@@ -1,0 +1,1099 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta property="og:title" content="jina.enums module" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="api/jina.enums.html" />
+  <meta property="og:description" content="Miscellaneous enums used in Jina. To use these enums in YAML config, following the example below: chunk_idx: uses: index/chunk.yml parallel: ${{PARALLEL}} parallel_type: !PollingType ANY # or paral..." />
+  <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.excepts module" href="../jina.excepts/" /><link rel="prev" title="jina.checker module" href="../jina.checker/" />
+
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
+        <title>jina.enums module - Jina 2.0.0rc3 documentation</title>
+      <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
+    <link rel="stylesheet" href="../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../"><div class="brand">Jina 2.0.0rc3 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Jina 2.0.0rc3 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search/">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p><span class="caption-text">Python API</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.helper/">jina.clients.request.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.asyncio/">jina.clients.asyncio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.docker/">jina.docker package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.docker.hubapi/">jina.docker.hubapi package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.docker.hubapi.local/">jina.docker.hubapi.local module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.docker.hubapi.remote/">jina.docker.hubapi.remote module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.docker.checker/">jina.docker.checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.docker.helper/">jina.docker.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.docker.hubio/">jina.docker.hubio module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.executors.decorators/">jina.executors.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.executors.metas/">jina.executors.metas module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.flow.asyncio/">jina.flow.asyncio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.flow.base/">jina.flow.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.flow.builder/">jina.flow.builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.chatbot.executors/">jina.helloworld.chatbot.executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.fashion.executors/">jina.helloworld.fashion.executors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.helloworld.multimodal.executors/">jina.helloworld.multimodal.executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.helloworld.fork/">jina.helloworld.fork module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label for="toctree-checkbox-13"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.flow.legacy/">jina.jaml.parsers.flow.legacy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/">jina.jaml.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.logging.formatter/">jina.logging.formatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.logging.profile/">jina.logging.profile module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.optimizers.flow_runner/">jina.optimizers.flow_runner module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.optimizers.parameters/">jina.optimizers.parameters module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers.hub/">jina.parsers.hub package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label for="toctree-checkbox-20"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hub.build/">jina.parsers.hub.build module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hub.list/">jina.parsers.hub.list module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hub.login/">jina.parsers.hub.login module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hub.new/">jina.parsers.hub.new module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hub.pushpull/">jina.parsers.hub.pushpull module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.zed/">jina.parsers.peapods.runtimes.zed module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.parsers.peapods.runtimes.zmq/">jina.parsers.peapods.runtimes.zmq module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.peapods.base/">jina.parsers.peapods.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.peapods.pea/">jina.parsers.peapods.pea module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.peapods.pod/">jina.parsers.peapods.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.base/">jina.parsers.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.check/">jina.parsers.check module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.flow/">jina.parsers.flow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.helper/">jina.parsers.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.optimizer/">jina.parsers.optimizer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.ping/">jina.parsers.ping module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.pods.compound/">jina.peapods.pods.compound module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio/">jina.peapods.runtimes.asyncio package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.grpc/">jina.peapods.runtimes.asyncio.grpc package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.grpc.async_call/">jina.peapods.runtimes.asyncio.grpc.async_call module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.rest/">jina.peapods.runtimes.asyncio.rest package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.rest.app/">jina.peapods.runtimes.asyncio.rest.app module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.rest.models/">jina.peapods.runtimes.asyncio.rest.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.base/">jina.peapods.runtimes.asyncio.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.ssh/">jina.peapods.runtimes.ssh package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/">jina.proto.serializer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.executor/">jina.schemas.executor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.flow/">jina.schemas.flow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.helper/">jina.schemas.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.meta/">jina.schemas.meta module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.schemas.pod/">jina.schemas.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.document/">jina.types.arrays.document module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.match/">jina.types.arrays.match module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.document.converters/">jina.types.document.converters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.document.helper/">jina.types.document.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.message.common/">jina.types.message.common module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.tensorflow/">jina.types.ndarray.sparse.tensorflow module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.control/">jina.types.request.control module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.struct/">jina.types.struct module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.checker/">jina.checker module</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">jina.enums module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.helper/">jina.helper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.importer/">jina.importer module</a></li>
+</ul>
+</li>
+</ul>
+<p><span class="caption-text">Command Line Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
+</ul>
+<p><span class="caption-text">Protobuf Specification</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <section id="module-jina.enums">
+<span id="jina-enums-module"></span><h1>jina.enums module<a class="headerlink" href="#module-jina.enums" title="Permalink to this headline">¶</a></h1>
+<p>Miscellaneous enums used in Jina.</p>
+<p>To use these enums in YAML config, following the example below:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">chunk_idx</span><span class="p">:</span>
+  <span class="nt">uses</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">index/chunk.yml</span>
+  <span class="nt">parallel</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${{PARALLEL}}</span>
+  <span class="nt">parallel_type</span><span class="p">:</span> <span class="kt">!PollingType</span> <span class="l l-Scalar l-Scalar-Plain">ANY</span>
+  <span class="c1"># or</span>
+  <span class="nt">parallel_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ANY</span>
+  <span class="c1"># or</span>
+  <span class="nt">parallel_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">any</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="jina.enums.EnumType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">EnumType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.EnumMeta</span></code></p>
+<p>The metaclass for BetterEnum.</p>
+<p>Register a new EnumType</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – args passed to super()</p></li>
+<li><p><strong>kwargs</strong> – kwargs passed to super()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the registry class</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="jina.enums.EnumType.register_class">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">register_class</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType.register_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType.register_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register the class for dumping loading.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cls</strong> – Target class.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Registered class.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.BetterEnum">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">BetterEnum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>The base class of Enum used in Jina.</p>
+<dl class="py method">
+<dt id="jina.enums.BetterEnum.from_string">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">from_string</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum.from_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the enum from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – string representation of the enum value</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>enum value</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.SchedulerType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">SchedulerType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#SchedulerType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.SchedulerType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The enum for Scheduler Type.</p>
+<dl class="py attribute">
+<dt id="jina.enums.SchedulerType.LOAD_BALANCE">
+<code class="sig-name descname"><span class="pre">LOAD_BALANCE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.SchedulerType.LOAD_BALANCE" title="Permalink to this definition">¶</a></dt>
+<dd><p>balance the workload between Peas, faster peas get more work</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SchedulerType.ROUND_ROBIN">
+<code class="sig-name descname"><span class="pre">ROUND_ROBIN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.SchedulerType.ROUND_ROBIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.PollingType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">PollingType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PollingType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PollingType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The enum for representing the parallel type of peas in a pod.</p>
+<dl class="py attribute">
+<dt id="jina.enums.PollingType.ANY">
+<code class="sig-name descname"><span class="pre">ANY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PollingType.ANY" title="Permalink to this definition">¶</a></dt>
+<dd><p>one of the shards will receive the message</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PollingType.ALL">
+<code class="sig-name descname"><span class="pre">ALL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL" title="Permalink to this definition">¶</a></dt>
+<dd><p>all shards will receive the message, blocked until all done with the message</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PollingType.ALL_ASYNC">
+<code class="sig-name descname"><span class="pre">ALL_ASYNC</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL_ASYNC" title="Permalink to this definition">¶</a></dt>
+<dd><p>(reserved) all replica will receive the message, but any one of them can return, useful in backup</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.PollingType.is_push">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_push</span></code><a class="headerlink" href="#jina.enums.PollingType.is_push" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>push</cite> protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if this <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>push</cite> protocol else False.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.PollingType.is_block">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_block</span></code><a class="headerlink" href="#jina.enums.PollingType.is_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>block</cite> protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if this <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is requiring <cite>block</cite> protocol else False.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.LogVerbosity">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">LogVerbosity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#LogVerbosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.LogVerbosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Verbosity level of the logger.</p>
+<dl class="py attribute">
+<dt id="jina.enums.LogVerbosity.DEBUG">
+<code class="sig-name descname"><span class="pre">DEBUG</span></code><em class="property"> <span class="pre">=</span> <span class="pre">10</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.DEBUG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.LogVerbosity.INFO">
+<code class="sig-name descname"><span class="pre">INFO</span></code><em class="property"> <span class="pre">=</span> <span class="pre">20</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.INFO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.LogVerbosity.SUCCESS">
+<code class="sig-name descname"><span class="pre">SUCCESS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">25</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.SUCCESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.LogVerbosity.WARNING">
+<code class="sig-name descname"><span class="pre">WARNING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">30</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.WARNING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.LogVerbosity.ERROR">
+<code class="sig-name descname"><span class="pre">ERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">40</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.LogVerbosity.CRITICAL">
+<code class="sig-name descname"><span class="pre">CRITICAL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">50</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.CRITICAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.SocketType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">SocketType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#SocketType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.SocketType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Enums for representing the socket type in a pod.</p>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PULL_BIND">
+<code class="sig-name descname"><span class="pre">PULL_BIND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.SocketType.PULL_BIND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PULL_CONNECT">
+<code class="sig-name descname"><span class="pre">PULL_CONNECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.SocketType.PULL_CONNECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PUSH_BIND">
+<code class="sig-name descname"><span class="pre">PUSH_BIND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.SocketType.PUSH_BIND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PUSH_CONNECT">
+<code class="sig-name descname"><span class="pre">PUSH_CONNECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#jina.enums.SocketType.PUSH_CONNECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.SUB_BIND">
+<code class="sig-name descname"><span class="pre">SUB_BIND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#jina.enums.SocketType.SUB_BIND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.SUB_CONNECT">
+<code class="sig-name descname"><span class="pre">SUB_CONNECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#jina.enums.SocketType.SUB_CONNECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PUB_BIND">
+<code class="sig-name descname"><span class="pre">PUB_BIND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#jina.enums.SocketType.PUB_BIND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PUB_CONNECT">
+<code class="sig-name descname"><span class="pre">PUB_CONNECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">7</span></em><a class="headerlink" href="#jina.enums.SocketType.PUB_CONNECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PAIR_BIND">
+<code class="sig-name descname"><span class="pre">PAIR_BIND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">8</span></em><a class="headerlink" href="#jina.enums.SocketType.PAIR_BIND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.PAIR_CONNECT">
+<code class="sig-name descname"><span class="pre">PAIR_CONNECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">9</span></em><a class="headerlink" href="#jina.enums.SocketType.PAIR_CONNECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.ROUTER_BIND">
+<code class="sig-name descname"><span class="pre">ROUTER_BIND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">10</span></em><a class="headerlink" href="#jina.enums.SocketType.ROUTER_BIND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.SocketType.DEALER_CONNECT">
+<code class="sig-name descname"><span class="pre">DEALER_CONNECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">11</span></em><a class="headerlink" href="#jina.enums.SocketType.DEALER_CONNECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="jina.enums.SocketType.is_bind">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_bind</span></code><a class="headerlink" href="#jina.enums.SocketType.is_bind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this socket is using <cite>bind</cite> protocol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if this socket is using <cite>bind</cite> protocol else False.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.SocketType.is_receive">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_receive</span></code><a class="headerlink" href="#jina.enums.SocketType.is_receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this socket is used for receiving data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if this socket is used for receiving data else False.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.SocketType.is_pubsub">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_pubsub</span></code><a class="headerlink" href="#jina.enums.SocketType.is_pubsub" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this socket is used for publish or subscribe data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if this socket is used for publish or subscribe data else False.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.SocketType.paired">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">paired</span></code><a class="headerlink" href="#jina.enums.SocketType.paired" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the paired SocketType.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#jina.enums.SocketType" title="jina.enums.SocketType"><code class="xref py py-class docutils literal notranslate"><span class="pre">SocketType</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a paired SocketType.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.FlowBuildLevel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">FlowBuildLevel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowBuildLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowBuildLevel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The enum for representing a flow’s build level.</p>
+<p>Some <a class="reference internal" href="../jina.flow/#jina.flow.Flow" title="jina.flow.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.Flow</span></code></a> class functions require certain build level to run.</p>
+<dl class="py attribute">
+<dt id="jina.enums.FlowBuildLevel.EMPTY">
+<code class="sig-name descname"><span class="pre">EMPTY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.EMPTY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nothing is built</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.FlowBuildLevel.GRAPH">
+<code class="sig-name descname"><span class="pre">GRAPH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.GRAPH" title="Permalink to this definition">¶</a></dt>
+<dd><p>The underlying graph is built, you may visualize the flow</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.FlowBuildLevel.RUNNING">
+<code class="sig-name descname"><span class="pre">RUNNING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.RUNNING" title="Permalink to this definition">¶</a></dt>
+<dd><p>the graph is started and all pods are running</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.PeaRoleType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">PeaRoleType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PeaRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PeaRoleType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The enum of a Pea role.</p>
+<dl class="py attribute">
+<dt id="jina.enums.PeaRoleType.SINGLETON">
+<code class="sig-name descname"><span class="pre">SINGLETON</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.PeaRoleType.SINGLETON" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PeaRoleType.HEAD">
+<code class="sig-name descname"><span class="pre">HEAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PeaRoleType.HEAD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PeaRoleType.TAIL">
+<code class="sig-name descname"><span class="pre">TAIL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PeaRoleType.TAIL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PeaRoleType.PARALLEL">
+<code class="sig-name descname"><span class="pre">PARALLEL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#jina.enums.PeaRoleType.PARALLEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.PodRoleType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">PodRoleType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PodRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PodRoleType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The enum of a Pod role for visualization.</p>
+<dl class="py attribute">
+<dt id="jina.enums.PodRoleType.POD">
+<code class="sig-name descname"><span class="pre">POD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.PodRoleType.POD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PodRoleType.JOIN">
+<code class="sig-name descname"><span class="pre">JOIN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PodRoleType.JOIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PodRoleType.INSPECT">
+<code class="sig-name descname"><span class="pre">INSPECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PodRoleType.INSPECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PodRoleType.GATEWAY">
+<code class="sig-name descname"><span class="pre">GATEWAY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#jina.enums.PodRoleType.GATEWAY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PodRoleType.INSPECT_AUX_PASS">
+<code class="sig-name descname"><span class="pre">INSPECT_AUX_PASS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#jina.enums.PodRoleType.INSPECT_AUX_PASS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.PodRoleType.JOIN_INSPECT">
+<code class="sig-name descname"><span class="pre">JOIN_INSPECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#jina.enums.PodRoleType.JOIN_INSPECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="jina.enums.PodRoleType.is_inspect">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_inspect</span></code><a class="headerlink" href="#jina.enums.PodRoleType.is_inspect" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the role is inspect pod related.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the Pod role is inspect related else False.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.RequestType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">RequestType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#RequestType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.RequestType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The enum of Client mode.</p>
+<dl class="py attribute">
+<dt id="jina.enums.RequestType.DATA">
+<code class="sig-name descname"><span class="pre">DATA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.RequestType.DATA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.RequestType.CONTROL">
+<code class="sig-name descname"><span class="pre">CONTROL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.RequestType.CONTROL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.CompressAlgo">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">CompressAlgo</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#CompressAlgo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.CompressAlgo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The enum of Compress algorithms.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>LZ4 requires additional package, to install it use pip install “jina[lz4]”</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://docs.python.org/3/library/archiving.html">https://docs.python.org/3/library/archiving.html</a></p>
+</div>
+<dl class="py attribute">
+<dt id="jina.enums.CompressAlgo.NONE">
+<code class="sig-name descname"><span class="pre">NONE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.CompressAlgo.NONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.CompressAlgo.LZ4">
+<code class="sig-name descname"><span class="pre">LZ4</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.CompressAlgo.LZ4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.CompressAlgo.ZLIB">
+<code class="sig-name descname"><span class="pre">ZLIB</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.CompressAlgo.ZLIB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.CompressAlgo.GZIP">
+<code class="sig-name descname"><span class="pre">GZIP</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#jina.enums.CompressAlgo.GZIP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.CompressAlgo.BZ2">
+<code class="sig-name descname"><span class="pre">BZ2</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#jina.enums.CompressAlgo.BZ2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.CompressAlgo.LZMA">
+<code class="sig-name descname"><span class="pre">LZMA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#jina.enums.CompressAlgo.LZMA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.OnErrorStrategy">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">OnErrorStrategy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#OnErrorStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.OnErrorStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>The level of error handling.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>In theory, all methods below do not 100% guarantee the success
+execution on the sequel flow. If something is wrong in the upstream,
+it is hard to CARRY this exception and moving forward without ANY
+side-effect.</p>
+</div>
+<dl class="py attribute">
+<dt id="jina.enums.OnErrorStrategy.IGNORE">
+<code class="sig-name descname"><span class="pre">IGNORE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.OnErrorStrategy.IGNORE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.OnErrorStrategy.SKIP_HANDLE">
+<code class="sig-name descname"><span class="pre">SKIP_HANDLE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.OnErrorStrategy.SKIP_HANDLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Skip all Executors in the sequel, only <cite>pre_hook</cite> and <cite>post_hook</cite> are called</p>
+</dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.OnErrorStrategy.THROW_EARLY">
+<code class="sig-name descname"><span class="pre">THROW_EARLY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.OnErrorStrategy.THROW_EARLY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Immediately throw the exception, the sequel flow will not be running at all</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.FlowInspectType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">FlowInspectType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowInspectType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowInspectType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Inspect strategy in the flow.</p>
+<dl class="py attribute">
+<dt id="jina.enums.FlowInspectType.HANG">
+<code class="sig-name descname"><span class="pre">HANG</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.HANG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.FlowInspectType.REMOVE">
+<code class="sig-name descname"><span class="pre">REMOVE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.REMOVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.FlowInspectType.COLLECT">
+<code class="sig-name descname"><span class="pre">COLLECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.COLLECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="jina.enums.FlowInspectType.is_keep">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_keep</span></code><a class="headerlink" href="#jina.enums.FlowInspectType.is_keep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the target is inspected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the target is inspected else False.</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.RemoteAccessType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">RemoteAccessType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#RemoteAccessType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.RemoteAccessType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Remote access type when connect to the host.</p>
+<dl class="py attribute">
+<dt id="jina.enums.RemoteAccessType.SSH">
+<code class="sig-name descname"><span class="pre">SSH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.RemoteAccessType.SSH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.RemoteAccessType.JINAD">
+<code class="sig-name descname"><span class="pre">JINAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.RemoteAccessType.JINAD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.BuildTestLevel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">BuildTestLevel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BuildTestLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BuildTestLevel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Test level in <strong class="command">jina hub build</strong>, higher level includes lower levels.</p>
+<dl class="py attribute">
+<dt id="jina.enums.BuildTestLevel.NONE">
+<code class="sig-name descname"><span class="pre">NONE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.BuildTestLevel.NONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.BuildTestLevel.EXECUTOR">
+<code class="sig-name descname"><span class="pre">EXECUTOR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.BuildTestLevel.EXECUTOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.BuildTestLevel.POD_NONDOCKER">
+<code class="sig-name descname"><span class="pre">POD_NONDOCKER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.BuildTestLevel.POD_NONDOCKER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.BuildTestLevel.POD_DOCKER">
+<code class="sig-name descname"><span class="pre">POD_DOCKER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#jina.enums.BuildTestLevel.POD_DOCKER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.BuildTestLevel.FLOW">
+<code class="sig-name descname"><span class="pre">FLOW</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#jina.enums.BuildTestLevel.FLOW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.DataInputType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">DataInputType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DataInputType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DataInputType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Data input type in the request generator.</p>
+<dl class="py attribute">
+<dt id="jina.enums.DataInputType.AUTO">
+<code class="sig-name descname"><span class="pre">AUTO</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.DataInputType.AUTO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.DataInputType.DOCUMENT">
+<code class="sig-name descname"><span class="pre">DOCUMENT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.DataInputType.DOCUMENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.DataInputType.CONTENT">
+<code class="sig-name descname"><span class="pre">CONTENT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.DataInputType.CONTENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.RuntimeBackendType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">RuntimeBackendType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#RuntimeBackendType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.RuntimeBackendType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Type of backend in runtime.</p>
+<dl class="py attribute">
+<dt id="jina.enums.RuntimeBackendType.THREAD">
+<code class="sig-name descname"><span class="pre">THREAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.RuntimeBackendType.THREAD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.RuntimeBackendType.PROCESS">
+<code class="sig-name descname"><span class="pre">PROCESS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.RuntimeBackendType.PROCESS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.enums.EmbeddingClsType">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">EmbeddingClsType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EmbeddingClsType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EmbeddingClsType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<p>Enums for representing the type of embeddings supported.</p>
+<dl class="py attribute">
+<dt id="jina.enums.EmbeddingClsType.DENSE">
+<code class="sig-name descname"><span class="pre">DENSE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.DENSE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.EmbeddingClsType.SCIPY_COO">
+<code class="sig-name descname"><span class="pre">SCIPY_COO</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_COO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.EmbeddingClsType.SCIPY_CSR">
+<code class="sig-name descname"><span class="pre">SCIPY_CSR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_CSR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.EmbeddingClsType.SCIPY_BSR">
+<code class="sig-name descname"><span class="pre">SCIPY_BSR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_BSR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.EmbeddingClsType.SCIPY_CSC">
+<code class="sig-name descname"><span class="pre">SCIPY_CSC</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.SCIPY_CSC" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.EmbeddingClsType.TORCH">
+<code class="sig-name descname"><span class="pre">TORCH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.TORCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.enums.EmbeddingClsType.TF">
+<code class="sig-name descname"><span class="pre">TF</span></code><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#jina.enums.EmbeddingClsType.TF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt id="jina.enums.EmbeddingClsType.is_sparse">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_sparse</span></code><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_sparse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if is of sparse type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the type is sparse</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.EmbeddingClsType.is_dense">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_dense</span></code><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_dense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if is of dense type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the type is dense</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.EmbeddingClsType.is_scipy">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_scipy</span></code><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_scipy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if is of scipy sparse type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True is of scipy sparse type</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.EmbeddingClsType.is_torch">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_torch</span></code><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_torch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if is of torch sparse type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True is of torch sparse type</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.EmbeddingClsType.is_tf">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_tf</span></code><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_tf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if is of tf sparse type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True is of tf sparse type</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.EmbeddingClsType.scipy_cls_type">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">scipy_cls_type</span></code><a class="headerlink" href="#jina.enums.EmbeddingClsType.scipy_cls_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the specific scipy class type (coo, csr, csc, bsr)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True is of scipy sparse type</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.enums.EmbeddingClsType.is_scipy_stackable">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_scipy_stackable</span></code><a class="headerlink" href="#jina.enums.EmbeddingClsType.is_scipy_stackable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return if the specific scipy class is stackable. (BSR and CSC when stacked are converted into COO)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True is class is stackable</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.enums.replace_enum_to_str">
+<code class="sig-prename descclassname"><span class="pre">jina.enums.</span></code><code class="sig-name descname"><span class="pre">replace_enum_to_str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#replace_enum_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.replace_enum_to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform BetterEnum type into string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> – Target obj.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Transformed obj with string type values.</p>
+</dd>
+</dl>
+</dd></dl>
+</section>
+
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../jina.excepts/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">jina.excepts module</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../jina.checker/">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">jina.checker module</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; Jina AI Limited. All rights reserved.
+            |
+            Last updated on May 25, 2021.
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>
