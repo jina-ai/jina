@@ -122,11 +122,11 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning',
+    description='Jina is geared towards building search-as-a-service systems for any kind of data in just minutes.',
     author='Jina Dev Team',
     author_email='dev-team@jina.ai',
     license='Apache 2.0',
-    url='https://opensource.jina.ai',
+    url='https://github.com/jina-ai/jina/',
     download_url='https://github.com/jina-ai/jina/tags',
     long_description=_long_description,
     long_description_content_type='text/markdown',
@@ -166,6 +166,11 @@ setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
+    project_urls={
+        'Documentation': 'https://docs2.jina.ai',
+        'Source': 'https://github.com/jina-ai/jina/',
+        'Tracker': 'https://github.com/jina-ai/jina/issues',
+    },
     keywords='jina cloud-native neural-search query search index elastic neural-network encoding '
     'embedding serving docker container image video audio deep-learning',
 )
