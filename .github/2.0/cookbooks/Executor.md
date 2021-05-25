@@ -532,12 +532,8 @@ class PytorchMwuExecutor(Executor):
     @requests
     def encode(self, docs, **kwargs):
         for doc in docs:
-            input_tensor = torch.from_numpy(
-                doc.blob
-            )  # convert the ``ndarray`` of the doc to ``Tensor``
-            output_tensor = torch.matmul(
-                self.encoding_mat, input_tensor
-            )  # multiply the input with the encoding matrix.
+            input_tensor = torch.from_numpy(doc.blob)  # convert the ``ndarray`` of the doc to ``Tensor``
+            output_tensor = torch.matmul(self.encoding_mat, input_tensor)  # multiply the input with the encoding matrix.
             doc.embedding = output_tensor.numpy() # assign the encoding results to ``embedding``
 ```
 
