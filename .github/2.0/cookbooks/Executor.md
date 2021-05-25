@@ -495,7 +495,6 @@ Line number corresponds to the 1.x code:
 ### Scikit-learn
 
 
-
 ```python
 import sklearn
 
@@ -503,24 +502,16 @@ from jina import Executor, requests, DocumentArray
 
 class TFIDFTextEncoder(Executor):
 
-    def __init__(
-        self,
-        path_vectorizer: str = os.path.join(cur_dir, 'model/tfidf_vectorizer.pickle'),
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
-        self.path_vectorizer = path_vectorizer
+      
+        from sklearn import datasets
 
-        import os
-        import pickle
-
-        if os.path.exists(self.path_vectorizer):
-            self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, 'rb'))
-        else:
-            raise PretrainedModelFileDoesNotExist(
-                f'{self.path_vectorizer} not found, cannot find a fitted tfidf_vectorizer'
-            )
+        dataset = datasets.fetch_20newsgroups()
+        tfidf_vectorizer = TfidfVectorizer()
+        tfidf_vectorizer.fit(dataset.data) 
+        self.ttfidf_vectorizer = tfidf_vectorizer
 
     @requests
     def encode(self,docs: DocumentArray,  *args, **kwargs):
