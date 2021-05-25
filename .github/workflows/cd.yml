@@ -89,9 +89,17 @@ jobs:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
+
+  update-doc2:
+    needs: update-doc
+    runs-on: ubuntu-20.04
+    steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
       - name: push-to-gh-pages-branch
         run: |
           git config --local user.email "dev-bot@jina.ai"
@@ -114,7 +122,7 @@ jobs:
           touch .nojekyll
           echo docs2.jina.ai > CNAME
           git add api cli proto
-          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
+          git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
           git status
           git push origin gh-pages
 

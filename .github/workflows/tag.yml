@@ -96,21 +96,14 @@ jobs:
           inputs: '{ "TFID": "cloud.jina.ai", "instances": "{ \"cloud.jina.ai\": { \"type\": \"t2.micro\", \"disk\" = { \"type\" = \"gp2\", \"size\" = 20 }, \"pip\": [], \"command\": \"sudo echo Hello from cloud.jina.ai\"} }", "region": "us-east-1", "cloudflare_record_name": "cloud" }'
 
   update-doc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-#        with:
-#          submodules: true
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - id: get_version
-        run: |
-          echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
       - name: push-to-gh-pages-branch
         run: |
           git config --local user.email "dev-bot@jina.ai"
@@ -133,7 +126,7 @@ jobs:
           touch .nojekyll
           echo docs2.jina.ai > CNAME
           git add api cli proto
-          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
+          git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
           git status
           git push origin gh-pages
 
