@@ -20,6 +20,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: push-to-api-repo
         run: |
+          git checkout gh-pages
+          git merge master
           pip install .[devel]
           cd docs
           pip install -r requirements.txt
@@ -38,3 +40,4 @@ jobs:
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
           git status
+          git push origin gh-pages
