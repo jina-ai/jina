@@ -1,19 +1,14 @@
 import base64
-import csv
-import glob
 import io
-import itertools as it
 import json
 import mimetypes
 import os
-import random
 import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
 from typing import (
     Iterable,
-    Generator,
     Union,
     Dict,
     Optional,
@@ -27,6 +22,7 @@ from typing import (
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
+from jina.types.struct import StructView
 
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..arrays.chunk import ChunkArray
@@ -85,6 +81,8 @@ DocumentSourceType = TypeVar(
 )
 
 _all_mime_types = set(mimetypes.types_map.values())
+
+_all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
 
 
 class Document(ProtoTypeMixin):
@@ -265,6 +263,11 @@ class Document(ProtoTypeMixin):
         if self._pb_body.id is None or not self._pb_body.id:
             self.id = random_identity(use_uuid1=True)
 
+        # check if there are mutually exclusive content fields
+        if _contains_conflicting_content(**kwargs):
+            raise ValueError(
+                f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
+            )
         self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
 
@@ -333,6 +336,23 @@ class Document(ProtoTypeMixin):
         :return: the content_hash from the proto
         """
         return self._pb_body.content_hash
+
+    @property
+    def tags(self) -> Dict:
+        """Return the `tags` field of this Document as a Python dict
+
+        :return: a Python dict view of the tags.
+        """
+        return StructView(self._pb_body.tags)
+
+    @tags.setter
+    def tags(self, value: Dict):
+        """Set the `tags` field of this Document to a Python dict
+
+        :param value: a Python dict
+        """
+        self._pb_body.tags.Clear()
+        self._pb_body.tags.update(value)
 
     @staticmethod
     def _update(
@@ -956,8 +976,12 @@ class Document(ProtoTypeMixin):
         return NamedScore(self._pb_body.score)
 
     @score.setter
-    def score(self, value: Union[jina_pb2.NamedScoreProto, NamedScore]):
+    def score(
+        self, value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic]
+    ):
         """Set the score of the document.
+
+        You can assign a scala variable directly.
 
         :param value: the value to set the score of the Document from
         """
@@ -965,6 +989,10 @@ class Document(ProtoTypeMixin):
             self._pb_body.score.CopyFrom(value)
         elif isinstance(value, NamedScore):
             self._pb_body.score.CopyFrom(value._pb_body)
+        elif isinstance(value, (float, int)):
+            self._pb_body.score.value = value
+        elif isinstance(value, np.generic):
+            self._pb_body.score.value = value.item()
         else:
             raise TypeError(f'score is in unsupported type {typename(value)}')
 
@@ -1157,10 +1185,10 @@ class Document(ProtoTypeMixin):
 
         mermaid_str = (
             """
-                    %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                    classDiagram
-                
-                            """
+                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                        classDiagram
+                    
+                                """
             + self.__mermaid_str__()
         )
 
@@ -1246,203 +1274,12 @@ class Document(ProtoTypeMixin):
             ]
         return list(set(support_keys))
 
-    @staticmethod
-    def from_lines(
-        lines: Optional[Iterable[str]] = None,
-        filepath: Optional[str] = None,
-        read_mode: str = 'r',
-        line_format: str = 'json',
-        field_resolver: Optional[Dict[str, str]] = None,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-    ) -> Generator['Document', None, None]:
-        """Generator function for lines, json and csv. Yields documents or strings.
-
-        :param lines: a list of strings, each is considered as a document
-        :param filepath: a text file that each line contains a document
-        :param read_mode: specifies the mode in which the file
-                    is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param line_format: the format of each line ``json`` or ``csv``
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
-        :param size: the maximum number of the documents
-        :param sampling_rate: the sampling rate between [0, 1]
-        :yield: documents
-
-        """
-        if filepath:
-            file_type = os.path.splitext(filepath)[1]
-            with open(filepath, read_mode) as f:
-                if file_type in _jsonl_ext:
-                    yield from Document.from_ndjson(f)
-                elif file_type in _csv_ext:
-                    yield from Document.from_csv(f, field_resolver, size, sampling_rate)
-                else:
-                    yield from _subsample(f, size, sampling_rate)
-        elif lines:
-            if line_format == 'json':
-                yield from Document.from_ndjson(lines)
-            elif line_format == 'csv':
-                yield from Document.from_csv(lines, field_resolver, size, sampling_rate)
-            else:
-                yield from _subsample(lines, size, sampling_rate)
-        else:
-            raise ValueError('"filepath" and "lines" can not be both empty')
-
-    @staticmethod
-    def from_ndjson(
-        fp: Iterable[str],
-        field_resolver: Optional[Dict[str, str]] = None,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-    ) -> Generator['Document', None, None]:
-        """Generator function for line separated JSON. Yields documents.
-
-        :param fp: file paths
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
-        :param size: the maximum number of the documents
-        :param sampling_rate: the sampling rate between [0, 1]
-        :yield: documents
-
-        """
-        for line in _subsample(fp, size, sampling_rate):
-            value = json.loads(line)
-            if 'groundtruth' in value and 'document' in value:
-                yield Document(value['document'], field_resolver), Document(
-                    value['groundtruth'], field_resolver
-                )
-            else:
-                yield Document(value, field_resolver)
-
-    @staticmethod
-    def from_csv(
-        fp: Iterable[str],
-        field_resolver: Optional[Dict[str, str]] = None,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-    ) -> Generator['Document', None, None]:
-        """Generator function for CSV. Yields documents.
-
-        :param fp: file paths
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
-        :param size: the maximum number of the documents
-        :param sampling_rate: the sampling rate between [0, 1]
-        :yield: documents
-
-        """
-        lines = csv.DictReader(fp)
-        for value in _subsample(lines, size, sampling_rate):
-            if 'groundtruth' in value and 'document' in value:
-                yield Document(value['document'], field_resolver), Document(
-                    value['groundtruth'], field_resolver
-                )
-            else:
-                yield Document(value, field_resolver)
-
-    @staticmethod
-    def from_files(
-        patterns: Union[str, List[str]],
-        recursive: bool = True,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-        read_mode: Optional[str] = None,
-    ) -> Generator['Document', None, None]:
-        """Creates an iterator over a list of file path or the content of the files.
-
-        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
-        :param recursive: If recursive is true, the pattern '**' will match any files
-            and zero or more directories and subdirectories
-        :param size: the maximum number of the files
-        :param sampling_rate: the sampling rate between [0, 1]
-        :param read_mode: specifies the mode in which the file is opened.
-            'r' for reading in text mode, 'rb' for reading in binary mode.
-            If `read_mode` is None, will iterate over filenames.
-        :yield: file paths or binary content
-
-        .. note::
-            This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
-        """
-        if read_mode not in {'r', 'rb', None}:
-            raise RuntimeError(
-                f'read_mode should be "r", "rb" or None, got {read_mode}'
-            )
-
-        def _iter_file_exts(ps):
-            return it.chain.from_iterable(
-                glob.iglob(p, recursive=recursive) for p in ps
-            )
-
-        d = 0
-        if isinstance(patterns, str):
-            patterns = [patterns]
-        for g in _iter_file_exts(patterns):
-            if sampling_rate is None or random.random() < sampling_rate:
-                if read_mode is None:
-                    yield Document(uri=g)
-                elif read_mode in {'r', 'rb'}:
-                    with open(g, read_mode) as fp:
-                        yield Document(content=fp.read())
-                d += 1
-            if size is not None and d > size:
-                break
-
-    @staticmethod
-    def from_ndarray(
-        array: 'np.ndarray',
-        axis: int = 0,
-        size: Optional[int] = None,
-        shuffle: bool = False,
-    ) -> Generator['Document', None, None]:
-        """Create a generator for a given dimension of a numpy array.
-
-        :param array: the numpy ndarray data source
-        :param axis: iterate over that axis
-        :param size: the maximum number of the sub arrays
-        :param shuffle: shuffle the numpy data source beforehand
-        :yield: ndarray
-
-        .. note::
-            This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead
-        """
-
-        if shuffle:
-            # shuffle for random query
-            array = np.take(array, np.random.permutation(array.shape[0]), axis=axis)
-        d = 0
-        for r in array:
-            yield Document(content=r)
-            d += 1
-            if size is not None and d >= size:
-                break
-
     def __getattr__(self, item):
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
         else:
             value = dunder_get(self._pb_body, item)
         return value
-
-
-# https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
-_jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
-_csv_ext = {'.csv', '.tcsv'}
-
-
-def _sample(iterable, sampling_rate: Optional[float] = None):
-    for i in iterable:
-        if sampling_rate is None or random.random() < sampling_rate:
-            yield i
-
-
-def _subsample(
-    iterable, size: Optional[int] = None, sampling_rate: Optional[float] = None
-):
-    yield from it.islice(_sample(iterable, sampling_rate), size)
 
 
 def _is_uri(value: str) -> bool:
@@ -1458,3 +1295,14 @@ def _is_uri(value: str) -> bool:
 def _is_datauri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return is_url(value) and scheme in {'data'}
+
+
+def _contains_conflicting_content(**kwargs):
+    content_keys = 0
+    for k in kwargs.keys():
+        if k in _all_doc_content_keys:
+            content_keys += 1
+            if content_keys > 1:
+                return True
+
+    return False

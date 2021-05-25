@@ -14,7 +14,6 @@ async def request_generator(
     exec_endpoint: str,
     data: GeneratorSourceType,
     request_size: int = 0,
-    mime_type: Optional[str] = None,
     data_type: DataInputType = DataInputType.AUTO,
     target_peapod: Optional[str] = None,
     parameters: Optional[Dict] = None,
@@ -25,7 +24,6 @@ async def request_generator(
     :param exec_endpoint: the endpoint string, by convention starts with `/`
     :param data: the data to use in the request
     :param request_size: the request size for the client
-    :param mime_type: mime type
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
     :param parameters: the kwargs that will be sent to the executor
@@ -34,7 +32,7 @@ async def request_generator(
     :yield: request
     """
 
-    _kwargs = dict(mime_type=mime_type, weight=1.0, extra_kwargs=kwargs)
+    _kwargs = dict(extra_kwargs=kwargs)
 
     try:
         if data is None:

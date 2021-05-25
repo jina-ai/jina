@@ -39,7 +39,7 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--timeout-ready',
         type=int,
-        default=60000,
+        default=600000,
         help='The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting '
         'forever',
     )

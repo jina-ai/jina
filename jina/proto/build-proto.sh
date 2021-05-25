@@ -13,7 +13,7 @@ VER_FILE=../__init__.py
 
 if [ "$#" -ne 1 ]; then
     echo "Error: Please specify the [PATH_TO_GRPC_PYTHON_PLUGIN], refer more details at " \
-      "https://docs.jina.ai/chapters/proto/modify.html"
+      "https://docs2.jina.ai/"
     printf "\n"
     echo "USAGE:"
     printf "\t"

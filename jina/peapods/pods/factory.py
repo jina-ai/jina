@@ -1,5 +1,5 @@
 from argparse import Namespace
-from typing import Union, Optional, Dict, Set
+from typing import Optional, Set
 
 from .compound import CompoundPod
 from .. import BasePod
@@ -12,9 +12,7 @@ class PodFactory:
     """
 
     @staticmethod
-    def build_pod(
-        args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
-    ) -> BasePod:
+    def build_pod(args: 'Namespace', needs: Optional[Set[str]] = None) -> BasePod:
         """Build an implementation of a `BasePod` interface
 
         :param args: pod arguments parsed from the CLI.
@@ -22,7 +20,7 @@ class PodFactory:
 
         :return: the created BasePod
         """
-        if args.replicas > 1:
+        if getattr(args, 'replicas', 1) > 1:
             return CompoundPod(args, needs=needs)
         else:
             return Pod(args, needs=needs)

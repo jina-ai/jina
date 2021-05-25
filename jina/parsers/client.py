@@ -16,7 +16,6 @@ def mixin_client_cli_parser(parser):
         help='The number of Documents in each Request.',
     )
 
-    gp.add_argument('--mime-type', type=str, help='MIME type of the input Documents.')
     gp.add_argument(
         '--continue-on-error',
         action='store_true',
@@ -24,6 +23,14 @@ def mixin_client_cli_parser(parser):
         help='If set, a Request that causes error will be logged only without blocking the further '
         'requests.',
     )
+
+    gp.add_argument(
+        '--show-progress',
+        action='store_true',
+        default=False,
+        help='If set, client will show a progress bar on receiving every request.',
+    )
+
     gp.add_argument(
         '--return-results',
         action='store_true',

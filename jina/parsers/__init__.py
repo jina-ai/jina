@@ -63,14 +63,18 @@ def set_gateway_parser(parser=None):
     from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
     from .peapods.runtimes.container import mixin_container_runtime_parser
-    from .peapods.runtimes.remote import mixin_remote_parser
-    from .peapods.runtimes.remote import mixin_grpc_parser
+    from .peapods.runtimes.remote import (
+        mixin_remote_parser,
+        mixin_grpc_server_parser,
+        mixin_rest_server_parser,
+    )
     from .peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_zed_runtime_parser(parser)
-    mixin_grpc_parser(parser)
+    mixin_grpc_server_parser(parser)
+    mixin_rest_server_parser(parser)
     mixin_remote_parser(parser)
     mixin_pea_parser(parser)
 
@@ -84,6 +88,14 @@ def set_gateway_parser(parser=None):
         read_only=True,
         runtime_cls='GRPCRuntime',
         pod_role=PodRoleType.GATEWAY,
+    )
+
+    parser.add_argument(
+        '--restful',
+        '--rest-api',
+        action='store_true',
+        default=False,
+        help='If set, use RESTful interface instead of gRPC as the main interface',
     )
     return parser
 
@@ -99,11 +111,10 @@ def set_client_cli_parser(parser=None):
 
         parser = set_base_parser()
 
-    from .peapods.runtimes.remote import mixin_grpc_parser, mixin_remote_parser
+    from .peapods.runtimes.remote import mixin_remote_parser
     from .client import mixin_client_cli_parser
 
     mixin_client_cli_parser(parser)
-    mixin_grpc_parser(parser)
     mixin_remote_parser(parser)
 
     return parser

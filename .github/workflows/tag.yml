@@ -96,25 +96,39 @@ jobs:
           inputs: '{ "TFID": "cloud.jina.ai", "instances": "{ \"cloud.jina.ai\": { \"type\": \"t2.micro\", \"disk\" = { \"type\" = \"gp2\", \"size\" = 20 }, \"pip\": [], \"command\": \"sudo echo Hello from cloud.jina.ai\"} }", "region": "us-east-1", "cloudflare_record_name": "cloud" }'
 
   update-doc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-#        with:
-#          submodules: true
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - id: get_version
+      - name: push-to-gh-pages-branch
         run: |
-          echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
-          echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
-      # Tell docs repo jina is going to release
-      - name: send-repository-dispatch-event-to-docs
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/docs
-          event-type: jina-release-event
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git checkout gh-pages
+          git merge master
+          pip install .[devel]
+          cd docs
+          pip install -r requirements.txt
+          docker run --rm \
+            -v $(pwd)/proto:/out \
+            -v $(pwd)/../jina/proto:/protos \
+            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
+          make dirhtml
+          cd ./_build/dirhtml/
+          cp -r ./ ../../
+          cd -
+          rm -rf ./_build/dirhtml/
+          ls -la
+          touch .nojekyll
+          echo docs2.jina.ai > CNAME
+          git add api cli proto
+          git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
+          git status
+          git push origin gh-pages
 
   update-docker:
     needs: update-doc
