@@ -506,3 +506,28 @@ Line number corresponds to the 1.x code:
     - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
+
+## Executors in Action
+
+### Pytorch Lightning
+
+```python
+from pl_bolts.models.autoencoders import AE
+
+from jina import Executor, requests
+
+import torch
+
+class plMwuAutoEncoder(Executor):
+     def __init__(self, **kwargs):
+        super().__init__()
+
+     @requests
+     def encode(self, docs, **kwargs):
+         ae = AE(input_height=32).from_pretrained('cifar10-resnet18')
+
+         for doc in docs:
+             doc.embedding = ae(torch.from_numpy(doc.blob)).detach().numpy()
+
+         ae.freeze()
+```
