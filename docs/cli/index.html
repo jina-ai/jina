@@ -2,8 +2,7 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="color-scheme" content="light dark">
   <meta property="og:title" content="Jina Command-Line Interface" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="cli/index.html" />
@@ -119,7 +118,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -351,11 +350,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
@@ -375,13 +374,13 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <section id="jina-command-line-interface">
+        <div class="section" id="jina-command-line-interface">
 <h1>Jina Command-Line Interface<a class="headerlink" href="#jina-command-line-interface" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">vf</span><span class="p">]</span>
                     <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">flow</span> <span class="o">...</span> <span class="mi">6</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
-<section id="Named Arguments">
+<div class="section" id="Named Arguments">
 <h2>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>-v, --version</kbd></dt>
@@ -391,8 +390,8 @@
 <dd><p>Show Jina and all dependencies’ versions</p>
 </dd>
 </dl>
-</section>
-<section id="subcommands">
+</div>
+<div class="section" id="subcommands">
 <h2>subcommands<a class="headerlink" href="#subcommands" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Use <cite>%(prog)-8s [sub-command] –help</cite> to get detailed information about each sub-command.</p>
@@ -403,16 +402,16 @@
 <dd><p>Possible choices: hello, executor, pod, flow, ping, gateway, pea, client, export-api, check</p>
 </dd>
 </dl>
-</section>
-<section id="Sub-commands:">
+</div>
+<div class="section" id="Sub-commands:">
 <h2>Sub-commands:<a class="headerlink" href="#Sub-commands:" title="Permalink to this headline">¶</a></h2>
-<section id="hello">
+<div class="section" id="hello">
 <h3>hello<a class="headerlink" href="#hello" title="Permalink to this headline">¶</a></h3>
 <p>Start hello world demos.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hello</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">fashion</span><span class="p">,</span> <span class="n">chatbot</span><span class="p">,</span> <span class="n">multimodal</span><span class="p">,</span> <span class="n">fork</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
-<section id="subcommands_repeat1">
+<div class="section" id="subcommands_repeat1">
 <h4>subcommands<a class="headerlink" href="#subcommands_repeat1" title="Permalink to this headline">¶</a></h4>
 <p>use <cite>%(prog)-8s [sub-command] –help</cite> to get detailed information about each sub-command</p>
 <dl class="option-list">
@@ -420,10 +419,10 @@
 <dd><p>Possible choices: fashion, chatbot, multimodal, fork</p>
 </dd>
 </dl>
-</section>
-<section id="Sub-commands:_repeat1">
+</div>
+<div class="section" id="Sub-commands:_repeat1">
 <h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat1" title="Permalink to this headline">¶</a></h4>
-<section id="fashion">
+<div class="section" id="fashion">
 <h5>fashion<a class="headerlink" href="#fashion" title="Permalink to this headline">¶</a></h5>
 <p>Run a fashion search demo</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hello</span> <span class="n">fashion</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span>
@@ -432,19 +431,19 @@
                            <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">query</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">top</span><span class="o">-</span><span class="n">k</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="General arguments">
+<div class="section" id="General arguments">
 <h6>General arguments<a class="headerlink" href="#General arguments" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “904d7bef-797a-4e57-aa3b-b3790e4cc28c”</p>
+<p>Default: “ef5c4b32-efb9-4e8b-84b8-1d74215a8024”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
 </dd>
 </dl>
-</section>
-<section id="Index arguments">
+</div>
+<div class="section" id="Index arguments">
 <h6>Index arguments<a class="headerlink" href="#Index arguments" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--index-data-url</kbd></dt>
@@ -456,8 +455,8 @@
 <p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz</a>”</p>
 </dd>
 </dl>
-</section>
-<section id="Search arguments">
+</div>
+<div class="section" id="Search arguments">
 <h6>Search arguments<a class="headerlink" href="#Search arguments" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--query-data-url</kbd></dt>
@@ -481,16 +480,16 @@
 <p>Default: 50</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="chatbot">
+</div>
+</div>
+<div class="section" id="chatbot">
 <h5>chatbot<a class="headerlink" href="#chatbot" title="Permalink to this headline">¶</a></h5>
 <p>Run a chatbot QA demo</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hello</span> <span class="n">chatbot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span>
                            <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">parallel</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat1">
+<div class="section" id="Named Arguments_repeat1">
 <h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--index-data-url</kbd></dt>
@@ -506,28 +505,28 @@
 <p>Default: 2</p>
 </dd>
 </dl>
-</section>
-<section id="General arguments_repeat1">
+</div>
+<div class="section" id="General arguments_repeat1">
 <h6>General arguments<a class="headerlink" href="#General arguments_repeat1" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “081a42d8-cedd-4d3b-a4e8-f4b93f380b71”</p>
+<p>Default: “7c259c8e-c1f6-47ad-83a7-6d92c16d8765”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="multimodal">
+</div>
+</div>
+<div class="section" id="multimodal">
 <h5>multimodal<a class="headerlink" href="#multimodal" title="Permalink to this headline">¶</a></h5>
 <p>Run a multimodal search demo</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hello</span> <span class="n">multimodal</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
                               <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat2">
+<div class="section" id="Named Arguments_repeat2">
 <h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
@@ -543,27 +542,27 @@
 <p>Default: 8080</p>
 </dd>
 </dl>
-</section>
-<section id="General arguments_repeat2">
+</div>
+<div class="section" id="General arguments_repeat2">
 <h6>General arguments<a class="headerlink" href="#General arguments_repeat2" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “9ad3909d-dd5e-4a4a-bcc8-e32c61ae1ffe”</p>
+<p>Default: “77e7ab87-7497-4114-8873-63d4b090462a”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="fork">
+</div>
+</div>
+<div class="section" id="fork">
 <h5>fork<a class="headerlink" href="#fork" title="Permalink to this headline">¶</a></h5>
 <p>Fork a hello world project to a local directory.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hello</span> <span class="n">fork</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">fashion</span><span class="p">,</span> <span class="n">chatbot</span><span class="p">,</span> <span class="n">multimodal</span><span class="p">}</span> <span class="n">destination</span>
 </pre></div>
 </div>
-<section id="Positional Arguments">
+<div class="section" id="Positional Arguments">
 <h6>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>project</kbd></dt>
@@ -574,11 +573,11 @@
 <dd><p>The dest directory of the forked project. Note, it can not be an existing path.</p>
 </dd>
 </dl>
-</section>
-</section>
-</section>
-</section>
-<section id="executor (pod)">
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="executor (pod)">
 <h3>executor (pod)<a class="headerlink" href="#executor (pod)" title="Permalink to this headline">¶</a></h3>
 <p>Start an Executor. Executor is how Jina processes Document.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span>
@@ -609,7 +608,7 @@
                       <span class="p">[</span><span class="o">--</span><span class="n">peas</span><span class="o">-</span><span class="n">hosts</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
-<section id="Essential arguments">
+<div class="section" id="Essential arguments">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--name</kbd></dt>
@@ -641,13 +640,13 @@
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="ZMQRuntime arguments">
+</div>
+<div class="section" id="ZMQRuntime arguments">
 <h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 54257</p>
+<p>Default: 59989</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -667,8 +666,8 @@
 <dd><p>The ssh password to the ssh server.</p>
 </dd>
 </dl>
-</section>
-<section id="ZEDRuntime arguments">
+</div>
+<div class="section" id="ZEDRuntime arguments">
 <h4>ZEDRuntime arguments<a class="headerlink" href="#ZEDRuntime arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
@@ -693,11 +692,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 35179</p>
+<p>Default: 47823</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 33991</p>
+<p>Default: 49925</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -742,8 +741,8 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <p>Default: 0</p>
 </dd>
 </dl>
-</section>
-<section id="ContainerRuntime arguments">
+</div>
+<div class="section" id="ContainerRuntime arguments">
 <h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses-internal</kbd></dt>
@@ -772,8 +771,8 @@ container.</p>
 - All volumes are mounted with read-write mode.</p>
 </dd>
 </dl>
-</section>
-<section id="Expose arguments">
+</div>
+<div class="section" id="Expose arguments">
 <h4>Expose arguments<a class="headerlink" href="#Expose arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
@@ -782,15 +781,15 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 51659</p>
+<p>Default: 35129</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="Distributed arguments">
+</div>
+<div class="section" id="Distributed arguments">
 <h4>Distributed arguments<a class="headerlink" href="#Distributed arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--quiet-remote-logs</kbd></dt>
@@ -809,11 +808,11 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “607009ce-594f-4d2f-a140-ac200073c96a”</p>
+<p>Default: “6785ef22-38fb-4b81-83c4-49f1318f9cd0”</p>
 </dd>
 </dl>
-</section>
-<section id="Pea arguments">
+</div>
+<div class="section" id="Pea arguments">
 <h4>Pea arguments<a class="headerlink" href="#Pea arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--daemon</kbd></dt>
@@ -854,8 +853,8 @@ Python files, data files.</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="Pod arguments">
+</div>
+<div class="section" id="Pod arguments">
 <h4>Pod arguments<a class="headerlink" href="#Pod arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses-before</kbd></dt>
@@ -896,9 +895,9 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dl>
 </dd>
 </dl>
-</section>
-</section>
-<section id="flow">
+</div>
+</div>
+<div class="section" id="flow">
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this headline">¶</a></h3>
 <p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span>
@@ -906,7 +905,7 @@ peas are running on host provided by the argument <code class="docutils literal 
                   <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat3">
+<div class="section" id="Named Arguments_repeat3">
 <h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
@@ -919,8 +918,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 <p>Default: 2</p>
 </dd>
 </dl>
-</section>
-<section id="Essential arguments_repeat1">
+</div>
+<div class="section" id="Essential arguments_repeat1">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--name</kbd></dt>
@@ -953,15 +952,15 @@ peas are running on host provided by the argument <code class="docutils literal 
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="ping">
+</div>
+</div>
+<div class="section" id="ping">
 <h3>ping<a class="headerlink" href="#ping" title="Permalink to this headline">¶</a></h3>
 <p>Ping a Pod and check its network connectivity.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">ping</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">print</span><span class="o">-</span><span class="n">response</span><span class="p">]</span> <span class="n">host</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat1">
+<div class="section" id="Positional Arguments_repeat1">
 <h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>host</kbd></dt>
@@ -971,8 +970,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dd><p>The control port of the target pod/pea</p>
 </dd>
 </dl>
-</section>
-<section id="Named Arguments_repeat4">
+</div>
+<div class="section" id="Named Arguments_repeat4">
 <h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
@@ -989,9 +988,9 @@ peas are running on host provided by the argument <code class="docutils literal 
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="gateway">
+</div>
+</div>
+<div class="section" id="gateway">
 <h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this headline">¶</a></h3>
 <p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span>
@@ -1018,7 +1017,7 @@ peas are running on host provided by the argument <code class="docutils literal 
                      <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat5">
+<div class="section" id="Named Arguments_repeat5">
 <h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--restful, --rest-api</kbd></dt>
@@ -1026,8 +1025,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="Essential arguments_repeat2">
+</div>
+<div class="section" id="Essential arguments_repeat2">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--name</kbd></dt>
@@ -1060,13 +1059,13 @@ peas are running on host provided by the argument <code class="docutils literal 
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="ZMQRuntime arguments_repeat1">
+</div>
+<div class="section" id="ZMQRuntime arguments_repeat1">
 <h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 39827</p>
+<p>Default: 57837</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1086,8 +1085,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dd><p>The ssh password to the ssh server.</p>
 </dd>
 </dl>
-</section>
-<section id="ZEDRuntime arguments_repeat1">
+</div>
+<div class="section" id="ZEDRuntime arguments_repeat1">
 <h4>ZEDRuntime arguments<a class="headerlink" href="#ZEDRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
@@ -1112,11 +1111,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 58957</p>
+<p>Default: 44891</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 52461</p>
+<p>Default: 47779</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1161,8 +1160,8 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <p>Default: 0</p>
 </dd>
 </dl>
-</section>
-<section id="GRPC arguments">
+</div>
+<div class="section" id="GRPC arguments">
 <h4>GRPC arguments<a class="headerlink" href="#GRPC arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--max-message-size</kbd></dt>
@@ -1192,8 +1191,8 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <p>Default: 1.1</p>
 </dd>
 </dl>
-</section>
-<section id="REST JSON arguments">
+</div>
+<div class="section" id="REST JSON arguments">
 <h4>REST JSON arguments<a class="headerlink" href="#REST JSON arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--including-default-value-fields</kbd></dt>
@@ -1217,8 +1216,8 @@ and oneof fields are not affected by this option.</p>
 <dd><p>If set, use this to specify float field valid digits.</p>
 </dd>
 </dl>
-</section>
-<section id="Expose arguments_repeat1">
+</div>
+<div class="section" id="Expose arguments_repeat1">
 <h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
@@ -1227,15 +1226,15 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 39543</p>
+<p>Default: 57721</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="Pea arguments_repeat1">
+</div>
+<div class="section" id="Pea arguments_repeat1">
 <h4>Pea arguments<a class="headerlink" href="#Pea arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--daemon</kbd></dt>
@@ -1276,9 +1275,9 @@ and oneof fields are not affected by this option.</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="pea">
+</div>
+</div>
+<div class="section" id="pea">
 <h3>pea<a class="headerlink" href="#pea" title="Permalink to this headline">¶</a></h3>
 <p>Start a Pea. You should rarely use this directly unless you are doing low-level orchestration</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">pea</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span>
@@ -1302,7 +1301,7 @@ and oneof fields are not affected by this option.</p>
                  <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Essential arguments_repeat3">
+<div class="section" id="Essential arguments_repeat3">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--name</kbd></dt>
@@ -1334,13 +1333,13 @@ and oneof fields are not affected by this option.</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="ZMQRuntime arguments_repeat2">
+</div>
+<div class="section" id="ZMQRuntime arguments_repeat2">
 <h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 39651</p>
+<p>Default: 38547</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1360,8 +1359,8 @@ and oneof fields are not affected by this option.</p>
 <dd><p>The ssh password to the ssh server.</p>
 </dd>
 </dl>
-</section>
-<section id="ZEDRuntime arguments_repeat2">
+</div>
+<div class="section" id="ZEDRuntime arguments_repeat2">
 <h4>ZEDRuntime arguments<a class="headerlink" href="#ZEDRuntime arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
@@ -1386,11 +1385,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 53279</p>
+<p>Default: 56111</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 32783</p>
+<p>Default: 37977</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1435,8 +1434,8 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <p>Default: 0</p>
 </dd>
 </dl>
-</section>
-<section id="ContainerRuntime arguments_repeat1">
+</div>
+<div class="section" id="ContainerRuntime arguments_repeat1">
 <h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses-internal</kbd></dt>
@@ -1465,8 +1464,8 @@ container.</p>
 - All volumes are mounted with read-write mode.</p>
 </dd>
 </dl>
-</section>
-<section id="Expose arguments_repeat2">
+</div>
+<div class="section" id="Expose arguments_repeat2">
 <h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
@@ -1475,15 +1474,15 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 48443</p>
+<p>Default: 38393</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="Distributed arguments_repeat1">
+</div>
+<div class="section" id="Distributed arguments_repeat1">
 <h4>Distributed arguments<a class="headerlink" href="#Distributed arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--quiet-remote-logs</kbd></dt>
@@ -1502,11 +1501,11 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “089649e5-3885-4a36-89c5-b924b690f1d0”</p>
+<p>Default: “68f88982-7568-43a6-a6f0-2ca342b1309e”</p>
 </dd>
 </dl>
-</section>
-<section id="Pea arguments_repeat2">
+</div>
+<div class="section" id="Pea arguments_repeat2">
 <h4>Pea arguments<a class="headerlink" href="#Pea arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--daemon</kbd></dt>
@@ -1547,9 +1546,9 @@ Python files, data files.</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="client">
+</div>
+</div>
+<div class="section" id="client">
 <h3>client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
 <p>Start a Python client that connects to a remote Jina gateway</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
@@ -1557,7 +1556,7 @@ Python files, data files.</p>
                     <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Client arguments">
+<div class="section" id="Client arguments">
 <h4>Client arguments<a class="headerlink" href="#Client arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--request-size</kbd></dt>
@@ -1579,8 +1578,8 @@ process Responses in bulk instead of using callback.</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-<section id="Expose arguments_repeat3">
+</div>
+<div class="section" id="Expose arguments_repeat3">
 <h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
@@ -1589,16 +1588,16 @@ process Responses in bulk instead of using callback.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 43655</p>
+<p>Default: 52295</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
 <p>Default: False</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="export-api">
+</div>
+</div>
+<div class="section" id="export-api">
 <h3>export-api<a class="headerlink" href="#export-api" title="Permalink to this headline">¶</a></h3>
 <p>Export Jina API to JSON/YAML file for 3rd party applications</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">export</span><span class="o">-</span><span class="n">api</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">yaml</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
@@ -1606,7 +1605,7 @@ process Responses in bulk instead of using callback.</p>
                         <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat6">
+<div class="section" id="Named Arguments_repeat6">
 <h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
@@ -1619,25 +1618,25 @@ process Responses in bulk instead of using callback.</p>
 <dd><p>The JSONSchema file path for storing the exported API</p>
 </dd>
 </dl>
-</section>
-</section>
-<section id="check">
+</div>
+</div>
+<div class="section" id="check">
 <h3>check<a class="headerlink" href="#check" title="Permalink to this headline">¶</a></h3>
 <p>Check the import status of all executors</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">check</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">summary</span><span class="o">-</span><span class="n">exec</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat7">
+<div class="section" id="Named Arguments_repeat7">
 <h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--summary-exec</kbd></dt>
 <dd><p>The markdown file path for all executors summary</p>
 </dd>
 </dl>
-</section>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
+</div>
 
       </article>
       <footer>

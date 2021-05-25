@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
@@ -382,13 +382,13 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">islice</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">Namespace</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Iterator</span><span class="p">,</span>
@@ -400,7 +400,7 @@
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="k">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -440,7 +440,7 @@
 <span class="sd">    :param aliases: maps aliases to new arguments</span>
 <span class="sd">    :return: wrapper</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">.excepts</span> <span class="k">import</span> <span class="n">NotSupportedError</span>
+    <span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="n">NotSupportedError</span>
 
     <span class="k">def</span> <span class="nf">_rename_kwargs</span><span class="p">(</span><span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">aliases</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -453,25 +453,25 @@
         <span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">new_arg</span> <span class="ow">in</span> <span class="n">aliases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_arg</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{new_arg}</span><span class="s1"> must be a tuple, with first element as the new name, '</span>
-                    <span class="n">f</span><span class="s1">'second element as the deprecated level: 0 as warning, 1 as exception'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">new_arg</span><span class="si">}</span><span class="s1"> must be a tuple, with first element as the new name, '</span>
+                    <span class="sa">f</span><span class="s1">'second element as the deprecated level: 0 as warning, 1 as exception'</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="n">new_name</span><span class="p">,</span> <span class="n">dep_level</span> <span class="o">=</span> <span class="n">new_arg</span>
                 <span class="k">if</span> <span class="n">new_name</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">NotSupportedError</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'</span><span class="si">{func_name}</span><span class="s1"> received both </span><span class="si">{alias}</span><span class="s1"> and </span><span class="si">{new_name}</span><span class="s1">'</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s1"> received both </span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s1"> and </span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">dep_level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'`</span><span class="si">{alias}</span><span class="s1">` is renamed to `</span><span class="si">{new_name}</span><span class="s1">` in `</span><span class="si">{func_name}</span><span class="s1">()`, the usage of `</span><span class="si">{alias}</span><span class="s1">` is '</span>
-                        <span class="n">f</span><span class="s1">'deprecated and will be removed in the next version.'</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s1">'`</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s1">` is renamed to `</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s1">` in `</span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s1">()`, the usage of `</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s1">` is '</span>
+                        <span class="sa">f</span><span class="s1">'deprecated and will be removed in the next version.'</span><span class="p">,</span>
                         <span class="ne">DeprecationWarning</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">kwargs</span><span class="p">[</span><span class="n">new_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">dep_level</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">NotSupportedError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{alias}</span><span class="s1"> has been renamed to `</span><span class="si">{new_name}</span><span class="s1">`'</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">NotSupportedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s1"> has been renamed to `</span><span class="si">{</span><span class="n">new_name</span><span class="si">}</span><span class="s1">`'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">deco</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -507,13 +507,13 @@
 <span class="sd">    """</span>
     <span class="n">num_bytes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_bytes</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'</span><span class="si">{num_bytes}</span><span class="s1"> Bytes'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">num_bytes</span><span class="si">}</span><span class="s1"> Bytes'</span>
     <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'{num_bytes / 1024:.1f} KB'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">num_bytes</span> <span class="o">/</span> <span class="mi">1024</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> KB'</span>
     <span class="k">elif</span> <span class="n">num_bytes</span> <span class="o">&lt;</span> <span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'{num_bytes / (1024 ** 2):.1f} MB'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">num_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> MB'</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'{num_bytes / (1024 ** 3):.1f} GB'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">num_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> GB'</span>
 
 
 <span class="k">def</span> <span class="nf">call_obj_fn</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -600,7 +600,7 @@
                 <span class="k">return</span>
             <span class="k">yield</span> <span class="n">chunk</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'unsupported type: {type(data)}'</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'unsupported type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="parse_arg"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.parse_arg">[docs]</a><span class="k">def</span> <span class="nf">parse_arg</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
@@ -654,8 +654,8 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">t</span> <span class="o">-=</span> <span class="mi">1</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'⏳ {colored("</span><span class="si">%3d</span><span class="s1">" % t, "yellow")}s left: </span><span class="si">{reason}</span><span class="s1">'</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="se">\r</span><span class="si">{msg}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'⏳ </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">"</span><span class="si">%3d</span><span class="s2">"</span> <span class="o">%</span> <span class="n">t</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span><span class="si">}</span><span class="s1">s left: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\r</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
@@ -790,7 +790,7 @@
 
     <span class="kn">import</span> <span class="nn">threading</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
-    <span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">closing</span>
+    <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">closing</span>
     <span class="kn">import</span> <span class="nn">socket</span>
 
     <span class="k">def</span> <span class="nf">_get_port</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -813,7 +813,7 @@
                 <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'Couldn</span><span class="se">\'</span><span class="s1">t find an available port in [</span><span class="si">{min_port}</span><span class="s1">, </span><span class="si">{max_port}</span><span class="s1">].'</span>
+                <span class="sa">f</span><span class="s1">'Couldn</span><span class="se">\'</span><span class="s1">t find an available port in [</span><span class="si">{</span><span class="n">min_port</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">max_port</span><span class="si">}</span><span class="s1">].'</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">_port</span> <span class="o">=</span> <span class="n">_get_port</span><span class="p">()</span>
@@ -1092,22 +1092,22 @@
 <span class="sd">        :return: argument list</span>
 <span class="sd">        """</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="kn">from</span> <span class="nn">.executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
+        <span class="kn">from</span> <span class="nn">.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'_'</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
-                        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'--</span><span class="si">{k}</span><span class="s1">'</span><span class="p">)</span>
+                        <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'--</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>  <span class="c1"># for nargs</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">f</span><span class="s1">'--</span><span class="si">{k}</span><span class="s1">'</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">v</span><span class="p">)])</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s1">'--</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span> <span class="k">for</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">v</span><span class="p">)])</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">f</span><span class="s1">'--</span><span class="si">{k}</span><span class="s1">'</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s1">'--</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">BaseExecutor</span><span class="p">):</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">f</span><span class="s1">'--</span><span class="si">{k}</span><span class="s1">'</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="vm">__name__</span><span class="p">])</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s1">'--</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="vm">__name__</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">f</span><span class="s1">'--</span><span class="si">{k}</span><span class="s1">'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="sa">f</span><span class="s1">'--</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
         <span class="k">return</span> <span class="n">args</span></div>
 
 <div class="viewcode-block" id="ArgNamespace.kwargs2namespace"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.kwargs2namespace">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -1126,7 +1126,7 @@
             <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'bad arguments "</span><span class="si">{args}</span><span class="s1">" with parser </span><span class="si">{parser}</span><span class="s1">, '</span>
+                <span class="sa">f</span><span class="s1">'bad arguments "</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">" with parser </span><span class="si">{</span><span class="n">parser</span><span class="si">}</span><span class="s1">, '</span>
                 <span class="s1">'you may want to double check your args '</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">p_args</span></div>
@@ -1146,17 +1146,17 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">unknown_args</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+                <span class="kn">from</span> <span class="nn">.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
                 <span class="n">default_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'parser {typename(parser)} can not '</span>
-                    <span class="n">f</span><span class="s1">'recognize the following args: </span><span class="si">{unknown_args}</span><span class="s1">, '</span>
-                    <span class="n">f</span><span class="s1">'they are ignored. if you are using them from a global args (e.g. Flow), '</span>
-                    <span class="n">f</span><span class="s1">'then please ignore this message'</span>
+                    <span class="sa">f</span><span class="s1">'parser </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span><span class="si">}</span><span class="s1"> can not '</span>
+                    <span class="sa">f</span><span class="s1">'recognize the following args: </span><span class="si">{</span><span class="n">unknown_args</span><span class="si">}</span><span class="s1">, '</span>
+                    <span class="sa">f</span><span class="s1">'they are ignored. if you are using them from a global args (e.g. Flow), '</span>
+                    <span class="sa">f</span><span class="s1">'then please ignore this message'</span>
                 <span class="p">)</span>
         <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'bad arguments "</span><span class="si">{args}</span><span class="s1">" with parser </span><span class="si">{parser}</span><span class="s1">, '</span>
+                <span class="sa">f</span><span class="s1">'bad arguments "</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">" with parser </span><span class="si">{</span><span class="n">parser</span><span class="si">}</span><span class="s1">, '</span>
                 <span class="s1">'you may want to double check your args '</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span></div>
@@ -1214,7 +1214,7 @@
 <span class="sd">    :return: True if the path is valid else False.</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">.jaml</span> <span class="k">import</span> <span class="n">parse_config_source</span>
+        <span class="kn">from</span> <span class="nn">.jaml</span> <span class="kn">import</span> <span class="n">parse_config_source</span>
 
         <span class="n">parse_config_source</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -1228,13 +1228,13 @@
 
 <span class="sd">    :return: Version information and environment variables</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__proto_version__</span><span class="p">,</span> <span class="n">__jina_env__</span>
-    <span class="kn">from</span> <span class="nn">google.protobuf.internal</span> <span class="k">import</span> <span class="n">api_implementation</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__proto_version__</span><span class="p">,</span> <span class="n">__jina_env__</span>
+    <span class="kn">from</span> <span class="nn">google.protobuf.internal</span> <span class="kn">import</span> <span class="n">api_implementation</span>
     <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">zmq</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">google.protobuf</span><span class="o">,</span> <span class="nn">grpc</span><span class="o">,</span> <span class="nn">yaml</span>
-    <span class="kn">from</span> <span class="nn">grpc</span> <span class="k">import</span> <span class="n">_grpcio_metadata</span>
-    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_filename</span>
+    <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">_grpcio_metadata</span>
+    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
     <span class="kn">import</span> <span class="nn">platform</span>
-    <span class="kn">from</span> <span class="nn">.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
     <span class="k">try</span><span class="p">:</span>
 
@@ -1273,13 +1273,13 @@
 <span class="sd">    :param env_info: The Jina environment variables.</span>
 <span class="sd">    :return: Formatted version information.</span>
 <span class="sd">    """</span>
-    <span class="n">version_info</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="s1">'- </span><span class="si">{k:30s}{v}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-    <span class="n">env_info</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="s1">'* </span><span class="si">{k:30s}{v}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="n">version_info</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'- </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">30s</span><span class="si">}{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="n">env_info</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'* </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">30s</span><span class="si">}{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
     <span class="k">return</span> <span class="n">version_info</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="n">env_info</span>
 
 
 <span class="k">def</span> <span class="nf">_use_uvloop</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
+    <span class="kn">from</span> <span class="nn">.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -1321,7 +1321,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'</span><span class="si">{obj.__module__}</span><span class="s1">.</span><span class="si">{obj.__name__}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
 
@@ -1329,7 +1329,7 @@
 <div class="viewcode-block" id="cached_property"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.cached_property">[docs]</a><span class="k">class</span> <span class="nc">cached_property</span><span class="p">:</span>
     <span class="sd">"""The decorator to cache property of a class."""</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Create the :class:`cached_property`.</span>
 
@@ -1337,20 +1337,20 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
 
-    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
-        <span class="n">cached_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s1">'CACHED_</span><span class="si">{self.func.__name__}</span><span class="s1">'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="n">cached_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">'CACHED_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cached_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">cached_value</span>
 
-        <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">f</span><span class="s1">'CACHED_</span><span class="si">{self.func.__name__}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="sa">f</span><span class="s1">'CACHED_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="n">cached_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s1">'CACHED_</span><span class="si">{self.func.__name__}</span><span class="s1">'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__delete__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">cached_value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">'CACHED_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cached_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">cached_value</span><span class="p">,</span> <span class="s1">'close'</span><span class="p">):</span>
                 <span class="n">cached_value</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">f</span><span class="s1">'CACHED_</span><span class="si">{self.func.__name__}</span><span class="s1">'</span><span class="p">]</span></div>
+            <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="sa">f</span><span class="s1">'CACHED_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span></div>
 
 
 <span class="k">def</span> <span class="nf">get_now_timestamp</span><span class="p">():</span>
@@ -1388,7 +1388,7 @@
                 <span class="n">secs</span> <span class="o">-=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">mul</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">secs</span><span class="p">)</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{n}</span><span class="s1"> </span><span class="si">{unit}</span><span class="s1">'</span> <span class="o">+</span> <span class="p">(</span><span class="s1">''</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">'s'</span><span class="p">))</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s1">'</span> <span class="o">+</span> <span class="p">(</span><span class="s1">''</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">'s'</span><span class="p">))</span>
     <span class="k">return</span> <span class="s1">' and '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
 
 
@@ -1523,7 +1523,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">thread</span><span class="o">.</span><span class="n">result</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">.excepts</span> <span class="k">import</span> <span class="n">BadClient</span>
+                <span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
 
                 <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span>
                     <span class="s1">'something wrong when running the eventloop, result can not be retrieved'</span>
@@ -1611,7 +1611,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
         <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="s1">'can not download image, please check your graph and the network connections'</span>
@@ -1624,11 +1624,11 @@
 <span class="sd">    # noqa: DAR101</span>
 <span class="sd">    """</span>
     <span class="kn">import</span> <span class="nn">subprocess</span>
-    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_filename</span>
+    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
     <span class="n">soundfx</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'soundfx'</span><span class="p">,</span> <span class="s1">'bell.mp3'</span><span class="p">)))</span>
 
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">f</span><span class="s1">'ffplay  -nodisp -autoexit </span><span class="si">{soundfx}</span><span class="s1"> &gt;/dev/null 2&gt;&amp;1'</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ffplay  -nodisp -autoexit </span><span class="si">{</span><span class="n">soundfx</span><span class="si">}</span><span class="s1"> &gt;/dev/null 2&gt;&amp;1'</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">find_request_binding</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
@@ -1638,7 +1638,7 @@
 <span class="sd">    :return: a dictionary with key as request type and value as method name</span>
 <span class="sd">    """</span>
     <span class="kn">import</span> <span class="nn">ast</span><span class="o">,</span> <span class="nn">inspect</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">__default_endpoint__</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
 
     <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -1653,7 +1653,7 @@
             <span class="k">if</span> <span class="n">req_name</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">req_name</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'you already bind `</span><span class="si">{res[req_name]}</span><span class="s1">` with `</span><span class="si">{req_name}</span><span class="s1">` request'</span>
+                        <span class="sa">f</span><span class="s1">'you already bind `</span><span class="si">{</span><span class="n">res</span><span class="p">[</span><span class="n">req_name</span><span class="p">]</span><span class="si">}</span><span class="s1">` with `</span><span class="si">{</span><span class="n">req_name</span><span class="si">}</span><span class="s1">` request'</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">res</span><span class="p">[</span><span class="n">req_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span>
@@ -1672,7 +1672,7 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">req_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'/'</span><span class="p">):</span>
         <span class="c1"># new data request</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'data://</span><span class="si">{req_name}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'data://</span><span class="si">{</span><span class="n">req_name</span><span class="si">}</span><span class="s1">'</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># legacy request type</span>
         <span class="k">return</span> <span class="n">req_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'request'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
@@ -1712,7 +1712,7 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">pass</span>
 
-    <span class="kn">from</span> <span class="nn">google.protobuf.struct_pb2</span> <span class="k">import</span> <span class="n">Struct</span>
+    <span class="kn">from</span> <span class="nn">google.protobuf.struct_pb2</span> <span class="kn">import</span> <span class="n">Struct</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part1</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">_dict</span><span class="p">[</span><span class="n">part1</span><span class="p">]</span>

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,16 +370,16 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.request</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Dict</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="k">import</span> <span class="n">json_format</span>
-<span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="k">import</span> <span class="n">StructView</span>
+<span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
+<span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 
-<span class="kn">from</span> <span class="nn">..mixin</span> <span class="k">import</span> <span class="n">ProtoTypeMixin</span>
-<span class="kn">from</span> <span class="nn">...enums</span> <span class="k">import</span> <span class="n">CompressAlgo</span><span class="p">,</span> <span class="n">RequestType</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="k">import</span> <span class="n">BadRequestType</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">...proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
+<span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span><span class="p">,</span> <span class="n">RequestType</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadRequestType</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="n">_body_type</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">RequestType</span><span class="p">)</span>
 <span class="n">_trigger_body_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
@@ -420,7 +420,7 @@
 <span class="sd">    :param copy: Copy the request if ``copy`` is True.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">request</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">'jina_pb2.RequestProto'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">envelope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'jina_pb2.EnvelopeProto'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -453,14 +453,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># note ``None`` is not considered as a bad type</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'{typename(request)} is not recognizable'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">BadRequestType</span><span class="p">(</span><span class="n">f</span><span class="s1">'fail to construct a request from </span><span class="si">{request}</span><span class="s1">'</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
+            <span class="k">raise</span> <span class="n">BadRequestType</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fail to construct a request from </span><span class="si">{</span><span class="n">request</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_envelope</span> <span class="o">=</span> <span class="n">envelope</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_used</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: Return True when request has been r/w at least once</span>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># https://docs.python.org/3/reference/datamodel.html#object.__getattr__</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_trigger_body_fields</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
@@ -477,7 +477,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_type</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_type</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'"request_type" is not set yet'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'"request_type" is not set yet'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_request_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -500,8 +500,8 @@
 <span class="sd">        :param request_type: string representation of the request type</span>
 <span class="sd">        :return: self</span>
 <span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">.control</span> <span class="k">import</span> <span class="n">ControlRequest</span>
-        <span class="kn">from</span> <span class="nn">.data</span> <span class="k">import</span> <span class="n">DataRequest</span>
+        <span class="kn">from</span> <span class="nn">.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
+        <span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
         <span class="n">rt</span> <span class="o">=</span> <span class="n">request_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">RequestType</span><span class="o">.</span><span class="n">DATA</span><span class="p">)):</span>
@@ -509,7 +509,7 @@
         <span class="k">elif</span> <span class="n">rt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">RequestType</span><span class="o">.</span><span class="n">CONTROL</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">ControlRequest</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{request_type}</span><span class="s1"> is not recognized'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">request_type</span><span class="si">}</span><span class="s1"> is not recognized'</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@request_type</span><span class="o">.</span><span class="n">setter</span>
@@ -523,7 +523,7 @@
         <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_body_type</span><span class="p">:</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">SetInParent</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{value}</span><span class="s1"> is not valid, must be one of </span><span class="si">{_body_type}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> is not valid, must be one of </span><span class="si">{</span><span class="n">_body_type</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_type</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,12 +371,12 @@
         </label>
         <h1>Source code for jina.jaml.parsers.executor.legacy</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">reduce</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Set</span>
 
-<span class="kn">from</span> <span class="nn">..base</span> <span class="k">import</span> <span class="n">VersionedYAMLParser</span>
-<span class="kn">from</span> <span class="nn">....executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
-<span class="kn">from</span> <span class="nn">....executors.metas</span> <span class="k">import</span> <span class="n">get_default_metas</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
+<span class="kn">from</span> <span class="nn">....executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
+<span class="kn">from</span> <span class="nn">....executors.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>
 
 
 <div class="viewcode-block" id="LegacyParser"><a class="viewcode-back" href="../../../../../../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser">[docs]</a><span class="k">class</span> <span class="nc">LegacyParser</span><span class="p">(</span><span class="n">VersionedYAMLParser</span><span class="p">):</span>
@@ -429,7 +429,7 @@
 <span class="sd">        :param data: flow yaml file loaded as python dict</span>
 <span class="sd">        :return: the Flow YAML parser given the syntax version number</span>
 <span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">....logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+        <span class="kn">from</span> <span class="nn">....logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
         <span class="n">_meta_config</span> <span class="o">=</span> <span class="n">get_default_metas</span><span class="p">()</span>
         <span class="n">_meta_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'metas'</span><span class="p">,</span> <span class="p">{}))</span>
@@ -452,11 +452,11 @@
         <span class="n">difference_set</span> <span class="o">=</span> <span class="n">arguments_from_yaml</span> <span class="o">-</span> <span class="n">arguments_from_cls</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">difference_set</span><span class="p">):</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'The arguments </span><span class="si">{difference_set}</span><span class="s1"> defined in the YAML are not expected in the '</span>
-                <span class="n">f</span><span class="s1">'class </span><span class="si">{cls.__name__}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'The arguments </span><span class="si">{</span><span class="n">difference_set</span><span class="si">}</span><span class="s1"> defined in the YAML are not expected in the '</span>
+                <span class="sa">f</span><span class="s1">'class </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
-        <span class="n">default_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'successfully built </span><span class="si">{cls.__name__}</span><span class="s1"> from a yaml config'</span><span class="p">)</span>
+        <span class="n">default_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'successfully built </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> from a yaml config'</span><span class="p">)</span>
 
         <span class="c1"># if node.tag in {'!CompoundExecutor'}:</span>
         <span class="c1">#     os.environ['JINA_WARN_UNNAMED'] = 'YES'</span>

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -374,8 +374,8 @@
 
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
@@ -384,9 +384,9 @@
     <span class="n">Sequence</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.metas</span> <span class="k">import</span> <span class="n">get_default_metas</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">convert_tuple_to_list</span>
+<span class="kn">from</span> <span class="nn">.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">convert_tuple_to_list</span>
 
 
 <div class="viewcode-block" id="wrap_func"><a class="viewcode-back" href="../../../../api/jina.executors.decorators/#jina.wrap_func">[docs]</a><span class="k">def</span> <span class="nf">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_lst</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">):</span>
@@ -464,16 +464,16 @@
 <span class="sd">    :param on: the endpoint string, by convention starts with `/`</span>
 <span class="sd">    :return: decorated function</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">__default_endpoint__</span><span class="p">,</span> <span class="n">__num_args_executor_func__</span>
+    <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span><span class="p">,</span> <span class="n">__num_args_executor_func__</span>
 
     <span class="k">class</span> <span class="nc">FunctionMapper</span><span class="p">:</span>
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
 
             <span class="n">arg_spec</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">arg_spec</span><span class="o">.</span><span class="n">varkw</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">__num_args_executor_func__</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{fn}</span><span class="s1"> accepts only </span><span class="si">{arg_spec.args}</span><span class="s1"> which is fewer than expected, '</span>
-                    <span class="n">f</span><span class="s1">'please add `**kwargs` to the function signature.'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1"> accepts only </span><span class="si">{</span><span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s1"> which is fewer than expected, '</span>
+                    <span class="sa">f</span><span class="s1">'please add `**kwargs` to the function signature.'</span>
                 <span class="p">)</span>
 
             <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>

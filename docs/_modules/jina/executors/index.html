@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,14 +371,14 @@
         </label>
         <h1>Source code for jina.executors</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">.decorators</span> <span class="k">import</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
-<span class="kn">from</span> <span class="nn">.metas</span> <span class="k">import</span> <span class="n">get_default_metas</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">__default_endpoint__</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">..jaml</span> <span class="k">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">subvar_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
+<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
+<span class="kn">from</span> <span class="nn">.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">subvar_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">,</span> <span class="s1">'AnyExecutor'</span><span class="p">,</span> <span class="s1">'ExecutorType'</span><span class="p">]</span>
 
@@ -388,7 +388,7 @@
 <div class="viewcode-block" id="ExecutorType"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.ExecutorType">[docs]</a><span class="k">class</span> <span class="nc">ExecutorType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">),</span> <span class="nb">type</span><span class="p">):</span>
     <span class="sd">"""The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""</span>
 
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
@@ -409,7 +409,7 @@
 
         <span class="n">reg_cls_set</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">'_registered_class'</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
 
-        <span class="n">cls_id</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{cls.__module__}</span><span class="s1">.</span><span class="si">{cls.__name__}</span><span class="s1">'</span>
+        <span class="n">cls_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span>
         <span class="k">if</span> <span class="n">cls_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reg_cls_set</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">'force_register'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">[</span><span class="s1">'__init__'</span><span class="p">],</span> <span class="n">store_init_kwargs</span><span class="p">)</span>
 
@@ -444,7 +444,7 @@
 
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -482,7 +482,7 @@
                     <span class="n">request_mapping</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">_func</span><span class="o">.</span><span class="n">fn</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'expect {typename(self)}.</span><span class="si">{func}</span><span class="s1"> to be a function, but receiving {typename(_func)}'</span>
+                        <span class="sa">f</span><span class="s1">'expect </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s1"> to be a function, but receiving </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">):</span>
@@ -526,7 +526,7 @@
                             <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                <span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1">=</span><span class="si">{v}</span><span class="s1"> is not substitutable or badly referred'</span>
+                                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1"> is not substitutable or badly referred'</span>
                             <span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -545,7 +545,7 @@
 <span class="sd">        """</span>
         <span class="k">pass</span></div>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
@@ -583,10 +583,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'can not find metas.workspace or runtime_args.workspace'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </pre></div>
       </article>

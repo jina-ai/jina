@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,14 +372,14 @@
         <h1>Source code for jina.clients.request.asyncio</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module for async requests generator."""</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="k">import</span> <span class="n">_new_data_request_from_batch</span><span class="p">,</span> <span class="n">_new_data_request</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">GeneratorSourceType</span>
-<span class="kn">from</span> <span class="nn">...enums</span> <span class="k">import</span> <span class="n">DataInputType</span>
-<span class="kn">from</span> <span class="nn">...importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">...logging</span> <span class="k">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">...types.request</span> <span class="k">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_new_data_request_from_batch</span><span class="p">,</span> <span class="n">_new_data_request</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">GeneratorSourceType</span>
+<span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
+<span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">...logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="request_generator"><a class="viewcode-back" href="../../../../../api/jina.clients.request.asyncio/#jina.clients.request.asyncio.request_generator">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">request_generator</span><span class="p">(</span>
@@ -427,7 +427,7 @@
                 <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="c1"># must be handled here, as grpc channel wont handle Python exception</span>
-        <span class="n">default_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">f</span><span class="s1">'inputs is not valid! </span><span class="si">{ex!r}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">default_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">'inputs is not valid! </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,18 +370,18 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.flow.builder</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">__default_host__</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="k">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="k">import</span> <span class="n">FlowBuildLevelError</span><span class="p">,</span> <span class="n">SocketTypeError</span>
-<span class="kn">from</span> <span class="nn">..peapods</span> <span class="k">import</span> <span class="n">BasePod</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowBuildLevelError</span><span class="p">,</span> <span class="n">SocketTypeError</span>
+<span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">BasePod</span>
 
 <span class="c1"># noinspection PyUnreachableCode</span>
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">Flow</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 
 <div class="viewcode-block" id="build_required"><a class="viewcode-back" href="../../../../api/jina.flow.builder/#jina.flow.builder.build_required">[docs]</a><span class="k">def</span> <span class="nf">build_required</span><span class="p">(</span><span class="n">required_level</span><span class="p">:</span> <span class="s1">'FlowBuildLevel'</span><span class="p">):</span>
@@ -408,10 +408,10 @@
                     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">FlowBuildLevelError</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'build_level check failed for </span><span class="si">{func!r}</span><span class="s1">, required level: </span><span class="si">{required_level}</span><span class="s1">, actual level: </span><span class="si">{self._build_level}</span><span class="s1">'</span>
+                        <span class="sa">f</span><span class="s1">'build_level check failed for </span><span class="si">{</span><span class="n">func</span><span class="si">!r}</span><span class="s1">, required level: </span><span class="si">{</span><span class="n">required_level</span><span class="si">}</span><span class="s1">, actual level: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{self!r}</span><span class="s1"> has no attribute "_build_level"'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> has no attribute "_build_level"'</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">arg_wrapper</span>
 
@@ -481,9 +481,9 @@
             <span class="n">first_socket_type</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span>
         <span class="n">_connect</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">first_socket_type</span><span class="o">=</span><span class="n">first_socket_type</span><span class="p">)</span>
         <span class="n">flow</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'Connect </span><span class="si">{start_node_name}</span><span class="s1"> '</span>
-            <span class="n">f</span><span class="s1">'with </span><span class="si">{end_node_name}</span><span class="s1"> {str(end_node.role)} require '</span>
-            <span class="n">f</span><span class="s1">'{getattr(end_node.head_args, "num_part", 0)} messages'</span>
+            <span class="sa">f</span><span class="s1">'Connect </span><span class="si">{</span><span class="n">start_node_name</span><span class="si">}</span><span class="s1"> '</span>
+            <span class="sa">f</span><span class="s1">'with </span><span class="si">{</span><span class="n">end_node_name</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">end_node</span><span class="o">.</span><span class="n">role</span><span class="p">)</span><span class="si">}</span><span class="s1"> require '</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">end_node</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="s2">"num_part"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s1"> messages'</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_traverse_graph</span><span class="p">(</span><span class="n">op_flow</span><span class="p">,</span> <span class="n">outgoing_map</span><span class="p">,</span> <span class="n">_connect_two_nodes</span><span class="p">)</span>
@@ -524,7 +524,7 @@
         <span class="p">)</span>  <span class="c1"># the hostname of s_pod</span>
         <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">SocketTypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{first_socket_type!r}</span><span class="s1"> is not supported here'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">SocketTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">first_socket_type</span><span class="si">!r}</span><span class="s1"> is not supported here'</span><span class="p">)</span>
 </pre></div>
       </article>
       <footer>

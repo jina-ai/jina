@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -378,8 +378,8 @@
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">hashlib</span> <span class="k">import</span> <span class="n">blake2b</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">hashlib</span> <span class="kn">import</span> <span class="n">blake2b</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
@@ -392,30 +392,30 @@
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="k">import</span> <span class="n">json_format</span>
-<span class="kn">from</span> <span class="nn">google.protobuf.field_mask_pb2</span> <span class="k">import</span> <span class="n">FieldMask</span>
-<span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="k">import</span> <span class="n">StructView</span>
+<span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.field_mask_pb2</span> <span class="kn">import</span> <span class="n">FieldMask</span>
+<span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 
-<span class="kn">from</span> <span class="nn">.converters</span> <span class="k">import</span> <span class="n">png_to_buffer</span><span class="p">,</span> <span class="n">to_datauri</span><span class="p">,</span> <span class="n">guess_mime</span><span class="p">,</span> <span class="n">to_image_blob</span>
-<span class="kn">from</span> <span class="nn">..arrays.chunk</span> <span class="k">import</span> <span class="n">ChunkArray</span>
-<span class="kn">from</span> <span class="nn">..arrays.match</span> <span class="k">import</span> <span class="n">MatchArray</span>
-<span class="kn">from</span> <span class="nn">..mixin</span> <span class="k">import</span> <span class="n">ProtoTypeMixin</span>
-<span class="kn">from</span> <span class="nn">..ndarray.generic</span> <span class="k">import</span> <span class="n">NdArray</span><span class="p">,</span> <span class="n">BaseSparseNdArray</span>
-<span class="kn">from</span> <span class="nn">..score</span> <span class="k">import</span> <span class="n">NamedScore</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="k">import</span> <span class="n">BadDocType</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">png_to_buffer</span><span class="p">,</span> <span class="n">to_datauri</span><span class="p">,</span> <span class="n">guess_mime</span><span class="p">,</span> <span class="n">to_image_blob</span>
+<span class="kn">from</span> <span class="nn">..arrays.chunk</span> <span class="kn">import</span> <span class="n">ChunkArray</span>
+<span class="kn">from</span> <span class="nn">..arrays.match</span> <span class="kn">import</span> <span class="n">MatchArray</span>
+<span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
+<span class="kn">from</span> <span class="nn">..ndarray.generic</span> <span class="kn">import</span> <span class="n">NdArray</span><span class="p">,</span> <span class="n">BaseSparseNdArray</span>
+<span class="kn">from</span> <span class="nn">..score</span> <span class="kn">import</span> <span class="n">NamedScore</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadDocType</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">is_url</span><span class="p">,</span>
     <span class="n">typename</span><span class="p">,</span>
     <span class="n">random_identity</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
     <span class="n">dunder_get</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">...importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">...logging</span> <span class="k">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">...proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">...logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">coo_matrix</span>
+    <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 
     <span class="c1"># fix type-hint complain for sphinx and flake</span>
     <span class="kn">import</span> <span class="nn">scipy</span>
@@ -519,7 +519,7 @@
 
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">document</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentSourceType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -615,7 +615,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">RuntimeWarning</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">BadDocType</span><span class="p">(</span>
-                            <span class="n">f</span><span class="s1">'fail to construct a document from </span><span class="si">{document}</span><span class="s1">'</span>
+                            <span class="sa">f</span><span class="s1">'fail to construct a document from </span><span class="si">{</span><span class="n">document</span><span class="si">}</span><span class="s1">'</span>
                         <span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
@@ -624,12 +624,12 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">proto</span>
             <span class="k">elif</span> <span class="n">document</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># note ``None`` is not considered as a bad type</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'{typename(document)} is not recognizable'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">document</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">BadDocType</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'fail to construct a document from </span><span class="si">{document}</span><span class="s1">, '</span>
-                <span class="n">f</span><span class="s1">'if you are trying to set the content '</span>
-                <span class="n">f</span><span class="s1">'you may use "Document(content=your_content)"'</span>
+                <span class="sa">f</span><span class="s1">'fail to construct a document from </span><span class="si">{</span><span class="n">document</span><span class="si">}</span><span class="s1">, '</span>
+                <span class="sa">f</span><span class="s1">'if you are trying to set the content '</span>
+                <span class="sa">f</span><span class="s1">'you may use "Document(content=your_content)"'</span>
             <span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
@@ -638,7 +638,7 @@
         <span class="c1"># check if there are mutually exclusive content fields</span>
         <span class="k">if</span> <span class="n">_contains_conflicting_content</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'Document content fields are mutually exclusive, please provide only one of </span><span class="si">{_all_doc_content_keys}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'Document content fields are mutually exclusive, please provide only one of </span><span class="si">{</span><span class="n">_all_doc_content_keys</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mermaid_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>  <span class="c1">#: for mermaid visualize id</span>
@@ -830,7 +830,7 @@
             <span class="n">_intersect</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">include_fields</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">exclude_fields</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">_intersect</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{_intersect}</span><span class="s1"> is in both `include_fields` and `exclude_fields`'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">_intersect</span><span class="si">}</span><span class="s1"> is in both `include_fields` and `exclude_fields`'</span>
                 <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span>
@@ -976,7 +976,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="k">def</span> <span class="nf">_check_installed_array_packages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">JINA_GLOBAL</span>
+        <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">JINA_GLOBAL</span>
 
         <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1001,7 +1001,7 @@
 
     <span class="k">def</span> <span class="nf">_update_if_sparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
 
-        <span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">JINA_GLOBAL</span>
+        <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">JINA_GLOBAL</span>
 
         <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_installed_array_packages</span><span class="p">()</span>
@@ -1010,7 +1010,7 @@
             <span class="kn">import</span> <span class="nn">scipy</span>
 
             <span class="k">if</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-                <span class="kn">from</span> <span class="nn">..ndarray.sparse.scipy</span> <span class="k">import</span> <span class="n">SparseNdArray</span>
+                <span class="kn">from</span> <span class="nn">..ndarray.sparse.scipy</span> <span class="kn">import</span> <span class="n">SparseNdArray</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_sparse_ndarray</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">sparse_cls</span><span class="o">=</span><span class="n">SparseNdArray</span><span class="p">)</span>
                 <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1019,7 +1019,7 @@
             <span class="kn">import</span> <span class="nn">tensorflow</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">tensorflow</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">):</span>
-                <span class="kn">from</span> <span class="nn">..ndarray.sparse.tensorflow</span> <span class="k">import</span> <span class="n">SparseNdArray</span>
+                <span class="kn">from</span> <span class="nn">..ndarray.sparse.tensorflow</span> <span class="kn">import</span> <span class="n">SparseNdArray</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_sparse_ndarray</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">sparse_cls</span><span class="o">=</span><span class="n">SparseNdArray</span><span class="p">)</span>
                 <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1028,7 +1028,7 @@
             <span class="kn">import</span> <span class="nn">torch</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">is_sparse</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">..ndarray.sparse.pytorch</span> <span class="k">import</span> <span class="n">SparseNdArray</span>
+                <span class="kn">from</span> <span class="nn">..ndarray.sparse.pytorch</span> <span class="kn">import</span> <span class="n">SparseNdArray</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_update_sparse_ndarray</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">sparse_cls</span><span class="o">=</span><span class="n">SparseNdArray</span><span class="p">)</span>
                 <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1048,7 +1048,7 @@
             <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_if_sparse</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">v_valid_sparse_type</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1"> is in unsupported type {typename(v)}'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> is in unsupported type </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'MatchArray'</span><span class="p">:</span>
@@ -1116,7 +1116,7 @@
                     <span class="c1"># no property setter, but proto has this attribute so fallback to proto</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1"> is not recognized'</span><span class="p">)</span></div>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> is not recognized'</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.get_attributes"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.get_attributes">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
         <span class="sd">"""Bulk fetch Document fields and return a list of the values of these fields</span>
@@ -1152,7 +1152,7 @@
                 <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
                 <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'Could not get attribute `{typename(self)}.</span><span class="si">{k}</span><span class="s1">`, returning `None`'</span>
+                    <span class="sa">f</span><span class="s1">'Could not get attribute `</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">`, returning `None`'</span>
                 <span class="p">)</span>
                 <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
@@ -1184,9 +1184,9 @@
             <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
                 <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">pkg_name</span><span class="o">=</span><span class="s1">'python-magic'</span><span class="p">,</span>
-                <span class="n">help_text</span><span class="o">=</span><span class="n">f</span><span class="s1">'can not sniff the MIME type '</span>
-                <span class="n">f</span><span class="s1">'MIME sniffing requires brew install '</span>
-                <span class="n">f</span><span class="s1">'libmagic (Mac)/ apt-get install libmagic1 (Linux)'</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'can not sniff the MIME type '</span>
+                <span class="sa">f</span><span class="s1">'MIME sniffing requires brew install '</span>
+                <span class="sa">f</span><span class="s1">'libmagic (Mac)/ apt-get install libmagic1 (Linux)'</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="kn">import</span> <span class="nn">magic</span>
 
@@ -1251,16 +1251,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">elif</span> <span class="n">value</span><span class="p">:</span>
             <span class="c1"># given but not recognizable, do best guess</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">f</span><span class="s1">'*.</span><span class="si">{value}</span><span class="s1">'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="sa">f</span><span class="s1">'*.</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">r</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="n">r</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -1305,7 +1305,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># ``None`` is also considered as bad type</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'{typename(value)} is not recognizable'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">granularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1366,7 +1366,7 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'score is in unsupported type {typename(value)}'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'score is in unsupported type </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Document.convert_image_buffer_to_blob"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.convert_image_buffer_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_buffer_to_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">"""Convert an image buffer to blob</span>
@@ -1440,7 +1440,7 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{self.uri}</span><span class="s1"> is not a URL or a valid local path'</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a URL or a valid local path'</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.convert_uri_to_datauri"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.convert_uri_to_datauri">[docs]</a>    <span class="k">def</span> <span class="nf">convert_uri_to_datauri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'utf-8'</span><span class="p">,</span> <span class="n">base64</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">"""Convert uri to data uri.</span>
@@ -1467,7 +1467,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{self.mime_type}</span><span class="s1"> is unset, can not convert it to data uri'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="si">}</span><span class="s1"> is unset, can not convert it to data uri'</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">to_datauri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">charset</span><span class="p">,</span> <span class="n">base64</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -1513,21 +1513,21 @@
 
     <span class="k">def</span> <span class="nf">__mermaid_str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="k">import</span> <span class="n">MessageToDict</span>
+        <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
 
         <span class="n">content</span> <span class="o">=</span> <span class="n">MessageToDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">_id</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{self._mermaid_id[:3]}</span><span class="s1">~Document~'</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_mermaid_id</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1">~Document~'</span>
 
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">):</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{_id}</span><span class="s1"> --&gt; "{idx + 1}/{len(self.chunks)}" </span><span class="si">{c._mermaid_id[:3]}</span><span class="s1">~Document~: chunks'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">_id</span><span class="si">}</span><span class="s1"> --&gt; "</span><span class="si">{</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s1">" </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">_mermaid_id</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1">~Document~: chunks'</span>
             <span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">__mermaid_str__</span><span class="p">())</span>
 
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">):</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{_id}</span><span class="s1"> ..&gt; "{idx + 1}/{len(self.matches)}" </span><span class="si">{c._mermaid_id[:3]}</span><span class="s1">~Document~: matches'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">_id</span><span class="si">}</span><span class="s1"> ..&gt; "</span><span class="si">{</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1">" </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">_mermaid_id</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s1">~Document~: matches'</span>
             <span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">__mermaid_str__</span><span class="p">())</span>
         <span class="k">if</span> <span class="s1">'chunks'</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
@@ -1535,12 +1535,12 @@
         <span class="k">if</span> <span class="s1">'matches'</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
             <span class="n">content</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'matches'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'class </span><span class="si">{_id}</span><span class="s1">{{'</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'class </span><span class="si">{</span><span class="n">_id</span><span class="si">}</span><span class="se">{{</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">content</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
-                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'+</span><span class="si">{k}</span><span class="s1"> {str(v)[:10]}'</span><span class="p">)</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'+</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'+</span><span class="si">{k}</span><span class="s1">({type(getattr(self, k, v))})'</span><span class="p">)</span>
+                    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'+</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'}'</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
@@ -1568,7 +1568,7 @@
             <span class="s1">'utf-8'</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'https://mermaid.ink/</span><span class="si">{img_type}</span><span class="s1">/</span><span class="si">{encoded_str}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'https://mermaid.ink/</span><span class="si">{</span><span class="n">img_type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">encoded_str</span><span class="si">}</span><span class="s1">'</span>
 
     <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Displays the object in IPython as a side effect"""</span>
@@ -1590,7 +1590,7 @@
         <span class="n">showed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">inline_display</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
+                <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Image</span>
 
                 <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">))</span>
                 <span class="n">showed</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1601,9 +1601,9 @@
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="n">download_mermaid_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">showed</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+            <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'Document visualization: </span><span class="si">{url}</span><span class="s1">'</span><span class="p">)</span></div>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Document visualization: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">non_empty_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -1646,7 +1646,7 @@
             <span class="p">]</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">support_keys</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>

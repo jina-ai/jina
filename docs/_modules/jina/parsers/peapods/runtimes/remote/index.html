@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,10 +371,10 @@
         </label>
         <h1>Source code for jina.parsers.peapods.runtimes.remote</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Argparser module for remote runtime"""</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="n">add_arg_group</span>
-<span class="kn">from</span> <span class="nn">....</span> <span class="k">import</span> <span class="n">__default_host__</span>
-<span class="kn">from</span> <span class="nn">....</span> <span class="k">import</span> <span class="n">helper</span>
-<span class="kn">from</span> <span class="nn">....enums</span> <span class="k">import</span> <span class="n">CompressAlgo</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span>
 
 
 <div class="viewcode-block" id="mixin_remote_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_remote_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -387,7 +387,7 @@
         <span class="s1">'--host'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="n">f</span><span class="s1">'The host address of the runtime, by default it is </span><span class="si">{__default_host__}</span><span class="s1">.'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">'The host address of the runtime, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">.'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>

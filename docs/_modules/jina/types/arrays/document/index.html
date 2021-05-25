@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -376,10 +376,10 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="k">import</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">Iterable</span> <span class="k">as</span> <span class="n">Itr</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">nullcontext</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">Iterable</span> <span class="k">as</span> <span class="n">Itr</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
@@ -394,26 +394,26 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<span class="kn">from</span> <span class="nn">.traversable</span> <span class="k">import</span> <span class="n">TraversableSequence</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">cached_property</span>
-<span class="kn">from</span> <span class="nn">...logging</span> <span class="k">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">...proto.jina_pb2</span> <span class="k">import</span> <span class="n">DocumentProto</span>
+<span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">cached_property</span>
+<span class="kn">from</span> <span class="nn">...logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DocumentProto</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="c1"># when protobuf using Cpp backend</span>
-    <span class="kn">from</span> <span class="nn">google.protobuf.pyext._message</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="kn">from</span> <span class="nn">google.protobuf.pyext._message</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">RepeatedCompositeContainer</span> <span class="k">as</span> <span class="n">RepeatedContainer</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="c1"># when protobuf using Python backend</span>
-    <span class="kn">from</span> <span class="nn">google.protobuf.internal.containers</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="kn">from</span> <span class="nn">google.protobuf.internal.containers</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">RepeatedCompositeFieldContainer</span> <span class="k">as</span> <span class="n">RepeatedContainer</span><span class="p">,</span>
     <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..document</span> <span class="k">import</span> <span class="n">Document</span>
+    <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="c1"># https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996</span>
 <span class="n">_jsonl_ext</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'.jsonlines'</span><span class="p">,</span> <span class="s1">'.ndjson'</span><span class="p">,</span> <span class="s1">'.jsonl'</span><span class="p">,</span> <span class="s1">'.jl'</span><span class="p">,</span> <span class="s1">'.ldjson'</span><span class="p">}</span>
@@ -442,7 +442,7 @@
 <span class="sd">    :type docs_proto: Optional[Union['RepeatedContainer', Iterable['Document']]]</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">docs_proto</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'RepeatedContainer'</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -464,13 +464,13 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">f</span><span class="s1">'do not support this index </span><span class="si">{key}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'do not support this index </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -479,29 +479,29 @@
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'do not support this index type {typename(index)}: </span><span class="si">{index}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'do not support this index type </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">)</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_docs_proto</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]:</span>
-        <span class="kn">from</span> <span class="nn">..document</span> <span class="k">import</span> <span class="n">Document</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]:</span>
+        <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_map</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
-        <span class="kn">from</span> <span class="nn">..document</span> <span class="k">import</span> <span class="n">Document</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
+        <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">[</span><span class="n">item</span><span class="p">])</span>
@@ -510,9 +510,9 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">[</span><span class="n">item</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">f</span><span class="s1">'do not support this index type {typename(item)}: </span><span class="si">{item}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'do not support this index type </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]):</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
@@ -520,7 +520,7 @@
             <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
 
-    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">]):</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
@@ -613,8 +613,8 @@
 
         <span class="k">if</span> <span class="n">bad_docs</span><span class="p">:</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'found {len(bad_docs)} docs at granularity </span><span class="si">{bad_docs[0].granularity}</span><span class="s1"> are missing one of the '</span>
-                <span class="n">f</span><span class="s1">'following fields: </span><span class="si">{fields}</span><span class="s1"> '</span>
+                <span class="sa">f</span><span class="s1">'found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bad_docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> docs at granularity </span><span class="si">{</span><span class="n">bad_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">granularity</span><span class="si">}</span><span class="s1"> are missing one of the '</span>
+                <span class="sa">f</span><span class="s1">'following fields: </span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s1"> '</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">docs_pts</span><span class="p">:</span>
@@ -622,18 +622,18 @@
 
         <span class="k">return</span> <span class="n">contents</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">docs_pts</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""To simulate ```l = []; if l: ...```</span>
 
 <span class="sd">        :return: returns true if the length of the array is larger than 0</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">..document</span> <span class="k">import</span> <span class="n">Document</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">,</span> <span class="s1">'__len__'</span><span class="p">):</span>
-            <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{self.__class__.__name__}</span><span class="s1"> has {len(self._docs_proto)} items'</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">)</span><span class="si">}</span><span class="s1"> items'</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="n">content</span> <span class="o">+=</span> <span class="s1">' (showing first three)'</span>
@@ -645,13 +645,13 @@
 
         <span class="k">return</span> <span class="n">content</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">content</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1">=</span><span class="si">{v}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'length'</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">)}</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'length'</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">)}</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="n">content</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">' at {id(self)}'</span>
+        <span class="n">content</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">' at </span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'&lt;{typename(self)} </span><span class="si">{content}</span><span class="s1">&gt;'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'&lt;</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s1">&gt;'</span>
 
 <div class="viewcode-block" id="DocumentArray.save"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Save array elements into a JSON file.</span>
@@ -682,7 +682,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">Document</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
@@ -756,7 +756,7 @@
 <span class="sd">        :yield: documents</span>
 
 <span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">Document</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -785,7 +785,7 @@
 <span class="sd">        :yield: documents</span>
 
 <span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">Document</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="n">lines</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
@@ -819,11 +819,11 @@
 <span class="sd">        .. note::</span>
 <span class="sd">            This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead</span>
 <span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">Document</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="k">if</span> <span class="n">read_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'r'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">,</span> <span class="kc">None</span><span class="p">}:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'read_mode should be "r", "rb" or None, got </span><span class="si">{read_mode}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'read_mode should be "r", "rb" or None, got </span><span class="si">{</span><span class="n">read_mode</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_iter_file_exts</span><span class="p">(</span><span class="n">ps</span><span class="p">):</span>
@@ -864,7 +864,7 @@
 <span class="sd">            This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead</span>
 <span class="sd">        """</span>
 
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">Document</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
         <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
             <span class="c1"># shuffle for random query</span>

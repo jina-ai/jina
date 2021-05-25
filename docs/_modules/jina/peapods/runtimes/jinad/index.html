@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,19 +372,19 @@
         <h1>Source code for jina.peapods.runtimes.jinad</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">.client</span> <span class="k">import</span> <span class="n">PeaDaemonClient</span>
-<span class="kn">from</span> <span class="nn">...zmq</span> <span class="k">import</span> <span class="n">Zmqlet</span><span class="p">,</span> <span class="n">send_ctrl_message</span>
-<span class="kn">from</span> <span class="nn">..asyncio.base</span> <span class="k">import</span> <span class="n">AsyncZMQRuntime</span>
-<span class="kn">from</span> <span class="nn">....excepts</span> <span class="k">import</span> <span class="n">DaemonConnectivityError</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="k">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">colored</span><span class="p">,</span> <span class="n">is_yaml_filepath</span>
+<span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">PeaDaemonClient</span>
+<span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span><span class="p">,</span> <span class="n">send_ctrl_message</span>
+<span class="kn">from</span> <span class="nn">..asyncio.base</span> <span class="kn">import</span> <span class="n">AsyncZMQRuntime</span>
+<span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">DaemonConnectivityError</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">colored</span><span class="p">,</span> <span class="n">is_yaml_filepath</span>
 
 
 <div class="viewcode-block" id="JinadRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime">[docs]</a><span class="k">class</span> <span class="nc">JinadRuntime</span><span class="p">(</span><span class="n">AsyncZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure for Jinad."""</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="c1"># Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main` process.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">remote_ctrl_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span>
@@ -423,15 +423,15 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'created a remote </span><span class="si">{self.api.kind}</span><span class="s1">: {colored(self._remote_id, "cyan")}'</span>
+                <span class="sa">f</span><span class="s1">'created a remote </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'fail to connect to the daemon at </span><span class="si">{self.host}</span><span class="s1">:</span><span class="si">{self.port_expose}</span><span class="s1">, please check:</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="n">f</span><span class="s1">'- is there a typo in </span><span class="si">{self.host}</span><span class="s1">?</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="n">f</span><span class="s1">'- on </span><span class="si">{self.host}</span><span class="s1">, are you running `docker run --network host jinaai/jina:latest-daemon`?</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="n">f</span><span class="s1">'- on </span><span class="si">{self.host}</span><span class="s1">, have you set the security policy to public for all required ports?</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="n">f</span><span class="s1">'- on local, are you behind VPN or proxy?'</span>
+                <span class="sa">f</span><span class="s1">'fail to connect to the daemon at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">, please check:</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- is there a typo in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">?</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">, are you running `docker run --network host jinaai/jina:latest-daemon`?</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">, have you set the security policy to public for all required ports?</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- on local, are you behind VPN or proxy?'</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">DaemonConnectivityError</span></div>
 
@@ -472,8 +472,8 @@
                 <span class="n">upload_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upload_files</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'will upload </span><span class="si">{upload_files}</span><span class="s1"> to remote, to include more local file '</span>
-                    <span class="n">f</span><span class="s1">'dependencies, please use `--upload-files`'</span>
+                    <span class="sa">f</span><span class="s1">'will upload </span><span class="si">{</span><span class="n">upload_files</span><span class="si">}</span><span class="s1"> to remote, to include more local file '</span>
+                    <span class="sa">f</span><span class="s1">'dependencies, please use `--upload-files`'</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">upload_files</span><span class="p">:</span>
@@ -483,7 +483,7 @@
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="n">workspace_id</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'uploaded to workspace: {colored(workspace_id, "cyan")}'</span>
+                        <span class="sa">f</span><span class="s1">'uploaded to workspace: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'can not upload required files to remote'</span><span class="p">)</span>

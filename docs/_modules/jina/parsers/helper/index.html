@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -374,14 +374,14 @@
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 <span class="n">_SHOW_ALL_ARGS</span> <span class="o">=</span> <span class="s1">'JINA_FULL_CLI'</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
 <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
     <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-        <span class="n">f</span><span class="s1">'Setting </span><span class="si">{_SHOW_ALL_ARGS}</span><span class="s1"> will make remote Peas with sharding not work when using JinaD'</span>
+        <span class="sa">f</span><span class="s1">'Setting </span><span class="si">{</span><span class="n">_SHOW_ALL_ARGS</span><span class="si">}</span><span class="s1"> will make remote Peas with sharding not work when using JinaD'</span>
     <span class="p">)</span>
 
 
@@ -392,7 +392,7 @@
 <span class="sd">    :param title: the group name</span>
 <span class="sd">    :return: the new parser</span>
 <span class="sd">    """</span>
-    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{title}</span><span class="s1"> arguments'</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1"> arguments'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UUIDString"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.UUIDString">[docs]</a><span class="k">def</span> <span class="nf">UUIDString</span><span class="p">(</span><span class="n">astring</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -411,7 +411,7 @@
 <span class="sd">    This is used for setting up --env</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        call the KVAppendAction</span>
 
@@ -423,7 +423,7 @@
 <span class="sd">        :param option_string: inherited, not used</span>
 <span class="sd">        """</span>
         <span class="kn">import</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">re</span>
-        <span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">parse_arg</span>
+        <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">parse_arg</span>
 
         <span class="n">d</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
@@ -434,7 +434,7 @@
                     <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">'[:=]\s*'</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'could not parse argument </span><span class="se">\"</span><span class="si">{values[0]}</span><span class="se">\"</span><span class="s1"> as k=v format'</span>
+                        <span class="sa">f</span><span class="s1">'could not parse argument </span><span class="se">\"</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\"</span><span class="s1"> as k=v format'</span>
                     <span class="p">)</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">parse_arg</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span></div>
@@ -446,7 +446,7 @@
 <span class="sd">    This is used for setting up arbitrary kwargs for docker sdk</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        call the DockerKwargsAppendAction</span>
 
@@ -469,7 +469,7 @@
                     <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'could not parse argument </span><span class="se">\"</span><span class="si">{values[0]}</span><span class="se">\"</span><span class="s1"> as k:v format'</span>
+                        <span class="sa">f</span><span class="s1">'could not parse argument </span><span class="se">\"</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\"</span><span class="s1"> as k:v format'</span>
                     <span class="p">)</span>
                 <span class="c1"># transform from text to actual type (int, list, etc...)</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
@@ -478,7 +478,7 @@
 
 <span class="k">class</span> <span class="nc">_ColoredHelpFormatter</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentDefaultsHelpFormatter</span><span class="p">):</span>
     <span class="k">class</span> <span class="nc">_Section</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formatter</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">heading</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span> <span class="o">=</span> <span class="n">formatter</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">heading</span> <span class="o">=</span> <span class="n">heading</span>
@@ -499,7 +499,7 @@
 
             <span class="c1"># add the heading if the section was non-empty</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heading</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">heading</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">colored</span>
+                <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span>
 
                 <span class="n">current_indent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span><span class="o">.</span><span class="n">_current_indent</span>
                 <span class="n">captial_heading</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
@@ -528,7 +528,7 @@
         <span class="n">help_string</span> <span class="o">=</span> <span class="s1">''</span>
         <span class="k">if</span> <span class="s1">'%(default)'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">help</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">colored</span>
+                <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span>
 
                 <span class="n">defaulting_nargs</span> <span class="o">=</span> <span class="p">[</span><span class="n">argparse</span><span class="o">.</span><span class="n">OPTIONAL</span><span class="p">,</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ZERO_OR_MORE</span><span class="p">]</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">argparse</span><span class="o">.</span><span class="n">_StoreTrueAction</span><span class="p">):</span>
@@ -538,12 +538,12 @@
                         <span class="o">%</span> <span class="p">(</span>
                             <span class="s1">'enabled'</span>
                             <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">default</span>
-                            <span class="k">else</span> <span class="n">f</span><span class="s1">'disabled, use "</span><span class="si">{action.option_strings[0]}</span><span class="s1">" to enable it'</span>
+                            <span class="k">else</span> <span class="sa">f</span><span class="s1">'disabled, use "</span><span class="si">{</span><span class="n">action</span><span class="o">.</span><span class="n">option_strings</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">" to enable it'</span>
                         <span class="p">),</span>
                         <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'dark'</span><span class="p">],</span>
                     <span class="p">)</span>
                 <span class="k">elif</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">:</span>
-                    <span class="n">choices_str</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'{{{", ".join([str(c) for c in action.choices])}}}'</span>
+                    <span class="n">choices_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="se">{{</span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">])</span><span class="si">}</span><span class="se">}}</span><span class="s1">'</span>
                     <span class="n">help_string</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span>
                         <span class="s1">'choose from: '</span> <span class="o">+</span> <span class="n">choices_str</span> <span class="o">+</span> <span class="s1">'; default: </span><span class="si">%(default)s</span><span class="s1">'</span><span class="p">,</span>
                         <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'dark'</span><span class="p">],</span>
@@ -552,11 +552,11 @@
                     <span class="n">help_string</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span>
                         <span class="s1">'type: </span><span class="si">%(type)s</span><span class="s1">; default: </span><span class="si">%(default)s</span><span class="s1">'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'dark'</span><span class="p">]</span>
                     <span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">'''</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">        </span>
-<span class="s1">        </span><span class="si">{help_string}</span><span class="s1"></span>
+<span class="s1">        </span><span class="si">{</span><span class="n">help_string</span><span class="si">}</span><span class="s1"></span>
 <span class="s1">        </span>
-<span class="s1">        </span><span class="si">{action.help}</span><span class="s1"></span>
+<span class="s1">        </span><span class="si">{</span><span class="n">action</span><span class="o">.</span><span class="n">help</span><span class="si">}</span><span class="s1"></span>
 <span class="s1">        </span>
 <span class="s1">        '''</span>
 
@@ -588,10 +588,10 @@
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="n">choice_strs</span> <span class="o">=</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'{{</span><span class="si">{choice_strs}</span><span class="s1"> ... {len(action.choices) - 4} more choices}}'</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="se">{{</span><span class="si">{</span><span class="n">choice_strs</span><span class="si">}</span><span class="s1"> ... </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="si">}</span><span class="s1"> more choices</span><span class="se">}}</span><span class="s1">'</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">choice_strs</span> <span class="o">=</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">choices</span><span class="p">])</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'{{</span><span class="si">{choice_strs}</span><span class="s1">}}'</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="se">{{</span><span class="si">{</span><span class="n">choice_strs</span><span class="si">}</span><span class="se">}}</span><span class="s1">'</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">default_metavar</span>
 

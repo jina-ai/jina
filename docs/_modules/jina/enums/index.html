@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
@@ -388,13 +388,13 @@
 <span class="sd">        parallel_type: any</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">EnumMeta</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">EnumMeta</span>
 
 
 <div class="viewcode-block" id="EnumType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.EnumType">[docs]</a><span class="k">class</span> <span class="nc">EnumType</span><span class="p">(</span><span class="n">EnumMeta</span><span class="p">):</span>
     <span class="sd">"""The metaclass for BetterEnum."""</span>
 
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Register a new EnumType</span>
 
 <span class="sd">        :param args: args passed to super()</span>
@@ -416,7 +416,7 @@
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reg_cls_set</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">'force_register'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">reg_cls_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">'_registered_class'</span><span class="p">,</span> <span class="n">reg_cls_set</span><span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">.jaml</span> <span class="k">import</span> <span class="n">JAML</span>
+        <span class="kn">from</span> <span class="nn">.jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
 
         <span class="n">JAML</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span></div></div>
@@ -425,7 +425,7 @@
 <div class="viewcode-block" id="BetterEnum"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.BetterEnum">[docs]</a><span class="k">class</span> <span class="nc">BetterEnum</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">EnumType</span><span class="p">):</span>
     <span class="sd">"""The base class of Enum used in Jina."""</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
 <div class="viewcode-block" id="BetterEnum.from_string"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.BetterEnum.from_string">[docs]</a>    <span class="nd">@classmethod</span>
@@ -440,7 +440,7 @@
             <span class="k">return</span> <span class="bp">cls</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'{s.upper()} is not a valid enum for </span><span class="si">{cls!r}</span><span class="s1">, must be one of {list(cls)}'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1"> is not a valid enum for </span><span class="si">{</span><span class="bp">cls</span><span class="si">!r}</span><span class="s1">, must be one of </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span></div>
 
     <span class="nd">@classmethod</span>

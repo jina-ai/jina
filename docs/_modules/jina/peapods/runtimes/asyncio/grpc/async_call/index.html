@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,12 +372,12 @@
         <h1>Source code for jina.peapods.runtimes.asyncio.grpc.async_call</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 
-<span class="kn">from</span> <span class="nn">.....helper</span> <span class="k">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">.....logging</span> <span class="k">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">.....logging.profile</span> <span class="k">import</span> <span class="n">TimeContext</span>
-<span class="kn">from</span> <span class="nn">.....proto</span> <span class="k">import</span> <span class="n">jina_pb2_grpc</span>
-<span class="kn">from</span> <span class="nn">.....types.message</span> <span class="k">import</span> <span class="n">Message</span>
-<span class="kn">from</span> <span class="nn">.....types.request</span> <span class="k">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">.....helper</span> <span class="kn">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">.....logging</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">.....logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
+<span class="kn">from</span> <span class="nn">.....proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
+<span class="kn">from</span> <span class="nn">.....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">.....types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'AsyncPrefetchCall'</span><span class="p">]</span>
 
@@ -385,7 +385,7 @@
 <div class="viewcode-block" id="AsyncPrefetchCall"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.grpc.async_call/#jina.peapods.runtimes.asyncio.grpc.async_call.AsyncPrefetchCall">[docs]</a><span class="k">class</span> <span class="nc">AsyncPrefetchCall</span><span class="p">(</span><span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaRPCServicer</span><span class="p">):</span>
     <span class="sd">"""JinaRPCServicer """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span> <span class="o">=</span> <span class="n">zmqlet</span>
@@ -429,7 +429,7 @@
                         <span class="n">next_request</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                            <span class="n">f</span><span class="s1">'{typename(request_iterator)} does not have `__anext__` or `__next__`'</span>
+                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span><span class="si">}</span><span class="s1"> does not have `__anext__` or `__next__`'</span>
                         <span class="p">)</span>
                     <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
@@ -439,11 +439,11 @@
                     <span class="n">fetch_to</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">recv_message</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="n">handle</span><span class="p">))</span>
                     <span class="p">)</span>
-                <span class="k">except</span> <span class="p">(</span><span class="ne">StopIteration</span><span class="p">,</span> <span class="n">StopAsyncIteration</span><span class="p">):</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">StopIteration</span><span class="p">,</span> <span class="ne">StopAsyncIteration</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="n">f</span><span class="s1">'prefetching </span><span class="si">{self.args.prefetch}</span><span class="s1"> requests'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'prefetching </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="si">}</span><span class="s1"> requests'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s1">'if this takes too long, you may want to take smaller "--prefetch" or '</span>
                 <span class="s1">'ask client to reduce "--request-size"'</span>
@@ -468,9 +468,9 @@
             <span class="c1"># the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other</span>
             <span class="k">while</span> <span class="n">prefetch_task</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'send: </span><span class="si">{self.zmqlet.msg_sent}</span><span class="s1"> '</span>
-                    <span class="n">f</span><span class="s1">'recv: </span><span class="si">{self.zmqlet.msg_recv}</span><span class="s1"> '</span>
-                    <span class="n">f</span><span class="s1">'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}'</span>
+                    <span class="sa">f</span><span class="s1">'send: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">msg_sent</span><span class="si">}</span><span class="s1"> '</span>
+                    <span class="sa">f</span><span class="s1">'recv: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">msg_recv</span><span class="si">}</span><span class="s1"> '</span>
+                    <span class="sa">f</span><span class="s1">'pending: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">msg_sent</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">msg_recv</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
                 <span class="n">onrecv_task</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">prefetch_task</span><span class="p">):</span>

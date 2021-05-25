@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,9 +370,9 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.message.common</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">Message</span>
-<span class="kn">from</span> <span class="nn">..request</span> <span class="k">import</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">...proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
+<span></span><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">..request</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="n">_available_commands</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="o">.</span><span class="n">ControlRequestProto</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">enum_values_by_name</span>
@@ -392,7 +392,7 @@
 <span class="sd">    :param kwargs: Additional keyword arguments which are just used for the parent initialization</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span> <span class="n">identity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="p">())</span>
@@ -402,7 +402,7 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'command "</span><span class="si">{command}</span><span class="s1">" is not supported, must be one of </span><span class="si">{_available_commands}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'command "</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">" is not supported, must be one of </span><span class="si">{</span><span class="n">_available_commands</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="kc">None</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">pod_name</span><span class="o">=</span><span class="n">pod_name</span><span class="p">,</span> <span class="n">identity</span><span class="o">=</span><span class="n">identity</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -373,9 +373,9 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
-<span class="kn">from</span> <span class="nn">jina.executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
-<span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span> <span class="k">as</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="k">import</span> <span class="n">JAML</span>
+<span class="kn">from</span> <span class="nn">jina.executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
+<span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span> <span class="k">as</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
 
 
 <span class="k">def</span> <span class="nf">_read_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -406,7 +406,7 @@
             <span class="k">return</span> <span class="n">default_config</span>
     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="n">f</span><span class="s2">"Failing building from </span><span class="si">{executor_yml}</span><span class="s2">. All environment variables in </span><span class="si">{executor_yml}</span><span class="s2"> must be defined!"</span>
+            <span class="sa">f</span><span class="s2">"Failing building from </span><span class="si">{</span><span class="n">executor_yml</span><span class="si">}</span><span class="s2">. All environment variables in </span><span class="si">{</span><span class="n">executor_yml</span><span class="si">}</span><span class="s2"> must be defined!"</span>
         <span class="p">)</span>
 
 
@@ -421,24 +421,24 @@
         <span class="n">encoder_name</span><span class="p">,</span>
         <span class="n">default_parameters</span><span class="p">,</span>
     <span class="p">)</span> <span class="ow">in</span> <span class="n">discovered_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">"Default .yaml configurations for </span><span class="si">{filename}</span><span class="s2">:</span><span class="si">{encoder_name}</span><span class="s2">:"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Default .yaml configurations for </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">encoder_name</span><span class="si">}</span><span class="s2">:"</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">"with:"</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">default_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">"    </span><span class="si">{parameter}</span><span class="s2">: </span><span class="si">{value}</span><span class="s2">"</span><span class="p">)</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    </span><span class="si">{</span><span class="n">parameter</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_replace_parameters</span><span class="p">(</span><span class="n">executor_yml</span><span class="p">,</span> <span class="n">default_parameters</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">default_parameters</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">with:</span><span class="se">\n</span><span class="s2">"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">executor_yml</span><span class="p">:</span>
             <span class="n">executor_yml</span> <span class="o">=</span> <span class="n">executor_yml</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">with:</span><span class="se">\n</span><span class="s2">"</span>
-        <span class="k">if</span> <span class="n">f</span><span class="s2">"</span><span class="si">{parameter.parameter_name}</span><span class="s2">:"</span> <span class="ow">in</span> <span class="n">executor_yml</span><span class="p">:</span>
+        <span class="k">if</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">parameter_name</span><span class="si">}</span><span class="s2">:"</span> <span class="ow">in</span> <span class="n">executor_yml</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">"Skipping the following parameter, since it is already defined: </span><span class="si">{parameter.parameter_name}</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Skipping the following parameter, since it is already defined: </span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">parameter_name</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">continue</span>
         <span class="n">executor_yml</span> <span class="o">=</span> <span class="n">executor_yml</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
             <span class="s2">"</span><span class="se">\n</span><span class="s2">with:</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span>
-            <span class="n">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">with:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{parameter.parameter_name}</span><span class="s2">: $</span><span class="si">{parameter.jaml_variable}</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">with:</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">parameter_name</span><span class="si">}</span><span class="s2">: $</span><span class="si">{</span><span class="n">parameter</span><span class="o">.</span><span class="n">jaml_variable</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">executor_yml</span>
 
@@ -459,7 +459,7 @@
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">target_file</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite_parameter_file</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="n">f</span><span class="s2">"</span><span class="si">{target_file}</span><span class="s2"> already exists. Skip writing. Please remove it before parameter discovery."</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">target_file</span><span class="si">}</span><span class="s2"> already exists. Skip writing. Please remove it before parameter discovery."</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target_file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
@@ -468,7 +468,7 @@
 
 <span class="k">def</span> <span class="nf">_write_to</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">create_backup</span><span class="p">:</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">f</span><span class="s2">"</span><span class="si">{filepath}</span><span class="s2">.backup"</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">.backup"</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">new_file</span><span class="p">:</span>
         <span class="n">new_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
 

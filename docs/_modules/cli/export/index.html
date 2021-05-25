@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,15 +372,15 @@
         <h1>Source code for cli.export</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 
 <div class="viewcode-block" id="api_to_dict"><a class="viewcode-back" href="../../../api/cli.export/#cli.export.api_to_dict">[docs]</a><span class="k">def</span> <span class="nf">api_to_dict</span><span class="p">():</span>
     <span class="sd">"""Convert Jina API to a dict</span>
 <span class="sd">    :return: dict</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">__version__</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="k">import</span> <span class="n">get_main_parser</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span>
 
     <span class="n">parsers</span> <span class="o">=</span> <span class="n">get_main_parser</span><span class="p">()</span><span class="o">.</span><span class="n">_actions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span>
 
@@ -393,7 +393,7 @@
         <span class="s1">'source'</span><span class="p">:</span> <span class="s1">'https://github.com/jina-ai/jina/tree/'</span>
         <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_VCS_VERSION'</span><span class="p">,</span> <span class="s1">'master'</span><span class="p">),</span>
         <span class="s1">'url'</span><span class="p">:</span> <span class="s1">'https://jina.ai'</span><span class="p">,</span>
-        <span class="s1">'docs'</span><span class="p">:</span> <span class="s1">'https://docs.jina.ai'</span><span class="p">,</span>
+        <span class="s1">'docs'</span><span class="p">:</span> <span class="s1">'https://docs2.jina.ai'</span><span class="p">,</span>
         <span class="s1">'authors'</span><span class="p">:</span> <span class="s1">'dev-team@jina.ai'</span><span class="p">,</span>
         <span class="s1">'version'</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
         <span class="s1">'methods'</span><span class="p">:</span> <span class="p">[],</span>
@@ -412,9 +412,9 @@
 
 
 <span class="k">def</span> <span class="nf">_export_parser_args</span><span class="p">(</span><span class="n">parser_fn</span><span class="p">,</span> <span class="n">type_as_str</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="k">import</span> <span class="n">BetterEnum</span>
-    <span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="k">import</span> <span class="n">KVAppendAction</span>
+    <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
+    <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span>
 
     <span class="n">port_attr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'help'</span><span class="p">,</span> <span class="s1">'choices'</span><span class="p">,</span> <span class="s1">'default'</span><span class="p">,</span> <span class="s1">'required'</span><span class="p">,</span> <span class="s1">'option_strings'</span><span class="p">,</span> <span class="s1">'dest'</span><span class="p">)</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">parser_fn</span><span class="p">()</span>
@@ -450,7 +450,7 @@
 
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dest</span> <span class="ow">in</span> <span class="n">random_dest</span><span class="p">:</span>
             <span class="n">ddd</span><span class="p">[</span><span class="s1">'default_random'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="k">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">random_port</span>
+            <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">random_port</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">default</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="n">ddd</span><span class="p">[</span><span class="s1">'default_factory'</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_identity</span><span class="o">.</span><span class="vm">__name__</span>

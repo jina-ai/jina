@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -375,20 +375,20 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">..zmq.base</span> <span class="k">import</span> <span class="n">ZMQRuntime</span>
-<span class="kn">from</span> <span class="nn">...zmq</span> <span class="k">import</span> <span class="n">Zmqlet</span>
-<span class="kn">from</span> <span class="nn">....excepts</span> <span class="k">import</span> <span class="n">BadImageNameError</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="k">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">is_valid_local_config_source</span><span class="p">,</span> <span class="n">slugify</span>
-<span class="kn">from</span> <span class="nn">....jaml.helper</span> <span class="k">import</span> <span class="n">complete_path</span>
-<span class="kn">from</span> <span class="nn">....docker.hubio</span> <span class="k">import</span> <span class="n">HubIO</span>
+<span class="kn">from</span> <span class="nn">..zmq.base</span> <span class="kn">import</span> <span class="n">ZMQRuntime</span>
+<span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
+<span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">BadImageNameError</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">is_valid_local_config_source</span><span class="p">,</span> <span class="n">slugify</span>
+<span class="kn">from</span> <span class="nn">....jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
+<span class="kn">from</span> <span class="nn">....docker.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 
 
 <div class="viewcode-block" id="ContainerRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime">[docs]</a><span class="k">class</span> <span class="nc">ContainerRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure for container."""</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_network_for_dind_linux</span><span class="p">()</span>
 
@@ -440,8 +440,8 @@
                     <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'Unable to set control address from "bridge" network: </span><span class="si">{ex!r}</span><span class="s1">'</span>
-                    <span class="n">f</span><span class="s1">' Control address set to </span><span class="si">{self.ctrl_addr}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'Unable to set control address from "bridge" network: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">' Control address set to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
         <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -455,18 +455,18 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
             <span class="n">uses_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
             <span class="n">uses_img</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">_alias_to_docker_image_name</span><span class="p">(</span><span class="n">uses_img</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'will use Docker image: </span><span class="si">{uses_img}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'will use Docker image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'you are using legacy image format </span><span class="si">{self.args.uses}</span><span class="s1">, this may create some ambiguity. '</span>
-                <span class="n">f</span><span class="s1">'please use the new format: "--uses docker://</span><span class="si">{self.args.uses}</span><span class="s1">"'</span>
+                <span class="sa">f</span><span class="s1">'you are using legacy image format </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">, this may create some ambiguity. '</span>
+                <span class="sa">f</span><span class="s1">'please use the new format: "--uses docker://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">"'</span>
             <span class="p">)</span>
             <span class="n">uses_img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span>
 
         <span class="c1"># the image arg should be ignored otherwise it keeps using ContainerPea in the container</span>
         <span class="c1"># basically all args in BasePea-docker arg group should be ignored.</span>
         <span class="c1"># this prevent setting containerPea twice</span>
-        <span class="kn">from</span> <span class="nn">....parsers</span> <span class="k">import</span> <span class="n">set_pea_parser</span>
+        <span class="kn">from</span> <span class="nn">....parsers</span> <span class="kn">import</span> <span class="n">set_pea_parser</span>
 
         <span class="n">non_defaults</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">get_non_defaults_args</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
@@ -486,25 +486,25 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uses_img</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">ImageNotFound</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'can not find local image: </span><span class="si">{uses_img}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not find local image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="n">img_not_found</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pull_latest</span> <span class="ow">or</span> <span class="n">img_not_found</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'pulling </span><span class="si">{uses_img}</span><span class="s1">, this could take a while. if you encounter '</span>
-                <span class="n">f</span><span class="s1">'timeout error due to pulling takes to long, then please set '</span>
-                <span class="n">f</span><span class="s1">'"timeout-ready" to a larger value.'</span>
+                <span class="sa">f</span><span class="s1">'pulling </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">, this could take a while. if you encounter '</span>
+                <span class="sa">f</span><span class="s1">'timeout error due to pulling takes to long, then please set '</span>
+                <span class="sa">f</span><span class="s1">'"timeout-ready" to a larger value.'</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="n">uses_img</span><span class="p">)</span>
                 <span class="n">img_not_found</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
                 <span class="n">img_not_found</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'can not find remote image: </span><span class="si">{uses_img}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not find remote image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">img_not_found</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">BadImageNameError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'image: </span><span class="si">{uses_img}</span><span class="s1"> can not be found local &amp; remote.'</span>
+                <span class="sa">f</span><span class="s1">'image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1"> can not be found local &amp; remote.'</span>
             <span class="p">)</span>
 
         <span class="n">_volumes</span> <span class="o">=</span> <span class="p">{}</span>
@@ -521,7 +521,7 @@
                 <span class="n">_volumes</span><span class="p">[</span><span class="n">full_path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'bind'</span><span class="p">:</span> <span class="n">non_defaults</span><span class="p">[</span><span class="s1">'uses'</span><span class="p">],</span> <span class="s1">'mode'</span><span class="p">:</span> <span class="s1">'ro'</span><span class="p">}</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_valid_local_config_source</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'"uses_internal" </span><span class="si">{self.args.uses_internal}</span><span class="s1"> is not like a path, please check it'</span>
+                    <span class="sa">f</span><span class="s1">'"uses_internal" </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="si">}</span><span class="s1"> is not like a path, please check it'</span>
                 <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
@@ -544,7 +544,7 @@
             <span class="n">_expose_port</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_out</span><span class="p">)</span>
 
         <span class="n">_args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2list</span><span class="p">(</span><span class="n">non_defaults</span><span class="p">)</span>
-        <span class="n">ports</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="s1">'</span><span class="si">{v}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_expose_port</span><span class="p">}</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net_mode</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">ports</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_expose_port</span><span class="p">}</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net_mode</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="n">docker_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>

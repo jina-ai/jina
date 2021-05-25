@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -379,24 +379,24 @@
 <span class="kn">import</span> <span class="nn">urllib.parse</span>
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">webbrowser</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">.checker</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="k">import</span> <span class="n">credentials_file</span>
-<span class="kn">from</span> <span class="nn">.hubapi.local</span> <span class="k">import</span> <span class="n">_list_local</span><span class="p">,</span> <span class="n">_load_local_hub_manifest</span>
-<span class="kn">from</span> <span class="nn">.hubapi.remote</span> <span class="k">import</span> <span class="n">_list</span><span class="p">,</span> <span class="n">_register_to_mongodb</span><span class="p">,</span> <span class="n">_fetch_docker_auth</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">jina_version</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="k">import</span> <span class="n">BuildTestLevel</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">.checker</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">credentials_file</span>
+<span class="kn">from</span> <span class="nn">.hubapi.local</span> <span class="kn">import</span> <span class="n">_list_local</span><span class="p">,</span> <span class="n">_load_local_hub_manifest</span>
+<span class="kn">from</span> <span class="nn">.hubapi.remote</span> <span class="kn">import</span> <span class="n">_list</span><span class="p">,</span> <span class="n">_register_to_mongodb</span><span class="p">,</span> <span class="n">_fetch_docker_auth</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">jina_version</span>
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">BuildTestLevel</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">HubBuilderError</span><span class="p">,</span>
     <span class="n">HubBuilderBuildError</span><span class="p">,</span>
     <span class="n">HubBuilderTestError</span><span class="p">,</span>
     <span class="n">HubLoginRequired</span><span class="p">,</span>
     <span class="n">ImageAlreadyExists</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
-<span class="kn">from</span> <span class="nn">..flow</span> <span class="k">import</span> <span class="n">Flow</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">..executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
+<span class="kn">from</span> <span class="nn">..flow</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">colored</span><span class="p">,</span>
     <span class="n">get_readable_size</span><span class="p">,</span>
     <span class="n">get_now_timestamp</span><span class="p">,</span>
@@ -405,11 +405,11 @@
     <span class="n">expand_dict</span><span class="p">,</span>
     <span class="n">countdown</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">..logging</span> <span class="k">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="k">import</span> <span class="n">TimeContext</span><span class="p">,</span> <span class="n">ProgressBar</span>
-<span class="kn">from</span> <span class="nn">..parsers</span> <span class="k">import</span> <span class="n">set_pod_parser</span>
-<span class="kn">from</span> <span class="nn">..peapods</span> <span class="k">import</span> <span class="n">Pod</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span><span class="p">,</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_pod_parser</span>
+<span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">Pod</span>
 
 <span class="n">_allowed</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">'name'</span><span class="p">,</span>
@@ -440,7 +440,7 @@
 <span class="sd">        - :command:`jina hub pull jinahub/pod.dummy_mwu_encoder:0.0.6` to download the image</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
         <span class="sd">"""Create a new HubIO.</span>
 
 <span class="sd">        :param args: arguments</span>
@@ -456,7 +456,7 @@
             <span class="s1">'to enable full CLI, please do pip install "jina[docker]"'</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="kn">import</span> <span class="nn">docker</span>
-            <span class="kn">from</span> <span class="nn">docker</span> <span class="k">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">DockerClient</span>
+            <span class="kn">from</span> <span class="nn">docker</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">DockerClient</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">DockerClient</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
 
@@ -470,7 +470,7 @@
 <span class="sd">        :param no_input: Argument to avoid prompting dialogue (just to be used for testing)</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">cookiecutter.main</span> <span class="k">import</span> <span class="n">cookiecutter</span>
+            <span class="kn">from</span> <span class="nn">cookiecutter.main</span> <span class="kn">import</span> <span class="n">cookiecutter</span>
             <span class="kn">import</span> <span class="nn">click</span>  <span class="c1"># part of cookiecutter</span>
 
         <span class="n">cookiecutter_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">template</span>
@@ -526,12 +526,12 @@
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'You should see a "Device Activation" page open in your browser. '</span>
-                    <span class="n">f</span><span class="s1">'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}'</span>
+                    <span class="sa">f</span><span class="s1">'You should see a "Device Activation" page open in your browser. '</span>
+                    <span class="sa">f</span><span class="s1">'If not, please go to </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">verification_uri</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">"underline"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="s1">'Please follow the steps:</span><span class="se">\n\n</span><span class="s1">'</span>
-                    <span class="n">f</span><span class="s1">'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'1. Enter the following code to that page: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">user_code</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">"bold"</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
                     <span class="s1">'2. Click "Continue"</span><span class="se">\n</span><span class="s1">'</span>
                     <span class="s1">'3. Come back to this terminal</span><span class="se">\n</span><span class="s1">'</span>
                 <span class="p">)</span>
@@ -563,13 +563,13 @@
                     <span class="n">token</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'access_token'</span><span class="p">:</span> <span class="n">access_token_response</span><span class="p">[</span><span class="s1">'access_token'</span><span class="p">]}</span>
                     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">credentials_file</span><span class="p">(),</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">cf</span><span class="p">:</span>
                         <span class="n">JAML</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">cf</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'✅ Successfully logged in!'</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'✅ Successfully logged in!'</span><span class="p">)</span>
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'❌ Max retries </span><span class="si">{login_max_retry}</span><span class="s1"> reached'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'❌ Max retries </span><span class="si">{</span><span class="n">login_max_retry</span><span class="si">}</span><span class="s1"> reached'</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'❌ Can not read the key in response: </span><span class="si">{exp}</span><span class="s1">'</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'❌ Can not read the key in response: </span><span class="si">{</span><span class="n">exp</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.list"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
         <span class="sd">"""List all hub images given a filter specified by CLI.</span>
@@ -612,11 +612,11 @@
                 <span class="p">)</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="n">ImageAlreadyExists</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'Image with name </span><span class="si">{name}</span><span class="s1"> already exists. Will NOT overwrite.'</span>
+                    <span class="sa">f</span><span class="s1">'Image with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> already exists. Will NOT overwrite.'</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'Image with name </span><span class="si">{name}</span><span class="s1"> does not exist. Pushing now...'</span>
+                    <span class="sa">f</span><span class="s1">'Image with name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> does not exist. Pushing now...'</span>
                 <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_push_docker_hub</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -628,9 +628,9 @@
                         <span class="n">build_result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'can not find the build summary file.'</span>
-                        <span class="n">f</span><span class="s1">'please use "jina hub build" to build the image first '</span>
-                        <span class="n">f</span><span class="s1">'before pushing.'</span>
+                        <span class="sa">f</span><span class="s1">'can not find the build summary file.'</span>
+                        <span class="sa">f</span><span class="s1">'please use "jina hub build" to build the image first '</span>
+                        <span class="sa">f</span><span class="s1">'before pushing.'</span>
                     <span class="p">)</span>
                     <span class="k">return</span>
 
@@ -648,7 +648,7 @@
                     <span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'Error when trying to push image </span><span class="si">{name}</span><span class="s1">: </span><span class="si">{e!r}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error when trying to push image </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="p">(</span><span class="n">ImageAlreadyExists</span><span class="p">,</span> <span class="n">HubLoginRequired</span><span class="p">)):</span>
                 <span class="k">raise</span> <span class="n">e</span></div>
 
@@ -660,13 +660,13 @@
         <span class="n">check_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">repository</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_docker_image</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docker_login</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="n">f</span><span class="s1">'pushing </span><span class="si">{name}</span><span class="s1">'</span><span class="p">,</span> <span class="n">batch_unit</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'pushing </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">batch_unit</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
                 <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'🎉 </span><span class="si">{name}</span><span class="s1"> is now published!'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🎉 </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is now published!'</span><span class="p">)</span>
 
-        <span class="n">share_link</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'https://api.jina.ai/hub/?jh={urllib.parse.quote_plus(name)}'</span>
+        <span class="n">share_link</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'https://api.jina.ai/hub/?jh=</span><span class="si">{</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">share_link</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -675,7 +675,7 @@
             <span class="k">pass</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!'</span>
+                <span class="sa">f</span><span class="s1">'Check out the usage </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">share_link</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">"underline"</span><span class="p">])</span><span class="si">}</span><span class="s1"> and share it with others!'</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="HubIO.pull"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -683,31 +683,31 @@
         <span class="n">check_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">repository</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_docker_login</span><span class="p">()</span>
-            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="n">f</span><span class="s1">'pulling </span><span class="si">{self.args.name}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'pulling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
                 <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">image_tag</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span> <span class="k">else</span> <span class="s1">''</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'🎉 pulled </span><span class="si">{image_tag}</span><span class="s1"> (</span><span class="si">{image.short_id}</span><span class="s1">) uncompressed size: {get_readable_size(image.attrs["Size"])}'</span>
+                <span class="sa">f</span><span class="s1">'🎉 pulled </span><span class="si">{</span><span class="n">image_tag</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">image</span><span class="o">.</span><span class="n">short_id</span><span class="si">}</span><span class="s1">) uncompressed size: </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Size"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'can not pull image </span><span class="si">{self.args.name}</span><span class="s1"> from </span><span class="si">{self.args.registry}</span><span class="s1"> due to </span><span class="si">{ex!r}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'can not pull image </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="si">}</span><span class="s1"> due to </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_check_docker_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># check local image</span>
         <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_allowed</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">f</span><span class="s1">'</span><span class="si">{_label_prefix}{r}</span><span class="s1">'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">_label_prefix</span><span class="si">}{</span><span class="n">r</span><span class="si">}</span><span class="s1">'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{r}</span><span class="s1"> is missing in your docker image labels, you may want to check it'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s1"> is missing in your docker image labels, you may want to check it'</span>
                 <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">image</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s1">'ai.jina.hub.jina_version'</span><span class="p">]</span> <span class="o">=</span> <span class="n">jina_version</span>
             <span class="n">label_info</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{self.args.repository}</span><span class="s1">/'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">repository</span><span class="si">}</span><span class="s1">/'</span>
                 <span class="o">+</span> <span class="s1">'</span><span class="si">{type}</span><span class="s1">.</span><span class="si">{kind}</span><span class="s1">.</span><span class="si">{name}</span><span class="s1">:</span><span class="si">{version}</span><span class="s1">-</span><span class="si">{jina_version}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">_label_prefix</span><span class="p">,</span> <span class="s1">''</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
                 <span class="p">)</span>
@@ -715,17 +715,17 @@
             <span class="n">safe_name</span> <span class="o">=</span> <span class="n">safe_url_name</span><span class="p">(</span><span class="n">label_info</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="n">safe_name</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'image </span><span class="si">{name}</span><span class="s1"> does not match with label info in the image. name should be </span><span class="si">{safe_name}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'image </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> does not match with label info in the image. name should be </span><span class="si">{</span><span class="n">safe_name</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'missing key in the label of the image {repr(e)}'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'missing key in the label of the image </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">raise</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'✅ </span><span class="si">{name}</span><span class="s1"> is a valid Jina Hub image, ready to publish'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'✅ </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a valid Jina Hub image, ready to publish'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_docker_login</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Log-in to Docker."""</span>
-        <span class="kn">from</span> <span class="nn">docker.errors</span> <span class="k">import</span> <span class="n">APIError</span>
+        <span class="kn">from</span> <span class="nn">docker.errors</span> <span class="kn">import</span> <span class="n">APIError</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">username</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">_fetch_docker_auth</span><span class="p">(</span>
@@ -737,10 +737,10 @@
                 <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
                 <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'✅ Successfully logged in to docker hub'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'✅ Successfully logged in to docker hub'</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">APIError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">HubLoginRequired</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'❌ Invalid docker credentials passed. docker login failed'</span>
+                <span class="sa">f</span><span class="s1">'❌ Invalid docker credentials passed. docker login failed'</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="HubIO.build"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -758,7 +758,7 @@
             <span class="n">_excepts</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'building {colored(self.args.path, "green")}'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="sa">f</span><span class="s1">'building </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">tc</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">_check_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_completeness</span><span class="p">()</span>
@@ -824,7 +824,7 @@
                 <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'can not build the image due to </span><span class="si">{_except_strs}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not build the image due to </span><span class="si">{</span><span class="n">_except_strs</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="n">_details</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="k">if</span> <span class="n">is_build_success</span><span class="p">:</span>
@@ -849,17 +849,17 @@
                         <span class="p">):</span>
                             <span class="n">is_build_success</span> <span class="o">=</span> <span class="kc">False</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                <span class="n">f</span><span class="s1">'build unsuccessful, failed at {str(failed_test_levels)} level'</span>
+                                <span class="sa">f</span><span class="s1">'build unsuccessful, failed at </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">failed_test_levels</span><span class="p">)</span><span class="si">}</span><span class="s1"> level'</span>
                             <span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">is_build_success</span> <span class="o">=</span> <span class="kc">True</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                                <span class="n">f</span><span class="s1">'Build successful. Tests failed at : {str(failed_test_levels)} levels. '</span>
-                                <span class="n">f</span><span class="s1">'This could be due to the fact that the executor has non-installed external dependencies'</span>
+                                <span class="sa">f</span><span class="s1">'Build successful. Tests failed at : </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">failed_test_levels</span><span class="p">)</span><span class="si">}</span><span class="s1"> levels. '</span>
+                                <span class="sa">f</span><span class="s1">'This could be due to the fact that the executor has non-installed external dependencies'</span>
                             <span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                            <span class="n">f</span><span class="s1">'something wrong while testing the build: </span><span class="si">{ex!r}</span><span class="s1">'</span>
+                            <span class="sa">f</span><span class="s1">'something wrong while testing the build: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
                         <span class="p">)</span>
                         <span class="n">ex</span> <span class="o">=</span> <span class="n">HubBuilderTestError</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
                         <span class="n">_except_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
@@ -939,24 +939,24 @@
     <span class="p">):</span>
         <span class="n">p_names</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">failed_levels</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'run tests using test level </span><span class="si">{test_level}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'run tests using test level </span><span class="si">{</span><span class="n">test_level</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="c1"># test uses at executor level</span>
         <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">EXECUTOR</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'test to initialize an executor from yaml configuration: </span><span class="si">{config_yaml_path}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'test to initialize an executor from yaml configuration: </span><span class="si">{</span><span class="n">config_yaml_path</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_yaml_path</span><span class="p">):</span>
                     <span class="k">pass</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'successfully tested to initialize an executor'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'successfully tested to initialize an executor'</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to initialize an executor'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to initialize an executor'</span><span class="p">)</span>
                 <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">EXECUTOR</span><span class="p">)</span>
 
         <span class="c1"># test uses at Pod level (no docker)</span>
         <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_NONDOCKER</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'test to initialize a pod from yaml configuration: </span><span class="si">{config_yaml_path}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'test to initialize a pod from yaml configuration: </span><span class="si">{</span><span class="n">config_yaml_path</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">Pod</span><span class="p">(</span>
@@ -971,24 +971,24 @@
                 <span class="p">):</span>
                     <span class="k">pass</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'successfully tested to initialize a pod from yaml configuration'</span>
+                    <span class="sa">f</span><span class="s1">'successfully tested to initialize a pod from yaml configuration'</span>
                 <span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to initialize a pod'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to initialize a pod'</span><span class="p">)</span>
                 <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_NONDOCKER</span><span class="p">)</span>
 
         <span class="c1"># test uses at Pod level (with docker)</span>
         <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_DOCKER</span><span class="p">:</span>
             <span class="n">p_name</span> <span class="o">=</span> <span class="n">random_name</span><span class="p">()</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'test to initialize a pod via docker image </span><span class="si">{image.tags[0]}</span><span class="s1"> named </span><span class="si">{p_name}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'test to initialize a pod via docker image </span><span class="si">{</span><span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> named </span><span class="si">{</span><span class="n">p_name</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">Pod</span><span class="p">(</span>
                     <span class="n">set_pod_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="s1">'--uses'</span><span class="p">,</span>
-                            <span class="n">f</span><span class="s1">'docker://</span><span class="si">{image.tags[0]}</span><span class="s1">'</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                             <span class="s1">'--name'</span><span class="p">,</span>
                             <span class="n">p_name</span><span class="p">,</span>
                             <span class="s1">'--timeout-ready'</span><span class="p">,</span>
@@ -1001,22 +1001,22 @@
                 <span class="p">):</span>
                     <span class="k">pass</span>
                 <span class="n">p_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_name</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'successfully tested to initialize a pod via docker'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'successfully tested to initialize a pod via docker'</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to initialize a pod via docker image'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to initialize a pod via docker image'</span><span class="p">)</span>
                 <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_DOCKER</span><span class="p">)</span>
 
         <span class="c1"># test uses at Flow level</span>
         <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">FLOW</span><span class="p">:</span>
             <span class="n">p_name</span> <span class="o">=</span> <span class="n">random_name</span><span class="p">()</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'test to build a flow from docker image </span><span class="si">{image.tags[0]}</span><span class="s1"> named </span><span class="si">{p_name}</span><span class="s1"> '</span>
-                <span class="n">f</span><span class="s1">'with daemon=</span><span class="si">{daemon_arg}</span><span class="s1"> and timeout_ready=</span><span class="si">{timeout_ready}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'test to build a flow from docker image </span><span class="si">{</span><span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1"> named </span><span class="si">{</span><span class="n">p_name</span><span class="si">}</span><span class="s1"> '</span>
+                <span class="sa">f</span><span class="s1">'with daemon=</span><span class="si">{</span><span class="n">daemon_arg</span><span class="si">}</span><span class="s1"> and timeout_ready=</span><span class="si">{</span><span class="n">timeout_ready</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="n">p_name</span><span class="p">,</span>
-                    <span class="n">uses</span><span class="o">=</span><span class="n">f</span><span class="s1">'docker://</span><span class="si">{image.tags[0]}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="n">uses</span><span class="o">=</span><span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="n">daemon</span><span class="o">=</span><span class="n">daemon_arg</span><span class="p">,</span>
                     <span class="n">timeout_ready</span><span class="o">=</span><span class="n">timeout_ready</span><span class="p">,</span>
                 <span class="p">):</span>
@@ -1024,7 +1024,7 @@
                 <span class="n">p_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_name</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'successfully tested to build a flow from docker image'</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to build a flow from docker image'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to build a flow from docker image'</span><span class="p">)</span>
                 <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">FLOW</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">p_names</span><span class="p">,</span> <span class="n">failed_levels</span>
 
@@ -1042,10 +1042,10 @@
         <span class="k">return</span> <span class="n">s</span></div>
 
     <span class="k">def</span> <span class="nf">_write_summary_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">file_path</span> <span class="o">=</span> <span class="n">get_summary_path</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{summary["name"]}</span><span class="s1">:</span><span class="si">{summary["version"]}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">get_summary_path</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">summary</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">summary</span><span class="p">[</span><span class="s2">"version"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">'w+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">'stored the summary from build to </span><span class="si">{file_path}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'stored the summary from build to </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_freeze_jina_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">pkg_resources</span>
@@ -1060,8 +1060,8 @@
                     <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requirements</span><span class="p">:</span>
                         <span class="k">if</span> <span class="s1">'jina'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
                             <span class="n">update</span> <span class="o">=</span> <span class="kc">True</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'Freezing jina version to </span><span class="si">{jina_version}</span><span class="s1">'</span><span class="p">)</span>
-                            <span class="n">new_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'jina==</span><span class="si">{jina_version}</span><span class="s1">'</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Freezing jina version to </span><span class="si">{</span><span class="n">jina_version</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+                            <span class="n">new_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'jina==</span><span class="si">{</span><span class="n">jina_version</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">new_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">req</span><span class="p">))</span>
                 <span class="k">except</span><span class="p">:</span>
@@ -1129,9 +1129,9 @@
         <span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'completeness check</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'completeness check</span><span class="se">\n</span><span class="s1">'</span>
             <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'{colored("✓", "green") if v else colored("✗", "red"):&gt;4} </span><span class="si">{k:&lt;20}</span><span class="s1"> </span><span class="si">{v}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">"✓"</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="n">colored</span><span class="p">(</span><span class="s2">"✗"</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span><span class="si">:</span><span class="s1">&gt;4</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">&lt;20</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">completeness</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">)</span>
             <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span>
@@ -1148,10 +1148,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_manifest</span><span class="p">(</span><span class="n">manifest_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'jina_version'</span><span class="p">]</span> <span class="o">=</span> <span class="n">jina_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="o">=</span> <span class="n">safe_url_name</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'</span><span class="si">{self.args.repository}</span><span class="s1">/'</span>
-            <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="si">{self.manifest["type"]}</span><span class="s1">.</span><span class="si">{self.manifest["kind"]}</span><span class="s1">.</span><span class="si">{self.manifest["name"]}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">repository</span><span class="si">}</span><span class="s1">/'</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s2">"kind"</span><span class="p">]</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="o">+</span> <span class="n">f</span><span class="s1">':</span><span class="si">{self.manifest["version"]}</span><span class="s1">-</span><span class="si">{jina_version}</span><span class="s1">'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">':</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s2">"version"</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">jina_version</span><span class="si">}</span><span class="s1">'</span>
         <span class="k">return</span> <span class="n">completeness</span>
 
     <span class="k">def</span> <span class="nf">_read_manifest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -1176,13 +1176,13 @@
         <span class="c1"># check the required field in manifest</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">required</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">manifest</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{r}</span><span class="s1"> is missing in the manifest.yaml, it is required'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s1"> is missing in the manifest.yaml, it is required'</span><span class="p">)</span>
 
         <span class="c1"># check if all fields are there</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_allowed</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">manifest</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{r}</span><span class="s1"> is missing in your manifest.yml, you may want to check it'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s1"> is missing in your manifest.yml, you may want to check it'</span>
                 <span class="p">)</span>
 
         <span class="c1"># check name</span>
@@ -1205,7 +1205,7 @@
 
         <span class="c1"># show manifest key-values</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">manifest</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1">: </span><span class="si">{v}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_write_slack_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">_expand_fn</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
@@ -1229,7 +1229,7 @@
                 <span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">'Content-Length'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">jdb</span><span class="p">)))</span>
                 <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">jdb</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                     <span class="n">res</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'push to Slack: </span><span class="si">{res}</span><span class="s1">'</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'push to Slack: </span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="c1"># alias of "new" in cli</span>
     <span class="n">create</span> <span class="o">=</span> <span class="n">new</span>

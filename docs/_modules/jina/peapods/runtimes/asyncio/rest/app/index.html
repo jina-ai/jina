@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,20 +372,20 @@
         <h1>Source code for jina.peapods.runtimes.asyncio.rest.app</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="k">import</span> <span class="n">MessageToJson</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToJson</span>
 
-<span class="kn">from</span> <span class="nn">..grpc.async_call</span> <span class="k">import</span> <span class="n">AsyncPrefetchCall</span>
-<span class="kn">from</span> <span class="nn">....zmq</span> <span class="k">import</span> <span class="n">AsyncZmqlet</span>
-<span class="kn">from</span> <span class="nn">.....</span> <span class="k">import</span> <span class="n">__version__</span>
-<span class="kn">from</span> <span class="nn">.....clients.request</span> <span class="k">import</span> <span class="n">request_generator</span>
-<span class="kn">from</span> <span class="nn">.....helper</span> <span class="k">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">random_identity</span>
-<span class="kn">from</span> <span class="nn">.....importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">.....logging</span> <span class="k">import</span> <span class="n">JinaLogger</span><span class="p">,</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">.....logging.profile</span> <span class="k">import</span> <span class="n">used_memory_readable</span>
-<span class="kn">from</span> <span class="nn">.....types.message</span> <span class="k">import</span> <span class="n">Message</span>
-<span class="kn">from</span> <span class="nn">.....types.request</span> <span class="k">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">..grpc.async_call</span> <span class="kn">import</span> <span class="n">AsyncPrefetchCall</span>
+<span class="kn">from</span> <span class="nn">....zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
+<span class="kn">from</span> <span class="nn">.....</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span> <span class="nn">.....clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
+<span class="kn">from</span> <span class="nn">.....helper</span> <span class="kn">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">random_identity</span>
+<span class="kn">from</span> <span class="nn">.....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">.....logging</span> <span class="kn">import</span> <span class="n">JinaLogger</span><span class="p">,</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">.....logging.profile</span> <span class="kn">import</span> <span class="n">used_memory_readable</span>
+<span class="kn">from</span> <span class="nn">.....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">.....types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="get_fastapi_app"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.rest.app/#jina.peapods.runtimes.asyncio.rest.app.get_fastapi_app">[docs]</a><span class="k">def</span> <span class="nf">get_fastapi_app</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">):</span>
@@ -397,14 +397,14 @@
 <span class="sd">    :return: fastapi app</span>
 <span class="sd">    """</span>
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">fastapi</span> <span class="k">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">WebSocket</span>
-        <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="k">import</span> <span class="n">JSONResponse</span>
-        <span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="k">import</span> <span class="n">CORSMiddleware</span>
-        <span class="kn">from</span> <span class="nn">starlette.endpoints</span> <span class="k">import</span> <span class="n">WebSocketEndpoint</span>
-        <span class="kn">from</span> <span class="nn">starlette</span> <span class="k">import</span> <span class="n">status</span>
-        <span class="kn">from</span> <span class="nn">starlette.types</span> <span class="k">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-        <span class="kn">from</span> <span class="nn">starlette.responses</span> <span class="k">import</span> <span class="n">StreamingResponse</span>
-        <span class="kn">from</span> <span class="nn">.models</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">WebSocket</span>
+        <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
+        <span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
+        <span class="kn">from</span> <span class="nn">starlette.endpoints</span> <span class="kn">import</span> <span class="n">WebSocketEndpoint</span>
+        <span class="kn">from</span> <span class="nn">starlette</span> <span class="kn">import</span> <span class="n">status</span>
+        <span class="kn">from</span> <span class="nn">starlette.types</span> <span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+        <span class="kn">from</span> <span class="nn">starlette.responses</span> <span class="kn">import</span> <span class="n">StreamingResponse</span>
+        <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="p">(</span>
             <span class="n">JinaStatusModel</span><span class="p">,</span>
             <span class="n">JinaIndexRequestModel</span><span class="p">,</span>
             <span class="n">JinaDeleteRequestModel</span><span class="p">,</span>
@@ -446,13 +446,13 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">startup</span><span class="p">():</span>
         <span class="sd">"""Log the host information when start the server."""</span>
         <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'''</span>
+            <span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">    Jina REST interface</span>
-<span class="s1">    💬 Swagger UI:</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{args.port_expose}</span><span class="s1">/docs</span>
-<span class="s1">    📚 Redoc     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{args.port_expose}</span><span class="s1">/redoc</span>
+<span class="s1">    💬 Swagger UI:</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs</span>
+<span class="s1">    📚 Redoc     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc</span>
 <span class="s1">        '''</span>
         <span class="p">)</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">__ready_msg__</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__ready_msg__</span>
 
         <span class="n">default_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
 
@@ -605,7 +605,7 @@
 
         <span class="n">encoding</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s1">'Scope'</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s1">'Receive'</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s1">'Send'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s1">'Scope'</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s1">'Receive'</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s1">'Send'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -632,9 +632,9 @@
             <span class="c1"># Register each client - https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients</span>
             <span class="c1"># And move class variables to instance variable</span>
             <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">client_info</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{websocket.client.host}</span><span class="s1">:</span><span class="si">{websocket.client.port}</span><span class="s1">'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">client_info</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'Client </span><span class="si">{self.client_info}</span><span class="s1"> connected to stream requests via websockets'</span>
+                <span class="sa">f</span><span class="s1">'Client </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_info</span><span class="si">}</span><span class="s1"> connected to stream requests via websockets'</span>
             <span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">close_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -679,7 +679,7 @@
                         <span class="k">break</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="n">close_code</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'Got an exception in handle_receive: </span><span class="si">{exc!r}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Got an exception in handle_receive: </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="k">raise</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">close_code</span><span class="p">)</span>
@@ -707,7 +707,7 @@
 <span class="sd">            :param websocket: disconnected websocket</span>
 <span class="sd">            :param close_code: close code</span>
 <span class="sd">            """</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'Client </span><span class="si">{self.client_info}</span><span class="s1"> got disconnected!'</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Client </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_info</span><span class="si">}</span><span class="s1"> got disconnected!'</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">app</span></div>
 </pre></div>

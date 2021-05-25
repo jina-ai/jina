@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,8 +370,8 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.parsers.hub</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..base</span> <span class="k">import</span> <span class="n">set_base_parser</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">_chf</span>
+<span></span><span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">_chf</span>
 
 
 <div class="viewcode-block" id="set_hub_pushpull_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hub/#jina.parsers.hub.set_hub_pushpull_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_pushpull_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -383,8 +383,8 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.login</span> <span class="k">import</span> <span class="n">mixin_hub_docker_login_parser</span>
-    <span class="kn">from</span> <span class="nn">.pushpull</span> <span class="k">import</span> <span class="n">mixin_hub_pushpull_parser</span>
+    <span class="kn">from</span> <span class="nn">.login</span> <span class="kn">import</span> <span class="n">mixin_hub_docker_login_parser</span>
+    <span class="kn">from</span> <span class="nn">.pushpull</span> <span class="kn">import</span> <span class="n">mixin_hub_pushpull_parser</span>
 
     <span class="n">mixin_hub_docker_login_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_hub_pushpull_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -400,8 +400,8 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.login</span> <span class="k">import</span> <span class="n">mixin_hub_docker_login_parser</span>
-    <span class="kn">from</span> <span class="nn">.build</span> <span class="k">import</span> <span class="n">mixin_hub_build_parser</span>
+    <span class="kn">from</span> <span class="nn">.login</span> <span class="kn">import</span> <span class="n">mixin_hub_docker_login_parser</span>
+    <span class="kn">from</span> <span class="nn">.build</span> <span class="kn">import</span> <span class="n">mixin_hub_build_parser</span>
 
     <span class="n">mixin_hub_docker_login_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_hub_build_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -418,7 +418,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.list</span> <span class="k">import</span> <span class="n">mixin_hub_list_parser</span>
+    <span class="kn">from</span> <span class="nn">.list</span> <span class="kn">import</span> <span class="n">mixin_hub_list_parser</span>
 
     <span class="n">mixin_hub_list_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
@@ -434,7 +434,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.new</span> <span class="k">import</span> <span class="n">mixin_hub_new_parser</span>
+    <span class="kn">from</span> <span class="nn">.new</span> <span class="kn">import</span> <span class="n">mixin_hub_new_parser</span>
 
     <span class="n">mixin_hub_new_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 

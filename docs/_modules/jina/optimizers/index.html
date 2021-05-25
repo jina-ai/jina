@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,28 +371,28 @@
         </label>
         <h1>Source code for jina.optimizers</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 
-<span class="kn">from</span> <span class="nn">.parameters</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">.parameters</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">IntegerParameter</span><span class="p">,</span>
     <span class="n">UniformParameter</span><span class="p">,</span>
     <span class="n">LogUniformParameter</span><span class="p">,</span>
     <span class="n">CategoricalParameter</span><span class="p">,</span>
     <span class="n">DiscreteUniformParameter</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.parameters</span> <span class="k">import</span> <span class="n">load_optimization_parameters</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">colored</span>
-<span class="kn">from</span> <span class="nn">..importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">..jaml</span> <span class="k">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span>
-<span class="kn">from</span> <span class="nn">..logging</span> <span class="k">import</span> <span class="n">default_logger</span> <span class="k">as</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">.parameters</span> <span class="kn">import</span> <span class="n">load_optimization_parameters</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span>
+<span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">default_logger</span> <span class="k">as</span> <span class="n">logger</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.flow_runner</span> <span class="k">import</span> <span class="n">FlowRunner</span>
+    <span class="kn">from</span> <span class="nn">.flow_runner</span> <span class="kn">import</span> <span class="n">FlowRunner</span>
     <span class="kn">import</span> <span class="nn">optuna</span>
-    <span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">Namespace</span>
+    <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 
 
 <div class="viewcode-block" id="OptimizerCallback"><a class="viewcode-back" href="../../../api/jina.optimizers/#jina.optimizers.OptimizerCallback">[docs]</a><span class="k">class</span> <span class="nc">OptimizerCallback</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">):</span>
@@ -419,7 +419,7 @@
 <span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Collects the results of evaluators in the response object for aggregation.</span>
 
@@ -435,7 +435,7 @@
 <span class="sd">    execution from the :py:class:`FlowOptimizer`.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        :param eval_name: evaluation name as required by the evaluator. Not needed if only 1 evaluator is used</span>
 <span class="sd">        """</span>
@@ -463,19 +463,19 @@
             <span class="n">evaluation_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_evaluation_values</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_evaluation_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'More than one evaluation metric found. Please define the right eval_name. Currently </span><span class="si">{evaluation_name}</span><span class="s1"> is used'</span>
+                    <span class="sa">f</span><span class="s1">'More than one evaluation metric found. Please define the right eval_name. Currently </span><span class="si">{</span><span class="n">evaluation_name</span><span class="si">}</span><span class="s1"> is used'</span>
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluation_values</span><span class="p">[</span><span class="n">evaluation_name</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_docs</span></div>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Store the evaluation values</span>
 
 <span class="sd">        :param response: response message</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_docs</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'Num of docs evaluated: </span><span class="si">{self._n_docs}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Num of docs evaluated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_docs</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">evaluation</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_evaluation_values</span><span class="p">[</span><span class="n">evaluation</span><span class="o">.</span><span class="n">op_name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">value</span></div>
@@ -484,15 +484,15 @@
 <div class="viewcode-block" id="ResultProcessor"><a class="viewcode-back" href="../../../api/jina.optimizers/#jina.optimizers.ResultProcessor">[docs]</a><span class="k">class</span> <span class="nc">ResultProcessor</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">):</span>
     <span class="sd">"""Result processor for the Optimizer."""</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="s1">'optuna.study.Study'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="s1">'optuna.study.Study'</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        :param study: optuna study object</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_study</span> <span class="o">=</span> <span class="n">study</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_best_parameters</span> <span class="o">=</span> <span class="n">study</span><span class="o">.</span><span class="n">best_trial</span><span class="o">.</span><span class="n">params</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="n">f</span><span class="s1">'Number of finished trials: {len(study.trials)}'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="n">f</span><span class="s1">'Best trial: </span><span class="si">{study.best_trial.params}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="n">f</span><span class="s1">'Time to finish: </span><span class="si">{study.best_trial.duration}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Number of finished trials: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Best trial: </span><span class="si">{</span><span class="n">study</span><span class="o">.</span><span class="n">best_trial</span><span class="o">.</span><span class="n">params</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Time to finish: </span><span class="si">{</span><span class="n">study</span><span class="o">.</span><span class="n">best_trial</span><span class="o">.</span><span class="n">duration</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">study</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -527,7 +527,7 @@
 <span class="sd">    https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">flow_runner</span><span class="p">:</span> <span class="s1">'FlowRunner'</span><span class="p">,</span>
         <span class="n">parameter_yaml</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -610,7 +610,7 @@
                 <span class="n">q</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'Paramater </span><span class="si">{param}</span><span class="s1"> is of unsupported type {type(param)}'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Paramater </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1"> is of unsupported type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
         <span class="n">trial_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trial_parameter_sampler</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
@@ -619,7 +619,7 @@
             <span class="n">trial_parameters</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="n">trial</span><span class="o">.</span><span class="n">workspace</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">evaluation_callback</span>
         <span class="p">)</span>
         <span class="n">eval_score</span> <span class="o">=</span> <span class="n">evaluation_callback</span><span class="o">.</span><span class="n">get_final_evaluation</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="n">f</span><span class="s1">'Evaluation Score: </span><span class="si">{eval_score}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Evaluation Score: </span><span class="si">{</span><span class="n">eval_score</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'green'</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">eval_score</span>
 
 <div class="viewcode-block" id="FlowOptimizer.optimize_flow"><a class="viewcode-back" href="../../../api/jina.optimizers/#jina.optimizers.FlowOptimizer.optimize_flow">[docs]</a>    <span class="k">def</span> <span class="nf">optimize_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ResultProcessor'</span><span class="p">:</span>
@@ -648,7 +648,7 @@
 <span class="sd">    :param args: arguments passed via cli</span>
 <span class="sd">    """</span>
     <span class="c1"># The following import is needed to initialize the JAML parser</span>
-    <span class="kn">from</span> <span class="nn">.flow_runner</span> <span class="k">import</span> <span class="n">SingleFlowRunner</span><span class="p">,</span> <span class="n">MultiFlowRunner</span>
+    <span class="kn">from</span> <span class="nn">.flow_runner</span> <span class="kn">import</span> <span class="n">SingleFlowRunner</span><span class="p">,</span> <span class="n">MultiFlowRunner</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>

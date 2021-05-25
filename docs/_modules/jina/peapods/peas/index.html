@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,20 +372,20 @@
         <h1>Source code for jina.peapods.peas</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="k">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">_make_or_event</span><span class="p">,</span> <span class="n">PeaType</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span>
-<span class="kn">from</span> <span class="nn">...enums</span> <span class="k">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="k">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeTerminated</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="k">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">_make_or_event</span><span class="p">,</span> <span class="n">PeaType</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeTerminated</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BasePea'</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..runtimes.base</span> <span class="k">import</span> <span class="n">BaseRuntime</span>
+    <span class="kn">from</span> <span class="nn">..runtimes.base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
 
 
 <div class="viewcode-block" id="BasePea"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea">[docs]</a><span class="k">class</span> <span class="nc">BasePea</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">PeaType</span><span class="p">):</span>
@@ -398,7 +398,7 @@
 
     <span class="n">runtime_cls</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Type['BaseRuntime']</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>  <span class="c1">#: required here to call process/thread __init__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">daemon</span>  <span class="c1">#: required here to set process/thread daemon</span>
@@ -419,8 +419,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runtime_cls</span><span class="p">()(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>  <span class="c1"># type: 'BaseRuntime'</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{ex!r}</span><span class="s1"> during </span><span class="si">{self.runtime_cls.__init__!r}</span><span class="s1">'</span>
-                <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="o">.</span><span class="fm">__init__</span><span class="si">!r}</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                 <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                 <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
@@ -438,13 +438,13 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_envs</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'starting {typename(self.runtime)}...'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'starting </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="p">)</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{ex!r}</span><span class="s1"> during </span><span class="si">{self.runtime.setup!r}</span><span class="s1">'</span>
-                <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">setup</span><span class="si">!r}</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                 <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                 <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
@@ -454,13 +454,13 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
             <span class="k">except</span> <span class="n">RuntimeTerminated</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{self.runtime!r}</span><span class="s1"> is end'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="si">!r}</span><span class="s1"> is end'</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{self.runtime!r}</span><span class="s1"> is interrupted by user'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="si">!r}</span><span class="s1"> is interrupted by user'</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="ne">SystemError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{ex!r}</span><span class="s1"> during </span><span class="si">{self.runtime.run_forever!r}</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="si">!r}</span><span class="s1">'</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                     <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
@@ -470,8 +470,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{ex!r}</span><span class="s1"> during </span><span class="si">{self.runtime.teardown!r}</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">teardown</span><span class="si">!r}</span><span class="s1">'</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                     <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
@@ -511,20 +511,20 @@
                 <span class="c1"># return too early and the shutdown is set, means something fails!!</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'fail to start </span><span class="si">{self!r}</span><span class="s1"> because </span><span class="si">{self.runtime!r}</span><span class="s1"> throws some exception, '</span>
-                        <span class="n">f</span><span class="s1">'remove "--quiet-error" to see the exception stack in details'</span>
+                        <span class="sa">f</span><span class="s1">'fail to start </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> because </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="si">!r}</span><span class="s1"> throws some exception, '</span>
+                        <span class="sa">f</span><span class="s1">'remove "--quiet-error" to see the exception stack in details'</span>
                     <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{self.runtime!r}</span><span class="s1"> timeout after waiting for </span><span class="si">{self.args.timeout_ready}</span><span class="s1">ms, '</span>
-                <span class="n">f</span><span class="s1">'if your executor takes time to load, you may increase --timeout-ready'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="si">!r}</span><span class="s1"> timeout after waiting for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span><span class="si">}</span><span class="s1">ms, '</span>
+                <span class="sa">f</span><span class="s1">'if your executor takes time to load, you may increase --timeout-ready'</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'{typename(self)}:</span><span class="si">{self.name}</span><span class="s1"> can not be initialized after {_timeout * 1e3}ms'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> can not be initialized after </span><span class="si">{</span><span class="n">_timeout</span> <span class="o">*</span> <span class="mf">1e3</span><span class="si">}</span><span class="s1">ms'</span>
             <span class="p">)</span></div>
 
     <span class="nd">@property</span>
@@ -557,8 +557,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{ex!r}</span><span class="s1"> during </span><span class="si">{self.runtime.cancel!r}</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">cancel</span><span class="si">!r}</span><span class="s1">'</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                     <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
@@ -599,10 +599,10 @@
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_runtime_cls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseRuntime'</span><span class="p">]:</span>
@@ -615,7 +615,7 @@
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
 
-            <span class="kn">from</span> <span class="nn">..runtimes</span> <span class="k">import</span> <span class="n">get_runtime</span>
+            <span class="kn">from</span> <span class="nn">..runtimes</span> <span class="kn">import</span> <span class="n">get_runtime</span>
 
             <span class="n">v</span> <span class="o">=</span> <span class="n">get_runtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>

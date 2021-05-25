@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,11 +371,11 @@
         </label>
         <h1>Source code for jina.jaml.parsers</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">VersionedYAMLParser</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">JAMLCompatible</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="k">import</span> <span class="n">BadFlowYAMLVersion</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadFlowYAMLVersion</span>
 
 
 <span class="k">def</span> <span class="nf">_get_all_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'JAMLCompatible'</span><span class="p">]):</span>
@@ -384,8 +384,8 @@
 <span class="sd">    :param cls: target class</span>
 <span class="sd">    :return: a tuple of two elements; first is a list of all parsers, second is the legacy parser for default fallback</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">...executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
-    <span class="kn">from</span> <span class="nn">...flow</span> <span class="k">import</span> <span class="n">BaseFlow</span>
+    <span class="kn">from</span> <span class="nn">...executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
+    <span class="kn">from</span> <span class="nn">...flow</span> <span class="kn">import</span> <span class="n">BaseFlow</span>
 
     <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">BaseFlow</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_get_flow_parser</span><span class="p">()</span>
@@ -396,20 +396,20 @@
 
 
 <span class="k">def</span> <span class="nf">_get_flow_parser</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.flow.legacy</span> <span class="k">import</span> <span class="n">LegacyParser</span>
-    <span class="kn">from</span> <span class="nn">.flow.v1</span> <span class="k">import</span> <span class="n">V1Parser</span>
+    <span class="kn">from</span> <span class="nn">.flow.legacy</span> <span class="kn">import</span> <span class="n">LegacyParser</span>
+    <span class="kn">from</span> <span class="nn">.flow.v1</span> <span class="kn">import</span> <span class="n">V1Parser</span>
 
     <span class="k">return</span> <span class="p">[</span><span class="n">V1Parser</span><span class="p">,</span> <span class="n">LegacyParser</span><span class="p">],</span> <span class="n">V1Parser</span>
 
 
 <span class="k">def</span> <span class="nf">_get_exec_parser</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.executor.legacy</span> <span class="k">import</span> <span class="n">LegacyParser</span>
+    <span class="kn">from</span> <span class="nn">.executor.legacy</span> <span class="kn">import</span> <span class="n">LegacyParser</span>
 
     <span class="k">return</span> <span class="p">[</span><span class="n">LegacyParser</span><span class="p">],</span> <span class="n">LegacyParser</span>
 
 
 <span class="k">def</span> <span class="nf">_get_default_parser</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.default.v1</span> <span class="k">import</span> <span class="n">V1Parser</span>
+    <span class="kn">from</span> <span class="nn">.default.v1</span> <span class="kn">import</span> <span class="n">V1Parser</span>
 
     <span class="k">return</span> <span class="p">[</span><span class="n">V1Parser</span><span class="p">],</span> <span class="n">V1Parser</span>
 
@@ -436,18 +436,18 @@
             <span class="c1"># fallback to major</span>
             <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'can not find parser for version: </span><span class="si">{version}</span><span class="s1">, '</span>
-                    <span class="n">f</span><span class="s1">'fallback to parser for version: </span><span class="si">{p.version}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'can not find parser for version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">, '</span>
+                    <span class="sa">f</span><span class="s1">'fallback to parser for version: </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="ne">UserWarning</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="n">p</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="n">BadFlowYAMLVersion</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{version}</span><span class="s1"> is not a valid version number'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">BadFlowYAMLVersion</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1"> is not a valid version number'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># fallback to legacy parser</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'can not find parser for version: </span><span class="si">{version}</span><span class="s1">, '</span>
-            <span class="n">f</span><span class="s1">'fallback to legacy parser. '</span>
-            <span class="n">f</span><span class="s1">'this usually mean you are using a depreciated YAML format.'</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">'can not find parser for version: </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">, '</span>
+            <span class="sa">f</span><span class="s1">'fallback to legacy parser. '</span>
+            <span class="sa">f</span><span class="s1">'this usually mean you are using a depreciated YAML format.'</span><span class="p">,</span>
             <span class="ne">DeprecationWarning</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">legacy_parser</span><span class="p">()</span></div>

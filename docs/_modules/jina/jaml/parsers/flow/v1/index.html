@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,13 +371,13 @@
         </label>
         <h1>Source code for jina.jaml.parsers.flow.v1</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">..base</span> <span class="k">import</span> <span class="n">VersionedYAMLParser</span>
-<span class="kn">from</span> <span class="nn">....enums</span> <span class="k">import</span> <span class="n">PodRoleType</span>
-<span class="kn">from</span> <span class="nn">....flow</span> <span class="k">import</span> <span class="n">Flow</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="k">import</span> <span class="n">expand_env_var</span><span class="p">,</span> <span class="n">ArgNamespace</span>
-<span class="kn">from</span> <span class="nn">....parsers</span> <span class="k">import</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
+<span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
+<span class="kn">from</span> <span class="nn">....flow</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">expand_env_var</span><span class="p">,</span> <span class="n">ArgNamespace</span>
+<span class="kn">from</span> <span class="nn">....parsers</span> <span class="kn">import</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
 
 
 <span class="k">def</span> <span class="nf">_get_taboo</span><span class="p">():</span>

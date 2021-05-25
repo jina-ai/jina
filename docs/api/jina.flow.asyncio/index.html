@@ -2,8 +2,7 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="color-scheme" content="light dark">
   <meta property="og:title" content="jina.flow.asyncio module" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="api/jina.flow.asyncio.html" />
@@ -119,7 +118,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -351,11 +350,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
@@ -375,7 +374,7 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <section id="module-jina.flow.asyncio">
+        <div class="section" id="module-jina.flow.asyncio">
 <span id="jina-flow-asyncio-module"></span><h1>jina.flow.asyncio module<a class="headerlink" href="#module-jina.flow.asyncio" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="jina.flow.asyncio.AsyncFlow">
@@ -394,10 +393,10 @@ is controlling and wrapping the eventloop internally, making the Flow looks sync
 For example, the following code
 will use the eventloop that already spawned in Jupyter/ipython to run Jina Flow (instead of creating a new one).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">with</span> <span class="n">AsyncFlow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">index_ndarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">on_done</span><span class="o">=</span><span class="k">print</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">f</span><span class="o">.</span><span class="n">index_ndarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements “autoawait”.</p>
@@ -410,7 +409,7 @@ will use the eventloop that already spawned in Jupyter/ipython to run Jina Flow 
 can use this feature to schedule Jina <code class="docutils literal notranslate"><span class="pre">index()</span></code> and <code class="docutils literal notranslate"><span class="pre">heavylifting()</span></code> concurrently.</p>
 <p>One can think of <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> as Jina-managed eventloop, whereas <a class="reference internal" href="#jina.flow.asyncio.AsyncFlow" title="jina.flow.asyncio.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a> is self-managed eventloop.</p>
 </dd></dl>
-</section>
+</div>
 
       </article>
       <footer>

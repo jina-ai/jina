@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,12 +370,12 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.score</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">..mixin</span> <span class="k">import</span> <span class="n">ProtoTypeMixin</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="k">import</span> <span class="n">BadNamedScoreType</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">...proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadNamedScoreType</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'NamedScore'</span><span class="p">]</span>
 
@@ -419,7 +419,7 @@
 
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">score</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -434,10 +434,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">score</span>
             <span class="k">elif</span> <span class="n">score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># note ``None`` is not considered as a bad type</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'{typename(score)} is not recognizable'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">score</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">BadNamedScoreType</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'fail to construct a NamedScore from </span><span class="si">{score}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'fail to construct a NamedScore from </span><span class="si">{</span><span class="n">score</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_attrs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -532,7 +532,7 @@
                         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                             <span class="n">score_to_add</span> <span class="o">=</span> <span class="n">NamedScore</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{item}</span><span class="s1"> is not recognized.'</span><span class="p">)</span>
+                            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> is not recognized.'</span><span class="p">)</span>
                         <span class="n">scores_to_add</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score_to_add</span><span class="p">)</span>
 
                     <span class="k">for</span> <span class="n">score_to_add</span> <span class="ow">in</span> <span class="n">scores_to_add</span><span class="p">:</span>
@@ -540,7 +540,7 @@
                         <span class="n">s</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">score_to_add</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-                        <span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1"> is not recognized, the only list argument is operands'</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> is not recognized, the only list argument is operands'</span>
                     <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -554,7 +554,7 @@
                     <span class="c1"># no property setter, but proto has this attribute so fallback to proto</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1"> is not recognized'</span><span class="p">)</span></div></div>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> is not recognized'</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

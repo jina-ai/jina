@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -375,14 +375,14 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">webbrowser</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="k">import</span> <span class="n">colored</span>
-<span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="k">import</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
+<span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 
 <span class="n">result_html</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">top_k</span> <span class="o">=</span> <span class="mi">0</span>
@@ -461,11 +461,11 @@
     <span class="k">global</span> <span class="n">evaluation_value</span>
     <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
         <span class="n">vi</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">uri</span>
-        <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'&lt;tr&gt;&lt;td&gt;&lt;img src="</span><span class="si">{vi}</span><span class="s1">"/&gt;&lt;/td&gt;&lt;td&gt;'</span><span class="p">)</span>
+        <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;tr&gt;&lt;td&gt;&lt;img src="</span><span class="si">{</span><span class="n">vi</span><span class="si">}</span><span class="s1">"/&gt;&lt;/td&gt;&lt;td&gt;'</span><span class="p">)</span>
         <span class="n">top_k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="p">:</span>
             <span class="n">kmi</span> <span class="o">=</span> <span class="n">kk</span><span class="o">.</span><span class="n">uri</span>
-            <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'&lt;img src="</span><span class="si">{kmi}</span><span class="s1">" style="opacity:</span><span class="si">{kk.score.value}</span><span class="s1">"/&gt;'</span><span class="p">)</span>
+            <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;img src="</span><span class="si">{</span><span class="n">kmi</span><span class="si">}</span><span class="s1">" style="opacity:</span><span class="si">{</span><span class="n">kk</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">"/&gt;'</span><span class="p">)</span>
         <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'&lt;/td&gt;&lt;/tr&gt;</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="c1"># update evaluation values</span>
@@ -505,13 +505,13 @@
         <span class="k">pass</span>  <span class="c1"># intentional pass, browser support isn't cross-platform</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">default_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'You should see a "hello-world.html" opened in your browser, '</span>
-            <span class="n">f</span><span class="s1">'if not you may open </span><span class="si">{url_html_path}</span><span class="s1"> manually'</span>
+            <span class="sa">f</span><span class="s1">'You should see a "hello-world.html" opened in your browser, '</span>
+            <span class="sa">f</span><span class="s1">'if not you may open </span><span class="si">{</span><span class="n">url_html_path</span><span class="si">}</span><span class="s1"> manually'</span>
         <span class="p">)</span>
 
     <span class="n">colored_url</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'https://opensource.jina.ai'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">)</span>
     <span class="n">default_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-        <span class="n">f</span><span class="s1">'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at </span><span class="si">{colored_url}</span><span class="s1">'</span>
+        <span class="sa">f</span><span class="s1">'🤩 Intrigued? Play with "jina hello fashion --help" and learn more about Jina at </span><span class="si">{</span><span class="n">colored_url</span><span class="si">}</span><span class="s1">'</span>
     <span class="p">)</span></div>
 
 

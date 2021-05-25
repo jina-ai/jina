@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
@@ -377,17 +377,17 @@
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">set_base_parser</span>
+        <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="k">import</span> <span class="n">mixin_base_ppr_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zmq</span> <span class="k">import</span> <span class="n">mixin_zmq_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zed</span> <span class="k">import</span> <span class="n">mixin_zed_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.container</span> <span class="k">import</span> <span class="n">mixin_container_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="k">import</span> <span class="n">mixin_remote_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.pea</span> <span class="k">import</span> <span class="n">mixin_pea_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.distributed</span> <span class="k">import</span> <span class="n">mixin_distributed_feature_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zmq</span> <span class="kn">import</span> <span class="n">mixin_zmq_runtime_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zed</span> <span class="kn">import</span> <span class="n">mixin_zed_runtime_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.container</span> <span class="kn">import</span> <span class="n">mixin_container_runtime_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.pea</span> <span class="kn">import</span> <span class="n">mixin_pea_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.distributed</span> <span class="kn">import</span> <span class="n">mixin_distributed_feature_parser</span>
 
     <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_zmq_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -407,13 +407,13 @@
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">set_base_parser</span>
+        <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
     <span class="n">set_pea_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">.peapods.pod</span> <span class="k">import</span> <span class="n">mixin_base_pod_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.pod</span> <span class="kn">import</span> <span class="n">mixin_base_pod_parser</span>
 
     <span class="n">mixin_base_pod_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
@@ -427,20 +427,20 @@
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">set_base_parser</span>
+        <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="k">import</span> <span class="n">mixin_base_ppr_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zmq</span> <span class="k">import</span> <span class="n">mixin_zmq_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zed</span> <span class="k">import</span> <span class="n">mixin_zed_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.container</span> <span class="k">import</span> <span class="n">mixin_container_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zmq</span> <span class="kn">import</span> <span class="n">mixin_zmq_runtime_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.zed</span> <span class="kn">import</span> <span class="n">mixin_zed_runtime_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.container</span> <span class="kn">import</span> <span class="n">mixin_container_runtime_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">mixin_remote_parser</span><span class="p">,</span>
         <span class="n">mixin_grpc_server_parser</span><span class="p">,</span>
         <span class="n">mixin_rest_server_parser</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">.peapods.pea</span> <span class="k">import</span> <span class="n">mixin_pea_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.pea</span> <span class="kn">import</span> <span class="n">mixin_pea_parser</span>
 
     <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_zmq_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -450,7 +450,7 @@
     <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_pea_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">..enums</span> <span class="k">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">PodRoleType</span>
+    <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">PodRoleType</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">'gateway'</span><span class="p">,</span>
@@ -479,12 +479,12 @@
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">set_base_parser</span>
+        <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="k">import</span> <span class="n">mixin_remote_parser</span>
-    <span class="kn">from</span> <span class="nn">.client</span> <span class="k">import</span> <span class="n">mixin_client_cli_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
+    <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">mixin_client_cli_parser</span>
 
     <span class="n">mixin_client_cli_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -497,14 +497,14 @@
 
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">set_base_parser</span>
-    <span class="kn">from</span> <span class="nn">.helloworld</span> <span class="k">import</span> <span class="n">set_hw_parser</span><span class="p">,</span> <span class="n">set_hello_parser</span>
-    <span class="kn">from</span> <span class="nn">.helper</span> <span class="k">import</span> <span class="n">_chf</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
+    <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
+    <span class="kn">from</span> <span class="nn">.helloworld</span> <span class="kn">import</span> <span class="n">set_hw_parser</span><span class="p">,</span> <span class="n">set_hello_parser</span>
+    <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_chf</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 
-    <span class="kn">from</span> <span class="nn">.check</span> <span class="k">import</span> <span class="n">set_check_parser</span>
-    <span class="kn">from</span> <span class="nn">.export_api</span> <span class="k">import</span> <span class="n">set_export_api_parser</span>
-    <span class="kn">from</span> <span class="nn">.flow</span> <span class="k">import</span> <span class="n">set_flow_parser</span>
-    <span class="kn">from</span> <span class="nn">.ping</span> <span class="k">import</span> <span class="n">set_ping_parser</span>
+    <span class="kn">from</span> <span class="nn">.check</span> <span class="kn">import</span> <span class="n">set_check_parser</span>
+    <span class="kn">from</span> <span class="nn">.export_api</span> <span class="kn">import</span> <span class="n">set_export_api_parser</span>
+    <span class="kn">from</span> <span class="nn">.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
+    <span class="kn">from</span> <span class="nn">.ping</span> <span class="kn">import</span> <span class="n">set_ping_parser</span>
 
     <span class="c1"># from .hub import set_hub_parser</span>
     <span class="c1"># from .optimizer import set_optimizer_parser</span>

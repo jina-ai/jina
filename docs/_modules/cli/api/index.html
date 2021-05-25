@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,7 +371,7 @@
         </label>
         <h1>Source code for cli.api</h1><div class="highlight"><pre>
 <span></span><span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">Namespace</span>
+    <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 
 
 <div class="viewcode-block" id="pod"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.pod">[docs]</a><span class="k">def</span> <span class="nf">pod</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
@@ -380,7 +380,7 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.peapods.pods.factory</span> <span class="k">import</span> <span class="n">PodFactory</span>
+    <span class="kn">from</span> <span class="nn">jina.peapods.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
@@ -399,7 +399,7 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.peapods</span> <span class="k">import</span> <span class="n">Pea</span>
+    <span class="kn">from</span> <span class="nn">jina.peapods</span> <span class="kn">import</span> <span class="n">Pea</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">Pea</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
@@ -423,7 +423,7 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.checker</span> <span class="k">import</span> <span class="n">ImportChecker</span>
+    <span class="kn">from</span> <span class="nn">jina.checker</span> <span class="kn">import</span> <span class="n">ImportChecker</span>
 
     <span class="n">ImportChecker</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
@@ -434,7 +434,7 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.checker</span> <span class="k">import</span> <span class="n">NetworkChecker</span>
+    <span class="kn">from</span> <span class="nn">jina.checker</span> <span class="kn">import</span> <span class="n">NetworkChecker</span>
 
     <span class="n">NetworkChecker</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
@@ -445,7 +445,7 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="k">import</span> <span class="n">Client</span>
+    <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
 
     <span class="n">Client</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
@@ -457,11 +457,11 @@
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
     <span class="kn">import</span> <span class="nn">json</span>
-    <span class="kn">from</span> <span class="nn">.export</span> <span class="k">import</span> <span class="n">api_to_dict</span>
-    <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="k">import</span> <span class="n">JAML</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">__version__</span>
-    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
-    <span class="kn">from</span> <span class="nn">jina.schemas</span> <span class="k">import</span> <span class="n">get_full_schema</span>
+    <span class="kn">from</span> <span class="nn">.export</span> <span class="kn">import</span> <span class="n">api_to_dict</span>
+    <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
+    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">jina.schemas</span> <span class="kn">import</span> <span class="n">get_full_schema</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">yaml_path</span><span class="p">:</span>
         <span class="n">dump_api</span> <span class="o">=</span> <span class="n">api_to_dict</span><span class="p">()</span>
@@ -469,7 +469,7 @@
             <span class="n">f_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">yp</span> <span class="o">%</span> <span class="n">__version__</span><span class="p">)</span> <span class="k">if</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">'</span> <span class="ow">in</span> <span class="n">yp</span> <span class="k">else</span> <span class="n">yp</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="n">JAML</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dump_api</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'API is exported to </span><span class="si">{f_name}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'API is exported to </span><span class="si">{</span><span class="n">f_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">json_path</span><span class="p">:</span>
         <span class="n">dump_api</span> <span class="o">=</span> <span class="n">api_to_dict</span><span class="p">()</span>
@@ -477,7 +477,7 @@
             <span class="n">f_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">jp</span> <span class="o">%</span> <span class="n">__version__</span><span class="p">)</span> <span class="k">if</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">'</span> <span class="ow">in</span> <span class="n">jp</span> <span class="k">else</span> <span class="n">jp</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dump_api</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'API is exported to </span><span class="si">{f_name}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'API is exported to </span><span class="si">{</span><span class="n">f_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">schema_path</span><span class="p">:</span>
         <span class="n">dump_api</span> <span class="o">=</span> <span class="n">get_full_schema</span><span class="p">()</span>
@@ -485,7 +485,7 @@
             <span class="n">f_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">jp</span> <span class="o">%</span> <span class="n">__version__</span><span class="p">)</span> <span class="k">if</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">'</span> <span class="ow">in</span> <span class="n">jp</span> <span class="k">else</span> <span class="n">jp</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f_name</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">dump_api</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'API is exported to </span><span class="si">{f_name}</span><span class="s1">'</span><span class="p">)</span></div>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'API is exported to </span><span class="si">{</span><span class="n">f_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="hello"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.hello">[docs]</a><span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
@@ -495,23 +495,23 @@
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">hello</span> <span class="o">==</span> <span class="s1">'fashion'</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.helloworld.fashion.app</span> <span class="k">import</span> <span class="n">hello_world</span>
+        <span class="kn">from</span> <span class="nn">jina.helloworld.fashion.app</span> <span class="kn">import</span> <span class="n">hello_world</span>
 
         <span class="n">hello_world</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">hello</span> <span class="o">==</span> <span class="s1">'chatbot'</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.helloworld.chatbot.app</span> <span class="k">import</span> <span class="n">hello_world</span>
+        <span class="kn">from</span> <span class="nn">jina.helloworld.chatbot.app</span> <span class="kn">import</span> <span class="n">hello_world</span>
 
         <span class="n">hello_world</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">hello</span> <span class="o">==</span> <span class="s1">'multimodal'</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.helloworld.multimodal.app</span> <span class="k">import</span> <span class="n">hello_world</span>
+        <span class="kn">from</span> <span class="nn">jina.helloworld.multimodal.app</span> <span class="kn">import</span> <span class="n">hello_world</span>
 
         <span class="n">hello_world</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">hello</span> <span class="o">==</span> <span class="s1">'fork'</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.helloworld.fork</span> <span class="k">import</span> <span class="n">fork_hello</span>
+        <span class="kn">from</span> <span class="nn">jina.helloworld.fork</span> <span class="kn">import</span> <span class="n">fork_hello</span>
 
         <span class="n">fork_hello</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'must be one of [`fashion`, `chatbot`, `multimodal`, `fork`]'</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'must be one of [`fashion`, `chatbot`, `multimodal`, `fork`]'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="flow"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.flow">[docs]</a><span class="k">def</span> <span class="nf">flow</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
@@ -520,14 +520,14 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.flow</span> <span class="k">import</span> <span class="n">Flow</span>
+    <span class="kn">from</span> <span class="nn">jina.flow</span> <span class="kn">import</span> <span class="n">Flow</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">:</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
         <span class="n">default_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">'start a flow from CLI requires a valid "--uses"'</span><span class="p">)</span></div>
 
@@ -538,7 +538,7 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.optimizers</span> <span class="k">import</span> <span class="n">run_optimizer_cli</span>
+    <span class="kn">from</span> <span class="nn">jina.optimizers</span> <span class="kn">import</span> <span class="n">run_optimizer_cli</span>
 
     <span class="n">run_optimizer_cli</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
@@ -549,7 +549,7 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina.docker.hubio</span> <span class="k">import</span> <span class="n">HubIO</span>
+    <span class="kn">from</span> <span class="nn">jina.docker.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 
     <span class="nb">getattr</span><span class="p">(</span><span class="n">HubIO</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">hub</span><span class="p">)()</span></div>
 </pre></div>

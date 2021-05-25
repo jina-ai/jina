@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
@@ -374,17 +374,17 @@
 
 
 <span class="k">def</span> <span class="nf">_get_run_args</span><span class="p">(</span><span class="n">print_args</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="k">import</span> <span class="n">get_main_parser</span>
-    <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="k">import</span> <span class="n">colored</span>
+    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span>
+    <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">get_main_parser</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span>
+        <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span>
 
         <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">print_args</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_filename</span>
+            <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
             <span class="n">p</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">_actions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
             <span class="n">default_args</span> <span class="o">=</span> <span class="p">{</span>
@@ -399,14 +399,14 @@
                 <span class="n">logo_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="n">param_str</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
-                <span class="n">j</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'{k.replace("_", "-"): &gt;30.30} = {str(v):30.30}'</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">)</span><span class="si">:</span><span class="s1"> &gt;30.30</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s1">30.30</span><span class="si">}</span><span class="s1">'</span>
                 <span class="k">if</span> <span class="n">default_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
                     <span class="n">param_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'   '</span> <span class="o">+</span> <span class="n">j</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">param_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'🔧️ '</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="s1">'blue'</span><span class="p">,</span> <span class="s1">'on_yellow'</span><span class="p">))</span>
             <span class="n">param_str</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">param_str</span><span class="p">)</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="se">\n</span><span class="si">{logo_str}</span><span class="se">\n</span><span class="s1">▶️  {" ".join(sys.argv)}</span><span class="se">\n</span><span class="si">{param_str}</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="si">{</span><span class="n">logo_str</span><span class="si">}</span><span class="se">\n</span><span class="s1">▶️  </span><span class="si">{</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">param_str</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">args</span>
     <span class="k">else</span><span class="p">:</span>
@@ -415,7 +415,7 @@
 
 
 <span class="k">def</span> <span class="nf">_quick_ac_lookup</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.autocomplete</span> <span class="k">import</span> <span class="n">ac_table</span>
+    <span class="kn">from</span> <span class="nn">.autocomplete</span> <span class="kn">import</span> <span class="n">ac_table</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'commands'</span><span class="p">:</span>
@@ -437,11 +437,11 @@
 
 <span class="k">def</span> <span class="nf">_is_latest_version</span><span class="p">(</span><span class="n">suppress_on_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="k">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
+        <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
         <span class="kn">import</span> <span class="nn">json</span>
-        <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">parse_version</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">__version__</span>
-        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="k">import</span> <span class="n">default_logger</span>
+        <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">parse_version</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
+        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
         <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
             <span class="s1">'https://api.jina.ai/latest'</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">}</span>
@@ -454,8 +454,8 @@
             <span class="n">cur_ver</span> <span class="o">=</span> <span class="n">parse_version</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cur_ver</span> <span class="o">&lt;</span> <span class="n">latest_ver</span><span class="p">:</span>
                 <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'WARNING: You are using Jina version </span><span class="si">{cur_ver}</span><span class="s1">, however version </span><span class="si">{latest_ver}</span><span class="s1"> is available. '</span>
-                    <span class="n">f</span><span class="s1">'You should consider upgrading via the "pip install --upgrade jina" command.'</span>
+                    <span class="sa">f</span><span class="s1">'WARNING: You are using Jina version </span><span class="si">{</span><span class="n">cur_ver</span><span class="si">}</span><span class="s1">, however version </span><span class="si">{</span><span class="n">latest_ver</span><span class="si">}</span><span class="s1"> is available. '</span>
+                    <span class="sa">f</span><span class="s1">'You should consider upgrading via the "pip install --upgrade jina" command.'</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
@@ -468,7 +468,7 @@
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/cli/#cli.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="sd">"""The main entrypoint of the CLI """</span>
     <span class="n">_quick_ac_lookup</span><span class="p">()</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">api</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">api</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
     <span class="n">_is_latest_version</span><span class="p">()</span>

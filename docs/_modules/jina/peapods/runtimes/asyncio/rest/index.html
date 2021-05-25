@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,9 +370,9 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.peapods.runtimes.asyncio.rest</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.app</span> <span class="k">import</span> <span class="n">get_fastapi_app</span>
-<span class="kn">from</span> <span class="nn">..base</span> <span class="k">import</span> <span class="n">AsyncNewLoopRuntime</span>
-<span class="kn">from</span> <span class="nn">.....importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
+<span></span><span class="kn">from</span> <span class="nn">.app</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
+<span class="kn">from</span> <span class="nn">.....importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'RESTRuntime'</span><span class="p">]</span>
 
@@ -387,7 +387,7 @@
 <span class="sd">        Setup the uvicorn server.</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="k">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
+            <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
 
         <span class="k">class</span> <span class="nc">UviServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
             <span class="sd">"""The uvicorn server."""</span>
@@ -432,7 +432,7 @@
         <span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'</span><span class="si">{self.__class__.__name__}</span><span class="s1"> is listening at: </span><span class="si">{self.args.host}</span><span class="s1">:</span><span class="si">{self.args.port_expose}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> is listening at: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="RESTRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.asyncio.rest/#jina.peapods.runtimes.asyncio.rest.RESTRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

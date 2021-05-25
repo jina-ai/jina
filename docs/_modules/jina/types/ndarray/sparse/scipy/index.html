@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,12 +370,12 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.ndarray.sparse.scipy</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">BaseSparseNdArray</span>
-<span class="kn">from</span> <span class="nn">....proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">BaseSparseNdArray</span>
+<span class="kn">from</span> <span class="nn">....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">scipy.sparse</span>
@@ -397,7 +397,7 @@
 <span class="sd">    :param sp_format: the sparse format of the scipy matrix. one of 'coo', 'bsr', 'csc', 'csr'.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">proto</span><span class="p">:</span> <span class="s1">'jina_pb2.SparseNdArrayProto'</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">sp_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'coo'</span><span class="p">,</span>
@@ -410,10 +410,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">proto</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">support_fmt</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'coo'</span><span class="p">,</span> <span class="s1">'bsr'</span><span class="p">,</span> <span class="s1">'csc'</span><span class="p">,</span> <span class="s1">'csr'</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">sp_format</span> <span class="ow">in</span> <span class="n">support_fmt</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">spmat_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="n">f</span><span class="s1">'</span><span class="si">{sp_format}</span><span class="s1">_matrix'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spmat_fn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sp_format</span><span class="si">}</span><span class="s1">_matrix'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{sp_format}</span><span class="s1"> sparse matrix is not supported, please choose one of those: </span><span class="si">{support_fmt}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sp_format</span><span class="si">}</span><span class="s1"> sparse matrix is not supported, please choose one of those: </span><span class="si">{</span><span class="n">support_fmt</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="SparseNdArray.sparse_constructor"><a class="viewcode-back" href="../../../../../../api/jina.types.ndarray.sparse.scipy/#jina.types.ndarray.sparse.scipy.SparseNdArray.sparse_constructor">[docs]</a>    <span class="k">def</span> <span class="nf">sparse_constructor</span><span class="p">(</span>
@@ -429,7 +429,7 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'scipy backend only supports ndim=2 sparse matrix, given </span><span class="si">{indices.shape}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'scipy backend only supports ndim=2 sparse matrix, given </span><span class="si">{</span><span class="n">indices</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spmat_fn</span><span class="p">((</span><span class="n">values</span><span class="p">,</span> <span class="n">indices</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span></div>
 

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -371,13 +371,13 @@
         </label>
         <h1>Source code for daemon.models.custom</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="k">import</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseConfig</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseConfig</span>
 
-<span class="kn">from</span> <span class="nn">cli.export</span> <span class="k">import</span> <span class="n">_export_parser_args</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="k">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">random_identity</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">cli.export</span> <span class="kn">import</span> <span class="n">_export_parser_args</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">random_identity</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">helper</span>
 
 
 <span class="k">def</span> <span class="nf">_get_validator</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">choices</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">):</span>
@@ -391,8 +391,8 @@
     <span class="k">def</span> <span class="nf">validate_arg_choices</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'Invalid value </span><span class="si">{v}</span><span class="s1">({typename(v)} for field </span><span class="si">{field}</span><span class="s1">. '</span>
-                <span class="n">f</span><span class="s1">'Valid choices are </span><span class="si">{choices}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'Invalid value </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s1"> for field </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s1">. '</span>
+                <span class="sa">f</span><span class="s1">'Valid choices are </span><span class="si">{</span><span class="n">choices</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">v</span>
 
@@ -406,7 +406,7 @@
 
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">_export_parser_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'choices'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">choices_validators</span><span class="p">[</span><span class="n">f</span><span class="s1">'validator_for_</span><span class="si">{a["name"]}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_validator</span><span class="p">(</span>
+            <span class="n">choices_validators</span><span class="p">[</span><span class="sa">f</span><span class="s1">'validator_for_</span><span class="si">{</span><span class="n">a</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_validator</span><span class="p">(</span>
                 <span class="n">field</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">choices</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">'choices'</span><span class="p">])</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="s1">'required'</span><span class="p">]:</span>
@@ -426,7 +426,7 @@
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'default_factory: </span><span class="si">{a["default_factory"]}</span><span class="s1"> is not recognizable for </span><span class="si">{a}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'default_factory: </span><span class="si">{</span><span class="n">a</span><span class="p">[</span><span class="s2">"default_factory"</span><span class="p">]</span><span class="si">}</span><span class="s1"> is not recognizable for </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="s1">'default'</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="s1">'help'</span><span class="p">])</span>
@@ -447,11 +447,11 @@
     <span class="k">class</span> <span class="nc">_PydanticConfig</span><span class="p">(</span><span class="n">BaseConfig</span><span class="p">):</span>
         <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="k">import</span> <span class="n">helper</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">helper</span>
 
     <span class="n">helper</span><span class="o">.</span><span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">old_val</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">helper</span><span class="o">.</span><span class="n">_SHOW_ALL_ARGS</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="k">import</span> <span class="n">set_pea_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers.flow</span> <span class="k">import</span> <span class="n">set_flow_parser</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_pea_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
 
     <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">'pod'</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_pod_parser</span>
@@ -460,7 +460,7 @@
     <span class="k">elif</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">'flow'</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_flow_parser</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{module}</span><span class="s1"> is not supported'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> is not supported'</span><span class="p">)</span>
 
     <span class="n">all_fields</span><span class="p">,</span> <span class="n">field_validators</span> <span class="o">=</span> <span class="n">_get_pydantic_fields</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 

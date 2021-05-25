@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -376,11 +376,11 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">unicodedata</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_stream</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_stream</span>
 
-<span class="kn">from</span> <span class="nn">..jaml</span> <span class="k">import</span> <span class="n">JAML</span>
+<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
 
 <span class="n">image_tag_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'</span>
 <span class="n">required</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'description'</span><span class="p">}</span>
@@ -404,7 +404,7 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">registry</span> <span class="o">==</span> <span class="s1">'https://index.docker.io/v1/'</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">repo_prefix</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'default registry only support image named with "</span><span class="si">{repo_prefix}</span><span class="s1">", yours: </span><span class="si">{name}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'default registry only support image named with "</span><span class="si">{</span><span class="n">repo_prefix</span><span class="si">}</span><span class="s1">", yours: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span></div>
 
 
@@ -416,7 +416,7 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name_regex</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'</span><span class="si">{name}</span><span class="s1"> is not a valid name, it should match with </span><span class="si">{name_regex}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is not a valid name, it should match with </span><span class="si">{</span><span class="n">name_regex</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span></div>
 
 
@@ -428,7 +428,7 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">sver_regex</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'</span><span class="si">{version}</span><span class="s1"> is not a valid semantic version number, see http://semver.org/'</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1"> is not a valid semantic version number, see http://semver.org/'</span>
         <span class="p">)</span></div>
 
 
@@ -440,7 +440,7 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">image_tag_regex</span><span class="p">,</span> <span class="n">image_name</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'</span><span class="si">{image_name}</span><span class="s1"> is not a valid image name for a Jina Hub image, it should match with </span><span class="si">{image_tag_regex}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1"> is not a valid image name for a Jina Hub image, it should match with </span><span class="si">{</span><span class="n">image_tag_regex</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span></div>
 
 
@@ -458,7 +458,7 @@
     <span class="k">for</span> <span class="n">ss</span> <span class="ow">in</span> <span class="n">platform_names</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ss</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">platforms</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'platform </span><span class="si">{ss}</span><span class="s1"> is not supported, should be one of </span><span class="si">{platforms}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'platform </span><span class="si">{</span><span class="n">ss</span><span class="si">}</span><span class="s1"> is not supported, should be one of </span><span class="si">{</span><span class="n">platforms</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span></div>
 
 
@@ -474,7 +474,7 @@
     <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
         <span class="n">approved</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">lic</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">approved</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'license </span><span class="si">{lic}</span><span class="s1"> is not an OSI-approved license </span><span class="si">{approved}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'license </span><span class="si">{</span><span class="n">lic</span><span class="si">}</span><span class="s1"> is not an OSI-approved license </span><span class="si">{</span><span class="n">approved</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">approved</span><span class="p">[</span><span class="n">lic</span><span class="p">]</span></div>
 
 
@@ -487,7 +487,7 @@
     <span class="n">allowed</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'pod'</span><span class="p">,</span> <span class="s1">'flow'</span><span class="p">,</span> <span class="s1">'app'</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">image_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="n">f</span><span class="s1">'type </span><span class="si">{image_type}</span><span class="s1"> is not allowed, should be one of </span><span class="si">{allowed}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'type </span><span class="si">{</span><span class="n">image_type</span><span class="si">}</span><span class="s1"> is not allowed, should be one of </span><span class="si">{</span><span class="n">allowed</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span></div>
 
 

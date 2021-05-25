@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -373,7 +373,7 @@
 <span></span><span class="sd">"""Module containing the base parser for arguments of Jina."""</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="k">import</span> <span class="n">_chf</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_chf</span>
 
 
 <div class="viewcode-block" id="set_base_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.base/#jina.parsers.base.set_base_parser">[docs]</a><span class="k">def</span> <span class="nf">set_base_parser</span><span class="p">():</span>
@@ -381,8 +381,8 @@
 
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">__version__</span>
-    <span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">format_full_version_info</span>
+    <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__version__</span>
+    <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">format_full_version_info</span>
 
     <span class="c1"># create the top-level parser</span>
     <span class="n">urls</span> <span class="o">=</span> <span class="p">{</span>
@@ -391,15 +391,15 @@
         <span class="s1">'Hiring!'</span><span class="p">:</span> <span class="p">(</span><span class="s1">'🙌'</span><span class="p">,</span> <span class="s1">'https://career.jina.ai'</span><span class="p">),</span>
     <span class="p">}</span>
     <span class="n">url_str</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">f</span><span class="s1">'- </span><span class="si">{v[0]:&lt;10}</span><span class="s1"> </span><span class="si">{k:10.10}</span><span class="se">\t</span><span class="s1">{colored(v[1], "cyan", attrs=["underline"])}'</span>
+        <span class="sa">f</span><span class="s1">'- </span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s1">&lt;10</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">10.10</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"cyan"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s2">"underline"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">urls</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
     <span class="p">)</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
-        <span class="n">epilog</span><span class="o">=</span><span class="n">f</span><span class="s1">'''</span>
-<span class="s1">Jina (v{colored(__version__, "green")}) is the cloud-native neural search framework powered by deep learning.</span>
+        <span class="n">epilog</span><span class="o">=</span><span class="sa">f</span><span class="s1">'''</span>
+<span class="s1">Jina (v</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1">) is the cloud-native neural search framework powered by deep learning.</span>
 
-<span class="si">{url_str}</span><span class="s1"></span>
+<span class="si">{</span><span class="n">url_str</span><span class="si">}</span><span class="s1"></span>
 
 <span class="s1">'''</span><span class="p">,</span>
         <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,16 +372,16 @@
         <h1>Source code for jina.peapods.runtimes.zmq.zed</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">zmq</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">ZMQRuntime</span>
-<span class="kn">from</span> <span class="nn">...zmq</span> <span class="k">import</span> <span class="n">ZmqStreamlet</span>
-<span class="kn">from</span> <span class="nn">....</span> <span class="k">import</span> <span class="n">__default_endpoint__</span>
-<span class="kn">from</span> <span class="nn">....enums</span> <span class="k">import</span> <span class="n">OnErrorStrategy</span>
-<span class="kn">from</span> <span class="nn">....excepts</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">ZMQRuntime</span>
+<span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">ZmqStreamlet</span>
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
+<span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">OnErrorStrategy</span>
+<span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">NoExplicitMessage</span><span class="p">,</span>
     <span class="n">ExecutorFailToLoad</span><span class="p">,</span>
     <span class="n">MemoryOverHighWatermark</span><span class="p">,</span>
@@ -390,13 +390,13 @@
     <span class="n">RuntimeTerminated</span><span class="p">,</span>
     <span class="n">UnknownControlCommand</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">....executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="k">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">....logging.profile</span> <span class="k">import</span> <span class="n">used_memory</span>
-<span class="kn">from</span> <span class="nn">....proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
-<span class="kn">from</span> <span class="nn">....types.arrays.document</span> <span class="k">import</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">....types.message</span> <span class="k">import</span> <span class="n">Message</span>
-<span class="kn">from</span> <span class="nn">....types.request</span> <span class="k">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">....executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">....logging.profile</span> <span class="kn">import</span> <span class="n">used_memory</span>
+<span class="kn">from</span> <span class="nn">....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">....types.arrays.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
+<span class="kn">from</span> <span class="nn">....types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
 <div class="viewcode-block" id="ZEDRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime">[docs]</a><span class="k">class</span> <span class="nc">ZEDRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
@@ -451,21 +451,21 @@
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">BadConfigSource</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'fail to load config from </span><span class="si">{self.args.uses}</span><span class="s1">, if you are using docker image for --uses, '</span>
-                <span class="n">f</span><span class="s1">'please use "docker://YOUR_IMAGE_NAME"'</span>
+                <span class="sa">f</span><span class="s1">'fail to load config from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">, if you are using docker image for --uses, '</span>
+                <span class="sa">f</span><span class="s1">'please use "docker://YOUR_IMAGE_NAME"'</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="n">ExecutorFailToLoad</span> <span class="kn">from</span> <span class="nn">ex</span>
         <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'fail to load file dependency'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fail to load file dependency'</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">ExecutorFailToLoad</span> <span class="kn">from</span> <span class="nn">ex</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">f</span><span class="s1">'can not load the executor from </span><span class="si">{self.args.uses}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not load the executor from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">ExecutorFailToLoad</span> <span class="kn">from</span> <span class="nn">ex</span>
 
     <span class="k">def</span> <span class="nf">_load_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Load the plugins if needed necessary to load executors."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">....importer</span> <span class="k">import</span> <span class="n">PathImporter</span>
+            <span class="kn">from</span> <span class="nn">....importer</span> <span class="kn">import</span> <span class="n">PathImporter</span>
 
             <span class="n">PathImporter</span><span class="o">.</span><span class="n">add_modules</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">)</span>
 
@@ -494,14 +494,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="p">[</span><span class="n">req_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_partial_messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span><span class="p">[</span><span class="n">req_id</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_partial_requests</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">request</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_partial_messages</span><span class="p">]</span>
-            <span class="n">part_str</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'({len(self.partial_requests)}/</span><span class="si">{self.expect_parts}</span><span class="s1"> parts)'</span>
+            <span class="n">part_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'(</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_requests</span><span class="p">)</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">expect_parts</span><span class="si">}</span><span class="s1"> parts)'</span>
 
-        <span class="n">info_msg</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'recv </span><span class="si">{msg.envelope.request_type}</span><span class="s1"> '</span>
+        <span class="n">info_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'recv </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">request_type</span><span class="si">}</span><span class="s1"> '</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_type</span> <span class="o">==</span> <span class="s1">'DataRequest'</span><span class="p">:</span>
-            <span class="n">info_msg</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">'(</span><span class="si">{self.envelope.header.exec_endpoint}</span><span class="s1">) '</span>
+            <span class="n">info_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="si">}</span><span class="s1">) '</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_type</span> <span class="o">==</span> <span class="s1">'ControlRequest'</span><span class="p">:</span>
-            <span class="n">info_msg</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">'(</span><span class="si">{self.request.command}</span><span class="s1">) '</span>
-        <span class="n">info_msg</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{part_str}</span><span class="s1"> from </span><span class="si">{msg.colored_route}</span><span class="s1">'</span>
+            <span class="n">info_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s1">) '</span>
+        <span class="n">info_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">part_str</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">msg</span><span class="o">.</span><span class="n">colored_route</span><span class="si">}</span><span class="s1">'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">info_msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expect_parts</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">expect_parts</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partial_requests</span><span class="p">):</span>
@@ -589,7 +589,7 @@
         <span class="k">if</span> <span class="n">r_docs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r_docs</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'return type must be </span><span class="si">{DocumentArray!r}</span><span class="s1"> or None, but getting {typename(r_docs)}'</span>
+                    <span class="sa">f</span><span class="s1">'return type must be </span><span class="si">{</span><span class="n">DocumentArray</span><span class="si">!r}</span><span class="s1"> or None, but getting </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">r_docs</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">r_docs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
                 <span class="c1"># this means the returned DocArray is a completely new one</span>
@@ -610,7 +610,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">resume_pollin</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{self.envelope.receiver_id}</span><span class="s1"> is idle, now I know these idle peas </span><span class="si">{self._idle_dealer_ids}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span><span class="si">}</span><span class="s1"> is idle, now I know these idle peas </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">'CANCEL'</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="p">:</span>
@@ -621,7 +621,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">_send_cancel_to_router</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnknownControlCommand</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'don</span><span class="se">\'</span><span class="s1">t know how to handle </span><span class="si">{self.request.command}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'don</span><span class="se">\'</span><span class="s1">t know how to handle </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
@@ -647,17 +647,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">)</span> <span class="k">as</span> <span class="n">kbex</span><span class="p">:</span>
             <span class="c1"># save executor</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{kbex!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kbex</span><span class="si">!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">flush</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">ZMQError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="c1"># save executor</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{ex!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">MemoryOverHighWatermark</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'memory usage {used_memory()} GB is above the high-watermark: </span><span class="si">{self.args.memory_hwm}</span><span class="s1"> GB'</span>
+                <span class="sa">f</span><span class="s1">'memory usage </span><span class="si">{</span><span class="n">used_memory</span><span class="p">()</span><span class="si">}</span><span class="s1"> GB is above the high-watermark: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">memory_hwm</span><span class="si">}</span><span class="s1"> GB'</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">NoExplicitMessage</span><span class="p">:</span>
             <span class="c1"># silent and do not propagate message anymore</span>
@@ -679,8 +679,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">msg</span><span class="o">.</span><span class="n">add_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">executor</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_executor'</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{ex!r}</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                     <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>

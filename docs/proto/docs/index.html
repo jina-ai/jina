@@ -2,8 +2,7 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="color-scheme" content="light dark">
   <meta property="og:title" content="Protocol Documentation" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="proto/docs.html" />
@@ -119,7 +118,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -351,11 +350,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Jina Protobuf Specification</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Protocol Documentation</a></li>
@@ -375,10 +374,10 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <section id="protocol-documentation">
+        <div class="section" id="protocol-documentation">
 <h1>Protocol Documentation<a class="headerlink" href="#protocol-documentation" title="Permalink to this headline">¶</a></h1>
 <p><a name="top"></a></p>
-<section id="table-of-contents">
+<div class="section" id="table-of-contents">
 <h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="#jina.proto">jina.proto</a></p>
@@ -409,11 +408,11 @@
 <li><p><a class="reference external" href="#scalar-value-types">Scalar Value Types</a></p></li>
 </ul>
 <p><a name="jina.proto"></a></p>
-<p align="right"><a href="#top">Top</a></p></section>
-<section id="jina-proto">
+<p align="right"><a href="#top">Top</a></p></div>
+<div class="section" id="jina-proto">
 <h2>jina.proto<a class="headerlink" href="#jina-proto" title="Permalink to this headline">¶</a></h2>
 <p><a name="jina.DenseNdArrayProto"></a></p>
-<section id="densendarrayproto">
+<div class="section" id="densendarrayproto">
 <h3>DenseNdArrayProto<a class="headerlink" href="#densendarrayproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a (quantized) dense n-dim array</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -476,8 +475,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.DocumentArrayProto"></a></p>
-</section>
-<section id="documentarrayproto">
+</div>
+<div class="section" id="documentarrayproto">
 <h3>DocumentArrayProto<a class="headerlink" href="#documentarrayproto" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -497,8 +496,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.DocumentProto"></a></p>
-</section>
-<section id="documentproto">
+</div>
+<div class="section" id="documentproto">
 <h3>DocumentProto<a class="headerlink" href="#documentproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a Document</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -639,8 +638,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.EnvelopeProto"></a></p>
-</section>
-<section id="envelopeproto">
+</div>
+<div class="section" id="envelopeproto">
 <h3>EnvelopeProto<a class="headerlink" href="#envelopeproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a Envelope, a part of the <code class="docutils literal notranslate"><span class="pre">Message</span></code>.</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -721,8 +720,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.EnvelopeProto.CompressConfigProto"></a></p>
-</section>
-<section id="envelopeproto-compressconfigproto">
+</div>
+<div class="section" id="envelopeproto-compressconfigproto">
 <h3>EnvelopeProto.CompressConfigProto<a class="headerlink" href="#envelopeproto-compressconfigproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a config for the compression algorithm</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -761,8 +760,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.EnvelopeProto.VersionProto"></a></p>
-</section>
-<section id="envelopeproto-versionproto">
+</div>
+<div class="section" id="envelopeproto-versionproto">
 <h3>EnvelopeProto.VersionProto<a class="headerlink" href="#envelopeproto-versionproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a the version information</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -795,8 +794,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.HeaderProto"></a></p>
-</section>
-<section id="headerproto">
+</div>
+<div class="section" id="headerproto">
 <h3>HeaderProto<a class="headerlink" href="#headerproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a Header.</p>
 <ul class="simple">
@@ -835,8 +834,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.MessageProto"></a></p>
-</section>
-<section id="messageproto">
+</div>
+<div class="section" id="messageproto">
 <h3>MessageProto<a class="headerlink" href="#messageproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a Message</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -863,8 +862,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.NamedScoreProto"></a></p>
-</section>
-<section id="namedscoreproto">
+</div>
+<div class="section" id="namedscoreproto">
 <h3>NamedScoreProto<a class="headerlink" href="#namedscoreproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents the relevance model to <code class="docutils literal notranslate"><span class="pre">ref_id</span></code></p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -909,8 +908,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.NdArrayProto"></a></p>
-</section>
-<section id="ndarrayproto">
+</div>
+<div class="section" id="ndarrayproto">
 <h3>NdArrayProto<a class="headerlink" href="#ndarrayproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a general n-dim array, can be either dense or sparse</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -937,8 +936,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.RequestProto"></a></p>
-</section>
-<section id="requestproto">
+</div>
+<div class="section" id="requestproto">
 <h3>RequestProto<a class="headerlink" href="#requestproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a Request</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -995,8 +994,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.RequestProto.ControlRequestProto"></a></p>
-</section>
-<section id="requestproto-controlrequestproto">
+</div>
+<div class="section" id="requestproto-controlrequestproto">
 <h3>RequestProto.ControlRequestProto<a class="headerlink" href="#requestproto-controlrequestproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a control request used to control the BasePod</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -1017,8 +1016,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.RequestProto.DataRequestProto"></a></p>
-</section>
-<section id="requestproto-datarequestproto">
+</div>
+<div class="section" id="requestproto-datarequestproto">
 <h3>RequestProto.DataRequestProto<a class="headerlink" href="#requestproto-datarequestproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a general data request</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -1045,8 +1044,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.RouteProto"></a></p>
-</section>
-<section id="routeproto">
+</div>
+<div class="section" id="routeproto">
 <h3>RouteProto<a class="headerlink" href="#routeproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a the route paths of this message</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -1091,8 +1090,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.SparseNdArrayProto"></a></p>
-</section>
-<section id="sparsendarrayproto">
+</div>
+<div class="section" id="sparsendarrayproto">
 <h3>SparseNdArrayProto<a class="headerlink" href="#sparsendarrayproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a sparse ndarray</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -1125,8 +1124,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.StatusProto"></a></p>
-</section>
-<section id="statusproto">
+</div>
+<div class="section" id="statusproto">
 <h3>StatusProto<a class="headerlink" href="#statusproto" title="Permalink to this headline">¶</a></h3>
 <p>Represents a Status</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -1159,8 +1158,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.StatusProto.ExceptionProto"></a></p>
-</section>
-<section id="statusproto-exceptionproto">
+</div>
+<div class="section" id="statusproto-exceptionproto">
 <h3>StatusProto.ExceptionProto<a class="headerlink" href="#statusproto-exceptionproto" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -1198,8 +1197,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.DenseNdArrayProto.QuantizationMode"></a></p>
-</section>
-<section id="densendarrayproto-quantizationmode">
+</div>
+<div class="section" id="densendarrayproto-quantizationmode">
 <h3>DenseNdArrayProto.QuantizationMode<a class="headerlink" href="#densendarrayproto-quantizationmode" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -1227,8 +1226,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.RequestProto.ControlRequestProto.Command"></a></p>
-</section>
-<section id="requestproto-controlrequestproto-command">
+</div>
+<div class="section" id="requestproto-controlrequestproto-command">
 <h3>RequestProto.ControlRequestProto.Command<a class="headerlink" href="#requestproto-controlrequestproto-command" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -1276,8 +1275,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.StatusProto.StatusCode"></a></p>
-</section>
-<section id="statusproto-statuscode">
+</div>
+<div class="section" id="statusproto-statuscode">
 <h3>StatusProto.StatusCode<a class="headerlink" href="#statusproto-statuscode" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -1325,8 +1324,8 @@
 </tr>
 </tbody>
 </table></div><p><a name="jina.JinaRPC"></a></p>
-</section>
-<section id="jinarpc">
+</div>
+<div class="section" id="jinarpc">
 <h3>JinaRPC<a class="headerlink" href="#jinarpc" title="Permalink to this headline">¶</a></h3>
 <p>jina gRPC service.</p>
 <div class="table-wrapper"><table border="1" class="docutils">
@@ -1346,9 +1345,9 @@
 <td>Pass in a Request and a filled Request with matches will be returned.</td>
 </tr>
 </tbody>
-</table></div></section>
-</section>
-<section id="scalar-value-types">
+</table></div></div>
+</div>
+<div class="section" id="scalar-value-types">
 <h2>Scalar Value Types<a class="headerlink" href="#scalar-value-types" title="Permalink to this headline">¶</a></h2>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
@@ -1531,8 +1530,8 @@
 <td>String (ASCII-8BIT)</td>
 </tr>
 </tbody>
-</table></div></section>
-</section>
+</table></div></div>
+</div>
 
       </article>
       <footer>

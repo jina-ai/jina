@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -372,15 +372,15 @@
         <h1>Source code for jina.clients.helper</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Helper functions for clients in Jina."""</span>
 
-<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="k">import</span> <span class="n">BadClientCallback</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="n">colored</span>
-<span class="kn">from</span> <span class="nn">..importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">..logging</span> <span class="k">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">..proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
-<span class="kn">from</span> <span class="nn">..types.request</span> <span class="k">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">BadClientCallback</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">..types.request</span> <span class="kn">import</span> <span class="n">Response</span>
 
 
 <div class="viewcode-block" id="pprint_routes"><a class="viewcode-back" href="../../../../api/jina.clients.helper/#jina.clients.helper.pprint_routes">[docs]</a><span class="k">def</span> <span class="nf">pprint_routes</span><span class="p">(</span><span class="n">resp</span><span class="p">:</span> <span class="s1">'Response'</span><span class="p">,</span> <span class="n">stack_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
@@ -389,14 +389,14 @@
 <span class="sd">    :param resp: the :class:`Response` object</span>
 <span class="sd">    :param stack_limit: traceback limit</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">textwrap</span> <span class="k">import</span> <span class="n">fill</span>
+    <span class="kn">from</span> <span class="nn">textwrap</span> <span class="kn">import</span> <span class="n">fill</span>
 
     <span class="n">routes</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">routes</span>
 
     <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="n">colored</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'bold'</span><span class="p">])</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'Pod'</span><span class="p">,</span> <span class="s1">'Time'</span><span class="p">,</span> <span class="s1">'Exception'</span><span class="p">)]</span>
 
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">prettytable</span> <span class="k">import</span> <span class="n">PrettyTable</span><span class="p">,</span> <span class="n">ALL</span>
+        <span class="kn">from</span> <span class="nn">prettytable</span> <span class="kn">import</span> <span class="n">PrettyTable</span><span class="p">,</span> <span class="n">ALL</span>
 
         <span class="n">table</span> <span class="o">=</span> <span class="n">PrettyTable</span><span class="p">(</span><span class="n">field_names</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s1">'l'</span><span class="p">,</span> <span class="n">hrules</span><span class="o">=</span><span class="n">ALL</span><span class="p">)</span>
         <span class="n">add_row</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">add_row</span>
@@ -411,8 +411,8 @@
 
         <span class="n">add_row</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{status_icon}</span><span class="s1"> </span><span class="si">{route.pod}</span><span class="s1">'</span><span class="p">,</span>
-                <span class="n">f</span><span class="s1">'{route.start_time.ToMilliseconds() - routes[0].start_time.ToMilliseconds()}ms'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">status_icon</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">pod</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">route</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">routes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span><span class="si">}</span><span class="s1">ms'</span><span class="p">,</span>
                 <span class="n">fill</span><span class="p">(</span>
                     <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">route</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">stacks</span><span class="p">[</span><span class="o">-</span><span class="n">stack_limit</span><span class="p">:]),</span>
                     <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
@@ -431,7 +431,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="n">err_msg</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'uncaught exception in callback </span><span class="si">{func.__name__}</span><span class="s1">(): </span><span class="si">{ex!r}</span><span class="s1">'</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'uncaught exception in callback </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(): </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="k">if</span> <span class="n">continue_on_error</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>

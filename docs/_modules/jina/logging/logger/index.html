@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -375,13 +375,13 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="k">import</span> <span class="n">resource_filename</span>
+<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">formatter</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="k">import</span> <span class="n">LogVerbosity</span>
-<span class="kn">from</span> <span class="nn">..jaml</span> <span class="k">import</span> <span class="n">JAML</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">formatter</span>
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">LogVerbosity</span>
+<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
 
 
 <div class="viewcode-block" id="SysLogHandlerWrapper"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper">[docs]</a><span class="k">class</span> <span class="nc">SysLogHandlerWrapper</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">SysLogHandler</span><span class="p">):</span>
@@ -418,7 +418,7 @@
 
     <span class="n">supported</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'FileHandler'</span><span class="p">,</span> <span class="s1">'StreamHandler'</span><span class="p">,</span> <span class="s1">'SysLogHandler'</span><span class="p">,</span> <span class="s1">'FluentHandler'</span><span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -428,7 +428,7 @@
         <span class="n">quiet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">__uptime__</span>
+        <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__uptime__</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">log_config</span><span class="p">:</span>
             <span class="n">log_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
@@ -495,10 +495,10 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">handlers</span>
 
-    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="JinaLogger.close"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -524,7 +524,7 @@
 
             <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cfg</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'can not find configs for </span><span class="si">{h}</span><span class="s1">, maybe it is not supported'</span>
+                    <span class="sa">f</span><span class="s1">'can not find configs for </span><span class="si">{</span><span class="n">h</span><span class="si">}</span><span class="s1">, maybe it is not supported'</span>
                 <span class="p">)</span>
 
             <span class="n">handler</span> <span class="o">=</span> <span class="kc">None</span>
@@ -555,11 +555,11 @@
                 <span class="p">)</span>
                 <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">'format'</span><span class="p">]</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)))</span>
             <span class="k">elif</span> <span class="n">h</span> <span class="o">==</span> <span class="s1">'FluentHandler'</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">..importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
+                <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
                 <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-                    <span class="kn">from</span> <span class="nn">fluent</span> <span class="k">import</span> <span class="n">asynchandler</span> <span class="k">as</span> <span class="n">fluentasynchandler</span>
-                    <span class="kn">from</span> <span class="nn">fluent.handler</span> <span class="k">import</span> <span class="n">FluentRecordFormatter</span>
+                    <span class="kn">from</span> <span class="nn">fluent</span> <span class="kn">import</span> <span class="n">asynchandler</span> <span class="k">as</span> <span class="n">fluentasynchandler</span>
+                    <span class="kn">from</span> <span class="nn">fluent.handler</span> <span class="kn">import</span> <span class="n">FluentRecordFormatter</span>
 
                     <span class="n">handler</span> <span class="o">=</span> <span class="n">fluentasynchandler</span><span class="o">.</span><span class="n">FluentHandler</span><span class="p">(</span>
                         <span class="n">cfg</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">],</span>

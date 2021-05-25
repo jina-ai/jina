@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,12 +370,12 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.api.endpoints</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="k">import</span> <span class="n">APIRouter</span>
+<span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="k">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span><span class="p">,</span> <span class="n">get_full_version</span>
-<span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="k">import</span> <span class="n">used_memory_readable</span>
-<span class="kn">from</span> <span class="nn">...models.status</span> <span class="k">import</span> <span class="n">DaemonStatus</span>
-<span class="kn">from</span> <span class="nn">...stores</span> <span class="k">import</span> <span class="n">pea_store</span><span class="p">,</span> <span class="n">pod_store</span><span class="p">,</span> <span class="n">flow_store</span><span class="p">,</span> <span class="n">workspace_store</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span><span class="p">,</span> <span class="n">get_full_version</span>
+<span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">used_memory_readable</span>
+<span class="kn">from</span> <span class="nn">...models.status</span> <span class="kn">import</span> <span class="n">DaemonStatus</span>
+<span class="kn">from</span> <span class="nn">...stores</span> <span class="kn">import</span> <span class="n">pea_store</span><span class="p">,</span> <span class="n">pod_store</span><span class="p">,</span> <span class="n">flow_store</span><span class="p">,</span> <span class="n">workspace_store</span>
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'daemon'</span><span class="p">])</span>
 
@@ -383,17 +383,17 @@
 <div class="viewcode-block" id="startup"><a class="viewcode-back" href="../../../../api/daemon.api.endpoints/#daemon.api.endpoints.startup">[docs]</a><span class="nd">@router</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'startup'</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">startup</span><span class="p">():</span>
     <span class="sd">"""Start the process"""</span>
-    <span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">daemon_logger</span><span class="p">,</span> <span class="n">jinad_args</span>
+    <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">daemon_logger</span><span class="p">,</span> <span class="n">jinad_args</span>
 
     <span class="n">daemon_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="n">f</span><span class="s1">'''</span>
+        <span class="sa">f</span><span class="s1">'''</span>
 <span class="s1">Welcome to Jina daemon - the manager of distributed Jina</span>
-<span class="s1">💬 Swagger UI     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{jinad_args.port_expose}</span><span class="s1">/docs</span>
-<span class="s1">📚 Redoc          :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{jinad_args.port_expose}</span><span class="s1">/redoc</span>
-<span class="s1">🔒 Private address:</span><span class="se">\t</span><span class="s1">http://{get_internal_ip()}:</span><span class="si">{jinad_args.port_expose}</span><span class="s1"></span>
-<span class="s1">🌐 Public address :</span><span class="se">\t</span><span class="s1">http://{get_public_ip()}:</span><span class="si">{jinad_args.port_expose}</span><span class="s1">'''</span>
+<span class="s1">💬 Swagger UI     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs</span>
+<span class="s1">📚 Redoc          :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc</span>
+<span class="s1">🔒 Private address:</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_internal_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">🌐 Public address :</span><span class="se">\t</span><span class="s1">http://</span><span class="si">{</span><span class="n">get_public_ip</span><span class="p">()</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'''</span>
     <span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="k">import</span> <span class="n">__ready_msg__</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__ready_msg__</span>
 
     <span class="n">daemon_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span></div>
 

@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -373,19 +373,19 @@
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="k">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">WebSocketDisconnect</span>
-<span class="kn">from</span> <span class="nn">fastapi.exceptions</span> <span class="k">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="k">import</span> <span class="n">FileResponse</span>
-<span class="kn">from</span> <span class="nn">starlette.endpoints</span> <span class="k">import</span> <span class="n">WebSocketEndpoint</span>
-<span class="kn">from</span> <span class="nn">starlette.types</span> <span class="k">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
-<span class="kn">from</span> <span class="nn">websockets</span> <span class="k">import</span> <span class="n">ConnectionClosedOK</span>
-<span class="kn">from</span> <span class="nn">websockets.exceptions</span> <span class="k">import</span> <span class="n">ConnectionClosedError</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">WebSocketDisconnect</span>
+<span class="kn">from</span> <span class="nn">fastapi.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
+<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">FileResponse</span>
+<span class="kn">from</span> <span class="nn">starlette.endpoints</span> <span class="kn">import</span> <span class="n">WebSocketEndpoint</span>
+<span class="kn">from</span> <span class="nn">starlette.types</span> <span class="kn">import</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+<span class="kn">from</span> <span class="nn">websockets</span> <span class="kn">import</span> <span class="n">ConnectionClosedOK</span>
+<span class="kn">from</span> <span class="nn">websockets.exceptions</span> <span class="kn">import</span> <span class="n">ConnectionClosedError</span>
 
-<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">daemon_logger</span><span class="p">,</span> <span class="n">jinad_args</span>
-<span class="kn">from</span> <span class="nn">...stores.helper</span> <span class="k">import</span> <span class="n">get_workspace_path</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">daemon_logger</span><span class="p">,</span> <span class="n">jinad_args</span>
+<span class="kn">from</span> <span class="nn">...stores.helper</span> <span class="kn">import</span> <span class="n">get_workspace_path</span>
 
 <span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'logs'</span><span class="p">])</span>
 
@@ -396,14 +396,14 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
             <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span>
-            <span class="n">detail</span><span class="o">=</span><span class="n">f</span><span class="s1">'log file </span><span class="si">{log_id}</span><span class="s1"> not found in workspace </span><span class="si">{workspace_id}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s1">'log file </span><span class="si">{</span><span class="n">log_id</span><span class="si">}</span><span class="s1"> not found in workspace </span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">FileResponse</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_websocket_details</span><span class="p">(</span><span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">f</span><span class="s1">'</span><span class="si">{websocket.client.host}</span><span class="s1">:</span><span class="si">{websocket.client.port}</span><span class="s1">'</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
 
 
 <div class="viewcode-block" id="ConnectionManager"><a class="viewcode-back" href="../../../../../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager">[docs]</a><span class="k">class</span> <span class="nc">ConnectionManager</span><span class="p">:</span>
@@ -415,7 +415,7 @@
 <span class="sd">    to active connections</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Instantiate a ConnectionManager."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">WebSocket</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -468,20 +468,20 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">no_fluentd</span><span class="p">:</span>
             <span class="n">daemon_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'</span><span class="si">{client_details}</span><span class="s1"> asks for logstreaming but fluentd is not available'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">client_details</span><span class="si">}</span><span class="s1"> asks for logstreaming but fluentd is not available'</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># on connection the fluentd file may not flushed (aka exist) yet</span>
         <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="n">daemon_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">'still waiting </span><span class="si">{filepath}</span><span class="s1"> to be ready...'</span><span class="p">)</span>
+            <span class="n">daemon_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'still waiting </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s1"> to be ready...'</span><span class="p">)</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">timeout</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">timeout</span><span class="p">:</span>
                 <span class="k">return</span>
 
-        <span class="n">daemon_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{filepath}</span><span class="s1"> is ready for streaming'</span><span class="p">)</span>
+        <span class="n">daemon_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s1"> is ready for streaming'</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -495,7 +495,7 @@
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
                     <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
-                        <span class="n">daemon_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s1">'JSON decode error on </span><span class="si">{line}</span><span class="s1">'</span><span class="p">)</span>
+                        <span class="n">daemon_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'JSON decode error on </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">payload</span><span class="p">:</span>
                         <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">broadcast</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>

@@ -2,8 +2,7 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="color-scheme" content="light dark">
   <meta property="og:title" content="jina package" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="api/jina.html" />
@@ -119,7 +118,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -351,11 +350,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
@@ -375,9 +374,9 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <section id="jina-package">
+        <div class="section" id="jina-package">
 <h1>jina package<a class="headerlink" href="#jina-package" title="Permalink to this headline">¶</a></h1>
-<section id="subpackages">
+<div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
@@ -624,8 +623,8 @@
 </li>
 </ul>
 </div>
-</section>
-<section id="submodules">
+</div>
+<div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
@@ -636,8 +635,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../jina.importer/">jina.importer module</a></li>
 </ul>
 </div>
-</section>
-<section id="module-jina">
+</div>
+<div class="section" id="module-jina">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina" title="Permalink to this headline">¶</a></h2>
 <p>Top-level module of Jina.</p>
 <p>The primary function of this module is to import all of the public Jina
@@ -660,10 +659,10 @@ is controlling and wrapping the eventloop internally, making the Flow looks sync
 For example, the following code
 will use the eventloop that already spawned in Jupyter/ipython to run Jina Flow (instead of creating a new one).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">with</span> <span class="n">AsyncFlow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">await</span> <span class="n">f</span><span class="o">.</span><span class="n">index_ndarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">on_done</span><span class="o">=</span><span class="k">print</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">f</span><span class="o">.</span><span class="n">index_ndarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements “autoawait”.</p>
@@ -723,7 +722,7 @@ or if non has been set a random one will be assigned.</p>
 Each property is implemented with proper setter, to improve the integrity and user experience. For example,
 assigning <code class="docutils literal notranslate"><span class="pre">doc.blob</span></code> or <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code> can be simply done via:</p>
 <blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># to set as content</span>
 <span class="n">d</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
@@ -739,7 +738,7 @@ from <code class="docutils literal notranslate"><span class="pre">jina_pb2.Docum
 weak reference when building from an existing <code class="docutils literal notranslate"><span class="pre">jina_pb2.DocumentProto</span></code>). For example,</p>
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="n">DocumentProto</span><span class="p">()</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">a</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'hello'</span>
 <span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s1">'hello'</span>
 </pre></div>
@@ -1658,7 +1657,7 @@ If <cite>read_mode</cite> is None, will iterate over filenames.</p></li>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.</span></code><code class="sig-name descname"><span class="pre">Flow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/flow/#Flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Flow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin" title="jina.clients.mixin.PostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.mixin.PostMixin</span></code></a>, <a class="reference internal" href="../jina.flow.base/#jina.flow.base.BaseFlow" title="jina.flow.base.BaseFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.base.BaseFlow</span></code></a></p>
 <p>The synchronous version of <a class="reference internal" href="#jina.AsyncFlow" title="jina.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a>.</p>
-<p>For proper usage see <cite>this guide</cite> &lt;<a class="reference external" href="https://docs.jina.ai/chapters/flow/index.html">https://docs.jina.ai/chapters/flow/index.html</a>&gt;</p>
+<p>For proper usage see <cite>this guide</cite> &lt;<a class="reference external" href="https://docs2.jina.ai/chapters/flow/index.html">https://docs2.jina.ai/chapters/flow/index.html</a>&gt;</p>
 </dd></dl>
 <dl class="py function">
 <dt id="jina.requests">
@@ -1678,8 +1677,8 @@ That means, it is the fallback handler for endpoints that are not found.</p>
 </dd>
 </dl>
 </dd></dl>
-</section>
-</section>
+</div>
+</div>
 
       </article>
       <footer>

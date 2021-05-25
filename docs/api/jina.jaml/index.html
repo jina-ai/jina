@@ -2,8 +2,7 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="color-scheme" content="light dark">
   <meta property="og:title" content="jina.jaml package" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="api/jina.jaml.html" />
@@ -119,7 +118,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -351,11 +350,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
@@ -375,9 +374,9 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <section id="jina-jaml-package">
+        <div class="section" id="jina-jaml-package">
 <h1>jina.jaml package<a class="headerlink" href="#jina-jaml-package" title="Permalink to this headline">¶</a></h1>
-<section id="subpackages">
+<div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
@@ -409,16 +408,16 @@
 </li>
 </ul>
 </div>
-</section>
-<section id="submodules">
+</div>
+<div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.jaml.helper/">jina.jaml.helper module</a></li>
 </ul>
 </div>
-</section>
-<section id="module-jina.jaml">
+</div>
+<div class="section" id="module-jina.jaml">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.jaml" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="jina.jaml.JAML">
@@ -447,7 +446,7 @@ You can combine literals, context references, and functions using operators.</p>
 <p>To evaluate (i.e. substitute the value to the real value)
 the expression when loading, use <code class="xref py py-meth docutils literal notranslate"><span class="pre">load(substitute=True)()</span></code>.</p>
 <p>To substitute the value based on a dict,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s1">'context_var'</span><span class="p">:</span> <span class="mf">3.14</span><span class="p">,</span>
                             <span class="s1">'context_var2'</span><span class="p">:</span> <span class="s1">'hello-world'</span><span class="p">})</span>
 </pre></div>
@@ -667,7 +666,7 @@ implements <a class="reference internal" href="#jina.jaml.JAMLCompatible" title=
 <span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">hello</span><span class="o">-</span><span class="n">world</span>
 
 <span class="c1"># disable substitute</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'a.yml'</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'a.yml'</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -689,8 +688,8 @@ implements <a class="reference internal" href="#jina.jaml.JAMLCompatible" title=
 </dl>
 </dd></dl>
 </dd></dl>
-</section>
-</section>
+</div>
+</div>
 
       </article>
       <footer>

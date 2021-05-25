@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
@@ -370,20 +370,20 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.peapods.runtimes.asyncio.rest.models</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="k">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
-<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="k">import</span> <span class="n">MessageToDict</span>
-<span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="k">import</span> <span class="n">GeneratedProtocolMessageType</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="k">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
-<span class="kn">from</span> <span class="nn">.....enums</span> <span class="k">import</span> <span class="n">DataInputType</span>
-<span class="kn">from</span> <span class="nn">.....parsers</span> <span class="k">import</span> <span class="n">set_client_cli_parser</span>
-<span class="kn">from</span> <span class="nn">.....proto.jina_pb2</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">.....enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
+<span class="kn">from</span> <span class="nn">.....parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span>
+<span class="kn">from</span> <span class="nn">.....proto.jina_pb2</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DenseNdArrayProto</span><span class="p">,</span>
     <span class="n">NdArrayProto</span><span class="p">,</span>
     <span class="n">SparseNdArrayProto</span><span class="p">,</span>
@@ -395,7 +395,7 @@
     <span class="n">MessageProto</span><span class="p">,</span>
     <span class="n">RequestProto</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.....types.document</span> <span class="k">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">.....types.document</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">DEFAULT_REQUEST_SIZE</span> <span class="o">=</span> <span class="n">set_client_cli_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([])</span><span class="o">.</span><span class="n">request_size</span>
 <span class="n">PROTO_TO_PYDANTIC_MODELS</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
@@ -441,7 +441,7 @@
     <span class="k">def</span> <span class="nf">oneof_validator</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">oneof_fields</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">values</span><span class="p">)))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'only one field among </span><span class="si">{oneof_fields}</span><span class="s1"> can be set for key </span><span class="si">{oneof_key}</span><span class="s1">!'</span>
+                <span class="sa">f</span><span class="s1">'only one field among </span><span class="si">{</span><span class="n">oneof_fields</span><span class="si">}</span><span class="s1"> can be set for key </span><span class="si">{</span><span class="n">oneof_key</span><span class="si">}</span><span class="s1">!'</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">values</span>
 
@@ -568,10 +568,10 @@
 
     <span class="c1"># Post-processing (Handle oneof fields)</span>
     <span class="k">for</span> <span class="n">oneof_k</span><span class="p">,</span> <span class="n">oneof_v_list</span> <span class="ow">in</span> <span class="n">oneof_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">oneof_field_validators</span><span class="p">[</span><span class="n">f</span><span class="s1">'oneof_validator_</span><span class="si">{oneof_k}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_oneof_validator</span><span class="p">(</span>
+        <span class="n">oneof_field_validators</span><span class="p">[</span><span class="sa">f</span><span class="s1">'oneof_validator_</span><span class="si">{</span><span class="n">oneof_k</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_oneof_validator</span><span class="p">(</span>
             <span class="n">oneof_fields</span><span class="o">=</span><span class="n">oneof_v_list</span><span class="p">,</span> <span class="n">oneof_key</span><span class="o">=</span><span class="n">oneof_k</span>
         <span class="p">)</span>
-        <span class="n">oneof_field_validators</span><span class="p">[</span><span class="n">f</span><span class="s1">'oneof_setter_</span><span class="si">{oneof_k}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_oneof_setter</span><span class="p">(</span>
+        <span class="n">oneof_field_validators</span><span class="p">[</span><span class="sa">f</span><span class="s1">'oneof_setter_</span><span class="si">{</span><span class="n">oneof_k</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_oneof_setter</span><span class="p">(</span>
             <span class="n">oneof_fields</span><span class="o">=</span><span class="n">oneof_v_list</span><span class="p">,</span> <span class="n">oneof_key</span><span class="o">=</span><span class="n">oneof_k</span>
         <span class="p">)</span>
 

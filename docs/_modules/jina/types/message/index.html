@@ -113,7 +113,7 @@
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p><span class="caption-text">Python API</span></p>
+  <p class="caption"><span class="caption-text">Python API</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -345,11 +345,11 @@
 </ul>
 </li>
 </ul>
-<p><span class="caption-text">Command Line Interface</span></p>
+<p class="caption"><span class="caption-text">Command Line Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
 </ul>
-<p><span class="caption-text">Protobuf Specification</span></p>
+<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
@@ -373,18 +373,18 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">..request</span> <span class="k">import</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__proto_version__</span>
-<span class="kn">from</span> <span class="nn">...enums</span> <span class="k">import</span> <span class="n">CompressAlgo</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="k">import</span> <span class="n">MismatchedVersion</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="n">colored</span>
-<span class="kn">from</span> <span class="nn">...logging</span> <span class="k">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">...proto</span> <span class="k">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">..request</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__proto_version__</span>
+<span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">MismatchedVersion</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">colored</span>
+<span class="kn">from</span> <span class="nn">...logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">...executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
+    <span class="kn">from</span> <span class="nn">...executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Message'</span><span class="p">]</span>
 
@@ -414,7 +414,7 @@
 <span class="sd">    :param kwargs: Additional keyword arguments.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">envelope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="s1">'jina_pb2.EnvelopeProto'</span><span class="p">]],</span>
         <span class="n">request</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="s1">'jina_pb2.RequestProto'</span><span class="p">],</span>
@@ -471,7 +471,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="o">=</span> <span class="n">val</span>  <span class="c1"># type: Union['Request', 'jina_pb2.RequestProto']</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}'</span>
+                <span class="sa">f</span><span class="s1">'expecting request to be bytes or jina_pb2.RequestProto, but receiving </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -565,7 +565,7 @@
             <span class="c1">#                 'as add_envelope() is only called at the gateway')</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'expecting request in type: jina_pb2.RequestProto, but receiving {type(self.request)}'</span>
+                <span class="sa">f</span><span class="s1">'expecting request in type: jina_pb2.RequestProto, but receiving </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
         <span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">compress</span><span class="p">)</span>
@@ -650,14 +650,14 @@
                 <span class="c1"># compression rate is too bad, dont bother</span>
                 <span class="c1"># save time on decompression</span>
                 <span class="n">default_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">'compression rate {(_size_before / _size_after):.2f}% '</span>
-                    <span class="n">f</span><span class="s1">'is lower than min_ratio '</span>
-                    <span class="n">f</span><span class="s1">'</span><span class="si">{self.envelope.compression.min_ratio}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'compression rate </span><span class="si">{</span><span class="p">(</span><span class="n">_size_before</span> <span class="o">/</span> <span class="n">_size_after</span><span class="p">)</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">% '</span>
+                    <span class="sa">f</span><span class="s1">'is lower than min_ratio '</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">min_ratio</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="s1">'NONE'</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="n">f</span><span class="s1">'compression={str(ctag)} failed, fallback to compression="NONE". reason: </span><span class="si">{ex!r}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'compression=</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ctag</span><span class="p">)</span><span class="si">}</span><span class="s1"> failed, fallback to compression="NONE". reason: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="s1">'NONE'</span>
 
@@ -727,8 +727,8 @@
             <span class="k">elif</span> <span class="n">__version__</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">jina</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MismatchedVersion</span><span class="p">(</span>
                     <span class="s1">'mismatched JINA version! '</span>
-                    <span class="n">f</span><span class="s1">'incoming message has JINA version </span><span class="si">{self.envelope.version.jina}</span><span class="s1">, '</span>
-                    <span class="n">f</span><span class="s1">'whereas local JINA version </span><span class="si">{__version__}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'incoming message has JINA version </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">jina</span><span class="si">}</span><span class="s1">, '</span>
+                    <span class="sa">f</span><span class="s1">'whereas local JINA version </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">proto</span><span class="p">:</span>
@@ -741,8 +741,8 @@
             <span class="k">elif</span> <span class="n">__proto_version__</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">proto</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MismatchedVersion</span><span class="p">(</span>
                     <span class="s1">'mismatched protobuf version! '</span>
-                    <span class="n">f</span><span class="s1">'incoming message has protobuf version </span><span class="si">{self.envelope.version.proto}</span><span class="s1">, '</span>
-                    <span class="n">f</span><span class="s1">'whereas local protobuf version </span><span class="si">{__proto_version__}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'incoming message has protobuf version </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">proto</span><span class="si">}</span><span class="s1">, '</span>
+                    <span class="sa">f</span><span class="s1">'whereas local protobuf version </span><span class="si">{</span><span class="n">__proto_version__</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">vcs</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_VCS_VERSION'</span><span class="p">):</span>
@@ -755,9 +755,9 @@
             <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_VCS_VERSION'</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">vcs</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MismatchedVersion</span><span class="p">(</span>
                     <span class="s1">'mismatched vcs version! '</span>
-                    <span class="n">f</span><span class="s1">'incoming message has vcs_version </span><span class="si">{self.envelope.version.vcs}</span><span class="s1">, '</span>
-                    <span class="n">f</span><span class="s1">'whereas local environment vcs_version is '</span>
-                    <span class="n">f</span><span class="s1">'{os.environ.get("JINA_VCS_VERSION")}'</span>
+                    <span class="sa">f</span><span class="s1">'incoming message has vcs_version </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">vcs</span><span class="si">}</span><span class="s1">, '</span>
+                    <span class="sa">f</span><span class="s1">'whereas local environment vcs_version is '</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"JINA_VCS_VERSION"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
