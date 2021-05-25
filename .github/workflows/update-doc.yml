@@ -21,6 +21,7 @@ jobs:
       - name: push-to-api-repo
         run: |
           cd docs
+          pip install -r requirements.txt
           docker run --rm \
             -v $(pwd)/proto:/out \
             -v $(pwd)/../jina/proto:/protos \
