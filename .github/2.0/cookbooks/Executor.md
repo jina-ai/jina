@@ -509,8 +509,7 @@ class ResnetImageEncoder(Executor):
 
      @requests
      def encode(self, docs, **kwargs):
-         batch_images = docs.get_attributes('blob')
-         batch = Torch.Tensor(batch_images)
+         batch = torch.Tensor(docs.get_attributes('blob'))
          batch_embeddings = self.model(batch).detach().numpy()
 
          for i,doc in enumerate(docs):
