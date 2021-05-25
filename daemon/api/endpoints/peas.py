@@ -32,10 +32,12 @@ async def _fetch_pea_params():
 )
 async def _create(pea: PeaDepends = Depends(PeaDepends)):
     try:
-        return store.add(id=pea.id,
-                         workspace_id=pea.workspace_id,
-                         command=pea.command,
-                         ports=pea.ports)
+        return store.add(
+            id=pea.id,
+            workspace_id=pea.workspace_id,
+            command=pea.command,
+            ports=pea.ports,
+        )
     except Exception as ex:
         raise Runtime400Exception from ex
 

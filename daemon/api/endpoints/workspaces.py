@@ -58,7 +58,7 @@ async def _create(files: List[UploadFile] = File(...)):
     response_model=DaemonID,
     status_code=200,
 )
-async def _update(id: DaemonID, files: List[UploadFile] = File(...)):
+async def _update(id: DaemonID, files: List[UploadFile] = File(None)):
     try:
         return store.update(workspace_id=id, files=files)
     except Exception as ex:

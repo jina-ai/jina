@@ -39,7 +39,8 @@ def range_conflict(range_a_min, range_b_min, count):
                 max(range_a_min, range_b_min),
                 min(range_a_min + count, range_b_min + count) + 1,
             )
-        ) != 0
+        )
+        != 0
     )
 
 
@@ -58,7 +59,11 @@ def random_port_range(port_min: int = 49153, port_max: int = 65535, count: int =
 
 
 def port_fields_from_pydantic(model):
-    return {i: getattr(model, i) for i in model.__fields__ if 'port' in i}
+    return {
+        i: getattr(model, i)
+        for i in model.__fields__
+        if 'port' in i and i != 'port_expose'
+    }
 
 
 @contextmanager

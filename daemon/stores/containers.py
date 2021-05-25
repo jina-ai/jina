@@ -15,23 +15,22 @@ class ContainerStore(BaseStore):
     _kind = 'container'
 
     @BaseStore.dump
-    def add(self,
-            id: DaemonID,
-            workspace_id: DaemonID,
-            command: str,
-            ports: Dict,
-            **kwargs):
+    def add(
+        self, id: DaemonID, workspace_id: DaemonID, command: str, ports: Dict, **kwargs
+    ):
         try:
             from . import workspace_store
+
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
 
-            _container, _network, _ports, _success = \
-                Dockerizer.run(workspace_id=workspace_id,
-                               container_id=id,
-                               command=command,
-                               ports=ports,
-                               additional_ports=random_port_range(count=30))
+            _container, _network, _ports, _success = Dockerizer.run(
+                workspace_id=workspace_id,
+                container_id=id,
+                command=command,
+                ports=ports,
+                additional_ports=random_port_range(count=30),
+            )
             if not _success:
                 raise Runtime400Exception(f'{id.type} creation failed')
 
@@ -45,7 +44,7 @@ class ContainerStore(BaseStore):
                     'container_name': _container.name,
                     'image_id': id_cleaner(_container.image.id),
                     'network': _network,
-                    'ports': _ports
+                    'ports': _ports,
                 },
                 'workspace_id': workspace_id,
                 'arguments': {'command': command},

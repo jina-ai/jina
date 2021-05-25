@@ -29,10 +29,12 @@ async def _fetch_flow_params():
 )
 async def _create(flow: FlowDepends = Depends(FlowDepends)):
     try:
-        return store.add(id=flow.id,
-                         workspace_id=flow.workspace_id,
-                         command=flow.command,
-                         ports=flow.ports)
+        return store.add(
+            id=flow.id,
+            workspace_id=flow.workspace_id,
+            command=flow.command,
+            ports=flow.ports,
+        )
     except Exception as ex:
         raise Runtime400Exception from ex
 

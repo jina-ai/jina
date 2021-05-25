@@ -29,10 +29,12 @@ async def _fetch_pod_params():
 )
 async def _create(pod: PodDepends = Depends(PodDepends)):
     try:
-        return store.add(id=pod.id,
-                         workspace_id=pod.workspace_id,
-                         command=pod.command,
-                         ports=pod.ports)
+        return store.add(
+            id=pod.id,
+            workspace_id=pod.workspace_id,
+            command=pod.command,
+            ports=pod.ports,
+        )
     except Exception as ex:
         raise Runtime400Exception from ex
 

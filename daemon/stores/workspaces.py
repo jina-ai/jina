@@ -12,7 +12,7 @@ from jina.logging import JinaLogger
 from .base import BaseStore
 from ..models import DaemonID
 from ..dockerize import Dockerizer
-from ..helper import get_workspace_path, random_port_range
+from ..helper import get_workspace_path, id_cleaner, random_port_range
 from ..excepts import Runtime400Exception
 from ..models.enums import DaemonBuild, PythonVersion
 from .. import __rootdir__, __dockerfiles__, jinad_args
@@ -136,7 +136,7 @@ class WorkspaceStore(BaseStore):
             workdir = get_workspace_path(workspace_id)
             self._handle_files(workspace_id=workspace_id, files=files)
             daemon_file = DaemonFile(workdir=workdir)
-            network = Dockerizer.network(workspace_id=workspace_id)
+            network_id = Dockerizer.network(workspace_id=workspace_id)
             _min, _max = random_port_range()
             image_id = Dockerizer.build(
                 workspace_id=workspace_id, daemon_file=daemon_file
@@ -149,7 +149,7 @@ class WorkspaceStore(BaseStore):
                 'metadata': {
                     'image_id': image_id,
                     'image_name': workspace_id.tag,
-                    'network': network,
+                    'network': id_cleaner(network_id),
                     'ports': {'min': _min, 'max': _max},
                     'workdir': workdir,
                 },
@@ -163,17 +163,24 @@ class WorkspaceStore(BaseStore):
                 },
             }
             self._logger.info(self[workspace_id])
-            self._logger.success(f'Workspace {colored(str(workspace_id), "cyan")} is added to stpre')
+            self._logger.success(
+                f'Workspace {colored(str(workspace_id), "cyan")} is added to stpre'
+            )
             return workspace_id
 
     @BaseStore.dump
     def update(
-        self, workspace_id: DaemonID, files: List[UploadFile], **kwargs
+        self, workspace_id: DaemonID, files: List[UploadFile] = None, **kwargs
     ) -> DaemonID:
+        # TODO: Remove repetitive code
+        # TODO: Handle POST vs PUT here
         try:
             workdir = get_workspace_path(workspace_id)
-            self._handle_files(workspace_id=workspace_id, files=files)
+            if files:
+                self._handle_files(workspace_id=workspace_id, files=files)
             daemon_file = DaemonFile(workdir=workdir)
+            network_id = Dockerizer.network(workspace_id=workspace_id)
+            _min, _max = random_port_range()
             image_id = Dockerizer.build(
                 workspace_id=workspace_id, daemon_file=daemon_file
             )
@@ -181,12 +188,34 @@ class WorkspaceStore(BaseStore):
             self._logger.error(f'{e!r}')
             raise
         else:
-            self[workspace_id]['arguments']['files'].extend([f.filename for f in files])
-            self[workspace_id]['arguments']['jinad'] = {
-                'build': daemon_file.build,
-                'dockerfile': daemon_file.dockerfile,
-            }
-            self[workspace_id]['metadata']['image_id'] = image_id
+            if workspace_id in self:
+                if files:
+                    self[workspace_id]['arguments']['files'].extend(
+                        [f.filename for f in files]
+                    )
+                self[workspace_id]['arguments']['jinad'] = {
+                    'build': daemon_file.build,
+                    'dockerfile': daemon_file.dockerfile,
+                }
+                self[workspace_id]['metadata']['image_id'] = image_id
+            else:
+                self[workspace_id] = {
+                    'metadata': {
+                        'image_id': image_id,
+                        'image_name': workspace_id.tag,
+                        'network': id_cleaner(network_id),
+                        'ports': {'min': _min, 'max': _max},
+                        'workdir': workdir,
+                    },
+                    'arguments': {
+                        'files': [f.filename for f in files] if files else [],
+                        'jinad': {
+                            'build': daemon_file.build,
+                            'dockerfile': daemon_file.dockerfile,
+                        },
+                        'requirements': [],
+                    },
+                }
             return workspace_id
 
     @BaseStore.dump

@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple, Union, TYPE_CHECKING
 
 import docker
+from fastapi import HTTPException
 from jina import __ready_msg__
 from jina.logging import JinaLogger
 from ..models import DaemonID
@@ -51,11 +52,11 @@ class Dockerizer:
         return list(cls.daemonize(cls.client.containers.list(), 'name'))
 
     @classmethod
-    def network(cls, workspace_id: DaemonID):
+    def network(cls, workspace_id: DaemonID) -> str:
         network: 'Network' = cls.client.networks.create(
             name=workspace_id, driver='bridge'
         )
-        return network.name
+        return network.id
 
     @classmethod
     def build(cls, workspace_id: 'DaemonID', daemon_file: 'DaemonFile') -> str:
@@ -75,34 +76,43 @@ class Dockerizer:
         return id_cleaner(image.id)
 
     @classmethod
-    def run(cls,
-            workspace_id: DaemonID,
-            container_id: DaemonID,
-            command: str,
-            ports: Dict,
-            additional_ports: Tuple[int, int]) -> Tuple['Container', str, Dict, bool]:
+    def run(
+        cls,
+        workspace_id: DaemonID,
+        container_id: DaemonID,
+        command: str,
+        ports: Dict,
+        additional_ports: Tuple[int, int],
+    ) -> Tuple['Container', str, Dict, bool]:
         from ..stores import workspace_store
+
         metadata = workspace_store[workspace_id]['metadata']
+
         _image = cls.client.images.get(name=metadata['image_id'])
         _network = metadata['network']
         _min_port, _max_port = additional_ports
-        ports.update(
-            {f'{port}/tcp': port for port in range(_min_port, _max_port+1)}
-        )
+        # TODO: Handle port mappings
+        # ports.update(
+        #     {f'{port}/tcp': port for port in range(_min_port, _max_port + 1)}
+        # )
         cls.logger.info(
             f'Creating a container using image {_image} in network {_network}'
         )
-
-        container: 'Container' = cls.client.containers.run(
-            image=_image,
-            name=container_id,
-            volumes=cls.volume(workspace_id),
-            environment=cls.environment(workspace_id, _min_port, _max_port),
-            network=_network,
-            ports=ports,
-            detach=True,
-            command=command,
-        )
+        try:
+            container: 'Container' = cls.client.containers.run(
+                image=_image,
+                name=container_id,
+                volumes=cls.volume(workspace_id),
+                environment=cls.environment(workspace_id, _min_port, _max_port),
+                network=_network,
+                ports=ports,
+                detach=True,
+                command=command,
+            )
+        except docker.errors.NotFound as e:
+            cls.logger.error(
+                f'Image {_image} or Network {_network} not found locally {e}'
+            )
 
         _msg_to_check = __flow_ready__ if container_id.type == 'flow' else __ready_msg__
 
@@ -129,12 +139,14 @@ class Dockerizer:
         }
 
     @classmethod
-    def environment(cls, workspace_id: DaemonID, min_port: int, max_port: int) -> Dict[str, str]:
+    def environment(
+        cls, workspace_id: DaemonID, min_port: int, max_port: int
+    ) -> Dict[str, str]:
         return {
             'JINA_LOG_WORKSPACE': '/workspace/logs',
             'JINA_RANDOM_PORTS': 'True',
             'JINA_RANDOM_PORT_MIN': str(min_port),
-            'JINA_RANDOM_PORT_MAX': str(max_port)
+            'JINA_RANDOM_PORT_MAX': str(max_port),
         }
 
     def remove(cls, id: DaemonID):
@@ -149,11 +161,17 @@ class Dockerizer:
     def rm_network(cls, id: DaemonID):
         try:
             network: 'Network' = cls.client.networks.get(id)
-        except docker.errors.NotFound as e:
-            cls.logger.error(f'Couldn\'t fetch network with name: {id}')
-            raise
-        else:
             network.remove()
+        except docker.errors.NotFound as e:
+            cls.logger.error(f'Couldn\'t fetch network with id: `{id}`')
+            raise HTTPException(status_code=404, detail=f'Network `{id}` not found')
+        except docker.errors.APIError as e:
+            cls.logger.error(
+                f'Dockerd threw an error while removing the network `{id}`: {e}'
+            )
+            raise HTTPException(
+                status_code=400, detail=f'dockerd error while removing network `{id}`'
+            )
 
     @classmethod
     def rm_image(cls, id: DaemonID):
@@ -161,16 +179,16 @@ class Dockerizer:
             # TODO: decide when to force
             cls.client.images.remove(id, force=True)
         except docker.errors.ImageNotFound as e:
-            cls.logger.error(f'Couldn\'t fetch image with name: {id}')
-            raise
+            cls.logger.error(f'Couldn\'t fetch image with name: `{id}`')
+            raise HTTPException(status_code=404, detail=f'Image `{id}` not found')
 
     @classmethod
     def rm_container(cls, id: DaemonID):
         try:
             container: 'Container' = cls.client.containers.get(id)
         except docker.errors.NotFound as e:
-            cls.logger.error(f'Couldn\'t fetch container with name: {id}')
-            raise
+            cls.logger.error(f'Couldn\'t fetch container with name: `{id}`')
+            raise HTTPException(status_code=404, detail=f'Container `{id}` not found')
         else:
             container.stop()
             container.remove()

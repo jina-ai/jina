@@ -44,8 +44,8 @@ class DaemonClient:
         base_url = f'{host}:{port}'
         rest_url = f'http://{base_url}'
         self.alive_api = f'{rest_url}/'
-        self.upload_api = f'{rest_url}/workspaces'
-        self.upload_api_arg = 'files'  # this is defined in Daemon API upload interface
+        self.workspaces_api = f'{rest_url}/workspaces'
+        self.workspaces_api_arg = 'files'  # this is defined in Daemon API upload interface
         if self.kind == 'pea':
             self.store_api = f'{rest_url}/peas'
         elif self.kind == 'pod':
@@ -74,7 +74,7 @@ class DaemonClient:
     def get_status(self, identity: str) -> Dict:
         """Get status of the remote Pea / Pod
 
-        :param identity: UUID string based identity for the Pea
+        :param identity: 'DaemonID' based identity for the Pea
         :raises: requests.exceptions.RequestException
         :return: json response of the remote Pea / Pod status
         :rtype: Dict
@@ -92,9 +92,10 @@ class DaemonClient:
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')
 
-    def upload(
-        self, dependencies: Sequence[str], workspace_id: Optional[str] = None
-    ) -> str:
+    def _daemonize_id(self, id: str, kind: str = 'workspace') -> str:
+        return f'j{kind}-{id}'
+
+    def upload(self, dependencies: Sequence[str], workspace_id: str) -> Optional[str]:
         """Upload local file dependencies to remote server by extracting from the pea_args
 
         :param dependencies: file dependencies
@@ -110,28 +111,26 @@ class DaemonClient:
         with ExitStack() as file_stack:
             files = [
                 (
-                    self.upload_api_arg,
+                    self.workspaces_api_arg,
                     file_stack.enter_context(open(complete_path(f), 'rb')),
                 )
                 for f in dependencies
             ]
-
-            if files:
-                try:
+            try:
+                if files:
                     self.logger.info(f'uploading {len(files)} file(s): {dependencies}')
-                    r = requests.post(
-                        url=self.upload_api,
-                        files=files,
-                        data={'workspace_id': workspace_id} if workspace_id else None,
-                        timeout=self.timeout,
-                    )
-                    rj = r.json()
-                    if r.status_code == 201:
-                        return rj
-                    else:
-                        raise requests.exceptions.RequestException(rj)
-                except requests.exceptions.RequestException as ex:
-                    self.logger.error(f'fail to upload as {ex!r}')
+                r = requests.put(
+                    url=f'{self.workspaces_api}/{self._daemonize_id(id=workspace_id)}',
+                    files=files if files else None,
+                    timeout=self.timeout,
+                )
+                rj = r.json()
+                if r.status_code in [requests.codes.ok, requests.codes.created]:
+                    return rj
+                else:
+                    raise requests.exceptions.RequestException(rj)
+            except requests.exceptions.RequestException as ex:
+                self.logger.error(f'fail to upload as {ex!r}')
 
     def create(self, args: 'Namespace') -> Optional[str]:
         """Create a remote Pea / Pod
@@ -151,6 +150,7 @@ class DaemonClient:
             # set timeout to None if args.timeout_ready is -1 (wait forever)
             r = requests.post(
                 url=self.store_api,
+                params={'workspace_id': self._daemonize_id(id=args.workspace_id)},
                 json=payload,
                 timeout=args.timeout_ready if args.timeout_ready != -1 else None,
             )

@@ -1,10 +1,9 @@
 from typing import Any
 
-from jina.executors.decorators import requests
-from jina.executors import BaseExecutor
+from jina import requests, Executor
 
 
-class MWUEncoder(BaseExecutor):
+class MWUEncoder(Executor):
     def __init__(self, greetings: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._greetings = greetings

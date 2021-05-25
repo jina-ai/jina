@@ -1,6 +1,6 @@
 import argparse
 import asyncio
-from typing import Optional
+from typing import List, Optional
 
 from .client import PeaDaemonClient
 from ...zmq import Zmqlet, send_ctrl_message
@@ -24,7 +24,7 @@ class JinadRuntime(AsyncZMQRuntime):
             host=self.host,
             port=self.port_expose,
             logger=self.logger,
-            timeout=self.args.timeout_ready,
+            timeout=self.args.timeout_ready if self.args.timeout_ready != -1 else None,
         )
 
     def cancel(self):
@@ -81,46 +81,47 @@ class JinadRuntime(AsyncZMQRuntime):
 
     def teardown(self):
         """
-        Closes the remote Pod/Pea using :class:`JinadAPI`
+        Terminates the remote Workspace/Pod/Pea using :class:`JinadAPI`
         """
         self.api.delete(remote_id=self._remote_id)
         super().teardown()
 
     @cached_property
+    def upload_files(self) -> List:
+        _upload_files = []
+        if is_yaml_filepath(self.args.uses):
+            _upload_files.append(self.args.uses)
+        if is_yaml_filepath(self.args.uses_internal):
+            _upload_files.append(self.args.uses_internal)
+        if self.args.upload_files:
+            _upload_files.extend(self.args.upload_files)
+        else:
+            self.logger.warning(
+                f'will upload {_upload_files} to remote, to include more local file '
+                f'dependencies, please use `--upload-files`'
+            )
+        return list(set(_upload_files))
+
+    @cached_property
     def _remote_id(self) -> Optional[str]:
         if self.api.is_alive:
-            upload_files = []
-            if is_yaml_filepath(self.args.uses):
-                upload_files.append(self.args.uses)
-
-            if is_yaml_filepath(self.args.uses_internal):
-                upload_files.append(self.args.uses_internal)
-
-            if self.args.upload_files:
-                upload_files.extend(self.args.upload_files)
+            workspace_id = self.api.upload(
+                dependencies=self.upload_files,
+                workspace_id=self.args.workspace_id,
+            )
+            if workspace_id:
+                self.logger.success(
+                    f'uploaded to workspace: {colored(workspace_id, "cyan")}'
+                )
             else:
-                self.logger.warning(
-                    f'will upload {upload_files} to remote, to include more local file '
-                    f'dependencies, please use `--upload-files`'
-                )
-
-            if upload_files:
-                workspace_id = self.api.upload(
-                    dependencies=list(set(upload_files)),
-                    workspace_id=self.args.workspace_id,
-                )
-                if workspace_id:
-                    self.logger.success(
-                        f'uploaded to workspace: {colored(workspace_id, "cyan")}'
-                    )
-                else:
-                    raise RuntimeError('can not upload required files to remote')
+                raise RuntimeError('can not upload required files to remote')
 
             _id = self.api.create(self.args)
-
             # if there is a new workspace_id, then use it
-            self._workspace_id = self.api.get_status(_id)['workspace_id']
-            return _id
+            # TODO: Handle return here
+            if _id:
+                self._workspace_id = self.api.get_status(_id)['workspace_id']
+                return _id
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""

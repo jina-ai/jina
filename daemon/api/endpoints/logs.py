@@ -14,12 +14,13 @@ from websockets.exceptions import ConnectionClosedError
 
 from ... import daemon_logger, jinad_args
 from ...helper import get_workspace_path
+from ...models import DaemonID
 
 router = APIRouter(tags=['logs'])
 
 
 @router.get(path='/logs/{workspace_id}/{log_id}')
-async def _export_logs(workspace_id: uuid.UUID, log_id: uuid.UUID):
+async def _export_logs(workspace_id: DaemonID, log_id: DaemonID):
     filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
     if not Path(filepath).is_file():
         raise HTTPException(
@@ -87,7 +88,7 @@ class ConnectionManager:
 
 @router.websocket('/logstream/{workspace_id}/{log_id}')
 async def _logstream(
-    websocket: WebSocket, workspace_id: uuid.UUID, log_id: uuid.UUID, timeout: int = 0
+    websocket: WebSocket, workspace_id: DaemonID, log_id: DaemonID, timeout: int = 0
 ):
     manager = ConnectionManager()
     await manager.connect(websocket)

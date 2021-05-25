@@ -63,9 +63,12 @@ class PeaDepends:
 
     @property
     def ports(self) -> Dict:
+        print(self.params)
         # TODO: Hacky way of knowing the `port` args
-        return {f'{port}/tcp': port
-                for port in port_fields_from_pydantic(self.params).values()}
+        return {
+            f'{port}/tcp': port
+            for port in port_fields_from_pydantic(self.params).values()
+        }
 
     def validate(self):
         self.params.workspace_id = self.workspace_id
