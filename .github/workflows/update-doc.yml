@@ -41,6 +41,7 @@ jobs:
           ls -la
           touch .nojekyll
           echo docs2.jina.ai > CNAME
+          git add api cli proto
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
           git status
           git push origin gh-pages
