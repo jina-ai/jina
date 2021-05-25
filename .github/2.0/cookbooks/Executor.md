@@ -489,3 +489,37 @@ Line number corresponds to the 1.x code:
     - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
+
+
+### Fastai
+
+
+```
+import torch
+from jina import Executor, requests, DocumentArray, Document
+
+
+class ResnetImageEncoder(Executor):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from fastai.vision.models import resnet18
+        
+        self.resnet = resnet18()
+
+     @requests
+     def encode(self, docs, **kwargs):
+         batch_images = []
+         for doc in docs:
+             image_np = torch.Tensor(doc.blob) 
+             batch_images.append(image_np)
+
+         batch = Torch.Tensor(batch_images)
+         batch_embeddings = self.model(batch)
+         batch_embeddings = batch.detach().numpy()
+
+         for i,doc in enumerate(docs):
+             doc.embedding = batch_embeddings[i]
+
+```
+
