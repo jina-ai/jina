@@ -527,8 +527,7 @@ from jina import Executor, requests
 class PytorchMwuExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
-        self.dims = 5
-        self.encoding_mat = torch.from_numpy(np.random.rand(self.dims, self.dims))
+        self.encoding_mat = torch.from_numpy(np.random.rand(5, 5))
 
     @requests
     def encode(self, docs, **kwargs):
@@ -540,6 +539,5 @@ class PytorchMwuExecutor(Executor):
                 self.encoding_mat, input_tensor
             )  # multiply the input with the encoding matrix.
             doc.embedding = output_tensor.numpy() # assign the encoding results to ``embedding``
-
 ```
 
