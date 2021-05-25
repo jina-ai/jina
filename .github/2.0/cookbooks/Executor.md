@@ -496,15 +496,14 @@ Line number corresponds to the 1.x code:
 
 ```python
 import torch
-from jina import Executor, requests, DocumentArray, Document
+from fastai.vision.models import resnet18
 
+from jina import Executor, requests, DocumentArray, Document
 
 class ResnetImageEncoder(Executor):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from fastai.vision.models import resnet18
-        
+        super().__init__(*args, **kwargs)        
         self.model = resnet18()
 
      @requests
