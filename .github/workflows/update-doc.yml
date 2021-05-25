@@ -22,6 +22,8 @@ jobs:
           fetch-depth: 0
       - name: push-to-api-repo
         run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
           git checkout gh-pages
           git merge master
           pip install .[devel]
@@ -38,8 +40,7 @@ jobs:
           rm -rf ./_build/dirhtml/
           ls -la
           touch .nojekyll
-          git config --local user.email "dev-bot@jina.ai"
-          git config --local user.name "Jina Dev Bot"
+          echo docs2.jina.ai > CNAME
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
           git status
           git push origin gh-pages
