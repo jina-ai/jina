@@ -90,12 +90,12 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 #       Tell docs repo jina is going to release
-      - name: send-repository-dispatch-event-to-docs
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/docs
-          event-type: jina-merge-event
+#      - name: send-repository-dispatch-event-to-docs
+#        uses: peter-evans/repository-dispatch@v1
+#        with:
+#          token: ${{ secrets.JINA_DEV_BOT }}
+#          repository: jina-ai/docs
+#          event-type: jina-merge-event
 
   update-docker:
     needs: update-doc

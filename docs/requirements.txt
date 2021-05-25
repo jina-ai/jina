@@ -1,0 +1,14 @@
+sphinx==3.5.3
+sphinx-argparse==0.2.5
+sphinxcontrib-apidoc==0.3.0
+sphinx-autodoc-typehints==1.11.1
+sphinx_rtd_theme==0.5.2
+recommonmark==0.7.1
+sphinx_markdown_tables==0.0.15
+sphinx_copybutton==0.3.1
+sphinx-notfound-page==0.6
+gitpython==3.1.13
+sphinx-sitemap==2.2.0
+sphinxext-opengraph
+furo
+

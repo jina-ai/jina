@@ -109,12 +109,12 @@ jobs:
           echo ::set-output name=JINA_VERSION::${GITHUB_REF/refs\/tags\/v/}
           echo ::set-output name=V_JINA_VERSION::${GITHUB_REF/refs\/tags\//}
       # Tell docs repo jina is going to release
-      - name: send-repository-dispatch-event-to-docs
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.JINA_DEV_BOT }}
-          repository: jina-ai/docs
-          event-type: jina-release-event
+#      - name: send-repository-dispatch-event-to-docs
+#        uses: peter-evans/repository-dispatch@v1
+#        with:
+#          token: ${{ secrets.JINA_DEV_BOT }}
+#          repository: jina-ai/docs
+#          event-type: jina-release-event
 
   update-docker:
     needs: update-doc
