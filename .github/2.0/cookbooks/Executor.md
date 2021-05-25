@@ -40,7 +40,6 @@ Table of Contents
   - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
   - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
-
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Minimum working example
@@ -489,3 +488,31 @@ Line number corresponds to the 1.x code:
     - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
+    
+## Executors in Action
+
+### Paddle
+
+```python
+import paddle  # paddle==2.1.0
+import numpy as np
+
+from jina import Executor, requests
+
+
+class PaddleMwuExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.dims = 5
+        self.encoding_mat = paddle.to_tensor(np.random.rand(self.dims, self.dims))
+
+    @requests
+    def encode(self, docs, **kwargs):
+        for doc in docs:
+            _input = paddle.to_tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Paddle.Tensor``
+            _output = _input.matmul(self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
+            doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
+```
+
+
+
