@@ -539,9 +539,7 @@ class PytorchMwuExecutor(Executor):
             output_tensor = torch.matmul(
                 self.encoding_mat, input_tensor
             )  # multiply the input with the encoding matrix.
-            doc.embedding = (
-                output_tensor.numpy()
-            )  # assign the encoding results to ``embedding``
+            doc.embedding = output_tensor.numpy() # assign the encoding results to ``embedding``
 
 ```
 
