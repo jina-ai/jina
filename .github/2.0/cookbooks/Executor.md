@@ -226,7 +226,7 @@ def foo(docs: Optional[DocumentArray],
 
 The Executor's method receive the following arguments in order:
 
-| Name | Type | Description  | 
+| Name | Type | Description  |
 | --- | --- | --- |
 | `docs`   | `Optional[DocumentArray]`  | `Request.docs`. When multiple requests are available, it is a concatenation of all `Request.docs` as one `DocumentArray`. When `DocumentArray` has zero element, then it is `None`.  |
 | `parameters`  | `Dict`  | `Request.parameters`, given by `Flow.post(..., parameters=)` |
@@ -458,7 +458,7 @@ different purposes.
 In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 
 |||
-| --- | --- | 
+| --- | --- |
 | `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace` |
 | `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `read_only`, `memory_hwm`, `on_error_strategy`, `num_part`, `uses_internal`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts` |
 
@@ -467,7 +467,7 @@ Note that the YAML API will ignore `.runtime_args` during save and load as they 
 Also note that for any other parametrization of the Executor, you can still access its constructor arguments (defined in
 the class `__init__`) and the request `parameters`.
 
---- 
+---
 
 ## Migration in Practice
 
@@ -489,3 +489,45 @@ Line number corresponds to the 1.x code:
     - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
+
+
+
+### Scikit-learn
+
+
+
+```python
+import sklearn
+
+from jina import Executor, requests, DocumentArray
+
+class TFIDFTextEncoder(Executor):
+
+    def __init__(
+        self,
+        path_vectorizer: str = os.path.join(cur_dir, 'model/tfidf_vectorizer.pickle'),
+        *args,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.path_vectorizer = path_vectorizer
+
+        import os
+        import pickle
+
+        if os.path.exists(self.path_vectorizer):
+            self.tfidf_vectorizer = pickle.load(open(self.path_vectorizer, 'rb'))
+        else:
+            raise PretrainedModelFileDoesNotExist(
+                f'{self.path_vectorizer} not found, cannot find a fitted tfidf_vectorizer'
+            )
+
+    @requests
+    def encode(self,docs: DocumentArray,  *args, **kwargs):
+        iterable_of_texts = docs.get_attributes('text')
+        embedding_matrix = self.tfidf_vectorizer.transform(iterable_of_texts)
+
+        for doc, doc_embedding in zip(docs, embedding_matrix):
+            doc.embedding = doc_embedding
+```
+
