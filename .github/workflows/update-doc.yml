@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: push-to-api-repo
         run: |
+          pip install .[devel]
           cd docs
           pip install -r requirements.txt
           docker run --rm \
@@ -27,7 +28,9 @@ jobs:
             -v $(pwd)/../jina/proto:/protos \
             pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
           make dirhtml
-          cp -r ./_build/dirhtml/ ./
+          cd ./_build/dirhtml/
+          cp -r ./ ../../
+          cd -
           rm -rf ./_build/dirhtml/
           ls -la
           touch .nojekyll
