@@ -66,30 +66,7 @@ with f:
 
 ### With YAML
 
-```text
-.
-├── __init__.py
-├── app.py
-├── my.yml
-└── foo.py
-
-```
-
-`foo.py`:
-
-```python
-from jina import Executor
-
-
-class MyExecutor(Executor):
-
-    def __init__(self, bar: int, **kwargs):
-        super().__init__(**kwargs)
-        self.bar = bar
-
-    def foo(self, **kwargs):
-        print(f'foo says: {self.bar} {self.metas} {kwargs}')
-```
+`MyExecutor` described as above.
 
 `my.yml`:
 
@@ -106,8 +83,14 @@ requests:
   /random_work: foo
 ```
 
-`app.py`:
+Construct `Executor` from YAML:
+```python
+from jina import Executor
 
+my_exec = Executor.load_config('my.yml')
+```
+
+Flow uses `Executor` from YAML: 
 ```python
 from jina import Flow, Document
 

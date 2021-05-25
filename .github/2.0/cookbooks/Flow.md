@@ -45,7 +45,7 @@ Table of Contents
 
 ## Minimum working example
 
-### Pure Python
+### Pure Python: All-in-one Style 
 
 ```python
 from jina import Flow, Document, Executor, requests
@@ -63,6 +63,35 @@ f = Flow().add(name='myexec1', uses=MyExecutor)
 with f:
     f.post(on='/bar', inputs=Document(), on_done=print)
 ```
+
+### Pure Python: Flow-as-a-Service Style
+
+Server:
+```python
+from jina import Flow, Executor, requests
+
+
+class MyExecutor(Executor):
+
+    @requests('/bar')
+    def foo(self, docs):
+        print(docs)
+
+
+f = Flow(port_expose=12345).add(name='myexec1', uses=MyExecutor)
+
+with f:
+    f.block()
+```
+
+Client:
+```python
+from jina import Client, Document
+
+c = Client(port_expose=12345)
+c.post(on='/bar', inputs=Document(), on_done=print)
+```
+
 
 ### With YAML
 
