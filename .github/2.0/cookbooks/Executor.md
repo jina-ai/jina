@@ -514,5 +514,34 @@ class PaddleMwuExecutor(Executor):
             doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
 ```
 
+### PyTorch
 
+```python
+import torch  # 1.8.1
+import numpy as np
+
+
+from jina import Executor, requests
+
+
+class PytorchMwuExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.dims = 5
+        self.encoding_mat = torch.from_numpy(np.random.rand(self.dims, self.dims))
+
+    @requests
+    def encode(self, docs, **kwargs):
+        for doc in docs:
+            input_tensor = torch.from_numpy(
+                doc.blob
+            )  # convert the ``ndarray`` of the doc to ``Tensor``
+            output_tensor = torch.matmul(
+                self.encoding_mat, input_tensor
+            )  # multiply the input with the encoding matrix.
+            doc.embedding = (
+                output_tensor.numpy()
+            )  # assign the encoding results to ``embedding``
+
+```
 
