@@ -1,0 +1,34 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - master
+
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally ignore all
+
+
+jobs:
+  update-doc:
+    if: |
+      startsWith(github.event.head_commit.message, 'chore(docs):')
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: push-to-api-repo
+        run: |
+          cd docs
+          docker run --rm \
+            -v $(pwd)/proto:/out \
+            -v $(pwd)/../jina/proto:/protos \
+            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
+          make dirhtml
+          cp -r ./_build/dirhtml/ ./
+          touch .nojekyll
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
+          git status
