@@ -361,7 +361,7 @@ class Document(ProtoTypeMixin):
         destination: 'Document',
         fields: Optional[List[str]] = None,
     ) -> None:
-        """Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
+        """Merge fields specified in ``fields`` from source to destination.
 
         :param source: source :class:`Document` object.
         :param destination: the destination :class:`Document` object to be merged into.
@@ -385,18 +385,22 @@ class Document(ProtoTypeMixin):
                     fields_to_preserve.append(field_name)
             except ValueError:
                 continue  # pass on purpose, HasField() only works for message fields.
+        dest_copy = deepcopy(destination)
         if fields:
-            # Only update specified ``fields``
+            # Field masks are used to specify a subset of fields that should be
+            # returned by a get operation or modified by an update operation.
+            # Not using FieldMask since tags as `StructView` can not call `MergeFrom`.
             for field in fields:
                 destination._pb_body.ClearField(field)
                 setattr(destination, field, getattr(source, field))
         else:
             # Merge fields completely while keeping the preserved fields.
-            dest = deepcopy(destination)
             destination.CopyFrom(source)
             if fields_to_preserve:
                 for field in fields_to_preserve:
-                    setattr(destination, field, getattr(dest, field))
+                    setattr(destination, field, getattr(dest_copy, field))
+        # For the tags, stay consistent with the python update method.
+        self._pb_body.tags.update(dest_copy.tags)
 
     def update(
         self,

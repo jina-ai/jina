@@ -740,7 +740,7 @@ def test_doc_update_given_empty_fields_and_attributes_identical(test_docs):
     doc1.update(source=doc2)
     assert doc1.id == doc2.id
     assert doc1.content == doc2.content
-    assert doc1.tags == doc2.tags
+    assert doc1.tags == {'a': 'b', 'c': 'd'}  # tags will be merged.
     assert (doc1.embedding == doc2.embedding).all()
     assert doc1.chunks == doc2.chunks
 
@@ -756,7 +756,7 @@ def test_doc_update_given_empty_fields_and_destination_has_more_attributes(test_
     doc1.update(source=doc2)
     assert doc1.id == doc2.id
     assert doc1.content == 'hello-world'  # doc1 content remains the same.
-    assert doc1.tags == doc2.tags
+    assert doc1.tags == {'a': 'b', 'c': 'd'}  # tags will be merged.
     assert (doc1.embedding == doc2.embedding).all()
     assert doc1.chunks == doc2.chunks
 
@@ -772,7 +772,7 @@ def test_doc_update_given_empty_fields_and_source_has_more_attributes(test_docs)
     assert (
         doc1.content == doc2.content
     )  # destination content `None` was updated by source's content.
-    assert doc1.tags == doc2.tags
+    assert doc1.tags == {'a': 'b', 'c': 'd'}  # tags will be merged.
     assert (doc1.embedding == doc2.embedding).all()
     assert doc1.chunks == doc2.chunks
 
@@ -781,10 +781,11 @@ def test_doc_update_given_singular_fields_and_attributes_identical(test_docs):
     # doc1 and doc2 has the same fields, id, content, tags, embedding and chunks.
     doc1, doc2 = test_docs
     # After update, only specified fields are updated.
-    doc1.update(source=doc2, fields=['id', 'content'])
+    doc1.update(source=doc2, fields=['id', 'text'])
     assert doc1.id == doc2.id
     assert doc1.content == doc2.content  # None was updated by source's content.
     assert doc1.tags != doc2.tags
+    assert doc1.tags == {'a': 'b'}
     assert (doc1.embedding != doc2.embedding).all()
     assert doc1.chunks != doc2.chunks
 
@@ -796,7 +797,7 @@ def test_doc_update_given_nested_fields_and_attributes_identical(test_docs):
     doc1.update(source=doc2, fields=['tags', 'embedding', 'chunks'])
     assert doc1.id != doc2.id
     assert doc1.content != doc2.content  # None was updated by source's content.
-    assert doc1.tags == doc2.tags
+    assert doc1.tags == {'a': 'b', 'c': 'd'}  # tags will be merged.
     assert (doc1.embedding == doc2.embedding).all()
     assert (
         doc1.chunks[0].parent_id != doc2.chunks[0].parent_id
@@ -816,6 +817,7 @@ def test_doc_update_given_fields_and_destination_has_more_attributes(test_docs):
     doc1.update(source=doc2, fields=['text'])
     assert doc1.text == ''
     assert doc1.tags != doc2.tags
+    assert doc1.tags == {'a': 'b'}
     assert (doc1.embedding != doc2.embedding).all()
     assert doc1.chunks != doc2.chunks
 
@@ -832,5 +834,6 @@ def test_doc_update_given_fields_and_source_has_more_attributes(test_docs):
     assert doc1.id != doc2.id
     assert doc1.content == doc2.content  # None was updated by source's content
     assert doc1.tags != doc2.tags
+    assert doc1.tags == {'a': 'b'}
     assert (doc1.embedding != doc2.embedding).all()
     assert doc1.chunks != doc2.chunks
