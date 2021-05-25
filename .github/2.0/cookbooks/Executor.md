@@ -514,5 +514,38 @@ class PaddleMwuExecutor(Executor):
             doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
 ```
 
+### MindSpore
+
+```python
+import numpy as np
+from mindspore import Tensor  # mindspre 1.2.0
+import mindspore.ops as ops
+import mindspore.context as context
+
+from jina import Executor, requests
+
+
+class MindsporeMwuExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        context.set_context(mode=context.PYNATIVE_MODE, device_target="CPU")
+        self.dims = 5
+        self.encoding_mat = Tensor(np.random.rand(self.dims, self.dims))
+
+    @requests
+    def encode(self, docs, **kwargs):
+        for doc in docs:
+            input_tensor = Tensor(
+                doc.blob
+            )  # convert the ``ndarray`` of the doc to ``Tensor``
+            matmul = ops.MatMul()
+            output_tensor = matmul(
+                self.encoding_mat, input_tensor
+            )  # multiply the input with the encoding matrix.
+            doc.embedding = (
+                output_tensor.asnumpy()
+            )  # assign the encoding results to ``embedding``
+```
+
 
 
