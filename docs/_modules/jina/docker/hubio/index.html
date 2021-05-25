@@ -1,0 +1,1287 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
+
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
+        <title>jina.docker.hubio - Jina 2.0.0rc3 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../../../../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
+    <link rel="stylesheet" href="../../../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../"><div class="brand">Jina 2.0.0rc3 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Jina 2.0.0rc3 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search/">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.request.helper/">jina.clients.request.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.docker/">jina.docker package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.docker.hubapi/">jina.docker.hubapi package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.docker.hubapi.local/">jina.docker.hubapi.local module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.docker.hubapi.remote/">jina.docker.hubapi.remote module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.docker.checker/">jina.docker.checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.docker.helper/">jina.docker.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.docker.hubio/">jina.docker.hubio module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.executors.decorators/">jina.executors.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.executors.metas/">jina.executors.metas module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.asyncio/">jina.flow.asyncio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.base/">jina.flow.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.builder/">jina.flow.builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot.executors/">jina.helloworld.chatbot.executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.executors/">jina.helloworld.fashion.executors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal.executors/">jina.helloworld.multimodal.executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.helloworld.fork/">jina.helloworld.fork module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label for="toctree-checkbox-13"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow.legacy/">jina.jaml.parsers.flow.legacy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.jaml.helper/">jina.jaml.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.optimizers.flow_runner/">jina.optimizers.flow_runner module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.optimizers.parameters/">jina.optimizers.parameters module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.hub/">jina.parsers.hub package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label for="toctree-checkbox-20"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.build/">jina.parsers.hub.build module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.list/">jina.parsers.hub.list module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.login/">jina.parsers.hub.login module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.new/">jina.parsers.hub.new module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.pushpull/">jina.parsers.hub.pushpull module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.zed/">jina.parsers.peapods.runtimes.zed module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.zmq/">jina.parsers.peapods.runtimes.zmq module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.peapods.base/">jina.parsers.peapods.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.peapods.pea/">jina.parsers.peapods.pea module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.peapods.pod/">jina.parsers.peapods.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.check/">jina.parsers.check module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.helper/">jina.parsers.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.optimizer/">jina.parsers.optimizer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.ping/">jina.parsers.ping module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.pods.compound/">jina.peapods.pods.compound module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio/">jina.peapods.runtimes.asyncio package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.grpc/">jina.peapods.runtimes.asyncio.grpc package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.grpc.async_call/">jina.peapods.runtimes.asyncio.grpc.async_call module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest/">jina.peapods.runtimes.asyncio.rest package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest.app/">jina.peapods.runtimes.asyncio.rest.app module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest.models/">jina.peapods.runtimes.asyncio.rest.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.base/">jina.peapods.runtimes.asyncio.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.ssh/">jina.peapods.runtimes.ssh package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.meta/">jina.schemas.meta module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.pod/">jina.schemas.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.message.common/">jina.types.message.common module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.tensorflow/">jina.types.ndarray.sparse.tensorflow module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.struct/">jina.types.struct module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.checker/">jina.checker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.enums/">jina.enums module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.helper/">jina.helper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.importer/">jina.importer module</a></li>
+</ul>
+</li>
+</ul>
+<p><span class="caption-text">Command Line Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
+</ul>
+<p><span class="caption-text">Protobuf Specification</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <h1>Source code for jina.docker.hubio</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Module for wrapping Jina Hub API calls."""</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span> <span class="nn">webbrowser</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">.checker</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="k">import</span> <span class="n">credentials_file</span>
+<span class="kn">from</span> <span class="nn">.hubapi.local</span> <span class="k">import</span> <span class="n">_list_local</span><span class="p">,</span> <span class="n">_load_local_hub_manifest</span>
+<span class="kn">from</span> <span class="nn">.hubapi.remote</span> <span class="k">import</span> <span class="n">_list</span><span class="p">,</span> <span class="n">_register_to_mongodb</span><span class="p">,</span> <span class="n">_fetch_docker_auth</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">jina_version</span>
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="k">import</span> <span class="n">BuildTestLevel</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">HubBuilderError</span><span class="p">,</span>
+    <span class="n">HubBuilderBuildError</span><span class="p">,</span>
+    <span class="n">HubBuilderTestError</span><span class="p">,</span>
+    <span class="n">HubLoginRequired</span><span class="p">,</span>
+    <span class="n">ImageAlreadyExists</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..executors</span> <span class="k">import</span> <span class="n">BaseExecutor</span>
+<span class="kn">from</span> <span class="nn">..flow</span> <span class="k">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">colored</span><span class="p">,</span>
+    <span class="n">get_readable_size</span><span class="p">,</span>
+    <span class="n">get_now_timestamp</span><span class="p">,</span>
+    <span class="n">get_full_version</span><span class="p">,</span>
+    <span class="n">random_name</span><span class="p">,</span>
+    <span class="n">expand_dict</span><span class="p">,</span>
+    <span class="n">countdown</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="k">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">..logging</span> <span class="k">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="k">import</span> <span class="n">TimeContext</span><span class="p">,</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">..parsers</span> <span class="k">import</span> <span class="n">set_pod_parser</span>
+<span class="kn">from</span> <span class="nn">..peapods</span> <span class="k">import</span> <span class="n">Pod</span>
+
+<span class="n">_allowed</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'name'</span><span class="p">,</span>
+    <span class="s1">'description'</span><span class="p">,</span>
+    <span class="s1">'author'</span><span class="p">,</span>
+    <span class="s1">'url'</span><span class="p">,</span>
+    <span class="s1">'documentation'</span><span class="p">,</span>
+    <span class="s1">'version'</span><span class="p">,</span>
+    <span class="s1">'vendor'</span><span class="p">,</span>
+    <span class="s1">'license'</span><span class="p">,</span>
+    <span class="s1">'avatar'</span><span class="p">,</span>
+    <span class="s1">'platform'</span><span class="p">,</span>
+    <span class="s1">'update'</span><span class="p">,</span>
+    <span class="s1">'keywords'</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_label_prefix</span> <span class="o">=</span> <span class="s1">'ai.jina.hub.'</span>
+
+
+<div class="viewcode-block" id="HubIO"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO">[docs]</a><span class="k">class</span> <span class="nc">HubIO</span><span class="p">:</span>
+    <span class="sd">""":class:`HubIO` provides the way to interact with Jina Hub registry.</span>
+
+<span class="sd">    You can use it with CLI to package a directory into a Jina Hub image and publish it to the world.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        - :command:`jina hub build my_pod/` build the image</span>
+<span class="sd">        - :command:`jina hub build my_pod/ --push` build the image and push to the public registry</span>
+<span class="sd">        - :command:`jina hub pull jinahub/pod.dummy_mwu_encoder:0.0.6` to download the image</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
+        <span class="sd">"""Create a new HubIO.</span>
+
+<span class="sd">        :param args: arguments</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_docker_client</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_load_docker_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">help_text</span><span class="o">=</span><span class="s1">'missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'</span>
+            <span class="s1">'to enable full CLI, please do pip install "jina[docker]"'</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">docker</span>
+            <span class="kn">from</span> <span class="nn">docker</span> <span class="k">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">DockerClient</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">DockerClient</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+
+            <span class="c1"># low-level client</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s1">'unix://var/run/docker.sock'</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HubIO.new"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_input</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Create a new executor using cookiecutter template.</span>
+
+<span class="sd">        :param no_input: Argument to avoid prompting dialogue (just to be used for testing)</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">cookiecutter.main</span> <span class="k">import</span> <span class="n">cookiecutter</span>
+            <span class="kn">import</span> <span class="nn">click</span>  <span class="c1"># part of cookiecutter</span>
+
+        <span class="n">cookiecutter_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">template</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'app'</span><span class="p">:</span>
+            <span class="n">cookiecutter_template</span> <span class="o">=</span> <span class="s1">'https://github.com/jina-ai/cookiecutter-jina.git'</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'pod'</span><span class="p">:</span>
+            <span class="n">cookiecutter_template</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">'https://github.com/jina-ai/cookiecutter-jina-hub.git'</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cookiecutter</span><span class="p">(</span>
+                <span class="n">template</span><span class="o">=</span><span class="n">cookiecutter_template</span><span class="p">,</span>
+                <span class="n">overwrite_if_exists</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">overwrite</span><span class="p">,</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+                <span class="n">no_input</span><span class="o">=</span><span class="n">no_input</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">click</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Abort</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'nothing is created, bye!'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HubIO.login"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Login using Github Device flow to allow push access to Jina Hub Registry."""</span>
+        <span class="kn">import</span> <span class="nn">requests</span>
+
+        <span class="k">with</span> <span class="n">resource_stream</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'hubapi.yml'</span><span class="p">)))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">hubapi_yml</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+        <span class="n">client_id</span> <span class="o">=</span> <span class="n">hubapi_yml</span><span class="p">[</span><span class="s1">'github'</span><span class="p">][</span><span class="s1">'client_id'</span><span class="p">]</span>
+        <span class="n">scope</span> <span class="o">=</span> <span class="n">hubapi_yml</span><span class="p">[</span><span class="s1">'github'</span><span class="p">][</span><span class="s1">'scope'</span><span class="p">]</span>
+        <span class="n">device_code_url</span> <span class="o">=</span> <span class="n">hubapi_yml</span><span class="p">[</span><span class="s1">'github'</span><span class="p">][</span><span class="s1">'device_code_url'</span><span class="p">]</span>
+        <span class="n">access_token_url</span> <span class="o">=</span> <span class="n">hubapi_yml</span><span class="p">[</span><span class="s1">'github'</span><span class="p">][</span><span class="s1">'access_token_url'</span><span class="p">]</span>
+        <span class="n">grant_type</span> <span class="o">=</span> <span class="n">hubapi_yml</span><span class="p">[</span><span class="s1">'github'</span><span class="p">][</span><span class="s1">'grant_type'</span><span class="p">]</span>
+        <span class="n">login_max_retry</span> <span class="o">=</span> <span class="n">hubapi_yml</span><span class="p">[</span><span class="s1">'github'</span><span class="p">][</span><span class="s1">'login_max_retry'</span><span class="p">]</span>
+
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'Accept'</span><span class="p">:</span> <span class="s1">'application/json'</span><span class="p">}</span>
+        <span class="n">code_request_body</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'client_id'</span><span class="p">:</span> <span class="n">client_id</span><span class="p">,</span> <span class="s1">'scope'</span><span class="p">:</span> <span class="n">scope</span><span class="p">}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s1">'Jina Hub login will use Github Device to generate one time token'</span>
+            <span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="n">device_code_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">code_request_body</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">'cannot reach github server. please make sure you</span><span class="se">\'</span><span class="s1">re connected to internet'</span>
+                <span class="p">)</span>
+
+            <span class="n">code_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="n">device_code</span> <span class="o">=</span> <span class="n">code_response</span><span class="p">[</span><span class="s1">'device_code'</span><span class="p">]</span>
+            <span class="n">user_code</span> <span class="o">=</span> <span class="n">code_response</span><span class="p">[</span><span class="s1">'user_code'</span><span class="p">]</span>
+            <span class="n">verification_uri</span> <span class="o">=</span> <span class="n">code_response</span><span class="p">[</span><span class="s1">'verification_uri'</span><span class="p">]</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">'You should see a "Device Activation" page open in your browser. '</span>
+                    <span class="n">f</span><span class="s1">'If not, please go to {colored(verification_uri, "cyan", attrs=["underline"])}'</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">'Please follow the steps:</span><span class="se">\n\n</span><span class="s1">'</span>
+                    <span class="n">f</span><span class="s1">'1. Enter the following code to that page: {colored(user_code, "cyan", attrs=["bold"])}</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="s1">'2. Click "Continue"</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="s1">'3. Come back to this terminal</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="p">)</span>
+                <span class="c1"># allowing sometime for the user to view the message</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">verification_uri</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># intentional pass, browser support isn't cross-platform</span>
+
+            <span class="n">access_request_body</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">'client_id'</span><span class="p">:</span> <span class="n">client_id</span><span class="p">,</span>
+                <span class="s1">'device_code'</span><span class="p">:</span> <span class="n">device_code</span><span class="p">,</span>
+                <span class="s1">'grant_type'</span><span class="p">:</span> <span class="n">grant_type</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">login_max_retry</span><span class="p">):</span>
+                <span class="n">access_token_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">access_token_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">access_request_body</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">access_token_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'authorization_pending'</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'still waiting for authorization'</span><span class="p">)</span>
+                    <span class="n">countdown</span><span class="p">(</span>
+                        <span class="mi">10</span><span class="p">,</span>
+                        <span class="n">reason</span><span class="o">=</span><span class="n">colored</span><span class="p">(</span>
+                            <span class="s1">'re-fetch access token'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'bold'</span><span class="p">,</span> <span class="s1">'reverse'</span><span class="p">]</span>
+                        <span class="p">),</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="s1">'access_token'</span> <span class="ow">in</span> <span class="n">access_token_response</span><span class="p">:</span>
+                    <span class="n">token</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'access_token'</span><span class="p">:</span> <span class="n">access_token_response</span><span class="p">[</span><span class="s1">'access_token'</span><span class="p">]}</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">credentials_file</span><span class="p">(),</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">cf</span><span class="p">:</span>
+                        <span class="n">JAML</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">cf</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'✅ Successfully logged in!'</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'❌ Max retries </span><span class="si">{login_max_retry}</span><span class="s1"> reached'</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">exp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'❌ Can not read the key in response: </span><span class="si">{exp}</span><span class="s1">'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HubIO.list"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.list">[docs]</a>    <span class="k">def</span> <span class="nf">list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]:</span>
+        <span class="sd">"""List all hub images given a filter specified by CLI.</span>
+
+<span class="sd">        :return: list of dictionaries of images</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">local_only</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_list_local</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_list</span><span class="p">(</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                <span class="n">image_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">image_kind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span>
+                <span class="n">image_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                <span class="n">image_keywords</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">build_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Push image to Jina Hub.</span>
+
+<span class="sd">        :param name: name of image</span>
+<span class="sd">        :param build_result: dictionary containing the build summary</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        """</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># check if image exists</span>
+            <span class="c1"># fail if it does</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_overwrite</span>
+                <span class="ow">and</span> <span class="n">build_result</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_image_version_exists</span><span class="p">(</span>
+                    <span class="n">build_result</span><span class="p">[</span><span class="s1">'manifest_info'</span><span class="p">][</span><span class="s1">'name'</span><span class="p">],</span>
+                    <span class="n">build_result</span><span class="p">[</span><span class="s1">'manifest_info'</span><span class="p">][</span><span class="s1">'version'</span><span class="p">],</span>
+                    <span class="n">jina_version</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ImageAlreadyExists</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">'Image with name </span><span class="si">{name}</span><span class="s1"> already exists. Will NOT overwrite.'</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">'Image with name </span><span class="si">{name}</span><span class="s1"> does not exist. Pushing now...'</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_push_docker_hub</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">build_result</span><span class="p">:</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">get_summary_path</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">build_result</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="n">f</span><span class="s1">'can not find the build summary file.'</span>
+                        <span class="n">f</span><span class="s1">'please use "jina hub build" to build the image first '</span>
+                        <span class="n">f</span><span class="s1">'before pushing.'</span>
+                    <span class="p">)</span>
+                    <span class="k">return</span>
+
+            <span class="k">if</span> <span class="n">build_result</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">build_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'is_build_success'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">_register_to_mongodb</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="n">build_result</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">build_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'details'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">build_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s1">'build_history'</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_slack_message</span><span class="p">(</span>
+                        <span class="n">build_result</span><span class="p">,</span>
+                        <span class="n">build_result</span><span class="p">[</span><span class="s1">'details'</span><span class="p">],</span>
+                        <span class="n">build_result</span><span class="p">[</span><span class="s1">'build_history'</span><span class="p">],</span>
+                    <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'Error when trying to push image </span><span class="si">{name}</span><span class="s1">: </span><span class="si">{e!r}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="p">(</span><span class="n">ImageAlreadyExists</span><span class="p">,</span> <span class="n">HubLoginRequired</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="n">e</span></div>
+
+    <span class="k">def</span> <span class="nf">_push_docker_hub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Push to Docker Hub.</span>
+
+<span class="sd">        :param name: name of image</span>
+<span class="sd">        """</span>
+        <span class="n">check_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">repository</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_docker_image</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docker_login</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="n">f</span><span class="s1">'pushing </span><span class="si">{name}</span><span class="s1">'</span><span class="p">,</span> <span class="n">batch_unit</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'🎉 </span><span class="si">{name}</span><span class="s1"> is now published!'</span><span class="p">)</span>
+
+        <span class="n">share_link</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'https://api.jina.ai/hub/?jh={urllib.parse.quote_plus(name)}'</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">webbrowser</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">share_link</span><span class="p">,</span> <span class="n">new</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># pass intentionally, dont want to bother users on opening browser failure</span>
+            <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'Check out the usage {colored(share_link, "cyan", attrs=["underline"])} and share it with others!'</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="HubIO.pull"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Pull docker image."""</span>
+        <span class="n">check_registry</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">repository</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_docker_login</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="n">f</span><span class="s1">'pulling </span><span class="si">{self.args.name}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">image_tag</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span> <span class="k">else</span> <span class="s1">''</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'🎉 pulled </span><span class="si">{image_tag}</span><span class="s1"> (</span><span class="si">{image.short_id}</span><span class="s1">) uncompressed size: {get_readable_size(image.attrs["Size"])}'</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'can not pull image </span><span class="si">{self.args.name}</span><span class="s1"> from </span><span class="si">{self.args.registry}</span><span class="s1"> due to </span><span class="si">{ex!r}</span><span class="s1">'</span>
+            <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_docker_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># check local image</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_allowed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span><span class="s1">'</span><span class="si">{_label_prefix}{r}</span><span class="s1">'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">'</span><span class="si">{r}</span><span class="s1"> is missing in your docker image labels, you may want to check it'</span>
+                <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="s1">'ai.jina.hub.jina_version'</span><span class="p">]</span> <span class="o">=</span> <span class="n">jina_version</span>
+            <span class="n">label_info</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">f</span><span class="s1">'</span><span class="si">{self.args.repository}</span><span class="s1">/'</span>
+                <span class="o">+</span> <span class="s1">'</span><span class="si">{type}</span><span class="s1">.</span><span class="si">{kind}</span><span class="s1">.</span><span class="si">{name}</span><span class="s1">:</span><span class="si">{version}</span><span class="s1">-</span><span class="si">{jina_version}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">_label_prefix</span><span class="p">,</span> <span class="s1">''</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">image</span><span class="o">.</span><span class="n">labels</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">safe_name</span> <span class="o">=</span> <span class="n">safe_url_name</span><span class="p">(</span><span class="n">label_info</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="n">safe_name</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">'image </span><span class="si">{name}</span><span class="s1"> does not match with label info in the image. name should be </span><span class="si">{safe_name}</span><span class="s1">'</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'missing key in the label of the image {repr(e)}'</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'✅ </span><span class="si">{name}</span><span class="s1"> is a valid Jina Hub image, ready to publish'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_docker_login</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Log-in to Docker."""</span>
+        <span class="kn">from</span> <span class="nn">docker.errors</span> <span class="k">import</span> <span class="n">APIError</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">username</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">_fetch_docker_auth</span><span class="p">(</span>
+                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">login</span><span class="p">(</span>
+                <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">registry</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">f</span><span class="s1">'✅ Successfully logged in to docker hub'</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">APIError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">HubLoginRequired</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'❌ Invalid docker credentials passed. docker login failed'</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="HubIO.build"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Perform a build of the Docker image.</span>
+
+<span class="sd">        :return: dictionary with information on image (manifest)</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dry_run</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dry_run</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_build_success</span><span class="p">,</span> <span class="n">is_push_success</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="n">_logs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">_except_strs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">_excepts</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'building {colored(self.args.path, "green")}'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">tc</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">_check_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_completeness</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_freeze_jina_version</span><span class="p">()</span>
+
+                    <span class="n">_dockerfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">_check_result</span><span class="p">[</span><span class="s1">'Dockerfile'</span><span class="p">])</span>
+                    <span class="n">_labels</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="n">_label_prefix</span> <span class="o">+</span> <span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">}</span>
+                    <span class="n">streamer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+                        <span class="n">decode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                        <span class="n">tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>
+                        <span class="n">pull</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pull</span><span class="p">,</span>
+                        <span class="n">dockerfile</span><span class="o">=</span><span class="n">_dockerfile</span><span class="p">,</span>
+                        <span class="n">labels</span><span class="o">=</span><span class="n">_labels</span><span class="p">,</span>
+                        <span class="n">rm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">streamer</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">'stream'</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">[</span><span class="s1">'stream'</span><span class="p">]</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+                                <span class="k">if</span> <span class="n">is_error_message</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                                    <span class="n">_except_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                                <span class="k">elif</span> <span class="s1">'warning'</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                                <span class="n">_logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="c1"># if pytest fails it should end up here as well</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+                    <span class="n">is_build_success</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">ex</span> <span class="o">=</span> <span class="n">HubBuilderBuildError</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+                    <span class="n">_except_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+                    <span class="n">_excepts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">is_build_success</span><span class="p">:</span>
+                <span class="c1"># compile it again, but this time don't show the log</span>
+                <span class="n">image</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+                    <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                    <span class="n">tag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>
+                    <span class="n">pull</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pull</span><span class="p">,</span>
+                    <span class="n">dockerfile</span><span class="o">=</span><span class="n">_dockerfile</span><span class="p">,</span>
+                    <span class="n">labels</span><span class="o">=</span><span class="n">_labels</span><span class="p">,</span>
+                    <span class="n">rm</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="c1"># success</span>
+
+                <span class="n">_details</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">'inspect'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">inspect_image</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                    <span class="s1">'tag'</span><span class="p">:</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s1">'hash'</span><span class="p">:</span> <span class="n">image</span><span class="o">.</span><span class="n">short_id</span><span class="p">,</span>
+                    <span class="s1">'size'</span><span class="p">:</span> <span class="n">get_readable_size</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'Size'</span><span class="p">]),</span>
+                <span class="p">}</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                    <span class="s1">'🎉 built </span><span class="si">{tag}</span><span class="s1"> (</span><span class="si">{hash}</span><span class="s1">) uncompressed size: </span><span class="si">{size}</span><span class="s1">'</span><span class="o">.</span><span class="n">format_map</span><span class="p">(</span>
+                        <span class="n">_details</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'can not build the image due to </span><span class="si">{_except_strs}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="n">_details</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">if</span> <span class="n">is_build_success</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">test_uses</span><span class="p">:</span>
+                    <span class="n">p_names</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">is_build_success</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">p_names</span><span class="p">,</span> <span class="n">failed_test_levels</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">_test_build</span><span class="p">(</span>
+                            <span class="n">image</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">test_level</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">config_yaml_path</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">daemon</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                            <span class="n">test_level</span> <span class="ow">in</span> <span class="n">failed_test_levels</span>
+                            <span class="k">for</span> <span class="n">test_level</span> <span class="ow">in</span> <span class="p">[</span>
+                                <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_DOCKER</span><span class="p">,</span>
+                                <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">FLOW</span><span class="p">,</span>
+                            <span class="p">]</span>
+                        <span class="p">):</span>
+                            <span class="n">is_build_success</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                <span class="n">f</span><span class="s1">'build unsuccessful, failed at {str(failed_test_levels)} level'</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">is_build_success</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="n">f</span><span class="s1">'Build successful. Tests failed at : {str(failed_test_levels)} levels. '</span>
+                                <span class="n">f</span><span class="s1">'This could be due to the fact that the executor has non-installed external dependencies'</span>
+                            <span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="n">f</span><span class="s1">'something wrong while testing the build: </span><span class="si">{ex!r}</span><span class="s1">'</span>
+                        <span class="p">)</span>
+                        <span class="n">ex</span> <span class="o">=</span> <span class="n">HubBuilderTestError</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+                        <span class="n">_except_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+                        <span class="n">_excepts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+                    <span class="k">finally</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">daemon</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">p_names</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                            <span class="k">except</span><span class="p">:</span>
+                                <span class="k">pass</span>  <span class="c1"># suppress on purpose</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">prune_containers</span><span class="p">()</span>
+
+                <span class="n">info</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
+                <span class="n">_host_info</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">'jina'</span><span class="p">:</span> <span class="n">info</span><span class="p">,</span>
+                    <span class="s1">'jina_envs'</span><span class="p">:</span> <span class="n">env_info</span><span class="p">,</span>
+                    <span class="s1">'docker'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">info</span><span class="p">(),</span>
+                    <span class="s1">'build_args'</span><span class="p">:</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">),</span>
+                <span class="p">}</span>
+
+            <span class="n">_build_history</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">'time'</span><span class="p">:</span> <span class="n">get_now_timestamp</span><span class="p">(),</span>
+                <span class="s1">'host_info'</span><span class="p">:</span> <span class="n">_host_info</span>
+                <span class="k">if</span> <span class="n">is_build_success</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host_info</span>
+                <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
+                <span class="s1">'duration'</span><span class="p">:</span> <span class="n">tc</span><span class="o">.</span><span class="n">readable_duration</span><span class="p">,</span>
+                <span class="s1">'logs'</span><span class="p">:</span> <span class="n">_logs</span><span class="p">,</span>
+                <span class="s1">'exception'</span><span class="p">:</span> <span class="n">_except_strs</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prune_images</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'deleting unused images'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span><span class="o">.</span><span class="n">prune_images</span><span class="p">()</span>
+
+            <span class="c1"># since db tracks `version` &amp; `jina_version` on the top level, let's get rid of them in `manifest`</span>
+            <span class="k">if</span> <span class="n">is_build_success</span><span class="p">:</span>
+                <span class="n">_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'version'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'jina_version'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_version</span> <span class="o">=</span> <span class="s1">'0.0.1'</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="k">if</span> <span class="n">is_build_success</span> <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
+                <span class="s1">'version'</span><span class="p">:</span> <span class="n">_version</span><span class="p">,</span>
+                <span class="s1">'jina_version'</span><span class="p">:</span> <span class="n">jina_version</span><span class="p">,</span>
+                <span class="s1">'path'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                <span class="s1">'manifest_info'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="k">if</span> <span class="n">is_build_success</span> <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
+                <span class="s1">'details'</span><span class="p">:</span> <span class="n">_details</span><span class="p">,</span>
+                <span class="s1">'is_build_success'</span><span class="p">:</span> <span class="n">is_build_success</span><span class="p">,</span>
+                <span class="s1">'build_history'</span><span class="p">:</span> <span class="n">_build_history</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="c1"># only successful build (NOT dry run) writes the summary to disk</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s1">'is_build_success'</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_summary_to_file</span><span class="p">(</span><span class="n">summary</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">push</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">[</span><span class="s1">'is_build_success'</span><span class="p">]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">raise_error</span><span class="p">:</span>
+            <span class="c1"># remove the very verbose build log when throw error</span>
+            <span class="k">if</span> <span class="s1">'build_history'</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="s1">'build_history'</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'logs'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">HubBuilderError</span><span class="p">(</span><span class="n">_excepts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_test_build</span><span class="p">(</span>
+        <span class="n">image</span><span class="p">,</span>  <span class="c1"># type docker image object</span>
+        <span class="n">test_level</span><span class="p">:</span> <span class="s1">'BuildTestLevel'</span><span class="p">,</span>
+        <span class="n">config_yaml_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">daemon_arg</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">p_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">failed_levels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'run tests using test level </span><span class="si">{test_level}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="c1"># test uses at executor level</span>
+        <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">EXECUTOR</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'test to initialize an executor from yaml configuration: </span><span class="si">{config_yaml_path}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_yaml_path</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'successfully tested to initialize an executor'</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to initialize an executor'</span><span class="p">)</span>
+                <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">EXECUTOR</span><span class="p">)</span>
+
+        <span class="c1"># test uses at Pod level (no docker)</span>
+        <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_NONDOCKER</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'test to initialize a pod from yaml configuration: </span><span class="si">{config_yaml_path}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">Pod</span><span class="p">(</span>
+                    <span class="n">set_pod_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="s1">'--uses'</span><span class="p">,</span>
+                            <span class="n">config_yaml_path</span><span class="p">,</span>
+                            <span class="s1">'--timeout-ready'</span><span class="p">,</span>
+                            <span class="nb">str</span><span class="p">(</span><span class="n">timeout_ready</span><span class="p">),</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">'successfully tested to initialize a pod from yaml configuration'</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to initialize a pod'</span><span class="p">)</span>
+                <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_NONDOCKER</span><span class="p">)</span>
+
+        <span class="c1"># test uses at Pod level (with docker)</span>
+        <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_DOCKER</span><span class="p">:</span>
+            <span class="n">p_name</span> <span class="o">=</span> <span class="n">random_name</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'test to initialize a pod via docker image </span><span class="si">{image.tags[0]}</span><span class="s1"> named </span><span class="si">{p_name}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">Pod</span><span class="p">(</span>
+                    <span class="n">set_pod_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="s1">'--uses'</span><span class="p">,</span>
+                            <span class="n">f</span><span class="s1">'docker://</span><span class="si">{image.tags[0]}</span><span class="s1">'</span><span class="p">,</span>
+                            <span class="s1">'--name'</span><span class="p">,</span>
+                            <span class="n">p_name</span><span class="p">,</span>
+                            <span class="s1">'--timeout-ready'</span><span class="p">,</span>
+                            <span class="nb">str</span><span class="p">(</span><span class="n">timeout_ready</span><span class="p">),</span>
+                        <span class="p">]</span>
+                        <span class="o">+</span> <span class="p">[</span><span class="s1">'--daemon'</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">daemon_arg</span>
+                        <span class="k">else</span> <span class="p">[]</span>
+                    <span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="n">p_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_name</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'successfully tested to initialize a pod via docker'</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to initialize a pod via docker image'</span><span class="p">)</span>
+                <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">POD_DOCKER</span><span class="p">)</span>
+
+        <span class="c1"># test uses at Flow level</span>
+        <span class="k">if</span> <span class="n">test_level</span> <span class="o">&gt;=</span> <span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">FLOW</span><span class="p">:</span>
+            <span class="n">p_name</span> <span class="o">=</span> <span class="n">random_name</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'test to build a flow from docker image </span><span class="si">{image.tags[0]}</span><span class="s1"> named </span><span class="si">{p_name}</span><span class="s1"> '</span>
+                <span class="n">f</span><span class="s1">'with daemon=</span><span class="si">{daemon_arg}</span><span class="s1"> and timeout_ready=</span><span class="si">{timeout_ready}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">p_name</span><span class="p">,</span>
+                    <span class="n">uses</span><span class="o">=</span><span class="n">f</span><span class="s1">'docker://</span><span class="si">{image.tags[0]}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="n">daemon</span><span class="o">=</span><span class="n">daemon_arg</span><span class="p">,</span>
+                    <span class="n">timeout_ready</span><span class="o">=</span><span class="n">timeout_ready</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="n">p_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p_name</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'successfully tested to build a flow from docker image'</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">'failed to build a flow from docker image'</span><span class="p">)</span>
+                <span class="n">failed_levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BuildTestLevel</span><span class="o">.</span><span class="n">FLOW</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p_names</span><span class="p">,</span> <span class="n">failed_levels</span>
+
+<div class="viewcode-block" id="HubIO.dry_run"><a class="viewcode-back" href="../../../../api/jina.docker.hubio/#jina.docker.hubio.HubIO.dry_run">[docs]</a>    <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Perform a dry-run.</span>
+
+<span class="sd">        :return: a dict with the manifest info.</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_completeness</span><span class="p">()</span>
+            <span class="n">s</span><span class="p">[</span><span class="s1">'is_build_success'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'is_build_success'</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">'exception'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+    <span class="k">def</span> <span class="nf">_write_summary_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">get_summary_path</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{summary["name"]}</span><span class="s1">:</span><span class="si">{summary["version"]}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">'w+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">'stored the summary from build to </span><span class="si">{file_path}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_freeze_jina_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">pkg_resources</span>
+
+        <span class="n">requirements_path</span> <span class="o">=</span> <span class="n">get_exist_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'requirements.txt'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">requirements_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">requirements_path</span><span class="p">):</span>
+            <span class="n">new_requirements</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">update</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">requirements_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">requirements</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">parse_requirements</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requirements</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">'jina'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
+                            <span class="n">update</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'Freezing jina version to </span><span class="si">{jina_version}</span><span class="s1">'</span><span class="p">)</span>
+                            <span class="n">new_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="s1">'jina==</span><span class="si">{jina_version}</span><span class="s1">'</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">new_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">req</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">requirements_path</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_requirements</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_alias_to_local_path</span><span class="p">(</span><span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Convert user given alias to the actual local path of the image, if fails return the original</span>
+
+<span class="sd">        :param alias: the name of the hub image, given by user</span>
+<span class="sd">        :return: the local path of the hub image, if not matched then return the original input</span>
+<span class="sd">        """</span>
+        <span class="n">all_local_images</span> <span class="o">=</span> <span class="n">_load_local_hub_manifest</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">all_local_images</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">all_local_images</span><span class="p">[</span><span class="n">alias</span><span class="p">][</span><span class="s1">'source_path'</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">alias</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_alias_to_docker_image_name</span><span class="p">(</span><span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Convert user given alias to the actual image tag, if fails return the original</span>
+
+<span class="sd">        :param alias: the name of the hub image, given by user</span>
+<span class="sd">        :return: the actual image tag, if not matched then return the original input</span>
+<span class="sd">        """</span>
+        <span class="n">all_local_images</span> <span class="o">=</span> <span class="n">_load_local_hub_manifest</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">all_local_images</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">all_local_images</span><span class="p">[</span><span class="n">alias</span><span class="p">][</span><span class="s1">'image_tag'</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">alias</span>
+
+    <span class="k">def</span> <span class="nf">_check_completeness</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_local_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">dockerfile_path</span> <span class="o">=</span> <span class="n">get_exist_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">manifest_path</span> <span class="o">=</span> <span class="n">get_exist_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'manifest.yml'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_yaml_path</span> <span class="o">=</span> <span class="n">get_exist_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'config.yml'</span><span class="p">)</span>
+        <span class="n">readme_path</span> <span class="o">=</span> <span class="n">get_exist_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'README.md'</span><span class="p">)</span>
+        <span class="n">requirements_path</span> <span class="o">=</span> <span class="n">get_exist_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'requirements.txt'</span><span class="p">)</span>
+
+        <span class="n">yaml_glob</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'*.yml'</span><span class="p">)))</span>
+        <span class="n">yaml_glob</span><span class="o">.</span><span class="n">difference_update</span><span class="p">({</span><span class="n">manifest_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_yaml_path</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_yaml_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_yaml_path</span> <span class="o">=</span> <span class="n">yaml_glob</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="n">py_glob</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'*.py'</span><span class="p">))</span>
+
+        <span class="n">test_glob</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s1">'tests/test_*.py'</span><span class="p">))</span>
+
+        <span class="n">completeness</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'Dockerfile'</span><span class="p">:</span> <span class="n">dockerfile_path</span><span class="p">,</span>
+            <span class="s1">'manifest.yml'</span><span class="p">:</span> <span class="n">manifest_path</span><span class="p">,</span>
+            <span class="s1">'config.yml'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_yaml_path</span><span class="p">,</span>
+            <span class="s1">'README.md'</span><span class="p">:</span> <span class="n">readme_path</span><span class="p">,</span>
+            <span class="s1">'requirements.txt'</span><span class="p">:</span> <span class="n">requirements_path</span><span class="p">,</span>
+            <span class="s1">'*.yml'</span><span class="p">:</span> <span class="n">yaml_glob</span><span class="p">,</span>
+            <span class="s1">'*.py'</span><span class="p">:</span> <span class="n">py_glob</span><span class="p">,</span>
+            <span class="s1">'tests'</span><span class="p">:</span> <span class="n">test_glob</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">f</span><span class="s1">'completeness check</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'{colored("✓", "green") if v else colored("✗", "red"):&gt;4} </span><span class="si">{k:&lt;20}</span><span class="s1"> </span><span class="si">{v}</span><span class="s1">'</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">completeness</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">completeness</span><span class="p">[</span><span class="s1">'Dockerfile'</span><span class="p">]</span> <span class="ow">and</span> <span class="n">completeness</span><span class="p">[</span><span class="s1">'manifest.yml'</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                <span class="s1">'Dockerfile or manifest.yml is not given, can not build'</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="s1">'Dockerfile or manifest.yml is not given, can not build'</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_manifest</span><span class="p">(</span><span class="n">manifest_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'jina_version'</span><span class="p">]</span> <span class="o">=</span> <span class="n">jina_version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="o">=</span> <span class="n">safe_url_name</span><span class="p">(</span>
+            <span class="n">f</span><span class="s1">'</span><span class="si">{self.args.repository}</span><span class="s1">/'</span>
+            <span class="o">+</span> <span class="n">f</span><span class="s1">'</span><span class="si">{self.manifest["type"]}</span><span class="s1">.</span><span class="si">{self.manifest["kind"]}</span><span class="s1">.</span><span class="si">{self.manifest["name"]}</span><span class="s1">'</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor_name</span> <span class="o">+</span> <span class="n">f</span><span class="s1">':</span><span class="si">{self.manifest["version"]}</span><span class="s1">-</span><span class="si">{jina_version}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="n">completeness</span>
+
+    <span class="k">def</span> <span class="nf">_read_manifest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">validate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">resource_stream</span><span class="p">(</span>
+            <span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'hub-builder'</span><span class="p">,</span> <span class="s1">'manifest.yml'</span><span class="p">))</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                <span class="n">fp</span>
+            <span class="p">)</span>  <span class="c1"># do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_manifest</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tmp</span>
+
+    <span class="k">def</span> <span class="nf">_validate_manifest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manifest</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">required</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'type'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">}</span>
+
+        <span class="c1"># check the required field in manifest</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">required</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">manifest</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{r}</span><span class="s1"> is missing in the manifest.yaml, it is required'</span><span class="p">)</span>
+
+        <span class="c1"># check if all fields are there</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_allowed</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">manifest</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">'</span><span class="si">{r}</span><span class="s1"> is missing in your manifest.yml, you may want to check it'</span>
+                <span class="p">)</span>
+
+        <span class="c1"># check name</span>
+        <span class="n">check_name</span><span class="p">(</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'name'</span><span class="p">])</span>
+        <span class="c1"># check_image_type</span>
+        <span class="n">check_image_type</span><span class="p">(</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'type'</span><span class="p">])</span>
+        <span class="c1"># check version number</span>
+        <span class="n">check_version</span><span class="p">(</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'version'</span><span class="p">])</span>
+        <span class="c1"># check version number</span>
+        <span class="n">check_license</span><span class="p">(</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'license'</span><span class="p">])</span>
+        <span class="c1"># check platform</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'platform'</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">manifest</span><span class="p">[</span><span class="s1">'platform'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'platform'</span><span class="p">])</span>
+        <span class="n">check_platform</span><span class="p">(</span><span class="n">manifest</span><span class="p">[</span><span class="s1">'platform'</span><span class="p">])</span>
+
+        <span class="c1"># replace all chars in value to safe chars</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">manifest</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">manifest</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">remove_control_characters</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># show manifest key-values</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">manifest</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">'</span><span class="si">{k}</span><span class="s1">: </span><span class="si">{v}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_write_slack_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_expand_fn</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+            <span class="k">return</span> <span class="n">v</span>
+
+        <span class="k">if</span> <span class="s1">'JINAHUB_SLACK_WEBHOOK'</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">resource_stream</span><span class="p">(</span>
+                <span class="s1">'jina'</span><span class="p">,</span>
+                <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'hub-builder-success'</span><span class="p">,</span> <span class="s1">'slack-jinahub.json'</span><span class="p">)),</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">expand_dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">),</span> <span class="n">_expand_fn</span><span class="p">,</span> <span class="n">resolve_cycle_ref</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'JINAHUB_SLACK_WEBHOOK'</span><span class="p">])</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s1">'application/json; charset=utf-8'</span><span class="p">)</span>
+                <span class="n">jdb</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>  <span class="c1"># needs to be bytes</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="s1">'Content-Length'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">jdb</span><span class="p">)))</span>
+                <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">jdb</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">'push to Slack: </span><span class="si">{res}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="c1"># alias of "new" in cli</span>
+    <span class="n">create</span> <span class="o">=</span> <span class="n">new</span>
+    <span class="n">init</span> <span class="o">=</span> <span class="n">new</span>
+
+    <span class="k">def</span> <span class="nf">_image_version_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module_version</span><span class="p">,</span> <span class="n">req_jina_version</span><span class="p">):</span>
+        <span class="n">manifests</span> <span class="o">=</span> <span class="n">_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="c1"># check if matching module version and jina version exists</span>
+        <span class="k">if</span> <span class="n">manifests</span><span class="p">:</span>
+            <span class="n">matching</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">m</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">manifests</span>
+                <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span> <span class="o">==</span> <span class="n">module_version</span>
+                <span class="ow">and</span> <span class="s1">'jina_version'</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="ow">and</span> <span class="n">m</span><span class="p">[</span><span class="s1">'jina_version'</span><span class="p">]</span> <span class="o">==</span> <span class="n">req_jina_version</span>
+            <span class="p">]</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+</pre></div>
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; Jina AI Limited. All rights reserved.
+            |
+            Last updated on May 25, 2021.
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script src="../../../../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>

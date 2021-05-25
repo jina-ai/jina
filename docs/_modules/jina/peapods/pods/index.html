@@ -1,0 +1,1086 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
+
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
+        <title>jina.peapods.pods - Jina 2.0.0rc3 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+    <link rel="stylesheet" href="../../../../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../../_static/pygments_dark.css">
+    
+
+
+<style>
+  :root {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #ffffff;
+  --color-code-foreground: #4d4d4d;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
+    <link rel="stylesheet" href="../../../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../"><div class="brand">Jina 2.0.0rc3 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../_static/logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../../_static/logo-dark.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Jina 2.0.0rc3 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search/">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.clients.request.helper/">jina.clients.request.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.docker/">jina.docker package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label for="toctree-checkbox-4"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.docker.hubapi/">jina.docker.hubapi package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.docker.hubapi.local/">jina.docker.hubapi.local module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.docker.hubapi.remote/">jina.docker.hubapi.remote module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.docker.checker/">jina.docker.checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.docker.helper/">jina.docker.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.docker.hubio/">jina.docker.hubio module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.executors/">jina.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label for="toctree-checkbox-6"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.executors.decorators/">jina.executors.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.executors.metas/">jina.executors.metas module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label for="toctree-checkbox-7"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.asyncio/">jina.flow.asyncio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.base/">jina.flow.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.builder/">jina.flow.builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label for="toctree-checkbox-8"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label for="toctree-checkbox-9"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.chatbot.executors/">jina.helloworld.chatbot.executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.executors/">jina.helloworld.fashion.executors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.helloworld.multimodal.executors/">jina.helloworld.multimodal.executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.helloworld.fork/">jina.helloworld.fork module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label for="toctree-checkbox-13"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label for="toctree-checkbox-14"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label for="toctree-checkbox-15"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label for="toctree-checkbox-16"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow.legacy/">jina.jaml.parsers.flow.legacy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.jaml.helper/">jina.jaml.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.optimizers/">jina.optimizers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.optimizers.discovery/">jina.optimizers.discovery module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.optimizers.flow_runner/">jina.optimizers.flow_runner module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.optimizers.parameters/">jina.optimizers.parameters module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.hub/">jina.parsers.hub package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label for="toctree-checkbox-20"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.build/">jina.parsers.hub.build module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.list/">jina.parsers.hub.list module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.login/">jina.parsers.hub.login module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.new/">jina.parsers.hub.new module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hub.pushpull/">jina.parsers.hub.pushpull module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.peapods/">jina.parsers.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label for="toctree-checkbox-21"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes/">jina.parsers.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.container/">jina.parsers.peapods.runtimes.container module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.distributed/">jina.parsers.peapods.runtimes.distributed module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.remote/">jina.parsers.peapods.runtimes.remote module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.zed/">jina.parsers.peapods.runtimes.zed module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.parsers.peapods.runtimes.zmq/">jina.parsers.peapods.runtimes.zmq module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.peapods.base/">jina.parsers.peapods.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.peapods.pea/">jina.parsers.peapods.pea module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.peapods.pod/">jina.parsers.peapods.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.check/">jina.parsers.check module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.helper/">jina.parsers.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.optimizer/">jina.parsers.optimizer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.ping/">jina.parsers.ping module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label for="toctree-checkbox-24"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.pods/">jina.peapods.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.pods.compound/">jina.peapods.pods.compound module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio/">jina.peapods.runtimes.asyncio package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.grpc/">jina.peapods.runtimes.asyncio.grpc package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.grpc.async_call/">jina.peapods.runtimes.asyncio.grpc.async_call module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest/">jina.peapods.runtimes.asyncio.rest package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest.app/">jina.peapods.runtimes.asyncio.rest.app module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest.models/">jina.peapods.runtimes.asyncio.rest.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.base/">jina.peapods.runtimes.asyncio.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.ssh/">jina.peapods.runtimes.ssh package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.base/">jina.peapods.runtimes.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.meta/">jina.schemas.meta module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.pod/">jina.schemas.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.message.common/">jina.types.message.common module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.tensorflow/">jina.types.ndarray.sparse.tensorflow module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.struct/">jina.types.struct module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.checker/">jina.checker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.enums/">jina.enums module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.helper/">jina.helper module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../api/jina.importer/">jina.importer module</a></li>
+</ul>
+</li>
+</ul>
+<p><span class="caption-text">Command Line Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
+</ul>
+<p><span class="caption-text">Protobuf Specification</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <h1>Source code for jina.peapods.pods</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="k">import</span> <span class="n">Namespace</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">ExitStack</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">cycle</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">..peas</span> <span class="k">import</span> <span class="n">BasePea</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__default_executor__</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">...enums</span> <span class="k">import</span> <span class="n">SchedulerType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="k">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span><span class="p">,</span> <span class="n">random_identity</span>
+
+
+<div class="viewcode-block" id="ExitFIFO"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.ExitFIFO">[docs]</a><span class="k">class</span> <span class="nc">ExitFIFO</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    ExitFIFO changes the exiting order of exitStack to turn it into FIFO.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">    The `__exit__` method is copied literally from `ExitStack` and changed the call:</span>
+<span class="sd">    `is_sync, cb = self._exit_callbacks.pop()` to `is_sync, cb = self._exit_callbacks.popleft()`</span>
+
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc_details</span><span class="p">):</span>
+        <span class="n">received_exc</span> <span class="o">=</span> <span class="n">exc_details</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="c1"># We manipulate the exception state so it behaves as though</span>
+        <span class="c1"># we were actually nesting multiple with statements</span>
+        <span class="n">frame_exc</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">_fix_exception_context</span><span class="p">(</span><span class="n">new_exc</span><span class="p">,</span> <span class="n">old_exc</span><span class="p">):</span>
+            <span class="c1"># Context may not be correct, so find the end of the chain</span>
+            <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">exc_context</span> <span class="o">=</span> <span class="n">new_exc</span><span class="o">.</span><span class="n">__context__</span>
+                <span class="k">if</span> <span class="n">exc_context</span> <span class="ow">is</span> <span class="n">old_exc</span><span class="p">:</span>
+                    <span class="c1"># Context is already set correctly (see issue 20317)</span>
+                    <span class="k">return</span>
+                <span class="k">if</span> <span class="n">exc_context</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">exc_context</span> <span class="ow">is</span> <span class="n">frame_exc</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">new_exc</span> <span class="o">=</span> <span class="n">exc_context</span>
+            <span class="c1"># Change the end of the chain to point to the exception</span>
+            <span class="c1"># we expect it to reference</span>
+            <span class="n">new_exc</span><span class="o">.</span><span class="n">__context__</span> <span class="o">=</span> <span class="n">old_exc</span>
+
+        <span class="c1"># Callbacks are invoked in LIFO order to match the behaviour of</span>
+        <span class="c1"># nested context managers</span>
+        <span class="n">suppressed_exc</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">pending_raise</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exit_callbacks</span><span class="p">:</span>
+            <span class="n">is_sync</span><span class="p">,</span> <span class="n">cb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exit_callbacks</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">is_sync</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cb</span><span class="p">(</span><span class="o">*</span><span class="n">exc_details</span><span class="p">):</span>
+                    <span class="n">suppressed_exc</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">pending_raise</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">exc_details</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">new_exc_details</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
+                <span class="c1"># simulate the stack of exceptions by setting the context</span>
+                <span class="n">_fix_exception_context</span><span class="p">(</span><span class="n">new_exc_details</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">exc_details</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">pending_raise</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">exc_details</span> <span class="o">=</span> <span class="n">new_exc_details</span>
+        <span class="k">if</span> <span class="n">pending_raise</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># bare "raise exc_details[1]" replaces our carefully</span>
+                <span class="c1"># set-up context</span>
+                <span class="n">fixed_ctx</span> <span class="o">=</span> <span class="n">exc_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">__context__</span>
+                <span class="k">raise</span> <span class="n">exc_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+                <span class="n">exc_details</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">__context__</span> <span class="o">=</span> <span class="n">fixed_ctx</span>
+                <span class="k">raise</span>
+        <span class="k">return</span> <span class="n">received_exc</span> <span class="ow">and</span> <span class="n">suppressed_exc</span></div>
+
+
+<div class="viewcode-block" id="BasePod"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod">[docs]</a><span class="k">class</span> <span class="nc">BasePod</span><span class="p">(</span><span class="n">ExitFIFO</span><span class="p">):</span>
+    <span class="sd">"""A BasePod is an immutable set of peas. They share the same input and output socket.</span>
+<span class="sd">    Internally, the peas can run with the process/thread backend.</span>
+<span class="sd">    They can be also run in their own containers on remote machines.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_conditional_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">needs</span> <span class="k">if</span> <span class="n">needs</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1">#: used in the :class:`jina.flow.Flow` to build the graph</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deducted_head</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deducted_tail</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BasePod.start"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BasePod'</span><span class="p">:</span>
+        <span class="sd">"""Start to run all :class:`BasePea` in this BasePod.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If one of the :class:`BasePea` fails to start, make sure that all of them</span>
+<span class="sd">            are properly closed.</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BasePod.close"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Stop all :class:`BasePea` in this BasePod.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_set_conditional_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">restful</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'RESTRuntime'</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'GRPCRuntime'</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'PodRoleType'</span><span class="p">:</span>
+        <span class="sd">"""Return the role of this :class:`BasePod`.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""The name of this :class:`BasePod`.</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host_in</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Get the host_in of this pod</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host_in</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host_out</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Get the host_out of this pod</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">host_out</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">address_in</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Get the full incoming address of this pod</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s1">'</span><span class="si">{self.head_args.host_in}</span><span class="s1">:</span><span class="si">{self.head_args.port_in}</span><span class="s1"> (</span><span class="si">{self.head_args.socket_in!s}</span><span class="s1">)'</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">address_out</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Get the full outgoing address of this pod</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s1">'</span><span class="si">{self.tail_args.host_out}</span><span class="s1">:</span><span class="si">{self.tail_args.port_out}</span><span class="s1"> (</span><span class="si">{self.tail_args.socket_out!s}</span><span class="s1">)'</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BasePod'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_copy_to_head_args</span><span class="p">(</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span><span class="p">,</span> <span class="n">as_router</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Set the outgoing args of the head router</span>
+
+<span class="sd">        :param args: basic arguments</span>
+<span class="sd">        :param polling_type: polling_type can be all or any</span>
+<span class="sd">        :param as_router: if true, router configuration is applied</span>
+<span class="sd">        :return: enriched head arguments</span>
+<span class="sd">        """</span>
+
+        <span class="n">_head_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">polling_type</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">port_ctrl</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">port_out</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">polling_type</span><span class="o">.</span><span class="n">is_push</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">scheduling</span> <span class="o">==</span> <span class="n">SchedulerType</span><span class="o">.</span><span class="n">ROUND_ROBIN</span><span class="p">:</span>
+                <span class="n">_head_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span>
+            <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">scheduling</span> <span class="o">==</span> <span class="n">SchedulerType</span><span class="o">.</span><span class="n">LOAD_BALANCE</span><span class="p">:</span>
+                <span class="n">_head_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUB_BIND</span>
+        <span class="k">if</span> <span class="n">as_router</span><span class="p">:</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_before</span> <span class="ow">or</span> <span class="n">__default_executor__</span>
+
+        <span class="k">if</span> <span class="n">as_router</span><span class="p">:</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">pea_role</span> <span class="o">=</span> <span class="n">PeaRoleType</span><span class="o">.</span><span class="n">HEAD</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{args.name}</span><span class="s1">/head'</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'head'</span>
+
+        <span class="c1"># in any case, if header is present, it represent this Pod to consume `num_part`</span>
+        <span class="c1"># the following peas inside the pod will have num_part=1</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">num_part</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">_head_args</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_copy_to_tail_args</span><span class="p">(</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span><span class="p">,</span> <span class="n">as_router</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Set the incoming args of the tail router</span>
+
+<span class="sd">        :param args: configuration for the connection</span>
+<span class="sd">        :param polling_type: polling type can be any or all</span>
+<span class="sd">        :param as_router: if true, add router configuration</span>
+<span class="sd">        :return: enriched arguments</span>
+<span class="sd">        """</span>
+        <span class="n">_tail_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">_tail_args</span><span class="o">.</span><span class="n">polling_type</span> <span class="o">=</span> <span class="n">polling_type</span>
+        <span class="n">_tail_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+        <span class="n">_tail_args</span><span class="o">.</span><span class="n">port_ctrl</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+        <span class="n">_tail_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PULL_BIND</span>
+        <span class="n">_tail_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">as_router</span><span class="p">:</span>
+            <span class="n">_tail_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="ow">or</span> <span class="n">__default_executor__</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">_tail_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{args.name}</span><span class="s1">/tail'</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_tail_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'tail'</span>
+            <span class="n">_tail_args</span><span class="o">.</span><span class="n">pea_role</span> <span class="o">=</span> <span class="n">PeaRoleType</span><span class="o">.</span><span class="n">TAIL</span>
+            <span class="n">_tail_args</span><span class="o">.</span><span class="n">num_part</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">polling_type</span><span class="o">.</span><span class="n">is_push</span> <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">parallel</span>
+
+        <span class="k">return</span> <span class="n">_tail_args</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_fill_in_host</span><span class="p">(</span><span class="n">bind_args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">connect_args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Compute the host address for ``connect_args``</span>
+
+<span class="sd">        :param bind_args: configuration for the host ip binding</span>
+<span class="sd">        :param connect_args: configuration for the host ip connection</span>
+<span class="sd">        :return: host ip</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">sys</span> <span class="k">import</span> <span class="n">platform</span>
+
+        <span class="c1"># by default __default_host__ is 0.0.0.0</span>
+
+        <span class="c1"># is BIND at local</span>
+        <span class="n">bind_local</span> <span class="o">=</span> <span class="n">bind_args</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">__default_host__</span>
+
+        <span class="c1"># is CONNECT at local</span>
+        <span class="n">conn_local</span> <span class="o">=</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">__default_host__</span>
+
+        <span class="c1"># is CONNECT inside docker?</span>
+        <span class="n">conn_docker</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+            <span class="n">connect_args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
+
+        <span class="c1"># is BIND &amp; CONNECT all on the same remote?</span>
+        <span class="n">bind_conn_same_remote</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conn_local</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bind_args</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'linux2'</span><span class="p">):</span>
+            <span class="n">local_host</span> <span class="o">=</span> <span class="n">__default_host__</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">local_host</span> <span class="o">=</span> <span class="s1">'host.docker.internal'</span>
+
+        <span class="c1"># pod1 in local, pod2 in local (conn_docker if pod2 in docker)</span>
+        <span class="k">if</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="n">conn_local</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_host</span> <span class="k">if</span> <span class="n">conn_docker</span> <span class="k">else</span> <span class="n">__default_host__</span>
+
+        <span class="c1"># pod1 and pod2 are remote but they are in the same host (pod2 is local w.r.t pod1)</span>
+        <span class="k">if</span> <span class="n">bind_conn_same_remote</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_host</span> <span class="k">if</span> <span class="n">conn_docker</span> <span class="k">else</span> <span class="n">__default_host__</span>
+
+        <span class="c1"># From here: Missing consideration of docker</span>
+        <span class="k">if</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conn_local</span><span class="p">:</span>
+            <span class="c1"># in this case we are telling CONN (at remote) our local ip address</span>
+            <span class="k">return</span> <span class="n">get_public_ip</span><span class="p">()</span> <span class="k">if</span> <span class="n">bind_args</span><span class="o">.</span><span class="n">expose_public</span> <span class="k">else</span> <span class="n">get_internal_ip</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># in this case we (at local) need to know about remote the BIND address</span>
+            <span class="k">return</span> <span class="n">bind_args</span><span class="o">.</span><span class="n">host</span>
+
+<div class="viewcode-block" id="BasePod.head_args"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_args">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get the arguments for the `head` of this BasePod.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+<div class="viewcode-block" id="BasePod.tail_args"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.tail_args">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">tail_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get the arguments for the `tail` of this BasePod.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
+<div class="viewcode-block" id="BasePod.join"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.join">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Wait until all pods and peas exit."""</span>
+        <span class="o">...</span></div></div>
+
+
+<div class="viewcode-block" id="Pod"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod">[docs]</a><span class="k">class</span> <span class="nc">Pod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
+    <span class="sd">"""A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.</span>
+<span class="sd">    Internally, the peas can run with the process/thread backend. They can be also run in their own containers</span>
+<span class="sd">    :param args: arguments parsed from the CLI</span>
+<span class="sd">    :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['BasePea']</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="c1"># This is used when a Pod is created in a remote context, where peas &amp; their connections are already given.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_singleton</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""Return if the Pod contains only a single Pea</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">first_pea_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
+        <span class="sd">"""Return the first non-head/tail pea's args</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="c1"># note this will be never out of boundary</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">port_expose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">"""Get the grpc port number</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pea_args</span><span class="o">.</span><span class="n">port_expose</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Get the host name of this Pod</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pea_args</span><span class="o">.</span><span class="n">host</span>
+
+    <span class="k">def</span> <span class="nf">_parse_args</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">],</span> <span class="n">Namespace</span><span class="p">]]]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_base_pod_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get the arguments for the `head` of this Pod.</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pea_args</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">deducted_head</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deducted_head</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'ambiguous head node, maybe it is deducted already?'</span><span class="p">)</span>
+
+    <span class="nd">@head_args</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">"""Set the arguments for the `head` of this Pod.</span>
+
+
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>  <span class="c1"># weak reference</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">deducted_head</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deducted_head</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'ambiguous head node, maybe it is deducted already?'</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tail_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get the arguments for the `tail` of this BasePod.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pea_args</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">deducted_tail</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deducted_tail</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'ambiguous tail node, maybe it is deducted already?'</span><span class="p">)</span>
+
+    <span class="nd">@tail_args</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">tail_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">"""Set the arguments for the `tail` of this BasePod.</span>
+
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>  <span class="c1"># weak reference</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">deducted_tail</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deducted_tail</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'ambiguous tail node, maybe it is deducted already?'</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">all_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]:</span>
+        <span class="sd">"""Get all arguments of all Peas in this BasePod.</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_fifo_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]:</span>
+        <span class="sd">"""Get all arguments of all Peas in this BasePod.</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="c1"># For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and</span>
+        <span class="c1"># some messages are not received by the inner peas. That's why ExitFIFO is needed</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">]</span>
+            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">num_peas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">"""Get the number of running :class:`BasePea`</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_peas</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">num_peas</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">_enter_pea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pea</span><span class="p">:</span> <span class="s1">'BasePea'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pea</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">pea</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_activate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># order is good. Activate from tail to head</span>
+        <span class="k">for</span> <span class="n">pea</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pea</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span>
+                <span class="n">pea</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Pod.start"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BasePod'</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Start to run all :class:`BasePea` in this BasePod.</span>
+
+<span class="sd">        :return: started pod</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If one of the :class:`BasePea` fails to start, make sure that all of them</span>
+<span class="sd">            are properly closed.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_args</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span>
+            <span class="c1"># now rely on higher level to call `wait_start_success`</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fifo_args</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_enter_pea</span><span class="p">(</span><span class="n">BasePea</span><span class="p">(</span><span class="n">_args</span><span class="p">))</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_activate</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">raise</span>
+            <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Pod.wait_start_success"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.wait_start_success">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Block until all peas starts successfully.</span>
+
+<span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">'</span><span class="si">{self.wait_start_success!r}</span><span class="s1"> should only be called when `noblock_on_start` is set to True'</span>
+            <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Pod.join"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Wait until all peas exit"""</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""Checks if Pod is ready</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            A Pod is ready when all the Peas it contains are ready</span>
+
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span>
+
+    <span class="k">def</span> <span class="nf">_set_after_to_pass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="c1"># TODO: check if needed</span>
+        <span class="c1"># remark 1: i think it's related to route driver.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'polling'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="o">.</span><span class="n">is_push</span><span class="p">:</span>
+            <span class="c1"># ONLY reset when it is push</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="o">=</span> <span class="n">__default_executor__</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_set_peas_args</span><span class="p">(</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
+        <span class="n">head_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tail_args</span><span class="p">:</span> <span class="n">Namespace</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">_host_list</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">peas_hosts</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">peas_hosts</span>
+            <span class="k">else</span> <span class="p">[</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">pea_host</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">parallel</span><span class="p">),</span> <span class="n">cycle</span><span class="p">(</span><span class="n">_host_list</span><span class="p">)):</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="n">idx</span>
+
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">pea_role</span> <span class="o">=</span> <span class="n">PeaRoleType</span><span class="o">.</span><span class="n">PARALLEL</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">identity</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">peas_hosts</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">pea_host</span>
+                <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="n">f</span><span class="s1">'/</span><span class="si">{idx}</span><span class="s1">'</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">f</span><span class="s1">'</span><span class="si">{idx}</span><span class="s1">'</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">pea_role</span> <span class="o">=</span> <span class="n">PeaRoleType</span><span class="o">.</span><span class="n">SINGLETON</span>
+
+            <span class="k">if</span> <span class="n">head_args</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">head_args</span><span class="o">.</span><span class="n">port_out</span>
+            <span class="k">if</span> <span class="n">tail_args</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">port_out</span> <span class="o">=</span> <span class="n">tail_args</span><span class="o">.</span><span class="n">port_in</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">port_ctrl</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="o">.</span><span class="n">is_push</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">scheduling</span> <span class="o">==</span> <span class="n">SchedulerType</span><span class="o">.</span><span class="n">ROUND_ROBIN</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PULL_CONNECT</span>
+                <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">scheduling</span> <span class="o">==</span> <span class="n">SchedulerType</span><span class="o">.</span><span class="n">LOAD_BALANCE</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="n">f</span><span class="s1">'</span><span class="si">{args.scheduling}</span><span class="s1"> is not supported as a SchedulerType!'</span>
+                    <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">SUB_CONNECT</span>
+            <span class="k">if</span> <span class="n">head_args</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">host_in</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
+                    <span class="n">bind_args</span><span class="o">=</span><span class="n">head_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">tail_args</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">host_out</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
+                    <span class="n">bind_args</span><span class="o">=</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span>
+                <span class="p">)</span>
+
+            <span class="c1"># pea workspace if not set then derive from workspace</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_args</span><span class="o">.</span><span class="n">workspace</span><span class="p">:</span>
+                <span class="n">_args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">workspace</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_parse_base_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">parsed_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'head'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'tail'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'peas'</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'parallel'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># reasons to separate head and tail from peas is that they</span>
+            <span class="c1"># can be deducted based on the previous and next pods</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_copy_to_tail_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_peas_args</span><span class="p">(</span>
+                <span class="n">args</span><span class="p">,</span>
+                <span class="n">head_args</span><span class="o">=</span><span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">],</span>
+                <span class="n">tail_args</span><span class="o">=</span><span class="n">parsed_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_before</span> <span class="o">!=</span> <span class="n">__default_executor__</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="o">!=</span> <span class="n">__default_executor__</span>
+        <span class="p">):</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">scheduling</span> <span class="o">=</span> <span class="n">SchedulerType</span><span class="o">.</span><span class="n">ROUND_ROBIN</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'tail'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy_to_tail_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="p">)</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_peas_args</span><span class="p">(</span>
+                <span class="n">args</span><span class="p">,</span>
+                <span class="n">head_args</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'head'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="n">tail_args</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'tail'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_tail_router</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="p">]</span>
+
+        <span class="c1"># note that peas_args['peas'][0] exist either way and carries the original property</span>
+        <span class="k">return</span> <span class="n">parsed_args</span></div>
+</pre></div>
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; Jina AI Limited. All rights reserved.
+            |
+            Last updated on May 25, 2021.
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/clipboard.min.js"></script>
+    <script src="../../../../_static/copybutton.js"></script>
+    <script src="../../../../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+</html>
