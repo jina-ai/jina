@@ -14,9 +14,10 @@ __flow_ready__ = 'Flow is ready to use'
 
 if TYPE_CHECKING:
     from ..stores.workspaces import DaemonFile
-    from docker.client import APIClient, DockerClient
+    from ..models.workspaces import WorkspaceMetadata
     from docker.models.networks import Network
     from docker.models.containers import Container
+    from docker.client import APIClient, DockerClient
 
 
 class Dockerizer:
@@ -86,10 +87,9 @@ class Dockerizer:
     ) -> Tuple['Container', str, Dict, bool]:
         from ..stores import workspace_store
 
-        metadata = workspace_store[workspace_id]['metadata']
-
-        _image = cls.client.images.get(name=metadata['image_id'])
-        _network = metadata['network']
+        metadata = workspace_store[workspace_id].metadata
+        _image = cls.client.images.get(name=metadata.image_id)
+        _network = metadata.network
         _min_port, _max_port = additional_ports
         # TODO: Handle port mappings
         # ports.update(
@@ -158,7 +158,7 @@ class Dockerizer:
             cls.rm_container(id)
 
     @classmethod
-    def rm_network(cls, id: DaemonID):
+    def rm_network(cls, id: str):
         try:
             network: 'Network' = cls.client.networks.get(id)
             network.remove()
@@ -174,7 +174,7 @@ class Dockerizer:
             )
 
     @classmethod
-    def rm_image(cls, id: DaemonID):
+    def rm_image(cls, id: str):
         try:
             # TODO: decide when to force
             cls.client.images.remove(id, force=True)
@@ -183,7 +183,7 @@ class Dockerizer:
             raise HTTPException(status_code=404, detail=f'Image `{id}` not found')
 
     @classmethod
-    def rm_container(cls, id: DaemonID):
+    def rm_container(cls, id: str):
         try:
             container: 'Container' = cls.client.containers.get(id)
         except docker.errors.NotFound as e:

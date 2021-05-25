@@ -4,29 +4,27 @@ import pickle
 from pathlib import Path
 from datetime import datetime
 from collections.abc import MutableMapping
-from typing import Callable, Dict, Any, Union, Type
+from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union, KeysView, ValuesView, ItemsView
 
 from jina.logging import JinaLogger
 from ..models import DaemonID
+from ..models.base import StoreItem, StoreStatus
 from .. import jinad_args, __root_workspace__
+
+if TYPE_CHECKING:
+    from ..models.workspaces import WorkspaceItem
+    from ..models.containers import ContainerItem
 
 
 class BaseStore(MutableMapping):
-    """The Base class for Jinad stores"""
+    """The Base class for Daemon stores"""
 
     _kind = ''
+    _status_model = StoreStatus
 
     def __init__(self):
-        self._items = {}  # type: Dict[DaemonID, Dict[str, Any]]
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
-        self._init_stats()
-
-    def _init_stats(self):
-        """Initialize the stats """
-        self._time_created = datetime.now()
-        self._time_updated = self._time_created
-        self._num_add = 0
-        self._num_del = 0
+        self.status = StoreStatus()
 
     def add(self, *args, **kwargs) -> DaemonID:
         """Add a new element to the store. This method needs to be overridden by the subclass
@@ -50,47 +48,55 @@ class BaseStore(MutableMapping):
         raise NotImplementedError
 
     def __iter__(self):
-        return iter(self._items)
+        return iter(self.status.items)
 
     def __len__(self):
-        return len(self._items)
+        return len(self.status.items)
 
     def __repr__(self) -> str:
-        return str(self.status)
+        return str(self.status.dict())
 
-    def __getitem__(self, key: DaemonID):
-        return self._items[key]
+    def keys(self) -> Sequence['DaemonID']:
+        return self.status.items.keys()
 
-    def __setitem__(self, key: DaemonID, value: Dict) -> None:
-        self._items[key] = value
-        t = datetime.now()
-        value.update({'time_created': t})
-        self._time_updated = t
-        self._num_add += 1
+    def values(self) -> Sequence[Union['WorkspaceItem', 'ContainerItem']]:
+        return self.status.items.values()
 
-    def __delitem__(self, key: DaemonID):
+    def items(self) -> Sequence[Tuple['DaemonID', Union['WorkspaceItem', 'ContainerItem']]]:
+        return self.status.items.items()
+
+    def __getitem__(self, key: DaemonID) -> Union['WorkspaceItem', 'ContainerItem']:
+        return self.status.items[key]
+
+    def __setitem__(self, key: DaemonID, value: StoreItem) -> None:
+        self.status.items[key] = value
+        self.status.num_add += 1
+        self.status.time_updated = datetime.now()
+
+    def __delitem__(self, key: DaemonID) -> None:
         """Release a Pea/Pod/Flow object from the store
 
         :param key: the key of the object
 
 
         .. #noqa: DAR201"""
-        self._items.pop(key)
-        self._time_updated = datetime.now()
-        self._num_del += 1
+        self.status.items.pop(key)
+        self.status.num_del += 1
+        self.status.time_updated = datetime.now()
 
     def __setstate__(self, state: Dict):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
-        self._init_stats()
         now = datetime.now()
-        self._time_created = state.get('time_created', now)
-        self._time_updated = state.get('time_updated', now)
-        self._num_add = state.get('num_add', 0)
-        self._num_del = state.get('num_del', 0)
-        self._items = state.get('items', {})
+        self.status = self._status_model(
+            time_created=state.get('time_created', now),
+            time_updated=state.get('time_updated', now),
+            num_add=state.get('num_add', 0),
+            num_del=state.get('num_del', 0),
+            items=state.get('items', {})
+        )
 
-    def __getstate__(self):
-        return self.status
+    def __getstate__(self) -> Dict:
+        return self.status.dict()
 
     @classmethod
     def dump(cls, func) -> Callable:
@@ -117,26 +123,10 @@ class BaseStore(MutableMapping):
     def clear(self) -> None:
         """delete all the objects in the store"""
 
-        keys = list(self._items.keys())
-        for k in keys:
+        for k in self.status.items.keys():
             self.delete(id=k, workspace=True)
 
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """
         self.clear()
-        self._init_stats()
-
-    @property
-    def status(self) -> Dict:
-        """Return the status of this store as a dict
-
-
-        .. #noqa: DAR201"""
-        return {
-            'size': len(self._items),
-            'time_created': self._time_created,
-            'time_updated': self._time_updated,
-            'num_add': self._num_add,
-            'num_del': self._num_del,
-            'items': self._items,
-        }
+        self.status = StoreStatus()

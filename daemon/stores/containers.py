@@ -1,8 +1,11 @@
 from typing import Dict
+from datetime import datetime
+
 from jina.helper import colored
 
 from .base import BaseStore
 from ..models import DaemonID
+from ..models.containers import ContainerArguments, ContainerItem, ContainerMetadata, ContainerStoreStatus
 from .. import __root_workspace__
 from ..dockerize import Dockerizer
 from ..excepts import Runtime400Exception
@@ -13,6 +16,7 @@ class ContainerStore(BaseStore):
     """A Store of Containers spawned by daemon"""
 
     _kind = 'container'
+    _status_model = ContainerStoreStatus
 
     @BaseStore.dump
     def add(
@@ -38,17 +42,19 @@ class ContainerStore(BaseStore):
             self._logger.error(f'{e!r}')
             raise
         else:
-            self[id] = {
-                'metadata': {
-                    'container_id': id_cleaner(_container.id),
-                    'container_name': _container.name,
-                    'image_id': id_cleaner(_container.image.id),
-                    'network': _network,
-                    'ports': _ports,
-                },
-                'workspace_id': workspace_id,
-                'arguments': {'command': command},
-            }
+            self[id] = ContainerItem(
+                metadata=ContainerMetadata(
+                    container_id=id_cleaner(_container.id),
+                    container_name=_container.name,
+                    image_id=id_cleaner(_container.image.id),
+                    network=_network,
+                    ports=_ports
+                ),
+                arguments=ContainerArguments(
+                    command=command
+                ),
+                workspace_id=workspace_id
+            )
             self._logger.success(
                 f'{colored(str(id), "cyan")} is added to workspace '
                 f'{colored(str(workspace_id), "cyan")}'
@@ -57,8 +63,8 @@ class ContainerStore(BaseStore):
 
     @BaseStore.dump
     def delete(self, id: DaemonID, **kwargs):
-        if id in self._items:
-            Dockerizer.rm_container(id=self[id]['metadata']['container_id'])
+        if id in self:
+            Dockerizer.rm_container(id=self[id].metadata.container_id)
             del self[id]
             self._logger.success(
                 f'{colored(str(id), "cyan")} is released from the store.'

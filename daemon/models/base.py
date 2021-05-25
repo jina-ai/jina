@@ -1,18 +1,23 @@
 from typing import Dict
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator, Field
 
 from .id import DaemonID
 
 
 class StoreItem(BaseModel):
-    time_created: datetime
+    time_created: datetime = Field(default_factory=datetime.now)
 
 
 class StoreStatus(BaseModel):
-    size: int
-    time_created: datetime
-    time_updated: datetime
-    num_add: int
-    num_del: int
-    items: Dict[DaemonID, StoreItem]
+    size: int = 0
+    time_created: datetime = Field(default_factory=datetime.now)
+    time_updated: datetime = Field(default_factory=datetime.now)
+    num_add: int = 0
+    num_del: int = 0
+    items: Dict[DaemonID, StoreItem] = {}
+
+    @root_validator(pre=False)
+    def set_size(cls, values):
+        values['size'] = len(values['items'])
+        return values

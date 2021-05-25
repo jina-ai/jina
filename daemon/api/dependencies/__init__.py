@@ -52,6 +52,7 @@ class PeaDepends:
     _kind = 'pea'
 
     def __init__(self, workspace_id: DaemonID, pea: PeaModel):
+        # Deepankar: adding quotes around PeaModel breaks things
         self.workspace_id = workspace_id
         self.params = pea
         self.validate()

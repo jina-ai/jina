@@ -1,9 +1,8 @@
 import os
 import glob
-import shutil
 from pathlib import Path
 from itertools import chain
-from typing import List, Optional, Tuple
+from typing import Dict, List
 
 from fastapi import UploadFile
 from jina.helper import colored
@@ -14,6 +13,7 @@ from ..models import DaemonID
 from ..dockerize import Dockerizer
 from ..helper import get_workspace_path, id_cleaner, random_port_range
 from ..excepts import Runtime400Exception
+from ..models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata, WorkspaceStoreStatus
 from ..models.enums import DaemonBuild, PythonVersion
 from .. import __rootdir__, __dockerfiles__, jinad_args
 
@@ -114,6 +114,7 @@ class DaemonFile:
 class WorkspaceStore(BaseStore):
 
     _kind = 'workspace'
+    _status_model = WorkspaceStoreStatus
 
     def _handle_files(self, workspace_id: DaemonID, files: List[UploadFile]):
         workdir = get_workspace_path(workspace_id)
@@ -145,24 +146,23 @@ class WorkspaceStore(BaseStore):
             self._logger.error(f'{e!r}')
             raise
         else:
-            self[workspace_id] = {
-                'metadata': {
-                    'image_id': image_id,
-                    'image_name': workspace_id.tag,
-                    'network': id_cleaner(network_id),
-                    'ports': {'min': _min, 'max': _max},
-                    'workdir': workdir,
-                },
-                'arguments': {
-                    'files': [f.filename for f in files],
-                    'jinad': {
+            self[workspace_id] = WorkspaceItem(
+                metadata=WorkspaceMetadata(
+                    image_id=image_id,
+                    image_name=workspace_id.tag,
+                    network=id_cleaner(network_id),
+                    ports={'min': _min, 'max': _max},
+                    workdir=workdir
+                ),
+                arguments=WorkspaceArguments(
+                    files=[f.filename for f in files],
+                    jinad={
                         'build': daemon_file.build,
                         'dockerfile': daemon_file.dockerfile,
                     },
-                    'requirements': [],
-                },
-            }
-            self._logger.info(self[workspace_id])
+                    requirements=[]
+                )
+            )
             self._logger.success(
                 f'Workspace {colored(str(workspace_id), "cyan")} is added to stpre'
             )
@@ -190,39 +190,39 @@ class WorkspaceStore(BaseStore):
         else:
             if workspace_id in self:
                 if files:
-                    self[workspace_id]['arguments']['files'].extend(
+                    self[workspace_id].arguments.files.extend(
                         [f.filename for f in files]
                     )
-                self[workspace_id]['arguments']['jinad'] = {
+                self[workspace_id].arguments.jinad = {
                     'build': daemon_file.build,
                     'dockerfile': daemon_file.dockerfile,
                 }
-                self[workspace_id]['metadata']['image_id'] = image_id
+                self[workspace_id].metadata.image_id = image_id
             else:
-                self[workspace_id] = {
-                    'metadata': {
-                        'image_id': image_id,
-                        'image_name': workspace_id.tag,
-                        'network': id_cleaner(network_id),
-                        'ports': {'min': _min, 'max': _max},
-                        'workdir': workdir,
-                    },
-                    'arguments': {
-                        'files': [f.filename for f in files] if files else [],
-                        'jinad': {
+                self[workspace_id] = WorkspaceItem(
+                    metadata=WorkspaceMetadata(
+                        image_id=image_id,
+                        image_name=workspace_id.tag,
+                        network=id_cleaner(network_id),
+                        ports={'min': _min, 'max': _max},
+                        workdir=workdir
+                    ),
+                    arguments=WorkspaceArguments(
+                        files=[f.filename for f in files] if files else [],
+                        jinad={
                             'build': daemon_file.build,
                             'dockerfile': daemon_file.dockerfile,
                         },
-                        'requirements': [],
-                    },
-                }
+                        requirements=[]
+                    )
+                )
             return workspace_id
 
     @BaseStore.dump
     def delete(self, id: DaemonID, **kwargs):
-        if id in self._items:
-            Dockerizer.rm_image(id=self[id]['metadata']['image_id'])
-            Dockerizer.rm_network(id=self[id]['metadata']['network'])
+        if id in self:
+            Dockerizer.rm_image(id=self[id].metadata.image_id)
+            Dockerizer.rm_network(id=self[id].metadata.network)
             del self[id]
             self._logger.success(
                 f'{colored(str(id), "cyan")} is released from the store.'
