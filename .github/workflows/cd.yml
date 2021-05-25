@@ -89,13 +89,34 @@ jobs:
           TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
-#       Tell docs repo jina is going to release
-#      - name: send-repository-dispatch-event-to-docs
-#        uses: peter-evans/repository-dispatch@v1
-#        with:
-#          token: ${{ secrets.JINA_DEV_BOT }}
-#          repository: jina-ai/docs
-#          event-type: jina-merge-event
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: push-to-gh-pages-branch
+        run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          git checkout gh-pages
+          git merge master
+          pip install .[devel]
+          cd docs
+          pip install -r requirements.txt
+          docker run --rm \
+            -v $(pwd)/proto:/out \
+            -v $(pwd)/../jina/proto:/protos \
+            pseudomuto/protoc-gen-doc --doc_opt=markdown,docs.md
+          make dirhtml
+          cd ./_build/dirhtml/
+          cp -r ./ ../../
+          cd -
+          rm -rf ./_build/dirhtml/
+          ls -la
+          touch .nojekyll
+          echo docs2.jina.ai > CNAME
+          git add api cli proto
+          git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
+          git status
+          git push origin gh-pages
 
   update-docker:
     needs: update-doc
