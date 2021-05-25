@@ -542,9 +542,7 @@ class MindsporeMwuExecutor(Executor):
             output_tensor = matmul(
                 self.encoding_mat, input_tensor
             )  # multiply the input with the encoding matrix.
-            doc.embedding = (
-                output_tensor.asnumpy()
-            )  # assign the encoding results to ``embedding``
+            doc.embedding = output_tensor.asnumpy() # assign the encoding results to ``embedding``
 ```
 
 
