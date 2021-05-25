@@ -38,6 +38,7 @@ jobs:
           rm -rf ./_build/dirhtml/
           ls -la
           touch .nojekyll
+          echo docs2.jina.ai > CNAME
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}"
