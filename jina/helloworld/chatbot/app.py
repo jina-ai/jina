@@ -8,7 +8,7 @@ from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_chatbot_parser
-from jina.types.document.stream import from_csv
+from jina.types.document.generators import from_csv
 
 if __name__ == '__main__':
     from executors import MyTransformer, MyIndexer

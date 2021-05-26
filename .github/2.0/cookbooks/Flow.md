@@ -531,7 +531,7 @@ with Flow() as f:
 
 ```python
 from jina import Flow
-from jina.types.document.stream import from_csv
+from jina.types.document.generators import from_csv
 
 f = Flow()
 

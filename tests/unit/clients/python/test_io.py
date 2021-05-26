@@ -6,7 +6,7 @@ import pytest
 from jina import Document
 from jina.clients import Client
 from jina.excepts import BadClientInput
-from jina.types.document.stream import (
+from jina.types.document.generators import (
     from_files,
     from_ndarray,
     from_lines,
