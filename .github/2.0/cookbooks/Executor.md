@@ -534,6 +534,31 @@ Line number corresponds to the 1.x code:
 
 ## Executors in Action
 
+### Pytorch Lightning
+
+This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model from [PyTorch Lightning Bolts](https://pytorch-lightning.readthedocs.io/en/stable/ecosystem/bolts.html) to build a Jina encoder."
+
+```python
+from pl_bolts.models.autoencoders import AE
+
+from jina import Executor, requests
+
+import torch
+
+class plMwuAutoEncoder(Executor):
+     def __init__(self, **kwargs):
+        super().__init__()
+        self.ae = AE(input_height=32).from_pretrained('cifar10-resnet18')
+        self.ae.freeze()
+         
+     @requests
+     def encode(self, docs, **kwargs):
+         for doc in docs:
+             input_tensor = torch.from_numpy(doc.blob)
+             output_tensor = self.ae(input_tensor)
+             doc.embedding = output_tensor.detach().numpy()
+```
+
 ### Paddle
 
 ```python
@@ -596,6 +621,3 @@ class TfMobileNetEncoder(Executor):
                 pass
         return resized_tensors
 ```
-
-
-
