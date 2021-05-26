@@ -653,7 +653,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.clear"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Remove all values from all fields of this Document. """</span>
+        <span class="sd">"""Remove all values from all fields of this Document."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
@@ -727,120 +727,60 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span>
         <span class="n">destination</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span>
-        <span class="n">exclude_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">include_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">replace_message_field</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">replace_repeated_field</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.</span>
+        <span class="sd">"""Merge fields specified in ``fields`` from source to destination.</span>
 
 <span class="sd">        :param source: source :class:`Document` object.</span>
 <span class="sd">        :param destination: the destination :class:`Document` object to be merged into.</span>
-<span class="sd">        :param exclude_fields: a tuple of field names that excluded from destination document</span>
-<span class="sd">        :param include_fields: a tuple of field names that included from source document</span>
-<span class="sd">        :param replace_message_field: Replace message field if True. Merge message</span>
-<span class="sd">                  field if False.</span>
-<span class="sd">        :param replace_repeated_field: Replace repeated field if True. Append</span>
-<span class="sd">                  elements of repeated field if False.</span>
+<span class="sd">        :param fields: a list of field names that included from destination document</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            *. if neither ``exclude_fields`` nor ``include_fields`` is given,</span>
-<span class="sd">                then destination is overridden by the source completely.</span>
-<span class="sd">            *. ``destination`` will be modified in place, ``source`` will be unchanged</span>
+<span class="sd">            *. if ``fields`` is empty, then destination is overridden by the source completely.</span>
+<span class="sd">            *. ``destination`` will be modified in place, ``source`` will be unchanged.</span>
+<span class="sd">            *. the ``fields`` has value in destination while not in source will be preserved.</span>
 <span class="sd">        """</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">include_fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exclude_fields</span><span class="p">:</span>
-            <span class="c1"># same behavior as copy</span>
-            <span class="n">destination</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">include_fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">exclude_fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">FieldMask</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">include_fields</span><span class="p">)</span><span class="o">.</span><span class="n">MergeMessage</span><span class="p">(</span>
-                <span class="n">source</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-                <span class="n">replace_message_field</span><span class="o">=</span><span class="n">replace_message_field</span><span class="p">,</span>
-                <span class="n">replace_repeated_field</span><span class="o">=</span><span class="n">replace_repeated_field</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">exclude_fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">empty_doc</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
-
-            <span class="n">_dest</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
-            <span class="c1"># backup exclude fields in destination</span>
-            <span class="n">FieldMask</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">exclude_fields</span><span class="p">)</span><span class="o">.</span><span class="n">MergeMessage</span><span class="p">(</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-                <span class="n">_dest</span><span class="p">,</span>
-                <span class="n">replace_repeated_field</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">replace_message_field</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">include_fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># override dest with src</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+        <span class="c1"># We do a safe update: only update existent (value being set) fields from source.</span>
+        <span class="n">fields_can_be_updated</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># ListFields returns a list of (FieldDescriptor, value) tuples for present fields.</span>
+        <span class="n">present_fields</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ListFields</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">field_descriptor</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">present_fields</span><span class="p">:</span>
+            <span class="n">fields_can_be_updated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_descriptor</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">fields_can_be_updated</span>  <span class="c1"># if `fields` empty, update all fields.</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">field</span> <span class="o">==</span> <span class="s1">'tags'</span>
+            <span class="p">):</span>  <span class="c1"># For the tags, stay consistent with the python update method.</span>
+                <span class="n">destination</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># only update include fields</span>
-                <span class="n">FieldMask</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">include_fields</span><span class="p">)</span><span class="o">.</span><span class="n">MergeMessage</span><span class="p">(</span>
-                    <span class="n">source</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-                    <span class="n">destination</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-                    <span class="n">replace_message_field</span><span class="o">=</span><span class="n">replace_message_field</span><span class="p">,</span>
-                    <span class="n">replace_repeated_field</span><span class="o">=</span><span class="n">replace_repeated_field</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="c1"># clear the exclude fields</span>
-            <span class="n">FieldMask</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">exclude_fields</span><span class="p">)</span><span class="o">.</span><span class="n">MergeMessage</span><span class="p">(</span>
-                <span class="n">empty_doc</span><span class="p">,</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-                <span class="n">replace_repeated_field</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">replace_message_field</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
-
-            <span class="c1"># recover exclude fields</span>
-            <span class="n">destination</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">MergeFrom</span><span class="p">(</span><span class="n">_dest</span><span class="p">)</span>
+                <span class="n">destination</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">field</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Document.update"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span>
-        <span class="n">exclude_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">include_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Updates fields specified in ``include_fields`` from the source to current Document.</span>
+        <span class="sd">"""Updates fields specified in ``fields`` from the source to current Document.</span>
 
 <span class="sd">        :param source: source :class:`Document` object.</span>
-<span class="sd">        :param exclude_fields: a tuple of field names that excluded from the current document,</span>
-<span class="sd">                when not given the non-empty fields of the current document is considered as ``exclude_fields``</span>
-<span class="sd">        :param include_fields: a tuple of field names that included from the source document</span>
+<span class="sd">        :param fields: a list of field names that included from the current document,</span>
+<span class="sd">                if not specified, merge all fields.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            *. ``destination`` will be modified in place, ``source`` will be unchanged</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">include_fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">include_fields</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">exclude_fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude_fields</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'include_fields and exclude_fields must be tuple of str'</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">exclude_fields</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">include_fields</span><span class="p">:</span>
-                <span class="n">exclude_fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-                    <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_empty_fields</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">include_fields</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">exclude_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">non_empty_fields</span>
-
-        <span class="k">if</span> <span class="n">include_fields</span> <span class="ow">and</span> <span class="n">exclude_fields</span><span class="p">:</span>
-            <span class="n">_intersect</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">include_fields</span><span class="p">)</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">exclude_fields</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">_intersect</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">_intersect</span><span class="si">}</span><span class="s1"> is in both `include_fields` and `exclude_fields`'</span>
-                <span class="p">)</span>
-
+        <span class="k">if</span> <span class="n">fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'Parameter `fields` must be list of str'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span>
             <span class="n">source</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">exclude_fields</span><span class="o">=</span><span class="n">exclude_fields</span><span class="p">,</span>
-            <span class="n">include_fields</span><span class="o">=</span><span class="n">include_fields</span><span class="p">,</span>
-            <span class="n">replace_message_field</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">replace_repeated_field</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.update_content_hash"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.update_content_hash">[docs]</a>    <span class="k">def</span> <span class="nf">update_content_hash</span><span class="p">(</span>
@@ -1423,7 +1363,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.convert_blob_to_buffer"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.convert_blob_to_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">convert_blob_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Convert blob to buffer """</span>
+        <span class="sd">"""Convert blob to buffer"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">blob</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Document.convert_uri_to_buffer"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.convert_uri_to_buffer">[docs]</a>    <span class="k">def</span> <span class="nf">convert_uri_to_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
