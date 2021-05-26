@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    jina.types.document.converters
+   jina.types.document.generators
    jina.types.document.helper
    jina.types.document.multimodal
 

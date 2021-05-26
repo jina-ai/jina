@@ -303,6 +303,7 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
@@ -370,15 +371,9 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.arrays.document</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">csv</span>
-<span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">Iterable</span> <span class="k">as</span> <span class="n">Itr</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
-
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Union</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
@@ -388,11 +383,7 @@
     <span class="n">TextIO</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Generator</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 
 <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">cached_property</span>
@@ -414,22 +405,6 @@
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
-
-<span class="c1"># https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996</span>
-<span class="n">_jsonl_ext</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'.jsonlines'</span><span class="p">,</span> <span class="s1">'.ndjson'</span><span class="p">,</span> <span class="s1">'.jsonl'</span><span class="p">,</span> <span class="s1">'.jl'</span><span class="p">,</span> <span class="s1">'.ldjson'</span><span class="p">}</span>
-<span class="n">_csv_ext</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'.csv'</span><span class="p">,</span> <span class="s1">'.tcsv'</span><span class="p">}</span>
-
-
-<span class="k">def</span> <span class="nf">_sample</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">sampling_rate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">sampling_rate</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">i</span>
-
-
-<span class="k">def</span> <span class="nf">_subsample</span><span class="p">(</span>
-    <span class="n">iterable</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">):</span>
-    <span class="k">yield from</span> <span class="n">itertools</span><span class="o">.</span><span class="n">islice</span><span class="p">(</span><span class="n">_sample</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">),</span> <span class="n">size</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="DocumentArray"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray">[docs]</a><span class="k">class</span> <span class="nc">DocumentArray</span><span class="p">(</span><span class="n">TraversableSequence</span><span class="p">,</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">Itr</span><span class="p">):</span>
@@ -688,193 +663,7 @@
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">da</span></div>
-
-<div class="viewcode-block" id="DocumentArray.from_lines"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.from_lines">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_lines</span><span class="p">(</span>
-        <span class="n">lines</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">read_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'r'</span><span class="p">,</span>
-        <span class="n">line_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'json'</span><span class="p">,</span>
-        <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">"""Generator function for lines, json and csv. Yields documents or strings.</span>
-
-<span class="sd">        :param lines: a list of strings, each is considered as a document</span>
-<span class="sd">        :param filepath: a text file that each line contains a document</span>
-<span class="sd">        :param read_mode: specifies the mode in which the file</span>
-<span class="sd">                    is opened. 'r' for reading in text mode, 'rb' for reading in binary</span>
-<span class="sd">        :param line_format: the format of each line ``json`` or ``csv``</span>
-<span class="sd">        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field</span>
-<span class="sd">                names defined in Protobuf. This is only used when the given ``document`` is</span>
-<span class="sd">                a JSON string or a Python dict.</span>
-<span class="sd">        :param size: the maximum number of the documents</span>
-<span class="sd">        :param sampling_rate: the sampling rate between [0, 1]</span>
-<span class="sd">        :yield: documents</span>
-
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">filepath</span><span class="p">:</span>
-            <span class="n">file_type</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">read_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">file_type</span> <span class="ow">in</span> <span class="n">_jsonl_ext</span><span class="p">:</span>
-                    <span class="k">yield from</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_ndjson</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">file_type</span> <span class="ow">in</span> <span class="n">_csv_ext</span><span class="p">:</span>
-                    <span class="k">yield from</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
-                        <span class="n">f</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">yield from</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">lines</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">line_format</span> <span class="o">==</span> <span class="s1">'json'</span><span class="p">:</span>
-                <span class="k">yield from</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_ndjson</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">line_format</span> <span class="o">==</span> <span class="s1">'csv'</span><span class="p">:</span>
-                <span class="k">yield from</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span>
-                    <span class="n">lines</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">yield from</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'"filepath" and "lines" can not be both empty'</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DocumentArray.from_ndjson"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.from_ndjson">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_ndjson</span><span class="p">(</span>
-        <span class="n">fp</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">"""Generator function for line separated JSON. Yields documents.</span>
-
-<span class="sd">        :param fp: file paths</span>
-<span class="sd">        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field</span>
-<span class="sd">                names defined in Protobuf. This is only used when the given ``document`` is</span>
-<span class="sd">                a JSON string or a Python dict.</span>
-<span class="sd">        :param size: the maximum number of the documents</span>
-<span class="sd">        :param sampling_rate: the sampling rate between [0, 1]</span>
-<span class="sd">        :yield: documents</span>
-
-<span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s1">'groundtruth'</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s1">'document'</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">'document'</span><span class="p">],</span> <span class="n">field_resolver</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span>
-                    <span class="n">value</span><span class="p">[</span><span class="s1">'groundtruth'</span><span class="p">],</span> <span class="n">field_resolver</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DocumentArray.from_csv"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.from_csv">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_csv</span><span class="p">(</span>
-        <span class="n">fp</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">"""Generator function for CSV. Yields documents.</span>
-
-<span class="sd">        :param fp: file paths</span>
-<span class="sd">        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field</span>
-<span class="sd">                names defined in Protobuf. This is only used when the given ``document`` is</span>
-<span class="sd">                a JSON string or a Python dict.</span>
-<span class="sd">        :param size: the maximum number of the documents</span>
-<span class="sd">        :param sampling_rate: the sampling rate between [0, 1]</span>
-<span class="sd">        :yield: documents</span>
-
-<span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
-            <span class="k">if</span> <span class="s1">'groundtruth'</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s1">'document'</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">'document'</span><span class="p">],</span> <span class="n">field_resolver</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span>
-                    <span class="n">value</span><span class="p">[</span><span class="s1">'groundtruth'</span><span class="p">],</span> <span class="n">field_resolver</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DocumentArray.from_files"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.from_files">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_files</span><span class="p">(</span>
-        <span class="n">patterns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-        <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">read_mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">"""Creates an iterator over a list of file path or the content of the files.</span>
-
-<span class="sd">        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'</span>
-<span class="sd">        :param recursive: If recursive is true, the pattern '**' will match any files</span>
-<span class="sd">            and zero or more directories and subdirectories</span>
-<span class="sd">        :param size: the maximum number of the files</span>
-<span class="sd">        :param sampling_rate: the sampling rate between [0, 1]</span>
-<span class="sd">        :param read_mode: specifies the mode in which the file is opened.</span>
-<span class="sd">            'r' for reading in text mode, 'rb' for reading in binary mode.</span>
-<span class="sd">            If `read_mode` is None, will iterate over filenames.</span>
-<span class="sd">        :yield: file paths or binary content</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead</span>
-<span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-        <span class="k">if</span> <span class="n">read_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'r'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">,</span> <span class="kc">None</span><span class="p">}:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'read_mode should be "r", "rb" or None, got </span><span class="si">{</span><span class="n">read_mode</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span>
-
-        <span class="k">def</span> <span class="nf">_iter_file_exts</span><span class="p">(</span><span class="n">ps</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
-                <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span>
-            <span class="p">)</span>
-
-        <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">patterns</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">_iter_file_exts</span><span class="p">(</span><span class="n">patterns</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">sampling_rate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">sampling_rate</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">read_mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">g</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">read_mode</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'r'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">}:</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">read_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                        <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-                <span class="n">d</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">&gt;</span> <span class="n">size</span><span class="p">:</span>
-                <span class="k">break</span></div>
-
-<div class="viewcode-block" id="DocumentArray.from_ndarray"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.from_ndarray">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_ndarray</span><span class="p">(</span>
-        <span class="n">array</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span>
-        <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">"""Create a generator for a given dimension of a numpy array.</span>
-
-<span class="sd">        :param array: the numpy ndarray data source</span>
-<span class="sd">        :param axis: iterate over that axis</span>
-<span class="sd">        :param size: the maximum number of the sub arrays</span>
-<span class="sd">        :param shuffle: shuffle the numpy data source beforehand</span>
-<span class="sd">        :yield: ndarray</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead</span>
-<span class="sd">        """</span>
-
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-        <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
-            <span class="c1"># shuffle for random query</span>
-            <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
-            <span class="n">d</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">d</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">:</span>
-                <span class="k">break</span></div></div>
+        <span class="k">return</span> <span class="n">da</span></div></div>
 </pre></div>
       </article>
       <footer>
