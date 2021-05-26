@@ -494,7 +494,7 @@ Line number corresponds to the 1.x code:
 
 This `Executor` uses the [ResNet18](https://docs.fast.ai) network for object classification on images provided by [fastai](https://github.com/fastai/fastai). 
 
-The `encode` function of this executor generates a feature vector for each image in each `Document` of the input `DocumentArray`. This is done in parrallel with a single function call for higher performance.
+The `encode` function of this executor generates a feature vector for each image in each `Document` of the input `DocumentArray`. Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all images in a single function call) to achieve higher performance.
 
 As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has completed.
 
