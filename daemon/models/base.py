@@ -15,9 +15,12 @@ class StoreStatus(BaseModel):
     time_updated: datetime = Field(default_factory=datetime.now)
     num_add: int = 0
     num_del: int = 0
-    items: Dict[DaemonID, StoreItem] = {}
+    items: Dict[DaemonID, StoreItem] = Field(default_factory=dict)
 
     @root_validator(pre=False)
     def set_size(cls, values):
-        values['size'] = len(values['items'])
+        if 'items' in values:
+            values['size'] = len(values['items'])
+        elif 'size' not in values:
+            values['size'] = 0
         return values
