@@ -494,8 +494,16 @@ Line number corresponds to the 1.x code:
 
 ### Scikit-learn
 
+This `Executor` uses a [TFI-DF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)  feature vector to generate sparse embeddings for text search.
 
-```python
+The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that  it is fitted with a dataset already present in `sklearn`. The executor provides an `encode` method that recieves a `DocumentArray` and updates each document in the  `DocumentArray` with an `embedding` attribute that is the tf-idf representation of the text found in the document. Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all texts in a single function call) to achieve higher performance.
+
+As a result, each `Document` in the `DocumentArray` will have an `embedding` afther `encode()` has completed.
+
+
+
+
+```
 import sklearn
 
 from jina import Executor, requests, DocumentArray
@@ -514,11 +522,11 @@ class TFIDFTextEncoder(Executor):
         self.ttfidf_vectorizer = tfidf_vectorizer
 
     @requests
-    def encode(self,docs: DocumentArray,  *args, **kwargs):
+    def encode(self, docs: DocumentArray, *args, **kwargs):
         iterable_of_texts = docs.get_attributes('text')
         embedding_matrix = self.tfidf_vectorizer.transform(iterable_of_texts)
 
-        for doc, doc_embedding in zip(docs, embedding_matrix):
-            doc.embedding = doc_embedding
+        for i, doc in enumerate(docs):
+            doc.embedding = embedding_matrix[i]
 ```
 
