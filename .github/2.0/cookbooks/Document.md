@@ -321,7 +321,7 @@ d.update(s, exclude_fields=('id',))
 
 #### Construct from JSON, CSV, `ndarray` and Files
 
-The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
+The `jina.types.document.stream` module let you construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
 functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original
 format:
 
@@ -338,7 +338,7 @@ To convert the generator to `DocumentArray` use:
 
 ```python
 from jina import DocumentArray
-from jina.types.document.generators import from_files
+from jina.types.document.stream import from_files
 
 DocumentArray(from_files('/*.png'))
 ```

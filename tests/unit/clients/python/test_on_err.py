@@ -3,7 +3,7 @@ import pytest
 
 from jina.excepts import BadClientCallback
 from jina.flow import Flow
-from jina.types.document.generators import from_ndarray
+from jina.types.document.stream import from_ndarray
 
 
 def validate(x):

@@ -12,7 +12,7 @@ from jina.flow import Flow
 from jina.parsers import set_gateway_parser, set_client_cli_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
-from jina.types.document.generators import from_csv, from_ndjson, from_files
+from jina.types.document.stream import from_csv, from_ndjson, from_files
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

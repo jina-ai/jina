@@ -10,7 +10,7 @@ from jina.flow import BaseFlow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
-from jina.types.document.generators import from_ndarray
+from jina.types.document.stream import from_ndarray
 
 cur_dir = Path(__file__).parent
 

@@ -3,7 +3,7 @@ import pytest
 
 from jina import Flow, Executor, requests, Document
 from jina.proto import jina_pb2
-from jina.types.document.generators import from_ndarray
+from jina.types.document.stream import from_ndarray
 from tests import validate_callback
 
 

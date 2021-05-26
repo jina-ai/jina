@@ -9,7 +9,7 @@ from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.helper import random_identity
 from jina.peapods.pods import BasePod
-from jina.types.document.generators import from_ndarray
+from jina.types.document.stream import from_ndarray
 from jina.types.request import Response
 from tests import random_docs, validate_callback
 
