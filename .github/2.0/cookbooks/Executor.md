@@ -615,8 +615,7 @@ class PaddleMwuExecutor(Executor):
     def encode(self, docs, **kwargs):
         for doc in docs:
             _input = paddle.to_tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Paddle.Tensor``
-            _output = _input.matmul(
-                self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
+            _output = _input.matmul(self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
             doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
 ```
 
@@ -730,4 +729,27 @@ class TFIDFTextEncoder(Executor):
 
         for i, doc in enumerate(docs):
             doc.embedding = embedding_matrix[i]
+```
+
+### PyTorch
+
+The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``.
+It leverages Pytorch's ``Tensor`` conversion and operation.
+Finally, the ``embedding`` of each document will be set as the multiplied result as ``np.ndarray``.
+
+```python
+import torch  # 1.8.1
+import numpy as np
+from jina import Executor, requests
+
+class PytorchMwuExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.encoding_mat = torch.from_numpy(np.random.rand(5, 5))
+    @requests
+    def encode(self, docs, **kwargs):
+        for doc in docs:
+            input_tensor = torch.from_numpy(doc.blob)  # convert the ``ndarray`` of the doc to ``Tensor``
+            output_tensor = torch.matmul(self.encoding_mat, input_tensor)  # multiply the input with the encoding matrix.
+            doc.embedding = output_tensor.numpy() # assign the encoding results to ``embedding``
 ```
