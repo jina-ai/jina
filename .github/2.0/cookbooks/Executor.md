@@ -638,7 +638,7 @@ Finally, the ``embedding`` of each document will be set as the multiplied result
 
 ```python
 import numpy as np
-from mindspore import Tensor  # mindspre 1.2.0
+from mindspore import Tensor  # mindspore 1.2.0
 import mindspore.ops as ops
 import mindspore.context as context
 
