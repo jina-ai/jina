@@ -633,7 +633,7 @@ The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that  i
 
 As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
 
-```
+```python
 import sklearn
 
 from jina import Executor, requests, DocumentArray
