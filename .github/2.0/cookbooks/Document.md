@@ -46,6 +46,7 @@ Table of Contents
   - [Filter Elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
+  - [Access nested attributes from tags](#access-nested-attributes-from-tags)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
