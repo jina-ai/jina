@@ -371,9 +371,7 @@ class Document(ProtoTypeMixin):
             *. ``destination`` will be modified in place, ``source`` will be unchanged.
             *. the ``fields`` has value in destination while not in source will be preserved.
         """
-        # CopyFrom will clear everything in current proto and call MergeFrom
-        # If some fields exist in destination, not exist in source, after calling update will lose.
-        # So `update` will only update non-empty fields from source.
+        # We do a safe update: only update existent (value being set) fields from source.
         fields_can_be_updated = []
         # ListFields returns a list of (FieldDescriptor, value) tuples for present fields.
         present_fields = source._pb_body.ListFields()
