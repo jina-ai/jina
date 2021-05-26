@@ -532,6 +532,12 @@ Line number corresponds to the 1.x code:
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
 
+
+
+## Executors in Action
+
+
+
 ### Fastai
 
 This `Executor` uses the [ResNet18](https://docs.fast.ai) network for object classification on images provided by [fastai](https://github.com/fastai/fastai). 
@@ -563,8 +569,7 @@ class ResnetImageEncoder(Executor):
 
 ```
 
-=======
-## Executors in Action
+
 
 ### Pytorch Lightning
 
