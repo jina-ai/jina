@@ -891,7 +891,7 @@ def typename(obj):
     if not isinstance(obj, type):
         obj = obj.__class__
     try:
-        return f'{obj.__module__}.{obj.__name__}'
+        return obj.__name__
     except AttributeError:
         return str(obj)
 
