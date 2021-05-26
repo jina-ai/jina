@@ -511,6 +511,8 @@ Line number corresponds to the 1.x code:
 
 ### Pytorch Lightning
 
+This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model from [PyTorch Lightning Bolts](https://pytorch-lightning.readthedocs.io/en/stable/ecosystem/bolts.html) to build a Jina encoder."
+
 ```python
 from pl_bolts.models.autoencoders import AE
 
@@ -527,5 +529,7 @@ class plMwuAutoEncoder(Executor):
      @requests
      def encode(self, docs, **kwargs):
          for doc in docs:
-             doc.embedding = self.ae(torch.from_numpy(doc.blob)).detach().numpy()
+             input_tensor = torch.from_numpy(doc.blob)
+             output_tensor = self.ae(input_tensor)
+             doc.embedding = output_tensor.detach().numpy()
 ```
