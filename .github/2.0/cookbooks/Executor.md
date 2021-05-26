@@ -40,6 +40,9 @@ Table of Contents
   - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
   - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
+- [Executors in Action](#executors-in-action)
+  - [Paddle](#paddle)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Minimum working example
@@ -512,6 +515,45 @@ class PaddleMwuExecutor(Executor):
             _input = paddle.to_tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Paddle.Tensor``
             _output = _input.matmul(self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
             doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
+```
+
+### Tensorflow
+
+```python
+import numpy as np
+import tensorflow as tf
+from keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
+from tensorflow.python.framework.errors_impl import InvalidArgumentError
+
+from jina import Executor, requests
+
+
+class TfMobileNetEncoder(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.image_dim = 224
+        self.model = MobileNetV2(pooling='avg', input_shape=(self.image_dim, self.image_dim, 3))
+
+    @requests
+    def encode(self, docs, **kwargs):
+        buffers, docs = docs.get_attributes_with_docs('buffer')
+
+        tensors = [tf.io.decode_image(contents=b, channels=3) for b in buffers]
+        resized_tensors = preprocess_input(np.array(self._resize_images(tensors)))
+
+        embeds = self.model.predict(np.stack(resized_tensors))
+        for d, b in zip(docs, embeds):
+            d.embedding = b
+
+    def _resize_images(self, tensors):
+        resized_tensors = []
+        for t in tensors:
+            try:
+                resized_tensors.append(tf.keras.preprocessing.image.smart_resize(t, (self.image_dim, self.image_dim)))
+            except InvalidArgumentError:
+                # this can happen if you include empty or other malformed images
+                pass
+        return resized_tensors
 ```
 
 
