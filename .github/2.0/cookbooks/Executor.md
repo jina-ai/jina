@@ -669,7 +669,7 @@ class TfMobileNetEncoder(Executor):
         return resized_tensors
 ```
 
-# MindSpore
+### MindSpore
 
 The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``.
 It leverages Mindspore ``Tensor`` conversion and operation.
