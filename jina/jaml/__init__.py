@@ -453,9 +453,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         implements :class:`JAMLCompatible` mixin can enjoy this feature, e.g. :class:`BaseFlow`,
         :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.
 
-        Support substitutions in YAML:
-            - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``, ``$VAR``.
+        Support the following substitutions:
             - Context dict (``context``): ``${{VAR}}``(recommended), ``$VAR``.
+            - Environment variables: `${{ENV.VAR}}` (recommended), ``${{VAR}}``, ``$VAR``.
             - Internal reference via ``this`` and ``root``: ``${{this.same_level_key}}``, ``${{root.root_level_key}}``
 
         Substitutions are carried in the order and multiple passes to resolve variables with best effort.
@@ -486,6 +486,22 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
 
             # disable substitute
             b = BaseExecutor.load_config('a.yml', substitute=False)
+
+        .. warning::
+            When the same variable is defined by both environment variable and the ``context``, the value in the
+            ``context`` has a higher priority to be used.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            # load Executor from yaml file
+            # echo VAR_A=hello-jina
+            BaseExecutor.load_config('a.yml')
+
+            # the assignment from context has higher priority
+            os.environ['VAR_A'] = 'hello-from-env'
+            b = BaseExecutor.load_config('a.yml', context={'VAR_A': 'hello-from-context'})
+            assert b.metas.name == hello-from-context
 
 
         .. # noqa: DAR401
