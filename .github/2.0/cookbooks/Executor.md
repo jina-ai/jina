@@ -558,7 +558,7 @@ class plMwuAutoEncoder(Executor):
              output_tensor = self.ae(input_tensor)
              doc.embedding = output_tensor.detach().numpy()
 ```
-=======
+
 ### Paddle
 
 ```python
