@@ -676,3 +676,48 @@ np.stack(da.get_attributes('embedding'))
  [4 5 6]
  [7 8 9]]
 ```
+
+### Access nested attributes from tags
+
+`Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values.
+
+```python
+from jina import Document
+
+doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
+
+doc.tags['dimensions']
+```
+
+```text
+{'weight': 10.0, 'height': 5.0}
+```
+
+In order to provide easy access to nested fields, the `Document` allows to access attributes by composing the attribute 
+qualified name with interlaced `__` symbols:
+
+```python
+from jina import Document
+
+doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
+
+doc.tags__dimensions__weight
+```
+
+```text
+10.0
+```
+
+This also allows to access nested metadata attributes in `bulk` from a `DocumentArray`.
+
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray([Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}}) for _ in range(10)]) 
+
+da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
+```
+
+```text
+[[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
+```
