@@ -116,7 +116,10 @@ with f:
 
 ## `Flow` API
 
-In Jina, Flow is how Jina streamlines and scales Executors. A `Flow` object has the following common methods:
+- Flow is how Jina streamlines and scales Executors. 
+- Flow is a service, allowing multiple clients to access it via gRPC/REST/WebSocket from the public/private network.
+  
+A `Flow` object has the following common methods:
 
 | |  |
 |---|---|
@@ -522,17 +525,18 @@ with Flow() as f:
     f.post('/')  # empty
 ```
 
-`Document` class provides some static methods that lets you build `Document` generator, e.g. [`from_csv`
+`Document` module provides some methods that lets you build `Document` generator, e.g. [`from_csv`
 , `from_files`, `from_ndarray`, `from_ndjson`](Document.md#construct-from-json-csv-ndarray-and-files). They can be used
  in conjunction with `.post()`, e.g.
 
 ```python
-from jina import Flow, Document
+from jina import Flow
+from jina.types.document.generators import from_csv
 
 f = Flow()
 
 with f, open('my.csv') as fp:
-    f.index(Document.from_csv(fp, field_resolver={'question': 'text'}))
+    f.index(from_csv(fp, field_resolver={'question': 'text'}))
 ```
 
 #### Callback Functions
@@ -662,7 +666,19 @@ if __name__ == '__main__':
 
 ## Flow as a Service
 
-A Flow can be used as a service, allows the access from multiple Python/HTTP clients from the public/private network.
+A Flow _is_ a service. Though implicit, you are already using it as a service.
+
+When you start a `Flow` and call `.post()` inside the context, a `jina.Client` object is started and used for communication.
+
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/implict-vs-explicit-service.svg?raw=true"/>
+
+Many times we need to use Flow & Client in a more explicit way, often due to one of the following reasons:
+- `Flow` and `Client` are on different machines: one on GPU, one on CPU
+- `Flow` and `Client` have different lifetime: one lives longer, one lives shorter.
+- Multiple `Client` want to access one `Flow`;
+- One `Client` want to interleave its access to multiple `Flow`. 
+
+So here is how:
 
 ### Python Client with gRPC Request
 
@@ -692,7 +708,7 @@ Note that the host address is `192.168.1.14` and `port_expose` is `12345`.
 While keep this server open, let's create a client on a different machine:
 
 ```python
-from jina.clients import Client
+from jina import Client
 
 c = Client(host='192.168.1.14', port_expose=12345)
 
@@ -832,6 +848,7 @@ WebSocketClient@27622[S]:Connected to the gateway at 192.168.1.14:12345
 	✅ done in ⏱ 0 seconds 🐎 18578.9/s
 ```
 
+---
 
 ## Remarks
 

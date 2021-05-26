@@ -4,12 +4,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from jina import Flow, AsyncFlow, Executor, DocumentArray
+from jina import Flow, AsyncFlow, Executor
 from jina.excepts import BadFlowYAMLVersion
 from jina.flow import BaseFlow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
+from jina.types.document.generators import from_ndarray
 
 cur_dir = Path(__file__).parent
 
@@ -48,12 +49,12 @@ def test_add_needs_inspect(tmpdir):
         .needs(['pod0', 'pod1'])
     )
     with f1:
-        f1.index(DocumentArray.from_ndarray(np.random.random([5, 5])), on_done=print)
+        f1.index(from_ndarray(np.random.random([5, 5])), on_done=print)
 
     f2 = Flow.load_config('yaml/flow-v1.0-syntax.yml')
 
     with f2:
-        f2.index(DocumentArray.from_ndarray(np.random.random([5, 5])), on_done=print)
+        f2.index(from_ndarray(np.random.random([5, 5])), on_done=print)
 
     assert f1 == f2
 
