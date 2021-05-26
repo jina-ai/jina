@@ -490,8 +490,13 @@ Line number corresponds to the 1.x code:
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
 
-
 ### Fastai
+
+This `Executor` uses the [ResNet18](https://docs.fast.ai) network for object classification on images provided by [fastai](https://github.com/fastai/fastai). 
+
+The `encode` function of this executor generates a feature vector for each image in each `Document` of the input `DocumentArray`. This is done in parrallel with a single function call for higher performance.
+
+As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has completed.
 
 
 ```python
