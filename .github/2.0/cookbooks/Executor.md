@@ -558,11 +558,13 @@ class ResnetImageEncoder(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)        
         self.model = resnet18()
+        self.model.eval()
 
      @requests
      def encode(self, docs, **kwargs):
          batch = torch.Tensor(docs.get_attributes('blob'))
-         batch_embeddings = self.model(batch).detach().numpy()
+         with torch.no_grad():
+            batch_embeddings = self.model(batch).detach().numpy()
 
          for doc,emb in zip(docs, batch_embeddings):
              doc.embedding = emb
@@ -590,10 +592,11 @@ class plMwuAutoEncoder(Executor):
          
      @requests
      def encode(self, docs, **kwargs):
-         for doc in docs:
-             input_tensor = torch.from_numpy(doc.blob)
-             output_tensor = self.ae(input_tensor)
-             doc.embedding = output_tensor.detach().numpy()
+        with torch.no_grad():
+            for doc in docs:
+                input_tensor = torch.from_numpy(doc.blob)
+                output_tensor = self.ae(input_tensor)
+                doc.embedding = output_tensor.detach().numpy()
 ```
 
 ### Paddle
