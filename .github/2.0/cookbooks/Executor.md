@@ -522,11 +522,10 @@ class plMwuAutoEncoder(Executor):
      def __init__(self, **kwargs):
         super().__init__()
         self.ae = AE(input_height=32).from_pretrained('cifar10-resnet18')
-     
+        self.ae.freeze()
+         
      @requests
      def encode(self, docs, **kwargs):
          for doc in docs:
              doc.embedding = self.ae(torch.from_numpy(doc.blob)).detach().numpy()
-
-         ae.freeze()
 ```
