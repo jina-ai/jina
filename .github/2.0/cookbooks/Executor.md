@@ -516,6 +516,10 @@ class PaddleMwuExecutor(Executor):
 
 ### MindSpore
 
+The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``.
+It leverages Mindspore ``Tensor`` conversion and operation.
+Finally, the ``embedding`` of each document will be set as the multiplied result as ``np.ndarray``.
+
 ```python
 import numpy as np
 from mindspore import Tensor  # mindspre 1.2.0
@@ -528,7 +532,7 @@ from jina import Executor, requests
 class MindsporeMwuExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
-        context.set_context(mode=context.PYNATIVE_MODE, device_target="CPU")
+        context.set_context(mode=context.PYNATIVE_MODE, device_target='CPU')
         self.dims = 5
         self.encoding_mat = Tensor(np.random.rand(self.dims, self.dims))
 
