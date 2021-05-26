@@ -15,31 +15,33 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 Table of Contents
 
 - [Minimum working example](#minimum-working-example)
-  - [Pure Python](#pure-python)
-  - [With YAML](#with-yaml)
+    - [Pure Python](#pure-python)
+    - [With YAML](#with-yaml)
 - [Executor API](#executor-api)
-  - [Inheritance](#inheritance)
-  - [`__init__` Constructor](#__init__-constructor)
-  - [Method naming](#method-naming)
-  - [`@requests` decorator](#requests-decorator)
-    - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
-    - [Multiple bindings: `@requests(on=[...])`](#multiple-bindings-requestson)
-    - [No binding](#no-binding)
-  - [Method Signature](#method-signature)
-  - [Method Arguments](#method-arguments)
-  - [Method Returns](#method-returns)
-    - [Example 1: Embed Documents `blob`](#example-1-embed-documents-blob)
-    - [Example 2: Add Chunks by Segmenting Document](#example-2-add-chunks-by-segmenting-document)
-    - [Example 3: Preserve Document `id` Only](#example-3-preserve-document-id-only)
-  - [YAML Interface](#yaml-interface)
-  - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
+    - [Inheritance](#inheritance)
+    - [`__init__` Constructor](#__init__-constructor)
+    - [Method naming](#method-naming)
+    - [`@requests` decorator](#requests-decorator)
+        - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
+        - [Multiple bindings: `@requests(on=[...])`](#multiple-bindings-requestson)
+        - [No binding](#no-binding)
+    - [Method Signature](#method-signature)
+    - [Method Arguments](#method-arguments)
+    - [Method Returns](#method-returns)
+        - [Example 1: Embed Documents `blob`](#example-1-embed-documents-blob)
+        - [Example 2: Add Chunks by Segmenting Document](#example-2-add-chunks-by-segmenting-document)
+        - [Example 3: Preserve Document `id` Only](#example-3-preserve-document-id-only)
+    - [YAML Interface](#yaml-interface)
+    - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
 - [Executor Built-in Features](#executor-built-in-features)
-  - [1.x vs 2.0](#1x-vs-20)
-  - [Workspace](#workspace)
-  - [Metas](#metas)
-  - [`.metas` & `.runtime_args`](#metas--runtime_args)
+    - [1.x vs 2.0](#1x-vs-20)
+    - [Workspace](#workspace)
+    - [Metas](#metas)
+    - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
-  - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
+    - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
+- [Executors in Action](#executors-in-action)
+    - [Paddle](#paddle)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -84,13 +86,15 @@ requests:
 ```
 
 Construct `Executor` from YAML:
+
 ```python
 from jina import Executor
 
 my_exec = Executor.load_config('my.yml')
 ```
 
-Flow uses `Executor` from YAML: 
+Flow uses `Executor` from YAML:
+
 ```python
 from jina import Flow, Document
 
@@ -269,13 +273,15 @@ The return is optional. **All changes happen in-place.**
 
 - If the return not `None`, then the current `docs` field in the `Request` will be overridden by the
   returned `DocumentArray`, which will be forwarded to the next Executor in the Flow.
-- If the return is just a shallow copy of `Request.docs`, then nothing happens. This is because the changes are already made in-place, there is no point to assign the value.
+- If the return is just a shallow copy of `Request.docs`, then nothing happens. This is because the changes are already
+  made in-place, there is no point to assign the value.
 
 So do I need a return? No, unless you must create a new `DocumentArray`. Let's see some examples.
 
 #### Example 1: Embed Documents `blob`
 
-In this example, `encode()` uses some neural network to get the embedding for each `Document.blob`, then assign it to `Document.embedding`. The whole procedure is in-place and there is no need to return anything.
+In this example, `encode()` uses some neural network to get the embedding for each `Document.blob`, then assign it
+to `Document.embedding`. The whole procedure is in-place and there is no need to return anything.
 
 ```python
 import numpy as np
@@ -283,11 +289,12 @@ from jina import requests, Executor, DocumentArray
 
 from pods.pn import get_predict_model
 
+
 class PNEncoder(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.model = get_predict_model(ckpt_path='ckpt', num_class=2260)
-    
+
     @requests
     def encode(self, docs: DocumentArray, *args, **kwargs) -> None:
         _blob, _docs = docs.traverse_flat(['c']).get_attributes_with_docs('blob')
@@ -298,10 +305,13 @@ class PNEncoder(Executor):
 
 #### Example 2: Add Chunks by Segmenting Document
 
-In this example, each `Document` is segmented by `get_mesh` and the results are added to `.chunks`. After that, `.buffer` and `.uri` are removed from each `Document`. In this case, all changes happen in-place and there is no need to return anything.
+In this example, each `Document` is segmented by `get_mesh` and the results are added to `.chunks`. After
+that, `.buffer` and `.uri` are removed from each `Document`. In this case, all changes happen in-place and there is no
+need to return anything.
 
 ```python
 from jina import requests, Document, Executor, DocumentArray
+
 
 class ConvertSegmenter(Executor):
 
@@ -315,10 +325,13 @@ class ConvertSegmenter(Executor):
 
 #### Example 3: Preserve Document `id` Only
 
-In this example, a simple indexer stores incoming `docs` in a `DocumentArray`. Then it recreates a new `DocumentArray` by preserving only `id` in the original `docs` and dropping all others, as the developer does not want to carry all rich info over the network. This needs a return. 
+In this example, a simple indexer stores incoming `docs` in a `DocumentArray`. Then it recreates a new `DocumentArray`
+by preserving only `id` in the original `docs` and dropping all others, as the developer does not want to carry all rich
+info over the network. This needs a return.
 
 ```python
 from jina import requests, Document, Executor, DocumentArray
+
 
 class MyIndexer(Executor):
     """Simple indexer class """
@@ -389,6 +402,35 @@ exec = Executor.load_config(y_literal)
 exec.save_config('y.yml')
 Executor.load_config('y.yml')
 ```
+
+### Use Executor out of the Flow
+
+`Executor` object can be used directly just like regular Python object. For example,
+
+```python
+from jina import Executor, requests, DocumentArray, Document
+
+
+class MyExec(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        for d in docs:
+            d.text = 'hello world'
+
+
+m = MyExec()
+da = DocumentArray([Document(text='test')])
+m.foo(da)
+print(da)
+```
+
+```text
+DocumentArray has 1 items:
+{'id': '20213a02-bdcd-11eb-abf1-1e008a366d48', 'mime_type': 'text/plain', 'text': 'hello world'}
+```
+
+This is useful in debugging an Executor.
 
 ## Executor Built-in Features
 
@@ -521,3 +563,93 @@ class ResnetImageEncoder(Executor):
 
 ```
 
+=======
+## Executors in Action
+
+### Pytorch Lightning
+
+This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model from [PyTorch Lightning Bolts](https://pytorch-lightning.readthedocs.io/en/stable/ecosystem/bolts.html) to build a Jina encoder."
+
+```python
+from pl_bolts.models.autoencoders import AE
+
+from jina import Executor, requests
+
+import torch
+
+class plMwuAutoEncoder(Executor):
+     def __init__(self, **kwargs):
+        super().__init__()
+        self.ae = AE(input_height=32).from_pretrained('cifar10-resnet18')
+        self.ae.freeze()
+         
+     @requests
+     def encode(self, docs, **kwargs):
+         for doc in docs:
+             input_tensor = torch.from_numpy(doc.blob)
+             output_tensor = self.ae(input_tensor)
+             doc.embedding = output_tensor.detach().numpy()
+```
+
+### Paddle
+
+```python
+import paddle  # paddle==2.1.0
+import numpy as np
+
+from jina import Executor, requests
+
+
+class PaddleMwuExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.dims = 5
+        self.encoding_mat = paddle.to_tensor(np.random.rand(self.dims, self.dims))
+
+    @requests
+    def encode(self, docs, **kwargs):
+        for doc in docs:
+            _input = paddle.to_tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Paddle.Tensor``
+            _output = _input.matmul(
+                self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
+            doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
+```
+
+### Tensorflow
+
+```python
+import numpy as np
+import tensorflow as tf
+from keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
+from tensorflow.python.framework.errors_impl import InvalidArgumentError
+
+from jina import Executor, requests
+
+
+class TfMobileNetEncoder(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.image_dim = 224
+        self.model = MobileNetV2(pooling='avg', input_shape=(self.image_dim, self.image_dim, 3))
+
+    @requests
+    def encode(self, docs, **kwargs):
+        buffers, docs = docs.get_attributes_with_docs('buffer')
+
+        tensors = [tf.io.decode_image(contents=b, channels=3) for b in buffers]
+        resized_tensors = preprocess_input(np.array(self._resize_images(tensors)))
+
+        embeds = self.model.predict(np.stack(resized_tensors))
+        for d, b in zip(docs, embeds):
+            d.embedding = b
+
+    def _resize_images(self, tensors):
+        resized_tensors = []
+        for t in tensors:
+            try:
+                resized_tensors.append(tf.keras.preprocessing.image.smart_resize(t, (self.image_dim, self.image_dim)))
+            except InvalidArgumentError:
+                # this can happen if you include empty or other malformed images
+                pass
+        return resized_tensors
+```
