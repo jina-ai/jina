@@ -1,4 +1,3 @@
-import sys
 from types import SimpleNamespace
 
 from jina.executors import BaseExecutor
