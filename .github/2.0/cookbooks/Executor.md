@@ -534,8 +534,42 @@ Line number corresponds to the 1.x code:
 
 
 
-
 ## Executors in Action
+
+
+
+### Fastai
+
+This `Executor` uses the [ResNet18](https://docs.fast.ai) network for object classification on images provided by [fastai](https://github.com/fastai/fastai). 
+
+The `encode` function of this executor generates a feature vector for each image in each `Document` of the input `DocumentArray`. The feature vector generated is the output activations of the neural network (a vector of 1000 components). Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all images in a single function call) to achieve higher performance.
+
+As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has completed.
+
+
+```python
+import torch
+from fastai.vision.models import resnet18
+
+from jina import Executor, requests, DocumentArray, Document
+
+class ResnetImageEncoder(Executor):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)        
+        self.model = resnet18()
+
+     @requests
+     def encode(self, docs, **kwargs):
+         batch = torch.Tensor(docs.get_attributes('blob'))
+         batch_embeddings = self.model(batch).detach().numpy()
+
+         for doc,emb in zip(docs, batch_embeddings):
+             doc.embedding = emb
+
+```
+
+
 
 ### Pytorch Lightning
 
@@ -587,6 +621,14 @@ class PaddleMwuExecutor(Executor):
 ```
 
 ### Tensorflow
+
+This `Executor` uses the [MobileNetV2](https://keras.io/api/applications/mobilenet/) network for object classification on images.
+
+It extracts the `buffer` field (which is the actual byte array) from each input `Document` in the `DocumentArray` _docs_, preprocesses the byte array and uses _MobileNet_ to predict the classes (dog/car/...) found in the image.
+Those predictions are Numpy arrays encoding the probability for each class supported by the model (1000 in this case).
+The `Executor` stores those arrays then in the `embedding` for each `Document`.
+
+As a result each `Document` in the input `DocumentArray` _docs_ will have an `embedding` after `encode()` has completed.
 
 ```python
 import numpy as np
