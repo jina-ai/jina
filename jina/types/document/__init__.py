@@ -6,7 +6,6 @@ import os
 import urllib.parse
 import urllib.request
 import warnings
-from copy import deepcopy
 from hashlib import blake2b
 from typing import (
     Iterable,
