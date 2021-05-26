@@ -1,9 +1,9 @@
-import pytest
 import numpy as np
+import pytest
 
-from jina import Document
 from jina.excepts import BadClientCallback
 from jina.flow import Flow
+from jina.types.document.generators import from_ndarray
 
 
 def validate(x):
@@ -29,7 +29,7 @@ def test_client_on_error(restful):
         t = 0
         try:
             f.index(
-                DocumentArray.from_ndarray(np.random.random([5, 4])),
+                from_ndarray(np.random.random([5, 4])),
                 on_done=validate,
                 continue_on_error=False,
             )
@@ -38,7 +38,7 @@ def test_client_on_error(restful):
             t = 1
         # now query the gateway again, make sure gateway's channel is still usable
         f.index(
-            DocumentArray.from_ndarray(np.random.random([5, 4])),
+            from_ndarray(np.random.random([5, 4])),
             on_done=validate,
             continue_on_error=True,
         )
