@@ -39,9 +39,7 @@ Table of Contents
     - [Metas](#metas)
     - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
-<<<<<<< HEAD
   - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
-=======
     - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
 - [Executors in Action](#executors-in-action)
     - [Paddle](#paddle)
@@ -535,17 +533,8 @@ Line number corresponds to the 1.x code:
     - replacing previous `Blob2PngURI` and `ExcludeQL` driver logic using `Document` built-in
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
-<<<<<<< HEAD
-    
-## Executors in Action
-
-=======
-
-
 
 ## Executors in Action
-
-
 
 ### Fastai
 
