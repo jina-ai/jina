@@ -690,9 +690,9 @@ class MindsporeMwuExecutor(Executor):
 
     @requests
     def encode(self, docs, **kwargs):
+        matmul = ops.MatMul()
         for doc in docs:
             input_tensor = Tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Tensor``
-            matmul = ops.MatMul()
             output_tensor = matmul(self.encoding_mat, input_tensor)  # multiply the input with the encoding matrix.
             doc.embedding = output_tensor.asnumpy() # assign the encoding results to ``embedding``
 ```
