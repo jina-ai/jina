@@ -534,6 +534,31 @@ Line number corresponds to the 1.x code:
 
 ## Executors in Action
 
+### Pytorch Lightning
+
+This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model from [PyTorch Lightning Bolts](https://pytorch-lightning.readthedocs.io/en/stable/ecosystem/bolts.html) to build a Jina encoder."
+
+```python
+from pl_bolts.models.autoencoders import AE
+
+from jina import Executor, requests
+
+import torch
+
+class plMwuAutoEncoder(Executor):
+     def __init__(self, **kwargs):
+        super().__init__()
+        self.ae = AE(input_height=32).from_pretrained('cifar10-resnet18')
+        self.ae.freeze()
+         
+     @requests
+     def encode(self, docs, **kwargs):
+         for doc in docs:
+             input_tensor = torch.from_numpy(doc.blob)
+             output_tensor = self.ae(input_tensor)
+             doc.embedding = output_tensor.detach().numpy()
+```
+
 ### Paddle
 
 ```python
@@ -559,6 +584,14 @@ class PaddleMwuExecutor(Executor):
 ```
 
 ### Tensorflow
+
+This `Executor` uses the [MobileNetV2](https://keras.io/api/applications/mobilenet/) network for object classification on images.
+
+It extracts the `buffer` field (which is the actual byte array) from each input `Document` in the `DocumentArray` _docs_, preprocesses the byte array and uses _MobileNet_ to predict the classes (dog/car/...) found in the image.
+Those predictions are Numpy arrays encoding the probability for each class supported by the model (1000 in this case).
+The `Executor` stores those arrays then in the `embedding` for each `Document`.
+
+As a result each `Document` in the input `DocumentArray` _docs_ will have an `embedding` after `encode()` has completed.
 
 ```python
 import numpy as np
