@@ -667,9 +667,39 @@ class TfMobileNetEncoder(Executor):
         return resized_tensors
 ```
 
+# MindSpore
+
+The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``.
+It leverages Mindspore ``Tensor`` conversion and operation.
+Finally, the ``embedding`` of each document will be set as the multiplied result as ``np.ndarray``.
+
+```python
+import numpy as np
+from mindspore import Tensor  # mindspore 1.2.0
+import mindspore.ops as ops
+import mindspore.context as context
+
+from jina import Executor, requests
+
+
+class MindsporeMwuExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+        context.set_context(mode=context.PYNATIVE_MODE, device_target='CPU')
+        self.encoding_mat = Tensor(np.random.rand(5, 5))
+
+    @requests
+    def encode(self, docs, **kwargs):
+        matmul = ops.MatMul()
+        for doc in docs:
+            input_tensor = Tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Tensor``
+            output_tensor = matmul(self.encoding_mat, input_tensor)  # multiply the input with the encoding matrix.
+            doc.embedding = output_tensor.asnumpy() # assign the encoding results to ``embedding``
+```
+
 ### Scikit-learn
 
-This `Executor` uses a [TFI-DF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)  feature vector to generate sparse embeddings for text search.
+This `Executor` uses a [TF-IDF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)  feature vector to generate sparse embeddings for text search.
 
 The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that  it is fitted with a dataset already present in `sklearn`. The executor provides an `encode` method that recieves a `DocumentArray` and updates each document in the  `DocumentArray` with an `embedding` attribute that is the tf-idf representation of the text found in the document. Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all texts in a single function call) to achieve higher performance.
 
