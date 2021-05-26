@@ -705,7 +705,8 @@ The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that  i
 As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
 
 ```python
-import sklearn
+from sklearn.datasets import fetch_20newsgroups
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 from jina import Executor, requests, DocumentArray
 
@@ -717,7 +718,7 @@ class TFIDFTextEncoder(Executor):
       
         from sklearn import datasets
 
-        dataset = datasets.fetch_20newsgroups()
+        dataset = fetch_20newsgroups()
         tfidf_vectorizer = TfidfVectorizer()
         tfidf_vectorizer.fit(dataset.data) 
         self.ttfidf_vectorizer = tfidf_vectorizer
