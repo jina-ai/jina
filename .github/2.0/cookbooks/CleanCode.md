@@ -83,6 +83,46 @@ tips to help you write clean and beautiful code.
         print(parameters)
    ```
 
+1. To debug an `Executor`, there is no need to use it in the Flow. Simply initiate it as an object and call its method.
+
+   ✅ Do:
+   ```python
+   from jina import Executor, requests, DocumentArray, Document
+
+
+   class MyExec(Executor):
+   
+       @requests
+       def foo(self, docs, **kwargs):
+           for d in docs:
+               d.text = 'hello world'
+   
+   
+   m = MyExec()
+   da = DocumentArray([Document(text='test')])
+   m.foo(da)
+   print(da)
+   ```
+   
+   😔 Don't:
+   ```python
+   from jina import Executor, requests, DocumentArray, Document, Flow
+   
+   
+   class MyExec(Executor):
+   
+       @requests
+       def foo(self, docs, **kwargs):
+           for d in docs:
+               d.text = 'hello world'
+   
+   
+   da = DocumentArray([Document(text='test')])
+   
+   with Flow().add(uses=MyExec) as f:
+       f.post('/', da, on_done=print)
+   ```
+   
 1. Send `parameters` only request to a Flow if you don't need `docs`.
 
    ✅ Do:
@@ -115,3 +155,4 @@ tips to help you write clean and beautiful code.
    with f:
       f.post('/foo', inputs=Document(), parameters={'hello': 'world'})
    ```
+

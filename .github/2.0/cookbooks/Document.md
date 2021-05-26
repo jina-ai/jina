@@ -321,16 +321,16 @@ d.update(s, exclude_fields=('id',))
 
 #### Construct from JSON, CSV, `ndarray` and Files
 
-You can also construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
+The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
 functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original
 format:
 
 |     |     |
 | --- | --- |
-| `Document.from_ndjson()` | Yield `Document` from a line-based JSON file. Each line is a `Document` object |
-| `Document.from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
-| `Document.from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
-| `Document.from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
+| `from_ndjson()` | Yield `Document` from a line-based JSON file. Each line is a `Document` object |
+| `from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
+| `from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
+| `from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
 
 Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.
 
@@ -338,8 +338,9 @@ To convert the generator to `DocumentArray` use:
 
 ```python
 from jina import DocumentArray
+from jina.types.document.generators import from_files
 
-DocumentArray(DocumentArray.from_files('/*.png'))
+DocumentArray(from_files('/*.png'))
 ```
 
 ### Serialize `Document`
