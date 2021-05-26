@@ -370,44 +370,33 @@ class Document(ProtoTypeMixin):
         .. note::
             *. if ``fields`` is empty, then destination is overridden by the source completely.
             *. ``destination`` will be modified in place, ``source`` will be unchanged.
-            *. the ``fields`` has value in destination while empty in source will be preserved.
+            *. the ``fields`` has value in destination while not in source will be preserved.
         """
         # CopyFrom will clear everything in current proto and call MergeFrom
         # If some fields exist in destination, not exist in source, after calling update will lose.
-        # Need to preserve these fields.
-        fields_to_preserve = []
-        for field_name in self._pb_body.DESCRIPTOR.fields_by_name.keys():
-            try:
-                # ``HasField`` Checks if a certain field is set for the message.
-                if destination._pb_body.HasField(
-                    field_name
-                ) and not source._pb_body.HasField(field_name):
-                    fields_to_preserve.append(field_name)
-            except ValueError:
-                continue  # pass on purpose, HasField() only works for message fields.
-        dest_copy = deepcopy(destination)
-        if fields:
-            # Field masks are used to specify a subset of fields that should be
-            # returned by a get operation or modified by an update operation.
-            # Not using FieldMask since tags as `StructView` can not call `MergeFrom`.
-            for field in fields:
+        # So `update` will only update non-empty fields from source.
+        fields_can_be_updated = []
+        # ListFields returns a list of (FieldDescriptor, value) tuples for present fields.
+        present_fields = source._pb_body.ListFields()
+        for field_descriptor, _ in present_fields:
+            fields_can_be_updated.append(field_descriptor.name)
+        if not fields:
+            fields = fields_can_be_updated  # if `fields` empty, update all fields.
+        for field in fields:
+            if (
+                field == 'tags'
+            ):  # For the tags, stay consistent with the python update method.
+                destination._pb_body.tags.update(source.tags)
+            else:
                 destination._pb_body.ClearField(field)
                 setattr(destination, field, getattr(source, field))
-        else:
-            # Merge fields completely while keeping the preserved fields.
-            destination.CopyFrom(source)
-            if fields_to_preserve:
-                for field in fields_to_preserve:
-                    setattr(destination, field, getattr(dest_copy, field))
-        # For the tags, stay consistent with the python update method.
-        self._pb_body.tags.update(dest_copy.tags)
 
     def update(
         self,
         source: 'Document',
         fields: Optional[List[str]] = None,
     ) -> None:
-        """Updates fields specified in ``include_fields`` from the source to current Document.
+        """Updates fields specified in ``fields`` from the source to current Document.
 
         :param source: source :class:`Document` object.
         :param fields: a list of field names that included from the current document,
