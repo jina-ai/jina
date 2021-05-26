@@ -73,6 +73,8 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 
 Copy-paste the minimum example below and run it:
 
+<sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">word/character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
+
 ```python
 import numpy as np
 from jina import Document, DocumentArray, Executor, Flow, requests
@@ -86,7 +88,7 @@ class CharEmbed(Executor):  # a simple character embedding with mean-pooling
     def foo(self, docs: DocumentArray, **kwargs):
         for d in docs:
             r_emb = [ord(c) - self.offset if self.offset <= ord(c) <= 127 else (self.dim - 1) for c in d.text]
-            d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # mean-pooling
+            d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # average pooling
 
 class Indexer(Executor):
     _docs = DocumentArray()  # for storing all document in memory
