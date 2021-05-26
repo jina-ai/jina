@@ -40,11 +40,9 @@ Table of Contents
     - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
   - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
-    - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
 - [Executors in Action](#executors-in-action)
     - [Paddle](#paddle)
-
->>>>>>> 9a8d84217a42a0493b924e8f72471620d87cb028
+    
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Minimum working example
@@ -534,7 +532,11 @@ Line number corresponds to the 1.x code:
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
 
+
+
 ## Executors in Action
+
+
 
 ### Fastai
 
