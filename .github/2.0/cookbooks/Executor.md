@@ -585,6 +585,14 @@ class PaddleMwuExecutor(Executor):
 
 ### Tensorflow
 
+This `Executor` uses the [MobileNetV2](https://keras.io/api/applications/mobilenet/) network for object classification on images.
+
+It extracts the `buffer` field (which is the actual byte array) from each input `Document` in the `DocumentArray` _docs_, preprocesses the byte array and uses _MobileNet_ to predict the classes (dog/car/...) found in the image.
+Those predictions are Numpy arrays encoding the probability for each class supported by the model (1000 in this case).
+The `Executor` stores those arrays then in the `embedding` for each `Document`.
+
+As a result each `Document` in the input `DocumentArray` _docs_ will have an `embedding` after `encode()` has completed.
+
 ```python
 import numpy as np
 import tensorflow as tf
