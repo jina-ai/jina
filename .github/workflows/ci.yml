@@ -136,6 +136,17 @@ jobs:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
+      - name: Check for python file changes
+          uses: getsentry/paths-filter@v2
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            filters: |
+              python:
+                - '**/*.py'
+              requirements:
+                - '*requirements*.txt'
+              yml:
+                - '**/*.yml'
       - uses: actions/checkout@v2
 #        with:
 #          submodules: true
