@@ -19,8 +19,5 @@ class StoreStatus(BaseModel):
 
     @root_validator(pre=False)
     def set_size(cls, values):
-        if 'items' in values:
-            values['size'] = len(values['items'])
-        elif 'size' not in values:
-            values['size'] = 0
+        values['size'] = len(values['items']) if 'items' in values else 0
         return values
