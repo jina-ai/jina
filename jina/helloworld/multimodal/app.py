@@ -1,14 +1,15 @@
 import os
-import zipfile
 import urllib.request
 import webbrowser
+import zipfile
 from pathlib import Path
 
-from jina import Flow, Document, DocumentArray
+from jina import Flow
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_multimodal_parser
+from jina.types.document.generators import from_csv
 
 
 def hello_world(args):
@@ -56,7 +57,7 @@ def hello_world(args):
     f = Flow.load_config('flow-index.yml')
 
     with f, open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
-        f.index(inputs=DocumentArray.from_csv(fp), request_size=10)
+        f.index(inputs=from_csv(fp), request_size=10)
 
     # search it!
     f = Flow.load_config('flow-search.yml')
