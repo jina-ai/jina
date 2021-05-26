@@ -68,14 +68,12 @@ with f:
 
 ### With YAML
 
-`MyExecutor` described as above.
+`MyExecutor` described as above. Save it as `foo.py`.
 
 `my.yml`:
 
 ```yaml
 jtype: MyExecutor
-with:
-  bar: 123
 metas:
   py_modules:
     - foo.py
