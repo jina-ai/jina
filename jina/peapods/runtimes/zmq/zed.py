@@ -4,7 +4,6 @@ from collections import defaultdict
 from typing import Dict, List
 
 import zmq
-from google.protobuf.json_format import MessageToDict
 
 from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
@@ -204,7 +203,7 @@ class ZEDRuntime(ZMQRuntime):
         r_docs = self._executor(
             req_endpoint=self.envelope.header.exec_endpoint,
             docs=self.docs,
-            parameters=MessageToDict(self.request.parameters),
+            parameters=self.request.parameters,
             docs_matrix=self.docs_matrix,
             groundtruths=self.groundtruths,
             groundtruths_matrix=self.groundtruths_matrix,

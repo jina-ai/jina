@@ -19,7 +19,6 @@ In this guide, we're going to go through the steps for each kind of contribution
 - [☑️ Naming Conventions](#-naming-conventions)
 - [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
 - [📖 Contributing Documentation](#-contributing-documentation)
-- [💬 Getting Support](#-getting-support)
 - [🙏 Thank You](#-thank-you)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -65,7 +64,7 @@ Right now we're working on a list of things we want help with and easy-to-fix bu
 ## 🥇 Making Your First Submission
 
 0. Associate your local git config with your github account. If this is your first time using git you can follow [the steps](#associate-with-github-account).
-1. Fork the Jina repo and clone onto your computer. By default, `git` won't clone `jina/hub` as it is a submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). Please follow [the steps](#check-out-jinahub-submodule) for details.
+1. Fork the Jina repo and clone onto your computer. 
 1. Configure git pre-commit hooks. Please follow [the steps](#install-pre-commit-hooks)
 1. Create a [new branch](#naming-your-branch), for example `fix-jina-typo-1`.
 1. Work on this branch to do the fix/improvement.
@@ -116,24 +115,6 @@ For more about our docstring style, refer to [this guide](https://docs.jina.ai/c
 
 Run `git config blame.ignoreRevsFile .github/.git-blame-ignore-revs`
 
-### Check out `jina/hub` submodule
-
-By default, `git clone` won't clone anything under `jina/hub` as it is a Git submodule maintained at [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub). If you want to contribute to `jina-hub`, please move to [`jina-ai/jina-hub`](https://github.com/jina-ai/jina-hub) repo and make your contribution.
-
-In most cases when you work on `jina-ai/jina`, you don't need `jina-hub`. But just in case for some reason you wish to work with files under `jina/hub` (e.g. some integration test), you can use:
-
-```bash
-git clone https://github.com/jina-ai/jina.git
-git submodule update --init --remote
-```
-
-At any time, if you want to sync your local files `jina/hub` with `master@jina-ai/jina-hub`, you can always use:
-
-```bash
-git submodule update --remote
-```
-
-If you are unfamiliar with git submodule, [this blog post from Github nicely explains it](https://github.blog/2016-02-01-working-with-submodules/).  
 
 <a name="-naming-conventions"></a>
 ## ☑️ Naming Conventions
@@ -315,17 +296,6 @@ python -m http.server 8080 -d _build/html
 
 The documentation is then available in your browser at [`http://0.0.0.0:8080/`](http://0.0.0.0:8080/).
 
-<a name="-getting-support"></a>
-## 💬 Getting Support
-
-We're always happy to lend a hand, answer questions, or listen to feedback. You find us here:
-
-* [Documentation](http://docs.jina.ai)
-* [Slack](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w)
-
-We're also looking at starting online developer hangouts, so you can catch up with us over chat and video, and get to meet your fellow Jina contributors.
-
-<a name="-thank-you"></a>
 ## 🙏 Thank You
 
 Once again, thanks so much for your interest in contributing to Jina. We're excited to see your contributions!

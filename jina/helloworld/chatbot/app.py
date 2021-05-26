@@ -3,11 +3,12 @@ import urllib.request
 import webbrowser
 from pathlib import Path
 
-from jina import Flow, Document, DocumentArray
+from jina import Flow
 from jina.importer import ImportExtensions
 from jina.logging import default_logger
 from jina.logging.profile import ProgressBar
 from jina.parsers.helloworld import set_hw_chatbot_parser
+from jina.types.document.generators import from_csv
 
 if __name__ == '__main__':
     from executors import MyTransformer, MyIndexer
@@ -47,13 +48,13 @@ def hello_world(args):
 
     f = (
         Flow()
-        .add(uses=MyTransformer, parallel=args.parallel, timeout_ready=600000)
+        .add(uses=MyTransformer, parallel=args.parallel)
         .add(uses=MyIndexer, workspace=args.workdir)
     )
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:
-        f.index(DocumentArray.from_csv(fp, field_resolver={'question': 'text'}))
+        f.index(from_csv(fp, field_resolver={'question': 'text'}))
 
         # switch to REST gateway at runtime
         f.use_rest_gateway(args.port_expose)

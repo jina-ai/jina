@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import inspect
 import os
+from contextlib import nullcontext
 from typing import Callable, Union, Optional, Iterator, Iterable, AsyncIterator
 
 import grpc
@@ -150,7 +151,13 @@ class BaseClient:
                 self.logger.success(
                     f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
                 )
-                with ProgressBar() as p_bar, TimeContext(''):
+
+                if self.args.show_progress:
+                    cm1, cm2 = ProgressBar(), TimeContext('')
+                else:
+                    cm1, cm2 = nullcontext(), nullcontext()
+
+                with cm1 as p_bar, cm2:
                     async for resp in stub.Call(req_iter):
                         resp.as_typed_request(resp.request_type)
                         resp.as_response()
@@ -162,7 +169,8 @@ class BaseClient:
                             continue_on_error=self.args.continue_on_error,
                             logger=self.logger,
                         )
-                        p_bar.update(self.args.request_size)
+                        if self.args.show_progress:
+                            p_bar.update(self.args.request_size)
                         yield resp
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')

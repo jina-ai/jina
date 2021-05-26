@@ -1,13 +1,11 @@
-from tests import random_docs
-from jina.types.document import Document
+import pydantic
+import pytest
 from jina.peapods.runtimes.asyncio.rest.models import (
     PROTO_TO_PYDANTIC_MODELS,
     JinaRequestModel,
 )
-
-import pytest
-import pydantic
-from google.protobuf.json_format import MessageToDict
+from jina.types.document import Document
+from tests import random_docs
 
 
 def test_schema_invocation():
@@ -128,11 +126,11 @@ def test_oneof_validation_error():
 def test_tags_document():
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world')
     assert doc.tags == {'hello': 'world'}
-    assert MessageToDict(Document(doc.dict()).tags) == {'hello': 'world'}
+    assert Document(doc.dict()).tags == {'hello': 'world'}
 
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world', tags={'key': 'value'})
     assert doc.tags == {'hello': 'world', 'key': 'value'}
-    assert MessageToDict(Document(doc.dict()).tags) == {
+    assert Document(doc.dict()).tags == {
         'hello': 'world',
         'key': 'value',
     }
