@@ -1,6 +1,6 @@
 # What is Neural Search?
 
-**Neural Search** is deep neural network-powered information retrieval. In academics, it is often termed as Neural IR. The core idea is to leverage the state-of-the-art deep neural network to build *every* component of a search system. 
+**Neural Search is deep neural network-powered information retrieval.** In academics, it is often termed as Neural IR. The core idea is to leverage the state-of-the-art deep neural network to build *every* component of a search system. 
 
 ### What can it do?
 
