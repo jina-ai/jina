@@ -18,7 +18,8 @@ class IDLiterals(DaemonEnum):
 
 class DaemonBuild(DaemonEnum):
     DEVEL = 'devel'
-    CPU = 'cpu'
+    DEFAULT = 'default'
+    CPU = 'default'
     GPU = 'gpu'
 
     @classproperty

@@ -82,3 +82,11 @@ class PodDepends(PeaDepends):
         self.params = pod
         self.validate()
         self.id = DaemonID('jpod')
+
+
+class WorkspaceDepends:
+    def __init__(self) -> None:
+        # Use this with api endpoint
+        # push workspace_id & files to the queue
+        # return a workspace_id
+        pass

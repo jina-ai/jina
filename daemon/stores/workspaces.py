@@ -141,6 +141,9 @@ class WorkspaceStore(BaseStore):
     def _handle_files(self, workspace_id: DaemonID, files: List[UploadFile]):
         workdir = get_workspace_path(workspace_id)
         Path(workdir).mkdir(parents=True, exist_ok=True)
+        if not files:
+            self._logger.warning(f'there are no more files to upload!')
+            return
         for f in files:
             dest = os.path.join(workdir, f.filename)
             if os.path.isfile(dest):
@@ -152,93 +155,85 @@ class WorkspaceStore(BaseStore):
                 fp.write(content)
             self._logger.info(f'saved uploads to {dest}')
 
-    @BaseStore.dump
-    def add(self, files: List[UploadFile], **kwargs):
-        try:
-            workspace_id = DaemonID('jworkspace')
-            workdir = get_workspace_path(workspace_id)
-            self._handle_files(workspace_id=workspace_id, files=files)
-            daemon_file = DaemonFile(workdir=workdir)
-            network_id = Dockerizer.network(workspace_id=workspace_id)
-            _min, _max = random_port_range()
-            image_id = Dockerizer.build(
-                workspace_id=workspace_id, daemon_file=daemon_file
+    def bob_the_builder(self, id: DaemonID, files: List[UploadFile]):
+        # Move Bob to the Consumer thread
+        workdir = get_workspace_path(id)
+        self._handle_files(workspace_id=id, files=files)
+        daemon_file = DaemonFile(workdir=workdir)
+        network_id = Dockerizer.network(workspace_id=id)
+        image_id = Dockerizer.build(
+            workspace_id=id, daemon_file=daemon_file
+        )
+        _min, _max = random_port_range()
+        return workdir, daemon_file, network_id, image_id, _min, _max
+
+    def _set_id(self, id, files, workdir, daemon_file, network_id,
+                image_id, _min, _max):
+        # Move this to the Consumer thread
+        if id in self:
+            if files:
+                self[id].arguments.files.extend(
+                    [f.filename for f in files]
+                )
+            self[id].arguments.jinad = {
+                'build': daemon_file.build,
+                'dockerfile': daemon_file.dockerfile,
+            }
+            self[id].metadata.image_id = image_id
+            self[id].arguments.requirements = daemon_file.requirements
+            self._logger.success(
+                f'Workspace {colored(str(id), "cyan")} is added to store'
             )
-        except Exception as e:
-            self._logger.error(f'{e!r}')
-            raise
         else:
-            self[workspace_id] = WorkspaceItem(
+            self[id] = WorkspaceItem(
                 metadata=WorkspaceMetadata(
                     image_id=image_id,
-                    image_name=workspace_id.tag,
+                    image_name=id.tag,
                     network=id_cleaner(network_id),
                     ports={'min': _min, 'max': _max},
                     workdir=workdir
                 ),
                 arguments=WorkspaceArguments(
-                    files=[f.filename for f in files],
+                    files=[f.filename for f in files] if files else [],
                     jinad={
                         'build': daemon_file.build,
                         'dockerfile': daemon_file.dockerfile,
                     },
-                    requirements=[]
+                    requirements=daemon_file.requirements
                 )
             )
             self._logger.success(
-                f'Workspace {colored(str(workspace_id), "cyan")} is added to stpre'
+                f'Workspace {colored(str(id), "cyan")} is updated'
             )
-            return workspace_id
+        return id
 
     @BaseStore.dump
-    def update(
-        self, workspace_id: DaemonID, files: List[UploadFile] = None, **kwargs
-    ) -> DaemonID:
-        # TODO: Remove repetitive code
-        # TODO: Handle POST vs PUT here
+    def add(self, files: List[UploadFile], **kwargs):
         try:
-            workdir = get_workspace_path(workspace_id)
-            if files:
-                self._handle_files(workspace_id=workspace_id, files=files)
-            daemon_file = DaemonFile(workdir=workdir)
-            network_id = Dockerizer.network(workspace_id=workspace_id)
-            _min, _max = random_port_range()
-            image_id = Dockerizer.build(
-                workspace_id=workspace_id, daemon_file=daemon_file
-            )
+            id = DaemonID('jworkspace')
+            workdir, daemon_file, network_id, image_id, _min, _max = \
+                self.bob_the_builder(id, files)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
         else:
-            if workspace_id in self:
-                if files:
-                    self[workspace_id].arguments.files.extend(
-                        [f.filename for f in files]
-                    )
-                self[workspace_id].arguments.jinad = {
-                    'build': daemon_file.build,
-                    'dockerfile': daemon_file.dockerfile,
-                }
-                self[workspace_id].metadata.image_id = image_id
-            else:
-                self[workspace_id] = WorkspaceItem(
-                    metadata=WorkspaceMetadata(
-                        image_id=image_id,
-                        image_name=workspace_id.tag,
-                        network=id_cleaner(network_id),
-                        ports={'min': _min, 'max': _max},
-                        workdir=workdir
-                    ),
-                    arguments=WorkspaceArguments(
-                        files=[f.filename for f in files] if files else [],
-                        jinad={
-                            'build': daemon_file.build,
-                            'dockerfile': daemon_file.dockerfile,
-                        },
-                        requirements=[]
-                    )
-                )
-            return workspace_id
+            return self._set_id(id, files, workdir, daemon_file,
+                                network_id, image_id, _min, _max)
+
+    @BaseStore.dump
+    def update(
+        self, id: DaemonID, files: List[UploadFile] = None, **kwargs
+    ) -> DaemonID:
+        # TODO: Handle POST vs PUT here
+        try:
+            workdir, daemon_file, network_id, image_id, _min, _max = \
+                self.bob_the_builder(id, files)
+        except Exception as e:
+            self._logger.error(f'{e!r}')
+            raise
+        else:
+            return self._set_id(id, files, workdir, daemon_file,
+                                network_id, image_id, _min, _max)
 
     @BaseStore.dump
     def delete(self, id: DaemonID, **kwargs):

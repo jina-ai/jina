@@ -64,6 +64,7 @@ class Dockerizer:
         for build_logs in cls.raw_client.build(
             path=daemon_file.dockercontext,
             dockerfile=daemon_file.dockerfile,
+            buildargs=daemon_file.dockerargs,
             tag=workspace_id.tag,
             rm=True,
             pull=True,

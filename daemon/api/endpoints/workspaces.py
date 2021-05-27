@@ -60,7 +60,7 @@ async def _create(files: List[UploadFile] = File(...)):
 )
 async def _update(id: DaemonID, files: List[UploadFile] = File(None)):
     try:
-        return store.update(workspace_id=id, files=files)
+        return store.update(id=id, files=files)
     except Exception as ex:
         raise Runtime400Exception from ex
 
