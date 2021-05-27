@@ -57,6 +57,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8745,4 +8746,68 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```2f4f2a0d```](https://github.com/jina-ai/jina/commit/2f4f2a0d4fc5de5a3fa78173ed2a36b7618e85ac)] __-__ minor improvement and typo fix to the cookbook of Executor (#2441) (*Nan Wang*)
  - [[```0f4afa3d```](https://github.com/jina-ai/jina/commit/0f4afa3d538fd1a52bf28ada0647e851e339b970)] __-__ update readme (*Han Xiao*)
  - [[```c9521307```](https://github.com/jina-ai/jina/commit/c9521307c1009e05d72d6daa9b25b29829ace793)] __-__ __version__: the next version will be 2.0.0rc2 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-0rc3></a>
+## Release Note (`2.0.0rc3`)
+
+> Release time: 2021-05-27 10:28:05
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Alex Cureton-Griffiths,  Zhaofeng Miao,  Jina Dev Bot,  Felix,  Wang Bo,  David Buchaca Prats,  Tobias Jacobowitz,  Joan Fontanals,  Kelton Zhang,  Nan Wang,  Maximilian Werk,  🙇
+
+
+### 🆕 New Features
+
+ - [[```c9722e45```](https://github.com/jina-ai/jina/commit/c9722e4552c9c72bc5863b607ddcff081423264c)] __-__ add pytorch to cookbook (#2478) (*Wang Bo*)
+ - [[```9a8d8421```](https://github.com/jina-ai/jina/commit/9a8d84217a42a0493b924e8f72471620d87cb028)] __-__ add mindspore to cookbook (#2474) (*Wang Bo*)
+ - [[```5df76893```](https://github.com/jina-ai/jina/commit/5df768939f4fc94b15fb320474a6869f87b9ae08)] __-__ add example sklearn encoder with tfidf (#2475) (*David Buchaca Prats*)
+ - [[```60b3e3a0```](https://github.com/jina-ai/jina/commit/60b3e3a01efb43984821909872ce679224f1bd2e)] __-__ add example of executor using fastai (#2477) (*David Buchaca Prats*)
+ - [[```8a5701b7```](https://github.com/jina-ai/jina/commit/8a5701b7bb0692a7f153b6f9f209f39f22f8f4f7)] __-__ add description for tf executor example (#2484) (*Tobias Jacobowitz*)
+ - [[```64382e05```](https://github.com/jina-ai/jina/commit/64382e053fdf650ce432748530d7d64746be0457)] __-__ add pytorch lightning snippet to cookbook (#2476) (*Kelton Zhang*)
+ - [[```42c2e993```](https://github.com/jina-ai/jina/commit/42c2e993a10a81bd66e41bafffcaadc00adb1156)] __-__ add example for executor using tensorflow (#2480) (*Tobias Jacobowitz*)
+ - [[```db4a3733```](https://github.com/jina-ai/jina/commit/db4a37338e177ee4104e8b92188f2fd24b2a209a)] __-__ add code snippets for using paddle in cookbooks (#2472) (*Nan Wang*)
+ - [[```30b90690```](https://github.com/jina-ai/jina/commit/30b906907667d7ff3257ce2ae2e5453a5123e013)] __-__ add show_progress option to client cli (#2470) (*Han Xiao*)
+ - [[```162c9d25```](https://github.com/jina-ai/jina/commit/162c9d253852a9db657b0646b3377a10f92c905d)] __-__ add parser for changing REST JSON serialization (#2468) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```5b7dacb2```](https://github.com/jina-ai/jina/commit/5b7dacb25cb6fcd762769e978cb4f34a1258ab06)] __-__ __cookbook__: fixing pytorch model inferences examples (#2487) (*Felix*)
+ - [[```86d61239```](https://github.com/jina-ai/jina/commit/86d61239ffee4d7e88da6c8490565996e784a8a6)] __-__ missing imports in code snippet (#2488) (*David Buchaca Prats*)
+ - [[```7781733a```](https://github.com/jina-ai/jina/commit/7781733a9a203ded83cbc6c5f081d33dc26d2072)] __-__ fixed hanging pod termination (#2451) (*Maximilian Werk*)
+
+### 🚧 Code Refactoring
+
+ - [[```3f949560```](https://github.com/jina-ai/jina/commit/3f949560cdd9be670512b833c37dfaf2aa77b093)] __-__ meth update for document primitive type (#2465) (*Wang Bo*)
+ - [[```c4a93181```](https://github.com/jina-ai/jina/commit/c4a93181a0756d2b157b1dd888bf26b4245158da)] __-__ move from_* helpers to types.document.generators (#2482) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```42a296dd```](https://github.com/jina-ai/jina/commit/42a296dd4383544d9871693151cd0600a81d4510)] __-__ __what-neural-search__: polish (#2493) (*Alex Cureton-Griffiths*)
+ - [[```8468c5a5```](https://github.com/jina-ai/jina/commit/8468c5a51b589b7f41150fd4b44ff33803ba6bcf)] __-__ __cookbooks__: remove `with` property in minimum yml example (#2490) (*Zhaofeng Miao*)
+ - [[```0871c168```](https://github.com/jina-ai/jina/commit/0871c168e0895d1a2c1a0d695cb41966ca40e40a)] __-__ add tags nested access in cookbook (#2483) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```413b6c82```](https://github.com/jina-ai/jina/commit/413b6c82f2fa014f38358c2eff5dfdef558319b1)] __-__ recreate sparse pipeline test for 2.0 (#2433) (*Kelton Zhang*)
+ - [[```d455cff7```](https://github.com/jina-ai/jina/commit/d455cff780b3494d34d4fc3711e2cd843d7aaf7f)] __-__ fix docs2 pipeline (*Han Xiao*)
+ - [[```5fc3d1bf```](https://github.com/jina-ai/jina/commit/5fc3d1bf505f4df7463b7bfaefaec2abf3f6b8b8)] __-__ replace old docs with docs2 (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```50dd7337```](https://github.com/jina-ai/jina/commit/50dd7337c54cad48b1424eea105e71d254bf1670)] __-__ fix pre install in readme (*Han Xiao*)
+ - [[```72f53c9e```](https://github.com/jina-ai/jina/commit/72f53c9e6547042990c97c72c4a767e9e046725c)] __-__ add what is neural search (*Han Xiao*)
+ - [[```8bf98e91```](https://github.com/jina-ai/jina/commit/8bf98e912404afcca175c71978e22e7f1c9e49dc)] __-__ rm incorrect docstrings (*Han Xiao*)
+ - [[```4f279b71```](https://github.com/jina-ai/jina/commit/4f279b717aac10a9e3ae3835d63c69d9d6a9b3be)] __-__ fix cookbook layout (*Han Xiao*)
+ - [[```24d26319```](https://github.com/jina-ai/jina/commit/24d26319221170584d5a4572731a743d07003e51)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0178dc3b```](https://github.com/jina-ai/jina/commit/0178dc3b6f8acc3cd9ad78c97da802458f5649ad)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```4d258c1c```](https://github.com/jina-ai/jina/commit/4d258c1c4c2589dbe6fef418b18a985ee679d3ab)] __-__ fix cookbook title (*Han Xiao*)
+ - [[```57c8e0bc```](https://github.com/jina-ai/jina/commit/57c8e0bc6f32478b8439300a397f4221dbfd4101)] __-__ add section to cookbook (*Han Xiao*)
+ - [[```28c6040a```](https://github.com/jina-ai/jina/commit/28c6040a838ed314dd7a94175089801ad0995213)] __-__ add wiki link to readme (*Han Xiao*)
+ - [[```6051e67c```](https://github.com/jina-ai/jina/commit/6051e67c8578a5d9be47cb607290f5367eca7c3d)] __-__ fix typo in readme (*Han Xiao*)
+ - [[```ea8fc8c3```](https://github.com/jina-ai/jina/commit/ea8fc8c313d4e97aecfd6e65826146da98919077)] __-__ __docs__: add api reference docs (*Han Xiao*)
+ - [[```286ac09f```](https://github.com/jina-ai/jina/commit/286ac09f0d0076734271737044c5f1333a4e512c)] __-__ fix readme (*Han Xiao*)
+ - [[```41bd9a5b```](https://github.com/jina-ai/jina/commit/41bd9a5b218b144f1b3e6350034c6e5c61eb2c0c)] __-__ Revert &#34;fix: fixed hanging pod termination (#2451)&#34; (#2471) (*Han Xiao*)
+ - [[```cef57eed```](https://github.com/jina-ai/jina/commit/cef57eed2a6df1278c06ba4b9581ee78d5edd2fb)] __-__ __version__: the next version will be 2.0.0rc3 (*Jina Dev Bot*)
 
