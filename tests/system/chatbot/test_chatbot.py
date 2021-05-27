@@ -35,7 +35,7 @@ def test_multimodal(helloworld_args, expected_result, payload, post_uri):
     thread = threading.Thread(target=hello_world, args=(helloworld_args,))
     thread.daemon = True
     thread.start()
-    time.sleep(30)  # wait for index finish and ready for connection.
+    thread.join(timeout=30)
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
     assert expected_result in resp.text
