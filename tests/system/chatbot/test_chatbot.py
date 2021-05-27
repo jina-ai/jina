@@ -32,11 +32,11 @@ def expected_result():
 
 def test_multimodal(helloworld_args, expected_result, payload, post_uri):
     """Regression test for helloworld example."""
-    thread = mp.Process(target=hello_world, args=(helloworld_args,))
-    thread.daemon = False
-    thread.start()
+    p = mp.Process(target=hello_world, args=(helloworld_args,))
+    p.daemon = False
+    p.start()
     time.sleep(30)  # download, index and flow start
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
     assert expected_result in resp.text
-    thread.terminate()
+    p.terminate()
