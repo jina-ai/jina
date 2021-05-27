@@ -30,12 +30,12 @@ def expected_result():
     return '''no evidence from the outbreak that eating garlic, sipping water every 15 minutes or taking vitamin C will protect people from the new coronavirus.'''
 
 
-def test_multimodal(helloworld_args, expected_result, payload, post_uri):
-    """Regression test for helloworld example."""
+def test_chatbot(helloworld_args, expected_result, payload, post_uri):
+    """Regression test for chatbot example."""
     p = mp.Process(target=hello_world, args=(helloworld_args,))
     p.daemon = False
     p.start()
-    time.sleep(30)  # download, index and flow start
+    time.sleep(30)
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
     assert expected_result in resp.text
