@@ -1,0 +1,51 @@
+name: Manual Release devel-1.3
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_token:
+        description: 'Your release token'
+        required: true
+      release_reason:
+        description: 'Short reason for this manual release'
+        required: true
+
+jobs:
+  token-check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "success!"
+        if: "${{ github.event.inputs.release_token }} == ${{ env.release_token }}"
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
+
+  regular-release:
+    needs: token-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          fetch-depth: 100  # means max contribute history is limited to 100 lines
+          submodules: true
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+        # https://github.com/actions/checkout#fetch-all-tags
+      - run: |
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+          npm install git-release-notes
+          pip install twine wheel
+          ./scripts/release.devel-1.3.sh final "${{ github.event.inputs.release_reason }}" "${{github.actor}}"
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+          JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
+      - if: failure()
+        run: echo "nothing to release"
+      - name: bumping master version
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          tags: true
+          branch: devel-1.3
