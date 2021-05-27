@@ -15,40 +15,40 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 Table of Contents
 
 - [Minimum working example](#minimum-working-example)
-  - [Pure Python](#pure-python)
-  - [With YAML](#with-yaml)
+    - [Pure Python](#pure-python)
+    - [With YAML](#with-yaml)
 - [Executor API](#executor-api)
-  - [Inheritance](#inheritance)
-  - [`__init__` Constructor](#__init__-constructor)
-  - [Method naming](#method-naming)
-  - [`@requests` decorator](#requests-decorator)
-    - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
-    - [Multiple bindings: `@requests(on=[...])`](#multiple-bindings-requestson)
-    - [No binding](#no-binding)
-  - [Method Signature](#method-signature)
-  - [Method Arguments](#method-arguments)
-  - [Method Returns](#method-returns)
-    - [Example 1: Embed Documents `blob`](#example-1-embed-documents-blob)
-    - [Example 2: Add Chunks by Segmenting Document](#example-2-add-chunks-by-segmenting-document)
-    - [Example 3: Preserve Document `id` Only](#example-3-preserve-document-id-only)
-  - [YAML Interface](#yaml-interface)
-  - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
-  - [Use Executor out of the Flow](#use-executor-out-of-the-flow)
+    - [Inheritance](#inheritance)
+    - [`__init__` Constructor](#__init__-constructor)
+    - [Method naming](#method-naming)
+    - [`@requests` decorator](#requests-decorator)
+        - [Default binding: `@requests` without `on=`](#default-binding-requests-without-on)
+        - [Multiple bindings: `@requests(on=[...])`](#multiple-bindings-requestson)
+        - [No binding](#no-binding)
+    - [Method Signature](#method-signature)
+    - [Method Arguments](#method-arguments)
+    - [Method Returns](#method-returns)
+        - [Example 1: Embed Documents `blob`](#example-1-embed-documents-blob)
+        - [Example 2: Add Chunks by Segmenting Document](#example-2-add-chunks-by-segmenting-document)
+        - [Example 3: Preserve Document `id` Only](#example-3-preserve-document-id-only)
+    - [YAML Interface](#yaml-interface)
+    - [Load and Save Executor's YAML config](#load-and-save-executors-yaml-config)
+    - [Use Executor out of the Flow](#use-executor-out-of-the-flow)
 - [Executor Built-in Features](#executor-built-in-features)
-  - [1.x vs 2.0](#1x-vs-20)
-  - [Workspace](#workspace)
-  - [Metas](#metas)
-  - [`.metas` & `.runtime_args`](#metas--runtime_args)
+    - [1.x vs 2.0](#1x-vs-20)
+    - [Workspace](#workspace)
+    - [Metas](#metas)
+    - [`.metas` & `.runtime_args`](#metas--runtime_args)
 - [Migration in Practice](#migration-in-practice)
-  - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
+    - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
 - [Executors in Action](#executors-in-action)
-  - [Fastai](#fastai)
-  - [Pytorch Lightning](#pytorch-lightning)
-  - [Paddle](#paddle)
-  - [Tensorflow](#tensorflow)
-  - [MindSpore](#mindspore)
-  - [Scikit-learn](#scikit-learn)
-  - [PyTorch](#pytorch)
+    - [Fastai](#fastai)
+    - [Pytorch Lightning](#pytorch-lightning)
+    - [Paddle](#paddle)
+    - [Tensorflow](#tensorflow)
+    - [MindSpore](#mindspore)
+    - [Scikit-learn](#scikit-learn)
+    - [PyTorch](#pytorch)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -537,50 +537,54 @@ Line number corresponds to the 1.x code:
       methods `convert_blob_to_uri` and `pop`
     - there is nothing to return, as the change is done in-place.
 
-
+---
 
 ## Executors in Action
 
-
-
 ### Fastai
 
-This `Executor` uses the [ResNet18](https://docs.fast.ai) network for object classification on images provided by [fastai](https://github.com/fastai/fastai). 
+This `Executor` uses the [ResNet18](https://docs.fast.ai) network for object classification on images provided
+by [fastai](https://github.com/fastai/fastai).
 
-The `encode` function of this executor generates a feature vector for each image in each `Document` of the input `DocumentArray`. The feature vector generated is the output activations of the neural network (a vector of 1000 components). Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all images in a single function call) to achieve higher performance.
+The `encode` function of this executor generates a feature vector for each image in each `Document` of the
+input `DocumentArray`. The feature vector generated is the output activations of the neural network (a vector of 1000
+components). Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all images
+in a single function call) to achieve higher performance.
 
-As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has completed.
-
+As a result each `Document` in the input `DocumentArray`  _docs_ will have an `embedding` after `encode()` has
+completed.
 
 ```python
 import torch
 from fastai.vision.models import resnet18
 
-from jina import Executor, requests, DocumentArray, Document
+from jina import Executor, requests
+
 
 class ResnetImageEncoder(Executor):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)        
+        super().__init__(*args, **kwargs)
         self.model = resnet18()
         self.model.eval()
 
-     @requests
-     def encode(self, docs, **kwargs):
-         batch = torch.Tensor(docs.get_attributes('blob'))
-         with torch.no_grad():
+    @requests
+    def encode(self, docs, **kwargs):
+        batch = torch.Tensor(docs.get_attributes('blob'))
+        with torch.no_grad():
             batch_embeddings = self.model(batch).detach().numpy()
 
-         for doc,emb in zip(docs, batch_embeddings):
-             doc.embedding = emb
+        for doc, emb in zip(docs, batch_embeddings):
+            doc.embedding = emb
 
 ```
 
-
-
 ### Pytorch Lightning
 
-This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model from [PyTorch Lightning Bolts](https://pytorch-lightning.readthedocs.io/en/stable/ecosystem/bolts.html) to build a Jina encoder."
+This code snippet uses an autoencoder pretrained from cifar10-resnet18 to build an executor that encodes Document blob(
+an ndarray that could for example be an image) into embedding . It demonstrates the use of prebuilt model
+from [PyTorch Lightning Bolts](https://pytorch-lightning.readthedocs.io/en/stable/ecosystem/bolts.html) to build a Jina
+encoder."
 
 ```python
 from pl_bolts.models.autoencoders import AE
@@ -589,14 +593,15 @@ from jina import Executor, requests
 
 import torch
 
-class plMwuAutoEncoder(Executor):
-     def __init__(self, **kwargs):
+
+class PLMwuAutoEncoder(Executor):
+    def __init__(self, **kwargs):
         super().__init__()
         self.ae = AE(input_height=32).from_pretrained('cifar10-resnet18')
         self.ae.freeze()
-         
-     @requests
-     def encode(self, docs, **kwargs):
+
+    @requests
+    def encode(self, docs, **kwargs):
         with torch.no_grad():
             for doc in docs:
                 input_tensor = torch.from_numpy(doc.blob)
@@ -623,16 +628,19 @@ class PaddleMwuExecutor(Executor):
     def encode(self, docs, **kwargs):
         for doc in docs:
             _input = paddle.to_tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Paddle.Tensor``
-            _output = _input.matmul(self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
+            _output = _input.matmul(
+                self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
             doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
 ```
 
 ### Tensorflow
 
-This `Executor` uses the [MobileNetV2](https://keras.io/api/applications/mobilenet/) network for object classification on images.
+This `Executor` uses the [MobileNetV2](https://keras.io/api/applications/mobilenet/) network for object classification
+on images.
 
-It extracts the `buffer` field (which is the actual byte array) from each input `Document` in the `DocumentArray` _docs_, preprocesses the byte array and uses _MobileNet_ to predict the classes (dog/car/...) found in the image.
-Those predictions are Numpy arrays encoding the probability for each class supported by the model (1000 in this case).
+It extracts the `buffer` field (which is the actual byte array) from each input `Document` in the `DocumentArray` _docs_
+, preprocesses the byte array and uses _MobileNet_ to predict the classes (dog/car/...) found in the image. Those
+predictions are Numpy arrays encoding the probability for each class supported by the model (1000 in this case).
 The `Executor` stores those arrays then in the `embedding` for each `Document`.
 
 As a result each `Document` in the input `DocumentArray` _docs_ will have an `embedding` after `encode()` has completed.
@@ -676,9 +684,9 @@ class TfMobileNetEncoder(Executor):
 
 ### MindSpore
 
-The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``.
-It leverages Mindspore ``Tensor`` conversion and operation.
-Finally, the ``embedding`` of each document will be set as the multiplied result as ``np.ndarray``.
+The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``. It
+leverages Mindspore ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the
+multiplied result as ``np.ndarray``.
 
 ```python
 import numpy as np
@@ -701,14 +709,20 @@ class MindsporeMwuExecutor(Executor):
         for doc in docs:
             input_tensor = Tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Tensor``
             output_tensor = matmul(self.encoding_mat, input_tensor)  # multiply the input with the encoding matrix.
-            doc.embedding = output_tensor.asnumpy() # assign the encoding results to ``embedding``
+            doc.embedding = output_tensor.asnumpy()  # assign the encoding results to ``embedding``
 ```
 
 ### Scikit-learn
 
-This `Executor` uses a [TF-IDF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)  feature vector to generate sparse embeddings for text search.
+This `Executor` uses
+a [TF-IDF](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)
+feature vector to generate sparse embeddings for text search.
 
-The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that  it is fitted with a dataset already present in `sklearn`. The executor provides an `encode` method that recieves a `DocumentArray` and updates each document in the  `DocumentArray` with an `embedding` attribute that is the tf-idf representation of the text found in the document. Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all texts in a single function call) to achieve higher performance.
+The class `TFIDFTextEncoder` extracts stores a `tfidf_vectorizer` object that it is fitted with a dataset already
+present in `sklearn`. The executor provides an `encode` method that recieves a `DocumentArray` and updates each document
+in the  `DocumentArray` with an `embedding` attribute that is the tf-idf representation of the text found in the
+document. Note the embedding of each text is perfomed in a joined operation (all embeddings are creted for all texts in
+a single function call) to achieve higher performance.
 
 As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
 
@@ -718,17 +732,17 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 from jina import Executor, requests, DocumentArray
 
+
 class TFIDFTextEncoder(Executor):
 
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
-      
+
         from sklearn import datasets
 
         dataset = fetch_20newsgroups()
         tfidf_vectorizer = TfidfVectorizer()
-        tfidf_vectorizer.fit(dataset.data) 
+        tfidf_vectorizer.fit(dataset.data)
         self.ttfidf_vectorizer = tfidf_vectorizer
 
     @requests
@@ -742,23 +756,26 @@ class TFIDFTextEncoder(Executor):
 
 ### PyTorch
 
-The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``.
-It leverages Pytorch's ``Tensor`` conversion and operation.
-Finally, the ``embedding`` of each document will be set as the multiplied result as ``np.ndarray``.
+The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``. It
+leverages Pytorch's ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the
+multiplied result as ``np.ndarray``.
 
 ```python
 import torch  # 1.8.1
 import numpy as np
 from jina import Executor, requests
 
+
 class PytorchMwuExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
         self.encoding_mat = torch.from_numpy(np.random.rand(5, 5))
+
     @requests
     def encode(self, docs, **kwargs):
         for doc in docs:
             input_tensor = torch.from_numpy(doc.blob)  # convert the ``ndarray`` of the doc to ``Tensor``
-            output_tensor = torch.matmul(self.encoding_mat, input_tensor)  # multiply the input with the encoding matrix.
-            doc.embedding = output_tensor.numpy() # assign the encoding results to ``embedding``
+            output_tensor = torch.matmul(self.encoding_mat,
+                                         input_tensor)  # multiply the input with the encoding matrix.
+            doc.embedding = output_tensor.numpy()  # assign the encoding results to ``embedding``
 ```

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-<b>Cloud-Native Neural Search Framework for <i>Any</i> Kind of Data</b>
+<b>Cloud-Native <ins>Neural Search</ins><sup><a href=".github/2.0/neural-search.md">[?]</a></sup> Framework for <i>Any</i> Kind of Data</b>
 </p>
 
 
@@ -15,19 +15,18 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-600%2B-blueviolet"></a>
 </p>
 
-Jina is geared towards building search-as-a-service systems for any kind of
-data in just minutes.
+Jina allows you to build deep learning-powered search-as-a-service in just minutes.
 
-🌌 **Search anything** - Large-scale indexing and querying of unstructured data: video, image, long/short text, music,
-source code, PDF, etc.
+🌌 **Universal data type** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
+
+🌩️ **Fast & cloud-native** - Distributed architecture from day one. Scalable & cloud-native by design: enjoy
+containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
 🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with
 fragmented, multi-vendor, generic legacy tools.
 
-🌩️ **Fast & cloud-native** - Distributed architecture from day one. Scalable & cloud-native by design: enjoy
-containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
 
 ## Installation
 
@@ -73,7 +72,7 @@ Document, Executor, Flow are three fundamental concepts in Jina.
 
 Copy-paste the minimum example below and run it:
 
-<sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">word/character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
+<sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
 
 ```python
 import numpy as np
@@ -133,6 +132,8 @@ It finds most similar lines to "`request(on=something)`" from the server code sn
 [1]0.181676: "@requests(on='/search')"
 [2]0.192049: "query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]"
 ```
+<sup>😔 Doesn't work? Our bad! <a href="https://github.com/jina-ai/jina/issues/new?assignees=&labels=kind%2Fbug&template=---found-a-bug-and-i-solved-it.md&title=">Please report it here.</a></sup>
+
 
 ### Run Quick Demo
 
@@ -150,6 +151,7 @@ $ jina hello fork fashion ../my-proj/
 
 ### Read Tutorials
 
+- 🧠 [What is "Neural Search"?](.github/2.0/neural-search.md)
 - 📄 `Document` & `DocumentArray`: the basic data type in Jina.
     - [Minimum working example](.github/2.0/cookbooks/Document.md#minimum-working-example)
     - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
@@ -158,13 +160,14 @@ $ jina hello fork fashion ../my-proj/
     - [Minimum working example](.github/2.0/cookbooks/Executor.md#minimum-working-example)
     - [`Executor` API](.github/2.0/cookbooks/Executor.md#executor-api)
     - [`Executor` Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
+    - [Use Tensorflow, Pytorch, Pytorch Lightning, Fastai, Mindspore, PaddlePaddle, Scikit-learn in `Executor`](.github/2.0/cookbooks/Executor.md#executors-in-action)
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
     - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Flow.md#flow-as-a-service)
 - 🧼 [Write clean code in Jina](.github/2.0/cookbooks/CleanCode.md)
-- 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)
 - 📓 [Developer References](https://docs2.jina.ai)
+- 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)
 
 ## Support
 

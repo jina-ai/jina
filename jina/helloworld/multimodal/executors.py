@@ -12,12 +12,6 @@ from jina import Executor, DocumentArray, requests, Document
 class Segmenter(Executor):
     @requests
     def segment(self, docs: DocumentArray, **kwargs):
-        """
-        Read the data and add tags.
-
-        :param docs: received documents.
-        :param ..
-        """
         for doc in docs:
             text = doc.tags['caption']
             uri = f'{os.environ["HW_WORKDIR"]}/people-img/{doc.tags["image"]}'
