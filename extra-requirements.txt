@@ -59,7 +59,6 @@ pytest-mock:                test
 pytest-cov:                 test
 pytest-repeat:              test
 pytest-asyncio:             test
-pytest-xprocess:            test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
