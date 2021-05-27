@@ -1,19 +1,15 @@
 import pathlib
-import uuid
-
-import pytest
 
 from daemon.models import DaemonID
 from daemon.models.base import StoreItem
 from daemon.stores.base import BaseStore
-from jina.helper import random_identity, random_uuid
 from daemon import __root_workspace__
 
 
 store_items = {
-    DaemonID(f'jflow-{uuid.UUID(random_identity())}'): StoreItem(),
-    DaemonID(f'jflow-{uuid.UUID(random_identity())}'): StoreItem(),
-    DaemonID(f'jflow-{uuid.UUID(random_identity())}'): StoreItem(),
+    DaemonID(f'jflow'): StoreItem(),
+    DaemonID(f'jflow'): StoreItem(),
+    DaemonID(f'jflow'): StoreItem(),
 }
 
 

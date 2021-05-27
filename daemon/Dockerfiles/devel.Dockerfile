@@ -24,7 +24,6 @@ RUN if [ -n "$PIP_REQUIREMENTS" ]; then \
     fi
 
 COPY . /codebase/
-# COPY entrypoint.sh /entrypoint.sh
 
 WORKDIR /codebase
 RUN pip install .[devel]

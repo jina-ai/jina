@@ -4,7 +4,7 @@ import pickle
 from pathlib import Path
 from datetime import datetime
 from collections.abc import MutableMapping
-from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union, KeysView, ValuesView, ItemsView
+from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union
 
 from jina.logging import JinaLogger
 from ..models import DaemonID
@@ -66,17 +66,27 @@ class BaseStore(MutableMapping):
         return self.status.items.items()
 
     def __getitem__(self, key: DaemonID) -> Union['WorkspaceItem', 'ContainerItem']:
+        """Fetch a Container/Workspace object from the store
+
+        :param key: the key (DaemonID) of the object
+        :return: the value of the object
+        """
         return self.status.items[key]
 
     def __setitem__(self, key: DaemonID, value: StoreItem) -> None:
+        """Add a Container/Workspace object to the store
+
+        :param key: the key (DaemonID) of the object
+        :param value: the value to be assigned
+        """
         self.status.items[key] = value
         self.status.num_add += 1
         self.status.time_updated = datetime.now()
 
     def __delitem__(self, key: DaemonID) -> None:
-        """Release a Pea/Pod/Flow object from the store
+        """Release a Container/Workspace object from the store
 
-        :param key: the key of the object
+        :param key: the key (DaemonID) of the object
 
 
         .. #noqa: DAR201"""

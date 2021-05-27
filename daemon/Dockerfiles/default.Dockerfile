@@ -1,4 +1,3 @@
-
 ARG JINA_VERSION=latest
 ARG PY_VERSION=py37
 
@@ -8,7 +7,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-
     gem install fluentd --no-doc
 
 # ARG COMMANDS
-ARG PIP_REQUIREMENTS
 
 # RUN if [ -n "$COMMANDS" ]; then \
 #         echo -e "Excuting `${COMMANDS}`"; \
@@ -18,11 +16,8 @@ ARG PIP_REQUIREMENTS
 #         done; \
 #     fi
 
-RUN if [ -n "$PIP_REQUIREMENTS" ]; then \
-        echo -e "Installing ${PIP_REQUIREMENTS}"; \
-        for package in ${PIP_REQUIREMENTS}; do \
-            pip install "${package}"; \
-        done; \
+RUN if [ -f requirements.txt ]; then \
+        pip install -r requirements.txt; \
     fi
 
 COPY Dockerfiles/entrypoint.sh /entrypoint.sh

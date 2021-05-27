@@ -19,7 +19,7 @@ class classproperty:
 
 
 def id_cleaner(docker_id: str, prefix: str = 'sha256:') -> str:
-    return docker_id[docker_id.startswith(prefix) and len(prefix) :][:10]
+    return docker_id[docker_id.startswith(prefix) and len(prefix):][:10]
 
 
 def get_workspace_path(workspace_id: 'DaemonID', *args):

@@ -2,7 +2,7 @@ import os
 import glob
 from pathlib import Path
 from itertools import chain
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from fastapi import UploadFile
 from jina.helper import colored
@@ -70,6 +70,17 @@ class DaemonFile:
         self._run = run
 
     @property
+    def requirements(self) -> str:
+        _req = f'{self._workdir}/requirements.txt'
+        if not Path(_req).is_file():
+            self._logger.warning(
+                'please add a requirements.txt file to manage python dependencies in the workspace'
+            )
+            return ''
+        with open(_req) as f:
+            return " ".join(f.read().splitlines())
+
+    @property
     def dockercontext(self) -> str:
         return __rootdir__ if self.build == DaemonBuild.DEVEL else self._workdir
 
@@ -77,12 +88,23 @@ class DaemonFile:
     def dockerfile(self) -> str:
         return f'{__dockerfiles__}/{self.build.value}.Dockerfile'
 
+    @property
+    def dockerargs(self) -> Dict:
+        return {
+            'PY_VERSION': self.python.value,
+            'PIP_REQUIREMENTS': self.requirements
+        } if self.build == DaemonBuild.DEVEL else {
+            'PY_VERSION': self.python.name.lower()
+        }
+
     def process_file(self) -> None:
+        # Checks if a file .jinad exists in the workspace
         jinad_file_path = Path(self._workdir) / self.extension
         if jinad_file_path.is_file():
             self.set_args(jinad_file_path)
             return
 
+        # Checks alls the .jinad files in the workspace
         _other_jinad_files = glob.glob(f'{Path(self._workdir)}/*{self.extension}')
         if not _other_jinad_files:
             self._logger.warning(
