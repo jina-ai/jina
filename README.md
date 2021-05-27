@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-<b>Cloud-Native Neural Search Framework for <i>Any</i> Kind of Data</b>
+<b>Cloud-Native <ins>Neural Search</ins><sup><a href=".github/2.0/neural-search.md">[?]</a></sup> Framework for <i>Any</i> Kind of Data</b>
 </p>
 
 
@@ -151,6 +151,7 @@ $ jina hello fork fashion ../my-proj/
 
 ### Read Tutorials
 
+- 🧠 [What is "Neural Search"?](.github/2.0/neural-search.md)
 - 📄 `Document` & `DocumentArray`: the basic data type in Jina.
     - [Minimum working example](.github/2.0/cookbooks/Document.md#minimum-working-example)
     - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
@@ -165,8 +166,8 @@ $ jina hello fork fashion ../my-proj/
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Flow.md#flow-as-a-service)
 - 🧼 [Write clean code in Jina](.github/2.0/cookbooks/CleanCode.md)
-- 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)
 - 📓 [Developer References](https://docs2.jina.ai)
+- 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)
 
 ## Support
 
