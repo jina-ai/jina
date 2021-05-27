@@ -1,5 +1,5 @@
+import multiprocessing as mp
 import time
-import threading
 
 import pytest
 import requests
@@ -32,10 +32,11 @@ def expected_result():
 
 def test_multimodal(helloworld_args, expected_result, payload, post_uri):
     """Regression test for helloworld example."""
-    thread = threading.Thread(target=hello_world, args=(helloworld_args,))
-    thread.daemon = True
+    thread = mp.Process(target=hello_world, args=(helloworld_args,))
+    thread.daemon = False
     thread.start()
-    thread.join(timeout=30)
+    time.sleep(30)  # download, index and flow start
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
     assert expected_result in resp.text
+    thread.terminate()
