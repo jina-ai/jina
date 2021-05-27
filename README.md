@@ -138,8 +138,8 @@ It finds most similar lines to "`request(on=something)`" from the server code sn
 ### Run Quick Demo
 
 - [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
-- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install --pre "jina[chatbot]" && jina hello chatbot`
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install --pre "jina[multimodal]" && jina hello multimodal`
 
 #### Fork Demo & Build Your Own
 

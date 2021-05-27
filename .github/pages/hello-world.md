@@ -42,7 +42,7 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 
 For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions. To run that:
 ```bash
-pip install "jina[chatbot]"
+pip install --pre "jina[chatbot]"
 
 jina hello chatbot
 ```
@@ -59,7 +59,7 @@ This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tell
 
 A multimodal-document contains multiple data types, e.g. a PDF document often contains figures and text. Jina lets you build a multimodal search solution in just minutes. To run our minimum multimodal document search demo:
 ```bash
-pip install "jina[multimodal]"
+pip install --pre "jina[multimodal]"
 
 jina hello multimodal
 ```
