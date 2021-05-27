@@ -31,7 +31,7 @@ def expected_result():
 
 
 def test_multimodal(helloworld_args, expected_result, payload, post_uri):
-    """Regression test for multimodal example."""
+    """Regression test for helloworld example."""
     thread = threading.Thread(target=hello_world, args=(helloworld_args,))
     thread.daemon = True
     thread.start()
