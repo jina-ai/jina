@@ -1,6 +1,6 @@
 # What is Neural Search?
 
-The core idea of neural search is to leverage state-of-the-art deep neural networks to build *every* component of a search system. In short, neural search is deep neural network-powered information retrieval.** In academia, it's often called *neural IR*. 
+The core idea of neural search is to leverage state-of-the-art deep neural networks to build *every* component of a search system. In short, **neural search is deep neural network-powered information retrieval.** In academia, it's often called *neural IR*. 
 
 ### What can it do?
 
