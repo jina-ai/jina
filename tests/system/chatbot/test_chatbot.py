@@ -1,17 +1,28 @@
-import pytest
+import time
+import threading
 
-from jina import Document, Flow
+import pytest
+import requests
+
 from jina.helloworld.chatbot.app import hello_world
-from jina.helloworld.chatbot.executors import MyTransformer, MyIndexer
 from jina.parsers.helloworld import set_hw_chatbot_parser
-from tests import validate_callback
 
 
 @pytest.fixture
 def helloworld_args(tmpdir):
     return set_hw_chatbot_parser().parse_args(
-        ['--workdir', str(tmpdir), '--unblock-query-flow']
+        ['--workdir', str(tmpdir), '--port-expose', '8080']
     )
+
+
+@pytest.fixture
+def payload():
+    return {'data': ['text:Is my dog safe from virus']}
+
+
+@pytest.fixture
+def post_uri():
+    return 'http://localhost:8080/search'
 
 
 @pytest.fixture
@@ -19,30 +30,12 @@ def expected_result():
     return '''no evidence from the outbreak that eating garlic, sipping water every 15 minutes or taking vitamin C will protect people from the new coronavirus.'''
 
 
-def search(query_document, on_done_callback, on_fail_callback, top_k):
-    with Flow().add(uses=MyTransformer).add(uses=MyIndexer) as f:
-        f.search(
-            inputs=query_document,
-            on_done=on_done_callback,
-            on_fail=on_fail_callback,
-            parameters={'top_k': top_k},
-        )
-
-
-def test_multimodal(helloworld_args, expected_result, mocker):
+def test_multimodal(helloworld_args, expected_result, payload, post_uri):
     """Regression test for multimodal example."""
-
-    def validate_response(resp):
-        assert len(resp.data.docs) == 1
-        for doc in resp.data.docs:
-            print(doc)  # Fix embedding empty
-
-    hello_world(helloworld_args)
-
-    mock_on_done = mocker.Mock()
-    mock_on_fail = mocker.Mock()
-
-    search(Document(text='Is my dog safe from virus'), mock_on_done, mock_on_fail, 1)
-
-    mock_on_fail.assert_not_called()
-    validate_callback(mock_on_done, validate_response)
+    thread = threading.Thread(target=hello_world, args=(helloworld_args,))
+    thread.daemon = True
+    thread.start()
+    time.sleep(30)  # wait for index finish and ready for connection.
+    resp = requests.post(post_uri, json=payload)
+    assert resp.status_code == 200
+    assert expected_result in resp.text
