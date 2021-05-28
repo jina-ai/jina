@@ -531,6 +531,17 @@ da.save('data.json')
 da1 = DocumentArray.load('data.json')
 ```
 
+`DocumentArray` can be also stored in binary format, which is much faster and yields smaller file:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()])
+
+da.save('data.bin', file_format='binary')
+da1 = DocumentArray.load('data.bin', file_format='binary')
+```
+
 ### Access Element
 
 You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
