@@ -10,12 +10,13 @@ from typing import (
     TextIO,
     Optional,
     Generator,
+    BinaryIO,
 )
 
 from .traversable import TraversableSequence
 from ...helper import typename, cached_property
 from ...logging import default_logger
-from ...proto.jina_pb2 import DocumentProto
+from ...proto.jina_pb2 import DocumentProto, DocumentArrayProto
 
 try:
     # when protobuf using Cpp backend
@@ -255,8 +256,62 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         content = content.strip()
         return f'<{typename(self)} {content}>'
 
-    def save(self, file: Union[str, TextIO]) -> None:
+    def save(
+        self, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
+    ) -> None:
+        """Save array elements into a JSON or a binary file.
+
+        :param file: File or filename to which the data is saved.
+        :param file_format: `json` or `binary`. JSON file is human-readable,
+            but binary format gives much smaller size and faster save/load speed.
+        """
+        if file_format == 'json':
+            self.save_json(file)
+        elif file_format == 'binary':
+            self.save_binary(file)
+        else:
+            raise ValueError('`format` must be one of [`json`, `binary`]')
+
+    @classmethod
+    def load(
+        cls, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
+    ) -> 'DocumentArray':
+        """Load array elements from a JSON or a binary file.
+
+        :param file: File or filename to which the data is saved.
+        :param file_format: `json` or `binary`. JSON file is human-readable,
+            but binary format gives much smaller size and faster save/load speed.
+
+        :return: the loaded DocumentArray object
+        """
+        if file_format == 'json':
+            return cls.load_json(file)
+        elif file_format == 'binary':
+            return cls.load_binary(file)
+        else:
+            raise ValueError('`format` must be one of [`json`, `binary`]')
+
+    def save_binary(self, file: Union[str, BinaryIO]) -> None:
+        """Save array elements into a binary file.
+
+        Comparing to :meth:`save_json`, it is faster and the file is smaller, but not human-readable.
+
+        :param file: File or filename to which the data is saved.
+        """
+        if hasattr(file, 'write'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'wb')
+
+        with file_ctx as fp:
+            dap = DocumentArrayProto()
+            dap.docs.extend([d.proto for d in self._docs_proto])
+            fp.write(dap.SerializeToString())
+
+    def save_json(self, file: Union[str, TextIO]) -> None:
         """Save array elements into a JSON file.
+
+        Comparing to :meth:`save_binary`, it is human-readable but slower to save/load and the file size larger.
 
         :param file: File or filename to which the data is saved.
         """
@@ -270,8 +325,8 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
                 json.dump(d.dict(), fp)
                 fp.write('\n')
 
-    @staticmethod
-    def load(file: Union[str, TextIO]) -> 'DocumentArray':
+    @classmethod
+    def load_json(cls, file: Union[str, TextIO]) -> 'DocumentArray':
         """Load array elements from a JSON file.
 
         :param file: File or filename to which the data is saved.
@@ -284,10 +339,31 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         else:
             file_ctx = open(file)
 
-        from jina import Document
-
-        da = DocumentArray()
         with file_ctx as fp:
+            from jina import Document
+
+            da = DocumentArray()
             for v in fp:
                 da.append(Document(v))
-        return da
+            return da
+
+    @classmethod
+    def load_binary(cls, file: Union[str, BinaryIO]) -> 'DocumentArray':
+        """Load array elements from a binary file.
+
+        :param file: File or filename to which the data is saved.
+
+        :return: a DocumentArray object
+        """
+
+        if hasattr(file, 'read'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'rb')
+
+        dap = DocumentArrayProto()
+
+        with file_ctx as fp:
+            dap.ParseFromString(fp.read())
+            da = DocumentArray(dap.docs)
+            return da
