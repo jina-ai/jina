@@ -49,6 +49,7 @@ Table of Contents
   - [MindSpore](#mindspore)
   - [Scikit-learn](#scikit-learn)
   - [PyTorch](#pytorch)
+  - [ONNX-Runtime](#onnx-runtime)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -778,4 +779,56 @@ class PytorchMwuExecutor(Executor):
             output_tensor = torch.matmul(self.encoding_mat,
                                          input_tensor)  # multiply the input with the encoding matrix.
             doc.embedding = output_tensor.numpy()  # assign the encoding results to ``embedding``
+```
+
+### ONNX-Runtime
+
+The code snippet bellow converts a `Pytorch` model to the `ONNX` and leverage `onnxruntime` to run inference tasks on models from `hugging-face transformers`.
+
+```python
+from pathlib import Path
+
+import numpy as np
+import onnxruntime
+from jina import Executor, requests
+from transformers import BertTokenizerFast, convert_graph_to_onnx
+
+
+class ONNXBertExecutor(Executor):
+    def __init__(self, **kwargs):
+        super().__init__()
+
+        # export your huggingface model to onnx
+        convert_graph_to_onnx.convert(
+            framework="pt",
+            model="bert-base-cased",
+            output=Path("onnx/bert-base-cased.onnx"),
+            opset=11,
+        )
+
+        # create the tokenizer
+        self.tokenizer = BertTokenizerFast.from_pretrained("bert-base-cased")
+
+        # create the inference session
+        options = onnxruntime.SessionOptions()
+        options.intra_op_num_threads = 1  # have an impact on performances
+        options.graph_optimization_level = (
+            onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
+        )
+
+        # Load the model as a graph and prepare the CPU backend
+        self.session = onnxruntime.InferenceSession(
+            "onnx/bert-base-cased.onnx", options
+        )
+        self.session.disable_fallback()
+
+    @requests
+    def encode(self, docs, **kwargs):
+        for doc in docs:
+            tokens = self.tokenizer.encode_plus(doc.text)
+            inputs = {name: np.atleast_2d(value) for name, value in tokens.items()}
+
+            output, pooled = self.session.run(None, inputs)
+            # assign the encoding results to ``embedding``
+            doc.embedding = pooled[0]
 ```
