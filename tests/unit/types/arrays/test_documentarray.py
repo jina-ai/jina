@@ -100,10 +100,18 @@ def test_clear(docarray):
     assert len(docarray) == 0
 
 
-def test_delete(docarray, document_factory):
+def test_delete_by_index(docarray, document_factory):
     doc = document_factory.create(4, 'test 4')
     docarray.append(doc)
     del docarray[-1]
+    assert len(docarray) == 3
+    assert docarray == docarray
+
+
+def test_delete_by_id(docarray: DocumentArray, document_factory):
+    doc = document_factory.create(4, 'test 4')
+    docarray.append(doc)
+    del docarray[doc.id]
     assert len(docarray) == 3
     assert docarray == docarray
 
