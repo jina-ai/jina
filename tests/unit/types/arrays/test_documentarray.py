@@ -1,11 +1,13 @@
+import os
 from copy import deepcopy
 
-import pytest
 import numpy as np
+import pytest
 from scipy.sparse import coo_matrix
 
-from jina import Document
-from jina.types.arrays import DocumentArray
+from jina import Document, DocumentArray
+from jina.logging.profile import TimeContext
+from tests import random_docs
 
 DOCUMENTS_PER_LEVEL = 1
 
@@ -204,3 +206,18 @@ def test_doc_array_from_generator():
 
     doc_array = DocumentArray(generate())
     assert len(doc_array) == NUM_DOCS
+
+
+@pytest.mark.parametrize('method', ['json', 'binary'])
+def test_document_save_load(method, tmp_path):
+    da = DocumentArray(random_docs(1000))
+    tmp_file = os.path.join(tmp_path, 'test')
+    with TimeContext(f'w/{method}'):
+        da.save(tmp_file, file_format=method)
+    with TimeContext(f'r/{method}'):
+        da_r = DocumentArray.load(tmp_file, file_format=method)
+    assert len(da) == len(da_r)
+    for d, d_r in zip(da, da_r):
+        assert d.id == d_r.id
+        np.testing.assert_equal(d.embedding, d_r.embedding)
+        assert d.content == d_r.content
