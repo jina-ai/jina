@@ -383,12 +383,13 @@
     <span class="n">TextIO</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">BinaryIO</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">cached_property</span>
 <span class="kn">from</span> <span class="nn">...logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">...proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DocumentProto</span>
+<span class="kn">from</span> <span class="nn">...proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DocumentProto</span><span class="p">,</span> <span class="n">DocumentArrayProto</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="c1"># when protobuf using Cpp backend</span>
@@ -628,8 +629,62 @@
         <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'&lt;</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s1">&gt;'</span>
 
-<div class="viewcode-block" id="DocumentArray.save"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DocumentArray.save"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">],</span> <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'json'</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Save array elements into a JSON or a binary file.</span>
+
+<span class="sd">        :param file: File or filename to which the data is saved.</span>
+<span class="sd">        :param file_format: `json` or `binary`. JSON file is human-readable,</span>
+<span class="sd">            but binary format gives much smaller size and faster save/load speed.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s1">'json'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s1">'binary'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_binary</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'`format` must be one of [`json`, `binary`]'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DocumentArray.load"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">],</span> <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'json'</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
+        <span class="sd">"""Load array elements from a JSON or a binary file.</span>
+
+<span class="sd">        :param file: File or filename to which the data is saved.</span>
+<span class="sd">        :param file_format: `json` or `binary`. JSON file is human-readable,</span>
+<span class="sd">            but binary format gives much smaller size and faster save/load speed.</span>
+
+<span class="sd">        :return: the loaded DocumentArray object</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s1">'json'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">file_format</span> <span class="o">==</span> <span class="s1">'binary'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_binary</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'`format` must be one of [`json`, `binary`]'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DocumentArray.save_binary"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.save_binary">[docs]</a>    <span class="k">def</span> <span class="nf">save_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Save array elements into a binary file.</span>
+
+<span class="sd">        Comparing to :meth:`save_json`, it is faster and the file is smaller, but not human-readable.</span>
+
+<span class="sd">        :param file: File or filename to which the data is saved.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'write'</span><span class="p">):</span>
+            <span class="n">file_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">dap</span> <span class="o">=</span> <span class="n">DocumentArrayProto</span><span class="p">()</span>
+            <span class="n">dap</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">d</span><span class="o">.</span><span class="n">proto</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs_proto</span><span class="p">])</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dap</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DocumentArray.save_json"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.save_json">[docs]</a>    <span class="k">def</span> <span class="nf">save_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Save array elements into a JSON file.</span>
+
+<span class="sd">        Comparing to :meth:`save_binary`, it is human-readable but slower to save/load and the file size larger.</span>
 
 <span class="sd">        :param file: File or filename to which the data is saved.</span>
 <span class="sd">        """</span>
@@ -643,8 +698,8 @@
                 <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span> <span class="n">fp</span><span class="p">)</span>
                 <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DocumentArray.load"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.load">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
+<div class="viewcode-block" id="DocumentArray.load_json"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.load_json">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
         <span class="sd">"""Load array elements from a JSON file.</span>
 
 <span class="sd">        :param file: File or filename to which the data is saved.</span>
@@ -657,13 +712,34 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-
-        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+            <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="n">da</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">da</span></div></div>
+            <span class="k">return</span> <span class="n">da</span></div>
+
+<div class="viewcode-block" id="DocumentArray.load_binary"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.load_binary">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_binary</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BinaryIO</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
+        <span class="sd">"""Load array elements from a binary file.</span>
+
+<span class="sd">        :param file: File or filename to which the data is saved.</span>
+
+<span class="sd">        :return: a DocumentArray object</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'read'</span><span class="p">):</span>
+            <span class="n">file_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_ctx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span>
+
+        <span class="n">dap</span> <span class="o">=</span> <span class="n">DocumentArrayProto</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">file_ctx</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">dap</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">dap</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">da</span></div></div>
 </pre></div>
       </article>
       <footer>
