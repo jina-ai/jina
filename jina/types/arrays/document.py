@@ -68,8 +68,10 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         self._docs_proto.insert(index, doc.proto)
 
     def __setitem__(self, key, value: 'Document'):
-        if isinstance(key, (int, str)):
+        if isinstance(key, int):
             self[key].CopyFrom(value)
+        elif isinstance(key, str):
+            self[self._id_to_index[key]].CopyFrom(value)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -77,7 +79,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         if isinstance(index, int):
             del self._docs_proto[index]
         elif isinstance(index, str):
-            del self._docs_map[index]
+            del self[self._id_to_index[index]]
         elif isinstance(index, slice):
             del self._docs_proto[index]
         else:
@@ -101,7 +103,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             yield Document(d)
 
     def __contains__(self, item: str):
-        return item in self._docs_map
+        return item in self._id_to_index
 
     def __getitem__(self, item: Union[int, str, slice]):
         from ..document import Document
@@ -109,7 +111,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
-            return Document(self._docs_map[item])
+            return self[self._id_to_index[item]]
         elif isinstance(item, slice):
             return DocumentArray(self._docs_proto[item])
         else:
@@ -164,11 +166,11 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             self._docs_proto.reverse()
 
     @cached_property
-    def _docs_map(self):
-        """Returns a doc_id to doc mapping so one can later index a Document using doc_id as string key.
+    def _id_to_index(self):
+        """Returns a doc_id to index in list
 
         .. # noqa: DAR201"""
-        return {d.id: d for d in self._docs_proto}
+        return {d.id: i for i, d in enumerate(self._docs_proto)}
 
     def sort(self, *args, **kwargs):
         """
