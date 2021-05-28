@@ -62,7 +62,9 @@ class BaseStore(MutableMapping):
     def values(self) -> Sequence[Union['WorkspaceItem', 'ContainerItem']]:
         return self.status.items.values()
 
-    def items(self) -> Sequence[Tuple['DaemonID', Union['WorkspaceItem', 'ContainerItem']]]:
+    def items(
+        self,
+    ) -> Sequence[Tuple['DaemonID', Union['WorkspaceItem', 'ContainerItem']]]:
         return self.status.items.items()
 
     def __getitem__(self, key: DaemonID) -> Union['WorkspaceItem', 'ContainerItem']:
@@ -81,6 +83,7 @@ class BaseStore(MutableMapping):
         """
         self.status.items[key] = value
         self.status.num_add += 1
+        self.status.size += 1
         self.status.time_updated = datetime.now()
 
     def __delitem__(self, key: DaemonID) -> None:
@@ -92,6 +95,7 @@ class BaseStore(MutableMapping):
         .. #noqa: DAR201"""
         self.status.items.pop(key)
         self.status.num_del += 1
+        self.status.size -= 1
         self.status.time_updated = datetime.now()
 
     def __setstate__(self, state: Dict):
@@ -102,7 +106,7 @@ class BaseStore(MutableMapping):
             time_updated=state.get('time_updated', now),
             num_add=state.get('num_add', 0),
             num_del=state.get('num_del', 0),
-            items=state.get('items', {})
+            items=state.get('items', {}),
         )
 
     def __getstate__(self) -> Dict:
