@@ -84,15 +84,19 @@ def png_to_buffer(arr: 'np.ndarray', width: int, height: int, resize_method: str
 
 def to_image_blob(source, color_axis: int = -1) -> 'np.ndarray':
     """
-    Convert an image buffer to blob
+    Convert an image uri to blob
 
-    :param source: image bytes buffer
+    :param source: image uri.
     :param color_axis: the axis id of the color channel, ``-1`` indicates the color channel info at the last axis
     :return: image blob
     """
     from PIL import Image
 
-    raw_img = Image.open(source).convert('RGB')
+    uri_segments = urllib.parse.urlparse(source)
+    if all([uri_segments.scheme, uri_segments.netloc, uri_segments.path]):
+        raw_img = Image.open(urllib.request.urlopen(source)).convert('RGB')
+    else:
+        raw_img = Image.open(source).convert('RGB')
     img = np.array(raw_img).astype('float32')
     if color_axis != -1:
         img = np.moveaxis(img, -1, color_axis)

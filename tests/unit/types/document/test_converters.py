@@ -13,6 +13,12 @@ def test_uri_to_blob():
     doc.convert_image_uri_to_blob()
     assert isinstance(doc.blob, np.ndarray)
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
+    doc = Document(
+        uri='https://raw.githubusercontent.com/jina-ai/jina/master/tests/unit/types/document/test.png'
+    )
+    doc.convert_image_uri_to_blob()
+    assert isinstance(doc.blob, np.ndarray)
+    assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
 
 def test_datauri_to_blob():
