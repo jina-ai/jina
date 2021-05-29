@@ -48,7 +48,7 @@ $ docker run jinaai/jina:master -v
 <details>
 <summary>📦 More installation options</summary>
 
-| <br><sub><sup>x86/64,arm/v6,v7,[v8 (Apple M1)](https://github.com/jina-ai/jina/issues/1781)</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
+| <br><sub><sup>x86/64,arm64,v6,v7,Apple M1</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
 | Standard | `pip install --pre jina` | `docker run jinaai/jina:master` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install --pre "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:master-daemon`</sub> |
@@ -177,7 +177,7 @@ $ jina hello fork fashion ../my-proj/
     - **When?** The second Tuesday of every month
     - **Where?**
       Zoom ([calendar link](https://calendar.google.com/event?action=TEMPLATE&tmeid=MHIybG03cjAwaXE3ZzRrYmVpaDJyZ2FpZjlfMjAyMDEwMTNUMTIwMDAwWiBjXzF0NW9nZnAyZDQ1djhmaXQ5ODFqMDhtY200QGc&tmsrc=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&scp=ALL)/[.ics](https://hanxiao.io/2020/08/06/Engineering-All-Hands-in-Public/jina-ai-public.ics))
-      and [live stream on YouTube](https://youtube.com/c/jina-ai))
+      and [live stream on YouTube](https://youtube.com/c/jina-ai)
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai).
 
 ## Join Us
@@ -195,7 +195,6 @@ your active involvement.
   community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
-- [Upcoming features](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about.
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-152-orange.svg?style=flat-square)](#contributors-)
