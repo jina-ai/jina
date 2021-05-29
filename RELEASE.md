@@ -66,7 +66,7 @@ The following example shows how Jina is released from 0.9 to 0.9.2 according to 
 
 ## Docker image versioning
 
-Our univeral Docker image is ready-to-use on linux/amd64, linux/armv7+, linux/arm/v6, linux/arm/v8. The Docker image name always starts with `jinaai/jina` followed by a tag composed of three parts:
+Our univeral Docker image is ready-to-use on linux/amd64, linux/armv7+, linux/arm/v6, linux/arm64. The Docker image name always starts with `jinaai/jina` followed by a tag composed of three parts:
 
 ```text
 jinaai/jina:{version}{python_version}{extra}
