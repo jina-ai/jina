@@ -403,7 +403,7 @@
 <span class="sd">        This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead</span>
 <span class="sd">    """</span>
 
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
     <span class="k">if</span> <span class="n">shuffle</span><span class="p">:</span>
         <span class="c1"># shuffle for random query</span>
@@ -438,7 +438,7 @@
 <span class="sd">    .. note::</span>
 <span class="sd">        This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
     <span class="k">if</span> <span class="n">read_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'r'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">,</span> <span class="kc">None</span><span class="p">}:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'read_mode should be "r", "rb" or None, got </span><span class="si">{</span><span class="n">read_mode</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
@@ -480,7 +480,7 @@
 <span class="sd">    :yield: documents</span>
 
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
     <span class="n">lines</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
@@ -509,7 +509,7 @@
 <span class="sd">    :yield: documents</span>
 
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+    <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>

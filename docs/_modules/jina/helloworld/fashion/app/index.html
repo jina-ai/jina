@@ -375,7 +375,6 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">countdown</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helloworld</span> <span class="kn">import</span> <span class="n">set_hw_parser</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
@@ -385,7 +384,6 @@
         <span class="n">download_data</span><span class="p">,</span>
         <span class="n">index_generator</span><span class="p">,</span>
         <span class="n">query_generator</span><span class="p">,</span>
-        <span class="n">colored</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">executors</span> <span class="kn">import</span> <span class="n">MyEncoder</span><span class="p">,</span> <span class="n">MyIndexer</span><span class="p">,</span> <span class="n">MyEvaluator</span>
 <span class="k">else</span><span class="p">:</span>
@@ -395,7 +393,6 @@
         <span class="n">download_data</span><span class="p">,</span>
         <span class="n">index_generator</span><span class="p">,</span>
         <span class="n">query_generator</span><span class="p">,</span>
-        <span class="n">colored</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">.executors</span> <span class="kn">import</span> <span class="n">MyEncoder</span><span class="p">,</span> <span class="n">MyIndexer</span><span class="p">,</span> <span class="n">MyEvaluator</span>
 
@@ -456,16 +453,6 @@
         <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
             <span class="n">index_generator</span><span class="p">(</span><span class="n">num_docs</span><span class="o">=</span><span class="n">targets</span><span class="p">[</span><span class="s1">'index'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="n">targets</span><span class="p">),</span>
             <span class="n">request_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="c1"># wait for couple of seconds</span>
-        <span class="n">countdown</span><span class="p">(</span>
-            <span class="mi">3</span><span class="p">,</span>
-            <span class="n">reason</span><span class="o">=</span><span class="n">colored</span><span class="p">(</span>
-                <span class="s1">'behold! im going to switch to query mode'</span><span class="p">,</span>
-                <span class="s1">'cyan'</span><span class="p">,</span>
-                <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'underline'</span><span class="p">,</span> <span class="s1">'bold'</span><span class="p">,</span> <span class="s1">'reverse'</span><span class="p">],</span>
-            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="c1"># f.search(</span>
