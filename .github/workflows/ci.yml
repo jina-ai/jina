@@ -133,7 +133,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ 3.7 ]
         test-arch: ["linux/armhf", "linux/arm/v6", "linux/arm/v8"]
     steps:
       - uses: actions/checkout@v2
@@ -142,8 +141,8 @@ jobs:
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
-          platforms: ${{ matrix.test-path }}
-          push: true
+          platforms: ${{ matrix.test-arch }}
+          push: false
           tags: jinaai/jina-multi-arch:test-pip
           target: jina_devel
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
