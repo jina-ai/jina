@@ -165,7 +165,7 @@ jobs:
           target: jina_devel
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
       - run: |
-          docker run localhost:5000/jina/multiarch:latest hello fashion
+          docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest hello fashion
 
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]
