@@ -181,9 +181,7 @@ class WorkspaceStore(BaseStore):
                 'dockerfile': daemon_file.dockerfile,
             }
             self[id].metadata.image_id = image_id
-            self[id].arguments.requirements = list(
-                filter(None, daemon_file.requirements.split(' '))
-            )
+            self[id].arguments.requirements = daemon_file.requirements
             self._logger.success(
                 f'Workspace {colored(str(id), "cyan")} is added to store'
             )
@@ -202,9 +200,7 @@ class WorkspaceStore(BaseStore):
                         'build': daemon_file.build,
                         'dockerfile': daemon_file.dockerfile,
                     },
-                    requirements=list(
-                        filter(None, daemon_file.requirements.split(' '))
-                    ),
+                    requirements=daemon_file.requirements,
                 ),
             )
             self._logger.success(f'Workspace {colored(str(id), "cyan")} is updated')

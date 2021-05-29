@@ -83,7 +83,6 @@ class BaseStore(MutableMapping):
         """
         self.status.items[key] = value
         self.status.num_add += 1
-        self.status.size += 1
         self.status.time_updated = datetime.now()
 
     def __delitem__(self, key: DaemonID) -> None:
@@ -95,7 +94,6 @@ class BaseStore(MutableMapping):
         .. #noqa: DAR201"""
         self.status.items.pop(key)
         self.status.num_del += 1
-        self.status.size -= 1
         self.status.time_updated = datetime.now()
 
     def __setstate__(self, state: Dict):
@@ -144,3 +142,6 @@ class BaseStore(MutableMapping):
         """Calling :meth:`clear` and reset all stats """
         self.clear()
         self.status = StoreStatus()
+
+    def __len__(self):
+        return len(self.items())

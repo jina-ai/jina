@@ -18,12 +18,12 @@ def test_workspace_store(filepath):
     store = WorkspaceStore()
     workspace_id = store.add(files=[UploadFile(filepath)])
 
-    assert store.status.size == 1
+    assert len(store) == 1
     assert store.status.num_add == 1
-    assert len(list(store.status.items.values())[0].arguments.files) == 1
+    assert len(list(store.values())[0].arguments.files) == 1
 
     store.delete(workspace_id)
 
     assert store.status.num_add == 1
     assert store.status.num_del == 1
-    assert store.status.size == 0
+    assert len(store) == 0
