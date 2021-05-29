@@ -134,6 +134,7 @@ jobs:
       matrix:
         tag_stage: ["", "-devel", "-daemon"]
         tag_pyversion: ["-py37", "-py38", "-py39"]
+        tag_arch: ["linux/amd64", "linux/armhf", "linux/arm/v6", "linux/arm64"]
     steps:
       - uses: actions/checkout@v2
 #        with:
@@ -177,7 +178,7 @@ jobs:
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
-          platforms: linux/armhf,linux/amd64,linux/arm/v6,linux/arm64
+          platforms: ${{ matrix.tag_arch }}
           push: true
           tags: jinaai/jina:master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
