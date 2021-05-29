@@ -15,6 +15,7 @@ ARG BUILD_DATE
 ARG JINA_VERSION
 ARG PIP_TAG
 ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
+ARG TARGETPLATFORM
 
 LABEL org.opencontainers.image.created=${BUILD_DATE} \
       org.opencontainers.image.authors="dev-team@jina.ai" \
@@ -45,7 +46,7 @@ RUN ln -s locale.h /usr/include/xlocale.h && \
     cd /jina && \
     pip install . --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
     if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile --extra-index-url $PIP_EXTRA_INDEX_URL; fi && \
-    if [ "${PY_VERSION}" = "linux/arm64" ]; then apt-get remove -y --auto-remove ${JINA_COMPILERS}; fi && \
+    if [ "${TARGETPLATFORM}" = "linux/arm64" ]; then apt-get remove -y --auto-remove ${JINA_COMPILERS}; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
