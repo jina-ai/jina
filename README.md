@@ -195,7 +195,6 @@ your active involvement.
   community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
-- [Upcoming features](https://portal.productboard.com/jinaai/) - what's being planned, what we're thinking about.
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-152-orange.svg?style=flat-square)](#contributors-)
