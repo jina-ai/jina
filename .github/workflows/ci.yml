@@ -125,7 +125,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-arch: ["linux/amd64", "linux/armhf", "linux/arm/v6", "linux/arm64"]
+        test-arch: ["linux/amd64", "linux/arm64"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
@@ -151,8 +151,8 @@ jobs:
           tags: localhost:5000/jina/multiarch:latest
           target: jina_devel
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
-#      - run: |
-#          docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
+      - run: |
+          docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]
