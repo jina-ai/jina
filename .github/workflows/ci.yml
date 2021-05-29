@@ -127,6 +127,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+  docker-arm-image-test:
+    needs: commit-lint
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ 3.7 ]
+        test-arch: ["linux/armhf", "linux/arm/v6", "linux/arm/v8"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfiles/debianx.Dockerfile
+          platforms: ${{ matrix.test-path }}
+          push: true
+          tags: jinaai/jina-multi-arch:test-pip
+          target: jina_devel
+          build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
+      - run: |
+        docker run jinaai/jina-multi-arch:test-pip hello fashion
+
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]
     runs-on: ubuntu-20.04
@@ -198,7 +221,7 @@ jobs:
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
-    needs: [core-test, docker-image-test, check-docstring, check-black]
+    needs: [core-test, docker-image-test, check-docstring, check-black, docker-arm-image-test]
     if: always()
     runs-on: ubuntu-20.04
     steps:
