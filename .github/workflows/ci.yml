@@ -138,7 +138,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-arch: ["linux/armhf", "linux/arm/v6", "linux/arm/arm64"]
+        test-arch: ["linux/armhf", "linux/arm/v6", "linux/arm64"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
