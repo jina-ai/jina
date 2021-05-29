@@ -58,6 +58,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -8811,4 +8812,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```286ac09f```](https://github.com/jina-ai/jina/commit/286ac09f0d0076734271737044c5f1333a4e512c)] __-__ fix readme (*Han Xiao*)
  - [[```41bd9a5b```](https://github.com/jina-ai/jina/commit/41bd9a5b218b144f1b3e6350034c6e5c61eb2c0c)] __-__ Revert &#34;fix: fixed hanging pod termination (#2451)&#34; (#2471) (*Han Xiao*)
  - [[```cef57eed```](https://github.com/jina-ai/jina/commit/cef57eed2a6df1278c06ba4b9581ee78d5edd2fb)] __-__ __version__: the next version will be 2.0.0rc3 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-0rc4></a>
+## Release Note (`2.0.0rc4`)
+
+> Release time: 2021-05-29 01:16:43
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  felix-wang,  cristian,  Han Xiao,  Zhaofeng Miao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```cbd4787d```](https://github.com/jina-ai/jina/commit/cbd4787dba642ddfb62393e5a9cafe4e12512f7c)] __-__ __cookbook__: add onnx_runtime snippet executor (#2498) (*felix-wang*)
+ - [[```b8574046```](https://github.com/jina-ai/jina/commit/b8574046e256efc5106b94aef98b2590a10e52a7)] __-__ add binary save load for DocumentArray (#2495) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```848e0234```](https://github.com/jina-ai/jina/commit/848e0234e750735ef4658096ae5d64780f7ee6de)] __-__ delete from docarray by doc id (#2502) (*cristian*)
+
+### 📗 Documentation
+
+ - [[```bba8d9c3```](https://github.com/jina-ai/jina/commit/bba8d9c3f2547fdb8052bbc09e7a9b9f1d02c9d2)] __-__ __cookbook__: fix two typos in the executor part (#2494) (*Zhaofeng Miao*)
+ - [[```124f749b```](https://github.com/jina-ai/jina/commit/124f749bd196a3732d89a3393ad06f0b96514dc6)] __-__ __cookbook__: add missing ``` (#2496) (*Zhaofeng Miao*)
+
+### 🍹 Other Improvements
+
+ - [[```d25e8e39```](https://github.com/jina-ai/jina/commit/d25e8e39f3cd1e3703a99e0f48a07dc9b93f9371)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2b7a239b```](https://github.com/jina-ai/jina/commit/2b7a239bedbed5fe2280efdbffece3a5bdbbdcef)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f3bf74e6```](https://github.com/jina-ai/jina/commit/f3bf74e6eecfd20a3b5f88ddd745eb2097327d7d)] __-__ fix what is neural search (*Han Xiao*)
+ - [[```1ed39295```](https://github.com/jina-ai/jina/commit/1ed392952cce0979b4b96f04874e184a4118a303)] __-__ fix ci cd merge ops (*Han Xiao*)
+ - [[```4d8c4a71```](https://github.com/jina-ai/jina/commit/4d8c4a71cfcbc35972a20e9690c4bfad462a2026)] __-__ __version__: the next version will be 2.0.0rc4 (*Jina Dev Bot*)
 
