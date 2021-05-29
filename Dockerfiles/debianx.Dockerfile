@@ -43,7 +43,7 @@ COPY . /jina/
 
 RUN ln -s locale.h /usr/include/xlocale.h && \
     if [ "${TARGETPLATFORM}" = "linux/arm64" ] || [ "${TARGETPLATFORM}" = "linux/arm/v8" ]; then apt-get update && apt-get install --no-install-recommends -y ${JINA_COMPILERS}; fi && \
-    if [ "${TARGETPLATFORM}" = "linux/armhf" ] || [ "${TARGETPLATFORM}" = "linux/arm/v6" ]; then apt-get update && apt-get install --no-install-recommends -y python3-numpy; fi && \
+    if [ "${TARGETPLATFORM}" = "linux/armhf" ] || [ "${TARGETPLATFORM}" = "linux/arm/v6" ]; then apt-get update && apt-get install --no-install-recommends -y libatlas-base-dev; fi && \
     cd /jina && \
     pip install . --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
     if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile --extra-index-url $PIP_EXTRA_INDEX_URL; fi && \
