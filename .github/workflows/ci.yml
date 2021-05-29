@@ -136,7 +136,19 @@ jobs:
         test-arch: ["linux/armhf", "linux/arm/v6", "linux/arm/v8"]
     steps:
       - uses: actions/checkout@v2
-      - name: Build and push
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          install: true
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+      - run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Build and test
         uses: docker/build-push-action@v2
         with:
           context: .
