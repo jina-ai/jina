@@ -117,19 +117,6 @@ jobs:
   docker-image-test:
     needs: commit-lint
     runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - run: |
-          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
-      - run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker run jinaai/jina:test-pip hello fashion
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  docker-arm-image-test:
-    needs: commit-lint
-    runs-on: ubuntu-20.04
     services:
       registry:
         image: registry:2
@@ -138,7 +125,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-arch: ["linux/armhf", "linux/arm/v6", "linux/arm64"]
+        test-arch: ["linux/amd64", "linux/armhf", "linux/arm/v6", "linux/arm64"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
@@ -165,7 +152,7 @@ jobs:
           target: jina_devel
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
       - run: |
-          docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest hello fashion
+          docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]
@@ -238,7 +225,7 @@ jobs:
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
-    needs: [core-test, docker-image-test, check-docstring, check-black, docker-arm-image-test]
+    needs: [core-test, docker-image-test, check-docstring, check-black]
     if: always()
     runs-on: ubuntu-20.04
     steps:
