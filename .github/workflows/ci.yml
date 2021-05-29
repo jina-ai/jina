@@ -147,7 +147,7 @@ jobs:
           target: jina_devel
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
       - run: |
-        docker run jinaai/jina-multi-arch:test-pip hello fashion
+          docker run jinaai/jina-multi-arch:test-pip hello fashion
 
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]
@@ -220,7 +220,7 @@ jobs:
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
-    needs: [core-test, docker-image-test, check-docstring, check-black]
+    needs: [core-test, docker-image-test, check-docstring, check-black, docker-arm-image-test]
     if: always()
     runs-on: ubuntu-20.04
     steps:
