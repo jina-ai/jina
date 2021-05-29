@@ -342,7 +342,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             file_ctx = open(file)
 
         with file_ctx as fp:
-            from jina import Document
+            from ..document import Document
 
             da = DocumentArray()
             for v in fp:

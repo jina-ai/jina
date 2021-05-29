@@ -30,7 +30,7 @@ def from_ndarray(
         This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead
     """
 
-    from jina import Document
+    from ..document import Document
 
     if shuffle:
         # shuffle for random query
@@ -65,7 +65,7 @@ def from_files(
     .. note::
         This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
     """
-    from jina import Document
+    from ..document import Document
 
     if read_mode not in {'r', 'rb', None}:
         raise RuntimeError(f'read_mode should be "r", "rb" or None, got {read_mode}')
@@ -107,7 +107,7 @@ def from_csv(
     :yield: documents
 
     """
-    from jina import Document
+    from ..document import Document
 
     lines = csv.DictReader(fp)
     for value in _subsample(lines, size, sampling_rate):
@@ -136,7 +136,7 @@ def from_ndjson(
     :yield: documents
 
     """
-    from jina import Document
+    from ..document import Document
 
     for line in _subsample(fp, size, sampling_rate):
         value = json.loads(line)

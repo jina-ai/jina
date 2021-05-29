@@ -154,6 +154,9 @@ _set_nofile()
 
 # ONLY FIRST CLASS CITIZENS ARE ALLOWED HERE, namely Document, Executor Flow
 
+# Client
+from jina.clients import Client
+
 # Document
 from jina.types.document import Document
 from jina.types.arrays.document import DocumentArray
@@ -165,9 +168,6 @@ from jina.executors.decorators import requests
 # Flow
 from jina.flow import Flow
 from jina.flow.asyncio import AsyncFlow
-
-# Client
-from jina.clients import Client
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)
