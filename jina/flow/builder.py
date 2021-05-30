@@ -4,7 +4,7 @@ from typing import Dict, List, Callable
 
 from .. import __default_host__
 from ..enums import SocketType, FlowBuildLevel, PodRoleType
-from ..excepts import FlowBuildLevelError, SocketTypeError
+from ..excepts import FlowBuildLevelError, SocketTypeError, FlowTopologyError
 from ..peapods import BasePod
 
 # noinspection PyUnreachableCode
@@ -147,7 +147,10 @@ def _connect(
             node_to_update.args.freeze_network_settings
             and _rgetattr(node_to_update, attr_to_set) != value_to_set
         ):
-            raise Exception("Cannot update the parameters of Pod because it is frozen")
+            raise FlowTopologyError(
+                f'Cannot update the parameters of Pod {node_to_update.args.name} because it is frozen. '
+                f'{node_to_update.args.name} is expecting {attr_to_set} to be {value_to_set}'
+            )
         _rsetattr(node_to_update, attr_to_set, value_to_set)
 
     _valid_update(first, 'tail_args.socket_out', first_socket_type)
