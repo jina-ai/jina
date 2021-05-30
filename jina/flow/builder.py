@@ -120,8 +120,9 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
 def _connect(
     first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'
 ) -> None:
-    """Connect two Pods
+    """Connect two Pods.
 
+    This will change the args of the tail Pea of the first, and the args of the head pea of the second.
 
     .. # noqa: DAR401
     :param first: the first BasePod
