@@ -1,10 +1,19 @@
 import sys
 from os import path
-
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
+
+try:
+    import fastentrypoints
+except ImportError:
+    from setuptools.command import easy_install
+    import pkg_resources
+
+    easy_install.main(['fastentrypoints'])
+    pkg_resources.require('fastentrypoints')
+    import fastentrypoint
 
 PY37 = 'py37'
 PY38 = 'py38'

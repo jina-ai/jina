@@ -7,10 +7,11 @@ area/testing:
   - tests/**/*
 
 area/setup:
-  - ./setup.py
+  - setup.py
   - extra-requirements.txt
   - requirements.txt
   - MANIFEST.in
+  - fastentrypoints.py
 
 area/core:
   - jina/**/*
