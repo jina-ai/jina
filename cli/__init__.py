@@ -66,7 +66,6 @@ def _is_latest_version(suppress_on_error=True):
     try:
         from urllib.request import Request, urlopen
         import json
-        from pkg_resources import parse_version
         from jina import __version__
         from jina.logging.predefined import default_logger
 
@@ -77,8 +76,10 @@ def _is_latest_version(suppress_on_error=True):
             req, timeout=1
         ) as resource:  # 'with' is important to close the resource after use
             latest_ver = json.load(resource)['version']
-            latest_ver = parse_version(latest_ver)
-            cur_ver = parse_version(__version__)
+            from distutils.version import LooseVersion
+
+            latest_ver = LooseVersion(latest_ver)
+            cur_ver = LooseVersion(__version__)
             if cur_ver < latest_ver:
                 default_logger.warning(
                     f'WARNING: You are using Jina version {cur_ver}, however version {latest_ver} is available. '
@@ -98,5 +99,5 @@ def main():
     from . import api
 
     args = _get_run_args()
-    _is_latest_version()
+    # _is_latest_version()
     getattr(api, args.cli.replace('-', '_'))(args)
