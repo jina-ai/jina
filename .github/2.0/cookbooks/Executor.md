@@ -612,26 +612,34 @@ class PLMwuAutoEncoder(Executor):
 
 ### Paddle
 
+The example below use PaddlePaddle [Ernie](https://github.com/PaddlePaddle/ERNIE) model as encoder.
+The Executor load pre-trained Ernie family of tokenizer and model.
+Convert Jina Document ``doc.text`` into Paddle Tensor and encode it as embedding.
+As a result, each `Document` in the `DocumentArray` will have an `embedding` after `encode()` has completed.
+
 ```python
-import paddle  # paddle==2.1.0
+import paddle as P # paddle==2.1.0
 import numpy as np
+from ernie.modeling_ernie import ErnieModel # paddle-ernie 0.2.0.dev1
+from ernie.tokenizing_ernie import ErnieTokenizer
 
 from jina import Executor, requests
 
 
-class PaddleMwuExecutor(Executor):
+class PaddleErineExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
-        self.dims = 5
-        self.encoding_mat = paddle.to_tensor(np.random.rand(self.dims, self.dims))
+        self.tokenizer = ErnieTokenizer.from_pretrained('ernie-1.0')
+        self.model = ErnieModel.from_pretrained('ernie-1.0') 
+        self.model.eval()
 
     @requests
     def encode(self, docs, **kwargs):
         for doc in docs:
-            _input = paddle.to_tensor(doc.blob)  # convert the ``ndarray`` of the doc to ``Paddle.Tensor``
-            _output = _input.matmul(
-                self.encoding_mat)  # multiply the input with the encoding matrix using Paddle ``matmul`` operator 
-            doc.embedding = np.array(_output)  # assign the encoding results to ``embedding``
+            ids, _ = self.tokenizer.encode(doc.text)
+            ids = P.to_tensor(np.expand_dims(ids, 0))
+            pooled, encoded = self.model(ids)
+            doc.embedding = pooled.numpy()
 ```
 
 ### Tensorflow
@@ -757,28 +765,29 @@ class TFIDFTextEncoder(Executor):
 
 ### PyTorch
 
-The code snippet below takes ``docs`` as input and perform matrix multiplication with ``self.encoding_matrix``. It
+The code snippet below takes ``docs`` as input and perform feature extraction with ``modelnet v2``. It
 leverages Pytorch's ``Tensor`` conversion and operation. Finally, the ``embedding`` of each document will be set as the
-multiplied result as ``np.ndarray``.
+extracted features.
 
 ```python
 import torch  # 1.8.1
-import numpy as np
+import torchvision.models as models  # 0.9.1
 from jina import Executor, requests
 
 
-class PytorchMwuExecutor(Executor):
+class PytorchMobilNetExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
-        self.encoding_mat = torch.from_numpy(np.random.rand(5, 5))
+        self.model = models.quantization.mobilenet_v2(pretrained=True, quantize=True)
+        self.model.eval()
 
     @requests
     def encode(self, docs, **kwargs):
-        for doc in docs:
-            input_tensor = torch.from_numpy(doc.blob)  # convert the ``ndarray`` of the doc to ``Tensor``
-            output_tensor = torch.matmul(self.encoding_mat,
-                                         input_tensor)  # multiply the input with the encoding matrix.
-            doc.embedding = output_tensor.numpy()  # assign the encoding results to ``embedding``
+        blobs = torch.Tensor(docs.get_attributes('blob'))
+        with torch.no_grad():
+            embeds = self.model(blobs).detach().numpy()
+            for doc, embed in zip(docs, embeds):
+                doc.embedding = embed
 ```
 
 ### ONNX-Runtime
