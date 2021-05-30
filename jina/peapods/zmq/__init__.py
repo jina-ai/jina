@@ -15,7 +15,7 @@ from ...enums import SocketType
 from ...helper import colored, random_identity, get_readable_size, get_or_reuse_loop
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
-
+from ...logging.logger import JinaLogger
 from ...types.message import Message
 from ...types.message.common import ControlMessage
 from ...types.request import Request
