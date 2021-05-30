@@ -315,10 +315,10 @@ d = Document(
 )
 
 # only update `id` field
-d.update(s, include_fields=('id',))
+d.update(s, fields=['id'])
 
-# only preserve `id` field
-d.update(s, exclude_fields=('id',))
+# update all fields. `tags` field as `dict` will be merged.
+d.update(s)
 ```
 
 #### Construct from JSON, CSV, `ndarray` and Files
