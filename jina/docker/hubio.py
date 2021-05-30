@@ -783,7 +783,9 @@ class HubIO:
         return completeness
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:
-        with os.path.join(__resources_path__, 'hub-builder', 'manifest.yml') as fp:
+        with open(
+            os.path.join(__resources_path__, 'hub-builder', 'manifest.yml')
+        ) as fp:
             tmp = JAML.load(
                 fp
             )  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
@@ -844,8 +846,10 @@ class HubIO:
             return v
 
         if 'JINAHUB_SLACK_WEBHOOK' in os.environ:
-            with os.path.join(
-                __resources_path__, 'hub-builder-success', 'slack-jinahub.json'
+            with open(
+                os.path.join(
+                    __resources_path__, 'hub-builder-success', 'slack-jinahub.json'
+                )
             ) as fp:
                 tmp = expand_dict(json.load(fp), _expand_fn, resolve_cycle_ref=False)
                 req = urllib.request.Request(os.environ['JINAHUB_SLACK_WEBHOOK'])
