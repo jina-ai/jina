@@ -1,0 +1,9 @@
+jtype: Flow
+with:
+  return_results: True
+executors:
+  - name: indexer
+    uses:
+      jtype: CrudIndexer
+      metas:
+        workspace: $WORKSPACE
