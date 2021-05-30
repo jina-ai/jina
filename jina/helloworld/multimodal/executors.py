@@ -279,7 +279,7 @@ class KeyValueIndexer(Executor):
         for doc in docs:
             for match in doc.matches:
                 extracted_doc = self._docs[match.parent_id]
-                match.MergeFrom(extracted_doc)
+                match.update(extracted_doc)
 
 
 class WeightedRanker(Executor):
