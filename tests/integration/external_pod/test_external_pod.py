@@ -1,9 +1,10 @@
 import pytest
 
-from jina.peapods.pods import Pod, PodRoleType
+from jina.peapods.pods import Pod
 from jina.parsers import set_pod_parser
 
 from jina import Flow, Executor, requests, Document, DocumentArray
+from jina.helper import random_port
 from tests import validate_callback
 
 
@@ -13,18 +14,28 @@ def input_docs():
 
 
 @pytest.fixture(scope='function')
-def external_pod_args():
+def port_in_external():
+    return random_port()
+
+
+@pytest.fixture(scope='function')
+def port_out_external():
+    return random_port()
+
+
+@pytest.fixture(scope='function')
+def external_pod_args(port_in_external, port_out_external):
     args = [
         '--uses',
         'MyExternalExecutor',
         '--name',
         'external_real',
         '--port-in',
-        '5000',
+        str(port_in_external),
         '--host-in',
         '0.0.0.0',
         '--port-out',
-        '3000',
+        str(port_out_external),
         '--host-out',
         '0.0.0.0',
     ]
@@ -72,7 +83,7 @@ def test_flow_with_external_pod(external_pod, external_pod_args, input_docs, moc
 
 
 @pytest.fixture(scope='function')
-def external_pod_parallel_1_args():
+def external_pod_parallel_1_args(port_in_external, port_out_external):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -81,11 +92,11 @@ def external_pod_parallel_1_args():
         '--socket-in',
         'SUB_CONNECT',
         '--port-in',
-        '3500',
+        str(port_in_external),
         '--host-in',
         '0.0.0.0',
         '--port-out',
-        '3000',
+        str(port_out_external),
         '--host-out',
         '0.0.0.0',
         '--socket-out',
@@ -102,7 +113,7 @@ def external_pod_parallel_1(external_pod_parallel_1_args):
 
 
 @pytest.fixture(scope='function')
-def external_pod_parallel_2_args():
+def external_pod_parallel_2_args(port_in_external, port_out_external):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -111,11 +122,11 @@ def external_pod_parallel_2_args():
         '--socket-in',
         'SUB_CONNECT',
         '--port-in',
-        '3500',
+        str(port_in_external),
         '--host-in',
         '0.0.0.0',
         '--port-out',
-        '3000',
+        str(port_out_external),
         '--host-out',
         '0.0.0.0',
         '--socket-out',
@@ -136,6 +147,8 @@ def test_flow_with_external_pod_parallel(
     external_pod_parallel_2,
     external_pod_parallel_1_args,
     external_pod_parallel_2_args,
+    port_in_external,
+    port_out_external,
     input_docs,
     mocker,
 ):
@@ -155,14 +168,16 @@ def test_flow_with_external_pod_parallel(
         del external_args_2['pod_role']
         flow = (
             Flow()
-            .add(name='pod1', port_out=3500)
+            .add(name='pod1', port_out=port_in_external)
             .add(
                 **external_args_1, name='external_fake_1', external=True, needs=['pod1']
             )
             .add(
                 **external_args_2, name='external_fake_2', external=True, needs=['pod1']
             )
-            .join(needs=['external_fake_1', 'external_fake_2'], port_in=3000)
+            .join(
+                needs=['external_fake_1', 'external_fake_2'], port_in=port_out_external
+            )
         )
 
         mock = mocker.Mock()
