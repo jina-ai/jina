@@ -104,20 +104,6 @@ def test_request_generate_lines_from_list():
         assert doc.text == f'i\'m dummy doc {index}'
 
 
-def test_request_generate_lines_with_fake_url():
-    def random_lines(num_lines):
-        for j in range(1, num_lines + 1):
-            yield f'https://github.com i\'m dummy doc {j}'
-
-    req = request_generator('', data=random_lines(100), request_size=100)
-
-    request = next(req)
-    assert len(request.docs) == 100
-    for index, doc in enumerate(request.docs, 1):
-        assert doc.mime_type == 'text/plain'
-        assert doc.text == f'https://github.com i\'m dummy doc {index}'
-
-
 def test_request_generate_bytes():
     def random_lines(num_lines):
         for j in range(1, num_lines + 1):

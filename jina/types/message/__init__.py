@@ -8,7 +8,7 @@ from ... import __version__, __proto_version__
 from ...enums import CompressAlgo
 from ...excepts import MismatchedVersion
 from ...helper import colored
-from ...logging import default_logger
+from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
 if False:

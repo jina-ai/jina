@@ -6,8 +6,7 @@ import tempfile
 import unicodedata
 from typing import Optional
 
-from pkg_resources import resource_stream
-
+from .. import __resources_path__
 from ..jaml import JAML
 
 image_tag_regex = r'^hub.[a-zA-Z_$][a-zA-Z_\s\-\.$0-9]*$'
@@ -78,9 +77,8 @@ def check_platform(platform_names) -> None:
 
     :param platform_names: the name of the platforms
     """
-    with resource_stream(
-        'jina', '/'.join(('resources', 'hub-builder', 'platforms.yml'))
-    ) as fp:
+
+    with open(os.path.join(__resources_path__, 'hub-builder', 'platforms.yml')) as fp:
         platforms = JAML.load(fp)
 
     for ss in platform_names:
@@ -97,8 +95,8 @@ def check_license(lic) -> str:
     :param lic: the license
     :return: the full name of the license
     """
-    with resource_stream(
-        'jina', '/'.join(('resources', 'hub-builder', 'osi-approved.yml'))
+    with open(
+        os.path.join(__resources_path__, 'hub-builder', 'osi-approved.yml')
     ) as fp:
         approved = JAML.load(fp)
     if lic not in approved:

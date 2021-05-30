@@ -2,7 +2,7 @@ import time
 
 from jina import __default_executor__
 from jina.helper import random_identity
-from jina.logging import default_logger
+from jina.logging.predefined import default_logger
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet

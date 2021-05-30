@@ -10,3 +10,4 @@
 !MANIFEST.in
 !cli/**
 !daemon/**
+!fastentrypoints.py

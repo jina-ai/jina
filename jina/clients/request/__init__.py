@@ -5,7 +5,7 @@ from typing import Iterator, Union, Tuple, AsyncIterable, Iterable, Optional, Di
 from .helper import _new_data_request_from_batch, _new_data_request
 from ...enums import DataInputType
 from ...helper import batch_iterator
-from ...logging import default_logger
+from ...logging.predefined import default_logger
 from ...types.document import DocumentSourceType, DocumentContentType, Document
 from ...types.request import Request
 

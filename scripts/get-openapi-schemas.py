@@ -2,7 +2,7 @@ import json
 
 from daemon import _get_app
 from daemon.parser import get_main_parser
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
 from jina.peapods.runtimes.asyncio.rest.app import get_fastapi_app
 
