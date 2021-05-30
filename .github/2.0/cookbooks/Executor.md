@@ -775,7 +775,7 @@ import torchvision.models as models  # 0.9.1
 from jina import Executor, requests
 
 
-class PytorchMwuExecutor(Executor):
+class PytorchMobilNetExecutor(Executor):
     def __init__(self, **kwargs):
         super().__init__()
         self.model = models.quantization.mobilenet_v2(pretrained=True, quantize=True)
