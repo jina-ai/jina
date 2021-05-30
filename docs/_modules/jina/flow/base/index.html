@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -381,7 +382,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TextIO</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">build_required</span><span class="p">,</span> <span class="n">_build_flow</span><span class="p">,</span> <span class="n">_hanging_pods</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
@@ -396,8 +397,8 @@
     <span class="n">ArgNamespace</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">JAMLCompatible</span>
-<span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
+<span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BaseFlow'</span><span class="p">]</span>

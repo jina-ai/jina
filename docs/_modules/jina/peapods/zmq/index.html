@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -387,7 +388,8 @@
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">SocketType</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span>
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">...logging</span> <span class="kn">import</span> <span class="n">default_logger</span><span class="p">,</span> <span class="n">profile_logger</span><span class="p">,</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">...types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">...types.message.common</span> <span class="kn">import</span> <span class="n">ControlMessage</span>
 <span class="kn">from</span> <span class="nn">...types.request</span> <span class="kn">import</span> <span class="n">Request</span>
@@ -601,14 +603,6 @@
             <span class="sa">f</span><span class="s1">'#recv: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">msg_recv</span><span class="si">}</span><span class="s1"> '</span>
             <span class="sa">f</span><span class="s1">'sent_size: </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bytes_sent</span><span class="p">)</span><span class="si">}</span><span class="s1"> '</span>
             <span class="sa">f</span><span class="s1">'recv_size: </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bytes_recv</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-        <span class="p">)</span>
-        <span class="n">profile_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s1">'msg_sent'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span><span class="p">,</span>
-                <span class="s1">'msg_recv'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">msg_recv</span><span class="p">,</span>
-                <span class="s1">'bytes_sent'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytes_sent</span><span class="p">,</span>
-                <span class="s1">'bytes_recv'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bytes_recv</span><span class="p">,</span>
-            <span class="p">}</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Zmqlet.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>

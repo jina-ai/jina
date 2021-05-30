@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -374,8 +375,7 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
-
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
@@ -410,12 +410,14 @@
     <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_daemon_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
+
     <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
         <span class="n">port_expose</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
         <span class="n">workspace</span><span class="o">=</span><span class="s1">'/tmp/jinad'</span><span class="p">,</span>
         <span class="n">log_config</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
             <span class="s1">'JINAD_LOG_CONFIG'</span><span class="p">,</span>
-            <span class="n">resource_filename</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'logging.daemon.yml'</span><span class="p">))),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'logging.daemon.yml'</span><span class="p">),</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
@@ -431,7 +433,6 @@
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">print_args</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
         <span class="n">default_args</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">a</span><span class="o">.</span><span class="n">dest</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">default</span>
@@ -439,9 +440,7 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">))</span>
         <span class="p">}</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-            <span class="n">resource_filename</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'jina.logo'</span><span class="p">)))</span>
-        <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'jina.logo'</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">logo_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">param_str</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>

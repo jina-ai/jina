@@ -200,6 +200,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -437,7 +438,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “b91c7c04-7248-412b-9f61-c910b9ae1fef”</p>
+<p>Default: “d94047bd-dcd7-42b8-ad01-4ee645ab3294”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -512,7 +513,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “defa15ee-9152-47cf-83a1-0c3a0b59aa9a”</p>
+<p>Default: “f8b56f51-c741-457e-9da8-5c3c7ff44e29”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -523,17 +524,13 @@
 <div class="section" id="multimodal">
 <h5>multimodal<a class="headerlink" href="#multimodal" title="Permalink to this headline">¶</a></h5>
 <p>Run a multimodal search demo</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hello</span> <span class="n">multimodal</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hello</span> <span class="n">multimodal</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span>
                               <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments_repeat2">
 <h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
-<dt><kbd>--uses</kbd></dt>
-<dd><p>The yaml path of the index flow</p>
-<p>Default: “/home/runner/work/jina/jina/jina/resources/multimodal/flow-index.yml”</p>
-</dd>
 <dt><kbd>--index-data-url</kbd></dt>
 <dd><p>The url of index csv data</p>
 <p>Default: “<a class="reference external" href="https://static.jina.ai/multimodal/people-img.zip">https://static.jina.ai/multimodal/people-img.zip</a>”</p>
@@ -549,7 +546,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “38133103-6cdc-4c48-a74d-0a197a5fb71c”</p>
+<p>Default: “19eb046b-ca4c-4614-b43d-c63d9b6b7e96”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -647,7 +644,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 40179</p>
+<p>Default: 47277</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -693,11 +690,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 48125</p>
+<p>Default: 41407</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 45333</p>
+<p>Default: 56599</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -778,7 +775,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 51241</p>
+<p>Default: 43071</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -805,7 +802,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “100cb9a3-af18-46e5-b02d-a4a67ec28f4d”</p>
+<p>Default: “b91eaf93-5085-4fe5-8045-50a708d4f9ec”</p>
 </dd>
 </dl>
 </div>
@@ -1062,7 +1059,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 58959</p>
+<p>Default: 57707</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1108,11 +1105,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 43721</p>
+<p>Default: 34779</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60905</p>
+<p>Default: 58091</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1219,7 +1216,7 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 51499</p>
+<p>Default: 49005</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1332,7 +1329,7 @@ and oneof fields are not affected by this option.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 60273</p>
+<p>Default: 34763</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1378,11 +1375,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 53249</p>
+<p>Default: 49719</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 52545</p>
+<p>Default: 43703</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1463,7 +1460,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 52215</p>
+<p>Default: 54727</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1490,7 +1487,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “a7e31956-d214-4c01-8686-d552bbb474c4”</p>
+<p>Default: “3eff2b67-625a-4404-a691-d48af6c2cf59”</p>
 </dd>
 </dl>
 </div>
@@ -1577,7 +1574,7 @@ process Responses in bulk instead of using callback.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 47255</p>
+<p>Default: 51211</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>

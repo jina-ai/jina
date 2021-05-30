@@ -6,4 +6,5 @@ jina
 
    cli
    daemon
+   fastentrypoints
    jina

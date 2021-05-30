@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -379,7 +380,7 @@
 
 <span class="n">_SHOW_ALL_ARGS</span> <span class="o">=</span> <span class="s1">'JINA_FULL_CLI'</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
 <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
     <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
         <span class="sa">f</span><span class="s1">'Setting </span><span class="si">{</span><span class="n">_SHOW_ALL_ARGS</span><span class="si">}</span><span class="s1"> will make remote Peas with sharding not work when using JinaD'</span>

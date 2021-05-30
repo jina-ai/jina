@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -405,14 +406,13 @@
 <span class="kn">from</span> <span class="nn">..score</span> <span class="kn">import</span> <span class="n">NamedScore</span>
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadDocType</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">is_url</span><span class="p">,</span>
     <span class="n">typename</span><span class="p">,</span>
     <span class="n">random_identity</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
     <span class="n">dunder_get</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">...logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
@@ -1542,7 +1542,7 @@
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="n">download_mermaid_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">showed</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+            <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
             <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Document visualization: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
@@ -1598,7 +1598,7 @@
 <span class="k">def</span> <span class="nf">_is_uri</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="n">scheme</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span>
     <span class="k">return</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'http'</span><span class="p">,</span> <span class="s1">'https'</span><span class="p">}</span> <span class="ow">and</span> <span class="n">is_url</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="p">(</span><span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'http'</span><span class="p">,</span> <span class="s1">'https'</span><span class="p">})</span>
         <span class="ow">or</span> <span class="p">(</span><span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">})</span>
         <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">)</span>
@@ -1607,7 +1607,7 @@
 
 <span class="k">def</span> <span class="nf">_is_datauri</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="n">scheme</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span>
-    <span class="k">return</span> <span class="n">is_url</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">}</span>
 
 
 <span class="k">def</span> <span class="nf">_contains_conflicting_content</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

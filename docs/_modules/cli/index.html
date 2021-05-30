@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -372,12 +373,14 @@
         </label>
         <h1>Source code for cli</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 
 <span class="k">def</span> <span class="nf">_get_run_args</span><span class="p">(</span><span class="n">print_args</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
     <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span>
     <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">get_main_parser</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -385,7 +388,6 @@
 
         <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">print_args</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
             <span class="n">p</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">_actions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
             <span class="n">default_args</span> <span class="o">=</span> <span class="p">{</span>
@@ -394,9 +396,7 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">))</span>
             <span class="p">}</span>
 
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-                <span class="n">resource_filename</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'jina.logo'</span><span class="p">)))</span>
-            <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'jina.logo'</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
                 <span class="n">logo_str</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="n">param_str</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
@@ -440,9 +440,8 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
         <span class="kn">import</span> <span class="nn">json</span>
-        <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">parse_version</span>
         <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
-        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+        <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
         <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
             <span class="s1">'https://api.jina.ai/latest'</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">}</span>
@@ -451,8 +450,10 @@
             <span class="n">req</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">resource</span><span class="p">:</span>  <span class="c1"># 'with' is important to close the resource after use</span>
             <span class="n">latest_ver</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">resource</span><span class="p">)[</span><span class="s1">'version'</span><span class="p">]</span>
-            <span class="n">latest_ver</span> <span class="o">=</span> <span class="n">parse_version</span><span class="p">(</span><span class="n">latest_ver</span><span class="p">)</span>
-            <span class="n">cur_ver</span> <span class="o">=</span> <span class="n">parse_version</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
+            <span class="kn">from</span> <span class="nn">distutils.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
+
+            <span class="n">latest_ver</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">latest_ver</span><span class="p">)</span>
+            <span class="n">cur_ver</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cur_ver</span> <span class="o">&lt;</span> <span class="n">latest_ver</span><span class="p">:</span>
                 <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'WARNING: You are using Jina version </span><span class="si">{</span><span class="n">cur_ver</span><span class="si">}</span><span class="s1">, however version </span><span class="si">{</span><span class="n">latest_ver</span><span class="si">}</span><span class="s1"> is available. '</span>
@@ -472,7 +473,7 @@
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">api</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
-    <span class="n">_is_latest_version</span><span class="p">()</span>
+    <span class="c1"># _is_latest_version()</span>
     <span class="nb">getattr</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'-'</span><span class="p">,</span> <span class="s1">'_'</span><span class="p">))(</span><span class="n">args</span><span class="p">)</span></div>
 </pre></div>
       </article>

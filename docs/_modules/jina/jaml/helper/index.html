@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -481,7 +482,6 @@
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
     <span class="n">allow_stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_yaml_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">allow_builtin_resource</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_raw_yaml_content</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_class_type</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">allow_dict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -496,7 +496,6 @@
 <span class="sd">    :param path: the multi-kind source of the configs.</span>
 <span class="sd">    :param allow_stream: flag</span>
 <span class="sd">    :param allow_yaml_file: flag</span>
-<span class="sd">    :param allow_builtin_resource: flag</span>
 <span class="sd">    :param allow_raw_yaml_content: flag</span>
 <span class="sd">    :param allow_class_type: flag</span>
 <span class="sd">    :param allow_dict: flag</span>
@@ -507,7 +506,6 @@
 <span class="sd">            if available.</span>
 <span class="sd">    """</span>
     <span class="kn">import</span> <span class="nn">io</span>
-    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">BadConfigSource</span>
@@ -521,18 +519,6 @@
         <span class="k">return</span> <span class="n">path</span><span class="p">,</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="n">allow_yaml_file</span> <span class="ow">and</span> <span class="n">is_yaml_filepath</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="n">comp_path</span> <span class="o">=</span> <span class="n">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">comp_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">),</span> <span class="n">comp_path</span>
-    <span class="k">elif</span> <span class="p">(</span>
-        <span class="n">allow_builtin_resource</span>
-        <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)</span>
-        <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span>
-            <span class="n">resource_filename</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'executors.</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">.yml'</span><span class="p">)))</span>
-        <span class="p">)</span>
-    <span class="p">):</span>
-        <span class="c1"># NOTE: this returns a binary stream</span>
-        <span class="n">comp_path</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span>
-            <span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'executors.</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">.yml'</span><span class="p">))</span>
-        <span class="p">)</span>
         <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">comp_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf8'</span><span class="p">),</span> <span class="n">comp_path</span>
     <span class="k">elif</span> <span class="n">allow_raw_yaml_content</span> <span class="ow">and</span> <span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">'!'</span><span class="p">,</span> <span class="s1">'jtype'</span><span class="p">)):</span>
         <span class="c1"># possible YAML content</span>

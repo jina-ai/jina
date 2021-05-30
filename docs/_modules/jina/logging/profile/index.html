@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -377,12 +378,9 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">get_readable_time</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-
-<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="c1"># fix type-hint complain for sphinx and flake</span>
-    <span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
 
 <div class="viewcode-block" id="used_memory"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.used_memory">[docs]</a><span class="k">def</span> <span class="nf">used_memory</span><span class="p">(</span><span class="n">unit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -397,7 +395,7 @@
 
         <span class="k">return</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="n">unit</span>
 
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
     <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
         <span class="s1">'module "resource" can not be found and you are likely running it on Windows, '</span>
@@ -430,7 +428,7 @@
 <span class="sd">    :param func: function to be profiled</span>
 <span class="sd">    :return: arguments wrapper</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
     <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -642,23 +640,7 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">num_bars</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">bar_len</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">profile_logger</span>
-
-        <span class="n">profile_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s1">'num_bars'</span><span class="p">:</span> <span class="n">num_bars</span><span class="p">,</span>
-                <span class="s1">'num_reqs'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_reqs</span><span class="p">,</span>
-                <span class="s1">'bar_len'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bar_len</span><span class="p">,</span>
-                <span class="s1">'progress'</span><span class="p">:</span> <span class="n">num_bars</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">bar_len</span><span class="p">,</span>
-                <span class="s1">'task_name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_name</span><span class="p">,</span>
-                <span class="s1">'qps'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_reqs</span> <span class="o">/</span> <span class="n">elapsed</span><span class="p">,</span>
-                <span class="s1">'speed'</span><span class="p">:</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_docs</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_docs</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_reqs</span><span class="p">)</span>
-                <span class="o">/</span> <span class="n">elapsed</span><span class="p">,</span>
-                <span class="s1">'speed_unit'</span><span class="p">:</span> <span class="p">(</span><span class="s1">'Documents'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_docs</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">'Requests'</span><span class="p">),</span>
-                <span class="s1">'elapsed'</span><span class="p">:</span> <span class="n">elapsed</span><span class="p">,</span>
-            <span class="p">}</span>
-        <span class="p">)</span></div>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>

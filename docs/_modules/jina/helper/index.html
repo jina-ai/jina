@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -401,9 +402,6 @@
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">'batch_iterator'</span><span class="p">,</span>
@@ -416,7 +414,6 @@
     <span class="s1">'ArgNamespace'</span><span class="p">,</span>
     <span class="s1">'is_valid_local_config_source'</span><span class="p">,</span>
     <span class="s1">'cached_property'</span><span class="p">,</span>
-    <span class="s1">'is_url'</span><span class="p">,</span>
     <span class="s1">'typename'</span><span class="p">,</span>
     <span class="s1">'get_public_ip'</span><span class="p">,</span>
     <span class="s1">'get_internal_ip'</span><span class="p">,</span>
@@ -809,7 +806,9 @@
     <span class="k">if</span> <span class="s1">'JINA_RANDOM_PORTS'</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
         <span class="n">min_port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_RANDOM_PORT_MIN'</span><span class="p">,</span> <span class="s1">'49153'</span><span class="p">))</span>
         <span class="n">max_port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_RANDOM_PORT_MAX'</span><span class="p">,</span> <span class="s1">'65535'</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">_port</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">min_port</span><span class="p">,</span> <span class="n">max_port</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+        <span class="n">all_ports</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">min_port</span><span class="p">,</span> <span class="n">max_port</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">all_ports</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_port</span> <span class="ow">in</span> <span class="n">all_ports</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">_get_port</span><span class="p">(</span><span class="n">_port</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
@@ -962,60 +961,6 @@
 <span class="n">_RESET</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[0m'</span>
 
 
-<span class="k">def</span> <span class="nf">build_url_regex_pattern</span><span class="p">():</span>
-    <span class="sd">"""</span>
-<span class="sd">    Set up the regex pattern of URL.</span>
-
-<span class="sd">    :return: Regex pattern.</span>
-<span class="sd">    """</span>
-    <span class="n">ul</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\u00a1</span><span class="s1">-</span><span class="se">\uffff</span><span class="s1">'</span>  <span class="c1"># Unicode letters range (must not be a raw string).</span>
-
-    <span class="c1"># IP patterns</span>
-    <span class="n">ipv4_re</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">r</span><span class="s1">'(?:25[0-5]|2[0-4]\d|[0-1]?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|[0-1]?\d?\d))</span><span class="si">{3}</span><span class="s1">'</span>
-    <span class="p">)</span>
-    <span class="n">ipv6_re</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'\[[0-9a-f:.]+\]'</span>  <span class="c1"># (simple regex, validated later)</span>
-
-    <span class="c1"># Host patterns</span>
-    <span class="n">hostname_re</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">r</span><span class="s1">'[a-z'</span> <span class="o">+</span> <span class="n">ul</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">'0-9](?:[a-z'</span> <span class="o">+</span> <span class="n">ul</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">'0-9-]{0,61}[a-z'</span> <span class="o">+</span> <span class="n">ul</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">'0-9])?'</span>
-    <span class="p">)</span>
-    <span class="c1"># Max length for domain name labels is 63 characters per RFC 1034 sec. 3.1</span>
-    <span class="n">domain_re</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'(?:\.(?!-)[a-z'</span> <span class="o">+</span> <span class="n">ul</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">'0-9-]{1,63}(?&lt;!-))*'</span>
-    <span class="n">tld_re</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="sa">r</span><span class="s1">'\.'</span>  <span class="c1"># dot</span>
-        <span class="sa">r</span><span class="s1">'(?!-)'</span>  <span class="c1"># can't start with a dash</span>
-        <span class="sa">r</span><span class="s1">'(?:[a-z'</span> <span class="o">+</span> <span class="n">ul</span> <span class="o">+</span> <span class="s1">'-]{2,63}'</span>  <span class="c1"># domain label</span>
-        <span class="sa">r</span><span class="s1">'|xn--[a-z0-9]{1,59})'</span>  <span class="c1"># or punycode label</span>
-        <span class="sa">r</span><span class="s1">'(?&lt;!-)'</span>  <span class="c1"># can't end with a dash</span>
-        <span class="sa">r</span><span class="s1">'\.?'</span>  <span class="c1"># may have a trailing dot</span>
-    <span class="p">)</span>
-    <span class="n">host_re</span> <span class="o">=</span> <span class="s1">'('</span> <span class="o">+</span> <span class="n">hostname_re</span> <span class="o">+</span> <span class="n">domain_re</span> <span class="o">+</span> <span class="n">tld_re</span> <span class="o">+</span> <span class="s1">'|localhost)'</span>
-
-    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s1">'^(?:[a-z0-9.+-]*)://'</span>  <span class="c1"># scheme is validated separately</span>
-        <span class="sa">r</span><span class="s1">'(?:[^\s:@/]+(?::[^\s:@/]*)?@)?'</span>  <span class="c1"># user:pass authentication</span>
-        <span class="sa">r</span><span class="s1">'(?:'</span> <span class="o">+</span> <span class="n">ipv4_re</span> <span class="o">+</span> <span class="s1">'|'</span> <span class="o">+</span> <span class="n">ipv6_re</span> <span class="o">+</span> <span class="s1">'|'</span> <span class="o">+</span> <span class="n">host_re</span> <span class="o">+</span> <span class="s1">')'</span>
-        <span class="sa">r</span><span class="s1">'(?::\d{2,5})?'</span>  <span class="c1"># port</span>
-        <span class="sa">r</span><span class="s1">'(?:[/?#][^\s]*)?'</span>  <span class="c1"># resource path</span>
-        <span class="sa">r</span><span class="s1">'\Z'</span><span class="p">,</span>
-        <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">,</span>
-    <span class="p">)</span>
-
-
-<span class="n">url_pat</span> <span class="o">=</span> <span class="n">build_url_regex_pattern</span><span class="p">()</span>
-
-
-<div class="viewcode-block" id="is_url"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.is_url">[docs]</a><span class="k">def</span> <span class="nf">is_url</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Check if the text is URL.</span>
-
-<span class="sd">    :param text: The target text.</span>
-<span class="sd">    :return: True if text is URL else False.</span>
-<span class="sd">    """</span>
-    <span class="k">return</span> <span class="n">url_pat</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
-
-
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'nt'</span><span class="p">:</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">'color'</span><span class="p">)</span>
 
@@ -1147,7 +1092,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">unknown_args</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+                <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
                 <span class="n">default_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'parser </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span><span class="si">}</span><span class="s1"> can not '</span>
@@ -1229,13 +1174,12 @@
 
 <span class="sd">    :return: Version information and environment variables</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__proto_version__</span><span class="p">,</span> <span class="n">__jina_env__</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__proto_version__</span><span class="p">,</span> <span class="n">__jina_env__</span><span class="p">,</span> <span class="n">__resources_path__</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.internal</span> <span class="kn">import</span> <span class="n">api_implementation</span>
     <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">zmq</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">google.protobuf</span><span class="o">,</span> <span class="nn">grpc</span><span class="o">,</span> <span class="nn">yaml</span>
     <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">_grpcio_metadata</span>
-    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
     <span class="kn">import</span> <span class="nn">platform</span>
-    <span class="kn">from</span> <span class="nn">.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
     <span class="k">try</span><span class="p">:</span>
 
@@ -1255,7 +1199,7 @@
             <span class="s1">'platform-version'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">version</span><span class="p">(),</span>
             <span class="s1">'architecture'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">(),</span>
             <span class="s1">'processor'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">processor</span><span class="p">(),</span>
-            <span class="s1">'jina-resources'</span><span class="p">:</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'resources'</span><span class="p">),</span>
+            <span class="s1">'jina-resources'</span><span class="p">:</span> <span class="n">__resources_path__</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">env_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s1">'(unset)'</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">__jina_env__</span><span class="p">}</span>
         <span class="n">full_version</span> <span class="o">=</span> <span class="n">info</span><span class="p">,</span> <span class="n">env_info</span>
@@ -1607,29 +1551,18 @@
 <span class="sd">    :param mermaid_url: The URL of the image.</span>
 <span class="sd">    :param output: A filename specifying the name of the image to be created, the suffix svg/jpg determines the file type of the output image.</span>
 <span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">mermaid_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">})</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">default_logger</span>
+        <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
         <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="s1">'can not download image, please check your graph and the network connections'</span>
         <span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">ding</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
-    <span class="sd">"""Play a ding sound `on_done`, used in 2021 April fools day</span>
-
-<span class="sd">    # noqa: DAR101</span>
-<span class="sd">    """</span>
-    <span class="kn">import</span> <span class="nn">subprocess</span>
-    <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
-
-    <span class="n">soundfx</span> <span class="o">=</span> <span class="n">resource_filename</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'soundfx'</span><span class="p">,</span> <span class="s1">'bell.mp3'</span><span class="p">)))</span>
-
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ffplay  -nodisp -autoexit </span><span class="si">{</span><span class="n">soundfx</span><span class="si">}</span><span class="s1"> &gt;/dev/null 2&gt;&amp;1'</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">find_request_binding</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>

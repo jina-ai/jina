@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -373,8 +374,7 @@
         <h1>Source code for jina.parsers.peapods.base</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Base argparser module for Pea and Pod runtime"""</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
-
-<span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">resource_filename</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
@@ -416,12 +416,12 @@
         <span class="s1">'If not set, then derive from its parent `workspace`.'</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
+
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--log-config'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">resource_filename</span><span class="p">(</span>
-            <span class="s1">'jina'</span><span class="p">,</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s1">'resources'</span><span class="p">,</span> <span class="s1">'logging.default.yml'</span><span class="p">))</span>
-        <span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'logging.default.yml'</span><span class="p">),</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'The YAML config of the logger used in this object.'</span><span class="p">,</span>
     <span class="p">)</span>
 

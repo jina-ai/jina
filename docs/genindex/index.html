@@ -194,6 +194,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -1102,7 +1103,7 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.DEBUG">DEBUG (jina.enums.LogVerbosity attribute)</a>
 </li>
-        <li><a href="../api/jina.logging/#jina.logging.default_logger">default_logger (in module jina.logging)</a>
+        <li><a href="../api/jina.logging.predefined/#jina.logging.predefined.default_logger">default_logger (in module jina.logging.predefined)</a>
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.delete">delete() (daemon.stores.base.BaseStore method)</a>
 
@@ -1272,6 +1273,13 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    fastentrypoints
+
+        <ul>
+          <li><a href="../api/fastentrypoints/#module-fastentrypoints">module</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.rest.models/#jina.peapods.runtimes.asyncio.rest.models.CustomConfig.fields">fields (jina.peapods.runtimes.asyncio.rest.models.CustomConfig attribute)</a>
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.first_pea_args">first_pea_args() (jina.peapods.pods.Pod property)</a>
@@ -1302,10 +1310,10 @@
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
 </li>
-        <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
+</li>
         <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.flows">flows (daemon.models.status.DaemonStatus attribute)</a>
 </li>
         <li><a href="../api/daemon.stores.flow/#daemon.stores.flow.FlowStore">FlowStore (class in daemon.stores.flow)</a>
@@ -1355,6 +1363,8 @@
         <li><a href="../api/jina.excepts/#jina.excepts.GatewayPartialMessage">GatewayPartialMessage</a>
 </li>
         <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.gather_inspect">gather_inspect() (jina.flow.base.BaseFlow method)</a>
+</li>
+        <li><a href="../api/fastentrypoints/#fastentrypoints.get_args">get_args() (in module fastentrypoints)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.get_attributes">get_attributes() (jina.Document method)</a>
 
@@ -1580,10 +1590,10 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.is_block">is_block() (jina.enums.PollingType property)</a>
 </li>
-        <li><a href="../api/jina.types.message/#jina.types.message.Message.is_data_request">is_data_request() (jina.types.message.Message property)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.message/#jina.types.message.Message.is_data_request">is_data_request() (jina.types.message.Message property)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_dense">is_dense() (jina.enums.EmbeddingClsType property)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.is_error">is_error() (jina.types.message.Message property)</a>
@@ -1625,8 +1635,6 @@
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_tf">is_tf() (jina.enums.EmbeddingClsType property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_torch">is_torch() (jina.enums.EmbeddingClsType property)</a>
-</li>
-        <li><a href="../api/jina.helper/#jina.helper.is_url">is_url() (in module jina.helper)</a>
 </li>
         <li><a href="../api/jina.types.request/#jina.types.request.Request.is_used">is_used (jina.types.request.Request attribute)</a>
 </li>
@@ -2020,6 +2028,13 @@
 
         <ul>
           <li><a href="../api/jina.logging.logger/#module-jina.logging.logger">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.logging.predefined
+
+        <ul>
+          <li><a href="../api/jina.logging.predefined/#module-jina.logging.predefined">module</a>
 </li>
         </ul></li>
         <li>
@@ -2840,6 +2855,8 @@
         <ul>
           <li><a href="../api/daemon/#daemon.main">(in module daemon)</a>
 </li>
+          <li><a href="../api/fastentrypoints/#fastentrypoints.main">(in module fastentrypoints)</a>
+</li>
           <li><a href="../api/jina.optimizers.discovery/#jina.optimizers.discovery.main">(in module jina.optimizers.discovery)</a>
 </li>
         </ul></li>
@@ -2987,6 +3004,8 @@
 </li>
           <li><a href="../api/daemon.stores.workspace/#module-daemon.stores.workspace">daemon.stores.workspace</a>
 </li>
+          <li><a href="../api/fastentrypoints/#module-fastentrypoints">fastentrypoints</a>
+</li>
           <li><a href="../api/jina/#module-jina">jina</a>
 </li>
           <li><a href="../api/jina.checker/#module-jina.checker">jina.checker</a>
@@ -3090,6 +3109,8 @@
           <li><a href="../api/jina.logging.formatter/#module-jina.logging.formatter">jina.logging.formatter</a>
 </li>
           <li><a href="../api/jina.logging.logger/#module-jina.logging.logger">jina.logging.logger</a>
+</li>
+          <li><a href="../api/jina.logging.predefined/#module-jina.logging.predefined">jina.logging.predefined</a>
 </li>
           <li><a href="../api/jina.logging.profile/#module-jina.logging.profile">jina.logging.profile</a>
 </li>

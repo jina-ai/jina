@@ -9,6 +9,7 @@ Submodules
 
    jina.logging.formatter
    jina.logging.logger
+   jina.logging.predefined
    jina.logging.profile
 
 Module contents

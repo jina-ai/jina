@@ -195,6 +195,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label for="toctree-checkbox-17"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
@@ -386,7 +387,8 @@
 <span class="kn">from</span> <span class="nn">.request</span> <span class="kn">import</span> <span class="n">GeneratorSourceType</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">BadClient</span><span class="p">,</span> <span class="n">BadClientInput</span><span class="p">,</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">ArgNamespace</span>
-<span class="kn">from</span> <span class="nn">..logging</span> <span class="kn">import</span> <span class="n">default_logger</span><span class="p">,</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 <span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span><span class="p">,</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span>
 <span class="kn">from</span> <span class="nn">..proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
