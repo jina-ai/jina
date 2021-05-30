@@ -88,14 +88,6 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
     )
 
     gp.add_argument(
-        '--read-only',
-        action='store_true',
-        default=False,
-        help='If set, do not allow the pod to modify the model, '
-        'dump_interval will be ignored',
-    )
-
-    gp.add_argument(
         '--memory-hwm',
         type=int,
         default=-1,

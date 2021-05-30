@@ -168,7 +168,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                read_only=True,
                 runtime_cls='GRPCRuntime'
                 if self._cls_client == Client
                 else 'RESTRuntime',
