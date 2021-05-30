@@ -78,3 +78,10 @@ The polling strategy of the Pod (when `parallel>1`)
         Peas will be evenly distributed among the hosts. By default,
         peas are running on host provided by the argument ``host``''',
     )
+    gp.add_argument(
+        '--external',
+        action='store_true',
+        default=False,
+        help='The Pod will be considered a external Pod that has been started independently from the Pod. The Pod '
+        'will not be context managed by the Flow',
+    )
