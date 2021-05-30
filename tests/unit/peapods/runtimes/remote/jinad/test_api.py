@@ -1,10 +1,9 @@
-import argparse
 import os
 
 import mock
 import pytest
 
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 from jina.parsers import set_pea_parser
 from jina.peapods.runtimes.jinad.client import (
     DaemonClient,

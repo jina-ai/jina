@@ -1,15 +1,15 @@
-import json
 import subprocess
 import threading
 
-import pkg_resources
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
 from daemon.excepts import Runtime400Exception, daemon_runtime_exception_handler
-from jina import __version__
-from jina.logging import JinaLogger
+from jina import __version__, __resources_path__
+from jina.logging.logger import JinaLogger
 from .parser import get_main_parser, _get_run_args
 
 jinad_args = get_main_parser().parse_args([])
@@ -85,7 +85,7 @@ def _start_uvicorn(app: 'FastAPI'):
 
 def _start_fluentd():
     daemon_logger.info('starting fluentd...')
-    cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
+    cfg = os.path.join(__resources_path__, 'fluent.conf')
     try:
         fluentd_proc = subprocess.Popen(
             ['fluentd', '-c', cfg],

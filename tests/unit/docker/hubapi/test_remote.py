@@ -7,7 +7,7 @@ import pytest
 import requests
 
 from jina.docker.hubapi.remote import _register_to_mongodb, _fetch_docker_auth
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 from jina.excepts import HubLoginRequired
 
 DUMMY_ACCESS_TOKEN = 'dummy access'

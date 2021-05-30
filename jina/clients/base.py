@@ -13,7 +13,8 @@ from .helper import callback_exec
 from .request import GeneratorSourceType
 from ..excepts import BadClient, BadClientInput, ValidationError
 from ..helper import typename, ArgNamespace
-from ..logging import default_logger, JinaLogger
+from ..logging.logger import JinaLogger
+from ..logging.predefined import default_logger
 from ..logging.profile import TimeContext, ProgressBar
 from ..parsers import set_client_cli_parser
 from ..proto import jina_pb2_grpc

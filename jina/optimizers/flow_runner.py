@@ -5,7 +5,7 @@ from typing import Optional, Union, List
 
 from ..flow import Flow
 from ..helper import colored
-from ..logging import default_logger as logger
+from ..logging.predefined import default_logger as logger
 from ..jaml import JAMLCompatible
 
 

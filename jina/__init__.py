@@ -75,6 +75,10 @@ __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __num_args_executor_func__ = 5
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
+__resources_path__ = _os.path.join(
+    _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
+)
+
 
 _names_with_underscore = [
     '__version__',
@@ -119,8 +123,6 @@ def _set_nofile(nofile_atleast=4096):
     except ImportError:  # Windows
         res = None
 
-    from .logging import default_logger
-
     if res is None:
         return (None,) * 2
 
@@ -132,21 +134,17 @@ def _set_nofile(nofile_atleast=4096):
         if hard < soft:
             hard = soft
 
-        default_logger.debug(f'setting soft & hard ulimit -n {soft} {hard}')
         try:
             res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
         except (ValueError, res.error):
             try:
                 hard = soft
-                default_logger.warning(
-                    f'trouble with max limit, retrying with soft,hard {soft},{hard}'
-                )
+                print(f'trouble with max limit, retrying with soft,hard {soft},{hard}')
                 res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
             except Exception:
-                default_logger.warning('failed to set ulimit, giving up')
+                print('failed to set ulimit, giving up')
                 soft, hard = res.getrlimit(res.RLIMIT_NOFILE)
 
-    default_logger.debug(f'ulimit -n soft,hard: {soft} {hard}')
     return soft, hard
 
 

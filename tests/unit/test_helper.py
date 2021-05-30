@@ -21,7 +21,7 @@ from jina.helper import (
     dunder_get,
 )
 from jina.jaml.helper import complete_path
-from jina.logging import default_logger
+from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
 from jina.proto import jina_pb2
 from jina.types.ndarray.generic import NdArray

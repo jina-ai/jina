@@ -1,8 +1,7 @@
 import os
 import sys
 
-from pkg_resources import resource_filename
-
+from jina import __resources_path__
 from jina.parsers.base import set_base_parser
 from jina.parsers.helper import add_arg_group
 from jina.parsers.peapods.base import mixin_base_ppr_parser
@@ -37,12 +36,14 @@ def get_main_parser():
     mixin_base_ppr_parser(parser)
     mixin_daemon_parser(parser)
 
+    from jina import __resources_path__
+
     parser.set_defaults(
         port_expose=8000,
         workspace='/tmp/jinad',
         log_config=os.getenv(
             'JINAD_LOG_CONFIG',
-            resource_filename('jina', '/'.join(('resources', 'logging.daemon.yml'))),
+            os.path.join(__resources_path__, 'logging.daemon.yml'),
         ),
     )
 
@@ -58,7 +59,6 @@ def _get_run_args(print_args: bool = True):
 
     args = parser.parse_args()
     if print_args:
-        from pkg_resources import resource_filename
 
         default_args = {
             a.dest: a.default
@@ -66,9 +66,7 @@ def _get_run_args(print_args: bool = True):
             if isinstance(a, (_StoreAction, _StoreTrueAction))
         }
 
-        with open(
-            resource_filename('jina', '/'.join(('resources', 'jina.logo')))
-        ) as fp:
+        with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
             logo_str = fp.read()
         param_str = []
         for k, v in sorted(vars(args).items()):

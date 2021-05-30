@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from jina.logging import default_logger
+from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeDict, profiling
 
 

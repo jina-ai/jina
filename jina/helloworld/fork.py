@@ -1,10 +1,15 @@
 import os
 import shutil
 
-from jina.logging import default_logger
+from jina.logging.predefined import default_logger
 
 
-def fork_hello(args):
+def fork_hello(args) -> None:
+    """Fork the hello world demos into a new directory
+
+    :param args: the arg from cli
+
+    """
     from_path = os.path.join(os.path.dirname(__file__), args.project)
     shutil.copytree(from_path, args.destination)
     full_path = os.path.abspath(args.destination)

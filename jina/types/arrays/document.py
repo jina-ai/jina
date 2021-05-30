@@ -15,7 +15,7 @@ from typing import (
 
 from .traversable import TraversableSequence
 from ...helper import typename, cached_property
-from ...logging import default_logger
+from ...logging.predefined import default_logger
 from ...proto.jina_pb2 import DocumentProto, DocumentArrayProto
 
 try:
