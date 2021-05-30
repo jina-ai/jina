@@ -9,7 +9,7 @@ from uvicorn import Config, Server
 
 from daemon.excepts import Runtime400Exception, daemon_runtime_exception_handler
 from jina import __version__, __resources_path__
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 from .parser import get_main_parser, _get_run_args
 
 jinad_args = get_main_parser().parse_args([])

@@ -4,7 +4,7 @@ from typing import Optional
 
 import numpy as np
 from jina import Executor, requests, DocumentArray, Document
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 
 
 class KeyValueDBMSIndexer(Executor):

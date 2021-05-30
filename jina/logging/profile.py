@@ -1,19 +1,12 @@
-import os
 import sys
 import time
 from collections import defaultdict
 from functools import wraps
 from typing import Optional
 
-from .. import __resources_path__
+from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
 from ..importer import ImportExtensions
-from ..logging import JinaLogger
-
-profile_logger = JinaLogger(
-    'PROFILE',
-    log_config=os.path.join(__resources_path__, 'logging.profile.yml'),
-)
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -28,7 +21,7 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
 
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
 
-    from . import default_logger
+    from .predefined import default_logger
 
     default_logger.error(
         'module "resource" can not be found and you are likely running it on Windows, '
@@ -61,7 +54,7 @@ def profiling(func):
     :param func: function to be profiled
     :return: arguments wrapper
     """
-    from . import default_logger
+    from .predefined import default_logger
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
@@ -274,21 +267,6 @@ class ProgressBar(TimeContext):
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
         sys.stdout.flush()
-
-        profile_logger.info(
-            {
-                'num_bars': num_bars,
-                'num_reqs': self.num_reqs,
-                'bar_len': self.bar_len,
-                'progress': num_bars / self.bar_len,
-                'task_name': self.task_name,
-                'qps': self.num_reqs / elapsed,
-                'speed': (self.num_docs if self.num_docs > 0 else self.num_reqs)
-                / elapsed,
-                'speed_unit': ('Documents' if self.num_docs > 0 else 'Requests'),
-                'elapsed': elapsed,
-            }
-        )
 
     def __enter__(self):
         super().__enter__()

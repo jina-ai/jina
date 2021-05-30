@@ -12,7 +12,7 @@ from .... import __default_host__, __resources_path__
 from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
 from ....jaml.helper import complete_path
-from ....logging import JinaLogger
+from ....logging.logger import JinaLogger
 
 
 class DaemonClient:

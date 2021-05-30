@@ -2,7 +2,7 @@ import json
 import mock
 
 from jina.docker.hubapi import remote
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 
 DUMMY_ACCESS_TOKEN = 'dummy access'
 sample_manifest = [

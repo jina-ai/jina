@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Any, Union
 
 from jina.helper import colored
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 from .. import jinad_args
 
 

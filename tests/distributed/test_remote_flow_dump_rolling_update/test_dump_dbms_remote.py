@@ -6,7 +6,7 @@ import pytest
 import requests
 
 from jina import Document
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 dbms_flow_yml = os.path.join(cur_dir, 'flow_dbms.yml')

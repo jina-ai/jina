@@ -15,7 +15,7 @@ from .parameters import load_optimization_parameters
 from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
-from ..logging import default_logger as logger
+from ..logging.predefined import default_logger as logger
 
 if False:
     from .flow_runner import FlowRunner

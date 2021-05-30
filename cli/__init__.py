@@ -3,7 +3,7 @@ import os
 
 
 def _get_run_args(print_args: bool = True):
-    from jina.logging import default_logger
+    from jina.logging.predefined import default_logger
     from jina.parsers import get_main_parser
     from jina.helper import colored
     from jina import __resources_path__
@@ -68,7 +68,7 @@ def _is_latest_version(suppress_on_error=True):
         import json
         from pkg_resources import parse_version
         from jina import __version__
-        from jina.logging import default_logger
+        from jina.logging.predefined import default_logger
 
         req = Request(
             'https://api.jina.ai/latest', headers={'User-Agent': 'Mozilla/5.0'}

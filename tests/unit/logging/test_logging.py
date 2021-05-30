@@ -5,7 +5,7 @@ import pytest
 
 from jina import __uptime__, Flow, Document
 from jina.enums import LogVerbosity
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

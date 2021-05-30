@@ -11,7 +11,7 @@ from ... import __version__
 from ...excepts import HubLoginRequired
 from ...helper import colored
 from ...jaml import JAML
-from ...logging import default_logger
+from ...logging.predefined import default_logger
 
 _header_attrs = ['bold', 'underline']
 

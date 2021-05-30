@@ -8,7 +8,7 @@ import uuid
 import warnings
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
+from typing import Optional, Union, Tuple, List, Set, Dict
 
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
@@ -23,8 +23,8 @@ from ..helper import (
     ArgNamespace,
     download_mermaid_url,
 )
-from ..jaml import JAML, JAMLCompatible
-from ..logging import JinaLogger
+from ..jaml import JAMLCompatible
+from ..logging.logger import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 
 __all__ = ['BaseFlow']

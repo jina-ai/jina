@@ -34,7 +34,7 @@ from ..helper import (
     countdown,
 )
 from ..importer import ImportExtensions
-from ..logging import JinaLogger
+from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..parsers import set_pod_parser
 from ..peapods import Pod

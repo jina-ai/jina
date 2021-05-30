@@ -32,14 +32,13 @@ from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import (
-    is_url,
     typename,
     random_identity,
     download_mermaid_url,
     dunder_get,
 )
 from ...importer import ImportExtensions
-from ...logging import default_logger
+from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
 if False:
@@ -1169,7 +1168,7 @@ class Document(ProtoTypeMixin):
         if output:
             download_mermaid_url(url, output)
         elif not showed:
-            from jina.logging import default_logger
+            from jina.logging.predefined import default_logger
 
             default_logger.info(f'Document visualization: {url}')
 
@@ -1225,7 +1224,7 @@ class Document(ProtoTypeMixin):
 def _is_uri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return (
-        (scheme in {'http', 'https'} and is_url(value))
+        (scheme in {'http', 'https'})
         or (scheme in {'data'})
         or os.path.exists(value)
         or os.access(os.path.dirname(value), os.W_OK)
@@ -1234,7 +1233,7 @@ def _is_uri(value: str) -> bool:
 
 def _is_datauri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
-    return is_url(value) and scheme in {'data'}
+    return scheme in {'data'}
 
 
 def _contains_conflicting_content(**kwargs):
