@@ -1,10 +1,12 @@
 import sys
+import os
 
 
 def _get_run_args(print_args: bool = True):
     from jina.logging import default_logger
     from jina.parsers import get_main_parser
     from jina.helper import colored
+    from jina import __resources_path__
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
@@ -12,7 +14,6 @@ def _get_run_args(print_args: bool = True):
 
         args = parser.parse_args()
         if print_args:
-            from pkg_resources import resource_filename
 
             p = parser._actions[-1].choices[sys.argv[1]]
             default_args = {
@@ -21,9 +22,7 @@ def _get_run_args(print_args: bool = True):
                 if isinstance(a, (_StoreAction, _StoreTrueAction))
             }
 
-            with open(
-                resource_filename('jina', '/'.join(('resources', 'jina.logo')))
-            ) as fp:
+            with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
                 logo_str = fp.read()
             param_str = []
             for k, v in sorted(vars(args).items()):

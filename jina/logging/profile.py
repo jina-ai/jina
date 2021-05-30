@@ -1,15 +1,19 @@
+import os
 import sys
 import time
 from collections import defaultdict
 from functools import wraps
 from typing import Optional
 
+from .. import __resources_path__
 from ..helper import colored, get_readable_size, get_readable_time
 from ..importer import ImportExtensions
+from ..logging import JinaLogger
 
-if False:
-    # fix type-hint complain for sphinx and flake
-    from ..logging import JinaLogger
+profile_logger = JinaLogger(
+    'PROFILE',
+    log_config=os.path.join(__resources_path__, 'logging.profile.yml'),
+)
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -270,7 +274,6 @@ class ProgressBar(TimeContext):
         if num_bars == self.bar_len:
             sys.stdout.write('\n')
         sys.stdout.flush()
-        from . import profile_logger
 
         profile_logger.info(
             {

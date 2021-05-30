@@ -6,9 +6,9 @@ from argparse import Namespace
 from contextlib import ExitStack
 from typing import Optional, Sequence, Dict
 
-from pkg_resources import resource_filename
+import os
 
-from .... import __default_host__
+from .... import __default_host__, __resources_path__
 from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
 from ....jaml.helper import complete_path
@@ -180,9 +180,7 @@ class DaemonClient:
         with ImportExtensions(required=True):
             import websockets
 
-        remote_log_config = resource_filename(
-            'jina', '/'.join(('resources', 'logging.remote.yml'))
-        )
+        remote_log_config = os.path.join(__resources_path__, 'logging.remote.yml')
         all_remote_loggers = {}
         try:
             async with websockets.connect(

@@ -856,11 +856,10 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
-    from . import __version__, __proto_version__, __jina_env__
+    from . import __version__, __proto_version__, __jina_env__, __resources_path__
     from google.protobuf.internal import api_implementation
     import os, zmq, numpy, google.protobuf, grpc, yaml
     from grpc import _grpcio_metadata
-    from pkg_resources import resource_filename
     import platform
     from .logging import default_logger
 
@@ -882,7 +881,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'platform-version': platform.version(),
             'architecture': platform.machine(),
             'processor': platform.processor(),
-            'jina-resources': resource_filename('jina', 'resources'),
+            'jina-resources': __resources_path__,
         }
         env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
         full_version = info, env_info
@@ -1244,19 +1243,6 @@ def download_mermaid_url(mermaid_url, output) -> None:
         default_logger.error(
             'can not download image, please check your graph and the network connections'
         )
-
-
-def ding(req):
-    """Play a ding sound `on_done`, used in 2021 April fools day
-
-    # noqa: DAR101
-    """
-    import subprocess
-    from pkg_resources import resource_filename
-
-    soundfx = resource_filename('jina', '/'.join(('resources', 'soundfx', 'bell.mp3')))
-
-    subprocess.call(f'ffplay  -nodisp -autoexit {soundfx} >/dev/null 2>&1', shell=True)
 
 
 def find_request_binding(target):

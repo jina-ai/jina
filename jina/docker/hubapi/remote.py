@@ -1,25 +1,25 @@
 """Module wrapping interactions with the remote Jina Hub API"""
-from jina.logging.logger import JinaLogger
-import json
 import base64
+import json
+import os
+from typing import Dict, Sequence, Any, Optional, List, Tuple
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
-from pkg_resources import resource_stream
-from typing import Dict, Sequence, Any, Optional, List, Tuple
 
-
+from jina.logging.logger import JinaLogger
 from .local import (
     _fetch_access_token,
     _make_hub_table,
     _make_hub_table_with_local,
     _load_local_hub_manifest,
 )
-from ...jaml import JAML
+from ... import __resources_path__
+from ...excepts import HubLoginRequired
 from ...helper import colored
 from ...importer import ImportExtensions
+from ...jaml import JAML
 from ...logging.profile import TimeContext
-from ...excepts import HubLoginRequired
 
 
 def _list(
@@ -38,7 +38,7 @@ def _list(
     :param image_keywords: keywords added in the manifest yml
     :return: a dict of manifest specifications, each coresponds to a hub image
     """
-    with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
+    with open(os.path.join(__resources_path__, 'hubapi.yml')) as fp:
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['list']
 
@@ -82,7 +82,7 @@ def _fetch_docker_auth(logger: JinaLogger) -> Tuple[str, str]:
     :param logger: the logger instance
     :return: a dict of specifying username and password
     """
-    with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
+    with open(os.path.join(__resources_path__, 'hubapi.yml')) as fp:
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['docker_auth']
 
@@ -116,8 +116,7 @@ def _register_to_mongodb(logger: JinaLogger, summary: Optional[Dict] = None):
     """
     # TODO(Deepankar): implement to jsonschema based validation for summary
     logger.info('registering image to Jina Hub database...')
-
-    with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
+    with open(os.path.join(__resources_path__, 'hubapi.yml')) as fp:
         hubapi_yml = JAML.load(fp)
         hubapi_url = hubapi_yml['hubapi']['url'] + hubapi_yml['hubapi']['push']
 

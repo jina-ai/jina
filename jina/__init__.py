@@ -75,6 +75,10 @@ __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __num_args_executor_func__ = 5
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
+__resources_path__ = _os.path.join(
+    _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
+)
+
 
 _names_with_underscore = [
     '__version__',

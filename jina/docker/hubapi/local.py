@@ -4,15 +4,14 @@ import os
 import pkgutil
 from typing import Dict, Any, List, Optional
 
-from pkg_resources import parse_version
 from setuptools import find_packages
 
 from ..helper import credentials_file
+from ... import __version__
 from ...excepts import HubLoginRequired
 from ...helper import colored
 from ...jaml import JAML
 from ...logging import default_logger
-from ... import __version__
 
 _header_attrs = ['bold', 'underline']
 
@@ -131,6 +130,8 @@ def _make_hub_table_with_local(images: Dict, local_images: Dict) -> List[str]:
             color = 'white'
             if image_name in local_images:
                 local_ver = local_images[image_name].get('version', '')
+                from pkg_resources import parse_version
+
                 _v1, _v2 = parse_version(ver), parse_version(local_ver)
                 if _v1 > _v2:
                     color = 'red'
