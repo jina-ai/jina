@@ -4,7 +4,6 @@ import pytest
 
 from jina.docker.hubio import HubIO
 from jina.parsers.hub import (
-    set_hub_new_parser,
     set_hub_pushpull_parser,
     set_hub_build_parser,
 )

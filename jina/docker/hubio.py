@@ -123,7 +123,7 @@ class HubIO:
         """Login using Github Device flow to allow push access to Jina Hub Registry."""
         import requests
 
-        with os.path.join(__resources_path__, 'hubapi.yml') as fp:
+        with open(os.path.join(__resources_path__, 'hubapi.yml')) as fp:
             hubapi_yml = JAML.load(fp)
 
         client_id = hubapi_yml['github']['client_id']
