@@ -541,7 +541,6 @@
             <span class="nb">dict</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">pod_name</span><span class="p">,</span>
                 <span class="n">ctrl_with_ipc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># otherwise ctrl port would be conflicted</span>
-                <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">runtime_cls</span><span class="o">=</span><span class="s1">'GRPCRuntime'</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_client</span> <span class="o">==</span> <span class="n">Client</span>
                 <span class="k">else</span> <span class="s1">'RESTRuntime'</span><span class="p">,</span>

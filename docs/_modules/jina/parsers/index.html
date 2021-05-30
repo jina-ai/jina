@@ -458,7 +458,6 @@
         <span class="n">socket_in</span><span class="o">=</span><span class="n">SocketType</span><span class="o">.</span><span class="n">PULL_CONNECT</span><span class="p">,</span>  <span class="c1"># otherwise there can be only one client at a time</span>
         <span class="n">socket_out</span><span class="o">=</span><span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span><span class="p">,</span>
         <span class="n">ctrl_with_ipc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># otherwise ctrl port would be conflicted</span>
-        <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">runtime_cls</span><span class="o">=</span><span class="s1">'GRPCRuntime'</span><span class="p">,</span>
         <span class="n">pod_role</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
     <span class="p">)</span>

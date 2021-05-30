@@ -493,8 +493,9 @@
 <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span>
     <span class="n">first</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">first_socket_type</span><span class="p">:</span> <span class="s1">'SocketType'</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""Connect two Pods</span>
+    <span class="sd">"""Connect two Pods.</span>
 
+<span class="sd">    This will change the args of the tail Pea of the first, and the args of the head pea of the second.</span>
 
 <span class="sd">    .. # noqa: DAR401</span>
 <span class="sd">    :param first: the first BasePod</span>
