@@ -17,7 +17,7 @@ def random_docs(
     jitter=1,
     start_id=0,
     embedding=True,
-    text=b'hello world',
+    text='hello world',
 ) -> Iterator['Document']:
     next_chunk_doc_id = start_id + num_docs
     for j in range(num_docs):
