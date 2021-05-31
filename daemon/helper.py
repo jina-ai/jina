@@ -57,14 +57,6 @@ def random_port_range(port_min: int = 49153, port_max: int = 65535, count: int =
             return _jina_random_port_min, _jina_random_port_min + count
 
 
-def port_fields_from_pydantic(model):
-    return {
-        i: getattr(model, i)
-        for i in model.__fields__
-        if 'port' in i and i != 'port_expose'
-    }
-
-
 @contextmanager
 def jina_workspace(workspace_id: 'DaemonID'):
     """

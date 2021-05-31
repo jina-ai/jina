@@ -75,7 +75,7 @@ async def _list(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in store')
 
 
 # @router.on_event('shutdown')

@@ -112,13 +112,16 @@ class DaemonWorker(Thread):
 class ConsumerThread(Thread):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(daemon=True)
+        # TODO: This is used for naming the worker, just appending doesn't make sense
         self._workers_count = 0
 
     def run(self) -> None:
         while True:
             try:
                 workspace_id, files = __task_queue__.get()
-                daemon_logger.info(f'starting DaemonWorker{self._workers_count} for workspace {workspace_id}')
+                daemon_logger.info(
+                    f'starting DaemonWorker{self._workers_count} for workspace {colored(workspace_id, "cyan")}'
+                )
                 DaemonWorker(id=workspace_id,
                              files=files,
                              name=str(self._workers_count))

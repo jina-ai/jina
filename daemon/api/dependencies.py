@@ -5,13 +5,14 @@ from fastapi import HTTPException, UploadFile, File
 from pydantic.errors import PathNotAFileError
 
 from jina import Flow
+from jina.enums import PeaRoleType, SocketType
 from jina.helper import ArgNamespace
 
+from ..helper import get_workspace_path
 from ..models.enums import WorkspaceState
 from ..stores import workspace_store as store
 from ..models.workspaces import WorkspaceItem
 from ..models import DaemonID, FlowModel, PodModel, PeaModel
-from ..helper import get_workspace_path, port_fields_from_pydantic
 
 
 class FlowDepends:
@@ -63,8 +64,8 @@ class PeaDepends:
         # Deepankar: adding quotes around PeaModel breaks things
         self.workspace_id = workspace_id
         self.params = pea
-        self.validate()
         self.id = DaemonID('jpea')
+        self.validate()
 
     @property
     def command(self) -> str:
@@ -72,16 +73,29 @@ class PeaDepends:
 
     @property
     def ports(self) -> Dict:
-        print(self.params)
         # TODO: Hacky way of knowing the `port` args
         return {
             f'{port}/tcp': port
-            for port in port_fields_from_pydantic(self.params).values()
+            for port in self.port_fields_from_pydantic(self.params).values()
         }
 
     def validate(self):
+        # Each pea is inside a container
+        # TODO: Handle host if pea uses a docker image
+        self.params.host_in = 'host.docker.internal'
+        self.params.host_out = 'host.docker.internal'
+        self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
         self.params.log_config = ''
+
+    def port_fields_from_pydantic(self, model):
+        return {
+            i: getattr(model, i)
+            for i in model.__fields__
+            if 'port' in i and i != 'port_expose'
+        } if getattr(model, 'pea_role') != PeaRoleType.PARALLEL.name else {
+            'port_ctrl': model.port_ctrl
+        }
 
 
 class PodDepends(PeaDepends):

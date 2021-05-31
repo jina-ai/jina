@@ -93,18 +93,18 @@ async def _logstream(
     manager = ConnectionManager()
     await manager.connect(websocket)
     client_details = _websocket_details(websocket)
-    filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
+    filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
     try:
         if jinad_args.no_fluentd:
             daemon_logger.warning(
-                f'{client_details} asks for logstreaming but fluentd is not available'
+                f'{client_details} asked for logstreaming but fluentd is not available'
             )
             return
 
         # on connection the fluentd file may not flushed (aka exist) yet
         n = 0
         while not Path(filepath).is_file():
-            daemon_logger.debug(f'still waiting {filepath} to be ready...')
+            daemon_logger.info(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1
             if timeout > 0 and n >= timeout:

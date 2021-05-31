@@ -22,7 +22,7 @@ from .excepts import (
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
-__task_queue__ = Queue(maxsize=10)
+__task_queue__ = Queue()
 __root_workspace__ = jinad_args.workspace
 __rootdir__ = str(Path(__file__).parent.parent.absolute())
 __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')

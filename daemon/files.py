@@ -21,7 +21,7 @@ def workspace_files(workspace_id: DaemonID,
     workdir = get_workspace_path(workspace_id)
     Path(workdir).mkdir(parents=True, exist_ok=True)
     if not files:
-        logger.warning(f'there are no more files to upload!')
+        logger.warning(f'couldn\'t find any files to upload!')
         return
     for f in files:
         dest = os.path.join(workdir, f.filename)
@@ -125,7 +125,7 @@ class DaemonFile:
         _other_jinad_files = glob.glob(f'{Path(self._workdir)}/*{self.extension}')
         if not _other_jinad_files:
             self._logger.warning(
-                f'couldn\'t find any `.jinad` file in the workspace. picking defaults..'
+                f'please add a .jinad file to manage the docker image in the workspace'
             )
         elif len(_other_jinad_files) == 1:
             self.set_args(Path(_other_jinad_files[0]))
