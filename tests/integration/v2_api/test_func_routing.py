@@ -1,7 +1,7 @@
 from jina import Flow, Document, Executor, requests, DocumentArray
 
 
-def test_func_simple_routing(mocker):
+def test_func_simple_routing():
     class MyExecutor(Executor):
         @requests(on='/search')
         def foo(self, **kwargs):
@@ -11,38 +11,45 @@ def test_func_simple_routing(mocker):
             assert len(kwargs['groundtruths']) == 3
             assert kwargs['parameters']['hello'] == 'world'
             assert kwargs['parameters']['topk'] == 10
+            kwargs['docs'][0].tags['hello'] = 'world'
 
     f = Flow().add(uses=MyExecutor)
 
-    done_mock = mocker.Mock()
-    fail_mock = mocker.Mock()
-
     with f:
-        f.post(
+        results = f.post(
             on='/search',
             inputs=[(Document(), Document()) for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
-            on_done=done_mock,
-            on_error=fail_mock,
+            return_results=True,
         )
-
-    done_mock.assert_called_once()
-    fail_mock.assert_not_called()
-
-    done_mock = mocker.Mock()
-    fail_mock = mocker.Mock()
+        assert results[0].status.code == 0
+        assert results[0].data.docs[0].tags['hello'] == 'world'
 
     with f:
-        f.post(
+        results = f.post(
             on='/random',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
-            on_done=done_mock,
-            on_error=fail_mock,
+            return_results=True,
         )
+        assert results[0].status.code == 0
 
-    done_mock.assert_called_once()
-    fail_mock.assert_not_called()
+
+def test_func_failure():
+    class MyExecutor(Executor):
+        @requests(on='/search')
+        def foo(self, **kwargs):
+            raise Exception()
+
+    f = Flow().add(uses=MyExecutor)
+
+    with f:
+        results = f.post(
+            on='/search',
+            inputs=[(Document(), Document()) for _ in range(3)],
+            return_results=True,
+        )
+        assert results[0].status.code == 3
 
 
 def test_func_default_routing():
