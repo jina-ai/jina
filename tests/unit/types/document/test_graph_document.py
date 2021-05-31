@@ -22,6 +22,9 @@ def graph():
 
 
 def validate_graph(graph):
+    assert graph.num_nodes == 4
+    assert graph.num_edges == 5
+
     doc0 = graph.chunks[0]
     assert doc0.text == 'Document0'
     doc1 = graph.chunks[1]
@@ -51,35 +54,43 @@ def validate_graph(graph):
             assert d1.text == 'Document2'
             assert d2.text == 'Document3'
 
+    assert graph.get_out_degree(doc0) == 2
     outgoing_0 = graph.get_outgoing_nodes(doc0)
     assert len(outgoing_0) == 2
     assert outgoing_0[0].text == 'Document1'
     assert outgoing_0[1].text == 'Document2'
 
+    assert graph.get_in_degree(doc0) == 0
     incoming_0 = graph.get_incoming_nodes(doc0)
     assert len(incoming_0) == 0
 
+    assert graph.get_out_degree(doc1) == 1
     outgoing_1 = graph.get_outgoing_nodes(doc1)
     assert len(outgoing_1) == 1
     assert outgoing_1[0].text == 'Document3'
 
+    assert graph.get_in_degree(doc1) == 2
     incoming_1 = graph.get_incoming_nodes(doc1)
     assert len(incoming_1) == 2
     assert incoming_1[0].text == 'Document0'
     assert incoming_1[1].text == 'Document2'
 
+    assert graph.get_out_degree(doc2) == 2
     outgoing_2 = graph.get_outgoing_nodes(doc2)
     assert len(outgoing_2) == 2
     assert outgoing_2[0].text == 'Document1'
     assert outgoing_2[1].text == 'Document3'
 
+    assert graph.get_in_degree(doc2) == 1
     incoming_2 = graph.get_incoming_nodes(doc2)
     assert len(incoming_2) == 1
     assert incoming_2[0].text == 'Document0'
 
+    assert graph.get_out_degree(doc3) == 0
     outgoing_3 = graph.get_outgoing_nodes(doc3)
     assert len(outgoing_3) == 0
 
+    assert graph.get_in_degree(doc3) == 2
     incoming_3 = graph.get_incoming_nodes(doc3)
     assert len(incoming_3) == 2
     assert incoming_3[0].text == 'Document1'

@@ -21,10 +21,7 @@ class GraphExecutor(Executor):
             graph = GraphDocument(doc)
             for node in graph.nodes:
                 node.embedding = np.array(
-                    [
-                        len(graph.get_outgoing_nodes(node))
-                        + len(graph.get_incoming_nodes(node))
-                    ]
+                    [graph.get_out_degree(node) + graph.get_in_degree(node)]
                 )
 
             sum = 0

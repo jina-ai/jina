@@ -6,6 +6,8 @@ from . import Document, DocumentSourceType
 from ..arrays import ChunkArray
 from ..struct import StructView
 from ..ndarray.sparse.scipy import SparseNdArray
+from ...logging.predefined import default_logger
+
 
 __all__ = ['GraphDocument']
 
@@ -46,6 +48,19 @@ class GraphDocument(Document):
             chunk.id: offset for offset, chunk in enumerate(self.chunks)
         }
 
+    def add_node(self, node: 'Document'):
+        """
+        Add a a node to the graph
+
+        :param node: the node to be added to the graph
+        """
+        if node.id in self._chunk_id_to_offset:
+            default_logger.warning(f'Document {node.id} is already a node of the graph')
+            return
+
+        self._chunk_id_to_offset[node.id] = len(self.chunks)
+        self.chunks.append(node)
+
     def add_edge(
         self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
     ):
@@ -59,9 +74,8 @@ class GraphDocument(Document):
         from scipy.sparse import coo_matrix
 
         for doc in [doc1, doc2]:
-            if doc.id not in self._chunk_id_to_offset:
-                self._chunk_id_to_offset[doc.id] = len(self.chunks)
-                self.chunks.append(doc)
+            self.add_node(doc)
+
         current_adjacency = self.adjacency
         doc1_node_offset = self._chunk_id_to_offset[doc1.id]
         doc2_node_offset = self._chunk_id_to_offset[doc2.id]
@@ -80,9 +94,7 @@ class GraphDocument(Document):
             if current_adjacency is not None
             else np.array([1])
         )
-        self.adjacency = coo_matrix(
-            (data, (row, col)), shape=(len(self.chunks), len(self.chunks))
-        )
+        self.adjacency = coo_matrix((data, (row, col)))
         if features is not None:
             self.edge_features[len(self.adjacency)] = features
 
@@ -122,10 +134,49 @@ class GraphDocument(Document):
         """
         SparseNdArray(self._pb_body.graph_info.adjacency, sp_format='coo').value = value
 
+    def get_out_degree(self, doc: 'Document') -> int:
+        """
+        The out degree of the doc node
+
+        .. # noqa: DAR201
+        :param doc: the document node from which to extract the outdegree.
+        """
+        out_edges = self.get_outgoing_nodes(doc)
+        return len(out_edges) if out_edges else 0
+
+    def get_in_degree(self, doc: 'Document') -> int:
+        """
+        The in degree of the doc node
+
+        .. # noqa: DAR201
+        :param doc: the document node from which to extract the indegree.
+        """
+        in_edges = self.get_incoming_nodes(doc)
+        return len(in_edges) if in_edges else 0
+
+    @property
+    def num_nodes(self) -> int:
+        """
+        The number of nodes in the graph
+
+        .. # noqa: DAR201
+        """
+        return len(self.nodes)
+
+    @property
+    def num_edges(self) -> int:
+        """
+        The number of edges in the graph
+
+        .. # noqa: DAR201
+        """
+        adjacency = self.adjacency
+        return len(adjacency.data) if adjacency is not None else 0
+
     @property
     def nodes(self):
         """
-        The nodes list for this graph,
+        The nodes list for this graph
 
         .. # noqa: DAR201
         """
