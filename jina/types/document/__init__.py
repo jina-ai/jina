@@ -82,6 +82,7 @@ DocumentSourceType = TypeVar(
 _all_mime_types = set(mimetypes.types_map.values())
 
 _all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
+_all_doc_array_keys = ('blob', 'embedding')
 
 
 class Document(ProtoTypeMixin):
@@ -1171,6 +1172,19 @@ class Document(ProtoTypeMixin):
             from jina.logging.predefined import default_logger
 
             default_logger.info(f'Document visualization: {url}')
+
+    def dict(self):
+        """Return the object in Python dictionary
+
+        :return: dict representation of the object
+        """
+        d = super().dict()
+        for key in _all_doc_array_keys:
+            if key in d:
+                value = getattr(self, key)
+                if isinstance(value, np.ndarray):
+                    d[key] = value.tolist()
+        return d
 
     @property
     def non_empty_fields(self) -> Tuple[str]:
