@@ -1,10 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, UploadFile, File, Body, HTTPException
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 
 from ... import Runtime400Exception
-from ...models import DaemonID, WorkspaceItem, WorkspaceStoreStatus
+from ..dependencies import WorkspaceDepends
 from ...stores import workspace_store as store
+from ...models import DaemonID, WorkspaceItem, WorkspaceStoreStatus
 
 router = APIRouter(prefix='/workspaces', tags=['workspaces'])
 
@@ -41,12 +42,12 @@ async def _delete(id: DaemonID):
     path='',
     summary='Create a workspace & upload files',
     description='Return a DaemonID to the workspace, which can be used later when create Pea/Pod/Flow',
-    response_model=DaemonID,
+    # response_model=WorkspaceStoreStatus.items,
     status_code=201,
 )
-async def _create(files: List[UploadFile] = File(...)):
+async def _create(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
     try:
-        return store.add(files)
+        return workspace.j
     except Exception as ex:
         raise Runtime400Exception from ex
 

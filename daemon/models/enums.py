@@ -16,12 +16,22 @@ class IDLiterals(DaemonEnum):
     JWORKSPACE = 'jworkspace'
 
 
+class WorkspaceState(DaemonEnum):
+    PENDING = 'PENDING'
+    CREATING = 'CREATING'
+    UPDATING = 'UPDATING'
+    ACTIVE = 'ACTIVE'
+    FAILED = 'FAILED'
+    DELETING = 'DELETING'
+
+
 class DaemonBuild(DaemonEnum):
     DEVEL = 'devel'
     DEFAULT = 'default'
     CPU = 'default'
     GPU = 'gpu'
 
+    # TODO (Deepankar): remove this once default becomes default
     @classproperty
     def default(cls):
         return cls.DEVEL

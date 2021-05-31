@@ -1,14 +1,15 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 from .id import DaemonID
+from .enums import WorkspaceState
 from .base import StoreItem, StoreStatus
 
 
 class WorkspaceArguments(BaseModel):
     files: List[str]
     jinad: Dict[str, str]
-    requirements: List
+    requirements: str
 
 
 class WorkspaceMetadata(BaseModel):
@@ -20,8 +21,9 @@ class WorkspaceMetadata(BaseModel):
 
 
 class WorkspaceItem(StoreItem):
-    metadata: WorkspaceMetadata
-    arguments: WorkspaceArguments
+    state: WorkspaceState
+    metadata: Optional[WorkspaceMetadata]
+    arguments: Optional[WorkspaceArguments]
 
 
 class WorkspaceStoreStatus(StoreStatus):

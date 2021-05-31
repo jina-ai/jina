@@ -1,5 +1,6 @@
 import subprocess
 import pkg_resources
+from queue import Queue
 from pathlib import Path
 from threading import Thread
 
@@ -20,6 +21,7 @@ from .excepts import (
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
+__task_queue__ = Queue(maxsize=10)
 __root_workspace__ = jinad_args.workspace
 __rootdir__ = str(Path(__file__).parent.parent.absolute())
 __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
@@ -111,6 +113,11 @@ def _start_fluentd():
         jinad_args.no_fluentd = True
 
 
+def _start_consumer():
+    from .tasks import ConsumerThread
+    ConsumerThread().start()
+
+
 def main():
     """Entrypoint for jinad"""
     global jinad_args, __root_workspace__
@@ -118,4 +125,5 @@ def main():
     __root_workspace__ = jinad_args.workspace
     if not jinad_args.no_fluentd:
         Thread(target=_start_fluentd, daemon=True).start()
+    _start_consumer()
     _start_uvicorn(app=_get_app())

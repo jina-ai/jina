@@ -50,9 +50,9 @@ def random_port_range(port_min: int = 49153, port_max: int = 65535, count: int =
     for _ in range(10):
         _jina_random_port_min = random.randint(port_min, port_max)
         for i in workspace_store.values():
-            _min = i.metadata.ports['min']
-            if range_conflict(_jina_random_port_min, _min, count):
-                break
+            if i.metadata:
+                if range_conflict(_jina_random_port_min, i.metadata.ports['min'], count):
+                    break
         else:
             return _jina_random_port_min, _jina_random_port_min + count
 

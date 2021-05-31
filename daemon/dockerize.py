@@ -4,17 +4,17 @@ import docker
 from fastapi import HTTPException
 from jina import __ready_msg__
 from jina.logging import JinaLogger
-from ..models import DaemonID
-from ..models.enums import IDLiterals
-from ..helper import id_cleaner, classproperty
-from .. import __rootdir__, __dockerfiles__, __root_workspace__, jinad_args
+from .models import DaemonID
+from .models.enums import IDLiterals
+from .helper import id_cleaner, classproperty
+from . import __rootdir__, __dockerfiles__, __root_workspace__, jinad_args
 
 __flow_ready__ = 'Flow is ready to use'
 
 
 if TYPE_CHECKING:
-    from ..stores.workspaces import DaemonFile
-    from ..models.workspaces import WorkspaceMetadata
+    from .files import DaemonFile
+    from .models.workspaces import WorkspaceMetadata
     from docker.models.networks import Network
     from docker.models.containers import Container
     from docker.client import APIClient, DockerClient
@@ -54,13 +54,17 @@ class Dockerizer:
 
     @classmethod
     def network(cls, workspace_id: DaemonID) -> str:
-        network: 'Network' = cls.client.networks.create(
-            name=workspace_id, driver='bridge'
-        )
+        if workspace_id in cls.networks:
+            network = cls.client.networks.get(network_id=workspace_id)
+        else:
+            network: 'Network' = cls.client.networks.create(name=workspace_id, driver='bridge')
         return network.id
 
     @classmethod
-    def build(cls, workspace_id: 'DaemonID', daemon_file: 'DaemonFile') -> str:
+    def build(cls,
+              workspace_id: 'DaemonID',
+              daemon_file: 'DaemonFile',
+              logger: 'JinaLogger') -> str:
         for build_logs in cls.raw_client.build(
             path=daemon_file.dockercontext,
             dockerfile=daemon_file.dockerfile,
@@ -73,7 +77,7 @@ class Dockerizer:
             if 'stream' in build_logs:
                 _stream = build_logs['stream'].splitlines()[0]
                 if _stream:
-                    cls.logger.info(_stream)
+                    logger.info(_stream)
         image = cls.client.images.get(name=workspace_id.tag)
         return id_cleaner(image.id)
 
@@ -86,7 +90,7 @@ class Dockerizer:
         ports: Dict,
         additional_ports: Tuple[int, int],
     ) -> Tuple['Container', str, Dict, bool]:
-        from ..stores import workspace_store
+        from .stores import workspace_store
 
         metadata = workspace_store[workspace_id].metadata
         _image = cls.client.images.get(name=metadata.image_id)
@@ -168,7 +172,7 @@ class Dockerizer:
             raise HTTPException(status_code=404, detail=f'Network `{id}` not found')
         except docker.errors.APIError as e:
             cls.logger.error(
-                f'Dockerd threw an error while removing the network `{id}`: {e}'
+                f'dockerd threw an error while removing the network `{id}`: {e}'
             )
             raise HTTPException(
                 status_code=400, detail=f'dockerd error while removing network `{id}`'

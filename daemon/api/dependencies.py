@@ -1,17 +1,23 @@
-from jina import Flow
-from typing import Dict
 from pathlib import Path
+from typing import Dict, List, Optional
 from pydantic import FilePath
-from fastapi import HTTPException
-from jina.helper import ArgNamespace
+from fastapi import HTTPException, UploadFile, File
 from pydantic.errors import PathNotAFileError
 
-from ...models import DaemonID, FlowModel, PodModel, PeaModel
-from ...helper import get_workspace_path, port_fields_from_pydantic
+from jina import Flow
+from jina.helper import ArgNamespace
+
+from ..models.enums import WorkspaceState
+from ..stores import workspace_store as store
+from ..models.workspaces import WorkspaceItem
+from ..models import DaemonID, FlowModel, PodModel, PeaModel
+from ..helper import get_workspace_path, port_fields_from_pydantic
 
 
 class FlowDepends:
-    def __init__(self, workspace_id: DaemonID, filename: str) -> None:
+    def __init__(self,
+                 workspace_id: DaemonID,
+                 filename: str) -> None:
         self.workspace_id = workspace_id
         self.filename = filename
         self.localpath = self.validate()
@@ -51,7 +57,9 @@ class FlowDepends:
 class PeaDepends:
     _kind = 'pea'
 
-    def __init__(self, workspace_id: DaemonID, pea: PeaModel):
+    def __init__(self,
+                 workspace_id: DaemonID,
+                 pea: PeaModel):
         # Deepankar: adding quotes around PeaModel breaks things
         self.workspace_id = workspace_id
         self.params = pea
@@ -77,7 +85,9 @@ class PeaDepends:
 
 
 class PodDepends(PeaDepends):
-    def __init__(self, workspace_id: DaemonID, pod: PodModel):
+    def __init__(self,
+                 workspace_id: DaemonID,
+                 pod: PodModel):
         self.workspace_id = workspace_id
         self.params = pod
         self.validate()
@@ -85,8 +95,23 @@ class PodDepends(PeaDepends):
 
 
 class WorkspaceDepends:
-    def __init__(self) -> None:
-        # Use this with api endpoint
-        # push workspace_id & files to the queue
-        # return a workspace_id
-        pass
+    def __init__(self,
+                 id: Optional[DaemonID] = None,
+                 files: List[UploadFile] = File(None)) -> None:
+        self.id = id if id else DaemonID('jworkspace')
+        self.files = files
+
+        from ..tasks import __task_queue__
+        if self.id not in store:
+            # when id doesn't exist in store, create it.
+            store.add(id=self.id, value=WorkspaceState.PENDING)
+            __task_queue__.put((self.id, self.files))
+
+        if self.id in store and store[self.id].state == WorkspaceState.ACTIVE:
+            # when id exists in the store and is "active", update it.
+            store.update(id=self.id, value=WorkspaceState.PENDING)
+            __task_queue__.put((self.id, self.files))
+
+        self.j = {
+            self.id: store[self.id]
+        }
