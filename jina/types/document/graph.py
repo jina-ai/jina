@@ -1,4 +1,4 @@
-from typing import Optional, Iterator, Tuple, Dict, List
+from typing import Optional, Iterator, Tuple, Dict, Iterable
 
 import numpy as np
 
@@ -112,6 +112,32 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         """
         return SparseNdArray(self._pb_body.graph_info.adjacency, sp_format='coo').value
+
+    @adjacency.setter
+    def adjacency(self, value: 'coo_matrix'):
+        """
+        Set the adjacency list of this graph.
+
+        :param value: the float weight of the document.
+        """
+        SparseNdArray(self._pb_body.graph_info.adjacency, sp_format='coo').value = value
+
+    @property
+    def nodes(self):
+        """
+        The nodes list for this graph,
+
+        .. # noqa: DAR201
+        """
+        return self.chunks
+
+    @nodes.setter
+    def nodes(self, value: Iterable['Document']):
+        """Set all nodes of the current document.
+
+        :param value: the array of nodes of this document
+        """
+        self.chunks = value
 
     @adjacency.setter
     def adjacency(self, value: 'coo_matrix'):

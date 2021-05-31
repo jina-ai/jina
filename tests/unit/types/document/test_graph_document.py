@@ -31,6 +31,8 @@ def validate_graph(graph):
     doc3 = graph.chunks[3]
     assert doc3.text == 'Document3'
 
+    assert len(graph.nodes) == 4
+
     assert len(graph) == 5
     for i, (d1, d2) in enumerate(graph):
         if i == 0:
