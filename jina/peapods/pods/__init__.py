@@ -322,6 +322,15 @@ class BasePod(ExitFIFO):
         """Wait until all pods and peas exit."""
         ...
 
+    @abstractmethod
+    def is_singleton(self) -> bool:
+        """Return if the Pod contains only a single Pea
+
+
+        .. # noqa: DAR201
+        """
+        ...
+
 
 class Pod(BasePod):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
