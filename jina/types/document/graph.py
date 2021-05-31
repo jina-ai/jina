@@ -8,7 +8,6 @@ from ..struct import StructView
 from ..ndarray.sparse.scipy import SparseNdArray
 from ...logging.predefined import default_logger
 
-
 __all__ = ['GraphDocument']
 
 if False:
@@ -44,8 +43,8 @@ class GraphDocument(Document):
         **kwargs,
     ):
         super().__init__(document=document, copy=copy, **kwargs)
-        self._chunk_id_to_offset = {
-            chunk.id: offset for offset, chunk in enumerate(self.chunks)
+        self._node_id_to_offset = {
+            node.id: offset for offset, node in enumerate(self.nodes)
         }
 
     def add_node(self, node: 'Document'):
@@ -54,12 +53,63 @@ class GraphDocument(Document):
 
         :param node: the node to be added to the graph
         """
-        if node.id in self._chunk_id_to_offset:
+        if node.id in self._node_id_to_offset:
             default_logger.warning(f'Document {node.id} is already a node of the graph')
             return
 
-        self._chunk_id_to_offset[node.id] = len(self.chunks)
-        self.chunks.append(node)
+        self._node_id_to_offset[node.id] = len(self.nodes)
+        self.nodes.append(node)
+
+    def remove_node(self, node: 'Document'):
+        """
+        Remove a node from the graph along with the edges that may contain it
+
+        :param node: the node to be removed from the graph
+        """
+        if node.id not in self._node_id_to_offset:
+            default_logger.warning(
+                f'Trying to remove document {node.id} from the graph while is not a node of the graph'
+            )
+            return
+
+        offset = self._node_id_to_offset[node]
+
+        for edge_id, (row, col) in enumerate(
+            zip(self.adjacency.row, self.adjacency.col)
+        ):
+            if row.item() == offset or col.item() == offset:
+                self._remove_edge_id(edge_id)
+
+        del self.nodes[offset]
+        self._node_id_to_offset = {
+            node.id: offset for offset, node in enumerate(self.nodes)
+        }
+
+    def _remove_edge_id(self, edge_id: int):
+        if self.adjacency is not None:
+            if edge_id > self.num_edges:
+                raise Exception(
+                    f'Trying to remove edge {edge_id} while number of edges is {self.num_edges}'
+                )
+            row = np.delete(self.adjacency.row, edge_id)
+            col = np.delete(self.adjacency.col, edge_id)
+            data = np.delete(self.adjacency.data, edge_id)
+            self.adjacency = coo_matrix((data, (row, col)))
+
+    def remove_edge(self, doc1: 'Document', doc2: 'Document'):
+        """
+        Remove a node from the graph along with the edges that may contain it
+
+        :param doc1: the starting node for this edge
+        :param doc2: the ending node for this edge
+        """
+        offset1 = self._node_id_to_offset[doc1.id]
+        offset2 = self._node_id_to_offset[doc2.id]
+        for edge_id, (row, col) in enumerate(
+            zip(self.adjacency.row, self.adjacency.col)
+        ):
+            if row.item() == offset1 and col.item() == offset2:
+                self._remove_edge_id(edge_id)
 
     def add_edge(
         self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
@@ -77,8 +127,8 @@ class GraphDocument(Document):
             self.add_node(doc)
 
         current_adjacency = self.adjacency
-        doc1_node_offset = self._chunk_id_to_offset[doc1.id]
-        doc2_node_offset = self._chunk_id_to_offset[doc2.id]
+        doc1_node_offset = self._node_id_to_offset[doc1.id]
+        doc2_node_offset = self._node_id_to_offset[doc2.id]
         row = (
             np.append(current_adjacency.row, doc1_node_offset)
             if current_adjacency is not None
@@ -206,11 +256,11 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         :param doc: the document node from which to extract the outgoing nodes.
         """
-        if self.adjacency is not None and doc.id in self._chunk_id_to_offset:
-            offset = self._chunk_id_to_offset[doc.id]
+        if self.adjacency is not None and doc.id in self._node_id_to_offset:
+            offset = self._node_id_to_offset[doc.id]
             return ChunkArray(
                 [
-                    self.chunks[col.item()]
+                    self.nodes[col.item()]
                     for (row, col) in zip(self.adjacency.row, self.adjacency.col)
                     if row.item() == offset
                 ],
@@ -224,11 +274,11 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         :param doc: the document node from which to extract the incoming nodes.
         """
-        if self.adjacency is not None and doc.id in self._chunk_id_to_offset:
-            offset = self._chunk_id_to_offset[doc.id]
+        if self.adjacency is not None and doc.id in self._node_id_to_offset:
+            offset = self._node_id_to_offset[doc.id]
             return ChunkArray(
                 [
-                    self.chunks[row.item()]
+                    self.nodes[row.item()]
                     for (row, col) in zip(self.adjacency.row, self.adjacency.col)
                     if col.item() == offset
                 ],
@@ -237,7 +287,7 @@ class GraphDocument(Document):
 
     def __iter__(self) -> Iterator[Tuple['Document']]:
         for (row, col) in zip(self.adjacency.row, self.adjacency.col):
-            yield self.chunks[row.item()], self.chunks[col.item()]
+            yield self.nodes[row.item()], self.nodes[col.item()]
 
     def __len__(self) -> int:
         return self.adjacency.getnnz()
