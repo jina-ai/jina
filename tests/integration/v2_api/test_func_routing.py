@@ -9,6 +9,8 @@ def test_func_simple_routing(mocker):
                 assert j in kwargs
             assert len(kwargs['docs']) == 3
             assert len(kwargs['groundtruths']) == 3
+            assert kwargs['parameters']['hello'] == 'world'
+            assert kwargs['parameters']['topk'] == 10
 
     f = Flow().add(uses=MyExecutor)
 
