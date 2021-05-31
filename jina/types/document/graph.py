@@ -66,19 +66,37 @@ class GraphDocument(Document):
 
         :param node: the node to be removed from the graph
         """
+        from scipy.sparse import coo_matrix
+
         if node.id not in self._node_id_to_offset:
             default_logger.warning(
                 f'Trying to remove document {node.id} from the graph while is not a node of the graph'
             )
             return
 
-        offset = self._node_id_to_offset[node]
+        offset = self._node_id_to_offset[node.id]
 
-        for edge_id, (row, col) in enumerate(
-            zip(self.adjacency.row, self.adjacency.col)
-        ):
-            if row.item() == offset or col.item() == offset:
+        if self.num_edges > 0:
+            edges_to_remove = []
+            for edge_id, (row, col) in enumerate(
+                zip(self.adjacency.row, self.adjacency.col)
+            ):
+                if row.item() == offset or col.item() == offset:
+                    edges_to_remove.append(edge_id)
+
+            for edge_id in reversed(edges_to_remove):
                 self._remove_edge_id(edge_id)
+
+            if self.num_edges > 0:
+                row = np.copy(self.adjacency.row)
+                col = np.copy(self.adjacency.col)
+                data = np.copy(self.adjacency.data)
+                for i in range(self.num_edges):
+                    if self.adjacency.row[i] > offset:
+                        row[i] = row[i] - 1
+                    if self.adjacency.col[i] > offset:
+                        col[i] = col[i] - 1
+                self.adjacency = coo_matrix((data, (row, col)))
 
         del self.nodes[offset]
         self._node_id_to_offset = {
@@ -86,6 +104,9 @@ class GraphDocument(Document):
         }
 
     def _remove_edge_id(self, edge_id: int):
+        # TODO: This needs to rebuild completely the adjacency
+        from scipy.sparse import coo_matrix
+
         if self.adjacency is not None:
             if edge_id > self.num_edges:
                 raise Exception(
@@ -94,7 +115,10 @@ class GraphDocument(Document):
             row = np.delete(self.adjacency.row, edge_id)
             col = np.delete(self.adjacency.col, edge_id)
             data = np.delete(self.adjacency.data, edge_id)
-            self.adjacency = coo_matrix((data, (row, col)))
+            if row.shape[0] > 0:
+                self.adjacency = coo_matrix((data, (row, col)))
+            else:
+                self.adjacency = coo_matrix((0, 0))
 
     def remove_edge(self, doc1: 'Document', doc2: 'Document'):
         """
@@ -221,7 +245,7 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         """
         adjacency = self.adjacency
-        return len(adjacency.data) if adjacency is not None else 0
+        return adjacency.data.shape[0] if adjacency is not None else 0
 
     @property
     def nodes(self):

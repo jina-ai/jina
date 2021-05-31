@@ -112,3 +112,32 @@ def test_graph_document_from_graph(graph):
 def test_graph_document_from_proto(graph):
     graph2 = GraphDocument(graph._pb_body)
     validate_graph(graph2)
+
+
+def test_remove_nodes(graph):
+    import copy
+
+    nodes = copy.deepcopy(graph.nodes)
+
+    for i, node in enumerate(nodes):
+        num_nodes = graph.num_nodes
+        num_edges = graph.num_edges
+        num_edges_to_remove = graph.get_in_degree(node) + graph.get_out_degree(node)
+        graph.remove_node(node)
+        assert graph.num_nodes == num_nodes - 1
+        assert graph.num_edges == num_edges - num_edges_to_remove
+
+    assert graph.num_nodes == 0
+    assert graph.num_edges == 0
+
+
+def test_remove_edges(graph):
+    edges = list([pair for pair in graph])
+
+    for i, (doc1, doc2) in enumerate(edges):
+        num_edges = graph.num_edges
+        graph.remove_edge(doc1, doc2)
+        assert graph.num_edges == num_edges - 1
+
+    assert graph.num_nodes == 4  # nodes are not removed
+    assert graph.num_edges == 0
