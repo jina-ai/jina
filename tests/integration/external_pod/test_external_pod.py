@@ -1,13 +1,18 @@
 import pytest
 
 from jina.peapods.pods.factory import PodFactory
-from jina.peapods.pods import PodRoleType
 from jina.parsers import set_pod_parser
 
 from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.helper import random_port
 from jina.excepts import FlowTopologyError
 from tests import validate_callback
+
+
+def validate_response(resp):
+    assert len(resp.data.docs) == 50
+    for doc in resp.data.docs:
+        assert 'external_real' in doc.tags['name']
 
 
 @pytest.fixture(scope='function')
@@ -25,8 +30,18 @@ def port_out_external():
     return random_port()
 
 
+@pytest.fixture
+def num_replicas(request):
+    return request.param
+
+
+@pytest.fixture
+def num_parallel(request):
+    return request.param
+
+
 @pytest.fixture(scope='function')
-def external_pod_args(port_in_external, port_out_external):
+def external_pod_args(port_in_external, port_out_external, num_replicas, num_parallel):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -40,6 +55,10 @@ def external_pod_args(port_in_external, port_out_external):
         str(port_out_external),
         '--host-out',
         '0.0.0.0',
+        '--parallel',
+        str(num_parallel),
+        '--replicas',
+        str(num_replicas),
     ]
     return set_pod_parser().parse_args(args)
 
@@ -61,12 +80,11 @@ class MyExternalExecutor(Executor):
             doc.tags['name'] = self.runtime_args.name
 
 
-def test_flow_with_external_pod(external_pod, external_pod_args, input_docs, mocker):
-    def validate_response(resp):
-        assert len(resp.data.docs) == 50
-        for doc in resp.data.docs:
-            assert doc.tags['name'] == 'external_real'
-
+@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
+@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
+def test_flow_with_external_pod(
+    external_pod, external_pod_args, input_docs, mocker, num_replicas, num_parallel
+):
     with external_pod:
         external_args = vars(external_pod_args)
         del external_args['name']
@@ -85,7 +103,9 @@ def test_flow_with_external_pod(external_pod, external_pod_args, input_docs, moc
 
 
 @pytest.fixture(scope='function')
-def external_pod_parallel_1_args(port_in_external, port_out_external):
+def external_pod_parallel_1_args(
+    port_in_external, port_out_external, num_replicas, num_parallel
+):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -103,6 +123,10 @@ def external_pod_parallel_1_args(port_in_external, port_out_external):
         '0.0.0.0',
         '--socket-out',
         'PUSH_CONNECT',
+        '--parallel',
+        str(num_parallel),
+        '--replicas',
+        str(num_replicas),
     ]
     return set_pod_parser().parse_args(args)
 
@@ -115,7 +139,9 @@ def external_pod_parallel_1(external_pod_parallel_1_args):
 
 
 @pytest.fixture(scope='function')
-def external_pod_parallel_2_args(port_in_external, port_out_external):
+def external_pod_parallel_2_args(
+    port_in_external, port_out_external, num_replicas, num_parallel
+):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -133,6 +159,10 @@ def external_pod_parallel_2_args(port_in_external, port_out_external):
         '0.0.0.0',
         '--socket-out',
         'PUSH_CONNECT',
+        '--parallel',
+        str(num_parallel),
+        '--replicas',
+        str(num_replicas),
     ]
     return set_pod_parser().parse_args(args)
 
@@ -144,6 +174,8 @@ def external_pod_parallel_2(external_pod_parallel_2_args):
     )
 
 
+@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
+@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
 def test_flow_with_external_pod_parallel(
     external_pod_parallel_1,
     external_pod_parallel_2,
@@ -153,11 +185,9 @@ def test_flow_with_external_pod_parallel(
     port_out_external,
     input_docs,
     mocker,
+    num_replicas,
+    num_parallel,
 ):
-    def validate_response(resp):
-        assert len(resp.data.docs) == 50
-        for doc in resp.data.docs:
-            assert doc.tags['name'] in {'external_real_1', 'external_real_2'}
 
     with external_pod_parallel_1, external_pod_parallel_2:
         external_args_1 = vars(external_pod_parallel_1_args)
@@ -201,7 +231,9 @@ def test_flow_with_external_pod_parallel(
 
 
 @pytest.fixture(scope='function')
-def external_pod_pre_parallel_args(port_in_external, port_out_external):
+def external_pod_pre_parallel_args(
+    port_in_external, port_out_external, num_replicas, num_parallel
+):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -219,6 +251,10 @@ def external_pod_pre_parallel_args(port_in_external, port_out_external):
         '0.0.0.0',
         '--socket-out',
         'PUB_BIND',
+        '--parallel',
+        str(num_parallel),
+        '--replicas',
+        str(num_replicas),
     ]
     return set_pod_parser().parse_args(args)
 
@@ -230,13 +266,16 @@ def external_pod_pre_parallel(external_pod_pre_parallel_args):
     )
 
 
+@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
+@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
 def test_flow_with_external_pod_pre_parallel(
-    external_pod_pre_parallel, external_pod_pre_parallel_args, input_docs, mocker
+    external_pod_pre_parallel,
+    external_pod_pre_parallel_args,
+    input_docs,
+    mocker,
+    num_replicas,
+    num_parallel,
 ):
-    def validate_response(resp):
-        assert len(resp.data.docs) == 50
-        for doc in resp.data.docs:
-            assert doc.tags['name'] == 'external_real'
 
     with external_pod_pre_parallel:
         external_args = vars(external_pod_pre_parallel_args)
@@ -270,7 +309,9 @@ def test_flow_with_external_pod_pre_parallel(
 
 
 @pytest.fixture(scope='function')
-def external_pod_join_args(port_in_external, port_out_external):
+def external_pod_join_args(
+    port_in_external, port_out_external, num_replicas, num_parallel
+):
     args = [
         '--uses',
         'MyExternalExecutor',
@@ -290,6 +331,10 @@ def external_pod_join_args(port_in_external, port_out_external):
         'PUSH_BIND',
         '--pod-role',
         'JOIN',
+        '--parallel',
+        str(num_parallel),
+        '--replicas',
+        str(num_replicas),
     ]
     return set_pod_parser().parse_args(args)
 
@@ -301,14 +346,16 @@ def external_pod_join(external_pod_join_args):
     )
 
 
+@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
+@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
 def test_flow_with_external_pod_join(
-    external_pod_join, external_pod_join_args, input_docs, mocker
+    external_pod_join,
+    external_pod_join_args,
+    input_docs,
+    mocker,
+    num_replicas,
+    num_parallel,
 ):
-    def validate_response(resp):
-        assert len(resp.data.docs) == 50
-        for doc in resp.data.docs:
-            assert doc.tags['name'] == 'external_real'
-
     with external_pod_join:
         external_args = vars(external_pod_join_args)
         del external_args['name']
@@ -343,6 +390,8 @@ def test_flow_with_external_pod_join(
     validate_callback(mock, validate_response)
 
 
+@pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
+@pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
 def test_flow_with_external_pod_parallel_error(
     external_pod_parallel_1,
     external_pod_parallel_2,
@@ -351,6 +400,8 @@ def test_flow_with_external_pod_parallel_error(
     port_in_external,
     port_out_external,
     input_docs,
+    num_replicas,
+    num_parallel,
 ):
     with external_pod_parallel_1, external_pod_parallel_2:
         external_args_1 = vars(external_pod_parallel_1_args)
