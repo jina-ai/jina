@@ -102,9 +102,9 @@ class MeanEvaluationCallback(OptimizerCallback):
 
         :param response: response message
         """
-        self._n_docs += len(response.search.docs)
+        self._n_docs += len(response.data.docs)
         logger.info(f'Num of docs evaluated: {self._n_docs}')
-        for doc in response.search.docs:
+        for doc in response.data.docs:
             for evaluation in doc.evaluations:
                 self._evaluation_values[evaluation.op_name] += evaluation.value
 
