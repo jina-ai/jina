@@ -121,6 +121,8 @@ class JinadRuntime(AsyncZMQRuntime):
         retries = 100
         for retry in range(retries):
             workspace_status = self.workspace_api.get(id=self.workspace_id)
+            if not workspace_status:
+                raise DaemonConnectivityError
             state = workspace_status.get('state', None)
             if not state:
                 self.logger.info(f'creating workspace {self.workspace_id} on remote. This might take some time.')

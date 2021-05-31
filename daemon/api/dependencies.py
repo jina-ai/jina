@@ -3,10 +3,11 @@ from typing import Dict, List, Optional
 from pydantic import FilePath
 from fastapi import HTTPException, UploadFile, File
 from pydantic.errors import PathNotAFileError
+from pydantic.main import BaseModel
 
 from jina import Flow
 from jina.enums import PeaRoleType, SocketType
-from jina.helper import ArgNamespace
+from jina.helper import ArgNamespace, cached_property
 
 from ..helper import get_workspace_path
 from ..models.enums import WorkspaceState
@@ -71,13 +72,24 @@ class PeaDepends:
     def command(self) -> str:
         return f'jina {self._kind} {" ".join(ArgNamespace.kwargs2list(self.params.dict(exclude={"log_config"})))}'
 
-    @property
+    @cached_property
     def ports(self) -> Dict:
-        # TODO: Hacky way of knowing the `port` args
-        return {
-            f'{port}/tcp': port
-            for port in self.port_fields_from_pydantic(self.params).values()
+        _mapping = {
+            'port_in': 'socket_in',
+            'port_out': 'socket_out',
+            'port_ctrl': 'socket_ctrl'
         }
+        # Map only "bind" ports for HEAD, TAIL & SINGLETON
+        if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
+            return {
+                f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
+                for i in self.params.__fields__
+                if i in _mapping and SocketType.from_string(getattr(self.params, _mapping[i], 'PAIR_BIND')).is_bind
+            }
+        else:
+            return {
+                f'{self.params.port_ctrl}/tcp': self.params.port_ctrl
+            }
 
     def validate(self):
         # Each pea is inside a container
@@ -86,16 +98,6 @@ class PeaDepends:
         self.params.host_out = 'host.docker.internal'
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
-        self.params.log_config = ''
-
-    def port_fields_from_pydantic(self, model):
-        return {
-            i: getattr(model, i)
-            for i in model.__fields__
-            if 'port' in i and i != 'port_expose'
-        } if getattr(model, 'pea_role') != PeaRoleType.PARALLEL.name else {
-            'port_ctrl': model.port_ctrl
-        }
 
 
 class PodDepends(PeaDepends):

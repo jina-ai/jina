@@ -6,7 +6,7 @@ from fastapi import UploadFile
 from jina.helper import cached_property, colored
 from jina.logging import JinaLogger
 
-from . import __task_queue__, daemon_logger
+from . import __task_queue__, daemon_logger, jinad_args
 from .models.id import DaemonID
 from .dockerize import Dockerizer
 from .models.enums import WorkspaceState
@@ -27,7 +27,8 @@ class DaemonWorker(Thread):
         self.id = id
         self.files = files
         self._logger = JinaLogger(self.name,
-                                  workspace_path=self.workdir)
+                                  workspace_path=self.workdir,
+                                  **vars(jinad_args))
         self.start()
 
     @cached_property
