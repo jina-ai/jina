@@ -24,7 +24,7 @@ class BaseStore(MutableMapping):
 
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
-        self.status = StoreStatus()
+        self.status = self.__class__._status_model()
 
     def add(self, *args, **kwargs) -> DaemonID:
         """Add a new element to the store. This method needs to be overridden by the subclass
@@ -141,7 +141,7 @@ class BaseStore(MutableMapping):
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """
         self.clear()
-        self.status = StoreStatus()
+        self.status = self._status_model()
 
     def __len__(self):
         return len(self.items())

@@ -1,5 +1,5 @@
 from typing import Dict
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .id import DaemonID
 from .base import StoreItem, StoreStatus
@@ -24,4 +24,4 @@ class ContainerItem(StoreItem):
 
 
 class ContainerStoreStatus(StoreStatus):
-    items: Dict[DaemonID, ContainerItem]
+    items: Dict[DaemonID, ContainerItem] = Field(default_factory=dict)
