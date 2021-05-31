@@ -1,7 +1,10 @@
+import os
+
 import numpy as np
 from typing import Tuple, Dict
 
 from jina import Executor, DocumentArray, requests, Document
+from jina.logging.logger import JinaLogger
 
 
 class CrudIndexer(Executor):
@@ -9,7 +12,14 @@ class CrudIndexer(Executor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.logger = JinaLogger('CrudIndexer')
         self._docs = DocumentArray()
+        self._dump_location = os.path.join(self.metas.workspace, 'docs')
+        if os.path.exists(self._dump_location):
+            self._docs = DocumentArray.load(self._dump_location)
+            self.logger.info(f'Loaded {len(self._docs)} from {self._dump_location}')
+        else:
+            self.logger.info(f'No data found at {self._dump_location}')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -19,6 +29,10 @@ class CrudIndexer(Executor):
     def update(self, docs: 'DocumentArray', **kwargs):
         self.delete(docs)
         self.index(docs)
+
+    def close(self) -> None:
+        self.logger.info(f'Dumping {len(self._docs)} to {self._dump_location}')
+        self._docs.save(self._dump_location)
 
     @requests(on='/delete')
     def delete(self, docs: 'DocumentArray', **kwargs):
