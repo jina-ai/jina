@@ -1,3 +1,4 @@
+import pathlib
 import subprocess
 import pkg_resources
 from queue import Queue
@@ -115,6 +116,7 @@ def _start_fluentd():
 
 def _start_consumer():
     from .tasks import ConsumerThread
+
     ConsumerThread().start()
 
 
@@ -123,6 +125,7 @@ def main():
     global jinad_args, __root_workspace__
     jinad_args = _get_run_args()
     __root_workspace__ = jinad_args.workspace
+    pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     if not jinad_args.no_fluentd:
         Thread(target=_start_fluentd, daemon=True).start()
     _start_consumer()
