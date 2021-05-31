@@ -476,9 +476,9 @@
 
 <span class="sd">        :param response: response message</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n_docs</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_docs</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Num of docs evaluated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_docs</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">evaluation</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_evaluation_values</span><span class="p">[</span><span class="n">evaluation</span><span class="o">.</span><span class="n">op_name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">value</span></div>
 
@@ -671,7 +671,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on May 30, 2021.
+            Last updated on May 31, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

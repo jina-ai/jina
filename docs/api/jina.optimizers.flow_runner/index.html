@@ -403,27 +403,21 @@
 </dd></dl>
 <dl class="py class">
 <dt id="jina.optimizers.flow_runner.SingleFlowRunner">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.optimizers.flow_runner.</span></code><code class="sig-name descname"><span class="pre">SingleFlowRunner</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_yaml</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents_parameter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'inputs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/flow_runner/#SingleFlowRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.flow_runner.SingleFlowRunner" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.optimizers.flow_runner.</span></code><code class="sig-name descname"><span class="pre">SingleFlowRunner</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_yaml</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/flow_runner/#SingleFlowRunner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.flow_runner.SingleFlowRunner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.optimizers.flow_runner.FlowRunner" title="jina.optimizers.flow_runner.FlowRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.optimizers.flow_runner.FlowRunner</span></code></a></p>
 <p><a class="reference internal" href="#jina.optimizers.flow_runner.SingleFlowRunner" title="jina.optimizers.flow_runner.SingleFlowRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleFlowRunner</span></code></a> enables running a flow repeadetly with different <cite>context</cite>.</p>
-<p><cite>documents</cite> maps to a parameter of the <cite>execution_method</cite>, depending on the method.
+<p><cite>documents</cite> maps to a parameter of the <cite>execution_endpoint</cite>, depending on the method.
 If you use a generator function/list as <cite>documents</cite>, the default will work out of the box.
 Otherwise, the following settings will work:</p>
-<p>indexing + jsonlines file: <cite>execution_methos=’index_lines’, documents_parameter_name=’filepath’</cite>
-search + jsonlines file: <cite>execution_methos=’search_lines’, documents_parameter_name=’filepath’</cite></p>
-<p>indexing + file pattern: <cite>execution_methos=’index_files’, documents_parameter_name=’pattern’</cite>
-search + file pattern: <cite>execution_methos=’search_files’, documents_parameter_name=’pattern’</cite></p>
 <p>For more reasonable values, have a look at the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>flow_yaml</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to Flow yaml</p></li>
-<li><p><strong>documents</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Input parameter for <cite>execution_method</cite> for iterating documents.
+<li><p><strong>documents</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Input parameter for <cite>execution_endpoint</cite> for iterating documents.
 (e.g. a list of documents for <cite>index</cite> or a .jsonlines file for <cite>index_lines</cite>)</p></li>
 <li><p><strong>request_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Request size used in the flow</p></li>
-<li><p><strong>execution_method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – One of the methods of the Jina <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> (e.g. <cite>index_lines</cite>)</p></li>
-<li><p><strong>documents_parameter_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The <cite>documents</cite> will be mapped to <cite>documents_parameter_name</cite> in the function <cite>execution_function</cite>.
-See <cite>jina/flow/__init__.py::Flow</cite> for more details.</p></li>
+<li><p><strong>execution_endpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The endpoint, <cite>f.post(on=)</cite> should point to</p></li>
 <li><p><strong>overwrite_workspace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, means workspace created by the Flow will be overwriten with each execution.</p></li>
 </ul>
 </dd>
@@ -505,7 +499,7 @@ It is an interface for common patterns like IndexFlow -&gt; SearchFlow.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on May 30, 2021.
+            Last updated on May 31, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
