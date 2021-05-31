@@ -13,7 +13,12 @@ from ..models import DaemonID
 from ..dockerize import Dockerizer
 from ..helper import get_workspace_path, id_cleaner, random_port_range
 from ..excepts import Runtime400Exception
-from ..models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata, WorkspaceStoreStatus
+from ..models.workspaces import (
+    WorkspaceArguments,
+    WorkspaceItem,
+    WorkspaceMetadata,
+    WorkspaceStoreStatus,
+)
 from ..models.enums import DaemonBuild, PythonVersion
 from .. import __rootdir__, __dockerfiles__, jinad_args
 
@@ -90,12 +95,11 @@ class DaemonFile:
 
     @property
     def dockerargs(self) -> Dict:
-        return {
-            'PY_VERSION': self.python.value,
-            'PIP_REQUIREMENTS': self.requirements
-        } if self.build == DaemonBuild.DEVEL else {
-            'PY_VERSION': self.python.name.lower()
-        }
+        return (
+            {'PY_VERSION': self.python.value, 'PIP_REQUIREMENTS': self.requirements}
+            if self.build == DaemonBuild.DEVEL
+            else {'PY_VERSION': self.python.name.lower()}
+        )
 
     def process_file(self) -> None:
         # Checks if a file .jinad exists in the workspace
@@ -161,20 +165,17 @@ class WorkspaceStore(BaseStore):
         self._handle_files(workspace_id=id, files=files)
         daemon_file = DaemonFile(workdir=workdir)
         network_id = Dockerizer.network(workspace_id=id)
-        image_id = Dockerizer.build(
-            workspace_id=id, daemon_file=daemon_file
-        )
+        image_id = Dockerizer.build(workspace_id=id, daemon_file=daemon_file)
         _min, _max = random_port_range()
         return workdir, daemon_file, network_id, image_id, _min, _max
 
-    def _set_id(self, id, files, workdir, daemon_file, network_id,
-                image_id, _min, _max):
+    def _set_id(
+        self, id, files, workdir, daemon_file, network_id, image_id, _min, _max
+    ):
         # Move this to the Consumer thread
         if id in self:
             if files:
-                self[id].arguments.files.extend(
-                    [f.filename for f in files]
-                )
+                self[id].arguments.files.extend([f.filename for f in files])
             self[id].arguments.jinad = {
                 'build': daemon_file.build,
                 'dockerfile': daemon_file.dockerfile,
@@ -191,7 +192,7 @@ class WorkspaceStore(BaseStore):
                     image_name=id.tag,
                     network=id_cleaner(network_id),
                     ports={'min': _min, 'max': _max},
-                    workdir=workdir
+                    workdir=workdir,
                 ),
                 arguments=WorkspaceArguments(
                     files=[f.filename for f in files] if files else [],
@@ -199,26 +200,31 @@ class WorkspaceStore(BaseStore):
                         'build': daemon_file.build,
                         'dockerfile': daemon_file.dockerfile,
                     },
-                    requirements=daemon_file.requirements
-                )
+                    requirements=daemon_file.requirements,
+                ),
             )
-            self._logger.success(
-                f'Workspace {colored(str(id), "cyan")} is updated'
-            )
+            self._logger.success(f'Workspace {colored(str(id), "cyan")} is updated')
         return id
 
     @BaseStore.dump
     def add(self, files: List[UploadFile], **kwargs):
         try:
             id = DaemonID('jworkspace')
-            workdir, daemon_file, network_id, image_id, _min, _max = \
-                self.bob_the_builder(id, files)
+            (
+                workdir,
+                daemon_file,
+                network_id,
+                image_id,
+                _min,
+                _max,
+            ) = self.bob_the_builder(id, files)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
         else:
-            return self._set_id(id, files, workdir, daemon_file,
-                                network_id, image_id, _min, _max)
+            return self._set_id(
+                id, files, workdir, daemon_file, network_id, image_id, _min, _max
+            )
 
     @BaseStore.dump
     def update(
@@ -226,14 +232,21 @@ class WorkspaceStore(BaseStore):
     ) -> DaemonID:
         # TODO: Handle POST vs PUT here
         try:
-            workdir, daemon_file, network_id, image_id, _min, _max = \
-                self.bob_the_builder(id, files)
+            (
+                workdir,
+                daemon_file,
+                network_id,
+                image_id,
+                _min,
+                _max,
+            ) = self.bob_the_builder(id, files)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
         else:
-            return self._set_id(id, files, workdir, daemon_file,
-                                network_id, image_id, _min, _max)
+            return self._set_id(
+                id, files, workdir, daemon_file, network_id, image_id, _min, _max
+            )
 
     @BaseStore.dump
     def delete(self, id: DaemonID, **kwargs):

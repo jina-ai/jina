@@ -8,7 +8,7 @@ from .base import StoreItem, StoreStatus
 class WorkspaceArguments(BaseModel):
     files: List[str]
     jinad: Dict[str, str]
-    requirements: List
+    requirements: str
 
 
 class WorkspaceMetadata(BaseModel):
