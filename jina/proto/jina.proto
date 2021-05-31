@@ -68,6 +68,14 @@ message NamedScoreProto {
 }
 
 /**
+ * Represents the relevance model to `ref_id`
+ */
+message GraphRelatedInfoProto {
+    SparseNdArrayProto adjacency = 1; // adjacency list
+    google.protobuf.Struct edge_features = 2; // Container structure to store edge features
+}
+
+/**
  * Represents a Document
  */
 message DocumentProto {
@@ -136,6 +144,8 @@ message DocumentProto {
     // List of evaluations performed on the document, each element corresponds to a metric
     repeated NamedScoreProto evaluations = 23;
 
+    // Related information to be used when a Document represents a graph with its chunks as nodes
+    GraphRelatedInfoProto graph_info = 26;
 }
 
 /**
