@@ -8,6 +8,7 @@ def test_func_simple_routing(mocker):
             for j in ('docs', 'groundtruths', 'parameters'):
                 assert j in kwargs
             assert len(kwargs['docs']) == 3
+            assert len(kwargs['groundtruths']) == 3
 
     f = Flow().add(uses=MyExecutor)
 
@@ -17,7 +18,7 @@ def test_func_simple_routing(mocker):
     with f:
         f.post(
             on='/search',
-            inputs=[Document() for _ in range(3)],
+            inputs=[(Document(), Document()) for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
             on_done=done_mock,
             on_error=fail_mock,
@@ -38,8 +39,8 @@ def test_func_simple_routing(mocker):
             on_error=fail_mock,
         )
 
-    fail_mock.assert_not_called()
     done_mock.assert_called_once()
+    fail_mock.assert_not_called()
 
 
 def test_func_default_routing():
