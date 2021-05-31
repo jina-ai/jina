@@ -57,14 +57,33 @@ class Dockerizer:
         if workspace_id in cls.networks:
             network = cls.client.networks.get(network_id=workspace_id)
         else:
-            network: 'Network' = cls.client.networks.create(name=workspace_id, driver='bridge')
+            from .stores import workspace_store
+
+            new_subnet_start = (
+                workspace_store.status.ip_range_start
+                + workspace_store.status.ip_range_current_offset
+            )
+
+            ipam_config = docker.types.IPAMConfig(
+                pool_configs=[
+                    docker.types.IPAMPool(
+                        subnet=f'{new_subnet_start}/{workspace_store.status.subnet_size}',
+                        gateway=f'{new_subnet_start+1}',
+                    )
+                ]
+            )
+            workspace_store.status.ip_range_current_offset += 2 ** (
+                32 - workspace_store.status.subnet_size
+            )
+            network: 'Network' = cls.client.networks.create(
+                name=workspace_id, driver='bridge', ipam=ipam_config
+            )
         return network.id
 
     @classmethod
-    def build(cls,
-              workspace_id: 'DaemonID',
-              daemon_file: 'DaemonFile',
-              logger: 'JinaLogger') -> str:
+    def build(
+        cls, workspace_id: 'DaemonID', daemon_file: 'DaemonFile', logger: 'JinaLogger'
+    ) -> str:
         for build_logs in cls.raw_client.build(
             path=daemon_file.dockercontext,
             dockerfile=daemon_file.dockerfile,

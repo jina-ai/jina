@@ -1,5 +1,6 @@
+from ipaddress import IPv4Address
 from typing import Dict, List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .id import DaemonID
 from .enums import WorkspaceState
@@ -27,4 +28,7 @@ class WorkspaceItem(StoreItem):
 
 
 class WorkspaceStoreStatus(StoreStatus):
-    items: Dict[DaemonID, WorkspaceItem]
+    ip_range_start: IPv4Address = IPv4Address('10.0.0.0')
+    subnet_size: int = 22
+    ip_range_current_offset: int = 0
+    items: Dict[DaemonID, WorkspaceItem] = Field(default_factory=dict)
