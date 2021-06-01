@@ -20,7 +20,7 @@ Jina allows you to build deep learning-powered search-as-a-service in just minut
 🌌 **Universal data type** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
 
 🌩️ **Fast & cloud-native** - Distributed architecture from day one. Scalable & cloud-native by design: enjoy
-containerizing, distributing, sharding, async, REST/gRPC/WebSocket.
+containerizing, distributing, streaming, paralleling, sharding, async scheduling with REST/gRPC/WebSocket.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 

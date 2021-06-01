@@ -125,8 +125,8 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         '--freeze-network-settings',
         action='store_true',
         default=False,
-        help='If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related parameters can not be changed by the Flow during build time.'
-        'the Flow object would not be allowed to change them '
+        help='''If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related 
+        parameters are frozen. They can not be changed by the Flow during the build time. '''
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
