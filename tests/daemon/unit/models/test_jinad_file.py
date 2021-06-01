@@ -1,5 +1,5 @@
 import os
-from daemon.stores.workspaces import DaemonFile
+from daemon.files import DaemonFile
 from daemon.excepts import Runtime400Exception
 
 import pytest

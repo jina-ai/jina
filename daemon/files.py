@@ -39,7 +39,7 @@ class DaemonFile:
     # __slots__ = ['_build', '_python', '_run', '_workdir', '_file', '_logger']
     extension = '.jinad'
 
-    def __init__(self, workdir: str, logger: 'JinaLogger') -> None:
+    def __init__(self, workdir: str, logger: 'JinaLogger' = None) -> None:
         self._logger = (
             logger
             if logger
