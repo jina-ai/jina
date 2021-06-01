@@ -1188,52 +1188,52 @@ class Document(ProtoTypeMixin):
 
             default_logger.info(f'Document visualization: {url}')
 
-    def dict(self):
+    def _prettify_doc_dict(self, d: Dict):
+        """Changes recursively a dictionary to show nd array fields as lists of values
+
+        :param d: the dictionary to prettify
+        """
+        for key in _all_doc_array_keys:
+            if key in d:
+                value = getattr(self, key)
+                if isinstance(value, np.ndarray):
+                    d[key] = value.tolist()
+            if 'chunks' in d:
+                for chunk_doc, chunk_dict in zip(self.chunks, d['chunks']):
+                    chunk_doc._prettify_doc_dict(chunk_dict)
+            if 'matches' in d:
+                for match_doc, match_dict in zip(self.matches, d['matches']):
+                    match_doc._prettify_doc_dict(match_dict)
+
+    def dict(self, prettify_ndarrays=False, *args, **kwargs):
         """Return the object in Python dictionary
 
+        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
         :return: dict representation of the object
         """
-
-        def _update_doc(d: Dict):
-            for key in _all_doc_array_keys:
-                if key in d:
-                    value = getattr(self, key)
-                    if isinstance(value, np.ndarray):
-                        d[key] = value.tolist()
-                if 'chunks' in d:
-                    for chunk in d['chunks']:
-                        _update_doc(chunk)
-                if 'matches' in d:
-                    for match in d['matches']:
-                        _update_doc(match)
-
-        d = super().dict()
-        _update_doc(d)
+        d = super().dict(*args, **kwargs)
+        if prettify_ndarrays:
+            self._prettify_doc_dict(d)
         return d
 
-    def json(self):
+    def json(self, prettify_ndarrays=False, *args, **kwargs):
         """Return the object in JSON string
 
+        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
         :return: JSON string of the object
         """
-        import json
+        if prettify_ndarrays:
+            import json
 
-        def _update_doc(d: Dict):
-            for key in _all_doc_array_keys:
-                if key in d:
-                    value = getattr(self, key)
-                    if isinstance(value, np.ndarray):
-                        d[key] = value.tolist()
-                if 'chunks' in d:
-                    for chunk in d['chunks']:
-                        _update_doc(chunk)
-                if 'matches' in d:
-                    for match in d['matches']:
-                        _update_doc(match)
-
-        d = super().dict()
-        _update_doc(d)
-        return json.dumps(d)
+            d = super().dict(*args, **kwargs)
+            self._prettify_doc_dict(d)
+            return json.dumps(d)
+        else:
+            return super().json(*args, **kwargs)
 
     @property
     def non_empty_fields(self) -> Tuple[str]:

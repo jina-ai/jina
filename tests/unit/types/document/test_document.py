@@ -857,7 +857,7 @@ def test_document_pretty_dict():
     assert doc.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert doc.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
 
-    d = doc.dict()
+    d = doc.dict(prettify_ndarrays=True)
     assert d['blob'] == [[0, 1, 2], [2, 1, 0]]
     assert d['embedding'] == [1.0, 2.0, 3.0]
     assert d['tags'] == {'hello': 'world'}
@@ -897,7 +897,7 @@ def test_document_pretty_json():
     assert doc.matches[0].tags == {'hello': 'world'}
     assert doc.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert doc.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
-    doc_json = doc.json()
+    doc_json = doc.json(prettify_ndarrays=True)
     d = json.loads(doc_json)
     assert d['blob'] == [[0, 1, 2], [2, 1, 0]]
     assert d['embedding'] == [1.0, 2.0, 3.0]
