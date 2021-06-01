@@ -195,7 +195,7 @@ class Document(ProtoTypeMixin):
 
                 for key in _all_doc_array_keys:
                     # cover when the document has been pretty-printed
-                    if isinstance(document[key], list):
+                    if key in document and isinstance(document[key], list):
                         document[key] = NdArray(np.array(document[key])).dict()
 
                 if field_resolver:
