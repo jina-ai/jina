@@ -107,7 +107,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             # first node is on remote, second is local. in this case, local node is often behind router/private
             # network, there is no way that first node can send data "actively" (CONNECT) to it
             first_socket_type = SocketType.PUSH_BIND
-        _connect(start_node, end_node, first_socket_type=first_socket_type)
+        _connect(start_node, end_node, first_out_socket_type=first_socket_type)
         flow.logger.debug(
             f'Connect {start_node_name} '
             f'with {end_node_name} {str(end_node.role)} require '
@@ -118,7 +118,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
 
 
 def _connect(
-    first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'
+    first: 'BasePod', second: 'BasePod', first_out_socket_type: 'SocketType'
 ) -> None:
     """Connect two Pods.
 
@@ -127,7 +127,7 @@ def _connect(
     .. # noqa: DAR401
     :param first: the first BasePod
     :param second: the second BasePod
-    :param first_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND
+    :param first_out_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND
     """
 
     def _valid_update(node_to_update: BasePod, attr_to_set: str, value_to_set):
@@ -154,10 +154,10 @@ def _connect(
             )
         _rsetattr(node_to_update, attr_to_set, value_to_set)
 
-    _valid_update(first, 'tail_args.socket_out', first_socket_type)
+    _valid_update(first, 'tail_args.socket_out', first_out_socket_type)
     _valid_update(second, 'head_args.socket_in', first.tail_args.socket_out.paired)
 
-    if first_socket_type == SocketType.PUSH_BIND:
+    if first_out_socket_type == SocketType.PUSH_BIND:
         _valid_update(first, 'tail_args.host_out', __default_host__)
         _valid_update(
             second,
@@ -167,7 +167,7 @@ def _connect(
             ),
         )
         _valid_update(second, 'head_args.port_in', first.tail_args.port_out)
-    elif first_socket_type == SocketType.PUSH_CONNECT:
+    elif first_out_socket_type == SocketType.PUSH_CONNECT:
         _valid_update(
             first,
             'tail_args.host_out',
@@ -179,7 +179,7 @@ def _connect(
         # https://github.com/jina-ai/jina/pull/1654
         # second.head_args.host_in = __default_host__
         _valid_update(first, 'tail_args.port_out', second.head_args.port_in)
-    elif first_socket_type == SocketType.PUB_BIND:
+    elif first_out_socket_type == SocketType.PUB_BIND:
         _valid_update(
             first, 'tail_args.host_out', __default_host__
         )  # bind always get default 0.0.0.0
@@ -194,4 +194,4 @@ def _connect(
             second, 'head_args.port_in', first.tail_args.port_out
         )  # the hostname of s_pod
     else:
-        raise SocketTypeError(f'{first_socket_type!r} is not supported here')
+        raise SocketTypeError(f'{first_out_socket_type!r} is not supported here')
