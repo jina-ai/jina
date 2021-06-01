@@ -6,9 +6,10 @@ from jina.types.arrays.chunk import ChunkArray
 
 
 class DummyExecutor(Executor):
-    def __init__(self, mode, *args, **kwargs):
+    def __init__(self, mode=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._mode = str(mode)
+        if mode:
+            self._mode = str(mode)
 
     @requests
     def do_something(self, docs, **kwargs):
@@ -48,10 +49,9 @@ class ChunkMerger(Executor):
 
 
 @pytest.mark.timeout(5)
-@pytest.mark.parametrize('replicas_shards', [(1, 1), (2, 2)])
-def test_sharding_tail_pea(replicas_shards):
+@pytest.mark.parametrize('num_replicas, num_shards', [(1, 1), (2, 2)])
+def test_sharding_tail_pea(num_replicas, num_shards):
     """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""
-    num_shards, num_replicas = replicas_shards
 
     f = Flow().add(
         uses=DummyExecutor,
