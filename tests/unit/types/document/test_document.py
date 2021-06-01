@@ -857,3 +857,24 @@ def test_document_pretty_dict():
     assert d_reconstructed.tags == {'hello': 'world'}
     assert d_reconstructed.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert d_reconstructed.embedding.tolist() == [1.0, 2.0, 3.0]
+
+
+def test_document_pretty_json():
+    doc = Document(
+        blob=np.array([[0, 1, 2], [2, 1, 0]]),
+        embedding=np.array([1.0, 2.0, 3.0]),
+        tags={'hello': 'world'},
+    )
+    assert doc.tags == {'hello': 'world'}
+    assert doc.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
+    assert doc.embedding.tolist() == [1.0, 2.0, 3.0]
+    doc_json = doc.json()
+    d = json.loads(doc_json)
+    assert d['blob'] == [[0, 1, 2], [2, 1, 0]]
+    assert d['embedding'] == [1.0, 2.0, 3.0]
+    assert d['tags'] == {'hello': 'world'}
+
+    d_reconstructed = Document(doc_json)
+    assert d_reconstructed.tags == {'hello': 'world'}
+    assert d_reconstructed.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
+    assert d_reconstructed.embedding.tolist() == [1.0, 2.0, 3.0]

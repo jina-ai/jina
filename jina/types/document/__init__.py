@@ -193,6 +193,11 @@ class Document(ProtoTypeMixin):
                 if isinstance(document, str):
                     document = json.loads(document)
 
+                for key in _all_doc_array_keys:
+                    # cover when the document has been pretty-printed
+                    if isinstance(document[key], list):
+                        document[key] = NdArray(np.array(document[key])).dict()
+
                 if field_resolver:
                     document = {
                         field_resolver.get(k, k): v for k, v in document.items()
@@ -1185,6 +1190,21 @@ class Document(ProtoTypeMixin):
                 if isinstance(value, np.ndarray):
                     d[key] = value.tolist()
         return d
+
+    def json(self):
+        """Return the object in JSON string
+
+        :return: JSON string of the object
+        """
+        import json
+
+        d = super().dict()
+        for key in _all_doc_array_keys:
+            if key in d:
+                value = getattr(self, key)
+                if isinstance(value, np.ndarray):
+                    d[key] = value.tolist()
+        return json.dumps(d)
 
     @property
     def non_empty_fields(self) -> Tuple[str]:
