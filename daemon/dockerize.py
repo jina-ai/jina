@@ -132,6 +132,7 @@ class Dockerizer:
                 ports=ports,
                 detach=True,
                 command=command,
+                extra_hosts={'host.docker.internal': 'host-gateway'},
             )
         except docker.errors.NotFound as e:
             cls.logger.error(
