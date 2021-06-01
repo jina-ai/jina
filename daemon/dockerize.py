@@ -159,6 +159,10 @@ class Dockerizer:
             f'{__root_workspace__}/{workspace_id}': {
                 'bind': '/workspace',
                 'mode': 'rw',
+            },
+            # TODO: without adding slash, it fails on WSL (needs to checked on linux/mac)
+            '//var/run/docker.sock': {
+                'bind': '/var/run/docker.sock'
             }
         }
 
