@@ -1231,7 +1231,7 @@ class Document(ProtoTypeMixin):
 
             d = super().dict(*args, **kwargs)
             self._prettify_doc_dict(d)
-            return json.dumps(d)
+            return json.dumps(d, sort_keys=True, **kwargs)
         else:
             return super().json(*args, **kwargs)
 
