@@ -539,11 +539,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         for k, v in self:
             v.args.noblock_on_start = True
-            self.enter_context(v)
+            if not getattr(v.args, 'external', False):
+                self.enter_context(v)
 
         for k, v in self:
             try:
-                v.wait_start_success()
+                if not getattr(v.args, 'external', False):
+                    v.wait_start_success()
             except Exception as ex:
                 self.logger.error(
                     f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted'

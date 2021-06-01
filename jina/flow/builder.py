@@ -4,7 +4,7 @@ from typing import Dict, List, Callable
 
 from .. import __default_host__
 from ..enums import SocketType, FlowBuildLevel, PodRoleType
-from ..excepts import FlowBuildLevelError, SocketTypeError
+from ..excepts import FlowBuildLevelError, SocketTypeError, FlowTopologyError
 from ..peapods import BasePod
 
 # noinspection PyUnreachableCode
@@ -129,28 +129,68 @@ def _connect(
     :param second: the second BasePod
     :param first_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND
     """
-    first.tail_args.socket_out = first_socket_type
-    second.head_args.socket_in = first.tail_args.socket_out.paired
+
+    def _valid_update(node_to_update: BasePod, attr_to_set: str, value_to_set):
+        import functools
+
+        def _rgetattr(obj, attr, *args):
+            def _getattr(obj, attr):
+                return getattr(obj, attr, *args)
+
+            return functools.reduce(_getattr, [obj] + attr.split('.'))
+
+        def _rsetattr(obj, attr, val):
+            pre, _, post = attr.rpartition('.')
+            return setattr(_rgetattr(obj, pre) if pre else obj, post, val)
+
+        if (
+            node_to_update.args.freeze_network_settings
+            and _rgetattr(node_to_update, attr_to_set) != value_to_set
+        ):
+            raise FlowTopologyError(
+                f'Cannot update the parameters of Pod {node_to_update.args.name} because it is frozen. '
+                f'{node_to_update.args.name} is expecting {attr_to_set} to be {value_to_set}'
+            )
+        _rsetattr(node_to_update, attr_to_set, value_to_set)
+
+    _valid_update(first, 'tail_args.socket_out', first_socket_type)
+    _valid_update(second, 'head_args.socket_in', first.tail_args.socket_out.paired)
 
     if first_socket_type == SocketType.PUSH_BIND:
-        first.tail_args.host_out = __default_host__
-        second.head_args.host_in = BasePod._fill_in_host(
-            bind_args=first.tail_args, connect_args=second.head_args
+        _valid_update(first, 'tail_args.host_out', __default_host__)
+        _valid_update(
+            second,
+            'head_args.host_in',
+            BasePod._fill_in_host(
+                bind_args=first.tail_args, connect_args=second.head_args
+            ),
         )
-        second.head_args.port_in = first.tail_args.port_out
+        _valid_update(second, 'head_args.port_in', first.tail_args.port_out)
     elif first_socket_type == SocketType.PUSH_CONNECT:
-        first.tail_args.host_out = BasePod._fill_in_host(
-            connect_args=first.tail_args, bind_args=second.head_args
+        _valid_update(
+            first,
+            'tail_args.host_out',
+            BasePod._fill_in_host(
+                connect_args=first.tail_args, bind_args=second.head_args
+            ),
         )
         # (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)
         # https://github.com/jina-ai/jina/pull/1654
         # second.head_args.host_in = __default_host__
-        first.tail_args.port_out = second.head_args.port_in
+        _valid_update(first, 'tail_args.port_out', second.head_args.port_in)
     elif first_socket_type == SocketType.PUB_BIND:
-        first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
-        second.head_args.host_in = BasePod._fill_in_host(
-            bind_args=first.tail_args, connect_args=second.head_args
+        _valid_update(
+            first, 'tail_args.host_out', __default_host__
+        )  # bind always get default 0.0.0.0
+        _valid_update(
+            second,
+            'head_args.host_in',
+            BasePod._fill_in_host(
+                bind_args=first.tail_args, connect_args=second.head_args
+            ),
         )  # the hostname of s_pod
-        second.head_args.port_in = first.tail_args.port_out
+        _valid_update(
+            second, 'head_args.port_in', first.tail_args.port_out
+        )  # the hostname of s_pod
     else:
         raise SocketTypeError(f'{first_socket_type!r} is not supported here')
