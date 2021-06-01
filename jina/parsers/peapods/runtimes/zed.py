@@ -26,7 +26,7 @@ def mixin_zed_runtime_parser(parser):
             * a docker image (must start with `docker://`)
             * the string literal of a YAML config (must start with `!`)
             * the string literal of a JSON config
-            
+
             When use it under Python, one can use the following values additionally:
             - a Python dict that represents the config
             - a text file stream has `.read()` interface

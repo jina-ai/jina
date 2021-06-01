@@ -5,9 +5,9 @@ from typing import List, Optional
 
 from ...zmq import Zmqlet, send_ctrl_message
 from ..asyncio.base import AsyncZMQRuntime
+from ....helper import cached_property, colored
 from ....excepts import DaemonConnectivityError
 from .client import PeaDaemonClient, WorkspaceDaemonClient
-from ....helper import cached_property, colored, is_yaml_filepath
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -85,28 +85,16 @@ class JinadRuntime(AsyncZMQRuntime):
         # self.workspace_api.delete(id=self.workspace_id)
         super().teardown()
 
-    @cached_property
-    def upload_files(self) -> List:
-        _upload_files = []
-        if is_yaml_filepath(self.args.uses):
-            _upload_files.append(self.args.uses)
-        if is_yaml_filepath(self.args.uses_internal):
-            _upload_files.append(self.args.uses_internal)
-        if self.args.upload_files:
-            _upload_files.extend(self.args.upload_files)
-        else:
-            self.logger.warning(
-                f'will upload {_upload_files} to remote, to include more local file '
-                f'dependencies, please use `--upload-files`'
-            )
-        return list(set(_upload_files))
-
     @property
     def workspace_id(self) -> str:
         return self.args.workspace_id
 
-    @cached_property
-    def _remote_id(self) -> Optional[str]:
+    def create_workspace(self):
+        """Create a workspace on remote (includes file upload & docker build)
+
+        :raises DaemonConnectivityError: if remote daemon is not reachable
+        :raises RuntimeError: if workspace creation fails
+        """
         if not self.workspace_api.alive:
             self.logger.error(
                 f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
@@ -125,12 +113,21 @@ class JinadRuntime(AsyncZMQRuntime):
                 raise DaemonConnectivityError
             state = workspace_status.get('state', None)
             if not state:
-                self.logger.info(f'creating workspace {self.workspace_id} on remote. This might take some time.')
-                self.workspace_api.post(dependencies=self.upload_files,
-                                        workspace_id=self.workspace_id)
-            elif state in ['PENDING', 'CREATING', 'UPDATING']:  # TODO: move enum from daemon to core
+                self.logger.info(
+                    f'creating workspace {self.workspace_id} on remote. This might take some time.'
+                )
+                self.workspace_api.post(
+                    dependencies=self.args.upload_files, workspace_id=self.workspace_id
+                )
+            elif state in [
+                'PENDING',
+                'CREATING',
+                'UPDATING',
+            ]:  # TODO: move enum from daemon to core
                 if retry % 10 == 0:
-                    self.logger.info(f'workspace {self.workspace_id} is getting created on remote. waiting..')
+                    self.logger.info(
+                        f'workspace {self.workspace_id} is getting created on remote. waiting..'
+                    )
                 time.sleep(sleep)
             elif state == 'ACTIVE':
                 self.logger.success(
@@ -140,6 +137,9 @@ class JinadRuntime(AsyncZMQRuntime):
             else:
                 raise RuntimeError(f'remote workspace creation failed')
 
+    @cached_property
+    def _remote_id(self) -> Optional[str]:
+        self.create_workspace()
         pea_id = self.pea_api.post(self.args)
         if not pea_id:
             raise RuntimeError('remote pea creation failed')
