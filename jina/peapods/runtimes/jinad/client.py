@@ -86,8 +86,10 @@ class DaemonClient:
         remote_log_config = os.path.join(__resources_path__, 'logging.remote.yml')
         all_remote_loggers = {}
         try:
-            url = f'{self.logstream_api}/' \
-                  f'{self._daemonize_id(workspace_id, "workspace")}/{id}'
+            url = (
+                f'{self.logstream_api}/'
+                f'{self._daemonize_id(workspace_id, "workspace")}/{id}'
+            )
             async with websockets.connect(url) as websocket:
                 async for log_line in websocket:
                     try:
@@ -164,8 +166,10 @@ class PeaDaemonClient(DaemonClient):
             import requests
 
         try:
-            r = requests.get(url=f'{self.store_api}/{self._daemonize_id(id, self.kind)}',
-                             timeout=self.timeout)
+            r = requests.get(
+                url=f'{self.store_api}/{self._daemonize_id(id, self.kind)}',
+                timeout=self.timeout,
+            )
             if r.status_code == requests.codes.not_found:
                 self.logger.warning(f'couldn\'t find {id} in remote {self.kind} store')
             return r.json()
@@ -221,8 +225,7 @@ class PeaDaemonClient(DaemonClient):
             import requests
 
         try:
-            r = requests.delete(url=f'{self.store_api}/{id}',
-                                timeout=self.timeout)
+            r = requests.delete(url=f'{self.store_api}/{id}', timeout=self.timeout)
             return r.status_code == 200
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'failed to delete {id} as {ex!r}')
@@ -240,9 +243,7 @@ class WorkspaceDaemonClient(PeaDaemonClient):
 
     kind = 'workspace'
 
-    def post(self,
-             dependencies: Sequence[str],
-             workspace_id: str) -> Optional[Dict]:
+    def post(self, dependencies: Sequence[str], workspace_id: str) -> Optional[Dict]:
         """Create a remote workspace (includes file upload, docker build on remote)
 
         :param dependencies: file dependencies

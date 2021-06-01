@@ -5,7 +5,12 @@ from jina.helper import colored
 
 from .base import BaseStore
 from ..models import DaemonID
-from ..models.containers import ContainerArguments, ContainerItem, ContainerMetadata, ContainerStoreStatus
+from ..models.containers import (
+    ContainerArguments,
+    ContainerItem,
+    ContainerMetadata,
+    ContainerStoreStatus,
+)
 from .. import __root_workspace__
 from ..dockerize import Dockerizer
 from ..excepts import Runtime400Exception
@@ -48,12 +53,10 @@ class ContainerStore(BaseStore):
                     container_name=_container.name,
                     image_id=id_cleaner(_container.image.id),
                     network=_network,
-                    ports=_ports
+                    ports=_ports,
                 ),
-                arguments=ContainerArguments(
-                    command=command
-                ),
-                workspace_id=workspace_id
+                arguments=ContainerArguments(command=command),
+                workspace_id=workspace_id,
             )
             self._logger.success(
                 f'{colored(str(id), "cyan")} is added to workspace '

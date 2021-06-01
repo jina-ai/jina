@@ -17,9 +17,7 @@ from ..models import DaemonID, FlowModel, PodModel, PeaModel
 
 
 class FlowDepends:
-    def __init__(self,
-                 workspace_id: DaemonID,
-                 filename: str) -> None:
+    def __init__(self, workspace_id: DaemonID, filename: str) -> None:
         self.workspace_id = workspace_id
         self.filename = filename
         self.localpath = self.validate()
@@ -59,9 +57,7 @@ class FlowDepends:
 class PeaDepends:
     _kind = 'pea'
 
-    def __init__(self,
-                 workspace_id: DaemonID,
-                 pea: PeaModel):
+    def __init__(self, workspace_id: DaemonID, pea: PeaModel):
         # Deepankar: adding quotes around PeaModel breaks things
         self.workspace_id = workspace_id
         self.params = pea
@@ -77,19 +73,20 @@ class PeaDepends:
         _mapping = {
             'port_in': 'socket_in',
             'port_out': 'socket_out',
-            'port_ctrl': 'socket_ctrl'
+            'port_ctrl': 'socket_ctrl',
         }
         # Map only "bind" ports for HEAD, TAIL & SINGLETON
         if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
             return {
                 f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
                 for i in self.params.__fields__
-                if i in _mapping and SocketType.from_string(getattr(self.params, _mapping[i], 'PAIR_BIND')).is_bind
+                if i in _mapping
+                and SocketType.from_string(
+                    getattr(self.params, _mapping[i], 'PAIR_BIND')
+                ).is_bind
             }
         else:
-            return {
-                f'{self.params.port_ctrl}/tcp': self.params.port_ctrl
-            }
+            return {f'{self.params.port_ctrl}/tcp': self.params.port_ctrl}
 
     def validate(self):
         # Each pea is inside a container
@@ -101,9 +98,7 @@ class PeaDepends:
 
 
 class PodDepends(PeaDepends):
-    def __init__(self,
-                 workspace_id: DaemonID,
-                 pod: PodModel):
+    def __init__(self, workspace_id: DaemonID, pod: PodModel):
         self.workspace_id = workspace_id
         self.params = pod
         self.validate()
@@ -111,13 +106,14 @@ class PodDepends(PeaDepends):
 
 
 class WorkspaceDepends:
-    def __init__(self,
-                 id: Optional[DaemonID] = None,
-                 files: List[UploadFile] = File(None)) -> None:
+    def __init__(
+        self, id: Optional[DaemonID] = None, files: List[UploadFile] = File(None)
+    ) -> None:
         self.id = id if id else DaemonID('jworkspace')
         self.files = files
 
         from ..tasks import __task_queue__
+
         if self.id not in store:
             # when id doesn't exist in store, create it.
             store.add(id=self.id, value=WorkspaceState.PENDING)
@@ -128,6 +124,4 @@ class WorkspaceDepends:
             store.update(id=self.id, value=WorkspaceState.PENDING)
             __task_queue__.put((self.id, self.files))
 
-        self.j = {
-            self.id: store[self.id]
-        }
+        self.j = {self.id: store[self.id]}

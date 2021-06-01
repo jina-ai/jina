@@ -18,7 +18,12 @@ def test_r_l_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
-        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log, timeout_ready=-1)
+        .add(
+            host=CLOUD_HOST,
+            parallel=parallels,
+            quiet_remote_logs=silent_log,
+            timeout_ready=-1,
+        )
         .add(parallel=parallels)
     )
     with f:

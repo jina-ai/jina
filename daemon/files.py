@@ -15,9 +15,9 @@ from . import __rootdir__, __dockerfiles__, jinad_args
 from .helper import get_workspace_path, id_cleaner, random_port_range
 
 
-def workspace_files(workspace_id: DaemonID,
-                    files: List[UploadFile],
-                    logger: 'JinaLogger'):
+def workspace_files(
+    workspace_id: DaemonID, files: List[UploadFile], logger: 'JinaLogger'
+):
     workdir = get_workspace_path(workspace_id)
     Path(workdir).mkdir(parents=True, exist_ok=True)
     if not files:
@@ -40,7 +40,11 @@ class DaemonFile:
     extension = '.jinad'
 
     def __init__(self, workdir: str, logger: 'JinaLogger') -> None:
-        self._logger = logger if logger else JinaLogger(self.__class__.__name__, **vars(jinad_args))
+        self._logger = (
+            logger
+            if logger
+            else JinaLogger(self.__class__.__name__, **vars(jinad_args))
+        )
         self._workdir = workdir
         self._logger.debug(
             f'analysing {self.extension} files in workdir: {self._workdir}'
@@ -107,12 +111,11 @@ class DaemonFile:
 
     @cached_property
     def dockerargs(self) -> Dict:
-        return {
-            'PY_VERSION': self.python.value,
-            'PIP_REQUIREMENTS': self.requirements
-        } if self.build == DaemonBuild.DEVEL else {
-            'PY_VERSION': self.python.name.lower()
-        }
+        return (
+            {'PY_VERSION': self.python.value, 'PIP_REQUIREMENTS': self.requirements}
+            if self.build == DaemonBuild.DEVEL
+            else {'PY_VERSION': self.python.name.lower()}
+        )
 
     def process_file(self) -> None:
         # Checks if a file .jinad exists in the workspace

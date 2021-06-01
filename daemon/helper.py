@@ -19,7 +19,7 @@ class classproperty:
 
 
 def id_cleaner(docker_id: str, prefix: str = 'sha256:') -> str:
-    return docker_id[docker_id.startswith(prefix) and len(prefix):][:10]
+    return docker_id[docker_id.startswith(prefix) and len(prefix) :][:10]
 
 
 def get_workspace_path(workspace_id: 'DaemonID', *args):
@@ -51,7 +51,9 @@ def random_port_range(port_min: int = 49153, port_max: int = 65535, count: int =
         _jina_random_port_min = random.randint(port_min, port_max)
         for i in workspace_store.values():
             if i.metadata:
-                if range_conflict(_jina_random_port_min, i.metadata.ports['min'], count):
+                if range_conflict(
+                    _jina_random_port_min, i.metadata.ports['min'], count
+                ):
                     break
         else:
             return _jina_random_port_min, _jina_random_port_min + count

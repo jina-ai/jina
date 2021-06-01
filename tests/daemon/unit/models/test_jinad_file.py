@@ -15,8 +15,8 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
         ('good_ws_nofile', ('devel', '3.8', '')),
         ('good_ws_emptyfile', ('devel', '3.8', '')),
         ('good_ws_multiple_files', ('devel', '3.7', '"echo Hello"')),
-        ('good_ws_wrong_values', ('devel', '3.8', ''))
-    ]
+        ('good_ws_wrong_values', ('devel', '3.8', '')),
+    ],
 )
 def test_jinad_good_ws(workdir, expected_response):
     d = DaemonFile(workdir=f'{cur_dir}/{workdir}')
@@ -25,9 +25,7 @@ def test_jinad_good_ws(workdir, expected_response):
     assert d.run == expected_response[2]
 
 
-@pytest.mark.parametrize(
-    'workdir', ['bad_ws_multiple_files']
-)
+@pytest.mark.parametrize('workdir', ['bad_ws_multiple_files'])
 def test_jinad_bad_ws(workdir):
     with pytest.raises(Runtime400Exception):
         DaemonFile(workdir=f'{cur_dir}/{workdir}')

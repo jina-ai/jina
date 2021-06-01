@@ -7,7 +7,12 @@ from ..models import DaemonID
 from ..dockerize import Dockerizer
 from ..models.enums import WorkspaceState
 
-from ..models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata, WorkspaceStoreStatus
+from ..models.workspaces import (
+    WorkspaceArguments,
+    WorkspaceItem,
+    WorkspaceMetadata,
+    WorkspaceStoreStatus,
+)
 
 from .. import __rootdir__, __dockerfiles__
 
@@ -18,18 +23,20 @@ class WorkspaceStore(BaseStore):
     _status_model = WorkspaceStoreStatus
 
     @BaseStore.dump
-    def add(self,
-            id: DaemonID,
-            value: WorkspaceState, **kwargs):
+    def add(self, id: DaemonID, value: WorkspaceState, **kwargs):
         if isinstance(value, WorkspaceState):
             self[id] = WorkspaceItem(state=value)
         return id
 
     @BaseStore.dump
-    def update(self,
-               id: DaemonID,
-               value: Union[WorkspaceItem, WorkspaceState, WorkspaceArguments, WorkspaceMetadata],
-               **kwargs) -> DaemonID:
+    def update(
+        self,
+        id: DaemonID,
+        value: Union[
+            WorkspaceItem, WorkspaceState, WorkspaceArguments, WorkspaceMetadata
+        ],
+        **kwargs,
+    ) -> DaemonID:
         if id not in self:
             raise KeyError(f'workspace {id} not found in store')
 
@@ -52,6 +59,4 @@ class WorkspaceStore(BaseStore):
         Dockerizer.rm_image(id=self[id].metadata.image_id)
         Dockerizer.rm_network(id=self[id].metadata.network)
         del self[id]
-        self._logger.success(
-            f'{colored(str(id), "cyan")} is released from the store.'
-        )
+        self._logger.success(f'{colored(str(id), "cyan")} is released from the store.')
