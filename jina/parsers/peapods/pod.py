@@ -60,6 +60,14 @@ The polling strategy of the Pod (when `parallel>1`)
         help='The strategy of scheduling workload among Peas',
     )
 
+    gp.add_argument(
+        '--external',
+        action='store_true',
+        default=False,
+        help='The Pod will be considered an external Pod that has been started independently from the Flow. This Pod '
+        'will not be context managed by the Flow, and is considered with `--freeze-network-settings`',
+    )
+
     # hidden CLI used for internal only
 
     gp.add_argument(
@@ -77,11 +85,4 @@ The polling strategy of the Pod (when `parallel>1`)
         help='''The hosts of the peas when parallel greater than 1.
         Peas will be evenly distributed among the hosts. By default,
         peas are running on host provided by the argument ``host``''',
-    )
-    gp.add_argument(
-        '--external',
-        action='store_true',
-        default=False,
-        help='The Pod will be considered a external Pod that has been started independently from the Pod. The Pod '
-        'will not be context managed by the Flow',
     )

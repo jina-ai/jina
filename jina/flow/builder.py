@@ -147,9 +147,10 @@ def _connect(
             node_to_update.args.freeze_network_settings
             and _rgetattr(node_to_update, attr_to_set) != value_to_set
         ):
+            org_value = _rgetattr(node_to_update, attr_to_set)
             raise FlowTopologyError(
-                f'Cannot update the parameters of Pod {node_to_update.args.name} because it is frozen. '
-                f'{node_to_update.args.name} is expecting {attr_to_set} to be {value_to_set}'
+                f'Cannot set `{node_to_update.args.name}.{attr_to_set}={value_to_set!s}` '
+                f'because it is frozen to {org_value!s} by --freeze-network-settings'
             )
         _rsetattr(node_to_update, attr_to_set, value_to_set)
 
