@@ -1,7 +1,7 @@
 import asyncio
 
 from .....helper import random_identity, typename
-from .....logging import JinaLogger
+from .....logging.logger import JinaLogger
 from .....logging.profile import TimeContext
 from .....proto import jina_pb2_grpc
 from .....types.message import Message

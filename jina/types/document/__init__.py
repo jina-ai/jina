@@ -32,14 +32,13 @@ from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import (
-    is_url,
     typename,
     random_identity,
     download_mermaid_url,
     dunder_get,
 )
 from ...importer import ImportExtensions
-from ...logging import default_logger
+from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
 if False:
@@ -280,7 +279,7 @@ class Document(ProtoTypeMixin):
             self._pb_body.ClearField(k)
 
     def clear(self) -> None:
-        """Remove all values from all fields of this Document. """
+        """Remove all values from all fields of this Document."""
         self._pb_body.Clear()
 
     @property
@@ -354,120 +353,60 @@ class Document(ProtoTypeMixin):
         self._pb_body.tags.Clear()
         self._pb_body.tags.update(value)
 
-    @staticmethod
     def _update(
+        self,
         source: 'Document',
         destination: 'Document',
-        exclude_fields: Optional[Tuple[str]] = None,
-        include_fields: Optional[Tuple[str]] = None,
-        replace_message_field: bool = True,
-        replace_repeated_field: bool = True,
+        fields: Optional[List[str]] = None,
     ) -> None:
-        """Merge fields specified in ``include_fields`` or ``exclude_fields`` from source to destination.
+        """Merge fields specified in ``fields`` from source to destination.
 
         :param source: source :class:`Document` object.
         :param destination: the destination :class:`Document` object to be merged into.
-        :param exclude_fields: a tuple of field names that excluded from destination document
-        :param include_fields: a tuple of field names that included from source document
-        :param replace_message_field: Replace message field if True. Merge message
-                  field if False.
-        :param replace_repeated_field: Replace repeated field if True. Append
-                  elements of repeated field if False.
+        :param fields: a list of field names that included from destination document
 
         .. note::
-            *. if neither ``exclude_fields`` nor ``include_fields`` is given,
-                then destination is overridden by the source completely.
-            *. ``destination`` will be modified in place, ``source`` will be unchanged
+            *. if ``fields`` is empty, then destination is overridden by the source completely.
+            *. ``destination`` will be modified in place, ``source`` will be unchanged.
+            *. the ``fields`` has value in destination while not in source will be preserved.
         """
-
-        if not include_fields and not exclude_fields:
-            # same behavior as copy
-            destination.CopyFrom(source)
-        elif include_fields is not None and exclude_fields is None:
-            FieldMask(paths=include_fields).MergeMessage(
-                source.proto,
-                destination.proto,
-                replace_message_field=replace_message_field,
-                replace_repeated_field=replace_repeated_field,
-            )
-        elif exclude_fields is not None:
-            empty_doc = jina_pb2.DocumentProto()
-
-            _dest = jina_pb2.DocumentProto()
-            # backup exclude fields in destination
-            FieldMask(paths=exclude_fields).MergeMessage(
-                destination.proto,
-                _dest,
-                replace_repeated_field=True,
-                replace_message_field=True,
-            )
-
-            if include_fields is None:
-                # override dest with src
-                destination.CopyFrom(source)
+        # We do a safe update: only update existent (value being set) fields from source.
+        fields_can_be_updated = []
+        # ListFields returns a list of (FieldDescriptor, value) tuples for present fields.
+        present_fields = source._pb_body.ListFields()
+        for field_descriptor, _ in present_fields:
+            fields_can_be_updated.append(field_descriptor.name)
+        if not fields:
+            fields = fields_can_be_updated  # if `fields` empty, update all fields.
+        for field in fields:
+            if (
+                field == 'tags'
+            ):  # For the tags, stay consistent with the python update method.
+                destination._pb_body.tags.update(source.tags)
             else:
-                # only update include fields
-                FieldMask(paths=include_fields).MergeMessage(
-                    source.proto,
-                    destination.proto,
-                    replace_message_field=replace_message_field,
-                    replace_repeated_field=replace_repeated_field,
-                )
-
-            # clear the exclude fields
-            FieldMask(paths=exclude_fields).MergeMessage(
-                empty_doc,
-                destination.proto,
-                replace_repeated_field=True,
-                replace_message_field=True,
-            )
-
-            # recover exclude fields
-            destination.proto.MergeFrom(_dest)
+                destination._pb_body.ClearField(field)
+                setattr(destination, field, getattr(source, field))
 
     def update(
         self,
         source: 'Document',
-        exclude_fields: Optional[Tuple[str, ...]] = None,
-        include_fields: Optional[Tuple[str, ...]] = None,
+        fields: Optional[List[str]] = None,
     ) -> None:
-        """Updates fields specified in ``include_fields`` from the source to current Document.
+        """Updates fields specified in ``fields`` from the source to current Document.
 
         :param source: source :class:`Document` object.
-        :param exclude_fields: a tuple of field names that excluded from the current document,
-                when not given the non-empty fields of the current document is considered as ``exclude_fields``
-        :param include_fields: a tuple of field names that included from the source document
+        :param fields: a list of field names that included from the current document,
+                if not specified, merge all fields.
 
         .. note::
             *. ``destination`` will be modified in place, ``source`` will be unchanged
         """
-        if (include_fields and not isinstance(include_fields, tuple)) or (
-            exclude_fields and not isinstance(exclude_fields, tuple)
-        ):
-            raise TypeError('include_fields and exclude_fields must be tuple of str')
-
-        if exclude_fields is None:
-            if include_fields:
-                exclude_fields = tuple(
-                    f for f in self.non_empty_fields if f not in include_fields
-                )
-            else:
-                exclude_fields = self.non_empty_fields
-
-        if include_fields and exclude_fields:
-            _intersect = set(include_fields).intersection(exclude_fields)
-            if _intersect:
-                raise ValueError(
-                    f'{_intersect} is in both `include_fields` and `exclude_fields`'
-                )
-
+        if fields and not isinstance(fields, list):
+            raise TypeError('Parameter `fields` must be list of str')
         self._update(
             source,
             self,
-            exclude_fields=exclude_fields,
-            include_fields=include_fields,
-            replace_message_field=True,
-            replace_repeated_field=True,
+            fields=fields,
         )
 
     def update_content_hash(
@@ -1050,7 +989,7 @@ class Document(ProtoTypeMixin):
         self.blob = np.frombuffer(self.buffer, dtype, count, offset)
 
     def convert_blob_to_buffer(self):
-        """Convert blob to buffer """
+        """Convert blob to buffer"""
         self.buffer = self.blob.tobytes()
 
     def convert_uri_to_buffer(self):
@@ -1229,7 +1168,7 @@ class Document(ProtoTypeMixin):
         if output:
             download_mermaid_url(url, output)
         elif not showed:
-            from jina.logging import default_logger
+            from jina.logging.predefined import default_logger
 
             default_logger.info(f'Document visualization: {url}')
 
@@ -1285,7 +1224,7 @@ class Document(ProtoTypeMixin):
 def _is_uri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return (
-        (scheme in {'http', 'https'} and is_url(value))
+        (scheme in {'http', 'https'})
         or (scheme in {'data'})
         or os.path.exists(value)
         or os.access(os.path.dirname(value), os.W_OK)
@@ -1294,7 +1233,7 @@ def _is_uri(value: str) -> bool:
 
 def _is_datauri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
-    return is_url(value) and scheme in {'data'}
+    return scheme in {'data'}
 
 
 def _contains_conflicting_content(**kwargs):

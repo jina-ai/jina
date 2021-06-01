@@ -6,7 +6,7 @@ from typing import Tuple
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 if _SHOW_ALL_ARGS:
-    from jina.logging import default_logger
+    from jina.logging.predefined import default_logger
 
     default_logger.warning(
         f'Setting {_SHOW_ALL_ARGS} will make remote Peas with sharding not work when using JinaD'

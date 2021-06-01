@@ -1,6 +1,5 @@
 import pathlib
 import subprocess
-import pkg_resources
 from queue import Queue
 from pathlib import Path
 from threading import Thread
@@ -9,8 +8,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
-from jina import __version__
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
+from jina import __version__, __resources_path__
 from .parser import get_main_parser, _get_run_args
 from .excepts import (
     RequestValidationError,
@@ -98,7 +97,7 @@ def _start_uvicorn(app: 'FastAPI'):
 
 def _start_fluentd():
     daemon_logger.info('starting fluentd...')
-    cfg = pkg_resources.resource_filename('jina', 'resources/fluent.conf')
+    cfg = os.path.join(__resources_path__, 'fluent.conf')
     try:
         fluentd_proc = subprocess.Popen(
             ['fluentd', '-c', cfg],

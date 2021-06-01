@@ -33,7 +33,7 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # NOTE: this represents the NEXT release version
 
 # TODO: remove 'rcN' on final release
-__version__ = '2.0.0rc3'
+__version__ = '2.0.0rc5'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -75,6 +75,10 @@ __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
 __num_args_executor_func__ = 5
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
+__resources_path__ = _os.path.join(
+    _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
+)
+
 
 _names_with_underscore = [
     '__version__',
@@ -119,8 +123,6 @@ def _set_nofile(nofile_atleast=4096):
     except ImportError:  # Windows
         res = None
 
-    from .logging import default_logger
-
     if res is None:
         return (None,) * 2
 
@@ -132,27 +134,26 @@ def _set_nofile(nofile_atleast=4096):
         if hard < soft:
             hard = soft
 
-        default_logger.debug(f'setting soft & hard ulimit -n {soft} {hard}')
         try:
             res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
         except (ValueError, res.error):
             try:
                 hard = soft
-                default_logger.warning(
-                    f'trouble with max limit, retrying with soft,hard {soft},{hard}'
-                )
+                print(f'trouble with max limit, retrying with soft,hard {soft},{hard}')
                 res.setrlimit(res.RLIMIT_NOFILE, (soft, hard))
             except Exception:
-                default_logger.warning('failed to set ulimit, giving up')
+                print('failed to set ulimit, giving up')
                 soft, hard = res.getrlimit(res.RLIMIT_NOFILE)
 
-    default_logger.debug(f'ulimit -n soft,hard: {soft} {hard}')
     return soft, hard
 
 
 _set_nofile()
 
 # ONLY FIRST CLASS CITIZENS ARE ALLOWED HERE, namely Document, Executor Flow
+
+# Client
+from jina.clients import Client
 
 # Document
 from jina.types.document import Document
@@ -165,9 +166,6 @@ from jina.executors.decorators import requests
 # Flow
 from jina.flow import Flow
 from jina.flow.asyncio import AsyncFlow
-
-# Client
-from jina.clients import Client
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)

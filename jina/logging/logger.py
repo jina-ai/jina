@@ -5,9 +5,8 @@ import platform
 import sys
 from typing import Optional
 
-from pkg_resources import resource_filename
-
 from . import formatter
+from .. import __uptime__, __resources_path__
 from ..enums import LogVerbosity
 from ..jaml import JAML
 
@@ -56,20 +55,15 @@ class JinaLogger:
         quiet: bool = False,
         **kwargs,
     ):
-        from .. import __uptime__
 
         if not log_config:
             log_config = os.getenv(
                 'JINA_LOG_CONFIG',
-                resource_filename(
-                    'jina', '/'.join(('resources', 'logging.default.yml'))
-                ),
+                os.path.join(__resources_path__, 'logging.default.yml'),
             )
 
         if quiet or os.getenv('JINA_LOG_CONFIG', None) == 'QUIET':
-            log_config = resource_filename(
-                'jina', '/'.join(('resources', 'logging.quiet.yml'))
-            )
+            log_config = os.path.join(__resources_path__, 'logging.quiet.yml')
 
         if not identity:
             identity = os.getenv('JINA_LOG_ID', None)

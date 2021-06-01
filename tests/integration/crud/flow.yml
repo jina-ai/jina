@@ -1,0 +1,10 @@
+jtype: Flow
+with:
+  return_results: True
+  restful: $RESTFUL
+executors:
+  - name: indexer
+    uses:
+      jtype: CrudIndexer
+      metas:
+        workspace: $WORKSPACE

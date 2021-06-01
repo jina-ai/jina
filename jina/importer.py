@@ -5,6 +5,8 @@ from collections import defaultdict
 from types import SimpleNamespace, ModuleType
 from typing import Optional, List, Any, Dict
 
+from . import __resources_path__
+
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
 IMPORTED.executors = False
@@ -93,13 +95,7 @@ class ImportExtensions:
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type == ModuleNotFoundError:
             missing_module = self._pkg_name or exc_val.name
-            from pkg_resources import resource_filename
-
-            with open(
-                resource_filename(
-                    'jina', '/'.join(('resources', 'extra-requirements.txt'))
-                )
-            ) as fp:
+            with open(os.path.join(__resources_path__, 'extra-requirements.txt')) as fp:
                 for v in fp:
                     if (
                         v.strip()

@@ -8,7 +8,7 @@ import uuid
 import warnings
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, TextIO
+from typing import Optional, Union, Tuple, List, Set, Dict
 
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
@@ -23,8 +23,8 @@ from ..helper import (
     ArgNamespace,
     download_mermaid_url,
 )
-from ..jaml import JAML, JAMLCompatible
-from ..logging import JinaLogger
+from ..jaml import JAMLCompatible
+from ..logging.logger import JinaLogger
 from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
 
 __all__ = ['BaseFlow']
@@ -168,7 +168,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                read_only=True,
                 runtime_cls='GRPCRuntime'
                 if self._cls_client == Client
                 else 'RESTRuntime',
@@ -540,11 +539,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         for k, v in self:
             v.args.noblock_on_start = True
-            self.enter_context(v)
+            if not getattr(v.args, 'external', False):
+                self.enter_context(v)
 
         for k, v in self:
             try:
-                v.wait_start_success()
+                if not getattr(v.args, 'external', False):
+                    v.wait_start_success()
             except Exception as ex:
                 self.logger.error(
                     f'{k}:{v!r} can not be started due to {ex!r}, Flow is aborted'
@@ -632,28 +633,56 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         end_repl = {}
         for node, v in self._pod_nodes.items():
             if not v.is_singleton and v.role != PodRoleType.GATEWAY:
-                mermaid_graph.append(
-                    f'subgraph sub_{node} ["{node} ({v.args.parallel})"]'
-                )
-                if v.is_head_router:
-                    head_router = node + '_HEAD'
-                    end_repl[node] = (head_router, '((fa:fa-random))')
-                if v.is_tail_router:
-                    tail_router = node + '_TAIL'
-                    start_repl[node] = (tail_router, '((fa:fa-random))')
-
-                p_r = '((%s))'
-                p_e = '[[%s]]'
-                for j in range(v.args.parallel):
-                    r = node + (f'_{j}' if v.args.parallel > 1 else '')
+                if v.args.replicas == 1:
+                    mermaid_graph.append(
+                        f'subgraph sub_{node} ["{node} ({v.args.parallel})"]'
+                    )
+                else:
+                    mermaid_graph.append(
+                        f'subgraph sub_{node} ["{node} ({v.args.replicas})({v.args.parallel})"]'
+                    )
                     if v.is_head_router:
-                        mermaid_graph.append(
-                            f'\t{head_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea'
-                        )
+                        head_router = node + '_HEAD'
+                        end_repl[node] = (head_router, '((fa:fa-random))')
                     if v.is_tail_router:
+                        tail_router = node + '_TAIL'
+                        start_repl[node] = (tail_router, '((fa:fa-random))')
+
+                for i in range(v.args.replicas):
+                    if v.is_head_router:
+                        head_replica_router = node + f'_{i}_HEAD'
+                        if v.args.replicas == 1:
+                            end_repl[node] = (head_replica_router, '((fa:fa-random))')
+                    if v.is_tail_router:
+                        tail_replica_router = node + f'_{i}_TAIL'
+                        if v.args.replicas == 1:
+                            start_repl[node] = (tail_replica_router, '((fa:fa-random))')
+
+                    p_r = '((%s))'
+                    p_e = '[[%s]]'
+                    if v.args.replicas > 1:
                         mermaid_graph.append(
-                            f'\t{r}{p_e % r}:::pea-->{tail_router}{p_r % "tail"}:::pea'
+                            f'\t{head_router}{p_r % "head"}:::pea-->{head_replica_router}{p_e % "replica_head"}:::pea'
                         )
+                        mermaid_graph.append(
+                            f'\t{tail_replica_router}{p_r % "replica_tail"}:::pea-->{tail_router}{p_e % "tail"}:::pea'
+                        )
+
+                    for j in range(v.args.parallel):
+                        r = node
+                        if v.args.replicas > 1:
+                            r += f'_{i}_{j}'
+                        elif v.args.parallel > 1:
+                            r += f'_{j}'
+
+                        if v.is_head_router:
+                            mermaid_graph.append(
+                                f'\t{head_replica_router}{p_r % "head"}:::pea-->{r}{p_e % r}:::pea'
+                            )
+                        if v.is_tail_router:
+                            mermaid_graph.append(
+                                f'\t{r}{p_e % r}:::pea-->{tail_replica_router}{p_r % "tail"}:::pea'
+                            )
                 mermaid_graph.append('end')
 
         for node, v in self._pod_nodes.items():

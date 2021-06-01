@@ -124,7 +124,7 @@ linkcheck_ignore = [
     'https://github.com/jina-ai/jina/commit/*',
     '.github/*',
     'extra-requirements.txt',
-    '../../101',
+    'fastentrypoints.py' '../../101',
     '../../102',
     'http://www.twinsun.com/tz/tz-link.htm',  # Broken link from pytz library
     'https://urllib3.readthedocs.io/en/latest/contrib.html#google-app-engine',  # Broken link from urllib3 library

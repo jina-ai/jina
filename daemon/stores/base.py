@@ -6,7 +6,7 @@ from datetime import datetime
 from collections.abc import MutableMapping
 from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union
 
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 from ..models import DaemonID
 from ..models.base import StoreItem, StoreStatus
 from .. import jinad_args, __root_workspace__

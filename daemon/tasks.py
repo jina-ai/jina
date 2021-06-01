@@ -4,7 +4,7 @@ from threading import Thread
 
 from fastapi import UploadFile
 from jina.helper import cached_property, colored
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 
 from . import __task_queue__, daemon_logger, jinad_args
 from .models.id import DaemonID

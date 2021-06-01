@@ -30,6 +30,7 @@ Table of Contents
     - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
     - [Conversion between `doc.content`](#conversion-between-doccontent)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
+    - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
     - [Construct from JSON, CSV, `ndarray` and Files](#construct-from-json-csv-ndarray-and-files)
   - [Serialize `Document`](#serialize-document)
@@ -46,6 +47,7 @@ Table of Contents
   - [Filter Elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
+  - [Access nested attributes from tags](#access-nested-attributes-from-tags)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -230,7 +232,7 @@ d = Document(uri='https://jina.ai',
 
 ```text
 <jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
-
+```
 
 #### Construct from Dict or JSON String
 
@@ -313,24 +315,24 @@ d = Document(
 )
 
 # only update `id` field
-d.update(s, include_fields=('id',))
+d.update(s, fields=['id'])
 
-# only preserve `id` field
-d.update(s, exclude_fields=('id',))
+# update all fields. `tags` field as `dict` will be merged.
+d.update(s)
 ```
 
 #### Construct from JSON, CSV, `ndarray` and Files
 
-You can also construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
+The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
 functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original
 format:
 
 |     |     |
 | --- | --- |
-| `Document.from_ndjson()` | Yield `Document` from a line-based JSON file. Each line is a `Document` object |
-| `Document.from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
-| `Document.from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
-| `Document.from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
+| `from_ndjson()` | Yield `Document` from a line-based JSON file. Each line is a `Document` object |
+| `from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
+| `from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
+| `from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
 
 Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.
 
@@ -338,8 +340,9 @@ To convert the generator to `DocumentArray` use:
 
 ```python
 from jina import DocumentArray
+from jina.types.document.generators import from_files
 
-DocumentArray(DocumentArray.from_files('/*.png'))
+DocumentArray(from_files('/*.png'))
 ```
 
 ### Serialize `Document`
@@ -529,6 +532,17 @@ da.save('data.json')
 da1 = DocumentArray.load('data.json')
 ```
 
+`DocumentArray` can be also stored in binary format, which is much faster and yields smaller file:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()])
+
+da.save('data.bin', file_format='binary')
+da1 = DocumentArray.load('data.bin', file_format='binary')
+```
+
 ### Access Element
 
 You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
@@ -674,4 +688,49 @@ np.stack(da.get_attributes('embedding'))
 [[1 2 3]
  [4 5 6]
  [7 8 9]]
+```
+
+### Access nested attributes from tags
+
+`Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values.
+
+```python
+from jina import Document
+
+doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
+
+doc.tags['dimensions']
+```
+
+```text
+{'weight': 10.0, 'height': 5.0}
+```
+
+In order to provide easy access to nested fields, the `Document` allows to access attributes by composing the attribute 
+qualified name with interlaced `__` symbols:
+
+```python
+from jina import Document
+
+doc = Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}})
+
+doc.tags__dimensions__weight
+```
+
+```text
+10.0
+```
+
+This also allows to access nested metadata attributes in `bulk` from a `DocumentArray`.
+
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray([Document(tags={'dimensions': {'height': 5.0, 'weight': 10.0}}) for _ in range(10)]) 
+
+da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
+```
+
+```text
+[[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
 ```

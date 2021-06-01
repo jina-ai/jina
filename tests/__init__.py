@@ -11,17 +11,33 @@ sys.path.append(os.path.dirname(file_dir))
 
 
 def random_docs(
-    num_docs, chunks_per_doc=5, embed_dim=10, jitter=1, start_id=0, embedding=True
+    num_docs,
+    chunks_per_doc=5,
+    embed_dim=10,
+    jitter=1,
+    start_id=0,
+    embedding=True,
+    sparse_embedding=False,
+    text='hello world',
 ) -> Iterator['Document']:
     next_chunk_doc_id = start_id + num_docs
     for j in range(num_docs):
         doc_id = start_id + j
 
         d = Document(id=doc_id)
-        d.text = b'hello world'
+        d.text = text
         d.tags['id'] = doc_id
         if embedding:
-            d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
+            if sparse_embedding:
+                from scipy.sparse import coo_matrix
+
+                d.embedding = coo_matrix(
+                    (np.array([1, 1, 1]), (np.array([0, 1, 2]), np.array([1, 2, 1])))
+                )
+            else:
+                d.embedding = np.random.random(
+                    [embed_dim + np.random.randint(0, jitter)]
+                )
         d.update_content_hash()
 
         for _ in range(chunks_per_doc):

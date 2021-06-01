@@ -242,3 +242,12 @@ class CompoundPod(BasePod):
                 # before taking down the next
         except:
             raise
+
+    @property
+    def is_singleton(self) -> bool:
+        """Return if the Pod contains only a single Pea
+
+
+        .. # noqa: DAR201
+        """
+        return False

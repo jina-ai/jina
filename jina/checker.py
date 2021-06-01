@@ -3,7 +3,7 @@ import os
 from . import __jina_env__
 from .helper import colored
 from .importer import import_classes, _print_dep_tree_rst
-from .logging import default_logger
+from .logging.predefined import default_logger
 
 if False:
     # fix type-hint complain for sphinx and flake

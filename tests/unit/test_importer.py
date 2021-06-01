@@ -1,11 +1,11 @@
 import pytest
 
 from jina.importer import ImportExtensions, import_classes
-from jina.logging import default_logger
+from jina.logging.predefined import default_logger
 
 
 def test_bad_import():
-    from jina.logging import default_logger
+    from jina.logging.predefined import default_logger
 
     with pytest.raises(ModuleNotFoundError):
         with ImportExtensions(required=True, logger=default_logger):

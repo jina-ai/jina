@@ -117,15 +117,42 @@ jobs:
   docker-image-test:
     needs: commit-lint
     runs-on: ubuntu-20.04
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+    strategy:
+      fail-fast: false
+      matrix:
+        test-arch: ["linux/amd64", "linux/arm64"]
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          install: true
+          driver-opts: network=host
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
       - run: |
-          echo "PIP_TAG='[devel]'" >> $GITHUB_ENV
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Build and test
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfiles/debianx.Dockerfile
+          platforms: ${{ matrix.test-arch }}
+          push: true
+          tags: localhost:5000/jina/multiarch:latest
+          target: jina_devel
+          build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
       - run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          docker run jinaai/jina:test-pip hello fashion
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
   core-test:
     needs: [prep-testbed, commit-lint, lint-flake-8]

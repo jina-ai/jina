@@ -336,16 +336,18 @@ class BasePod(ExitFIFO):
             # in this case we (at local) need to know about remote the BIND address
             return bind_args.host
 
+    @property
     @abstractmethod
-    def head_args(self):
+    def head_args(self) -> Namespace:
         """Get the arguments for the `head` of this BasePod.
 
         .. # noqa: DAR201
         """
         ...
 
+    @property
     @abstractmethod
-    def tail_args(self):
+    def tail_args(self) -> Namespace:
         """Get the arguments for the `tail` of this BasePod.
 
         .. # noqa: DAR201
@@ -355,6 +357,15 @@ class BasePod(ExitFIFO):
     @abstractmethod
     def join(self):
         """Wait until all pods and peas exit."""
+        ...
+
+    @abstractmethod
+    def is_singleton(self) -> bool:
+        """Return if the Pod contains only a single Pea
+
+
+        .. # noqa: DAR201
+        """
         ...
 
 
@@ -420,7 +431,7 @@ class Pod(BasePod):
         return self._parse_base_pod_args(args)
 
     @property
-    def head_args(self):
+    def head_args(self) -> Namespace:
         """Get the arguments for the `head` of this Pod.
 
 
@@ -452,7 +463,7 @@ class Pod(BasePod):
             raise ValueError('ambiguous head node, maybe it is deducted already?')
 
     @property
-    def tail_args(self):
+    def tail_args(self) -> Namespace:
         """Get the arguments for the `tail` of this BasePod.
 
         .. # noqa: DAR201

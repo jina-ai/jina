@@ -13,7 +13,7 @@ from typing import (
 )
 
 from .metas import get_default_metas
-from .. import DocumentArray
+from ..types.arrays import DocumentArray
 from ..helper import convert_tuple_to_list
 
 

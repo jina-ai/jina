@@ -1,12 +1,6 @@
-import csv
-import glob
-import itertools
 import json
-import os
-import random
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
-
 from typing import (
     Union,
     Iterable,
@@ -16,16 +10,13 @@ from typing import (
     TextIO,
     Optional,
     Generator,
-    Dict,
+    BinaryIO,
 )
-
-import numpy as np
-
 
 from .traversable import TraversableSequence
 from ...helper import typename, cached_property
-from ...logging import default_logger
-from ...proto.jina_pb2 import DocumentProto
+from ...logging.predefined import default_logger
+from ...proto.jina_pb2 import DocumentProto, DocumentArrayProto
 
 try:
     # when protobuf using Cpp backend
@@ -42,22 +33,6 @@ __all__ = ['DocumentArray']
 
 if False:
     from ..document import Document
-
-# https://github.com/ndjson/ndjson.github.io/issues/1#issuecomment-109935996
-_jsonl_ext = {'.jsonlines', '.ndjson', '.jsonl', '.jl', '.ldjson'}
-_csv_ext = {'.csv', '.tcsv'}
-
-
-def _sample(iterable, sampling_rate: Optional[float] = None):
-    for i in iterable:
-        if sampling_rate is None or random.random() < sampling_rate:
-            yield i
-
-
-def _subsample(
-    iterable, size: Optional[int] = None, sampling_rate: Optional[float] = None
-):
-    yield from itertools.islice(_sample(iterable, sampling_rate), size)
 
 
 class DocumentArray(TraversableSequence, MutableSequence, Itr):
@@ -93,8 +68,10 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         self._docs_proto.insert(index, doc.proto)
 
     def __setitem__(self, key, value: 'Document'):
-        if isinstance(key, (int, str)):
+        if isinstance(key, int):
             self[key].CopyFrom(value)
+        elif isinstance(key, str):
+            self[self._id_to_index[key]].CopyFrom(value)
         else:
             raise IndexError(f'do not support this index {key}')
 
@@ -102,7 +79,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         if isinstance(index, int):
             del self._docs_proto[index]
         elif isinstance(index, str):
-            del self._docs_map[index]
+            del self[self._id_to_index[index]]
         elif isinstance(index, slice):
             del self._docs_proto[index]
         else:
@@ -126,7 +103,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             yield Document(d)
 
     def __contains__(self, item: str):
-        return item in self._docs_map
+        return item in self._id_to_index
 
     def __getitem__(self, item: Union[int, str, slice]):
         from ..document import Document
@@ -134,7 +111,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         if isinstance(item, int):
             return Document(self._docs_proto[item])
         elif isinstance(item, str):
-            return Document(self._docs_map[item])
+            return self[self._id_to_index[item]]
         elif isinstance(item, slice):
             return DocumentArray(self._docs_proto[item])
         else:
@@ -189,11 +166,11 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             self._docs_proto.reverse()
 
     @cached_property
-    def _docs_map(self):
-        """Returns a doc_id to doc mapping so one can later index a Document using doc_id as string key.
+    def _id_to_index(self):
+        """Returns a doc_id to index in list
 
         .. # noqa: DAR201"""
-        return {d.id: d for d in self._docs_proto}
+        return {d.id: i for i, d in enumerate(self._docs_proto)}
 
     def sort(self, *args, **kwargs):
         """
@@ -281,8 +258,62 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         content = content.strip()
         return f'<{typename(self)} {content}>'
 
-    def save(self, file: Union[str, TextIO]) -> None:
+    def save(
+        self, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
+    ) -> None:
+        """Save array elements into a JSON or a binary file.
+
+        :param file: File or filename to which the data is saved.
+        :param file_format: `json` or `binary`. JSON file is human-readable,
+            but binary format gives much smaller size and faster save/load speed.
+        """
+        if file_format == 'json':
+            self.save_json(file)
+        elif file_format == 'binary':
+            self.save_binary(file)
+        else:
+            raise ValueError('`format` must be one of [`json`, `binary`]')
+
+    @classmethod
+    def load(
+        cls, file: Union[str, TextIO, BinaryIO], file_format: str = 'json'
+    ) -> 'DocumentArray':
+        """Load array elements from a JSON or a binary file.
+
+        :param file: File or filename to which the data is saved.
+        :param file_format: `json` or `binary`. JSON file is human-readable,
+            but binary format gives much smaller size and faster save/load speed.
+
+        :return: the loaded DocumentArray object
+        """
+        if file_format == 'json':
+            return cls.load_json(file)
+        elif file_format == 'binary':
+            return cls.load_binary(file)
+        else:
+            raise ValueError('`format` must be one of [`json`, `binary`]')
+
+    def save_binary(self, file: Union[str, BinaryIO]) -> None:
+        """Save array elements into a binary file.
+
+        Comparing to :meth:`save_json`, it is faster and the file is smaller, but not human-readable.
+
+        :param file: File or filename to which the data is saved.
+        """
+        if hasattr(file, 'write'):
+            file_ctx = nullcontext(file)
+        else:
+            file_ctx = open(file, 'wb')
+
+        with file_ctx as fp:
+            dap = DocumentArrayProto()
+            dap.docs.extend([d.proto for d in self._docs_proto])
+            fp.write(dap.SerializeToString())
+
+    def save_json(self, file: Union[str, TextIO]) -> None:
         """Save array elements into a JSON file.
+
+        Comparing to :meth:`save_binary`, it is human-readable but slower to save/load and the file size larger.
 
         :param file: File or filename to which the data is saved.
         """
@@ -296,8 +327,8 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
                 json.dump(d.dict(), fp)
                 fp.write('\n')
 
-    @staticmethod
-    def load(file: Union[str, TextIO]) -> 'DocumentArray':
+    @classmethod
+    def load_json(cls, file: Union[str, TextIO]) -> 'DocumentArray':
         """Load array elements from a JSON file.
 
         :param file: File or filename to which the data is saved.
@@ -310,196 +341,31 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         else:
             file_ctx = open(file)
 
-        from jina import Document
-
-        da = DocumentArray()
         with file_ctx as fp:
+            from ..document import Document
+
+            da = DocumentArray()
             for v in fp:
                 da.append(Document(v))
-        return da
+            return da
 
-    @staticmethod
-    def from_lines(
-        lines: Optional[Iterable[str]] = None,
-        filepath: Optional[str] = None,
-        read_mode: str = 'r',
-        line_format: str = 'json',
-        field_resolver: Optional[Dict[str, str]] = None,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-    ) -> Generator['Document', None, None]:
-        """Generator function for lines, json and csv. Yields documents or strings.
+    @classmethod
+    def load_binary(cls, file: Union[str, BinaryIO]) -> 'DocumentArray':
+        """Load array elements from a binary file.
 
-        :param lines: a list of strings, each is considered as a document
-        :param filepath: a text file that each line contains a document
-        :param read_mode: specifies the mode in which the file
-                    is opened. 'r' for reading in text mode, 'rb' for reading in binary
-        :param line_format: the format of each line ``json`` or ``csv``
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
-        :param size: the maximum number of the documents
-        :param sampling_rate: the sampling rate between [0, 1]
-        :yield: documents
+        :param file: File or filename to which the data is saved.
 
+        :return: a DocumentArray object
         """
-        if filepath:
-            file_type = os.path.splitext(filepath)[1]
-            with open(filepath, read_mode) as f:
-                if file_type in _jsonl_ext:
-                    yield from DocumentArray.from_ndjson(f)
-                elif file_type in _csv_ext:
-                    yield from DocumentArray.from_csv(
-                        f, field_resolver, size, sampling_rate
-                    )
-                else:
-                    yield from _subsample(f, size, sampling_rate)
-        elif lines:
-            if line_format == 'json':
-                yield from DocumentArray.from_ndjson(lines)
-            elif line_format == 'csv':
-                yield from DocumentArray.from_csv(
-                    lines, field_resolver, size, sampling_rate
-                )
-            else:
-                yield from _subsample(lines, size, sampling_rate)
+
+        if hasattr(file, 'read'):
+            file_ctx = nullcontext(file)
         else:
-            raise ValueError('"filepath" and "lines" can not be both empty')
+            file_ctx = open(file, 'rb')
 
-    @staticmethod
-    def from_ndjson(
-        fp: Iterable[str],
-        field_resolver: Optional[Dict[str, str]] = None,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-    ) -> Generator['Document', None, None]:
-        """Generator function for line separated JSON. Yields documents.
+        dap = DocumentArrayProto()
 
-        :param fp: file paths
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
-        :param size: the maximum number of the documents
-        :param sampling_rate: the sampling rate between [0, 1]
-        :yield: documents
-
-        """
-        from jina import Document
-
-        for line in _subsample(fp, size, sampling_rate):
-            value = json.loads(line)
-            if 'groundtruth' in value and 'document' in value:
-                yield Document(value['document'], field_resolver), Document(
-                    value['groundtruth'], field_resolver
-                )
-            else:
-                yield Document(value, field_resolver)
-
-    @staticmethod
-    def from_csv(
-        fp: Iterable[str],
-        field_resolver: Optional[Dict[str, str]] = None,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-    ) -> Generator['Document', None, None]:
-        """Generator function for CSV. Yields documents.
-
-        :param fp: file paths
-        :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
-                names defined in Protobuf. This is only used when the given ``document`` is
-                a JSON string or a Python dict.
-        :param size: the maximum number of the documents
-        :param sampling_rate: the sampling rate between [0, 1]
-        :yield: documents
-
-        """
-        from jina import Document
-
-        lines = csv.DictReader(fp)
-        for value in _subsample(lines, size, sampling_rate):
-            if 'groundtruth' in value and 'document' in value:
-                yield Document(value['document'], field_resolver), Document(
-                    value['groundtruth'], field_resolver
-                )
-            else:
-                yield Document(value, field_resolver)
-
-    @staticmethod
-    def from_files(
-        patterns: Union[str, List[str]],
-        recursive: bool = True,
-        size: Optional[int] = None,
-        sampling_rate: Optional[float] = None,
-        read_mode: Optional[str] = None,
-    ) -> Generator['Document', None, None]:
-        """Creates an iterator over a list of file path or the content of the files.
-
-        :param patterns: The pattern may contain simple shell-style wildcards, e.g. '\*.py', '[\*.zip, \*.gz]'
-        :param recursive: If recursive is true, the pattern '**' will match any files
-            and zero or more directories and subdirectories
-        :param size: the maximum number of the files
-        :param sampling_rate: the sampling rate between [0, 1]
-        :param read_mode: specifies the mode in which the file is opened.
-            'r' for reading in text mode, 'rb' for reading in binary mode.
-            If `read_mode` is None, will iterate over filenames.
-        :yield: file paths or binary content
-
-        .. note::
-            This function should not be directly used, use :meth:`Flow.index_files`, :meth:`Flow.search_files` instead
-        """
-        from jina import Document
-
-        if read_mode not in {'r', 'rb', None}:
-            raise RuntimeError(
-                f'read_mode should be "r", "rb" or None, got {read_mode}'
-            )
-
-        def _iter_file_exts(ps):
-            return itertools.chain.from_iterable(
-                glob.iglob(p, recursive=recursive) for p in ps
-            )
-
-        d = 0
-        if isinstance(patterns, str):
-            patterns = [patterns]
-        for g in _iter_file_exts(patterns):
-            if sampling_rate is None or random.random() < sampling_rate:
-                if read_mode is None:
-                    yield Document(uri=g)
-                elif read_mode in {'r', 'rb'}:
-                    with open(g, read_mode) as fp:
-                        yield Document(content=fp.read())
-                d += 1
-            if size is not None and d > size:
-                break
-
-    @staticmethod
-    def from_ndarray(
-        array: 'np.ndarray',
-        axis: int = 0,
-        size: Optional[int] = None,
-        shuffle: bool = False,
-    ) -> Generator['Document', None, None]:
-        """Create a generator for a given dimension of a numpy array.
-
-        :param array: the numpy ndarray data source
-        :param axis: iterate over that axis
-        :param size: the maximum number of the sub arrays
-        :param shuffle: shuffle the numpy data source beforehand
-        :yield: ndarray
-
-        .. note::
-            This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead
-        """
-
-        from jina import Document
-
-        if shuffle:
-            # shuffle for random query
-            array = np.take(array, np.random.permutation(array.shape[0]), axis=axis)
-        d = 0
-        for r in array:
-            yield Document(content=r)
-            d += 1
-            if size is not None and d >= size:
-                break
+        with file_ctx as fp:
+            dap.ParseFromString(fp.read())
+            da = DocumentArray(dap.docs)
+            return da

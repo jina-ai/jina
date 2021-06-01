@@ -1,8 +1,9 @@
 import numpy as np
 import pytest
 
-from jina import Flow, Executor, requests, Document, DocumentArray
+from jina import Flow, Executor, requests, Document
 from jina.proto import jina_pb2
+from jina.types.document.generators import from_ndarray
 from tests import validate_callback
 
 
@@ -185,7 +186,7 @@ def test_flow_on_callback(restful):
 
     with f:
         f.index(
-            DocumentArray.from_ndarray(np.random.random([10, 10])),
+            from_ndarray(np.random.random([10, 10])),
             on_done=f1,
             on_error=f2,
             on_always=f3,
@@ -217,7 +218,7 @@ def test_flow_on_error_callback(restful):
 
     with f:
         f.index(
-            DocumentArray.from_ndarray(np.random.random([10, 10])),
+            from_ndarray(np.random.random([10, 10])),
             on_done=f1,
             on_error=f2,
             on_always=f3,
@@ -226,3 +227,34 @@ def test_flow_on_error_callback(restful):
     assert hit == ['error', 'always']
 
     hit.clear()
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('restful', [False, True])
+def test_flow_startup_exception_not_hanging(restful):
+    class ExceptionExecutor(Executor):
+        def __init__(self, *args, **kwargs):
+            raise Exception
+
+    f = Flow(restful=restful).add(uses=ExceptionExecutor)
+    from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('restful', [False, True])
+def test_flow_startup_exception_not_hanging2(restful):
+    class ExceptionExecutor(Executor):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            raise Exception
+
+    f = Flow(restful=restful).add(uses=ExceptionExecutor)
+    from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass

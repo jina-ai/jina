@@ -1,7 +1,6 @@
 """Base argparser module for Pea and Pod runtime"""
 import argparse
-
-from pkg_resources import resource_filename
+import os
 
 from ..helper import add_arg_group, _SHOW_ALL_ARGS
 from ...helper import random_identity
@@ -43,12 +42,12 @@ When not given, then the default naming strategy will apply.
         'If not set, then derive from its parent `workspace`.',
     )
 
+    from ... import __resources_path__
+
     gp.add_argument(
         '--log-config',
         type=str,
-        default=resource_filename(
-            'jina', '/'.join(('resources', 'logging.default.yml'))
-        ),
+        default=os.path.join(__resources_path__, 'logging.default.yml'),
         help='The YAML config of the logger used in this object.',
     )
 

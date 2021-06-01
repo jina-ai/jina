@@ -1,9 +1,9 @@
-from typing import Dict, List, Tuple, Union, TYPE_CHECKING
+from typing import Dict, List, Tuple, TYPE_CHECKING
 
 import docker
 from fastapi import HTTPException
 from jina import __ready_msg__
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 from .models import DaemonID
 from .models.enums import IDLiterals
 from .helper import id_cleaner, classproperty

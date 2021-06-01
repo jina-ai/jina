@@ -1,10 +1,10 @@
 """Module for helper functions for clients."""
 from typing import Tuple
 
-from ... import Document
 from ...enums import DataInputType
 from ...excepts import BadDocType, BadRequestType
 from ...types.request import Request
+from ...types.document import Document
 
 
 def _new_data_request_from_batch(

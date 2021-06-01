@@ -1,8 +1,6 @@
 """Module for hello world argparser"""
 import argparse
 
-from pkg_resources import resource_filename
-
 from .base import set_base_parser
 from .helper import add_arg_group, _SHOW_ALL_ARGS, _chf
 from ..helper import random_identity
@@ -225,18 +223,11 @@ def set_hw_multimodal_parser(parser=None):
     :param parser: the parser configure
     :return: the new parser
     """
+
     if not parser:
         parser = set_base_parser()
 
     mixin_hw_base_parser(parser)
-    parser.add_argument(
-        '--uses',
-        type=str,
-        default=resource_filename(
-            'jina', '/'.join(('resources', 'multimodal', 'flow-index.yml'))
-        ),
-        help='The yaml path of the index flow',
-    )
     parser.add_argument(
         '--index-data-url',
         type=str,

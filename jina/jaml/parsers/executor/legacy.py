@@ -57,7 +57,7 @@ class LegacyParser(VersionedYAMLParser):
         :param data: flow yaml file loaded as python dict
         :return: the Flow YAML parser given the syntax version number
         """
-        from ....logging import default_logger
+        from ....logging.predefined import default_logger
 
         _meta_config = get_default_metas()
         _meta_config.update(data.get('metas', {}))

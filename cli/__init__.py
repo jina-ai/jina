@@ -1,10 +1,12 @@
 import sys
+import os
 
 
 def _get_run_args(print_args: bool = True):
-    from jina.logging import default_logger
+    from jina.logging.predefined import default_logger
     from jina.parsers import get_main_parser
     from jina.helper import colored
+    from jina import __resources_path__
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
@@ -12,7 +14,6 @@ def _get_run_args(print_args: bool = True):
 
         args = parser.parse_args()
         if print_args:
-            from pkg_resources import resource_filename
 
             p = parser._actions[-1].choices[sys.argv[1]]
             default_args = {
@@ -21,9 +22,7 @@ def _get_run_args(print_args: bool = True):
                 if isinstance(a, (_StoreAction, _StoreTrueAction))
             }
 
-            with open(
-                resource_filename('jina', '/'.join(('resources', 'jina.logo')))
-            ) as fp:
+            with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
                 logo_str = fp.read()
             param_str = []
             for k, v in sorted(vars(args).items()):
@@ -67,9 +66,8 @@ def _is_latest_version(suppress_on_error=True):
     try:
         from urllib.request import Request, urlopen
         import json
-        from pkg_resources import parse_version
         from jina import __version__
-        from jina.logging import default_logger
+        from jina.logging.predefined import default_logger
 
         req = Request(
             'https://api.jina.ai/latest', headers={'User-Agent': 'Mozilla/5.0'}
@@ -78,8 +76,10 @@ def _is_latest_version(suppress_on_error=True):
             req, timeout=1
         ) as resource:  # 'with' is important to close the resource after use
             latest_ver = json.load(resource)['version']
-            latest_ver = parse_version(latest_ver)
-            cur_ver = parse_version(__version__)
+            from distutils.version import LooseVersion
+
+            latest_ver = LooseVersion(latest_ver)
+            cur_ver = LooseVersion(__version__)
             if cur_ver < latest_ver:
                 default_logger.warning(
                     f'WARNING: You are using Jina version {cur_ver}, however version {latest_ver} is available. '
@@ -99,5 +99,5 @@ def main():
     from . import api
 
     args = _get_run_args()
-    _is_latest_version()
+    # _is_latest_version()
     getattr(api, args.cli.replace('-', '_'))(args)

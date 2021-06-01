@@ -6,7 +6,7 @@ from itertools import chain
 from typing import Dict, List
 
 from fastapi import UploadFile
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 
 from .models import DaemonID
 from .excepts import Runtime400Exception
