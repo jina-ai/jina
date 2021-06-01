@@ -17,6 +17,7 @@ def random_docs(
     jitter=1,
     start_id=0,
     embedding=True,
+    sparse_embedding=False,
     text='hello world',
 ) -> Iterator['Document']:
     next_chunk_doc_id = start_id + num_docs
@@ -27,7 +28,16 @@ def random_docs(
         d.text = text
         d.tags['id'] = doc_id
         if embedding:
-            d.embedding = np.random.random([embed_dim + np.random.randint(0, jitter)])
+            if sparse_embedding:
+                from scipy.sparse import coo_matrix
+
+                d.embedding = coo_matrix(
+                    (np.array([1, 1, 1]), (np.array([0, 1, 2]), np.array([1, 2, 1])))
+                )
+            else:
+                d.embedding = np.random.random(
+                    [embed_dim + np.random.randint(0, jitter)]
+                )
         d.update_content_hash()
 
         for _ in range(chunks_per_doc):
