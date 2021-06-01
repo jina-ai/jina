@@ -112,6 +112,16 @@ class BasePod(ExitFIFO):
         """
         self.__exit__(None, None, None)
 
+    def block(self):
+        """Block the process until user hits KeyboardInterrupt """
+
+        import threading
+
+        try:
+            threading.Event().wait()
+        except KeyboardInterrupt:
+            pass
+
     @staticmethod
     def _set_conditional_args(args):
         if args.pod_role == PodRoleType.GATEWAY:
