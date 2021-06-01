@@ -12,6 +12,7 @@ def test_uri_to_blob():
     doc = Document(uri=os.path.join(cur_dir, 'test.png'))
     doc.convert_image_uri_to_blob()
     assert isinstance(doc.blob, np.ndarray)
+    assert doc.mime_type == 'image/png'
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
 
@@ -20,6 +21,7 @@ def test_datauri_to_blob():
     doc.convert_uri_to_datauri()
     doc.convert_image_datauri_to_blob()
     assert isinstance(doc.blob, np.ndarray)
+    assert doc.mime_type == 'image/png'
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
 
@@ -28,6 +30,7 @@ def test_buffer_to_blob():
     doc.convert_uri_to_buffer()
     doc.convert_image_buffer_to_blob()
     assert isinstance(doc.blob, np.ndarray)
+    assert doc.mime_type == 'image/png'
     assert doc.blob.shape == (85, 152, 3)  # h,w,c
 
 
@@ -36,6 +39,7 @@ def test_convert_buffer_to_blob():
     array = rand_state.random([10, 10])
     doc = Document(content=array.tobytes())
     assert doc.content_type == 'buffer'
+    assert doc.mime_type == 'application/octet-stream'
     intialiazed_buffer = doc.buffer
 
     doc.convert_buffer_to_blob()
@@ -54,6 +58,7 @@ def test_convert_blob_to_uri(arr_size, mode):
     assert not doc.uri
     doc.convert_image_blob_to_uri(32, 28)
     assert doc.uri.startswith('data:image/png;base64,')
+    assert doc.mime_type == 'image/png'
 
 
 @pytest.mark.parametrize(
@@ -112,8 +117,10 @@ def test_convert_text_to_uri_and_back():
     text_from_file = open(__file__).read()
     doc = Document(content=text_from_file, mime_type='text/x-python')
     assert doc.text
+    assert doc.mime_type == 'text/x-python'
     doc.convert_text_to_uri()
     doc.convert_uri_to_text()
+    assert doc.mime_type == 'text/plain'
     assert doc.text == text_from_file
 
 
