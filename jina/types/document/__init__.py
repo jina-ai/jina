@@ -193,10 +193,20 @@ class Document(ProtoTypeMixin):
                 if isinstance(document, str):
                     document = json.loads(document)
 
-                for key in _all_doc_array_keys:
-                    # cover when the document has been pretty-printed
-                    if key in document and isinstance(document[key], list):
-                        document[key] = NdArray(np.array(document[key])).dict()
+                def _update_doc(d: Dict):
+                    for key in _all_doc_array_keys:
+                        if key in d:
+                            value = d[key]
+                            if isinstance(value, list):
+                                d[key] = NdArray(np.array(d[key])).dict()
+                        if 'chunks' in d:
+                            for chunk in d['chunks']:
+                                _update_doc(chunk)
+                        if 'matches' in d:
+                            for match in d['matches']:
+                                _update_doc(match)
+
+                _update_doc(document)
 
                 if field_resolver:
                     document = {
@@ -1183,12 +1193,22 @@ class Document(ProtoTypeMixin):
 
         :return: dict representation of the object
         """
+
+        def _update_doc(d: Dict):
+            for key in _all_doc_array_keys:
+                if key in d:
+                    value = getattr(self, key)
+                    if isinstance(value, np.ndarray):
+                        d[key] = value.tolist()
+                if 'chunks' in d:
+                    for chunk in d['chunks']:
+                        _update_doc(chunk)
+                if 'matches' in d:
+                    for match in d['matches']:
+                        _update_doc(match)
+
         d = super().dict()
-        for key in _all_doc_array_keys:
-            if key in d:
-                value = getattr(self, key)
-                if isinstance(value, np.ndarray):
-                    d[key] = value.tolist()
+        _update_doc(d)
         return d
 
     def json(self):
@@ -1198,12 +1218,21 @@ class Document(ProtoTypeMixin):
         """
         import json
 
+        def _update_doc(d: Dict):
+            for key in _all_doc_array_keys:
+                if key in d:
+                    value = getattr(self, key)
+                    if isinstance(value, np.ndarray):
+                        d[key] = value.tolist()
+                if 'chunks' in d:
+                    for chunk in d['chunks']:
+                        _update_doc(chunk)
+                if 'matches' in d:
+                    for match in d['matches']:
+                        _update_doc(match)
+
         d = super().dict()
-        for key in _all_doc_array_keys:
-            if key in d:
-                value = getattr(self, key)
-                if isinstance(value, np.ndarray):
-                    d[key] = value.tolist()
+        _update_doc(d)
         return json.dumps(d)
 
     @property
