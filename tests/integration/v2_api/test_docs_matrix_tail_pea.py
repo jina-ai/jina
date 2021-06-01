@@ -39,3 +39,39 @@ def test_sharding_tail_pea(replicas_shards):
             return_results=True,
         )
         assert len(results[0].docs[0].matches) == num_shards
+
+
+def test_merging_head_pea():
+    """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""
+
+    class DummyExecutor(Executor):
+        @requests
+        def do_something(self, docs, **kwargs):
+            print('Hello World!')
+
+    class MatchMerger(Executor):
+        @requests
+        def merge(self, docs_matrix, **kwargs):
+            results = OrderedDict()
+            for docs in docs_matrix:
+                for doc in docs:
+                    if doc.id in results:
+                        results[doc.id].matches.extend(doc.matches)
+                    else:
+                        results[doc.id] = doc
+            return DocumentArray(results.values())
+
+    f = (
+        Flow()
+        .add(uses=DummyExecutor, name='pod1')
+        .add(uses=DummyExecutor, name='pod2', needs='gateway')
+        .add(uses_before=MatchMerger, name='pod3', needs=['pod1', 'pod2'])
+    )
+    with f:
+        results = f.post(
+            on='/search',
+            inputs=Document(matches=[Document()]),
+            return_results=True,
+        )
+        assert len(results[0].docs[0].matches) == 2
+        assert len(results[0].docs) == 1
