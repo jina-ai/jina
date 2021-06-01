@@ -229,3 +229,17 @@ def test_document_save_load(method, tmp_path):
         assert d.id == d_r.id
         np.testing.assert_equal(d.embedding, d_r.embedding)
         assert d.content == d_r.content
+
+
+def test_documentarray_filter():
+    da = DocumentArray([Document() for _ in range(6)])
+
+    for j in range(6):
+        da[j].score.value = j
+
+    da = filter(lambda d: d.score.value > 2, da)
+
+    assert len(DocumentArray(list(da))) == 3
+
+    for d in da:
+        assert d.score.value > 2
