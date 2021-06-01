@@ -112,16 +112,6 @@ class BasePod(ExitFIFO):
         """
         self.__exit__(None, None, None)
 
-    def block(self):
-        """Block the process until user hits KeyboardInterrupt """
-
-        import threading
-
-        try:
-            threading.Event().wait()
-        except KeyboardInterrupt:
-            pass
-
     @staticmethod
     def _set_conditional_args(args):
         if args.pod_role == PodRoleType.GATEWAY:
@@ -311,8 +301,8 @@ class BasePod(ExitFIFO):
             # in this case we (at local) need to know about remote the BIND address
             return bind_args.host
 
-    @abstractmethod
     @property
+    @abstractmethod
     def head_args(self) -> Namespace:
         """Get the arguments for the `head` of this BasePod.
 
@@ -320,8 +310,8 @@ class BasePod(ExitFIFO):
         """
         ...
 
-    @abstractmethod
     @property
+    @abstractmethod
     def tail_args(self) -> Namespace:
         """Get the arguments for the `tail` of this BasePod.
 
