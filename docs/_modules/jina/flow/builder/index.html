@@ -481,7 +481,7 @@
             <span class="c1"># first node is on remote, second is local. in this case, local node is often behind router/private</span>
             <span class="c1"># network, there is no way that first node can send data "actively" (CONNECT) to it</span>
             <span class="n">first_socket_type</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span>
-        <span class="n">_connect</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">first_socket_type</span><span class="o">=</span><span class="n">first_socket_type</span><span class="p">)</span>
+        <span class="n">_connect</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">first_out_socket_type</span><span class="o">=</span><span class="n">first_socket_type</span><span class="p">)</span>
         <span class="n">flow</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'Connect </span><span class="si">{</span><span class="n">start_node_name</span><span class="si">}</span><span class="s1"> '</span>
             <span class="sa">f</span><span class="s1">'with </span><span class="si">{</span><span class="n">end_node_name</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">end_node</span><span class="o">.</span><span class="n">role</span><span class="p">)</span><span class="si">}</span><span class="s1"> require '</span>
@@ -492,7 +492,7 @@
 
 
 <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span>
-    <span class="n">first</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">first_socket_type</span><span class="p">:</span> <span class="s1">'SocketType'</span>
+    <span class="n">first</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">first_out_socket_type</span><span class="p">:</span> <span class="s1">'SocketType'</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">"""Connect two Pods.</span>
 
@@ -501,7 +501,7 @@
 <span class="sd">    .. # noqa: DAR401</span>
 <span class="sd">    :param first: the first BasePod</span>
 <span class="sd">    :param second: the second BasePod</span>
-<span class="sd">    :param first_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND</span>
+<span class="sd">    :param first_out_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="nf">_valid_update</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">:</span> <span class="n">BasePod</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_to_set</span><span class="p">):</span>
@@ -528,10 +528,10 @@
             <span class="p">)</span>
         <span class="n">_rsetattr</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">,</span> <span class="n">value_to_set</span><span class="p">)</span>
 
-    <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.socket_out'</span><span class="p">,</span> <span class="n">first_socket_type</span><span class="p">)</span>
+    <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.socket_out'</span><span class="p">,</span> <span class="n">first_out_socket_type</span><span class="p">)</span>
     <span class="n">_valid_update</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.socket_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">socket_out</span><span class="o">.</span><span class="n">paired</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">first_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">first_out_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span><span class="p">:</span>
         <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.host_out'</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">)</span>
         <span class="n">_valid_update</span><span class="p">(</span>
             <span class="n">second</span><span class="p">,</span>
@@ -541,7 +541,7 @@
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="n">_valid_update</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.port_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">first_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">first_out_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span><span class="p">:</span>
         <span class="n">_valid_update</span><span class="p">(</span>
             <span class="n">first</span><span class="p">,</span>
             <span class="s1">'tail_args.host_out'</span><span class="p">,</span>
@@ -553,7 +553,7 @@
         <span class="c1"># https://github.com/jina-ai/jina/pull/1654</span>
         <span class="c1"># second.head_args.host_in = __default_host__</span>
         <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.port_out'</span><span class="p">,</span> <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">first_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUB_BIND</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">first_out_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUB_BIND</span><span class="p">:</span>
         <span class="n">_valid_update</span><span class="p">(</span>
             <span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.host_out'</span><span class="p">,</span> <span class="n">__default_host__</span>
         <span class="p">)</span>  <span class="c1"># bind always get default 0.0.0.0</span>
@@ -568,7 +568,7 @@
             <span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.port_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span>
         <span class="p">)</span>  <span class="c1"># the hostname of s_pod</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">SocketTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">first_socket_type</span><span class="si">!r}</span><span class="s1"> is not supported here'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">SocketTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">first_out_socket_type</span><span class="si">!r}</span><span class="s1"> is not supported here'</span><span class="p">)</span>
 </pre></div>
       </article>
       <footer>
