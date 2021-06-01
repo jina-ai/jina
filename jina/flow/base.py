@@ -80,6 +80,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, BasePod]
         self._inspect_pods = {}  # type: Dict[str, str]
+        self._external_pods = []
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = [
             'gateway'
@@ -299,6 +300,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
         op_flow.last_pod = pod_name
+
+        if 'external' in kwargs and kwargs['external'] is True:
+            op_flow._external_pods.append(pod_name)
 
         return op_flow
 
