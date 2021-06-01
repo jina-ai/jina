@@ -493,6 +493,16 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'the number of messages expected from upstream, 0 and 1 means single part'</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--freeze-network-settings'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related parameters can not be changed by the Flow during build time.'</span>
+        <span class="s1">'the Flow object would not be allowed to change them '</span>
+        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
+        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>
@@ -506,7 +516,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on May 31, 2021.
+            Last updated on Jun 01, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

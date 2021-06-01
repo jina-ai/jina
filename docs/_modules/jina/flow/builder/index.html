@@ -378,7 +378,7 @@
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowBuildLevelError</span><span class="p">,</span> <span class="n">SocketTypeError</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowBuildLevelError</span><span class="p">,</span> <span class="n">SocketTypeError</span><span class="p">,</span> <span class="n">FlowTopologyError</span>
 <span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">BasePod</span>
 
 <span class="c1"># noinspection PyUnreachableCode</span>
@@ -503,29 +503,69 @@
 <span class="sd">    :param second: the second BasePod</span>
 <span class="sd">    :param first_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND</span>
 <span class="sd">    """</span>
-    <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">first_socket_type</span>
-    <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">socket_out</span><span class="o">.</span><span class="n">paired</span>
+
+    <span class="k">def</span> <span class="nf">_valid_update</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">:</span> <span class="n">BasePod</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_to_set</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">functools</span>
+
+        <span class="k">def</span> <span class="nf">_rgetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">_getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">_getattr</span><span class="p">,</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">+</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">_rsetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+            <span class="n">pre</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">post</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">setattr</span><span class="p">(</span><span class="n">_rgetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pre</span><span class="p">)</span> <span class="k">if</span> <span class="n">pre</span> <span class="k">else</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">node_to_update</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">freeze_network_settings</span>
+            <span class="ow">and</span> <span class="n">_rgetattr</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">)</span> <span class="o">!=</span> <span class="n">value_to_set</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">FlowTopologyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Cannot update the parameters of Pod </span><span class="si">{</span><span class="n">node_to_update</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> because it is frozen. '</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">node_to_update</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is expecting </span><span class="si">{</span><span class="n">attr_to_set</span><span class="si">}</span><span class="s1"> to be </span><span class="si">{</span><span class="n">value_to_set</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+        <span class="n">_rsetattr</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">,</span> <span class="n">value_to_set</span><span class="p">)</span>
+
+    <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.socket_out'</span><span class="p">,</span> <span class="n">first_socket_type</span><span class="p">)</span>
+    <span class="n">_valid_update</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.socket_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">socket_out</span><span class="o">.</span><span class="n">paired</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">first_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span><span class="p">:</span>
-        <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">host_out</span> <span class="o">=</span> <span class="n">__default_host__</span>
-        <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host_in</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-            <span class="n">bind_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
+        <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.host_out'</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">)</span>
+        <span class="n">_valid_update</span><span class="p">(</span>
+            <span class="n">second</span><span class="p">,</span>
+            <span class="s1">'head_args.host_in'</span><span class="p">,</span>
+            <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
+                <span class="n">bind_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
+            <span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span>
+        <span class="n">_valid_update</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.port_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">first_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span><span class="p">:</span>
-        <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">host_out</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-            <span class="n">connect_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">bind_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
+        <span class="n">_valid_update</span><span class="p">(</span>
+            <span class="n">first</span><span class="p">,</span>
+            <span class="s1">'tail_args.host_out'</span><span class="p">,</span>
+            <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
+                <span class="n">connect_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">bind_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="c1"># (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)</span>
         <span class="c1"># https://github.com/jina-ai/jina/pull/1654</span>
         <span class="c1"># second.head_args.host_in = __default_host__</span>
-        <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span> <span class="o">=</span> <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span>
+        <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.port_out'</span><span class="p">,</span> <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">first_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUB_BIND</span><span class="p">:</span>
-        <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">host_out</span> <span class="o">=</span> <span class="n">__default_host__</span>  <span class="c1"># bind always get default 0.0.0.0</span>
-        <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host_in</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-            <span class="n">bind_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
+        <span class="n">_valid_update</span><span class="p">(</span>
+            <span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.host_out'</span><span class="p">,</span> <span class="n">__default_host__</span>
+        <span class="p">)</span>  <span class="c1"># bind always get default 0.0.0.0</span>
+        <span class="n">_valid_update</span><span class="p">(</span>
+            <span class="n">second</span><span class="p">,</span>
+            <span class="s1">'head_args.host_in'</span><span class="p">,</span>
+            <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
+                <span class="n">bind_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
+            <span class="p">),</span>
         <span class="p">)</span>  <span class="c1"># the hostname of s_pod</span>
-        <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span>
+        <span class="n">_valid_update</span><span class="p">(</span>
+            <span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.port_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span>
+        <span class="p">)</span>  <span class="c1"># the hostname of s_pod</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">SocketTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">first_socket_type</span><span class="si">!r}</span><span class="s1"> is not supported here'</span><span class="p">)</span>
 </pre></div>
@@ -540,7 +580,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on May 31, 2021.
+            Last updated on Jun 01, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
