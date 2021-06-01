@@ -13,11 +13,11 @@ def graph():
     doc2 = Document(text='Document2')
     doc3 = Document(text='Document3')
 
-    graph.add_edge(doc0, doc1)
-    graph.add_edge(doc0, doc2)
-    graph.add_edge(doc2, doc1)
-    graph.add_edge(doc1, doc3)
-    graph.add_edge(doc2, doc3)
+    graph.add_edge(doc0, doc1, features={'text': 'I connect Doc0 and Doc1'})
+    graph.add_edge(doc0, doc2, features={'text': 'I connect Doc0 and Doc2'})
+    graph.add_edge(doc2, doc1, features={'text': 'I connect Doc2 and Doc1'})
+    graph.add_edge(doc1, doc3, features={'text': 'I connect Doc1 and Doc3'})
+    graph.add_edge(doc2, doc3, features={'text': 'I connect Doc2 and Doc3'})
     return graph
 
 
@@ -37,20 +37,36 @@ def validate_graph(graph):
     assert len(graph.nodes) == 4
 
     assert len(graph) == 5
+    edge_features = graph.edge_features
     for i, (d1, d2) in enumerate(graph):
         if i == 0:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc1'
+            )
             assert d1.text == 'Document0'
             assert d2.text == 'Document1'
         if i == 1:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc0 and Doc2'
+            )
             assert d1.text == 'Document0'
             assert d2.text == 'Document2'
         if i == 2:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc1'
+            )
             assert d1.text == 'Document2'
             assert d2.text == 'Document1'
         if i == 3:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc1 and Doc3'
+            )
             assert d1.text == 'Document1'
             assert d2.text == 'Document3'
         if i == 4:
+            assert (
+                edge_features[f'{d1.id}-{d2.id}']['text'] == 'I connect Doc2 and Doc3'
+            )
             assert d1.text == 'Document2'
             assert d2.text == 'Document3'
 
@@ -134,9 +150,12 @@ def test_remove_nodes(graph):
 def test_remove_edges(graph):
     edges = list([pair for pair in graph])
 
-    for i, (doc1, doc2) in enumerate(edges):
+    num_edge_features = len(graph.edge_features.keys())
+    for doc1, doc2 in edges:
         num_edges = graph.num_edges
         graph.remove_edge(doc1, doc2)
+        assert len(graph.edge_features.keys()) == num_edge_features - 1
+        num_edge_features -= 1
         assert graph.num_edges == num_edges - 1
 
     assert graph.num_nodes == 4  # nodes are not removed

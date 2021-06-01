@@ -82,10 +82,13 @@ class GraphDocument(Document):
                 zip(self.adjacency.row, self.adjacency.col)
             ):
                 if row.item() == offset or col.item() == offset:
-                    edges_to_remove.append(edge_id)
+                    edge_features_keys = (
+                        f'{self.nodes[row.item()].id}-{self.nodes[col.item()]}'
+                    )
+                    edges_to_remove.append((edge_id, edge_features_keys))
 
-            for edge_id in reversed(edges_to_remove):
-                self._remove_edge_id(edge_id)
+            for edge_id, edge_features_key in reversed(edges_to_remove):
+                self._remove_edge_id(edge_id, edge_features_key)
 
             if self.num_edges > 0:
                 row = np.copy(self.adjacency.row)
@@ -103,8 +106,7 @@ class GraphDocument(Document):
             node.id: offset for offset, node in enumerate(self.nodes)
         }
 
-    def _remove_edge_id(self, edge_id: int):
-        # TODO: This needs to rebuild completely the adjacency
+    def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
 
         if self.adjacency is not None:
@@ -120,6 +122,9 @@ class GraphDocument(Document):
             else:
                 self.adjacency = coo_matrix((0, 0))
 
+            if edge_feature_key in self.edge_features:
+                del self.edge_features[edge_feature_key]
+
     def remove_edge(self, doc1: 'Document', doc2: 'Document'):
         """
         Remove a node from the graph along with the edges that may contain it
@@ -133,7 +138,7 @@ class GraphDocument(Document):
             zip(self.adjacency.row, self.adjacency.col)
         ):
             if row.item() == offset1 and col.item() == offset2:
-                self._remove_edge_id(edge_id)
+                self._remove_edge_id(edge_id, f'{doc1.id}-{doc2.id}')
 
     def add_edge(
         self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
@@ -170,7 +175,7 @@ class GraphDocument(Document):
         )
         self.adjacency = coo_matrix((data, (row, col)))
         if features is not None:
-            self.edge_features[len(self.adjacency)] = features
+            self.edge_features[f'{doc1.id}-{doc2.id}'] = features
 
     @property
     def edge_features(self):
