@@ -99,13 +99,8 @@ class BaseStore(MutableMapping):
     def __setstate__(self, state: Dict):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
         now = datetime.now()
-        self.status = self._status_model(
-            time_created=state.get('time_created', now),
-            time_updated=state.get('time_updated', now),
-            num_add=state.get('num_add', 0),
-            num_del=state.get('num_del', 0),
-            items=state.get('items', {}),
-        )
+        self.status = self._status_model(**state)
+        self.status.time_updated = now
 
     def __getstate__(self) -> Dict:
         return self.status.dict()
