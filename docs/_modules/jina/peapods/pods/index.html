@@ -486,16 +486,6 @@
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BasePod.block"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Block the process until user hits KeyboardInterrupt """</span>
-
-        <span class="kn">import</span> <span class="nn">threading</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-            <span class="k">pass</span></div>
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_conditional_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
@@ -685,21 +675,23 @@
             <span class="c1"># in this case we (at local) need to know about remote the BIND address</span>
             <span class="k">return</span> <span class="n">bind_args</span><span class="o">.</span><span class="n">host</span>
 
-<div class="viewcode-block" id="BasePod.head_args"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.head_args">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""Get the arguments for the `head` of this BasePod.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="o">...</span></div>
+        <span class="o">...</span>
 
-<div class="viewcode-block" id="BasePod.tail_args"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.tail_args">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">tail_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">tail_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""Get the arguments for the `tail` of this BasePod.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="o">...</span></div>
+        <span class="o">...</span>
 
 <div class="viewcode-block" id="BasePod.join"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.join">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -778,7 +770,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_base_pod_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""Get the arguments for the `head` of this Pod.</span>
 
 
@@ -810,7 +802,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'ambiguous head node, maybe it is deducted already?'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tail_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">tail_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""Get the arguments for the `tail` of this BasePod.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>

@@ -499,8 +499,8 @@
         <span class="s1">'--freeze-network-settings'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related parameters can not be changed by the Flow during build time.'</span>
-        <span class="s1">'the Flow object would not be allowed to change them '</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related </span>
+<span class="s1">        parameters are frozen. They can not be changed by the Flow during the build time. '''</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span></div>

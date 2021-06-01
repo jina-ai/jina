@@ -430,11 +430,6 @@ are properly closed.</p>
 <dd><p>Stop all <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePea</span></code> in this BasePod.</p>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.peapods.pods.BasePod.block">
-<code class="sig-name descname"><span class="pre">block</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.block" title="Permalink to this definition">¶</a></dt>
-<dd><p>Block the process until user hits KeyboardInterrupt</p>
-</dd></dl>
-<dl class="py method">
 <dt id="jina.peapods.pods.BasePod.role">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">role</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.role" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the role of this <a class="reference internal" href="#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePod</span></code></a>.</p>
@@ -496,13 +491,23 @@ are properly closed.</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.BasePod.head_args">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">head_args</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.head_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.head_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">head_args</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.head_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the arguments for the <cite>head</cite> of this BasePod.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.BasePod.tail_args">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">tail_args</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.tail_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.tail_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">tail_args</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.tail_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the arguments for the <cite>tail</cite> of this BasePod.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.BasePod.join">
@@ -574,11 +579,21 @@ Internally, the peas can run with the process/thread backend. They can be also r
 <dt id="jina.peapods.pods.Pod.head_args">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">head_args</span></code><a class="headerlink" href="#jina.peapods.pods.Pod.head_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the arguments for the <cite>head</cite> of this Pod.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.Pod.tail_args">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">tail_args</span></code><a class="headerlink" href="#jina.peapods.pods.Pod.tail_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the arguments for the <cite>tail</cite> of this BasePod.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.Pod.all_args">

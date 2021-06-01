@@ -434,6 +434,14 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'The strategy of scheduling workload among Peas'</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--external'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The Pod will be considered an external Pod that has been started independently from the Flow. This Pod '</span>
+        <span class="s1">'will not be context managed by the Flow, and is considered with `--freeze-network-settings`'</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="c1"># hidden CLI used for internal only</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -451,13 +459,6 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'''The hosts of the peas when parallel greater than 1.</span>
 <span class="s1">        Peas will be evenly distributed among the hosts. By default,</span>
 <span class="s1">        peas are running on host provided by the argument ``host``'''</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--external'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The Pod will be considered a external Pod that has been started independently from the Pod. The Pod '</span>
-        <span class="s1">'will not be context managed by the Flow'</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>

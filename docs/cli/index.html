@@ -438,7 +438,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “5bcc8300-8be5-4fab-a627-39abc0e78562”</p>
+<p>Default: “4d80914e-96c3-48a2-bd08-0533239f5154”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -513,7 +513,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “6f7fc5a6-36fa-4a81-9bfd-f2b042c3ecf1”</p>
+<p>Default: “2545b9b9-dd5b-4901-9092-fe1565b57261”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -546,7 +546,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “573d6068-7e11-40a2-a8b5-bf3aceba531d”</p>
+<p>Default: “94f633d3-f415-4cde-ba9d-2b49a009f27e”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -602,9 +602,9 @@
                       <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">parallel</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">polling</span> <span class="p">{</span><span class="n">ANY</span><span class="p">,</span> <span class="n">ALL</span><span class="p">,</span> <span class="n">ALL_ASYNC</span><span class="p">}]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">scheduling</span> <span class="p">{</span><span class="n">LOAD_BALANCE</span><span class="p">,</span> <span class="n">ROUND_ROBIN</span><span class="p">}]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">scheduling</span> <span class="p">{</span><span class="n">LOAD_BALANCE</span><span class="p">,</span> <span class="n">ROUND_ROBIN</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">pod</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">POD</span><span class="p">,</span> <span class="n">JOIN</span><span class="p">,</span> <span class="n">INSPECT</span><span class="p">,</span> <span class="n">GATEWAY</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">peas</span><span class="o">-</span><span class="n">hosts</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">peas</span><span class="o">-</span><span class="n">hosts</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span>
 </pre></div>
 </div>
 <div class="section" id="Essential arguments">
@@ -645,7 +645,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 51395</p>
+<p>Default: 45789</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -691,11 +691,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 52485</p>
+<p>Default: 40301</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 54467</p>
+<p>Default: 52389</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -736,7 +736,10 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <p>Default: 0</p>
 </dd>
 <dt><kbd>--freeze-network-settings</kbd></dt>
-<dd><p>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related parameters can not be changed by the Flow during build time.the Flow object would not be allowed to change them</p>
+<dd><dl class="simple">
+<dt>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related</dt><dd><p>parameters are frozen. They can not be changed by the Flow during the build time.</p>
+</dd>
+</dl>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -780,7 +783,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 40747</p>
+<p>Default: 34293</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -807,7 +810,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “ddd2ce4c-4ce7-43da-b611-e919e8dbbac2”</p>
+<p>Default: “6c2ec244-271f-4190-9969-81fe89f8956b”</p>
 </dd>
 </dl>
 </div>
@@ -882,6 +885,10 @@ Python files, data files.</p>
 <p>The strategy of scheduling workload among Peas</p>
 <p>Default: 0</p>
 </dd>
+<dt><kbd>--external</kbd></dt>
+<dd><p>The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow, and is considered with <cite>–freeze-network-settings</cite></p>
+<p>Default: False</p>
+</dd>
 <dt><kbd>--pod-role</kbd></dt>
 <dd><p>Possible choices: POD, JOIN, INSPECT, GATEWAY, INSPECT_AUX_PASS, JOIN_INSPECT</p>
 <p>The role of this pod in the flow</p>
@@ -892,10 +899,6 @@ Python files, data files.</p>
 peas are running on host provided by the argument <code class="docutils literal notranslate"><span class="pre">host</span></code></p>
 </dd>
 </dl>
-</dd>
-<dt><kbd>--external</kbd></dt>
-<dd><p>The Pod will be considered a external Pod that has been started independently from the Pod. The Pod will not be context managed by the Flow</p>
-<p>Default: False</p>
 </dd>
 </dl>
 </div>
@@ -1068,7 +1071,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 55631</p>
+<p>Default: 56469</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1114,11 +1117,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 49667</p>
+<p>Default: 58353</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 51253</p>
+<p>Default: 43473</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1159,7 +1162,10 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <p>Default: 0</p>
 </dd>
 <dt><kbd>--freeze-network-settings</kbd></dt>
-<dd><p>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related parameters can not be changed by the Flow during build time.the Flow object would not be allowed to change them</p>
+<dd><dl class="simple">
+<dt>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related</dt><dd><p>parameters are frozen. They can not be changed by the Flow during the build time.</p>
+</dd>
+</dl>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1229,7 +1235,7 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 36419</p>
+<p>Default: 44829</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1343,7 +1349,7 @@ and oneof fields are not affected by this option.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 39433</p>
+<p>Default: 36849</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1389,11 +1395,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 55029</p>
+<p>Default: 40577</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 54767</p>
+<p>Default: 43289</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1434,7 +1440,10 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <p>Default: 0</p>
 </dd>
 <dt><kbd>--freeze-network-settings</kbd></dt>
-<dd><p>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related parameters can not be changed by the Flow during build time.the Flow object would not be allowed to change them</p>
+<dd><dl class="simple">
+<dt>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related</dt><dd><p>parameters are frozen. They can not be changed by the Flow during the build time.</p>
+</dd>
+</dl>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1478,7 +1487,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 51679</p>
+<p>Default: 52205</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1505,7 +1514,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “9291b952-5688-4520-9c87-d35256d4ef27”</p>
+<p>Default: “a936ebc8-5786-4405-8632-19abe9e16a21”</p>
 </dd>
 </dl>
 </div>
@@ -1592,7 +1601,7 @@ process Responses in bulk instead of using callback.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 58005</p>
+<p>Default: 48707</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
