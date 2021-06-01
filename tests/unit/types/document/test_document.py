@@ -845,27 +845,33 @@ def test_document_pretty_dict():
         embedding=np.array([1.0, 2.0, 3.0]),
         tags={'hello': 'world'},
     )
-    doc.chunks.append(Document(doc, copy=True))
-    doc.matches.append(Document(doc, copy=True))
+    chunk = Document(doc, copy=True)
+    chunk.blob = np.array([[3, 4, 5], [5, 4, 3]])
+    chunk.embedding = np.array([4.0, 5.0, 6.0])
+    match = Document(doc, copy=True)
+    match.blob = np.array([[6, 7, 8], [8, 7, 6]])
+    match.embedding = np.array([7.0, 8.0, 9.0])
+    doc.chunks.append(chunk)
+    doc.matches.append(match)
     assert doc.tags == {'hello': 'world'}
     assert doc.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert doc.embedding.tolist() == [1.0, 2.0, 3.0]
     assert doc.chunks[0].tags == {'hello': 'world'}
-    assert doc.chunks[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert doc.chunks[0].embedding.tolist() == [1.0, 2.0, 3.0]
+    assert doc.chunks[0].blob.tolist() == [[3, 4, 5], [5, 4, 3]]
+    assert doc.chunks[0].embedding.tolist() == [4.0, 5.0, 6.0]
     assert doc.matches[0].tags == {'hello': 'world'}
-    assert doc.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert doc.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
+    assert doc.matches[0].blob.tolist() == [[6, 7, 8], [8, 7, 6]]
+    assert doc.matches[0].embedding.tolist() == [7.0, 8.0, 9.0]
 
     d = doc.dict(prettify_ndarrays=True)
     assert d['blob'] == [[0, 1, 2], [2, 1, 0]]
     assert d['embedding'] == [1.0, 2.0, 3.0]
     assert d['tags'] == {'hello': 'world'}
-    assert d['chunks'][0]['blob'] == [[0, 1, 2], [2, 1, 0]]
-    assert d['chunks'][0]['embedding'] == [1.0, 2.0, 3.0]
+    assert d['chunks'][0]['blob'] == [[3, 4, 5], [5, 4, 3]]
+    assert d['chunks'][0]['embedding'] == [4.0, 5.0, 6.0]
     assert d['chunks'][0]['tags'] == {'hello': 'world'}
-    assert d['matches'][0]['blob'] == [[0, 1, 2], [2, 1, 0]]
-    assert d['matches'][0]['embedding'] == [1.0, 2.0, 3.0]
+    assert d['matches'][0]['blob'] == [[6, 7, 8], [8, 7, 6]]
+    assert d['matches'][0]['embedding'] == [7.0, 8.0, 9.0]
     assert d['matches'][0]['tags'] == {'hello': 'world'}
 
     d_reconstructed = Document(d)
@@ -873,11 +879,11 @@ def test_document_pretty_dict():
     assert d_reconstructed.blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert d_reconstructed.embedding.tolist() == [1.0, 2.0, 3.0]
     assert d_reconstructed.chunks[0].tags == {'hello': 'world'}
-    assert d_reconstructed.chunks[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert d_reconstructed.chunks[0].embedding.tolist() == [1.0, 2.0, 3.0]
+    assert d_reconstructed.chunks[0].blob.tolist() == [[3, 4, 5], [5, 4, 3]]
+    assert d_reconstructed.chunks[0].embedding.tolist() == [4.0, 5.0, 6.0]
     assert d_reconstructed.matches[0].tags == {'hello': 'world'}
-    assert d_reconstructed.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
-    assert d_reconstructed.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
+    assert d_reconstructed.matches[0].blob.tolist() == [[6, 7, 8], [8, 7, 6]]
+    assert d_reconstructed.matches[0].embedding.tolist() == [7.0, 8.0, 9.0]
 
 
 def test_document_pretty_json():
