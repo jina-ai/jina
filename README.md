@@ -17,16 +17,31 @@
 
 Jina allows you to build deep learning-powered search-as-a-service in just minutes.
 
-🌌 **Universal data type** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
+🌌 **All data types** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
 
 🌩️ **Fast & cloud-native** - Distributed architecture from day one. Scalable & cloud-native by design: enjoy
 containerizing, distributing, streaming, paralleling, sharding, async scheduling with REST/gRPC/WebSocket.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
-🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid the integration pitfalls with
+🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid integration pitfalls with
 fragmented, multi-vendor, generic legacy tools.
 
+## See Jina in Action
+
+Run `pip install --pre jina` and then:
+
+- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install --pre "jina[chatbot]" && jina hello chatbot`
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install --pre "jina[multimodal]" && jina hello multimodal`
+
+### Fork Demo & Build Your Own
+
+Copy the source code of a hello world to your own directory and start from there:
+
+```console
+$ jina hello fork fashion ../my-proj/ 
+```
 
 ## Installation
 
@@ -54,19 +69,21 @@ $ docker run jinaai/jina:master -v
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install --pre "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:master-daemon`</sub> |
 | <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:master-devel`</sub> |
 
-Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
-on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
-to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
+- Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). 
+- Jina can run on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). 
+- We welcome the community to help us with [native Windows support](https://github.com/jina-ai/jina/issues/1252).
 
 </details>
 
-## Get Started
+## Understand Jina
 
-Document, Executor, Flow are three fundamental concepts in Jina.
+Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 - [📄 **Document**](.github/2.0/cookbooks/Document.md) is the basic data type in Jina;
 - [⚙️ **Executor**](.github/2.0/cookbooks/Executor.md) is how Jina processes Documents;
 - [🔀 **Flow**](.github/2.0/cookbooks/Flow.md) is how Jina streamlines and distributes Executors.
+
+### Run the Jina server
 
 <a href="https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/2.0-readme-38l.ipynb"><img align="right" src="https://colab.research.google.com/assets/colab-badge.svg?raw=true"/></a>
 
@@ -81,7 +98,7 @@ from jina import Document, DocumentArray, Executor, Flow, requests
 class CharEmbed(Executor):  # a simple character embedding with mean-pooling
     offset = 32  # letter `a`
     dim = 127 - offset + 1  # last pos reserved for `UNK`
-    char_embd = np.eye(dim) * 1  # one-hot embedding for all chars
+    char_embd = np.eye(dim) * 1  # one-shot embedding for all chars
 
     @requests
     def foo(self, docs: DocumentArray, **kwargs):
@@ -90,7 +107,7 @@ class CharEmbed(Executor):  # a simple character embedding with mean-pooling
             d.embedding = self.char_embd[r_emb, :].mean(axis=0)  # average pooling
 
 class Indexer(Executor):
-    _docs = DocumentArray()  # for storing all document in memory
+    _docs = DocumentArray()  # for storing all documents in memory
 
     @requests(on='/index')
     def foo(self, docs: DocumentArray, **kwargs):
@@ -98,18 +115,20 @@ class Indexer(Executor):
 
     @requests(on='/search')
     def bar(self, docs: DocumentArray, **kwargs):
-        q = np.stack(docs.get_attributes('embedding'))  # get all embedding from query docs
-        d = np.stack(self._docs.get_attributes('embedding'))  # get all embedding from stored docs
+        q = np.stack(docs.get_attributes('embedding'))  # get all embeddings from query docs
+        d = np.stack(self._docs.get_attributes('embedding'))  # get all embeddings from stored docs
         euclidean_dist = np.linalg.norm(q[:, None, :] - d[None, :, :], axis=-1)  # pairwise euclidean distance
         for dist, query in zip(euclidean_dist, docs):  # add & sort match
             query.matches = [Document(self._docs[int(idx)], copy=True, score=d) for idx, d in enumerate(dist)]
-            query.matches.sort(key=lambda m: m.score.value)  # sort matches by its value
+            query.matches.sort(key=lambda m: m.score.value)  # sort matches by their values
 
-f = Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a flow, with 2 parallel CharEmbed, tho unnecessary
+f = Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of this file
     f.block()  # block for listening request
 ```
+
+### Connect with a client
 
 Keep the above running and start a simple client:
 
@@ -124,7 +143,7 @@ c = Client(host='localhost', port_expose=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
-It finds most similar lines to "`request(on=something)`" from the server code snippet and prints the following:  
+It finds the lines most similar to "`request(on=something)`" from the server code snippet and prints the following:
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
@@ -134,20 +153,6 @@ It finds most similar lines to "`request(on=something)`" from the server code sn
 ```
 <sup>😔 Doesn't work? Our bad! <a href="https://github.com/jina-ai/jina/issues/new?assignees=&labels=kind%2Fbug&template=---found-a-bug-and-i-solved-it.md&title=">Please report it here.</a></sup>
 
-
-### Run Quick Demo
-
-- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install --pre "jina[chatbot]" && jina hello chatbot`
-- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install --pre "jina[multimodal]" && jina hello multimodal`
-
-#### Fork Demo & Build Your Own
-
-Copy the source code of a hello world to your own directory and start from there:
-
-```console
-$ jina hello fork fashion ../my-proj/ 
-```
 
 ### Read Tutorials
 
