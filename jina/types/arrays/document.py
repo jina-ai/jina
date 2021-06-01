@@ -307,7 +307,13 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
 
         with file_ctx as fp:
             dap = DocumentArrayProto()
-            dap.docs.extend([d.proto for d in self._docs_proto])
+            if len(self._docs_proto) > 0:
+                if type(self._docs_proto[0]) != DocumentProto:
+                    dap.docs.extend([d.proto for d in self._docs_proto])
+                else:
+                    dap.docs.extend([d for d in self._docs_proto])
+            else:
+                default_logger.warning('data is empty')
             fp.write(dap.SerializeToString())
 
     def save_json(self, file: Union[str, TextIO]) -> None:
