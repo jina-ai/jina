@@ -203,7 +203,7 @@ class CompoundPod(BasePod):
             _args.replica_id = idx
             _args.identity = random_identity()
             if _args.name:
-                _args.name += f'/replica-{idx}'
+                _args.name += f'/rep-{idx}'
             else:
                 _args.name = f'{idx}'
 
