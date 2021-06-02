@@ -95,7 +95,6 @@ Represents a Document
 | uri | [string](#string) |  | a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |
 | chunks | [DocumentProto](#jina.DocumentProto) | repeated | list of the sub-documents of this document (recursive structure) |
 | weight | [float](#float) |  | The weight of this document |
-| siblings | [uint32](#uint32) |  | total number of siblings of this document (docs that are in the same granularity and have the same parent_id) |
 | matches | [DocumentProto](#jina.DocumentProto) | repeated | the matched documents on the same level (recursive structure) |
 | mime_type | [string](#string) |  | mime type of this document, for buffer content, this is required; for other contents, this can be guessed |
 | tags | [google.protobuf.Struct](#google.protobuf.Struct) |  | a structured data value, consisting of field which map to dynamically typed values. |

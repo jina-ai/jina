@@ -673,22 +673,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">siblings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        The number of siblings of the :class:``Document``</span>
-
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        :getter: number of siblings</span>
-<span class="sd">        :setter: number of siblings</span>
-<span class="sd">        :type: int</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">siblings</span>
-
-    <span class="nd">@siblings</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">siblings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">siblings</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        :return: the weight of the document</span>
