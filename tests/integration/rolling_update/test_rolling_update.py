@@ -35,6 +35,7 @@ class DummyMarkExecutor(Executor):
         for doc in docs:
             doc.tags['replica'] = self.runtime_args.replica_id
             doc.tags['shard'] = self.runtime_args.pea_id
+            doc.tags['reference'] = id(self)
 
     def close(self) -> None:
         import os
@@ -294,3 +295,40 @@ def test_num_peas(config):
             + 1  # compound pod tail
             + 1  # gateway
         )
+
+
+@pytest.mark.repeat(5)
+@pytest.mark.timeout(30)
+def test_distinct_executor_ids(config, docs, mocker, reraise):
+    def update_rolling(flow, pod_name):
+        with reraise:
+            flow.rolling_update(pod_name)
+
+    ids = set()
+
+    error_mock = mocker.Mock()
+    with Flow(return_results=True).add(
+        name='pod1',
+        uses=DummyMarkExecutor,
+        replicas=2,
+        parallel=1,
+        timeout_ready=5000,
+    ) as flow:
+        for i in range(5):
+            flow.search(docs, on_error=error_mock)
+        x = threading.Thread(
+            target=update_rolling,
+            args=(
+                flow,
+                'pod1',
+            ),
+        )
+        for i in range(40):
+            result = flow.search(docs)
+            id = result[0].docs[0].tags['reference']
+            ids.add(id)
+            if i == 5:
+                x.start()
+        x.join()
+    error_mock.assert_not_called()
+    assert len(ids) >= 3  # seems we cannot guarantee that they will all be reached
