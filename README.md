@@ -32,15 +32,11 @@ fragmented, multi-vendor, generic legacy tools.
 - [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `pip install --pre && jina hello fashion`
 - [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install --pre "jina[chatbot]" && jina hello chatbot`
 - [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install --pre "jina[multimodal]" && jina hello multimodal`
-- 🍴 Fork the source code of a hello world to your own directory and start from there:
-    
-    ```console
-    $ jina hello fork fashion ../my-proj/ 
-    ```
+- 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
 ## Install
 
-2.0 is still in pre-release, **add `--pre`** to install it. [Why 2.0?](.github/2.0/1vs2.md)
+2.0 is in pre-release, **add `--pre`** to install it. [Why 2.0?](.github/2.0/1vs2.md)
 
 ```console
 $ pip install --pre jina
