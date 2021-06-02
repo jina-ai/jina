@@ -666,29 +666,6 @@ def test_document_sparse_embedding(
         )
 
 
-def test_siblings_needs_to_be_set_manually():
-    document = Document()
-    with document:
-        document.text = 'this is text'
-        for i in range(3):
-            chunk = Document()
-            chunk.text = 'text in chunk'
-            document.chunks.append(chunk)
-    for i in range(3):
-        assert document.chunks[i].siblings == 0
-
-    document = Document()
-    with document:
-        document.text = 'this is text'
-        for i in range(3):
-            chunk = Document()
-            chunk.text = 'text in chunk'
-            chunk.siblings = 3
-            document.chunks.append(chunk)
-    for i in range(3):
-        assert document.chunks[i].siblings == 3
-
-
 def test_evaluations():
     document = Document()
     score = document.evaluations.add()
