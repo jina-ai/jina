@@ -550,14 +550,14 @@
         <span class="n">file_type</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">read_mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">file_type</span> <span class="ow">in</span> <span class="n">_jsonl_ext</span><span class="p">:</span>
-                <span class="k">yield from</span> <span class="n">from_ndjson</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">yield from</span> <span class="n">from_ndjson</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">file_type</span> <span class="ow">in</span> <span class="n">_csv_ext</span><span class="p">:</span>
                 <span class="k">yield from</span> <span class="n">from_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">yield from</span> <span class="n">_subsample</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">lines</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">line_format</span> <span class="o">==</span> <span class="s1">'json'</span><span class="p">:</span>
-            <span class="k">yield from</span> <span class="n">from_ndjson</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+            <span class="k">yield from</span> <span class="n">from_ndjson</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">line_format</span> <span class="o">==</span> <span class="s1">'csv'</span><span class="p">:</span>
             <span class="k">yield from</span> <span class="n">from_csv</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">field_resolver</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -593,7 +593,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 01, 2021.
+            Last updated on Jun 02, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
