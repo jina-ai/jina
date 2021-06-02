@@ -82,6 +82,7 @@ DocumentSourceType = TypeVar(
 _all_mime_types = set(mimetypes.types_map.values())
 
 _all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
+_all_doc_array_keys = ('blob', 'embedding')
 
 
 class Document(ProtoTypeMixin):
@@ -191,6 +192,21 @@ class Document(ProtoTypeMixin):
             elif isinstance(document, (dict, str)):
                 if isinstance(document, str):
                     document = json.loads(document)
+
+                def _update_doc(d: Dict):
+                    for key in _all_doc_array_keys:
+                        if key in d:
+                            value = d[key]
+                            if isinstance(value, list):
+                                d[key] = NdArray(np.array(d[key])).dict()
+                        if 'chunks' in d:
+                            for chunk in d['chunks']:
+                                _update_doc(chunk)
+                        if 'matches' in d:
+                            for match in d['matches']:
+                                _update_doc(match)
+
+                _update_doc(document)
 
                 if field_resolver:
                     document = {
@@ -1171,6 +1187,53 @@ class Document(ProtoTypeMixin):
             from jina.logging.predefined import default_logger
 
             default_logger.info(f'Document visualization: {url}')
+
+    def _prettify_doc_dict(self, d: Dict):
+        """Changes recursively a dictionary to show nd array fields as lists of values
+
+        :param d: the dictionary to prettify
+        """
+        for key in _all_doc_array_keys:
+            if key in d:
+                value = getattr(self, key)
+                if isinstance(value, np.ndarray):
+                    d[key] = value.tolist()
+            if 'chunks' in d:
+                for chunk_doc, chunk_dict in zip(self.chunks, d['chunks']):
+                    chunk_doc._prettify_doc_dict(chunk_dict)
+            if 'matches' in d:
+                for match_doc, match_dict in zip(self.matches, d['matches']):
+                    match_doc._prettify_doc_dict(match_dict)
+
+    def dict(self, prettify_ndarrays=False, *args, **kwargs):
+        """Return the object in Python dictionary
+
+        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
+        :return: dict representation of the object
+        """
+        d = super().dict(*args, **kwargs)
+        if prettify_ndarrays:
+            self._prettify_doc_dict(d)
+        return d
+
+    def json(self, prettify_ndarrays=False, *args, **kwargs):
+        """Return the object in JSON string
+
+        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
+        :return: JSON string of the object
+        """
+        if prettify_ndarrays:
+            import json
+
+            d = super().dict(*args, **kwargs)
+            self._prettify_doc_dict(d)
+            return json.dumps(d, sort_keys=True, **kwargs)
+        else:
+            return super().json(*args, **kwargs)
 
     @property
     def non_empty_fields(self) -> Tuple[str]:
