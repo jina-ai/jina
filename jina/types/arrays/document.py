@@ -309,7 +309,7 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             dap = DocumentArrayProto()
             if self._docs_proto:
                 if isinstance(self._docs_proto[0], DocumentProto):
-                    dap.docs.extend([d for d in self._docs_proto])
+                    dap.docs.extend(self._docs_proto)
                 else:
                     dap.docs.extend([d.proto for d in self._docs_proto])
             fp.write(dap.SerializeToString())
