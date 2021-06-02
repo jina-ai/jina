@@ -307,7 +307,11 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
 
         with file_ctx as fp:
             dap = DocumentArrayProto()
-            dap.docs.extend([d.proto for d in self._docs_proto])
+            if self._docs_proto:
+                if isinstance(self._docs_proto[0], DocumentProto):
+                    dap.docs.extend(self._docs_proto)
+                else:
+                    dap.docs.extend([d.proto for d in self._docs_proto])
             fp.write(dap.SerializeToString())
 
     def save_json(self, file: Union[str, TextIO]) -> None:
