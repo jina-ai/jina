@@ -75,10 +75,56 @@ def test_input_lines_with_empty_filepath_and_lines():
 
 
 def test_input_lines_with_jsonlines_docs():
-    result = list(from_lines(filepath='tests/unit/clients/python/docs.jsonlines'))
+    result = list(from_lines(filepath=os.path.join(cur_dir, 'docs.jsonlines')))
     assert len(result) == 2
     assert result[0].text == "a"
     assert result[1].text == "b"
+
+
+@pytest.mark.parametrize(
+    'size, sampling_rate',
+    [
+        (None, None),
+        (1, None),
+        (None, 0.5),
+    ],
+)
+def test_input_lines_with_jsonlines_file(size, sampling_rate):
+    result = list(
+        from_lines(
+            filepath=os.path.join(cur_dir, 'docs.jsonlines'),
+            size=size,
+            sampling_rate=sampling_rate,
+        )
+    )
+    assert len(result) == size if size is not None else 2
+    if sampling_rate is None:
+        assert result[0].text == "a"
+        if size is None:
+            assert result[1].text == "b"
+
+
+@pytest.mark.parametrize(
+    'size, sampling_rate',
+    [
+        (None, None),
+        (1, None),
+        (None, 0.5),
+    ],
+)
+def test_input_lines_with_jsonslines(size, sampling_rate):
+    with open(os.path.join(cur_dir, 'docs.jsonlines')) as fp:
+        lines = fp.readlines()
+    result = list(
+        from_lines(
+            lines=lines, line_format='json', size=size, sampling_rate=sampling_rate
+        )
+    )
+    assert len(result) == size if size is not None else 2
+    if sampling_rate is None:
+        assert result[0].text == "a"
+        if size is None:
+            assert result[1].text == "b"
 
 
 def test_input_lines_with_jsonlines_docs_groundtruth():

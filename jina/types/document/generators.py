@@ -176,14 +176,14 @@ def from_lines(
         file_type = os.path.splitext(filepath)[1]
         with open(filepath, read_mode) as f:
             if file_type in _jsonl_ext:
-                yield from from_ndjson(f)
+                yield from from_ndjson(f, field_resolver, size, sampling_rate)
             elif file_type in _csv_ext:
                 yield from from_csv(f, field_resolver, size, sampling_rate)
             else:
                 yield from _subsample(f, size, sampling_rate)
     elif lines:
         if line_format == 'json':
-            yield from from_ndjson(lines)
+            yield from from_ndjson(lines, field_resolver, size, sampling_rate)
         elif line_format == 'csv':
             yield from from_csv(lines, field_resolver, size, sampling_rate)
         else:
