@@ -1347,6 +1347,40 @@ the suffix svg/jpg determines the file type of the output image</p></li>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt id="jina.Document.dict">
+<code class="sig-name descname"><span class="pre">dict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prettify_ndarrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Document.dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the object in Python dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prettify_ndarrays</strong> – boolean indicating if the ndarrays need to be prettified to be shown as lists of values</p></li>
+<li><p><strong>args</strong> – Extra positional arguments</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict representation of the object</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.Document.json">
+<code class="sig-name descname"><span class="pre">json</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prettify_ndarrays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Document.json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the object in JSON string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prettify_ndarrays</strong> – boolean indicating if the ndarrays need to be prettified to be shown as lists of values</p></li>
+<li><p><strong>args</strong> – Extra positional arguments</p></li>
+<li><p><strong>kwargs</strong> – Extra keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>JSON string of the object</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt id="jina.Document.non_empty_fields">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">non_empty_fields</span></code><a class="headerlink" href="#jina.Document.non_empty_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the set fields of the current document that are not empty</p>
