@@ -68,7 +68,7 @@ message NamedScoreProto {
 }
 
 /**
- * Represents the relevance model to `ref_id`
+ * Represents a Graph
  */
 message GraphRelatedInfoProto {
     SparseNdArrayProto adjacency = 1; // adjacency list
