@@ -49,9 +49,12 @@ class RESTRuntime(AsyncNewLoopRuntime):
         # But uvicorn doesn't expose a config for max_size of a ws message, hence falling back to `ws='wsproto'`
         # Change to 'auto' once https://github.com/encode/uvicorn/pull/538 gets merged,
         # as 'wsproto' is less performant and adds another dependency.
+
+        from .....helper import extend_rest_interface
+
         self._server = UviServer(
             config=Config(
-                app=get_fastapi_app(self.args, self.logger),
+                app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
                 host=self.args.host,
                 port=self.args.port_expose,
                 ws='wsproto',
