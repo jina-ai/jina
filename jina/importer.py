@@ -192,8 +192,8 @@ class PathImporter:
                 It is imported as `jinahub.{user_module_name}`
                 
                 Affects:
-                - Either, you have change your code from `from {user_module_name} import ...` to `from jinahub.{user_module_name} import ...`
-                - Or, you rename {user_module_name} to another name
+                - Either, change your code from using `from {user_module_name} import ...` to `from jinahub.{user_module_name} import ...`
+                - Or, rename {user_module_name} to another name
                 '''
                 )
                 spec_name = f'{spec.name}.{user_module_name}'
