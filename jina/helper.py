@@ -586,7 +586,6 @@ _COLORS = {
 
 _RESET = '\033[0m'
 
-
 if os.name == 'nt':
     os.system('color')
 
@@ -1285,3 +1284,27 @@ def dunder_get(_dict: Any, key: str) -> Any:
         result = getattr(_dict, part1)
 
     return dunder_get(result, part2) if part2 else result
+
+
+if False:
+    from fastapi import FastAPI
+
+
+def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
+    """Extend Jina built-in FastAPI instance with customized APIs, routing, etc.
+
+    :param app: the built-in FastAPI instance given by Jina
+    :return: the extended FastAPI instance
+
+    .. highlight:: python
+    .. code-block:: python
+
+        def extend_rest_interface(app: 'FastAPI'):
+
+            @app.get('/extension1')
+            async def root():
+                return {"message": "Hello World"}
+
+            return app
+    """
+    return app
