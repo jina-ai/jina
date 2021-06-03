@@ -298,7 +298,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         # pod workspace if not set then derive from flow workspace
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
-        op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
+        op_flow._pod_nodes[pod_name] = PodFactory.build_pod(
+            args, needs, self.args.identity
+        )
         op_flow.last_pod = pod_name
 
         if 'external' in kwargs and kwargs['external'] is True:

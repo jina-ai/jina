@@ -130,3 +130,11 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+    gp.add_argument(
+        '--flow-identity',
+        type=str,
+        default=None,
+        help='A UUID string to represent the identity of the Flow. Used to subscribe to the messages of a Flow'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

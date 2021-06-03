@@ -41,6 +41,7 @@ class Zmqlet:
         ctrl_addr: Optional[str] = None,
     ):
         self.args = args
+        print(f' JOAN FLOW_IDENTITY {self.args.flow_identity}')
         self.identity = random_identity()
         self.name = args.name or self.__class__.__name__
         self.logger = logger
@@ -162,6 +163,7 @@ class Zmqlet:
                 ssh_server=self.args.ssh_server,
                 ssh_keyfile=self.args.ssh_keyfile,
                 ssh_password=self.args.ssh_password,
+                flow_topic=self.args.flow_identity,
             )
             self.logger.debug(
                 f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}'
@@ -176,6 +178,7 @@ class Zmqlet:
                 ssh_server=self.args.ssh_server,
                 ssh_keyfile=self.args.ssh_keyfile,
                 ssh_password=self.args.ssh_password,
+                flow_topic=self.args.flow_identity,
             )
             self.logger.debug(
                 f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}'
@@ -243,7 +246,9 @@ class Zmqlet:
         else:
             o_sock = self.ctrl_sock
 
-        self.bytes_sent += send_message(o_sock, msg, **self.send_recv_kwargs)
+        self.bytes_sent += send_message(
+            o_sock, msg, topic_send=self.args.flow_identity, **self.send_recv_kwargs
+        )
         self.msg_sent += 1
 
         if o_sock == self.out_sock and self.in_sock_type == zmq.DEALER:
@@ -474,6 +479,7 @@ def send_message(
     msg: 'Message',
     raise_exception: bool = False,
     timeout: int = -1,
+    topic_send: Optional[str] = None,
     **kwargs,
 ) -> int:
     """Send a protobuf message to a socket
@@ -488,7 +494,21 @@ def send_message(
     num_bytes = 0
     try:
         _prep_send_socket(sock, timeout)
-        sock.send_multipart(msg.dump())
+
+        print(f' type sock {type(sock)}')
+        if (
+            isinstance(sock, zmq.Socket)
+            and sock.type == zmq.PUB
+            or isinstance(sock, ZMQStream)
+            and sock.socket.type == zmq.PUB
+        ):
+            print(f' type sock PUBLISH')
+            print(f' dump {msg.dump()}')
+            msg_dump = [topic_send.encode('utf-8')] + msg.dump()
+            print(f' msg_dump {msg_dump}')
+        else:
+            msg_dump = msg.dump()
+        sock.send_multipart(msg_dump)
         num_bytes = msg.size
     except zmq.error.Again:
         raise TimeoutError(
@@ -524,7 +544,11 @@ def _prep_recv_socket(sock, timeout):
 
 
 async def send_message_async(
-    sock: 'zmq.Socket', msg: 'Message', timeout: int = -1, **kwargs
+    sock: 'zmq.Socket',
+    msg: 'Message',
+    timeout: int = -1,
+    topic_send: Optional[str] = None,
+    **kwargs,
 ) -> int:
     """Send a protobuf message to a socket in async manner
 
@@ -536,7 +560,12 @@ async def send_message_async(
     """
     try:
         _prep_send_socket(sock, timeout)
-        await sock.send_multipart(msg.dump())
+        if sock.type == zmq.PUB:
+            print(f' type sock PUBLISH ASYNC')
+            msg_dump = [topic_send.encode('utf-8')] + msg.dump()
+        else:
+            msg_dump = msg.dump()
+        await sock.send_multipart(msg_dump)
         return msg.size
     except zmq.error.Again:
         raise TimeoutError(
@@ -637,7 +666,7 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
     if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
         frames = [b' '] + frames
-    elif sock_type == zmq.ROUTER:
+    elif sock_type == zmq.ROUTER or sock_type == zmq.SUB:
         # the router appends dealer id when receive it, we need to remove it
         frames.pop(0)
 
@@ -672,6 +701,7 @@ def _init_socket(
     ssh_server: Optional[str] = None,
     ssh_keyfile: Optional[str] = None,
     ssh_password: Optional[str] = None,
+    flow_topic: Optional[str] = None,
 ) -> Tuple['zmq.Socket', str]:
     sock = {
         SocketType.PULL_BIND: lambda: ctx.socket(zmq.PULL),
@@ -731,7 +761,8 @@ def _init_socket(
             sock.connect(address)
 
     if socket_type in {SocketType.SUB_CONNECT, SocketType.SUB_BIND}:
-        # sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')
-        sock.subscribe('')  # An empty shall subscribe to all incoming messages
+        print(f' subscribe {flow_topic.encode("utf-8")}')
+        sock.setsockopt(zmq.SUBSCRIBE, flow_topic.encode('utf-8'))
+        # sock.subscribe(flow_topic.encode('utf-8'))  # An empty shall subscribe to all incoming messages
 
     return sock, sock.getsockopt_string(zmq.LAST_ENDPOINT)

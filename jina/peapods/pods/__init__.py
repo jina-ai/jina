@@ -345,6 +345,7 @@ class Pod(BasePod):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__(args, needs)
+        print(f' JOAN POD FLOW_IDENTITY {self.args.flow_identity}')
         self.peas = []  # type: List['BasePea']
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
@@ -352,6 +353,10 @@ class Pod(BasePod):
         else:
             self.peas_args = self._parse_args(args)
         self._activated = False
+        self.head_args.flow_identity = self.args.flow_identity
+        self.tail_args.flow_identity = self.args.flow_identity
+        for a in self.peas_args['peas']:
+            a.flow_identity = self.args.flow_identity
 
     @property
     def is_singleton(self) -> bool:
