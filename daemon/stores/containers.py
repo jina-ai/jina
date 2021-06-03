@@ -1,7 +1,7 @@
 from typing import Dict
 from datetime import datetime
 
-from jina.helper import colored
+from jina.helper import colored, ArgNamespace
 
 from .base import BaseStore
 from ..models import DaemonID
@@ -25,13 +25,15 @@ class ContainerStore(BaseStore):
 
     @BaseStore.dump
     def add(
-        self, id: DaemonID, workspace_id: DaemonID, command: str, ports: Dict, **kwargs
+        self, id: DaemonID, workspace_id: DaemonID, params: str, ports: Dict, **kwargs
     ):
         try:
             from . import workspace_store
 
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
+
+            command = f'jinad-partial --mode {self._kind} {" ".join(ArgNamespace.kwargs2list(params.dict(exclude={"log_config"})))}'
 
             _container, _network, _ports, _success = Dockerizer.run(
                 workspace_id=workspace_id,

@@ -32,7 +32,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
         return store.add(
             id=pod.id,
             workspace_id=pod.workspace_id,
-            command=pod.command,
+            params=pod.params,
             ports=pod.ports,
         )
     except Exception as ex:

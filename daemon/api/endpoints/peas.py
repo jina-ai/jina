@@ -35,7 +35,7 @@ async def _create(pea: PeaDepends = Depends(PeaDepends)):
         return store.add(
             id=pea.id,
             workspace_id=pea.workspace_id,
-            command=pea.command,
+            params=pea.params,
             ports=pea.ports,
         )
     except Exception as ex:

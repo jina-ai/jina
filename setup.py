@@ -149,7 +149,11 @@ setup(
     install_requires=list(all_deps['core'].union(all_deps['perf'])),
     extras_require=all_deps,
     entry_points={
-        'console_scripts': ['jina=cli:main', 'jinad=daemon:main'],
+        'console_scripts': [
+            'jina=cli:main',
+            'jinad=daemon:main',
+            'jinad-partial=daemon:partial',
+        ],
     },
     cmdclass={
         'develop': PostDevelopCommand,

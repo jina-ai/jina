@@ -1,23 +1,28 @@
 import os
 import pathlib
 import subprocess
-from queue import Queue
 from pathlib import Path
+from queue import Queue
 from threading import Thread
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
+from jina import __version__, __resources_path__, Flow
 from jina.logging.logger import JinaLogger
-from jina import __version__, __resources_path__
-from .parser import get_main_parser, _get_run_args
+from jina.parsers import set_pea_parser, set_pod_parser
+from jina.parsers.flow import set_flow_parser
+from jina.peapods.peas import BasePea
+from jina.peapods.pods.factory import PodFactory
+from jina.peapods.runtimes import ZEDRuntime
 from .excepts import (
     RequestValidationError,
     Runtime400Exception,
     daemon_runtime_exception_handler,
     validation_exception_handler,
 )
+from .parser import get_main_parser, _get_run_args, get_partial_parser
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
@@ -119,6 +124,25 @@ def _start_consumer():
     from .tasks import ConsumerThread
 
     ConsumerThread().start()
+
+
+def partial():
+    """ Entrypoint for partial jinad. Starts one of [flow, pod, pea] """
+    parser = get_partial_parser()
+    args, extra_args = parser.parse_known_args()
+
+    if args.mode == 'flow':
+        flow = Flow(set_flow_parser().parse_args(extra_args))
+        flow.start()
+    elif args.mode == 'pod':
+        pod = PodFactory.build_pod(set_pod_parser().parse_args(extra_args))
+        pod.start()
+    elif args.mode == 'pea':
+        pea = BasePea(set_pea_parser().parse_args(extra_args))
+        pea.runtime_cls = ZEDRuntime
+        pea.start()
+    else:
+        raise ValueError(f'Can not start partial JinaD with unknown mode {args.mode}')
 
 
 def main():

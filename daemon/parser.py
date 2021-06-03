@@ -50,6 +50,18 @@ def get_main_parser():
     return parser
 
 
+def get_partial_parser():
+    parser = set_base_parser()
+
+    parser.add_argument(
+        '--mode',
+        type=str,
+        help='Mode for partial jinad. Can be flow/pod/pea',
+    )
+
+    return parser
+
+
 def _get_run_args(print_args: bool = True):
     from jina.helper import colored
     from . import daemon_logger
