@@ -1,9 +1,10 @@
 from typing import Dict
-from datetime import datetime
 
-from jina.helper import colored, ArgNamespace
-
+from jina.helper import colored, ArgNamespace, random_port
 from .base import BaseStore
+from ..dockerize import Dockerizer
+from ..excepts import Runtime400Exception
+from ..helper import id_cleaner, random_port_range
 from ..models import DaemonID
 from ..models.containers import (
     ContainerArguments,
@@ -11,10 +12,6 @@ from ..models.containers import (
     ContainerMetadata,
     ContainerStoreStatus,
 )
-from .. import __root_workspace__
-from ..dockerize import Dockerizer
-from ..excepts import Runtime400Exception
-from ..helper import id_cleaner, random_port_range
 
 
 class ContainerStore(BaseStore):
@@ -33,7 +30,10 @@ class ContainerStore(BaseStore):
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
 
-            command = f'jinad-partial --mode {self._kind} {" ".join(ArgNamespace.kwargs2list(params.dict(exclude={"log_config"})))}'
+            rest_api_port = random_port()
+            command = f'jinad-partial --mode {self._kind} --rest-api-port {rest_api_port} {" ".join(ArgNamespace.kwargs2list(params.dict(exclude={"log_config"})))}'
+
+            ports[f'{rest_api_port}/tcp'] = rest_api_port
 
             _container, _network, _ports, _success = Dockerizer.run(
                 workspace_id=workspace_id,

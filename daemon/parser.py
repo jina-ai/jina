@@ -59,6 +59,12 @@ def get_partial_parser():
         help='Mode for partial jinad. Can be flow/pod/pea',
     )
 
+    parser.add_argument(
+        '--rest-api-port',
+        type=str,
+        help='Port to use for exposing the flow/pod/pea',
+    )
+
     return parser
 
 

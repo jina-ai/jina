@@ -34,7 +34,7 @@ __rootdir__ = str(Path(__file__).parent.parent.absolute())
 __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
 
 
-def _get_app():
+def _get_app(mode=None):
     from .api.endpoints import router, flows, pods, peas, logs, workspaces
 
     app = FastAPI(
@@ -46,26 +46,6 @@ def _get_app():
                 'name': 'daemon',
                 'description': 'API to manage the Daemon',
             },
-            {
-                'name': 'flows',
-                'description': 'API to manage Flows',
-            },
-            {
-                'name': 'pods',
-                'description': 'API to manage Pods',
-            },
-            {
-                'name': 'peas',
-                'description': 'API to manage Peas',
-            },
-            {
-                'name': 'logs',
-                'description': 'API to stream Logs',
-            },
-            {
-                'name': 'workspaces',
-                'description': 'API to manage Workspaces',
-            },
         ],
     )
     app.add_middleware(
@@ -75,14 +55,65 @@ def _get_app():
         allow_methods=['*'],
         allow_headers=['*'],
     )
+
     app.include_router(router)
-    app.include_router(logs.router)
-    app.include_router(peas.router)
-    app.include_router(pods.router)
-    app.include_router(flows.router)
-    app.include_router(workspaces.router)
     app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
+
+    if mode is None:
+        app.include_router(logs.router)
+        app.include_router(peas.router)
+        app.include_router(pods.router)
+        app.include_router(flows.router)
+        app.include_router(workspaces.router)
+        app.openapi_tags.extend(
+            [
+                {
+                    'name': 'flows',
+                    'description': 'API to manage Flows',
+                },
+                {
+                    'name': 'pods',
+                    'description': 'API to manage Pods',
+                },
+                {
+                    'name': 'peas',
+                    'description': 'API to manage Peas',
+                },
+                {
+                    'name': 'logs',
+                    'description': 'API to stream Logs',
+                },
+                {
+                    'name': 'workspaces',
+                    'description': 'API to manage Workspaces',
+                },
+            ]
+        )
+    elif mode == 'pod':
+        app.include_router(pods.router)
+        app.openapi_tags.append(
+            {
+                'name': 'pods',
+                'description': 'API to manage Pods',
+            }
+        )
+    elif mode == 'pea':
+        app.include_router(peas.router)
+        app.openapi_tags.append(
+            {
+                'name': 'peas',
+                'description': 'API to manage Peas',
+            },
+        )
+    elif mode == 'flow':
+        app.include_router(flows.router)
+        app.openapi_tags.append(
+            {
+                'name': 'flows',
+                'description': 'API to manage Flows',
+            }
+        )
 
     return app
 
@@ -143,6 +174,9 @@ def partial():
         pea.start()
     else:
         raise ValueError(f'Can not start partial JinaD with unknown mode {args.mode}')
+
+    jinad_args.port_expose = args.rest_api_port
+    _start_uvicorn(app=_get_app(mode=args.mode))
 
 
 def main():
