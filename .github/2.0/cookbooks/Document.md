@@ -36,6 +36,7 @@ Table of Contents
   - [Serialize `Document`](#serialize-document)
   - [Add Recursion to `Document`](#add-recursion-to-document)
     - [Recursive Attributes](#recursive-attributes)
+  - [Represent `Document` as Dictionary or JSON](#represent-document-as-dictionary-or-json)
   - [Visualize `Document`](#visualize-document)
   - [Add Relevancy to `Document`s](#add-relevancy-to-documents)
     - [Relevance Attributes](#relevance-attributes)
@@ -418,6 +419,75 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
   ```
 
 Note that both `doc.chunks` and `doc.matches` return `DocumentArray`, which we will introduce later.
+
+### Represent `Document` as Dictionary or JSON
+
+Any `Document` can be converted into a `Python dictionary` or into `Json string` by calling their `.dict()` or `.json()` methods. 
+
+```python
+import pprint
+import numpy as np
+
+from jina import Document
+
+d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
+pprint.pprint(d0.dict())
+pprint.pprint(d0.json())
+```
+
+```text
+{'embedding': {'dense': {'buffer': 'AAAAAAAAAAAAAAAAAAAAAA==',
+                         'dtype': '<i8',
+                         'shape': [2]}},
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+('{\n'
+ '  "embedding": {\n'
+ '    "dense": {\n'
+ '      "buffer": "AAAAAAAAAAAAAAAAAAAAAA==",\n'
+ '      "dtype": "<i8",\n'
+ '      "shape": [\n'
+ '        2\n'
+ '      ]\n'
+ '    }\n'
+ '  },\n'
+ '  "id": "identifier",\n'
+ '  "mime_type": "text/plain",\n'
+ '  "tags": {\n'
+ '    "cool": true\n'
+ '  },\n'
+ '  "text": "I am a Jina Document"\n'
+ '}')
+```
+
+As it can be observed, the output seems quite noisy when representing the `embedding`. This is because Jina `Document` stores `embeddings` in an `inner` structure
+supported by `protobuf`. In order to have a nicer representation of the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
+
+```python
+import pprint
+import numpy as np
+
+from jina import Document
+
+d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
+pprint.pprint(d0.dict(prettify_ndarrays=True))
+pprint.pprint(d0.json(prettify_ndarrays=True))
+```
+
+```text
+{'embedding': [0, 0],
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+
+('{"embedding": [0, 0], "id": "identifier", "mime_type": '
+ '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
+```
+
+This can be useful to understand the contents of the `Document` and to send to backends that can process vectors as `lists` of values.
 
 ### Visualize `Document`
 

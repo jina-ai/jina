@@ -120,3 +120,13 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    gp.add_argument(
+        '--freeze-network-settings',
+        action='store_true',
+        default=False,
+        help='''If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related 
+        parameters are frozen. They can not be changed by the Flow during the build time. '''
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

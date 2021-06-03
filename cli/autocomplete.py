@@ -28,6 +28,7 @@ def _update_autocomplete():
 if __name__ == '__main__':
     _update_autocomplete()
 
+
 ac_table = {
     'commands': [
         '--help',
@@ -70,7 +71,6 @@ ac_table = {
             '--help',
             '--workdir',
             '--download-proxy',
-            '--uses',
             '--index-data-url',
             '--port-expose',
             '--unblock-query-flow',
@@ -103,6 +103,7 @@ ac_table = {
             '--memory-hwm',
             '--on-error-strategy',
             '--num-part',
+            '--freeze-network-settings',
             '--uses-internal',
             '--entrypoint',
             '--docker-kwargs',
@@ -131,6 +132,7 @@ ac_table = {
             '--replicas',
             '--polling',
             '--scheduling',
+            '--external',
             '--pod-role',
             '--peas-hosts',
         ],
@@ -160,6 +162,7 @@ ac_table = {
             '--memory-hwm',
             '--on-error-strategy',
             '--num-part',
+            '--freeze-network-settings',
             '--uses-internal',
             '--entrypoint',
             '--docker-kwargs',
@@ -188,6 +191,7 @@ ac_table = {
             '--replicas',
             '--polling',
             '--scheduling',
+            '--external',
             '--pod-role',
             '--peas-hosts',
         ],
@@ -230,6 +234,7 @@ ac_table = {
             '--memory-hwm',
             '--on-error-strategy',
             '--num-part',
+            '--freeze-network-settings',
             '--max-message-size',
             '--prefetch',
             '--prefetch-on-recv',
@@ -282,6 +287,7 @@ ac_table = {
             '--memory-hwm',
             '--on-error-strategy',
             '--num-part',
+            '--freeze-network-settings',
             '--uses-internal',
             '--entrypoint',
             '--docker-kwargs',
