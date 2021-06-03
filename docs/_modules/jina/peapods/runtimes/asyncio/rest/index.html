@@ -423,9 +423,12 @@
         <span class="c1"># But uvicorn doesn't expose a config for max_size of a ws message, hence falling back to `ws='wsproto'`</span>
         <span class="c1"># Change to 'auto' once https://github.com/encode/uvicorn/pull/538 gets merged,</span>
         <span class="c1"># as 'wsproto' is less performant and adds another dependency.</span>
+
+        <span class="kn">from</span> <span class="nn">.....helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_server</span> <span class="o">=</span> <span class="n">UviServer</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span>
-                <span class="n">app</span><span class="o">=</span><span class="n">get_fastapi_app</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">),</span>
+                <span class="n">app</span><span class="o">=</span><span class="n">extend_rest_interface</span><span class="p">(</span><span class="n">get_fastapi_app</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)),</span>
                 <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
                 <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
                 <span class="n">ws</span><span class="o">=</span><span class="s1">'wsproto'</span><span class="p">,</span>

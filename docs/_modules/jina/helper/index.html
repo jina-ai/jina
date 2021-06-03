@@ -960,7 +960,6 @@
 
 <span class="n">_RESET</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[0m'</span>
 
-
 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'nt'</span><span class="p">:</span>
     <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">'color'</span><span class="p">)</span>
 
@@ -1659,6 +1658,30 @@
         <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_dict</span><span class="p">,</span> <span class="n">part1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dunder_get</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">part2</span><span class="p">)</span> <span class="k">if</span> <span class="n">part2</span> <span class="k">else</span> <span class="n">result</span>
+
+
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+
+<span class="k">def</span> <span class="nf">extend_rest_interface</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="s1">'FastAPI'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'FastAPI'</span><span class="p">:</span>
+    <span class="sd">"""Extend Jina built-in FastAPI instance with customized APIs, routing, etc.</span>
+
+<span class="sd">    :param app: the built-in FastAPI instance given by Jina</span>
+<span class="sd">    :return: the extended FastAPI instance</span>
+
+<span class="sd">    .. highlight:: python</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        def extend_rest_interface(app: 'FastAPI'):</span>
+
+<span class="sd">            @app.get('/extension1')</span>
+<span class="sd">            async def root():</span>
+<span class="sd">                return {"message": "Hello World"}</span>
+
+<span class="sd">            return app</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">app</span>
 </pre></div>
       </article>
       <footer>
