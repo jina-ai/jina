@@ -557,7 +557,19 @@
             <span class="k">if</span> <span class="n">user_module_name</span> <span class="o">==</span> <span class="s1">'__init__'</span><span class="p">:</span>
                 <span class="c1"># __init__ can not be used as a module name</span>
                 <span class="n">spec_name</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">elif</span> <span class="n">user_module_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+                <span class="n">spec_name</span> <span class="o">=</span> <span class="n">user_module_name</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'''</span>
+<span class="s1">                </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> shadows one of built-in Python module name.</span>
+<span class="s1">                It is imported as `jinahub.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1">`</span>
+<span class="s1">                </span>
+<span class="s1">                Affects:</span>
+<span class="s1">                - Either, change your code from using `from </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...` to `from jinahub.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> import ...`</span>
+<span class="s1">                - Or, rename </span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1"> to another name</span>
+<span class="s1">                '''</span>
+                <span class="p">)</span>
                 <span class="n">spec_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">user_module_name</span><span class="si">}</span><span class="s1">'</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">spec_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">module</span>
             <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
@@ -729,7 +741,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 02, 2021.
+            Last updated on Jun 03, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
