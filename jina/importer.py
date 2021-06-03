@@ -183,7 +183,19 @@ class PathImporter:
             if user_module_name == '__init__':
                 # __init__ can not be used as a module name
                 spec_name = spec.name
+            elif user_module_name not in sys.modules:
+                spec_name = user_module_name
             else:
+                warnings.warn(
+                    f'''
+                {user_module_name} shadows one of built-in Python module name.
+                It is imported as `jinahub.{user_module_name}`
+                
+                Affects:
+                - Either, you have change your code from `from {user_module_name} import ...` to `from jinahub.{user_module_name} import ...`
+                - Or, you rename {user_module_name} to another name
+                '''
+                )
                 spec_name = f'{spec.name}.{user_module_name}'
             sys.modules[spec_name] = module
             spec.loader.exec_module(module)
