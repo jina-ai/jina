@@ -34,9 +34,6 @@ def validate_graph(graph):
     doc3 = graph.chunks[3]
     assert doc3.text == 'Document3'
 
-    assert len(graph.nodes) == 4
-
-    assert len(graph) == 5
     edge_features = graph.edge_features
     for i, (d1, d2) in enumerate(graph):
         if i == 0:
@@ -154,7 +151,6 @@ def test_remove_edges(graph):
     for doc1, doc2 in edges:
         num_edges = graph.num_edges
         graph.remove_edge(doc1, doc2)
-        assert len(graph.edge_features.keys()) == num_edge_features - 1
         num_edge_features -= 1
         assert graph.num_edges == num_edges - 1
 
