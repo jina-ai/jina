@@ -247,7 +247,10 @@ class Zmqlet:
             o_sock = self.ctrl_sock
 
         self.bytes_sent += send_message(
-            o_sock, msg, topic_send=self.args.flow_identity, **self.send_recv_kwargs
+            o_sock,
+            msg,
+            topic_send=self.args.flow_identity or msg._topic_to_send,
+            **self.send_recv_kwargs,
         )
         self.msg_sent += 1
 
@@ -312,7 +315,10 @@ class AsyncZmqlet(Zmqlet):
         # await asyncio.sleep(sleep)  # preventing over-speed sending
         try:
             num_bytes = await send_message_async(
-                self.out_sock, msg, **self.send_recv_kwargs
+                self.out_sock,
+                msg,
+                topic_send=msg._topic_to_send,
+                **self.send_recv_kwargs,
             )
             self.bytes_sent += num_bytes
             self.msg_sent += 1
@@ -663,14 +669,18 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
     :param frames: list of bytes to parse from
     :return: a :class:`Message` object
     """
+    topic_to_send = None
     if sock_type == zmq.DEALER:
         # dealer consumes the first part of the message as id, we need to prepend it back
         frames = [b' '] + frames
-    elif sock_type == zmq.ROUTER or sock_type == zmq.SUB:
+    elif sock_type == zmq.ROUTER:
         # the router appends dealer id when receive it, we need to remove it
         frames.pop(0)
+    elif sock_type == zmq.SUB:
+        topic_to_send = frames[0]
+        frames.pop(0)
 
-    return Message(frames[1], frames[2])
+    return Message(frames[1], frames[2], topic_to_send=topic_to_send)
 
 
 def _get_random_ipc() -> str:

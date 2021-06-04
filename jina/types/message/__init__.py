@@ -46,6 +46,7 @@ class Message:
         self,
         envelope: Optional[Union[bytes, 'jina_pb2.EnvelopeProto']],
         request: Union[bytes, 'jina_pb2.RequestProto'],
+        topic_to_send: Optional[bytes] = None,
         *args,
         **kwargs,
     ):
@@ -60,8 +61,11 @@ class Message:
             # otherwise delay it to after request is built
             self.envelope = None
 
+        self._topic_to_send = topic_to_send
+
         self.request = request
         if envelope is None:
+            print(f' args {args}, kwargs {kwargs}')
             self.envelope = self._add_envelope(*args, **kwargs)
             # delayed assignment, now binding envelope to request
             if isinstance(self.request, Request):
