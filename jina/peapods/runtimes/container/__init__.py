@@ -4,6 +4,7 @@ import sys
 import time
 import warnings
 from pathlib import Path
+from platform import uname
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
@@ -56,7 +57,9 @@ class ContainerRuntime(ZMQRuntime):
         # Related to potential docker-in-docker communication. If `ContainerPea` lives already inside a container.
         # it will need to communicate using the `bridge` network.
         self._net_mode = None
-        if sys.platform in ('linux', 'linux2'):
+
+        # In WSL, we need to set ports explicitly
+        if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
             self._net_mode = 'host'
             try:
                 bridge_network = client.networks.get('bridge')

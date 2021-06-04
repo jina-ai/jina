@@ -43,7 +43,9 @@ def test_l_r_simple(silent_log, parallels, mocker):
     f = (
         Flow()
         .add(parallel=parallels)
-        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST,
+             parallel=parallels,
+             quiet_remote_logs=silent_log)
     )
     with f:
         f.index(
@@ -60,9 +62,13 @@ def test_r_l_r_simple(silent_log, parallels, mocker):
 
     f = (
         Flow()
-        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST,
+             parallel=parallels,
+             quiet_remote_logs=silent_log)
         .add()
-        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST,
+             parallel=parallels,
+             quiet_remote_logs=silent_log)
     )
     with f:
         f.index(
@@ -79,9 +85,15 @@ def test_r_r_r_simple(silent_log, parallels, mocker):
 
     f = (
         Flow()
-        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
-        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
-        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST,
+             parallel=parallels,
+             quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST,
+             parallel=parallels,
+             quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST,
+             parallel=parallels,
+             quiet_remote_logs=silent_log)
     )
     with f:
         f.index(
@@ -149,9 +161,93 @@ def docker_image():
     client.containers.prune()
 
 
-@pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 2, 3])
-def test_l_r_l_with_upload_remote(silent_log, parallels, docker_image, mocker):
+@pytest.mark.parametrize('parallels', [1, 2])
+def test_r_l_with_docker(parallels, docker_image, mocker):
+    response_mock = mocker.Mock()
+    f = (
+        Flow()
+        .add(uses=f'docker://{docker_image}',
+             host=CLOUD_HOST,
+             parallel=parallels,
+             timeout_ready=-1)
+        .add(parallel=parallels)
+    )
+    with f:
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
+
+    response_mock.assert_called()
+
+
+@pytest.mark.parametrize('parallels', [1, 2])
+def test_l_r_docker(parallels, docker_image, mocker):
+    response_mock = mocker.Mock()
+
+    f = (
+        Flow()
+        .add(parallel=parallels)
+        .add(uses=f'docker://{docker_image}',
+             host=CLOUD_HOST,
+             parallel=parallels)
+    )
+    with f:
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
+    response_mock.assert_called()
+
+
+@pytest.mark.parametrize('parallels', [1, 2])
+def test_r_l_r_docker(parallels, docker_image, mocker):
+    response_mock = mocker.Mock()
+
+    f = (
+        Flow()
+        .add(uses=f'docker://{docker_image}',
+             host=CLOUD_HOST,
+             parallel=parallels)
+        .add()
+        .add(uses=f'docker://{docker_image}',
+             host=CLOUD_HOST,
+             parallel=parallels)
+    )
+    with f:
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
+    response_mock.assert_called()
+
+
+@pytest.mark.parametrize('parallels', [1, 2])
+def test_r_r_r_docker(parallels, docker_image, mocker):
+    response_mock = mocker.Mock()
+
+    f = (
+        Flow()
+        .add(uses=f'docker://{docker_image}',
+             host=CLOUD_HOST,
+             parallel=parallels)
+        .add(uses=f'docker://{docker_image}',
+             host=CLOUD_HOST,
+             parallel=parallels)
+        .add(uses=f'docker://{docker_image}',
+             host=CLOUD_HOST,
+             parallel=parallels)
+    )
+    with f:
+        f.index(
+            inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
+    response_mock.assert_called()
+
+
+@pytest.mark.parametrize('parallels', [1, 2])
+def test_l_r_l_with_docker(parallels, docker_image, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
@@ -159,10 +255,7 @@ def test_l_r_l_with_upload_remote(silent_log, parallels, docker_image, mocker):
         .add(
             uses=f'docker://{docker_image}',
             host=CLOUD_HOST,
-            parallel=parallels,
-            quiet_remote_logs=silent_log,
-            timeout_ready=60000,
-        )
+            parallel=parallels)
         .add()
     )
     with f:
@@ -183,7 +276,7 @@ def test_create_pea_timeout(parallels):
             host=CLOUD_HOST,
             parallel=parallels,
             upload_files=['delayed_executor.py'],
-            timeout_ready=20000,
+            timeout_ready=120000,
         )
         .add()
     )

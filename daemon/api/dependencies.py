@@ -5,10 +5,11 @@ from fastapi import HTTPException, UploadFile, File
 from pydantic.errors import PathNotAFileError
 from pydantic.main import BaseModel
 
-from jina import Flow
+from jina import __default_host__, Flow
 from jina.enums import PeaRoleType, SocketType
 from jina.helper import ArgNamespace, cached_property
 
+from .. import __dockerhost__
 from ..helper import get_workspace_path
 from ..models.enums import WorkspaceState
 from ..stores import workspace_store as store
@@ -68,6 +69,59 @@ class PeaDepends:
     def command(self) -> str:
         return f'jina {self._kind} {" ".join(ArgNamespace.kwargs2list(self.params.dict(exclude={"log_config"})))}'
 
+    @property
+    def host_in(self):
+        """
+        DOCKER_HOST = 'host.docker.internal'
+
+        SINGLETON
+        =========
+        `runtime_cls`: `ZEDRuntime`
+            `host_in`, `host_out`: set to `DOCKER_HOST`, as it would talk to gateway/other pods
+            `ports`: map `port_in` & `port_out` if `socket_in` & `socket_out` are BIND.
+                     map `port_ctrl`, ignore `port_exppse`
+
+        `runtime_cls`: `ContainerRuntime`
+            `host_in`,`host_out`: don't change. Handled interally in `jina pod`
+            `ports`: handled internally in `ContainerRuntime`
+
+        PARALLEL
+        ========
+        `runtime_cls`: `ZEDRuntime`
+            `host_in`, `host_out`: set to `DOCKERHOST`
+                host config handled interally in `jina pod` wouldn't work here, as they need to talk to head/tail
+                peas which are on `DOCKER_HOST`
+            `ports`: don't map `port_in` & `port_out` as they're always CONNECT.
+                     map `port_ctrl`??, ignore `port_exppse`
+
+        `runtime_cls`: `ContainerRuntime` or `ZEDRuntime`
+            `host_in`, `host_out`: set to `DOCKERHOST`
+                host config handled interally in `jina pod` wouldn't work here, as they need to talk to head/tail
+                peas which are on `DOCKER_HOST`
+            `ports`: handled internally in `ContainerRuntime`
+
+        HEAD/TAIL
+        =========
+        `runtime_cls`:  `ZEDRuntime` (always??)
+            `host_in`, `host_out`: set to `DOCKER_HOST`, as they would talk to gateway/other pods.
+            `ports`: map `port_in` & `port_out` if `socket_in` & `socket_out` are BIND.
+                     map `port_ctrl`, ignore `port_exppse`
+
+        TODO: check the host_in/host_out for CONNECT sockets
+        TODO: HEAD/TAIL - can `uses_before` or `uses_after` be `docker://`
+        """
+        return __dockerhost__ \
+            if self.params.runtime_cls == 'ZEDRuntime' or \
+            PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL \
+            else self.params.host_in
+
+    @property
+    def host_out(self):
+        return __dockerhost__ \
+            if self.params.runtime_cls == 'ZEDRuntime' or \
+            PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL \
+            else self.params.host_in
+
     @cached_property
     def ports(self) -> Dict:
         _mapping = {
@@ -76,6 +130,9 @@ class PeaDepends:
             'port_ctrl': 'socket_ctrl',
         }
         # Map only "bind" ports for HEAD, TAIL & SINGLETON
+        if self.params.runtime_cls == 'ContainerRuntime':
+            # For `ContainerRuntime`, port mapping gets handled internally
+            return {}
         if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
             return {
                 f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
@@ -91,10 +148,12 @@ class PeaDepends:
     def validate(self):
         # Each pea is inside a container
         # TODO: Handle host if pea uses a docker image
-        self.params.host_in = 'host.docker.internal'
-        self.params.host_out = 'host.docker.internal'
+        print(f'\n\n\nparams: {self.params}\n\n')
+        self.params.host_in = self.host_in
+        self.params.host_out = self.host_out
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
+        print(f'\n\n\nparams: {self.params}\n\n')
 
 
 class PodDepends(PeaDepends):

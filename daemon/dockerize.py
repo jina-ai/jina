@@ -142,11 +142,13 @@ class Dockerizer:
         _msg_to_check = __flow_ready__ if container_id.type == 'flow' else __ready_msg__
 
         # TODO: Super ugly way of knowing if the "start" was successful
+        # Must be changed with mini jinad
         _success = False
         for run_logs in container.logs(stream=True, follow=True):
             _log_line = run_logs.splitlines()[0].decode()
             cls.logger.info(_log_line)
-            if _msg_to_check in _log_line:
+            if _msg_to_check in _log_line or 'will use' in _log_line:
+                cls.logger.info(_log_line)
                 cls.logger.success(
                     f'{container_id.type.title()} object is now ready to use!'
                 )
