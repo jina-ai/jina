@@ -70,7 +70,7 @@ message NamedScoreProto {
 /**
  * Represents a Graph
  */
-message GraphRelatedInfoProto {
+message Graph {
     SparseNdArrayProto adjacency = 1; // adjacency list
     google.protobuf.Struct edge_features = 2; // Container structure to store edge features
 }
@@ -142,7 +142,7 @@ message DocumentProto {
     repeated NamedScoreProto evaluations = 23;
 
     // Related information to be used when a Document represents a graph with its chunks as nodes
-    GraphRelatedInfoProto graph_info = 26;
+    Graph graph_info = 26;
 }
 
 /**

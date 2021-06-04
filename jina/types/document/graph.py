@@ -43,7 +43,7 @@ class GraphDocument(Document):
         copy: bool = False,
         **kwargs,
     ):
-        GraphDocument._check_installed_array_packages()
+        self._check_installed_array_packages()
         super().__init__(document=document, copy=copy, **kwargs)
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
@@ -334,6 +334,3 @@ class GraphDocument(Document):
     def __iter__(self) -> Iterator[Tuple["Document"]]:
         for (row, col) in zip(self.adjacency.row, self.adjacency.col):
             yield self.nodes[row.item()], self.nodes[col.item()]
-
-    # def __len__(self) -> int:
-    #    return self.adjacency.getnnz()
