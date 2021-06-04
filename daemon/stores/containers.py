@@ -35,7 +35,7 @@ class ContainerStore(BaseStore):
 
             ports[f'{rest_api_port}/tcp'] = rest_api_port
 
-            _container, _network, _ports, _success = Dockerizer.run(
+            _container, _network, _ports, _success, ip_address = Dockerizer.run(
                 workspace_id=workspace_id,
                 container_id=id,
                 command=command,
@@ -49,6 +49,7 @@ class ContainerStore(BaseStore):
             self._logger.error(f'{e!r}')
             raise
         else:
+
             self[id] = ContainerItem(
                 metadata=ContainerMetadata(
                     container_id=id_cleaner(_container.id),
@@ -56,6 +57,7 @@ class ContainerStore(BaseStore):
                     image_id=id_cleaner(_container.image.id),
                     network=_network,
                     ports=_ports,
+                    rest_api_uri=f'{ip_address}:{rest_api_port}',
                 ),
                 arguments=ContainerArguments(command=command),
                 workspace_id=workspace_id,
