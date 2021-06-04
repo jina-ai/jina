@@ -185,8 +185,12 @@ class ZEDRuntime(ZMQRuntime):
             return self
 
         # migrated from the previously RouteDriver logic
+
+        if 'external' not in self.name:
+            self._idle_dealer_ids.add('4a9b9a15-5d92-42db-9dcf-638ceaf8322b')
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
+            self.logger.warning(f'set receiver id {dealer_id}')
             self.envelope.receiver_id = dealer_id
 
             # when no available dealer, pause the pollin from upstream

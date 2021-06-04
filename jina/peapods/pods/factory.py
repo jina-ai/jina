@@ -26,7 +26,6 @@ class PodFactory:
         :return: the created BasePod
         """
         args.flow_identity = flow_identity
-        print(f' JOAN build_pod FLOW_IDENTITY {flow_identity}')
         if getattr(args, 'replicas', 1) > 1:
             return CompoundPod(args, needs=needs)
         else:

@@ -345,7 +345,6 @@ class Pod(BasePod):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__(args, needs)
-        print(f' JOAN POD FLOW_IDENTITY {self.args.flow_identity}')
         self.peas = []  # type: List['BasePea']
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.

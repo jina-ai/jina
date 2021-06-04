@@ -61,11 +61,8 @@ class Message:
             # otherwise delay it to after request is built
             self.envelope = None
 
-        self._topic_to_send = topic_to_send
-
         self.request = request
         if envelope is None:
-            print(f' args {args}, kwargs {kwargs}')
             self.envelope = self._add_envelope(*args, **kwargs)
             # delayed assignment, now binding envelope to request
             if isinstance(self.request, Request):
@@ -315,6 +312,9 @@ class Message:
         route_str = [_pod_str(r) for r in self.envelope.routes]
         route_str.append('⚐')
         return colored('▸', 'green').join(route_str)
+
+    def add_topic_to_envelope(self, topic: str):
+        self.envelope.topic_id = topic.encode('utf-8')
 
     def add_route(self, name: str, identity: str):
         """Add a route to the envelope.
