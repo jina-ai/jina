@@ -159,6 +159,8 @@ class SocketType(BetterEnum):
     PAIR_CONNECT = 9
     ROUTER_BIND = 10
     DEALER_CONNECT = 11
+    DEALER_BIND = 12
+    ROUTER_CONNECT = 13
 
     @property
     def is_bind(self) -> bool:
@@ -205,6 +207,7 @@ class SocketType(BetterEnum):
             SocketType.PUB_CONNECT: SocketType.SUB_BIND,
             SocketType.PUB_BIND: SocketType.SUB_CONNECT,
             SocketType.PAIR_CONNECT: SocketType.PAIR_BIND,
+            SocketType.ROUTER_CONNECT: SocketType.DEALER_BIND,
         }[self]
 
 

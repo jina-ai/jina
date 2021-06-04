@@ -61,7 +61,13 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                         )
                     asyncio.create_task(
                         self.zmqlet.send_message(
-                            Message(None, next_request, 'gateway', **vars(self.args))
+                            Message(
+                                None,
+                                next_request,
+                                None,
+                                pod_name='gateway',
+                                **vars(self.args),
+                            )
                         )
                     )
                     fetch_to.append(

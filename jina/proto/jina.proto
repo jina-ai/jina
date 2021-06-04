@@ -199,6 +199,7 @@ message EnvelopeProto {
 
     HeaderProto header = 12; // header contains meta info defined by the user, copied from Request, for lazy serialization
 
+    bytes topic_id = 13; // header contains meta info defined by the user, copied from Request, for lazy serialization
 }
 
 /**

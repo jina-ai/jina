@@ -352,6 +352,10 @@ class Pod(BasePod):
         else:
             self.peas_args = self._parse_args(args)
         self._activated = False
+        self.head_args.flow_identity = self.args.flow_identity
+        self.tail_args.flow_identity = self.args.flow_identity
+        for a in self.peas_args['peas']:
+            a.flow_identity = self.args.flow_identity
 
     @property
     def is_singleton(self) -> bool:

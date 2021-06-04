@@ -46,6 +46,7 @@ class Message:
         self,
         envelope: Optional[Union[bytes, 'jina_pb2.EnvelopeProto']],
         request: Union[bytes, 'jina_pb2.RequestProto'],
+        topic_to_send: Optional[bytes] = None,
         *args,
         **kwargs,
     ):
@@ -311,6 +312,9 @@ class Message:
         route_str = [_pod_str(r) for r in self.envelope.routes]
         route_str.append('⚐')
         return colored('▸', 'green').join(route_str)
+
+    def add_topic_to_envelope(self, topic: str):
+        self.envelope.topic_id = topic.encode('utf-8')
 
     def add_route(self, name: str, identity: str):
         """Add a route to the envelope.

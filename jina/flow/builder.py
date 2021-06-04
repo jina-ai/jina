@@ -107,8 +107,12 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             # first node is on remote, second is local. in this case, local node is often behind router/private
             # network, there is no way that first node can send data "actively" (CONNECT) to it
             first_socket_type = SocketType.PUSH_BIND
+        elif getattr(end_node.args, 'external', False):
+            first_socket_type = SocketType.ROUTER_CONNECT
+        elif getattr(start_node.args, 'external', False):
+            first_socket_type = SocketType.PUB_BIND
         _connect(start_node, end_node, first_out_socket_type=first_socket_type)
-        flow.logger.debug(
+        flow.logger.warning(
             f'Connect {start_node_name} '
             f'with {end_node_name} {str(end_node.role)} require '
             f'{getattr(end_node.head_args, "num_part", 0)} messages'
@@ -193,5 +197,11 @@ def _connect(
         _valid_update(
             second, 'head_args.port_in', first.tail_args.port_out
         )  # the hostname of s_pod
+    elif first_out_socket_type == SocketType.ROUTER_CONNECT:
+        # this means second is external
+        first.tail_args.host_out = __default_host__
+        first.head_args.host_in = __default_host__
+        second.head_args.port_in = first.tail_args.port_out
+
     else:
         raise SocketTypeError(f'{first_out_socket_type!r} is not supported here')
