@@ -428,7 +428,7 @@
             <span class="c1"># https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol</span>
 
             <span class="k">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'ws://</span><span class="si">{</span><span class="n">client_info</span><span class="si">}</span><span class="s1">/stream'</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span>
+                <span class="sa">f</span><span class="s1">'ws://</span><span class="si">{</span><span class="n">client_info</span><span class="si">}</span><span class="s1">/stream'</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ping_interval</span><span class="o">=</span><span class="kc">None</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
                 <span class="c1"># To enable websockets debug logs</span>
                 <span class="c1"># https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging</span>
