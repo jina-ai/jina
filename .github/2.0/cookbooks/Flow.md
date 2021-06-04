@@ -39,6 +39,7 @@ Table of Contents
   - [Switch REST & gRPC Request](#switch-rest--grpc-request)
   - [`curl` with HTTP Request](#curl-with-http-request)
   - [Python Client with REST Request](#python-client-with-rest-request)
+  - [Extend FastAPI interface](#extend-fastapi-interface)
 - [Remarks](#remarks)
   - [Joining/Merging](#joiningmerging)
 
