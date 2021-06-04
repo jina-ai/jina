@@ -26,6 +26,7 @@ from .parser import get_main_parser, _get_run_args, get_partial_parser
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
+extra_args = ''
 
 __task_queue__ = Queue()
 __dockerhost__ = 'host.docker.internal'
@@ -35,7 +36,7 @@ __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
 
 
 def _get_app(mode=None):
-    from .api.endpoints import router, flows, pods, peas, logs, workspaces
+    from .api.endpoints import router
 
     app = FastAPI(
         title='JinaD (Daemon)',
@@ -61,6 +62,8 @@ def _get_app(mode=None):
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
     if mode is None:
+        from .api.endpoints import flows, pods, peas, logs, workspaces
+
         app.include_router(logs.router)
         app.include_router(peas.router)
         app.include_router(pods.router)
@@ -91,27 +94,33 @@ def _get_app(mode=None):
             ]
         )
     elif mode == 'pod':
-        app.include_router(pods.router)
+        from .api.endpoints.partial import pod
+
+        app.include_router(pod.router)
         app.openapi_tags.append(
             {
-                'name': 'pods',
-                'description': 'API to manage Pods',
+                'name': 'pod',
+                'description': 'API to manage a Pod',
             }
         )
     elif mode == 'pea':
-        app.include_router(peas.router)
+        from .api.endpoints.partial import pea
+
+        app.include_router(pea.router)
         app.openapi_tags.append(
             {
-                'name': 'peas',
-                'description': 'API to manage Peas',
+                'name': 'pea',
+                'description': 'API to manage a Pea',
             },
         )
     elif mode == 'flow':
-        app.include_router(flows.router)
+        from .api.endpoints.partial import flow
+
+        app.include_router(flow.router)
         app.openapi_tags.append(
             {
-                'name': 'flows',
-                'description': 'API to manage Flows',
+                'name': 'flow',
+                'description': 'API to manage a Flow',
             }
         )
 
@@ -159,21 +168,9 @@ def _start_consumer():
 
 def partial():
     """ Entrypoint for partial jinad. Starts one of [flow, pod, pea] """
+    global extra_args
     parser = get_partial_parser()
     args, extra_args = parser.parse_known_args()
-
-    if args.mode == 'flow':
-        flow = Flow(set_flow_parser().parse_args(extra_args))
-        flow.start()
-    elif args.mode == 'pod':
-        pod = PodFactory.build_pod(set_pod_parser().parse_args(extra_args))
-        pod.start()
-    elif args.mode == 'pea':
-        pea = BasePea(set_pea_parser().parse_args(extra_args))
-        pea.runtime_cls = ZEDRuntime
-        pea.start()
-    else:
-        raise ValueError(f'Can not start partial JinaD with unknown mode {args.mode}')
 
     jinad_args.port_expose = args.rest_api_port
     _start_uvicorn(app=_get_app(mode=args.mode))

@@ -163,7 +163,7 @@ class Dockerizer:
         #     {f'{port}/tcp': port for port in range(_min_port, _max_port + 1)}
         # )
         cls.logger.info(
-            f'Creating a container using image {_image} in network {_network}'
+            f'Creating a container using image {_image} in network {_network} and ports {ports}'
         )
         try:
             container: 'Container' = cls.client.containers.run(
