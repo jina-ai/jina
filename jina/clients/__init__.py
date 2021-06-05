@@ -5,24 +5,32 @@ from .mixin import PostMixin
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 
-__all__ = ['Client', 'WebSocketClient']
+__all__ = ['Client', 'GRPCClient', 'WebSocketClient']
 
 
-class Client(PostMixin, BaseClient):
-    """A simple Python client for connecting to the gRPC gateway.
-
-    It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
-    """
+class Client(BaseClient):
+    def __init__(self, use_restful: bool = False):
+        self.use_restful = use_restful
 
     @property
     def client(self) -> 'Client':
         """Return the client object itself
 
         .. # noqa: DAR201"""
-        return self
+        if self.use_restful:
+            return WebSocketClient
+        else:
+            return GRPCClient
 
 
-class WebSocketClient(Client, WebSocketClientMixin):
+class GRPCClient(PostMixin, BaseClient):
+    """A simple Python client for connecting to the gRPC gateway.
+
+    It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
+    """
+
+
+class WebSocketClient(WebSocketClientMixin, BaseClient):
     """A Python Client to stream requests from a Flow with a REST Gateway.
 
     :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like
