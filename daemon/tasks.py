@@ -12,6 +12,7 @@ from .dockerize import Dockerizer
 from .models.enums import WorkspaceState
 from .stores import workspace_store as store
 from .files import DaemonFile, workspace_files
+from .excepts import DockerBuildException, DockerNetworkException
 from .helper import id_cleaner, get_workspace_path, random_port_range
 from .models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata
 
@@ -73,7 +74,7 @@ class DaemonWorker(Thread):
         return get_workspace_path(self.id)
 
     @cached_property
-    def daemon_file(self) -> 'DaemonFile':
+    def daemon_file(self) -> DaemonFile:
         return DaemonFile(workdir=self.workdir, logger=self._logger)
 
     @cached_property
@@ -107,6 +108,12 @@ class DaemonWorker(Thread):
             self._logger.success(
                 f'workspace {colored(str(self.id), "cyan")} is updated'
             )
+        except DockerNetworkException as e:
+            store.update(id=self.id, value=WorkspaceState.FAILED)
+            self._logger.error(f'Error while creating the docker network: {e!r}')
+        except DockerBuildException as e:
+            store.update(id=self.id, value=WorkspaceState.FAILED)
+            self._logger.error(f'Error while building the docker image: {e!r}')
         except Exception as e:
             # TODO: Handle cleanup in case of exception
             store.update(id=self.id, value=WorkspaceState.FAILED)

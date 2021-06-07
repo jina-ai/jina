@@ -1,9 +1,12 @@
+import time
 from contextlib import ExitStack
 from pathlib import Path
 from typing import List, Optional, Dict
 
 import requests
 
+from daemon.models import DaemonID
+from daemon.models.enums import WorkspaceState
 from jina.parsers import set_client_cli_parser
 
 
@@ -31,94 +34,69 @@ def get_results(
         method=method, url=url, payload={'top_k': top_k, 'data': [query]}
     )
 
-
 def create_workspace(
-    filepaths: List[str], url: str = 'http://localhost:8000/workspaces'
-) -> str:
+    filepaths: Optional[List[str]] = None,
+    dirpath: Optional[str] = None,
+    workspace_id: Optional[DaemonID] = None,
+    url: str = 'http://localhost:8000/workspaces'
+) -> Optional[str]:
     with ExitStack() as file_stack:
-        files = [
-            ('files', file_stack.enter_context(open(filepath, 'rb')))
-            for filepath in filepaths
-        ]
-        print(f'uploading {files}')
-        r = requests.post(url, files=files)
-        assert r.status_code == 201
+        def _to_file_tuple(path):
+            return ('files', file_stack.enter_context(open(path, 'rb')))
+        files_to_upload = set()
+        if filepaths:
+            files_to_upload.update([_to_file_tuple(filepath) for filepath in filepaths])
+        if dirpath:
+            for ext in ['*yml', '*yaml', '*py', '*.jinad', 'requirements.txt']:
+                files_to_upload.update([_to_file_tuple(filepath) for filepath in Path(dirpath).rglob(ext)])
 
-        workspace_id = r.json()
-        print(f'Got workspace_id: {workspace_id}')
+        if not files_to_upload:
+            print('nothing to upload')
+            return
+
+        print(f'will upload files: {files_to_upload}')
+        r = requests.post(url,
+                          files=list(files_to_upload))
+        print(f'Checking if the upload is succeeded: {r.json()}')
+        assert r.status_code == 201
+        json_response = r.json()
+        workspace_id = next(iter(json_response))
         return workspace_id
 
-
-def create_flow_2(
-    flow_yaml: str,
-    workspace_id: Optional[str] = None,
-    url: str = 'http://localhost:8000/flows',
-) -> str:
-    with open(flow_yaml, 'rb') as f:
-        r = requests.post(url, data={'workspace_id': workspace_id}, files={'flow': f})
-        print(f'Checking if the flow creation is succeeded: {r.json()}')
-        assert r.status_code == 201
-        return r.json()
-
+def wait_for_workspace(
+    workspace_id: DaemonID,
+    url: str = 'http://localhost:8000/workspaces'
+) -> bool:
+    while True:
+        r = requests.get(f'{url}/{workspace_id}')
+        try:
+            state = r.json()['state']
+        except KeyError as e:
+            print(f'KeyError: {e!r}')
+            return False
+        if state in [WorkspaceState.PENDING, WorkspaceState.CREATING, WorkspaceState.UPDATING]:
+            print(f'workspace still {state}, sleeping for 2 secs')
+            time.sleep(2)
+            continue
+        elif state == WorkspaceState.ACTIVE:
+            print(f'workspace got created successfully')
+            return True
+        elif state == WorkspaceState.FAILED:
+            print(f'workspace creation failed. please check logs')
+            return False
 
 def create_flow(
-    flow_yaml: str,
-    pod_dir: Optional[str] = None,
-    url: str = 'http://localhost:8000',
-    workspace_id: Optional[str] = None,
+    workspace_id: DaemonID,
+    filename: str,
+    url: str = 'http://localhost:8000/flows',
 ) -> str:
-    with ExitStack() as file_stack:
-        pymodules_files = []
-        uses_files = []
-        if pod_dir is not None:
-            uses_files = [
-                ('files', file_stack.enter_context(open(file_path, 'rb')))
-                for file_path in Path(pod_dir).glob('*.yml')
-            ]
-            pymodules_files = [
-                ('files', file_stack.enter_context(open(file_path, 'rb')))
-                for file_path in Path(pod_dir).rglob('*.py')
-            ]
-
-        files = [
-            *uses_files,
-            *pymodules_files,
-        ]
-        if files:
-            print(f'will upload {files}')
-            r = requests.post(f'{url}/workspaces', files=files)
-            print(f'Checking if the upload is succeeded: {r.json()}')
-            assert r.status_code == 201
-            workspace_id = r.json()
-
-            r = requests.get(f'{url}/workspaces/{workspace_id}')
-            print(f'Listing upload files: {r.json()}')
-            assert r.status_code == 200
-        else:
-            print('nothing to upload')
-
-        if workspace_id:
-            r = requests.post(
-                f'{url}/flows',
-                files={
-                    'flow': (
-                        'good_flow.yml',
-                        file_stack.enter_context(open(flow_yaml, 'rb')),
-                    ),
-                    'workspace_id': (None, workspace_id),
-                },
-            )
-        else:
-            r = requests.post(
-                f'{url}/flows',
-                files={
-                    'flow': (
-                        'good_flow.yml',
-                        file_stack.enter_context(open(flow_yaml, 'rb')),
-                    )
-                },
-            )
-
-        print(f'Checking if the flow creation is succeeded: {r.json()}')
-        assert r.status_code == 201
-        return r.json()
+    r = requests.post(
+        url,
+        params={
+            'workspace_id': workspace_id,
+            'filename': filename
+        }
+    )
+    print(f'Checking if the flow creation is succeeded: {r.json()}')
+    assert r.status_code == 201
+    return r.json()

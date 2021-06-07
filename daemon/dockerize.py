@@ -1,13 +1,23 @@
+
 from typing import Dict, List, Tuple, TYPE_CHECKING
 
 import docker
 from fastapi import HTTPException
+
 from jina import __ready_msg__
 from jina.logging.logger import JinaLogger
+from jina.docker.checker import is_error_message
+
 from .models import DaemonID
 from .models.enums import IDLiterals
 from .helper import id_cleaner, classproperty
 from . import __rootdir__, __dockerfiles__, __root_workspace__, jinad_args
+from .excepts import (
+    DockerNotFoundException,
+    DockerBuildException,
+    DockerNetworkException,
+    DockerRunException
+)
 
 __flow_ready__ = 'Flow is ready to use'
 
@@ -22,9 +32,16 @@ if TYPE_CHECKING:
 
 class Dockerizer:
 
-    client: 'DockerClient' = docker.from_env()
-    raw_client: 'APIClient' = docker.APIClient(base_url='unix://var/run/docker.sock')
     logger = JinaLogger('Dockerizer', **vars(jinad_args))
+    try:
+        client: 'DockerClient' = docker.from_env()
+        raw_client: 'APIClient' = docker.APIClient(base_url='unix://var/run/docker.sock')
+    except docker.errors.DockerException:
+        logger.critical(
+            f'docker client cannot connect to dockerd. '
+            f'please start jinad with `-v /var/run/docker.sock:/var/run/docker.sock`'
+        )
+        raise DockerNotFoundException()
 
     @classmethod
     def daemonize(cls, ids: List, attrs: str):
@@ -75,16 +92,35 @@ class Dockerizer:
             workspace_store.status.ip_range_current_offset += 2 ** (
                 32 - workspace_store.status.subnet_size
             )
-            network: 'Network' = cls.client.networks.create(
-                name=workspace_id, driver='bridge', ipam=ipam_config
-            )
+            try:
+                network: 'Network' = cls.client.networks.create(
+                    name=workspace_id, driver='bridge',  # ipam=ipam_config
+                )
+            except docker.errors.APIError as e:
+                import traceback
+                traceback.print_exc()
+                cls.logger.critical(f'API Error {e!r} during docker network creation')
+                raise DockerNetworkException()
         return network.id
 
     @classmethod
     def build(
         cls, workspace_id: 'DaemonID', daemon_file: 'DaemonFile', logger: 'JinaLogger'
     ) -> str:
-        for build_logs in cls.raw_client.build(
+        logger.info(f'about to build image using {daemon_file}')
+
+        def _log_stream(chunk, key):
+            # logging taken from hubio.build
+            _stream = chunk[key].splitlines()[0]
+            if _stream:
+                if is_error_message(_stream):
+                    logger.critical(_stream)
+                elif 'warning' in _stream.lower():
+                    logger.warning(_stream)
+                else:
+                    logger.info(_stream)
+
+        for build_log in cls.raw_client.build(
             path=daemon_file.dockercontext,
             dockerfile=daemon_file.dockerfile,
             buildargs=daemon_file.dockerargs,
@@ -93,11 +129,18 @@ class Dockerizer:
             pull=True,
             decode=True,
         ):
-            if 'stream' in build_logs:
-                _stream = build_logs['stream'].splitlines()[0]
-                if _stream:
-                    logger.info(_stream)
-        image = cls.client.images.get(name=workspace_id.tag)
+            if 'stream' in build_log:
+                _log_stream(build_log, 'stream')
+            elif 'message' in build_log:
+                _log_stream(build_log, 'message')
+            else:
+                logger.critical(build_log)
+
+        try:
+            image = cls.client.images.get(name=workspace_id.tag)
+        except docker.errors.ImageNotFound as e:
+            logger.critical(f'Couldn\'t find image with name: {workspace_id.tag} {e!r}')
+            raise DockerBuildException(e)
         return id_cleaner(image.id)
 
     @classmethod
@@ -135,9 +178,14 @@ class Dockerizer:
                 extra_hosts={'host.docker.internal': 'host-gateway'},
             )
         except docker.errors.NotFound as e:
-            cls.logger.error(
-                f'Image {_image} or Network {_network} not found locally {e}'
+            cls.logger.critical(
+                f'Image {_image} or Network {_network} not found locally {e!r}'
             )
+        except docker.errors.APIError as e:
+            import traceback
+            traceback.print_exc()
+            cls.logger.critical(f'API Error {e!r} during docker network creation')
+            raise DockerRunException()
 
         _msg_to_check = __flow_ready__ if container_id.type == 'flow' else __ready_msg__
 

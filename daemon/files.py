@@ -150,4 +150,5 @@ class DaemonFile:
         self.run = params.get('run', '')
 
     def __repr__(self) -> str:
-        return f'DaemonFile(build={self.build}, python={self.python}, run={self.run})'
+        return f'DaemonFile(build={self.build}, python={self.python}, run={self.run}, ' \
+               f'context={self.dockercontext}, args={self.dockerargs})'

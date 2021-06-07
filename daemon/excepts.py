@@ -6,6 +6,22 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 
 
+class DockerNotFoundException(Exception):
+    """ Exception if docker client cannot communicate with dockerd"""
+
+
+class DockerBuildException(Exception):
+    """ Exception while building a docker image in the workspace"""
+
+
+class DockerNetworkException(Exception):
+    """ Exception while handling docker networks in the workspace """
+
+
+class DockerRunException(Exception):
+    """ Exception while starting a docker image in the workspace"""
+
+
 class Runtime400Exception(Exception):
     """Exception when daemon FastAPI app is running"""
 
