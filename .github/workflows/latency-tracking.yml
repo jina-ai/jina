@@ -1,9 +1,10 @@
 name: CI
 
 on:
-  push:
-    branches-ignore:
-      - '**'  # temporally ignore all
+  workflow_dispatch:
+  # push:
+  #   branches-ignore:
+  #     - '**'  # temporally ignore all
 
 #on:
 #  pull_request_target:
