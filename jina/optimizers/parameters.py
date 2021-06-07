@@ -1,14 +1,18 @@
+from abc import abstractmethod, ABCMeta
 from typing import Optional, Sequence, Union
 
 from ..jaml import JAML, JAMLCompatible
 
+if False:
+    from optuna.trial import Trial
 
-class OptimizationParameter(JAMLCompatible):
+
+class OptimizationParameter(JAMLCompatible, metaclass=ABCMeta):
     """Base class for all optimization parameters."""
 
     def __init__(
         self,
-        parameter_name: str = "",
+        parameter_name: str = '',
         executor_name: Optional[str] = None,
         prefix: str = 'JINA',
         jaml_variable: Optional[str] = None,
@@ -18,6 +22,16 @@ class OptimizationParameter(JAMLCompatible):
             self.jaml_variable = f'{prefix}_{executor_name}_{parameter_name}'.upper()
         else:
             self.jaml_variable = jaml_variable
+
+    @abstractmethod
+    def suggest(self, trial: 'Trial'):
+        """
+        Suggest an instance of the parameter for a given trial.
+
+        :param trial: An instance of an Optuna Trial object
+            # noqa: DAR201
+        """
+        ...
 
 
 class IntegerParameter(OptimizationParameter):
@@ -41,11 +55,27 @@ class IntegerParameter(OptimizationParameter):
         self.high = high
         if log and step_size != 1:
             raise ValueError(
-                '''The step_size != 1 and log arguments cannot be used at the same time. When setting log argument to True, set the step argument to 1.'''
+                '''The step_size != 1 and log arguments cannot be used at the same time. When setting log argument to 
+                True, set the step argument to 1. '''
             )
 
         self.step_size = step_size
         self.log = log
+
+    def suggest(self, trial: 'Trial'):
+        """
+        Suggest an instance of the parameter for a given trial.
+
+        :param trial: An instance of an Optuna Trial object
+            # noqa: DAR201
+        """
+        return trial.suggest_int(
+            name=self.jaml_variable,
+            low=self.low,
+            high=self.high,
+            step=self.step_size,
+            log=self.log,
+        )
 
 
 class UniformParameter(OptimizationParameter):
@@ -60,6 +90,19 @@ class UniformParameter(OptimizationParameter):
         self.low = low
         self.high = high
 
+    def suggest(self, trial: 'Trial'):
+        """
+        Suggest an instance of the parameter for a given trial.
+
+        :param trial: An instance of an Optuna Trial object
+            # noqa: DAR201
+        """
+        return trial.suggest_uniform(
+            name=self.jaml_variable,
+            low=self.low,
+            high=self.high,
+        )
+
 
 class LogUniformParameter(OptimizationParameter):
     """
@@ -72,6 +115,19 @@ class LogUniformParameter(OptimizationParameter):
         super().__init__(*args, **kwargs)
         self.low = low
         self.high = high
+
+    def suggest(self, trial: 'Trial'):
+        """
+        Suggest an instance of the parameter for a given trial.
+
+        :param trial: An instance of an Optuna Trial object
+            # noqa: DAR201
+        """
+        return trial.suggest_loguniform(
+            name=self.jaml_variable,
+            low=self.low,
+            high=self.high,
+        )
 
 
 class CategoricalParameter(OptimizationParameter):
@@ -87,6 +143,15 @@ class CategoricalParameter(OptimizationParameter):
         super().__init__(*args, **kwargs)
         self.choices = choices
 
+    def suggest(self, trial: 'Trial'):
+        """
+        Suggest an instance of the parameter for a given trial.
+
+        :param trial: An instance of an Optuna Trial object
+            # noqa: DAR201
+        """
+        return trial.suggest_categorical(name=self.jaml_variable, choices=self.choices)
+
 
 class DiscreteUniformParameter(OptimizationParameter):
     """
@@ -100,6 +165,20 @@ class DiscreteUniformParameter(OptimizationParameter):
         self.low = low
         self.high = high
         self.q = q
+
+    def suggest(self, trial: 'Trial'):
+        """
+        Suggest an instance of the parameter for a given trial.
+
+        :param trial: An instance of an Optuna Trial object
+            # noqa: DAR201
+        """
+        return trial.suggest_discrete_uniform(
+            name=self.jaml_variable,
+            low=self.low,
+            high=self.high,
+            q=self.q,
+        )
 
 
 def load_optimization_parameters(filepath: str):
