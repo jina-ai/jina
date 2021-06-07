@@ -1,6 +1,7 @@
 import itertools
 import mmap
 import os
+import shutil
 from collections.abc import Iterable as Itr
 from pathlib import Path
 from typing import (
@@ -8,6 +9,7 @@ from typing import (
     Iterable,
     Iterator,
 )
+import tempfile
 
 import numpy as np
 
@@ -35,6 +37,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
 
     This class is designed to work similarly as :class:`DocumentArray` but differs in the following aspects:
         - one can not set the attribute of elements in a DocumentArrayMemmap;
+        - one can not use slice to index elements in a DocumentArrayMemmap
     """
 
     def __init__(self, path: str, key_length: int = 36):
@@ -72,18 +75,19 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         )
         self._header_entry_size = 24 + 4 * self._key_length
 
-        self.header = {
+        self._header_map = {
             r[0]: (idx, r[1], r[2], r[3])
             for idx, r in enumerate(tmp)
             if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY)
         }
-        self.body = self._body.fileno()
+        self._body_fileno = self._body.fileno()
         self._start = 0
-        if self.header:
+        if self._header_map:
             self._start = tmp[-1][1] + tmp[-1][3]
+        self._tmp = tmp
 
     def __len__(self):
-        return len(self.header)
+        return len(self._header_map)
 
     def extend(self, values: Iterable['Document']) -> None:
         """Extend the :class:`DocumentArrayMemmap` by appending all the items from the iterable.
@@ -120,7 +124,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
                 ],
             ).tobytes()
         )
-        self.header[doc.id] = (len(self.header), p, r, r + l)
+        self._header_map[doc.id] = (len(self._header_map), p, r, r + l)
         self._start = p + r + l
         self._body.write(value)
         self._header.flush()
@@ -128,9 +132,9 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
 
     def __getitem__(self, key: Union[int, str]) -> 'Document':
         if isinstance(key, str):
-            pos_info = self.header[key]
+            pos_info = self._header_map[key]
             _, p, r, l = pos_info
-            with mmap.mmap(self.body, offset=p, length=l) as m:
+            with mmap.mmap(self._body_fileno, offset=p, length=l) as m:
                 return Document(m[r:])
         elif isinstance(key, int):
             return self[self._int2str_id(key)]
@@ -162,10 +166,10 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         )
         self._header.seek(0, 2)
         self._header.flush()
-        self.header.pop(str_key)
+        self._header_map.pop(str_key)
 
     def _str2int_id(self, key: str) -> int:
-        return self.header[key][0]
+        return self._header_map[key][0]
 
     def _int2str_id(self, key: int) -> str:
         p = key * self._header_entry_size
@@ -177,7 +181,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         return d_id[0]
 
     def __iter__(self) -> Iterator['Document']:
-        for k in self.header.keys():
+        for k in self._header_map.keys():
             yield self[k]
 
     def __setitem__(self, key: Union[int, str], value: 'Document') -> None:
@@ -185,7 +189,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
             if 0 <= key < len(self):
                 # override an existing entry
                 self.append(value)
-                self.header[self._int2str_id(key)] = self.header[value.id]
+                self._header_map[self._int2str_id(key)] = self._header_map[value.id]
                 del self[value.id]
             else:
                 raise IndexError(f'`key`={key} is out of range')
@@ -205,3 +209,15 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         :return: returns true if the length of the array is larger than 0
         """
         return len(self) > 0
+
+    def prune(self) -> None:
+        """Prune deleted Documents from this object, this yields a smaller on-disk storage. """
+        tdir = tempfile.mkdtemp()
+        dam = DocumentArrayMemmap(tdir, key_length=self._key_length)
+        dam.extend(self)
+        dam.reload()
+        os.remove(self._body_path)
+        os.remove(self._header_path)
+        shutil.copy(os.path.join(tdir, 'header.bin'), self._header_path)
+        shutil.copy(os.path.join(tdir, 'body.bin'), self._body_path)
+        self.reload()

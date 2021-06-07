@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from jina import Document
@@ -109,7 +111,25 @@ def test_persist(tmpdir):
     for d1, d2 in zip(dam, dam2):
         assert d1.proto == d2.proto
 
-    dam.clear()
+    del dam['1']
     assert len(dam2) == 100
     dam2.reload()
+    assert len(dam2) == 99
+
+    dam.clear()
+    assert len(dam2) == 99
+    dam2.reload()
     assert len(dam2) == 0
+
+
+def test_prune_save_space(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(random_docs(100))
+    old_hsize = os.stat(os.path.join(tmpdir, 'header.bin')).st_size
+    old_bsize = os.stat(os.path.join(tmpdir, 'body.bin')).st_size
+    del dam['2']
+    dam.prune()
+    new_hsize = os.stat(os.path.join(tmpdir, 'header.bin')).st_size
+    new_bsize = os.stat(os.path.join(tmpdir, 'body.bin')).st_size
+    assert new_bsize < old_bsize
+    assert new_hsize < old_hsize
