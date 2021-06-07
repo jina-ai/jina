@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException
 
-from .... import extra_args
+from .... import nested_args
 from ....models import PodModel
 from ....models.base import StoreItem
 from ....stores import partial
 
 router = APIRouter(prefix='/pod', tags=['pod'])
-partial_pod_store: partial.PodStore = partial.PodStore(extra_args)
+partial_pod_store: partial.PodStore = partial.PodStore(nested_args)
 
 
 @router.get(

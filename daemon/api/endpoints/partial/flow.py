@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-from .... import extra_args
+from .... import nested_args
 from ....models import FlowModel
 from ....models.base import StoreItem
 from ....stores import partial
 
 router = APIRouter(prefix='/flow', tags=['flow'])
-partial_flow_store: partial.FlowStore = partial.FlowStore(extra_args)
+partial_flow_store: partial.FlowStore = partial.FlowStore(nested_args)
 
 
 @router.get(

@@ -31,7 +31,10 @@ class ContainerStore(BaseStore):
                 raise KeyError(f'{workspace_id} not found in workspace store')
 
             rest_api_port = random_port()
-            command = f'jinad-partial --mode {self._kind} --rest-api-port {rest_api_port} {" ".join(ArgNamespace.kwargs2list(params.dict(exclude={"log_config"})))}'
+
+            params = params.dict(exclude={'log_config'})
+            params['port_expose'] = rest_api_port
+            command = f'jinad --mode {self._kind} {" ".join(ArgNamespace.kwargs2list(params))}'
 
             ports[f'{rest_api_port}/tcp'] = rest_api_port
 

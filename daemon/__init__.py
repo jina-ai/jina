@@ -26,7 +26,7 @@ from .parser import get_main_parser, _get_run_args, get_partial_parser
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
-extra_args = ''
+nested_args = ''  # used by mini jinad, forwarded to pea/pod/flow
 
 __task_queue__ = Queue()
 __dockerhost__ = 'host.docker.internal'
@@ -166,23 +166,17 @@ def _start_consumer():
     ConsumerThread().start()
 
 
-def partial():
-    """ Entrypoint for partial jinad. Starts one of [flow, pod, pea] """
-    global extra_args
-    parser = get_partial_parser()
-    args, extra_args = parser.parse_known_args()
-
-    jinad_args.port_expose = args.rest_api_port
-    _start_uvicorn(app=_get_app(mode=args.mode))
-
-
 def main():
     """Entrypoint for jinad"""
     global jinad_args, __root_workspace__
     jinad_args = _get_run_args()
     __root_workspace__ = jinad_args.workspace
+    if jinad_args.mode is not None:
+        global nested_args
+        _, nested_args = get_partial_parser().parse_known_args()
+
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     if not jinad_args.no_fluentd:
         Thread(target=_start_fluentd, daemon=True).start()
     _start_consumer()
-    _start_uvicorn(app=_get_app())
+    _start_uvicorn(app=_get_app(mode=jinad_args.mode))

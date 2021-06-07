@@ -152,7 +152,6 @@ setup(
         'console_scripts': [
             'jina=cli:main',
             'jinad=daemon:main',
-            'jinad-partial=daemon:partial',
         ],
     },
     cmdclass={
