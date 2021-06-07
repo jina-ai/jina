@@ -6,7 +6,12 @@ from jina import Document
 from jina.clients import Client
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
-from ..helpers import create_flow, assert_request
+from ..helpers import (
+    create_workspace,
+    wait_for_workspace,
+    create_flow,
+    assert_request
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -39,12 +44,21 @@ def test_flow(docker_compose, doc_to_index, client, mocker):
         assert resp.data.docs[1].text == 'test'
 
     mock = mocker.Mock()
-    flow_id = create_flow(flow_yaml=flow_yaml, pod_dir=os.path.join(cur_dir, 'pods'))
+    workspace_id = create_workspace(
+        filepaths=[flow_yaml],
+        dirpath=os.path.join(cur_dir, 'pods')
+    )
+    assert wait_for_workspace(workspace_id)
+    flow_id = create_flow(
+        workspace_id=workspace_id,
+        flow_yaml='flow.yml',
+    )
 
     client.search(inputs=[doc_to_index], on_done=mock)
-
-    assert_request(method='get', url=f'http://localhost:8000/flows/{flow_id}')
-
+    assert_request(
+        method='get',
+        url=f'http://localhost:8000/flows/{flow_id}'
+    )
     assert_request(
         method='delete',
         url=f'http://localhost:8000/flows/{flow_id}',

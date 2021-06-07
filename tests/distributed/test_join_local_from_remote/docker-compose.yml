@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfiles/debianx.Dockerfile
     ports:
       - "8000:8000"
-      - "45678:45678"
     env_file:
       - tests/distributed/test_join_local_from_remote/.env
     expose:
