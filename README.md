@@ -80,6 +80,8 @@ Copy-paste the minimum example below and run it:
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
 
+![Get started system diagram](.github/2.0/simple-arch.svg)
+
 ```python
 import numpy as np
 from jina import Document, DocumentArray, Executor, Flow, requests
