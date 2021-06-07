@@ -922,16 +922,40 @@ it will be used as the major view.</p>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt id="jina.Document.get_sparse_blob">
+<code class="sig-name descname"><span class="pre">get_sparse_blob</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse_ndarray_cls_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.get_sparse_blob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Document.get_sparse_blob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">blob</span></code> of the content of a Document as an sparse array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sparse_ndarray_cls_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="../jina.types.ndarray.sparse/#jina.types.ndarray.sparse.BaseSparseNdArray" title="jina.types.ndarray.sparse.BaseSparseNdArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSparseNdArray</span></code></a>]) – Sparse class type, such as <cite>SparseNdArray</cite>.</p></li>
+<li><p><strong>kwargs</strong> – Additional key value argument, for <cite>scipy</cite> backend, we need to set
+the keyword <cite>sp_format</cite> as one of the scipy supported sparse format, such as <cite>coo</cite>
+or <cite>csr</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>SparseArrayType</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the blob from the proto as an sparse array</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt id="jina.Document.blob">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">blob</span></code><a class="headerlink" href="#jina.Document.blob" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">blob</span></code>, one of the content form of a Document.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Use <a class="reference internal" href="#jina.Document.content" title="jina.Document.content"><code class="xref py py-attr docutils literal notranslate"><span class="pre">content</span></code></a> to return the content of a Document</p>
+<p>This property will return the <cite>blob</cite> of the <cite>Document</cite> as a <cite>Dense</cite> or <cite>Sparse</cite> array depending on the actual
+proto instance stored. In the case where the <cite>blob</cite> stored is sparse, it will return them as a <cite>coo</cite> matrix.
+If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`get_sparse_blob</cite>.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dd class="field-odd"><p>ArrayType</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the blob content from the proto</p>
@@ -952,7 +976,7 @@ or <cite>csr</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>SparseEmbeddingType</p>
+<dd class="field-even"><p>SparseArrayType</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the embedding from the proto as an sparse array</p>
@@ -963,9 +987,17 @@ or <cite>csr</cite>.</p></li>
 <dt id="jina.Document.embedding">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">embedding</span></code><a class="headerlink" href="#jina.Document.embedding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">embedding</span></code> of the content of a Document.</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This property will return the <cite>embedding</cite> of the <cite>Document</cite> as a <cite>Dense</cite> or <cite>Sparse</cite> array depending on the actual
+proto instance stored. In the case where the <cite>embedding</cite> stored is sparse, it will return them as a <cite>coo</cite> matrix.
+If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`get_sparse_embedding</cite>.</p>
+</div>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>EmbeddingType</p>
+<dd class="field-odd"><p>SparseArrayType</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the embedding from the proto</p>

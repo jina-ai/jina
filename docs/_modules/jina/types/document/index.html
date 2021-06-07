@@ -423,8 +423,8 @@
     <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
     <span class="kn">import</span> <span class="nn">torch</span>
 
-    <span class="n">EmbeddingType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
-        <span class="s1">'EmbeddingType'</span><span class="p">,</span>
+    <span class="n">ArrayType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
+        <span class="s1">'ArrayType'</span><span class="p">,</span>
         <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span>
         <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">,</span>
@@ -434,8 +434,8 @@
         <span class="n">tf</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">SparseEmbeddingType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
-        <span class="s1">'SparseEmbeddingType'</span><span class="p">,</span>
+    <span class="n">SparseArrayType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
+        <span class="s1">'SparseArrayType'</span><span class="p">,</span>
         <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">,</span>
         <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">,</span>
@@ -857,18 +857,40 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parent_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">blob</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'np.ndarray'</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">blob</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ArrayType'</span><span class="p">:</span>
         <span class="sd">"""Return ``blob``, one of the content form of a Document.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            Use :attr:`content` to return the content of a Document</span>
 
+<span class="sd">            This property will return the `blob` of the `Document` as a `Dense` or `Sparse` array depending on the actual</span>
+<span class="sd">            proto instance stored. In the case where the `blob` stored is sparse, it will return them as a `coo` matrix.</span>
+<span class="sd">            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_blob`.</span>
+
 <span class="sd">        :return: the blob content from the proto</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">NdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">blob</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 
+<div class="viewcode-block" id="Document.get_sparse_blob"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.get_sparse_blob">[docs]</a>    <span class="k">def</span> <span class="nf">get_sparse_blob</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sparse_ndarray_cls_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseSparseNdArray</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'SparseArrayType'</span><span class="p">:</span>
+        <span class="sd">"""Return ``blob`` of the content of a Document as an sparse array.</span>
+
+<span class="sd">        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.</span>
+<span class="sd">        :param kwargs: Additional key value argument, for `scipy` backend, we need to set</span>
+<span class="sd">            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`</span>
+<span class="sd">            or `csr`.</span>
+<span class="sd">        :return: the blob from the proto as an sparse array</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">NdArray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">blob</span><span class="p">,</span>
+            <span class="n">sparse_cls</span><span class="o">=</span><span class="n">sparse_ndarray_cls_type</span><span class="p">,</span>
+            <span class="n">is_sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">value</span></div>
+
     <span class="nd">@blob</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]):</span>
         <span class="sd">"""Set the `blob` to :param:`value`.</span>
 
 <span class="sd">        :param value: the array value to set the blob</span>
@@ -876,8 +898,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_ndarray</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'EmbeddingType'</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'SparseArrayType'</span><span class="p">:</span>
         <span class="sd">"""Return ``embedding`` of the content of a Document.</span>
+
+<span class="sd">         .. note::</span>
+<span class="sd">            This property will return the `embedding` of the `Document` as a `Dense` or `Sparse` array depending on the actual</span>
+<span class="sd">            proto instance stored. In the case where the `embedding` stored is sparse, it will return them as a `coo` matrix.</span>
+<span class="sd">            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_embedding`.</span>
 
 <span class="sd">        :return: the embedding from the proto</span>
 <span class="sd">        """</span>
@@ -885,7 +912,7 @@
 
 <div class="viewcode-block" id="Document.get_sparse_embedding"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.get_sparse_embedding">[docs]</a>    <span class="k">def</span> <span class="nf">get_sparse_embedding</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">sparse_ndarray_cls_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseSparseNdArray</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'SparseEmbeddingType'</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'SparseArrayType'</span><span class="p">:</span>
         <span class="sd">"""Return ``embedding`` of the content of a Document as an sparse array.</span>
 
 <span class="sd">        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.</span>
@@ -902,7 +929,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">value</span></div>
 
     <span class="nd">@embedding</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'ArrayType'</span><span class="p">,</span> <span class="s1">'jina_pb2.NdArrayProto'</span><span class="p">,</span> <span class="s1">'NdArray'</span><span class="p">]):</span>
         <span class="sd">"""Set the ``embedding`` of the content of a Document.</span>
 
 <span class="sd">        :param value: the array value to set the embedding</span>
