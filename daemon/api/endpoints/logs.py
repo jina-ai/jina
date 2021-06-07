@@ -15,13 +15,15 @@ from websockets.exceptions import ConnectionClosedError
 from ... import daemon_logger, jinad_args
 from ...helper import get_workspace_path
 from ...models import DaemonID
+from ...models.enums import IDLiterals
+from ...stores import get_store_from_id
 
 router = APIRouter(tags=['logs'])
 
 
-@router.get(path='/logs/{workspace_id}/{log_id}')
-async def _export_logs(workspace_id: DaemonID, log_id: DaemonID):
-    filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
+@router.get(path='/logs/log_id}')
+async def _export_logs(log_id: DaemonID):
+    filepath, workspace_id = _get_log_file_path(log_id)
     if not Path(filepath).is_file():
         raise HTTPException(
             status_code=404,
@@ -29,6 +31,16 @@ async def _export_logs(workspace_id: DaemonID, log_id: DaemonID):
         )
     else:
         return FileResponse(filepath)
+
+
+def _get_log_file_path(log_id):
+    if IDLiterals.JWORKSPACE == log_id.jtype:
+        workspace_id = log_id
+        filepath = get_workspace_path(log_id, 'logs', 'logging.log')
+    else:
+        workspace_id = get_store_from_id(log_id)[log_id].workspace_id
+        filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
+    return filepath, workspace_id
 
 
 def _websocket_details(websocket: WebSocket):
@@ -86,14 +98,12 @@ class ConnectionManager:
                 await self.disconnect(connection)
 
 
-@router.websocket('/logstream/{workspace_id}/{log_id}')
-async def _logstream(
-    websocket: WebSocket, workspace_id: DaemonID, log_id: DaemonID, timeout: int = 0
-):
+@router.websocket('/logstream/{log_id}')
+async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 0):
     manager = ConnectionManager()
     await manager.connect(websocket)
     client_details = _websocket_details(websocket)
-    filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
+    filepath, _ = _get_log_file_path(log_id)
     try:
         if jinad_args.no_fluentd:
             daemon_logger.warning(
