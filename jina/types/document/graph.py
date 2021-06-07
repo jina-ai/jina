@@ -19,7 +19,7 @@ class GraphDocument(Document):
     """
     :class:`GraphDocument` is a data type created based on Jina primitive data type :class:`Document`.
 
-    It adds functionality that lets you work with a `Document` as a `graph` where all its chunks are the nodes in the `graph`.
+    It adds functionality that lets you work with a `Document` as a `directed graph` where all its chunks are the nodes in the `graph`.
 
     It exposes functionality to access and manipulate `graph related info` from the `DocumentProto` such as adjacency and edge features.
 
@@ -330,6 +330,41 @@ class GraphDocument(Document):
                 ],
                 reference_doc=self,
             )
+
+    @staticmethod
+    def load_from_dgl(dgl_graph: "DGLGraph"):
+        """
+        Construct a GraphDocument from of graph with type `dgl.DGLGraph`
+
+        .. # noqa: DAR201
+        :param dgl_graph: the graph from which to construct a `GraphDocument`.
+        """
+        jina_graph = GraphDocument()
+        nodeid_to_doc = {}
+        for node in dgl_graph.nodes():
+            node_doc = Document()
+            nodeid_to_doc[int(node)] = node_doc
+            jina_graph.add_node(node_doc)
+
+        for node_source, node_destination in zip(*dgl_graph.edges()):
+            print(int(node_source), int(node_destination))
+            jina_graph.add_edge(
+                nodeid_to_doc[int(node_source)], nodeid_to_doc[int(node_destination)]
+            )
+
+        return jina_graph
+
+    def to_dgl(self):
+        """
+        Construct a  `dgl.DGLGraph` from a `GraphDocument` instance.
+        """
+        import dgl
+        import torch
+
+        source_nodes = torch.tensor(self.adjacency.row.copy())
+        destination_nodes = torch.tensor(self.adjacency.col.copy())
+
+        return dgl.graph((source_nodes, destination_nodes))
 
     def __iter__(self) -> Iterator[Tuple["Document"]]:
         for (row, col) in zip(self.adjacency.row, self.adjacency.col):

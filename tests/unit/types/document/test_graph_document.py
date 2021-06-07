@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 from jina.types.document.graph import GraphDocument
 from jina.types.document import Document
@@ -156,3 +157,24 @@ def test_remove_edges(graph):
 
     assert graph.num_nodes == 4  # nodes are not removed
     assert graph.num_edges == 0
+
+
+def test_to_dgl(graph):
+
+    dgl_graph = graph.to_dgl()
+    dgl_adj_coo = dgl_graph.adjacency_matrix(scipy_fmt='coo')
+
+    assert dgl_graph.num_nodes() == graph.num_nodes
+    assert dgl_graph.num_edges() == graph.num_edges
+    assert (graph.adjacency.row == dgl_adj_coo.row).all()
+    assert (graph.adjacency.col == dgl_adj_coo.col).all()
+
+
+def test_from_dgl(graph):
+
+    dgl_graph = graph.to_dgl()
+    jina_graph = GraphDocument.load_from_dgl(dgl_graph)
+    assert graph.num_nodes == jina_graph.num_nodes
+    assert graph.num_edges == jina_graph.num_edges
+    assert (graph.adjacency.col == jina_graph.adjacency.col).all()
+    assert (graph.adjacency.col == jina_graph.adjacency.col).all()
