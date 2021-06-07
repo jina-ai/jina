@@ -44,7 +44,7 @@ process Responses in bulk instead of using callback.
     )
 
     gp.add_argument(
-        '--use-restful',
+        '--is-restful',
         action='store_true',
         default=False,
         help='Default False, will initialise grpc client. If set True, will initialise restful client.',
