@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABCMeta
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Union, List, Tuple
 
 from ..jaml import JAML, JAMLCompatible
 
@@ -11,11 +11,11 @@ class OptimizationParameter(JAMLCompatible, metaclass=ABCMeta):
     """Base class for all optimization parameters."""
 
     def __init__(
-        self,
-        parameter_name: str = '',
-        executor_name: Optional[str] = None,
-        prefix: str = 'JINA',
-        jaml_variable: Optional[str] = None,
+            self,
+            parameter_name: str = '',
+            executor_name: Optional[str] = None,
+            prefix: str = 'JINA',
+            jaml_variable: Optional[str] = None,
     ):
         self.parameter_name = parameter_name
         if jaml_variable is None:
@@ -42,13 +42,13 @@ class IntegerParameter(OptimizationParameter):
     """
 
     def __init__(
-        self,
-        low: int,
-        high: int,
-        step_size: int = 1,
-        log: bool = False,
-        *args,
-        **kwargs,
+            self,
+            low: int,
+            high: int,
+            step_size: int = 1,
+            log: bool = False,
+            *args,
+            **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.low = low
@@ -138,7 +138,7 @@ class CategoricalParameter(OptimizationParameter):
     """
 
     def __init__(
-        self, choices: Sequence[Union[None, bool, int, float, str]], *args, **kwargs
+            self, choices: Sequence[Union[None, bool, int, float, str]], *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.choices = choices
@@ -179,6 +179,24 @@ class DiscreteUniformParameter(OptimizationParameter):
             high=self.high,
             q=self.q,
         )
+
+
+class PodOptimizationParameter(OptimizationParameter):
+    """Base class for all optimization parameters."""
+
+    def __init__(self, inner_parameters: List[Tuple[str, OptimizationParameter]], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.inner_parameters = inner_parameters
+
+    @abstractmethod
+    def suggest(self, trial: 'Trial'):
+        """
+        Suggest an instance of the parameter for a given trial.
+
+        :param trial: An instance of an Optuna Trial object
+            # noqa: DAR201
+        """
+        ...
 
 
 def load_optimization_parameters(filepath: str):

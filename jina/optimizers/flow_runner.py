@@ -1,7 +1,7 @@
 import os
 import shutil
 from collections.abc import Iterable
-from typing import Optional, Union, List
+from typing import Union, List
 
 from ..types.document.generators import from_lines
 from ..flow import Flow
