@@ -59,14 +59,17 @@ def test_name_python_jaml_identical():
     # First way of import using py_modules argument in jaml file
     from jina.jaml.helper import load_py_modules
     from jina.helper import typename
+
     load_py_modules({'py_modules': ['metas_executors.py']})
     from metas_executors import TestExecutor
+
     jaml_executor = TestExecutor()
     jaml_metas_name = jaml_executor.metas.name
     jaml_typename = typename(jaml_executor)
 
     # Second way of importing directly via path in python
     from .metas_executors import TestExecutor
+
     py_executor = TestExecutor()
     py_metas_name = py_executor.metas.name
     py_typename = typename(py_executor)
