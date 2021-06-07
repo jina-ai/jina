@@ -1,7 +1,6 @@
 import os
 import sys
 import warnings
-from collections import defaultdict
 from types import SimpleNamespace, ModuleType
 from typing import Optional, List, Any, Dict
 
@@ -12,56 +11,6 @@ IMPORTED.executors = False
 IMPORTED.executors = False
 IMPORTED.hub = False
 IMPORTED.schema_executors = {}
-
-
-def import_classes(
-    namespace: str, show_import_table: bool = False, import_once: bool = False
-):
-    """
-    Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML constructor beforehand. It can be also used to import third-part or external executors.
-
-    :param namespace: the namespace to import
-    :param show_import_table: show the import result as a table
-    :param import_once: import everything only once, to avoid repeated import
-    :return: the dependency tree of the imported classes under the `namespace`
-    """
-
-    _import_type = 'ExecutorType'
-    _imported_property = namespace.split('.')[-1]
-    _is_imported = getattr(IMPORTED, _imported_property)
-    if import_once and _is_imported:
-        warnings.warn(
-            f'{namespace} has already imported. If you want to re-imported, please set `import_once=True`',
-            ImportWarning,
-        )
-        return {}
-
-    try:
-        _modules = _get_modules(namespace)
-    except ImportError as e:
-        warnings.warn(f'{namespace} has no module to import. {e}', ImportWarning)
-        return {}
-
-    load_stat = defaultdict(list)
-    bad_imports = []
-    depend_tree = {}
-    for _mod_name in _modules:
-        try:
-            bad_imports += _import_module(
-                _mod_name, _import_type, depend_tree, load_stat
-            )
-        except Exception as ex:
-            load_stat[_mod_name].append(('', False, ex))
-            bad_imports.append(_mod_name)
-
-    if show_import_table:
-        _print_load_table(load_stat)
-    else:
-        _raise_bad_imports_warnings(bad_imports, namespace)
-
-    setattr(IMPORTED, _imported_property, True)
-
-    return depend_tree
 
 
 class ImportExtensions:
@@ -326,32 +275,3 @@ def _update_depend_tree(cls_obj, module_name, cur_tree):
             d[vvv.__name__] = {}
         d = d[vvv.__name__]
     d['module'] = module_name
-
-
-def _import_module(module_name, import_type, depend_tree, load_stat):
-    from importlib import import_module
-    from .helper import colored
-    from .schemas.helper import _jina_class_to_schema
-
-    bad_imports = []
-    _mod_obj = import_module(module_name)
-    for _attr in dir(_mod_obj):
-        _cls_obj = getattr(_mod_obj, _attr)
-        if _cls_obj.__class__.__name__ != import_type:
-            continue
-        # update the dependency tree for each class
-        try:
-            _update_depend_tree(_cls_obj, module_name, depend_tree)
-            if _cls_obj.__class__.__name__ == 'ExecutorType':
-                IMPORTED.schema_executors[
-                    f'Jina::Executors::{_cls_obj.__name__}'
-                ] = _jina_class_to_schema(_cls_obj)
-
-            _success_msg = colored('▸', 'green').join(
-                f'{vvv.__name__}' for vvv in _cls_obj.mro()[:-1][::-1]
-            )
-            load_stat[module_name].append((_attr, True, _success_msg))
-        except Exception as ex:
-            load_stat[module_name].append((_attr, False, ex))
-            bad_imports.append('.'.join([module_name, _attr]))
-    return bad_imports
