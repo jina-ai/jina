@@ -9,18 +9,12 @@ __all__ = ['Client', 'GRPCClient', 'WebSocketClient']
 
 
 class Client(BaseClient):
-    def __init__(self, use_restful: bool = False):
-        self.use_restful = use_restful
-
     @property
-    def client(self) -> 'Client':
-        """Return the client object itself
-
-        .. # noqa: DAR201"""
-        if self.use_restful:
-            return WebSocketClient
-        else:
+    def client(self):
+        if not self.args.is_restful:
             return GRPCClient
+        else:
+            return WebSocketClient
 
 
 class GRPCClient(PostMixin, BaseClient):
