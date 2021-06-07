@@ -622,14 +622,16 @@ def test_document_sparse_attributes_pytorch(torch_sparse_matrix):
         ('tf', None, tf.SparseTensor),
     ],
 )
+@pytest.mark.parametrize('field', ['embedding', 'blob'])
 def test_document_sparse_embedding(
     scipy_sparse_matrix,
     return_sparse_ndarray_cls_type,
     return_scipy_class_type,
     return_expected_type,
+    field,
 ):
     d = Document()
-    d.embedding = scipy_sparse_matrix
+    setattr(d, field, scipy_sparse_matrix)
     cls_type = None
     sparse_kwargs = {}
     if return_sparse_ndarray_cls_type == 'scipy':
@@ -646,23 +648,29 @@ def test_document_sparse_embedding(
 
         cls_type = SparseNdArray
 
-    embedding = d.get_sparse_embedding(
-        sparse_ndarray_cls_type=cls_type, **sparse_kwargs
-    )
-    assert embedding is not None
-    assert isinstance(embedding, return_expected_type)
+    if field == 'blob':
+        field_sparse = d.get_sparse_blob(
+            sparse_ndarray_cls_type=cls_type, **sparse_kwargs
+        )
+    elif field == 'embedding':
+        field_sparse = d.get_sparse_embedding(
+            sparse_ndarray_cls_type=cls_type, **sparse_kwargs
+        )
+
+    assert field_sparse is not None
+    assert isinstance(field_sparse, return_expected_type)
     if return_sparse_ndarray_cls_type == 'torch':
-        assert embedding.is_sparse
+        assert field_sparse.is_sparse
 
     if return_sparse_ndarray_cls_type == 'scipy':
-        np.testing.assert_equal(embedding.todense(), scipy_sparse_matrix.todense())
+        np.testing.assert_equal(field_sparse.todense(), scipy_sparse_matrix.todense())
     elif return_sparse_ndarray_cls_type == 'torch':
         np.testing.assert_equal(
-            embedding.to_dense().numpy(), scipy_sparse_matrix.todense()
+            field_sparse.to_dense().numpy(), scipy_sparse_matrix.todense()
         )
     elif return_scipy_class_type == 'tf':
         np.testing.assert_equal(
-            tf.sparse.to_dense(embedding).numpy(), scipy_sparse_matrix.todense()
+            tf.sparse.to_dense(field_sparse).numpy(), scipy_sparse_matrix.todense()
         )
 
 
