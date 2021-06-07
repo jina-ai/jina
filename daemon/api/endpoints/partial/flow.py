@@ -21,4 +21,9 @@ async def _fetch_flow_params():
     return FlowModel.schema()['properties']
 
 
+@router.on_event('shutdown')
+def _shutdown():
+    partial_flow_store.flow.close()
+
+
 # TODO add rolling update or other functionality of a flow here

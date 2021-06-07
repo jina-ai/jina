@@ -29,3 +29,8 @@ async def _rolling_update(dump_path: str):
         raise HTTPException(
             status_code=405, detail=f'Pod does not support rolling update'
         )
+
+
+@router.on_event('shutdown')
+def _shutdown():
+    partial_pod_store.pod.close()

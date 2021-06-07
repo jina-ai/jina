@@ -20,3 +20,8 @@ async def _status():
 )
 async def _fetch_pea_params():
     return PeaModel.schema()['properties']
+
+
+@router.on_event('shutdown')
+def _shutdown():
+    partial_pea_store.pea.close()
