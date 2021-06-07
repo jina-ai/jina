@@ -22,7 +22,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/latency-tracking
-          ref: refs/heads/refactor-adapt-2.0.0rc2
           path: latency
       - uses: actions/setup-python@v2
         with:
