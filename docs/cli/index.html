@@ -438,7 +438,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “96c53b97-9916-4490-b730-5f32857729e0”</p>
+<p>Default: “878b3e59-333d-41b5-a210-e8f8d8fec034”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -513,7 +513,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1a708146-22d4-4c17-88e5-7203dae6730e”</p>
+<p>Default: “f1ed4ee6-b6b8-430a-93d5-a9ad02bb794d”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -546,7 +546,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “0c0c1928-4e33-4246-bc2c-76247bdfd0dc”</p>
+<p>Default: “6583daae-adc0-428d-adf9-68ccd9bbc3a4”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -645,7 +645,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 58927</p>
+<p>Default: 57523</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -673,9 +673,8 @@
 <dd><blockquote>
 <div><p>The config of the executor, it could be one of the followings:
 * an Executor-level YAML file path (.yml, .yaml, .jaml)
-* a name of a class inherited from <cite>jina.Executor</cite>
 * a docker image (must start with <cite>docker://</cite>)
-* the string literal of a YAML config (must start with <cite>!</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
 * the string literal of a JSON config</p>
 <p>When use it under Python, one can use the following values additionally:
 - a Python dict that represents the config
@@ -691,11 +690,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 43623</p>
+<p>Default: 60197</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 53321</p>
+<p>Default: 42255</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -783,7 +782,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 46029</p>
+<p>Default: 60957</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -810,7 +809,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “a412b89b-876c-45dd-a848-c64715ec7f61”</p>
+<p>Default: “f5092ba0-b818-44e2-98b5-f51baee9894c”</p>
 </dd>
 </dl>
 </div>
@@ -1071,7 +1070,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 57705</p>
+<p>Default: 39291</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1099,9 +1098,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dd><blockquote>
 <div><p>The config of the executor, it could be one of the followings:
 * an Executor-level YAML file path (.yml, .yaml, .jaml)
-* a name of a class inherited from <cite>jina.Executor</cite>
 * a docker image (must start with <cite>docker://</cite>)
-* the string literal of a YAML config (must start with <cite>!</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
 * the string literal of a JSON config</p>
 <p>When use it under Python, one can use the following values additionally:
 - a Python dict that represents the config
@@ -1117,11 +1115,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 48047</p>
+<p>Default: 59433</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 40843</p>
+<p>Default: 35585</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1235,7 +1233,7 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 39649</p>
+<p>Default: 52301</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1349,7 +1347,7 @@ and oneof fields are not affected by this option.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 41817</p>
+<p>Default: 46865</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1377,9 +1375,8 @@ and oneof fields are not affected by this option.</p>
 <dd><blockquote>
 <div><p>The config of the executor, it could be one of the followings:
 * an Executor-level YAML file path (.yml, .yaml, .jaml)
-* a name of a class inherited from <cite>jina.Executor</cite>
 * a docker image (must start with <cite>docker://</cite>)
-* the string literal of a YAML config (must start with <cite>!</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
 * the string literal of a JSON config</p>
 <p>When use it under Python, one can use the following values additionally:
 - a Python dict that represents the config
@@ -1395,11 +1392,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 41369</p>
+<p>Default: 58167</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 38761</p>
+<p>Default: 58107</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1487,7 +1484,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 33507</p>
+<p>Default: 57225</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1514,7 +1511,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “2323f8d7-4760-4500-93ee-50a930d1fe56”</p>
+<p>Default: “0a96083f-1920-4c54-8c4f-0109312504fe”</p>
 </dd>
 </dl>
 </div>
@@ -1601,7 +1598,7 @@ process Responses in bulk instead of using callback.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 58717</p>
+<p>Default: 50633</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1680,7 +1677,7 @@ process Responses in bulk instead of using callback.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 04, 2021.
+            Last updated on Jun 07, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
