@@ -105,13 +105,14 @@ with:
             flow_yaml: '{os.path.join(cur_dir, 'flow.yml')}'
             documents: {jsonlines_file}
             request_size: 1
-            execution_endpoint: 'index_lines'
+            execution_endpoint: '
+index'
         - !SingleFlowRunner
           with:
             flow_yaml: '{os.path.join(cur_dir, 'flow.yml')}'
             documents: {jsonlines_file}
             request_size: 1
-            execution_endpoint: 'search_lines'
+            execution_endpoint: 'search'
   evaluation_callback: !MeanEvaluationCallback {{}}
   parameter_yaml: '{os.path.join(cur_dir, 'parameter.yml')}'
   workspace_base_dir: {tmpdir}
