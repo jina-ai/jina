@@ -72,5 +72,5 @@ def test_name_python_jaml_identical():
     py_metas_name = py_executor.metas.name
 
     # Make sure that the executor meta name is equal to only the class name
-    assert jaml_metas_name == "TestExecutor"
-    assert py_metas_name == "TestExecutor"
+    assert jaml_metas_name == 'TestExecutor'
+    assert py_metas_name == 'TestExecutor'
