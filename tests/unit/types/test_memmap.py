@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from jina import Document
+from jina import Document, DocumentArray
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from tests import random_docs
 
@@ -133,3 +133,31 @@ def test_prune_save_space(tmpdir):
     new_bsize = os.stat(os.path.join(tmpdir, 'body.bin')).st_size
     assert new_bsize < old_bsize
     assert new_hsize < old_hsize
+
+
+def test_convert_dam_to_da(tmpdir, mocker):
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(random_docs(100))
+    da = DocumentArray(dam)
+    dam.clear()
+    mock = mocker.Mock()
+    for d in da:
+        assert d
+        mock()
+    mock.assert_called()
+    assert len(da) == 100
+    assert len(dam) == 0
+
+
+def test_convert_dm_to_dam(tmpdir, mocker):
+    dam = DocumentArrayMemmap(tmpdir)
+    da = DocumentArray(random_docs(100))
+    dam.extend(da)
+    da.clear()
+    mock = mocker.Mock()
+    for d in dam:
+        assert d
+        mock()
+    mock.assert_called()
+    assert len(da) == 0
+    assert len(dam) == 100

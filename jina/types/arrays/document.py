@@ -108,7 +108,9 @@ class DocumentArray(
     ):
         super().__init__()
         if docs_proto is not None:
-            if isinstance(docs_proto, Generator):
+            from .memmap import DocumentArrayMemmap
+
+            if isinstance(docs_proto, (Generator, DocumentArrayMemmap)):
                 self._docs_proto = list(docs_proto)
             else:
                 self._docs_proto = docs_proto

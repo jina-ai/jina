@@ -32,12 +32,27 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         - `header.bin`: stores id, offset, length and boundary info of each Document in `body.bin`;
         - `body.bin`: stores Documents continuously
 
-    When load DocumentArrayMemmap, it only keeps the content of `header.bin` in memory, while storing all `body.bin`
+    When loading DocumentArrayMemmap, it only loads the content of `header.bin` into memory, while storing all `body.bin`
     data on disk. As `header.bin` is often much smaller than `body.bin`, memory is saved.
 
     This class is designed to work similarly as :class:`DocumentArray` but differs in the following aspects:
         - one can not set the attribute of elements in a DocumentArrayMemmap;
         - one can not use slice to index elements in a DocumentArrayMemmap
+
+    To convert between a DocumentArrayMemmap and a DocumentArray
+
+    .. highlight:: python
+    .. code-block:: python
+
+        # convert from DocumentArrayMemmap to DocumentArray
+        dam = DocumentArrayMemmap('./tmp')
+        ...
+
+        da = DocumentArray(dam)
+
+        # convert from DocumentArray to DocumentArrayMemmap
+        dam2 = DocumentArrayMemmap('./tmp')
+        dam2.extend(da)
     """
 
     def __init__(self, path: str, key_length: int = 36):
