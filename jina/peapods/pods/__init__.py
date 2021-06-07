@@ -607,7 +607,7 @@ class Pod(BasePod):
                 if _args.peas_hosts:
                     _args.host = pea_host
                 if _args.name:
-                    _args.name += f'/{idx}'
+                    _args.name += f'/pea-{idx}'
                 else:
                     _args.name = f'{idx}'
             else:
