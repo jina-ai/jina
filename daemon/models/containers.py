@@ -15,6 +15,7 @@ class ContainerMetadata(BaseModel):
     image_id: str
     network: str
     ports: Dict
+    rest_api_uri: str
 
 
 class ContainerItem(StoreItem):

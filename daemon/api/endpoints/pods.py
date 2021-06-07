@@ -1,3 +1,5 @@
+import requests
+
 from fastapi import Depends, APIRouter, HTTPException
 
 from ..dependencies import PodDepends
@@ -32,7 +34,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
         return store.add(
             id=pod.id,
             workspace_id=pod.workspace_id,
-            command=pod.command,
+            params=pod.params,
             ports=pod.ports,
         )
     except Exception as ex:
@@ -65,6 +67,17 @@ async def _delete(id: DaemonID, workspace: bool = False):
 async def _status(id: DaemonID):
     try:
         return store[id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+
+
+@router.put(path='/{id}/rolling_update', summary='Trigger a rolling update on this Pod')
+async def _rolling_update(id: DaemonID, dump_path: str):
+    try:
+        return requests.put(
+            f'{store[id].metadata.rest_api_uri}/pod/rolling_update',
+            params={'dump_path': dump_path},
+        )
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 

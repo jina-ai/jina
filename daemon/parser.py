@@ -23,6 +23,13 @@ def mixin_daemon_parser(parser):
         help='do not start fluentd, no log streaming',
     )
 
+    gp.add_argument(
+        '--mode',
+        type=str,
+        default=None,
+        help='Mode for partial jinad. Can be flow/pod/pea. If none provided main jinad is run.',
+    )
+
 
 def get_main_parser():
     """
@@ -50,6 +57,18 @@ def get_main_parser():
     return parser
 
 
+def get_partial_parser():
+    parser = set_base_parser()
+
+    parser.add_argument(
+        '--mode',
+        type=str,
+        help='Mode for partial jinad. Can be flow/pod/pea',
+    )
+
+    return parser
+
+
 def _get_run_args(print_args: bool = True):
     from jina.helper import colored
     from . import daemon_logger
@@ -57,7 +76,7 @@ def _get_run_args(print_args: bool = True):
     parser = get_main_parser()
     from argparse import _StoreAction, _StoreTrueAction
 
-    args = parser.parse_args()
+    args, argv = parser.parse_known_args()
     if print_args:
 
         default_args = {

@@ -1,26 +1,32 @@
 import os
 import pathlib
 import subprocess
-from queue import Queue
 from pathlib import Path
+from queue import Queue
 from threading import Thread
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
+from jina import __version__, __resources_path__, Flow
 from jina.logging.logger import JinaLogger
-from jina import __version__, __resources_path__
-from .parser import get_main_parser, _get_run_args
+from jina.parsers import set_pea_parser, set_pod_parser
+from jina.parsers.flow import set_flow_parser
+from jina.peapods.peas import BasePea
+from jina.peapods.pods.factory import PodFactory
+from jina.peapods.runtimes import ZEDRuntime
 from .excepts import (
     RequestValidationError,
     Runtime400Exception,
     daemon_runtime_exception_handler,
     validation_exception_handler,
 )
+from .parser import get_main_parser, _get_run_args, get_partial_parser
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
+nested_args = ''  # used by mini jinad, forwarded to pea/pod/flow
 
 __task_queue__ = Queue()
 __dockerhost__ = 'host.docker.internal'
@@ -29,8 +35,8 @@ __rootdir__ = str(Path(__file__).parent.parent.absolute())
 __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
 
 
-def _get_app():
-    from .api.endpoints import router, flows, pods, peas, logs, workspaces
+def _get_app(mode=None):
+    from .api.endpoints import router
 
     app = FastAPI(
         title='JinaD (Daemon)',
@@ -41,26 +47,6 @@ def _get_app():
                 'name': 'daemon',
                 'description': 'API to manage the Daemon',
             },
-            {
-                'name': 'flows',
-                'description': 'API to manage Flows',
-            },
-            {
-                'name': 'pods',
-                'description': 'API to manage Pods',
-            },
-            {
-                'name': 'peas',
-                'description': 'API to manage Peas',
-            },
-            {
-                'name': 'logs',
-                'description': 'API to stream Logs',
-            },
-            {
-                'name': 'workspaces',
-                'description': 'API to manage Workspaces',
-            },
         ],
     )
     app.add_middleware(
@@ -70,14 +56,73 @@ def _get_app():
         allow_methods=['*'],
         allow_headers=['*'],
     )
+
     app.include_router(router)
-    app.include_router(logs.router)
-    app.include_router(peas.router)
-    app.include_router(pods.router)
-    app.include_router(flows.router)
-    app.include_router(workspaces.router)
     app.add_exception_handler(Runtime400Exception, daemon_runtime_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
+
+    if mode is None:
+        from .api.endpoints import flows, pods, peas, logs, workspaces
+
+        app.include_router(logs.router)
+        app.include_router(peas.router)
+        app.include_router(pods.router)
+        app.include_router(flows.router)
+        app.include_router(workspaces.router)
+        app.openapi_tags.extend(
+            [
+                {
+                    'name': 'flows',
+                    'description': 'API to manage Flows',
+                },
+                {
+                    'name': 'pods',
+                    'description': 'API to manage Pods',
+                },
+                {
+                    'name': 'peas',
+                    'description': 'API to manage Peas',
+                },
+                {
+                    'name': 'logs',
+                    'description': 'API to stream Logs',
+                },
+                {
+                    'name': 'workspaces',
+                    'description': 'API to manage Workspaces',
+                },
+            ]
+        )
+    elif mode == 'pod':
+        from .api.endpoints.partial import pod
+
+        app.include_router(pod.router)
+        app.openapi_tags.append(
+            {
+                'name': 'pod',
+                'description': 'API to manage a Pod',
+            }
+        )
+    elif mode == 'pea':
+        from .api.endpoints.partial import pea
+
+        app.include_router(pea.router)
+        app.openapi_tags.append(
+            {
+                'name': 'pea',
+                'description': 'API to manage a Pea',
+            },
+        )
+    elif mode == 'flow':
+        from .api.endpoints.partial import flow
+
+        app.include_router(flow.router)
+        app.openapi_tags.append(
+            {
+                'name': 'flow',
+                'description': 'API to manage a Flow',
+            }
+        )
 
     return app
 
@@ -126,8 +171,12 @@ def main():
     global jinad_args, __root_workspace__
     jinad_args = _get_run_args()
     __root_workspace__ = jinad_args.workspace
+    if jinad_args.mode is not None:
+        global nested_args
+        _, nested_args = get_partial_parser().parse_known_args()
+
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     if not jinad_args.no_fluentd:
         Thread(target=_start_fluentd, daemon=True).start()
     _start_consumer()
-    _start_uvicorn(app=_get_app())
+    _start_uvicorn(app=_get_app(mode=jinad_args.mode))
