@@ -9,7 +9,7 @@ from ..ndarray.sparse.scipy import SparseNdArray
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
 
-__all__ = ["GraphDocument"]
+__all__ = ['GraphDocument']
 
 if False:
     from scipy.sparse import coo_matrix
@@ -64,7 +64,7 @@ class GraphDocument(Document):
 
                 JINA_GLOBAL.scipy_installed = True
 
-    def add_node(self, node: "Document"):
+    def add_node(self, node: 'Document'):
         """
         Add a a node to the graph
 
@@ -77,7 +77,7 @@ class GraphDocument(Document):
         self._node_id_to_offset[node.id] = len(self.nodes)
         self.nodes.append(node)
 
-    def remove_node(self, node: "Document"):
+    def remove_node(self, node: 'Document'):
         """
         Remove a node from the graph along with the edges that may contain it
 
@@ -124,7 +124,7 @@ class GraphDocument(Document):
         }
 
     def add_edge(
-        self, doc1: "Document", doc2: "Document", features: Optional[Dict] = None
+        self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
     ):
         """
         Add an edge to the graph connecting `doc1` with `doc2`
@@ -179,7 +179,7 @@ class GraphDocument(Document):
             if edge_feature_key in self.edge_features:
                 del self.edge_features[edge_feature_key]
 
-    def remove_edge(self, doc1: "Document", doc2: "Document"):
+    def remove_edge(self, doc1: 'Document', doc2: 'Document'):
         """
         Remove a node from the graph along with the edges that may contain it
 
@@ -258,7 +258,7 @@ class GraphDocument(Document):
         """
         return self.chunks
 
-    def get_out_degree(self, doc: "Document") -> int:
+    def get_out_degree(self, doc: 'Document') -> int:
         """
         The out degree of the doc node
 
@@ -268,7 +268,7 @@ class GraphDocument(Document):
         out_edges = self.get_outgoing_nodes(doc)
         return len(out_edges) if out_edges else 0
 
-    def get_in_degree(self, doc: "Document") -> int:
+    def get_in_degree(self, doc: 'Document') -> int:
         """
         The in degree of the doc node
 
@@ -279,7 +279,7 @@ class GraphDocument(Document):
         return len(in_edges) if in_edges else 0
 
     @nodes.setter
-    def nodes(self, value: Iterable["Document"]):
+    def nodes(self, value: Iterable['Document']):
         """Set all nodes of the current document.
 
         :param value: the array of nodes of this document
@@ -295,7 +295,7 @@ class GraphDocument(Document):
         """
         SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value = value
 
-    def get_outgoing_nodes(self, doc: "Document") -> Optional[ChunkArray]:
+    def get_outgoing_nodes(self, doc: 'Document') -> Optional[ChunkArray]:
         """
         Get all the outgoing edges from `doc`
 
@@ -313,7 +313,7 @@ class GraphDocument(Document):
                 reference_doc=self,
             )
 
-    def get_incoming_nodes(self, doc: "Document") -> Optional[ChunkArray]:
+    def get_incoming_nodes(self, doc: 'Document') -> Optional[ChunkArray]:
         """
         Get all the outgoing edges from `doc`
 
@@ -332,7 +332,7 @@ class GraphDocument(Document):
             )
 
     @staticmethod
-    def load_from_dgl(dgl_graph: "DGLGraph"):
+    def load_from_dgl(dgl_graph: 'DGLGraph'):
         """
         Construct a GraphDocument from of graph with type `dgl.DGLGraph`
 
@@ -357,14 +357,38 @@ class GraphDocument(Document):
         """
         Construct a  `dgl.DGLGraph` from a `GraphDocument` instance.
         """
-        import dgl
+        from ... import JINA_GLOBAL
+
+        if JINA_GLOBAL.dgl_installed is None:
+            JINA_GLOBAL.dgl_installed = False
+            with ImportExtensions(
+                required=False,
+                pkg_name="dgl",
+                help_text=f"to_dgl method needs dgl",
+            ):
+                import dgl
+
+                JINA_GLOBAL.dgl_installed = True
+
+        if JINA_GLOBAL.torch_installed is None:
+            JINA_GLOBAL.torch_installed = False
+            with ImportExtensions(
+                required=False,
+                pkg_name="torch",
+                help_text=f"to_dgl method needs torch",
+            ):
+                import torch
+
+                JINA_GLOBAL.torch_installed = True
+
         import torch
+        import dgl
 
         source_nodes = torch.tensor(self.adjacency.row.copy())
         destination_nodes = torch.tensor(self.adjacency.col.copy())
 
         return dgl.graph((source_nodes, destination_nodes))
 
-    def __iter__(self) -> Iterator[Tuple["Document"]]:
+    def __iter__(self) -> Iterator[Tuple['Document']]:
         for (row, col) in zip(self.adjacency.row, self.adjacency.col):
             yield self.nodes[row.item()], self.nodes[col.item()]
