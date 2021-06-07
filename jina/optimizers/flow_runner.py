@@ -1,24 +1,24 @@
 import os
 import shutil
 from collections.abc import Iterable
-from typing import Union, List
+from typing import Union, List, Optional, Callable
 
 from ..types.document.generators import from_lines
-from ..flow import Flow
 from ..helper import colored
 from ..logging.predefined import default_logger as logger
 from ..jaml import JAMLCompatible
+from .flow_builder import FlowBuilder
 
 
 class FlowRunner(JAMLCompatible):
     """An abstract FlowRunner object in Jina."""
 
     def run(
-        self,
-        trial_parameters: dict,
-        workspace: str = 'workspace',
-        callback=None,
-        **kwargs,
+            self,
+            trial_parameters: dict,
+            workspace: str = 'workspace',
+            callback: Optional[Callable[..., None]] = None,
+            **kwargs,
     ):
         """
         Runs the defined Flow(s).
@@ -36,12 +36,12 @@ class SingleFlowRunner(FlowRunner):
     """:class:`SingleFlowRunner` enables running a flow repeadetly with different `context`."""
 
     def __init__(
-        self,
-        flow_yaml: str,
-        documents: Union[Iterable, str],
-        request_size: int,
-        execution_endpoint: str,
-        overwrite_workspace: bool = False,
+            self,
+            flow_yaml: str,
+            documents: Union[Iterable, str],
+            request_size: int,
+            execution_endpoint: str,
+            overwrite_workspace: bool = False,
     ):
         """
         `documents` maps to a parameter of the `execution_endpoint`, depending on the method.
@@ -92,22 +92,22 @@ class SingleFlowRunner(FlowRunner):
         os.makedirs(workspace, exist_ok=True)
 
     def run(
-        self,
-        trial_parameters: dict,
-        workspace: str = 'workspace',
-        callback=None,
-        **kwargs,
+            self,
+            trial_parameters: dict,
+            workspace: str = 'workspace',
+            callback: Optional[Callable[..., None]] = None,
+            **kwargs,
     ):
         """
         Running method of :class:`SingleFlowRunner`.
 
-        :param trial_parameters: parameters need to be tried
+        :param trial_parameters: parameters that need to be tried
         :param workspace: path of workspace
         :param callback: callback function
         :param kwargs: keyword argument
         """
         self._setup_workspace(workspace)
-        with Flow.load_config(self._flow_yaml, context=trial_parameters) as f:
+        with FlowBuilder(flow_yaml_template=self._flow_yaml).build(trial_parameters) as f:
             f.post(
                 inputs=self._documents,
                 on=self._execution_endpoint,
@@ -131,11 +131,11 @@ class MultiFlowRunner(FlowRunner):
         self.flows = flows
 
     def run(
-        self,
-        trial_parameters: dict,
-        workspace: str = 'workspace',
-        callback=None,
-        **kwargs,
+            self,
+            trial_parameters: dict,
+            workspace: str = 'workspace',
+            callback: Optional[Callable[..., None]] = None,
+            **kwargs,
     ):
         """
         Running method of :class:`MultiFlowRunner`.

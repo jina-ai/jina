@@ -445,7 +445,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         *,
         allow_py_modules: bool = True,
         substitute: bool = True,
-        context: Dict[str, Any] = None,
+        context: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features

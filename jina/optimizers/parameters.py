@@ -1,5 +1,4 @@
-from abc import abstractmethod, ABCMeta
-from typing import Optional, Sequence, Union, List, Tuple
+from typing import Optional, Sequence, List, Dict
 
 from ..jaml import JAML, JAMLCompatible
 
@@ -11,11 +10,11 @@ class OptimizationParameter(JAMLCompatible, metaclass=ABCMeta):
     """Base class for all optimization parameters."""
 
     def __init__(
-            self,
-            parameter_name: str = '',
-            executor_name: Optional[str] = None,
-            prefix: str = 'JINA',
-            jaml_variable: Optional[str] = None,
+        self,
+        parameter_name: str = '',
+        executor_name: Optional[str] = None,
+        prefix: str = 'JINA',
+        jaml_variable: Optional[str] = None,
     ):
         self.parameter_name = parameter_name
         if jaml_variable is None:
@@ -23,7 +22,6 @@ class OptimizationParameter(JAMLCompatible, metaclass=ABCMeta):
         else:
             self.jaml_variable = jaml_variable
 
-    @abstractmethod
     def suggest(self, trial: 'Trial'):
         """
         Suggest an instance of the parameter for a given trial.
@@ -31,7 +29,7 @@ class OptimizationParameter(JAMLCompatible, metaclass=ABCMeta):
         :param trial: An instance of an Optuna Trial object
             # noqa: DAR201
         """
-        ...
+        raise NotImplementedError
 
 
 class IntegerParameter(OptimizationParameter):
@@ -42,13 +40,13 @@ class IntegerParameter(OptimizationParameter):
     """
 
     def __init__(
-            self,
-            low: int,
-            high: int,
-            step_size: int = 1,
-            log: bool = False,
-            *args,
-            **kwargs,
+        self,
+        low: int,
+        high: int,
+        step_size: int = 1,
+        log: bool = False,
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.low = low
@@ -138,7 +136,7 @@ class CategoricalParameter(OptimizationParameter):
     """
 
     def __init__(
-            self, choices: Sequence[Union[None, bool, int, float, str]], *args, **kwargs
+        self, choices: Sequence[Optional[bool, int, float, str]], *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.choices = choices
@@ -184,11 +182,20 @@ class DiscreteUniformParameter(OptimizationParameter):
 class PodOptimizationParameter(OptimizationParameter):
     """Base class for all optimization parameters."""
 
-    def __init__(self, inner_parameters: List[Tuple[str, OptimizationParameter]], *args, **kwargs):
+    def __init__(
+        self,
+        pod_choices: List[Optional[str]],
+        inner_parameters: Dict[List[OptimizationParameter]],
+        *args,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
+        assert len(pod_choices) == len(
+            inner_parameters.keys()
+        ), 'Every pod alternative needs to have its set of parameters'
+        self.pod_parameter_selector = CategoricalParameter(pod_choices)
         self.inner_parameters = inner_parameters
 
-    @abstractmethod
     def suggest(self, trial: 'Trial'):
         """
         Suggest an instance of the parameter for a given trial.
@@ -196,7 +203,12 @@ class PodOptimizationParameter(OptimizationParameter):
         :param trial: An instance of an Optuna Trial object
             # noqa: DAR201
         """
-        ...
+        result = {}
+        key = self.pod_parameter_selector.suggest(trial)
+        result[key] = {}
+        for param in self.inner_parameters[key]:
+            result[key][param.jaml_variable] = param.suggest(trial)
+        return result
 
 
 def load_optimization_parameters(filepath: str):
