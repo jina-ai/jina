@@ -60,7 +60,7 @@ class ContainerStore(BaseStore):
                     image_id=id_cleaner(_container.image.id),
                     network=_network,
                     ports=_ports,
-                    rest_api_uri=f'{ip_address}:{rest_api_port}',
+                    rest_api_uri=f'http://{ip_address}:{rest_api_port}',
                 ),
                 arguments=ContainerArguments(command=command),
                 workspace_id=workspace_id,
