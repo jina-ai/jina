@@ -394,6 +394,7 @@
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.flow_runner</span> <span class="kn">import</span> <span class="n">FlowRunner</span>
     <span class="kn">import</span> <span class="nn">optuna</span>
+    <span class="kn">from</span> <span class="nn">optuna.trial</span> <span class="kn">import</span> <span class="n">Trial</span>
     <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 
 
@@ -561,11 +562,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_direction</span> <span class="o">=</span> <span class="n">direction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_seed</span> <span class="o">=</span> <span class="n">seed</span>
 
-    <span class="k">def</span> <span class="nf">_trial_parameter_sampler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_trial_parameter_sampler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="s1">'Trial'</span><span class="p">):</span>
         <span class="n">trial_parameters</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">load_optimization_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameter_yaml</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
-            <span class="n">trial_parameters</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">jaml_variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">FlowOptimizer</span><span class="o">.</span><span class="n">_suggest</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">trial</span><span class="p">)</span>
+            <span class="n">trial_parameters</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">jaml_variable</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">suggest</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
 
         <span class="n">trial</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_workspace_base_dir</span>
@@ -577,44 +578,7 @@
 
         <span class="k">return</span> <span class="n">trial_parameters</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_suggest</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">IntegerParameter</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">jaml_variable</span><span class="p">,</span>
-                <span class="n">low</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
-                <span class="n">high</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
-                <span class="n">step</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">step_size</span><span class="p">,</span>
-                <span class="n">log</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">UniformParameter</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_uniform</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">jaml_variable</span><span class="p">,</span>
-                <span class="n">low</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
-                <span class="n">high</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">LogUniformParameter</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_loguniform</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">jaml_variable</span><span class="p">,</span>
-                <span class="n">low</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
-                <span class="n">high</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">CategoricalParameter</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_categorical</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">jaml_variable</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">choices</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">DiscreteUniformParameter</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_discrete_uniform</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">jaml_variable</span><span class="p">,</span>
-                <span class="n">low</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
-                <span class="n">high</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
-                <span class="n">q</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">q</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Paramater </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1"> is of unsupported type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="s1">'Trial'</span><span class="p">):</span>
         <span class="n">trial_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trial_parameter_sampler</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
         <span class="n">evaluation_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluation_callback</span><span class="o">.</span><span class="n">get_empty_copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_flow_runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>

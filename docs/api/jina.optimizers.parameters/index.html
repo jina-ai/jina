@@ -382,6 +382,17 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.optimizers.parameters.</span></code><code class="sig-name descname"><span class="pre">OptimizationParameter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'JINA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jaml_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#OptimizationParameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.OptimizationParameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.jaml/#jina.jaml.JAMLCompatible" title="jina.jaml.JAMLCompatible"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jaml.JAMLCompatible</span></code></a></p>
 <p>Base class for all optimization parameters.</p>
+<dl class="py method">
+<dt id="jina.optimizers.parameters.OptimizationParameter.suggest">
+<code class="sig-name descname"><span class="pre">suggest</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#OptimizationParameter.suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.OptimizationParameter.suggest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suggest an instance of the parameter for a given trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trial</strong> (<em>Trial</em>) – An instance of an Optuna Trial object
+# noqa: DAR201</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.optimizers.parameters.IntegerParameter">
@@ -390,6 +401,17 @@
 <p>Used for optimizing integer parameters with the FlowOptimizer.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_int">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_int</a></p>
+<dl class="py method">
+<dt id="jina.optimizers.parameters.IntegerParameter.suggest">
+<code class="sig-name descname"><span class="pre">suggest</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#IntegerParameter.suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.IntegerParameter.suggest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suggest an instance of the parameter for a given trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trial</strong> (<em>Trial</em>) – An instance of an Optuna Trial object
+# noqa: DAR201</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.optimizers.parameters.UniformParameter">
@@ -398,6 +420,17 @@ For detailed information about sampling and usage see
 <p>Used for optimizing float parameters with the FlowOptimizer with uniform sampling.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform</a></p>
+<dl class="py method">
+<dt id="jina.optimizers.parameters.UniformParameter.suggest">
+<code class="sig-name descname"><span class="pre">suggest</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#UniformParameter.suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.UniformParameter.suggest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suggest an instance of the parameter for a given trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trial</strong> (<em>Trial</em>) – An instance of an Optuna Trial object
+# noqa: DAR201</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.optimizers.parameters.LogUniformParameter">
@@ -406,6 +439,17 @@ For detailed information about sampling and usage see
 <p>Used for optimizing float parameters with the FlowOptimizer with loguniform sampling.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_loguniform">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_loguniform</a></p>
+<dl class="py method">
+<dt id="jina.optimizers.parameters.LogUniformParameter.suggest">
+<code class="sig-name descname"><span class="pre">suggest</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#LogUniformParameter.suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.LogUniformParameter.suggest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suggest an instance of the parameter for a given trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trial</strong> (<em>Trial</em>) – An instance of an Optuna Trial object
+# noqa: DAR201</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.optimizers.parameters.CategoricalParameter">
@@ -414,6 +458,17 @@ For detailed information about sampling and usage see
 <p>Used for optimizing categorical parameters with the FlowOptimizer.
 For detailed information about sampling and usage see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical</a></p>
+<dl class="py method">
+<dt id="jina.optimizers.parameters.CategoricalParameter.suggest">
+<code class="sig-name descname"><span class="pre">suggest</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#CategoricalParameter.suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.CategoricalParameter.suggest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suggest an instance of the parameter for a given trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trial</strong> (<em>Trial</em>) – An instance of an Optuna Trial object
+# noqa: DAR201</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.optimizers.parameters.DiscreteUniformParameter">
@@ -422,6 +477,17 @@ For detailed information about sampling and usage see
 <p>Used for optimizing discrete parameters with the FlowOptimizer with uniform sampling.
 For detailed information about sampling and usage it is used by Jina with optuna see
 <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_discrete_uniform</a></p>
+<dl class="py method">
+<dt id="jina.optimizers.parameters.DiscreteUniformParameter.suggest">
+<code class="sig-name descname"><span class="pre">suggest</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/parameters/#DiscreteUniformParameter.suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.parameters.DiscreteUniformParameter.suggest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suggest an instance of the parameter for a given trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trial</strong> (<em>Trial</em>) – An instance of an Optuna Trial object
+# noqa: DAR201</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 <dl class="py function">
 <dt id="jina.optimizers.parameters.load_optimization_parameters">
