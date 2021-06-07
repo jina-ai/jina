@@ -42,3 +42,10 @@ If set, the results of all Requests will be returned as a list. This is useful w
 process Responses in bulk instead of using callback. 
                     ''',
     )
+
+    gp.add_argument(
+        '--use-restful',
+        action='store_true',
+        default=False,
+        help='Default False, will initialise grpc client. If set True, will initialise restful client.',
+    )
