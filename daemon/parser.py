@@ -7,6 +7,8 @@ from jina.parsers.helper import add_arg_group
 from jina.parsers.peapods.base import mixin_base_ppr_parser
 from jina.parsers.peapods.runtimes.remote import mixin_remote_parser
 
+from .models.enums import PartialDaemonModes
+
 
 def mixin_daemon_parser(parser):
     """
@@ -15,17 +17,16 @@ def mixin_daemon_parser(parser):
     # noqa: DAR103
     """
     gp = add_arg_group(parser, title='Daemon')
-
     gp.add_argument(
         '--no-fluentd',
         action='store_true',
         default=False,
         help='do not start fluentd, no log streaming',
     )
-
     gp.add_argument(
         '--mode',
         type=str,
+        choices=list(PartialDaemonModes),
         default=None,
         help='Mode for partial jinad. Can be flow/pod/pea. If none provided main jinad is run.',
     )
@@ -52,18 +53,6 @@ def get_main_parser():
             'JINAD_LOG_CONFIG',
             os.path.join(__resources_path__, 'logging.daemon.yml'),
         ),
-    )
-
-    return parser
-
-
-def get_partial_parser():
-    parser = set_base_parser()
-
-    parser.add_argument(
-        '--mode',
-        type=str,
-        help='Mode for partial jinad. Can be flow/pod/pea',
     )
 
     return parser

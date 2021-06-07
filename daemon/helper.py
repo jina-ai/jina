@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from contextlib import contextmanager
 
-from . import __root_workspace__
 
 if TYPE_CHECKING:
     from .models import DaemonID
@@ -29,6 +28,7 @@ def get_workspace_path(workspace_id: 'DaemonID', *args):
     :param args: paths to join
     :return: the full path
     """
+    from . import __root_workspace__
     return os.path.join(__root_workspace__, workspace_id, *[str(a) for a in args])
 
 
