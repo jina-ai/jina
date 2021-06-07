@@ -32,7 +32,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
         return store.add(
             id=flow.id,
             workspace_id=flow.workspace_id,
-            command=flow.command,
+            params=flow.params,
             ports=flow.ports,
         )
     except Exception as ex:

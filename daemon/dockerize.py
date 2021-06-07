@@ -24,7 +24,6 @@ __flow_ready__ = 'Flow is ready to use'
 
 if TYPE_CHECKING:
     from .files import DaemonFile
-    from .models.workspaces import WorkspaceMetadata
     from docker.models.networks import Network
     from docker.models.containers import Container
     from docker.client import APIClient, DockerClient
@@ -151,7 +150,7 @@ class Dockerizer:
         command: str,
         ports: Dict,
         additional_ports: Tuple[int, int],
-    ) -> Tuple['Container', str, Dict, bool]:
+    ) -> Tuple['Container', str, Dict, bool, str]:
         from .stores import workspace_store
 
         metadata = workspace_store[workspace_id].metadata
@@ -163,7 +162,7 @@ class Dockerizer:
         #     {f'{port}/tcp': port for port in range(_min_port, _max_port + 1)}
         # )
         cls.logger.info(
-            f'Creating a container using image {_image} in network {_network}'
+            f'Creating a container using image {_image} in network {_network} and ports {ports}'
         )
         try:
             container: 'Container' = cls.client.containers.run(
@@ -202,7 +201,12 @@ class Dockerizer:
                 )
                 _success = True
                 break
-        return container, _network, ports, _success
+
+        updated_container = cls.client.containers.get(container.attrs["Id"])
+        ip_address = list(
+            updated_container.attrs["NetworkSettings"]["Networks"].values()
+        )[0]['IPAddress']
+        return container, _network, ports, _success, ip_address
 
     @classmethod
     def volume(cls, workspace_id: DaemonID) -> Dict[str, Dict]:

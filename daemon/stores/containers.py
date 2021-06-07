@@ -1,9 +1,10 @@
 from typing import Dict
-from datetime import datetime
 
-from jina.helper import colored
-
+from jina.helper import colored, ArgNamespace, random_port
 from .base import BaseStore
+from ..dockerize import Dockerizer
+from ..excepts import Runtime400Exception
+from ..helper import id_cleaner, random_port_range
 from ..models import DaemonID
 from ..models.containers import (
     ContainerArguments,
@@ -11,10 +12,6 @@ from ..models.containers import (
     ContainerMetadata,
     ContainerStoreStatus,
 )
-from .. import __root_workspace__
-from ..dockerize import Dockerizer
-from ..excepts import Runtime400Exception
-from ..helper import id_cleaner, random_port_range
 
 
 class ContainerStore(BaseStore):
@@ -25,7 +22,7 @@ class ContainerStore(BaseStore):
 
     @BaseStore.dump
     def add(
-        self, id: DaemonID, workspace_id: DaemonID, command: str, ports: Dict, **kwargs
+        self, id: DaemonID, workspace_id: DaemonID, params: str, ports: Dict, **kwargs
     ):
         try:
             from . import workspace_store
@@ -33,7 +30,15 @@ class ContainerStore(BaseStore):
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
 
-            _container, _network, _ports, _success = Dockerizer.run(
+            rest_api_port = random_port()
+
+            params = params.dict(exclude={'log_config'})
+            params['port_expose'] = rest_api_port
+            command = f'jinad --mode {self._kind} {" ".join(ArgNamespace.kwargs2list(params))}'
+
+            ports[f'{rest_api_port}/tcp'] = rest_api_port
+
+            _container, _network, _ports, _success, ip_address = Dockerizer.run(
                 workspace_id=workspace_id,
                 container_id=id,
                 command=command,
@@ -47,6 +52,7 @@ class ContainerStore(BaseStore):
             self._logger.error(f'{e!r}')
             raise
         else:
+
             self[id] = ContainerItem(
                 metadata=ContainerMetadata(
                     container_id=id_cleaner(_container.id),
@@ -54,6 +60,7 @@ class ContainerStore(BaseStore):
                     image_id=id_cleaner(_container.image.id),
                     network=_network,
                     ports=_ports,
+                    rest_api_uri=f'{ip_address}:{rest_api_port}',
                 ),
                 arguments=ContainerArguments(command=command),
                 workspace_id=workspace_id,
