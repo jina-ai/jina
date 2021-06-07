@@ -347,7 +347,6 @@ class GraphDocument(Document):
             jina_graph.add_node(node_doc)
 
         for node_source, node_destination in zip(*dgl_graph.edges()):
-            print(int(node_source), int(node_destination))
             jina_graph.add_edge(
                 nodeid_to_doc[int(node_source)], nodeid_to_doc[int(node_destination)]
             )
