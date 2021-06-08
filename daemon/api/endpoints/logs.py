@@ -6,6 +6,7 @@ from typing import List
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
+from starlette.websockets import WebSocketState
 from websockets import ConnectionClosedOK
 from websockets.exceptions import ConnectionClosedError
 
@@ -70,9 +71,11 @@ class ConnectionManager:
 
         :param websocket: websocket to disconnect
         """
-        self.active_connections.remove(websocket)
-        await websocket.close()
-        daemon_logger.info('%s is disconnected' % _websocket_details(websocket))
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+        if websocket.application_state != WebSocketState.DISCONNECTED:
+            await websocket.close()
+            daemon_logger.info('%s is disconnected' % _websocket_details(websocket))
 
     async def broadcast(self, message: dict):
         """
@@ -85,9 +88,15 @@ class ConnectionManager:
             try:
                 await connection.send_json(message)
             except ConnectionClosedOK:
-                pass
+                await self.disconnect(connection)
             except ConnectionClosedError:
                 await self.disconnect(connection)
+
+    def has_active_connections(self):
+        return any(
+            connection.application_state != WebSocketState.DISCONNECTED
+            for connection in self.active_connections
+        )
 
 
 @router.websocket('/logstream/{log_id}')
@@ -118,7 +127,7 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 0):
             fp.seek(0, 2)
             delay = 0.1
             n = 0
-            while True:
+            while manager.has_active_connections():
                 line = fp.readline()  # also possible to read an empty line
                 if line:
                     daemon_logger.debug('sending line %s', line)
