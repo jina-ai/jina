@@ -1,27 +1,32 @@
 import asyncio
 import json
-import uuid
 from pathlib import Path
 from typing import List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
-from starlette.endpoints import WebSocketEndpoint
-from starlette.types import Receive, Scope, Send
+from starlette.websockets import WebSocketState
 from websockets import ConnectionClosedOK
 from websockets.exceptions import ConnectionClosedError
 
 from ... import daemon_logger, jinad_args
-from ...helper import get_workspace_path
+from ...helper import get_log_file_path
 from ...models import DaemonID
+from ...stores import get_store_from_id
 
 router = APIRouter(tags=['logs'])
 
 
-@router.get(path='/logs/{workspace_id}/{log_id}')
-async def _export_logs(workspace_id: DaemonID, log_id: DaemonID):
-    filepath = get_workspace_path(workspace_id, log_id, 'logging.log')
+@router.get(path='/logs/{log_id}')
+async def _export_logs(log_id: DaemonID):
+    try:
+        filepath, workspace_id = get_log_file_path(log_id)
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail=f'log file {log_id} not found in {get_store_from_id(log_id)._kind} store',
+        )
     if not Path(filepath).is_file():
         raise HTTPException(
             status_code=404,
@@ -66,9 +71,11 @@ class ConnectionManager:
 
         :param websocket: websocket to disconnect
         """
-        self.active_connections.remove(websocket)
-        await websocket.close()
-        daemon_logger.info('%s is disconnected' % _websocket_details(websocket))
+        if websocket in self.active_connections:
+            self.active_connections.remove(websocket)
+        if websocket.application_state != WebSocketState.DISCONNECTED:
+            await websocket.close()
+            daemon_logger.info('%s is disconnected' % _websocket_details(websocket))
 
     async def broadcast(self, message: dict):
         """
@@ -81,19 +88,23 @@ class ConnectionManager:
             try:
                 await connection.send_json(message)
             except ConnectionClosedOK:
-                pass
+                await self.disconnect(connection)
             except ConnectionClosedError:
                 await self.disconnect(connection)
 
+    def has_active_connections(self):
+        return any(
+            connection.application_state != WebSocketState.DISCONNECTED
+            for connection in self.active_connections
+        )
 
-@router.websocket('/logstream/{workspace_id}/{log_id}')
-async def _logstream(
-    websocket: WebSocket, workspace_id: DaemonID, log_id: DaemonID, timeout: int = 0
-):
+
+@router.websocket('/logstream/{log_id}')
+async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 0):
     manager = ConnectionManager()
     await manager.connect(websocket)
     client_details = _websocket_details(websocket)
-    filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
+    filepath, _ = get_log_file_path(log_id)
     try:
         if jinad_args.no_fluentd:
             daemon_logger.warning(
@@ -116,7 +127,7 @@ async def _logstream(
             fp.seek(0, 2)
             delay = 0.1
             n = 0
-            while True:
+            while manager.has_active_connections():
                 line = fp.readline()  # also possible to read an empty line
                 if line:
                     daemon_logger.debug('sending line %s', line)

@@ -4,7 +4,10 @@ from .. import jinad_args
 from .peas import PeaStore
 from .pods import PodStore
 from .flows import FlowStore
+from .base import BaseStore
 from .workspaces import WorkspaceStore
+from ..models import DaemonID
+from ..models.enums import IDLiterals
 
 if TYPE_CHECKING:
     from .partial import PartialStore
@@ -44,3 +47,15 @@ pod_store: PodStore = _get_store('pod')
 flow_store: FlowStore = _get_store('flow')
 workspace_store: WorkspaceStore = _get_store('workspace')
 partial_store = _get_partial_store()
+
+def get_store_from_id(entity_id: DaemonID) -> BaseStore:
+    if entity_id.jtype == IDLiterals.JPOD:
+        return pod_store
+    elif entity_id.jtype == IDLiterals.JPEA:
+        return pea_store
+    elif entity_id.jtype == IDLiterals.JFLOW:
+        return flow_store
+    elif entity_id.jtype == IDLiterals.JWORKSPACE:
+        return workspace_store
+    else:
+        return None
