@@ -378,23 +378,6 @@
         </label>
         <div class="section" id="module-jina.importer">
 <span id="jina-importer-module"></span><h1>jina.importer module<a class="headerlink" href="#module-jina.importer" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="jina.importer.import_classes">
-<code class="sig-prename descclassname"><span class="pre">jina.importer.</span></code><code class="sig-name descname"><span class="pre">import_classes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_import_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">import_once</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/importer/#import_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.import_classes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import all or selected executors into the runtime. This is called when Jina is first imported for registering the YAML constructor beforehand. It can be also used to import third-part or external executors.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>namespace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the namespace to import</p></li>
-<li><p><strong>show_import_table</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – show the import result as a table</p></li>
-<li><p><strong>import_once</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – import everything only once, to avoid repeated import</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the dependency tree of the imported classes under the <cite>namespace</cite></p>
-</dd>
-</dl>
-</dd></dl>
 <dl class="py class">
 <dt id="jina.importer.ImportExtensions">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.importer.</span></code><code class="sig-name descname"><span class="pre">ImportExtensions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">required</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkg_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/importer/#ImportExtensions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.ImportExtensions" title="Permalink to this definition">¶</a></dt>

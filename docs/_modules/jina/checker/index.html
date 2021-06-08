@@ -373,50 +373,11 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.checker</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__jina_env__</span>
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">colored</span>
-<span class="kn">from</span> <span class="nn">.importer</span> <span class="kn">import</span> <span class="n">import_classes</span><span class="p">,</span> <span class="n">_print_dep_tree_rst</span>
-<span class="kn">from</span> <span class="nn">.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span></span><span class="kn">from</span> <span class="nn">.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="c1"># fix type-hint complain for sphinx and flake</span>
     <span class="kn">import</span> <span class="nn">argparse</span>
-
-
-<div class="viewcode-block" id="ImportChecker"><a class="viewcode-back" href="../../../api/jina.checker/#jina.checker.ImportChecker">[docs]</a><span class="k">class</span> <span class="nc">ImportChecker</span><span class="p">:</span>
-    <span class="sd">"""Check all executors, drivers and handler functions in the package."""</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Create a new :class:`ImportChecker`.</span>
-
-<span class="sd">        :param args: args provided by the CLI.</span>
-<span class="sd">        """</span>
-        <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">available core executors</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
-
-        <span class="n">_r</span> <span class="o">=</span> <span class="n">import_classes</span><span class="p">(</span><span class="s1">'jina.executors'</span><span class="p">,</span> <span class="n">show_import_table</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">import_once</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">summary_exec</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">summary_exec</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                <span class="n">_print_dep_tree_rst</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="s1">'Executor'</span><span class="p">)</span>
-
-        <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">available hub executors</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
-
-        <span class="n">_r</span> <span class="o">=</span> <span class="n">import_classes</span><span class="p">(</span><span class="s1">'jina.hub'</span><span class="p">,</span> <span class="n">show_import_table</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">import_once</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">summary_exec</span> <span class="ow">and</span> <span class="n">_r</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">summary_exec</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                <span class="n">_print_dep_tree_rst</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">_r</span><span class="p">,</span> <span class="s1">'Executor'</span><span class="p">)</span>
-
-        <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">environment variables</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
-        <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s1">&lt;20</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">colored</span><span class="p">(</span><span class="s2">"(unset)"</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">))</span><span class="si">}</span><span class="s1">'</span>
-                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">__jina_env__</span>
-            <span class="p">)</span>
-        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="NetworkChecker"><a class="viewcode-back" href="../../../api/jina.checker/#jina.checker.NetworkChecker">[docs]</a><span class="k">class</span> <span class="nc">NetworkChecker</span><span class="p">:</span>
