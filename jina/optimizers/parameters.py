@@ -189,7 +189,7 @@ class DiscreteUniformParameter(OptimizationParameter):
         )
 
 
-class PodOptimizationParameter(CategoricalParameter):
+class PodAlternativeParameter(CategoricalParameter):
     """Base class for all optimization parameters."""
 
     def __init__(

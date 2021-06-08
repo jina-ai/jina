@@ -1,5 +1,4 @@
 import pytest
-
 import optuna
 
 from jina.optimizers.parameters import (
@@ -8,25 +7,16 @@ from jina.optimizers.parameters import (
     LogUniformParameter,
     CategoricalParameter,
     DiscreteUniformParameter,
+    PodAlternativeParameter,
 )
 
 
 @pytest.fixture()
-def trials():
-    from optuna.trial._state import TrialState
-
-    ts = []
-    for trial_id in range(10):
-        ts.append(
-            optuna.trial.create_trial(
-                state=TrialState.RUNNING, params={'JINA_DUMMY': None}
-            )
-        )
-
-    return ts
+def optuna_sampler():
+    return optuna.samplers.TPESampler()
 
 
-def test_integer_parameter(trials):
+def test_integer_parameter(optuna_sampler):
     parameter = IntegerParameter(
         jaml_variable='JINA_DUMMY',
         high=10,
@@ -35,44 +25,68 @@ def test_integer_parameter(trials):
         parameter_name='integer',
     )
 
-    for trial in trials:
-        trial_parameters = parameter.suggest(trial)
-        print(f' trial_parameters {trial_parameters}')
+    def objective(trial):
+        trial_parameters = {}
+        parameter.update_trial_params(trial, trial_parameters)
+        assert 'JINA_DUMMY' in trial_parameters.keys()
+        assert 0 <= trial_parameters['JINA_DUMMY'] <= 10
+        return 0.0
+
+    study = optuna.create_study(direction='maximize', sampler=optuna_sampler)
+    study.optimize(objective, n_trials=5)
 
 
-def test_uniform_parameter(trials):
+def test_uniform_parameter(optuna_sampler):
     parameter = UniformParameter(
         jaml_variable='JINA_DUMMY', high=10, low=0, parameter_name='uniform'
     )
 
-    for trial in trials:
-        trial_parameters = parameter.suggest(trial)
-        print(f' trial_parameters {trial_parameters}')
+    def objective(trial):
+        trial_parameters = {}
+        parameter.update_trial_params(trial, trial_parameters)
+        assert 'JINA_DUMMY' in trial_parameters.keys()
+        assert 0 <= trial_parameters['JINA_DUMMY'] <= 10
+        return 0.0
+
+    study = optuna.create_study(direction='maximize', sampler=optuna_sampler)
+    study.optimize(objective, n_trials=5)
 
 
-def test_log_uniform_parameter(trials):
+def test_log_uniform_parameter(optuna_sampler):
     parameter = LogUniformParameter(
-        jaml_variable='JINA_DUMMY', high=10, low=0, parameter_name='loguniform'
+        jaml_variable='JINA_DUMMY', high=10, low=1, parameter_name='loguniform'
     )
 
-    for trial in trials:
-        trial_parameters = parameter.suggest(trial)
-        print(f' trial_parameters {trial_parameters}')
+    def objective(trial):
+        trial_parameters = {}
+        parameter.update_trial_params(trial, trial_parameters)
+        assert 'JINA_DUMMY' in trial_parameters.keys()
+        assert 0 <= trial_parameters['JINA_DUMMY'] <= 10
+        return 0.0
+
+    study = optuna.create_study(direction='maximize', sampler=optuna_sampler)
+    study.optimize(objective, n_trials=5)
 
 
-def test_categorical_parameter(trials):
+def test_categorical_parameter(optuna_sampler):
     parameter = CategoricalParameter(
         jaml_variable='JINA_DUMMY',
         choices=[f'choice-{i}' for i in range(10)],
         parameter_name='categorical',
     )
 
-    for trial in trials:
-        trial_parameters = parameter.suggest(trial)
-        print(f' trial_parameters {trial_parameters}')
+    def objective(trial):
+        trial_parameters = {}
+        parameter.update_trial_params(trial, trial_parameters)
+        assert 'JINA_DUMMY' in trial_parameters.keys()
+        assert trial_parameters['JINA_DUMMY'] in [f'choice-{i}' for i in range(10)]
+        return 0.0
+
+    study = optuna.create_study(direction='maximize', sampler=optuna_sampler)
+    study.optimize(objective, n_trials=5)
 
 
-def test_discrete_uniform_parameter(trials):
+def test_discrete_uniform_parameter(optuna_sampler):
     parameter = DiscreteUniformParameter(
         jaml_variable='JINA_DUMMY',
         high=10,
@@ -81,6 +95,74 @@ def test_discrete_uniform_parameter(trials):
         parameter_name='discreteuniform',
     )
 
-    for trial in trials:
-        trial_parameters = parameter.suggest(trial)
-        print(f' trial_parameters {trial_parameters}')
+    def objective(trial):
+        trial_parameters = {}
+        parameter.update_trial_params(trial, trial_parameters)
+        assert 'JINA_DUMMY' in trial_parameters.keys()
+        assert 0 <= trial_parameters['JINA_DUMMY'] <= 10
+        return 0.0
+
+    study = optuna.create_study(direction='maximize', sampler=optuna_sampler)
+    study.optimize(objective, n_trials=5)
+
+
+def test_pod_alternative_parameter(optuna_sampler):
+    inner_parameters = {
+        'pod1': [
+            IntegerParameter(
+                jaml_variable='JINA_INTEGER_DUMMY_POD1',
+                high=10,
+                low=0,
+                parameter_name='integerparam_pod1',
+            ),
+            CategoricalParameter(
+                jaml_variable='JINA_CAT_DUMMY_POD1',
+                choices=[f'choice-{i}' for i in range(10)],
+                parameter_name='categorical_pod1',
+            ),
+        ],
+        'pod2': [
+            IntegerParameter(
+                jaml_variable='JINA_INTEGER_DUMMY_POD2',
+                high=10,
+                low=0,
+                parameter_name='integerparam_pod2',
+            ),
+            CategoricalParameter(
+                jaml_variable='JINA_CAT_DUMMY_POD2',
+                choices=[f'choice-{i}' for i in range(10)],
+                parameter_name='categorical_pod2',
+            ),
+        ],
+    }
+    parameter = PodAlternativeParameter(
+        jaml_variable='JINA_DUMMY',
+        choices=['pod1', 'pod2'],
+        inner_parameters=inner_parameters,
+        parameter_name='podalternative',
+    )
+
+    def objective(trial):
+        trial_parameters = {}
+        parameter.update_trial_params(trial, trial_parameters)
+        assert 'JINA_DUMMY' in trial_parameters.keys()
+        assert trial_parameters['JINA_DUMMY'] in ['pod1', 'pod2']
+        if trial_parameters['JINA_DUMMY'] == 'pod1':
+            assert 'JINA_INTEGER_DUMMY_POD1' in trial_parameters.keys()
+            assert 0 <= trial_parameters['JINA_INTEGER_DUMMY_POD1'] <= 10
+            assert 'JINA_CAT_DUMMY_POD1' in trial_parameters.keys()
+            assert trial_parameters['JINA_CAT_DUMMY_POD1'] in [
+                f'choice-{i}' for i in range(10)
+            ]
+        if trial_parameters['JINA_DUMMY'] == 'pod2':
+            assert 'JINA_INTEGER_DUMMY_POD2' in trial_parameters.keys()
+            assert 0 <= trial_parameters['JINA_INTEGER_DUMMY_POD2'] <= 10
+            assert 'JINA_CAT_DUMMY_POD2' in trial_parameters.keys()
+            assert trial_parameters['JINA_CAT_DUMMY_POD2'] in [
+                f'choice-{i}' for i in range(10)
+            ]
+
+        return 0.0
+
+    study = optuna.create_study(direction='maximize', sampler=optuna_sampler)
+    study.optimize(objective, n_trials=5)

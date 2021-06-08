@@ -11,7 +11,7 @@ from .parameters import (
     CategoricalParameter,
     DiscreteUniformParameter,
 )
-from .parameters import load_optimization_parameters, PodOptimizationParameter
+from .parameters import load_optimization_parameters, PodAlternativeParameter
 from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
@@ -187,11 +187,11 @@ class FlowOptimizer(JAMLCompatible):
         self._sampler = sampler
         self._direction = direction
         self._seed = seed
+        self.parameters = load_optimization_parameters(self._parameter_yaml)
 
     def _trial_parameter_sampler(self, trial: 'Trial'):
         trial_parameters = {}
-        parameters = load_optimization_parameters(self._parameter_yaml)
-        for param in parameters:
+        for param in self.parameters:
             param.update_trial_params(trial, trial_parameters)
 
         trial.workspace = (

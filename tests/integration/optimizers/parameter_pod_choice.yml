@@ -1,4 +1,4 @@
-- !PodOptimizationParameter
+- !PodAlternativeParameter
   parameter_name: pod_choice
   jaml_variable: JINA_DUMMYCRAFTER_CHOICE
   choices:
