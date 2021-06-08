@@ -1,6 +1,4 @@
 import multiprocessing as mp
-import sys
-import time
 
 import pytest
 import requests
@@ -35,9 +33,8 @@ def test_chatbot(helloworld_args, expected_result, payload, post_uri):
     """Regression test for chatbot example."""
     p = mp.Process(target=hello_world, args=(helloworld_args,))
     p.start()
-    time.sleep(30)
+    p.join(30)
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
     assert expected_result in resp.text
     p.terminate()
-    p.join(10)
