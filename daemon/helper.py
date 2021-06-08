@@ -81,3 +81,16 @@ def jina_workspace(workspace_id: 'DaemonID'):
             os.environ['JINA_LOG_WORKSPACE'] = old_var
         else:
             os.environ.pop('JINA_LOG_WORKSPACE')
+
+
+def get_log_file_path(log_id):
+    from .models.enums import IDLiterals
+    from .stores import get_store_from_id
+
+    if IDLiterals.JWORKSPACE == log_id.jtype:
+        workspace_id = log_id
+        filepath = get_workspace_path(log_id, 'logs', 'logging.log')
+    else:
+        workspace_id = get_store_from_id(log_id)[log_id].workspace_id
+        filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
+    return filepath, workspace_id
