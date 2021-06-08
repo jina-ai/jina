@@ -21,9 +21,15 @@ from ...stores import get_store_from_id
 router = APIRouter(tags=['logs'])
 
 
-@router.get(path='/logs/log_id}')
+@router.get(path='/logs/{log_id}')
 async def _export_logs(log_id: DaemonID):
-    filepath, workspace_id = _get_log_file_path(log_id)
+    try:
+        filepath, workspace_id = _get_log_file_path(log_id)
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail=f'log file {log_id} not found in {get_store_from_id(log_id)._kind} store',
+        )
     if not Path(filepath).is_file():
         raise HTTPException(
             status_code=404,
