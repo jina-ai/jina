@@ -13,6 +13,7 @@ __all__ = ['GraphDocument']
 
 if False:
     from scipy.sparse import coo_matrix
+    from dgl import DGLGraph
 
 
 class GraphDocument(Document):
@@ -332,7 +333,7 @@ class GraphDocument(Document):
             )
 
     @staticmethod
-    def load_from_dgl(dgl_graph: 'DGLGraph'):
+    def load_from_dgl_graph(dgl_graph: 'DGLGraph'):
         """
         Construct a GraphDocument from of graph with type `dgl.DGLGraph`
 
@@ -353,9 +354,10 @@ class GraphDocument(Document):
 
         return jina_graph
 
-    def to_dgl(self):
+    def to_dgl_graph(self):
         """
         Construct a  `dgl.DGLGraph` from a `GraphDocument` instance.
+        .. # noqa: DAR201
         """
         from ... import JINA_GLOBAL
 
@@ -363,8 +365,8 @@ class GraphDocument(Document):
             JINA_GLOBAL.dgl_installed = False
             with ImportExtensions(
                 required=False,
-                pkg_name="dgl",
-                help_text=f"to_dgl method needs dgl",
+                pkg_name='dgl',
+                help_text=f'to_dgl_graph method requires dgl to be installed',
             ):
                 import dgl
 
@@ -374,8 +376,8 @@ class GraphDocument(Document):
             JINA_GLOBAL.torch_installed = False
             with ImportExtensions(
                 required=False,
-                pkg_name="torch",
-                help_text=f"to_dgl method needs torch",
+                pkg_name='torch',
+                help_text=f'to_dgl_graph method requires torch to be installed',
             ):
                 import torch
 
