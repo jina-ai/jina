@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
+<img src="./.github/banner-intro.png?raw=true" alt="Jina banner" width="100%">
 </p>
 
 <p align="center">
