@@ -4,7 +4,6 @@ import pytest
 
 from jina import Document
 from jina.clients import Client
-from jina.parsers import set_client_cli_parser
 from tests import validate_callback
 from ..helpers import create_flow, assert_request
 
@@ -23,11 +22,7 @@ def doc_to_index():
 
 @pytest.fixture
 def client():
-    args = set_client_cli_parser().parse_args(
-        ['--host', 'localhost', '--port-expose', '45678']
-    )
-
-    return Client(args)
+    return Client(host='localhost', port_expose=45678)
 
 
 @pytest.mark.timeout(360)
