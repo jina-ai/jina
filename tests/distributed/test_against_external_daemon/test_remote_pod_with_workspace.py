@@ -47,20 +47,23 @@ def test_upload_multiple_workspaces(parallels, mocker):
     f = (
         Flow()
         .add(
+            name='tf_encoder',
             uses=_path(encoder_workspace, 'tf.yml'),
             host=CLOUD_HOST,
             parallel=parallels,
-            py_modules=[_path(encoder_workspace, 'tf_executor.py')],
+            py_modules=[_path(encoder_workspace, 'tf_encoder.py')],
             upload_files=[
                 _path(encoder_workspace, '.jinad'),
                 _path(encoder_workspace, 'requirements.txt')
             ],
         )
+        .add()
         .add(
+            name='tdb_indexer',
             uses=_path(indexer_workspace, 'tdb.yml'),
             host=CLOUD_HOST,
             parallel=parallels,
-            py_modules=[_path(indexer_workspace, 'tdb_executor.py')],
+            py_modules=[_path(indexer_workspace, 'tdb_indexer.py')],
             upload_files=[
                 _path(indexer_workspace, '.jinad'),
                 _path(indexer_workspace, 'requirements.txt')

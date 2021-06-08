@@ -1,7 +1,7 @@
 from jina import Executor, requests
 
 
-class TFExecutor(Executor):
+class TFEncoder(Executor):
     @requests
     def foo(*args, **kwargs):
         import tensorflow

@@ -6,8 +6,8 @@ from jina.peapods import Pea, Pod
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
 
-from .. import jinad_args
 from ..models import DaemonID
+from .. import jinad_args, __dockerhost__
 from ..models.enums import UpdateOperation
 from ..models.partial import PartialFlowItem, PartialStoreItem, PartialStoreStatus
 
@@ -48,6 +48,13 @@ class PartialPeaStore(PartialStore):
     def add(self, args: Namespace, **kwargs) -> 'DaemonID':
         try:
             _id = args.identity
+            # This is set so that ContainerRuntime sets host_ctrl to __dockerhost__
+            # and on linux machines, we can access dockerhost inside containers
+            args.docker_kwargs = {
+                'extra_hosts': {
+                    __dockerhost__: 'host-gateway'
+                }
+            }
             self.object = self.peapod_cls(args).start()
         except Exception as e:
             self._logger.error(f'{e!r}')
@@ -87,10 +94,8 @@ class PartialFlowStore(PartialStore):
             self.flow.identity = id.jid
             self.flow.workspace_id = jinad_args.workspace_id
             # If port_expose is not defined in yaml source and passed by main jinad
-            self._logger.critical(port_expose)
             if 'port_expose' not in self.flow._common_kwargs and port_expose:
                 self.flow._common_kwargs['port_expose'] = port_expose
-            self._logger.critical(self.flow._common_kwargs['port_expose'])
             self.flow.start()
         except Exception as e:
             self._logger.error(f'{e!r}')

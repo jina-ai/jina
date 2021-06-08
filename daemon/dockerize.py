@@ -153,6 +153,8 @@ class Dockerizer:
         from .stores import workspace_store
 
         metadata = workspace_store[workspace_id].metadata
+        if not metadata:
+            raise DockerBuildException('Docker image not built properly')
         image = cls.client.images.get(name=metadata.image_id)
         network = metadata.network
         cls.logger.info(

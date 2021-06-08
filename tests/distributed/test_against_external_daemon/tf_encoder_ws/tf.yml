@@ -1,4 +1,4 @@
-jtype: TFExecutor
+jtype: TFEncoder
 metas:
   name: tf-encoder
-  py_modules: tf_executor.py
+  py_modules: tf_encoder.py
