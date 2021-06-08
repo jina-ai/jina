@@ -8,7 +8,7 @@ Submodules
    :maxdepth: 4
 
    jina.helloworld.chatbot.app
-   jina.helloworld.chatbot.executors
+   jina.helloworld.chatbot.my_executors
 
 Module contents
 ---------------

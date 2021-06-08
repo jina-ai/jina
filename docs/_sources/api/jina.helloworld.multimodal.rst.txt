@@ -8,7 +8,7 @@ Submodules
    :maxdepth: 4
 
    jina.helloworld.multimodal.app
-   jina.helloworld.multimodal.executors
+   jina.helloworld.multimodal.my_executors
 
 Module contents
 ---------------

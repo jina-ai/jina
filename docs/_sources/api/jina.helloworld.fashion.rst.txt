@@ -8,8 +8,8 @@ Submodules
    :maxdepth: 4
 
    jina.helloworld.fashion.app
-   jina.helloworld.fashion.executors
    jina.helloworld.fashion.helper
+   jina.helloworld.fashion.my_executors
 
 Module contents
 ---------------
