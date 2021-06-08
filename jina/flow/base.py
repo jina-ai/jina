@@ -13,7 +13,7 @@ from typing import Optional, Union, Tuple, List, Set, Dict
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients.base import BaseClient
-from ..clients import GrpcClient, WebSocketClient
+from ..clients import Client, GrpcClient, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
@@ -914,7 +914,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _switch_gateway(self, gateway: str, port: int):
         restful = gateway == 'RESTRuntime'
-        client = WebSocketClient if gateway == 'RESTRuntime' else GrpcClient
+        client = (
+            Client(host=self.host, port_expose=self.port_expose, restful=True)
+            if gateway == 'RESTRuntime'
+            else Client(host=self.host, port_expose=self.port_expose)
+        )
 
         # globally register this at Flow level
         self._cls_client = client
