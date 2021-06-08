@@ -45,17 +45,6 @@ def gateway(args: 'Namespace'):
     pod(args)
 
 
-def check(args: 'Namespace'):
-    """
-    Check jina config, settings, imports, network etc
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.checker import ImportChecker
-
-    ImportChecker(args)
-
-
 def ping(args: 'Namespace'):
     """
     Check the connectivity of a Pea
