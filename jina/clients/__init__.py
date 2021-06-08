@@ -6,15 +6,17 @@ from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 from ..parsers import set_client_cli_parser
 
-__all__ = ['GrpcClient', 'WebSocketClient']
+__all__ = ['Client', 'GrpcClient', 'WebSocketClient']
 
 
-def Client(is_restful: bool = False, **kwargs):
-    args = set_client_cli_parser()
+def Client(host: str, port: int, is_restful: bool = False):
+    args = set_client_cli_parser().parse_args(
+        ['--host', host, '--port-expose', str(port)]
+    )
     if is_restful:
-        return WebSocketClient(args, **kwargs)
+        return WebSocketClient(args)
     else:
-        return GrpcClient(args, **kwargs)
+        return GrpcClient(args)
 
 
 class GrpcClient(PostMixin, BaseClient):
@@ -23,8 +25,14 @@ class GrpcClient(PostMixin, BaseClient):
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
 
+    @property
+    def client(self) -> 'GrpcClient':
+        """Return the client object itself
+        .. # noqa: DAR201"""
+        return self
 
-class WebSocketClient(WebSocketClientMixin, BaseClient):
+
+class WebSocketClient(GrpcClient, WebSocketClientMixin):
     """A Python Client to stream requests from a Flow with a REST Gateway.
 
     :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like
