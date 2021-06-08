@@ -284,7 +284,7 @@ class Document(ProtoTypeMixin):
                 f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
             )
         self.set_attributes(**kwargs)
-        self._mermaid_id = random_identity()  #: for mermaid visualize id
+        self._mermaid_id = self.id  #: for mermaid visualize id
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.

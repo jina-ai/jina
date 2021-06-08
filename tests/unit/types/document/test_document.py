@@ -910,3 +910,15 @@ def test_document_pretty_json():
     assert d_reconstructed.matches[0].tags == {'hello': 'world'}
     assert d_reconstructed.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert d_reconstructed.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
+
+
+def test_mermaid_id():
+    from jina import Document
+
+    c1 = Document(text='c1')
+    c2 = Document(text='c2')
+    d = Document()
+    d.chunks.append(c1)
+    d.chunks.append(c2)
+    assert c1._mermaid_id == d.chunks[0]._mermaid_id
+    assert c2._mermaid_id == d.chunks[1]._mermaid_id
