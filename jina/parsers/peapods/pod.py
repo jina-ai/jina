@@ -52,6 +52,20 @@ The polling strategy of the Pod (when `parallel>1`)
 - ALL: all Peas poll the message (like a broadcast)
 ''',
     )
+
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        dest='dynamic_routing',
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.',
+    )
+    parser.add_argument(
+        '--no-dynamic-routing',
+        action='store_false',
+        dest='dynamic_routing',
+        help='The Gateway should not do dynamic routing.',
+    )
+    parser.set_defaults(dynamic_routing=True)
     gp.add_argument(
         '--scheduling',
         type=SchedulerType.from_string,
@@ -64,8 +78,8 @@ The polling strategy of the Pod (when `parallel>1`)
         '--external',
         action='store_true',
         default=False,
-        help='The Pod will be considered an external Pod that has been started independently from the Flow. This Pod '
-        'will not be context managed by the Flow, and is considered with `--freeze-network-settings`',
+        help='The Pod will be considered an external Pod that has been started independently from the Flow.'
+        'This Pod will not be context managed by the Flow.',
     )
 
     # hidden CLI used for internal only

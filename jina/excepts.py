@@ -206,3 +206,7 @@ class MetricTypeError(Exception):
 
 class SocketTypeError(Exception):
     """Raised when such socket type is not supported or does not exist."""
+
+
+class RoutingGraphCyclicError(Exception):
+    """Raised when the routing graph has cycles."""
