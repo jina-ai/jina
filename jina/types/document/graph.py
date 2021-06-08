@@ -48,7 +48,7 @@ class GraphDocument(Document):
         super().__init__(document=document, copy=copy, **kwargs)
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
-        }
+        }  # dangerous because document is stateless, try to work only with proto,
 
     @staticmethod
     def _check_installed_array_packages():
@@ -83,6 +83,11 @@ class GraphDocument(Document):
         Remove a node from the graph along with the edges that may contain it
 
         :param node: the node to be removed from the graph
+
+        nodes= [1,2]
+        conectivity nodes
+        [2]
+        [5]
         """
         from scipy.sparse import coo_matrix
 
@@ -333,7 +338,7 @@ class GraphDocument(Document):
             )
 
     @staticmethod
-    def load_from_dgl_graph(dgl_graph: 'DGLGraph'):
+    def load_from_dgl_graph(dgl_graph: 'DGLGraph') -> 'GraphDocument':
         """
         Construct a GraphDocument from of graph with type `dgl.DGLGraph`
 
@@ -358,7 +363,7 @@ class GraphDocument(Document):
 
         return jina_graph
 
-    def to_dgl_graph(self):
+    def to_dgl_graph(self) -> 'dgl.DGLGraph':
         """
         Construct a  `dgl.DGLGraph` from a `GraphDocument` instance.
 
@@ -403,3 +408,29 @@ class GraphDocument(Document):
     def __iter__(self) -> Iterator[Tuple['Document']]:
         for (row, col) in zip(self.adjacency.row, self.adjacency.col):
             yield self.nodes[row.item()], self.nodes[col.item()]
+
+    def __mermaid_str__(self):
+        results = []
+        printed_ids = set()
+        _node_id_node_mermaid_id = {}
+
+        for node in self.nodes:
+            _node_id_node_mermaid_id[node.id] = node._mermaid_id
+
+        for in_node, out_node in self:
+
+            in_node_mermaid_id = _node_id_node_mermaid_id[in_node.id]
+            if in_node_mermaid_id not in printed_ids:
+                in_node._mermaid_id = in_node_mermaid_id
+                printed_ids.add(in_node_mermaid_id)
+                results.append(in_node.__mermaid_str__())
+
+            out_node_mermaid_id = _node_id_node_mermaid_id[out_node.id]
+            if out_node_mermaid_id not in printed_ids:
+                out_node._mermaid_id = out_node_mermaid_id
+                printed_ids.add(out_node_mermaid_id)
+                results.append(out_node.__mermaid_str__())
+
+            results.append(f'{in_node_mermaid_id[:3]} --> {out_node_mermaid_id[:3]}')
+
+        return '\n'.join(results)
