@@ -2,6 +2,7 @@ import itertools
 import mmap
 import os
 import shutil
+import tempfile
 from collections.abc import Iterable as Itr
 from pathlib import Path
 from typing import (
@@ -9,7 +10,6 @@ from typing import (
     Iterable,
     Iterator,
 )
-import tempfile
 
 import numpy as np
 
@@ -115,17 +115,20 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         :param values: the iterable of Documents to extend this array with
         """
         for d in values:
-            self.append(d)
+            self.append(d, flush=False)
+        self._header.flush()
+        self._body.flush()
 
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
 
-    def append(self, doc: 'Document') -> None:
+    def append(self, doc: 'Document', flush: bool = True) -> None:
         """
         Append :param:`doc` in :class:`DocumentArrayMemmap`.
 
         :param doc: The doc needs to be appended.
+        :param flush: If set, then flush to disk on done.
         """
         value = doc.binary_str()
         l = len(value)  #: the length
@@ -147,8 +150,9 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         self._header_map[doc.id] = (len(self._header_map), p, r, r + l)
         self._start = p + r + l
         self._body.write(value)
-        self._header.flush()
-        self._body.flush()
+        if flush:
+            self._header.flush()
+            self._body.flush()
 
     def __getitem__(self, key: Union[int, str]) -> 'Document':
         if isinstance(key, str):
