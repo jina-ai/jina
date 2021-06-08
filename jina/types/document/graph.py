@@ -339,6 +339,10 @@ class GraphDocument(Document):
 
         .. # noqa: DAR201
         :param dgl_graph: the graph from which to construct a `GraphDocument`.
+
+        .. warning::
+        - This method only deals with the graph structure (nodes and conectivity) graph
+          features that are task specific  are ignored.
         """
         jina_graph = GraphDocument()
         nodeid_to_doc = {}
@@ -357,6 +361,11 @@ class GraphDocument(Document):
     def to_dgl_graph(self):
         """
         Construct a  `dgl.DGLGraph` from a `GraphDocument` instance.
+
+        .. warning::
+        - This method only deals with the graph structure (nodes and conectivity) graph
+          features that are task specific are ignored.
+
         .. # noqa: DAR201
         """
         from ... import JINA_GLOBAL
