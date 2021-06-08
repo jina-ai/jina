@@ -304,6 +304,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.match/">jina.types.arrays.match module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.memmap/">jina.types.arrays.memmap module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
@@ -1430,7 +1431,7 @@ the suffix svg/jpg determines the file type of the output image</p></li>
 <dl class="py class">
 <dt id="jina.DocumentArray">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.</span></code><code class="sig-name descname"><span class="pre">DocumentArray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs_proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code>, <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin" title="jina.types.arrays.document.DocumentArrayGetAttrMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.document.DocumentArrayGetAttrMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code></p>
 <p><a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> is a mutable sequence of <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>.
 It gives an efficient view of a list of Document. One can iterate over it like
 a generator but ALSO modify it, count it, get item, or union two ‘DocumentArray’s using the ‘+’ and ‘+=’ operators.</p>
@@ -1498,40 +1499,6 @@ a generator but ALSO modify it, count it, get item, or union two ‘DocumentArra
 <li><p><strong>args</strong> – variable set of arguments to pass to the sorting underlying function</p></li>
 <li><p><strong>kwargs</strong> – keyword arguments to pass to the sorting underlying function</p></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.DocumentArray.get_attributes">
-<code class="sig-name descname"><span class="pre">get_attributes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.get_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.get_attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all nonempty values of the fields from all docs this array contains</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Returns a list of the values for these fields.
-When <cite>fields</cite> has multiple values, then it returns a list of list.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.DocumentArray.get_attributes_with_docs">
-<code class="sig-name descname"><span class="pre">get_attributes_with_docs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.get_attributes_with_docs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.get_attributes_with_docs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all nonempty values of the fields together with their nonempty docs</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Variable length argument with the name of the fields to extract</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>]], <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArray" title="jina.types.arrays.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Returns a tuple. The first element is  a list of the values for these fields.
-When <cite>fields</cite> has multiple values, then it returns a list of list. The second element is the non-empty docs.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1695,7 +1662,7 @@ That means, it is the fallback handler for endpoints that are not found.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 07, 2021.
+            Last updated on Jun 08, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

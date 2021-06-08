@@ -10,6 +10,7 @@ Submodules
    jina.types.arrays.chunk
    jina.types.arrays.document
    jina.types.arrays.match
+   jina.types.arrays.memmap
    jina.types.arrays.traversable
 
 Module contents

@@ -298,6 +298,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.memmap/">jina.types.arrays.memmap module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
@@ -451,6 +452,8 @@
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.append">(jina.types.arrays.document.DocumentArray method)</a>
 </li>
           <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray.append">(jina.types.arrays.match.MatchArray method)</a>
+</li>
+          <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.append">(jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -693,6 +696,8 @@
           <li><a href="../api/jina/#jina.DocumentArray.clear">(jina.DocumentArray method)</a>
 </li>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.clear">(jina.types.arrays.document.DocumentArray method)</a>
+</li>
+          <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.clear">(jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.clear">(jina.types.document.Document method)</a>
 </li>
@@ -1161,6 +1166,10 @@
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray">(class in jina.types.arrays.document)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin">DocumentArrayGetAttrMixin (class in jina.types.arrays.document)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap">DocumentArrayMemmap (class in jina.types.arrays.memmap)</a>
+</li>
         <li><a href="../api/jina.helloworld.fashion.helper/#jina.helloworld.fashion.helper.download_data">download_data() (in module jina.helloworld.fashion.helper)</a>
 
         <ul>
@@ -1270,6 +1279,8 @@
 </li>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.extend">(jina.types.arrays.document.DocumentArray method)</a>
 </li>
+          <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.extend">(jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
+</li>
         </ul></li>
     </ul></td>
   </tr></table>
@@ -1375,19 +1386,13 @@
         <li><a href="../api/jina/#jina.Document.get_attributes">get_attributes() (jina.Document method)</a>
 
         <ul>
-          <li><a href="../api/jina/#jina.DocumentArray.get_attributes">(jina.DocumentArray method)</a>
-</li>
-          <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.get_attributes">(jina.types.arrays.document.DocumentArray method)</a>
+          <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin.get_attributes">(jina.types.arrays.document.DocumentArrayGetAttrMixin method)</a>
 </li>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.get_attributes">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina/#jina.DocumentArray.get_attributes_with_docs">get_attributes_with_docs() (jina.DocumentArray method)</a>
-
-        <ul>
-          <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.get_attributes_with_docs">(jina.types.arrays.document.DocumentArray method)</a>
+        <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin.get_attributes_with_docs">get_attributes_with_docs() (jina.types.arrays.document.DocumentArrayGetAttrMixin method)</a>
 </li>
-        </ul></li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.get_ctrl_address">get_ctrl_address() (jina.peapods.zmq.Zmqlet static method)</a>
 </li>
         <li><a href="../api/jina.executors.metas/#jina.executors.metas.get_default_metas">get_default_metas() (in module jina.executors.metas)</a>
@@ -1422,10 +1427,10 @@
         </ul></li>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.get_non_defaults_args">get_non_defaults_args() (jina.helper.ArgNamespace static method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.get_parsed_args">get_parsed_args() (jina.helper.ArgNamespace static method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.parsers/#jina.jaml.parsers.get_parser">get_parser() (in module jina.jaml.parsers)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_public_ip">get_public_ip() (in module jina.helper)</a>
@@ -2237,8 +2242,6 @@
           <li><a href="../api/jina.parsers.peapods.runtimes.container/#module-jina.parsers.peapods.runtimes.container">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.parsers.peapods.runtimes.distributed
 
@@ -2246,6 +2249,8 @@
           <li><a href="../api/jina.parsers.peapods.runtimes.distributed/#module-jina.parsers.peapods.runtimes.distributed">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.parsers.peapods.runtimes.remote
 
@@ -2538,6 +2543,13 @@
 
         <ul>
           <li><a href="../api/jina.types.arrays.match/#module-jina.types.arrays.match">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.types.arrays.memmap
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.memmap/#module-jina.types.arrays.memmap">module</a>
 </li>
         </ul></li>
         <li>
@@ -3274,6 +3286,8 @@
 </li>
           <li><a href="../api/jina.types.arrays.match/#module-jina.types.arrays.match">jina.types.arrays.match</a>
 </li>
+          <li><a href="../api/jina.types.arrays.memmap/#module-jina.types.arrays.memmap">jina.types.arrays.memmap</a>
+</li>
           <li><a href="../api/jina.types.arrays.traversable/#module-jina.types.arrays.traversable">jina.types.arrays.traversable</a>
 </li>
           <li><a href="../api/jina.types.document/#module-jina.types.document">jina.types.document</a>
@@ -3605,6 +3619,8 @@
 </li>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin">ProtoTypeMixin (class in jina.types.mixin)</a>
 </li>
+        <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.prune">prune() (jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.PUB_BIND">PUB_BIND (jina.enums.SocketType attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.PUB_CONNECT">PUB_CONNECT (jina.enums.SocketType attribute)</a>
@@ -3672,6 +3688,8 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.registered_tags">registered_tags() (jina.jaml.JAML static method)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.reload">reload() (jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteAccessType">RemoteAccessType (class in jina.enums)</a>
 </li>
@@ -4385,7 +4403,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 07, 2021.
+            Last updated on Jun 08, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
