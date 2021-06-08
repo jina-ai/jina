@@ -63,12 +63,24 @@ class DaemonClient:
             return False
 
     def get(self, identity: str) -> Dict:
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         raise NotImplementedError
 
     def post(self, *args, **kwargs) -> Dict:
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         raise NotImplementedError
 
     def delete(self, *args, **kwargs) -> str:
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         raise NotImplementedError
 
     def _daemonize_id(self, id: str, kind: str = 'workspace') -> str:
@@ -86,10 +98,7 @@ class DaemonClient:
         remote_log_config = os.path.join(__resources_path__, 'logging.remote.yml')
         all_remote_loggers = {}
         try:
-            url = (
-                f'{self.logstream_api}/'
-                f'{self._daemonize_id(workspace_id, "workspace")}/{id}'
-            )
+            url = f'{self.logstream_api}/{id}'
             async with websockets.connect(url) as websocket:
                 async for log_line in websocket:
                     try:
@@ -156,7 +165,7 @@ class PeaDaemonClient(DaemonClient):
     def get(self, id: str) -> Dict:
         """Get status of the remote Pea / Pod
 
-        :param identity: 'DaemonID' based identity for the Pea
+        :param id: 'DaemonID' based identity for the Pea
         :raises: requests.exceptions.RequestException
         :return: json response of the remote Pea / Pod status
         :rtype: Dict
