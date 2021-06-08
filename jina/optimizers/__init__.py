@@ -192,15 +192,7 @@ class FlowOptimizer(JAMLCompatible):
         trial_parameters = {}
         parameters = load_optimization_parameters(self._parameter_yaml)
         for param in parameters:
-            if isinstance(param, PodOptimizationParameter):
-                value = param.suggest(trial)
-                trial_parameters[param.jaml_variable] = value
-                for inner_params in param.inner_parameters[value]:
-                    trial_parameters[inner_params.jaml_variable] = inner_params.suggest(
-                        trial
-                    )
-            else:
-                trial_parameters[param.jaml_variable] = param.suggest(trial)
+            param.update_trial_params(trial, trial_parameters)
 
         trial.workspace = (
             self._workspace_base_dir

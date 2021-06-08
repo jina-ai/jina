@@ -14,12 +14,6 @@ from jina.parsers.optimizer import set_optimizer_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-BEST_PARAMETERS = {
-    'JINA_DUMMYCRAFTER_PARAM1': 0,
-    'JINA_DUMMYCRAFTER_PARAM2': 1,
-    'JINA_DUMMYCRAFTER_PARAM3': 1,
-}
-
 
 @pytest.fixture
 def config(tmpdir):
