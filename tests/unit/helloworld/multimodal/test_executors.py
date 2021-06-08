@@ -4,7 +4,7 @@ import pytest
 from PIL import Image
 
 from jina import Document, DocumentArray, Flow
-from jina.helloworld.multimodal.executors import Segmenter, TextEncoder, ImageCrafter
+from jina.helloworld.multimodal.my_executors import Segmenter, TextEncoder, ImageCrafter
 
 
 @pytest.fixture(scope='function')

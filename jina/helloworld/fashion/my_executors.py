@@ -3,12 +3,13 @@ from typing import Tuple, Dict
 import numpy as np
 
 from jina import Executor, DocumentArray, requests, Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 class MyIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArray()
+        self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
