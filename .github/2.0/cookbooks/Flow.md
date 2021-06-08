@@ -834,17 +834,17 @@ When use `curl`, make sure to pass the `-N/--no-buffer` flag.
 
 ### Python Client with REST Request
 
-In some case when `restful=True`, you may still need a Python client to query the server for debugging. You can use `WebsocketClient` in this case.
+In some case when `restful=True`, you may still need a Python client to query the server for debugging. You can use `Client` with an additional parameter `restful` in this case.
 
 ```python
-from jina.clients import WebSocketClient
+from jina import Client
 
-c = WebSocketClient(host='192.168.1.14', port_expose=12345)
+c = Client(host='192.168.1.14', port_expose=12345, restful=True)
 c.post('/')
 ```
 
 ```text
-WebSocketClient@27622[S]:Connected to the gateway at 192.168.1.14:12345
+        Client@27622[S]:Connected to the gateway at 192.168.1.14:12345
   |█                   | 📃    100 ⏱️ 0.0s 🐎 19476.6/s      1   requests takes 0 seconds (0.00s)
 	✅ done in ⏱ 0 seconds 🐎 18578.9/s
 ```

@@ -9,18 +9,18 @@ from ..parsers import set_client_cli_parser
 __all__ = ['Client', 'GrpcClient', 'WebSocketClient']
 
 
-def Client(host: str, port: int, is_restful: bool = False) -> 'BaseClient':
+def Client(host: str, port: int, restful: bool = False) -> 'BaseClient':
     """Jina Python client.
 
     :param host: Host address of the flow.
     :param port: Port number of the flow.
-    :param is_restful: If connect to a Restful gateway, default is ``False``, connect to GrpcGateway.
+    :param restful: If connect to a Restful gateway, default is ``False``, connect to GrpcGateway.
     :return: An instance of :class:`GrpcClient` or :class:`WebSocketClient`.
     """
     args = set_client_cli_parser().parse_args(
         ['--host', host, '--port-expose', str(port)]
     )
-    if is_restful:
+    if restful:
         return WebSocketClient(args)
     else:
         return GrpcClient(args)
