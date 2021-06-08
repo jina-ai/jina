@@ -6,7 +6,7 @@ if False:
     from optuna.trial import Trial
 
 
-class OptimizationParameter(JAMLCompatible, metaclass=ABCMeta):
+class OptimizationParameter(JAMLCompatible):
     """Base class for all optimization parameters."""
 
     def __init__(
