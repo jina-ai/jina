@@ -235,22 +235,30 @@ class HubIO:
         # validate the executor package
 
         try:
-
             # archive the executor package
-            md5_hash = hashlib.md5()
-            bytesio = archive_package(pkg_path)
-            content = bytesio.getvalue()
-            md5_hash.update(content)
+            with TimeContext(f'archiving executor at {self.args.path}', self.logger):
+                md5_hash = hashlib.md5()
+                bytesio = archive_package(pkg_path)
+                content = bytesio.getvalue()
+                md5_hash.update(content)
 
-            md5_digest = md5_hash.hexdigest()
+                md5_digest = md5_hash.hexdigest()
 
             # upload the archived package
-            data = {'md5sum': md5_digest, 'jina_version': 'master'}
+            data = {
+                'is_public': is_public,
+                'md5sum': md5_digest,
+                'jina_version': jina_version,
+                'overwrite': self.args.overwrite,
+                'secret': self.args.secret,
+            }
 
             # TODO: replace with official jina hub url, e.g., http://hub.jina.ai/
             url = 'http://localhost:3001/upload'
             files = {'file': content}
-            resp = requests.post(url, files=files, data=data)
+            # upload the archived executor to Jina Hub
+            with TimeContext(f'uploading to {url}', self.logger):
+                resp = requests.post(url, files=files, data=data)
 
             if resp.status_code == 201 and resp.json()['success']:
                 # result = {
@@ -266,7 +274,7 @@ class HubIO:
 
         except Exception as e:  # IO related errors
             self.logger.error(
-                f'Error when trying to push the given executor at {self.args.path}: {e!r}'
+                f'Error when trying to push the executor at {self.args.path}: {e!r}'
             )
             raise e
 
