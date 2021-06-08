@@ -813,10 +813,10 @@ The next table show the speed and memory consumption when writing and reading 50
 
 || `DocumentArrayMemmap` | `DocumentArray` |
 |---|---|---|
-|Write | 0.62s | 0.71s |
-|Read | 0.11s | 0.20s |
-|Memory | 20MB | 342MB |
-|On-disk storage | 14.3MB | 12.6MB |
+|Write to disk | 0.62s | 0.71s |
+|Read from disk | 0.11s | 0.20s |
+|Memory usage | 20MB | 342MB |
+|Disk storage | 14.3MB | 12.6MB |
 
 ### Create `DocumentArrayMemmap` object
 
@@ -844,6 +844,10 @@ The `dam` object stores all future Documents into `./my-memmap`, there is no nee
 ### Clear a `DocumentArrayMemmap` object
 
 To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
+
+#### Pruning
+
+One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
 
 ### Mutable sequence with "read-only" elements
 
@@ -918,3 +922,49 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `__bool__` |✅|✅|
 | `__eq__` |✅|✅|
 | `save`, `load` |❌ unnecessary |✅|
+
+### Convert between `DocumentArray` and `DocumentArrayMemmap`
+
+```python
+from jina import Document, DocumentArray
+from jina.types.arrays.memmap import DocumentArrayMemmap
+
+da = DocumentArray([Document(text='hello'), Document(text='world')])
+
+# convert DocumentArray to DocumentArrayMemmap
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend(da)
+
+# convert DocumentArrayMemmap to DocumentArray
+da = DocumentArray(dam)
+```
+
+
+### Maintaining Consistency via `.reload()`
+
+Considering two `DocumentArrayMemmap` objects that share the same on-disk storage `./memmap` but sit in different processes/threads. After some writing ops, the consistency of the lookup table may be corrupted, as each `DocumentArrayMemmap` object has its own version of lookup table in memory. `.reload()` method is for solving this issue:
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam2 = DocumentArrayMemmap('./my-memmap')
+
+dam.extend([d1, d2])
+assert len(dam) == 2
+assert len(dam2) == 0
+
+dam2.reload()
+assert len(dam2) == 2
+
+dam.clear()
+assert len(dam) == 0
+assert len(dam2) == 2
+
+dam2.reload()
+assert len(dam2) == 0
+```
