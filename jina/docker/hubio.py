@@ -2,17 +2,11 @@
 
 import argparse
 import glob
-import json
-import time
-import urllib.parse
-import urllib.request
-import webbrowser
-from typing import Dict, Any, List
+from typing import Dict
 
 from .checker import *
-from .helper import credentials_file, archive_package
+from .helper import archive_package
 from .. import __version__ as jina_version, __resources_path__
-from ..executors import BaseExecutor
 from ..flow import Flow
 from ..helper import (
     colored,
