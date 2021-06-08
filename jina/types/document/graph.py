@@ -340,7 +340,7 @@ class GraphDocument(Document):
     @staticmethod
     def load_from_dgl_graph(dgl_graph: 'DGLGraph') -> 'GraphDocument':
         """
-        Construct a GraphDocument from of graph with type `dgl.DGLGraph`
+        Construct a GraphDocument from of graph with type `DGLGraph`
 
         .. # noqa: DAR201
         :param dgl_graph: the graph from which to construct a `GraphDocument`.
@@ -363,7 +363,7 @@ class GraphDocument(Document):
 
         return jina_graph
 
-    def to_dgl_graph(self) -> 'dgl.DGLGraph':
+    def to_dgl_graph(self) -> 'DGLGraph':
         """
         Construct a  `dgl.DGLGraph` from a `GraphDocument` instance.
 
