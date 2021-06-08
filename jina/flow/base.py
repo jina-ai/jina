@@ -914,11 +914,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _switch_gateway(self, gateway: str, port: int):
         restful = gateway == 'RESTRuntime'
-        client = (
-            Client(host=self.host, port_expose=self.port_expose, restful=True)
-            if gateway == 'RESTRuntime'
-            else Client(host=self.host, port_expose=self.port_expose)
-        )
+        client = WebSocketClient if gateway == 'RESTRuntime' else GrpcClient
 
         # globally register this at Flow level
         self._cls_client = client
