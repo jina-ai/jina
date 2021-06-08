@@ -1,4 +1,4 @@
-from typing import Optional, Sequence, List, Dict
+from typing import Optional, Sequence, List, Dict, Union
 
 from ..jaml import JAML, JAMLCompatible
 
@@ -136,7 +136,7 @@ class CategoricalParameter(OptimizationParameter):
     """
 
     def __init__(
-        self, choices: Sequence[Optional[bool, int, float, str]], *args, **kwargs
+        self, choices: Sequence[Optional[Union[bool, int, float, str]]], *args, **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.choices = choices
@@ -185,7 +185,7 @@ class PodOptimizationParameter(OptimizationParameter):
     def __init__(
         self,
         pod_choices: List[Optional[str]],
-        inner_parameters: Dict[List[OptimizationParameter]],
+        inner_parameters: Dict[str, List[OptimizationParameter]],
         *args,
         **kwargs,
     ):
