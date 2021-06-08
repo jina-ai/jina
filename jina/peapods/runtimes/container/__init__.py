@@ -19,7 +19,21 @@ class ContainerRuntime(ZMQRuntime):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
+        self.ctrl_addr = Zmqlet.get_ctrl_address(
+            self._host_ctrl, self.args.port_ctrl, self.args.ctrl_with_ipc
+        )[0]
+        self.logger.critical(f'_host_ctrl: {self._host_ctrl}, ctrl_addr: {self.ctrl_addr}')
         self._set_network_for_dind_linux()
+
+    @property
+    def _host_ctrl(self):
+        """
+        Checks if caller (jinad) has set `docker_kwargs['extra_hosts']` to _docker_host.
+        If yes, set host_ctrl to _docker_host, else set it to localhost
+        """
+        _docker_host = 'host.docker.internal'
+        return _docker_host if self.args.docker_kwargs and 'extra_hosts' in self.args.docker_kwargs and \
+            _docker_host in self.args.docker_kwargs['extra_hosts'] else self.host
 
     def setup(self):
         """Run the container."""

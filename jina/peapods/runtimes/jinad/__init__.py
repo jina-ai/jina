@@ -21,17 +21,20 @@ class JinadRuntime(AsyncZMQRuntime):
         self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
+        # TODO: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
+        # so it can't be used for Client timeout. Setting `timeout` to `None` would wait forever in `DaemonClient`,
+        # which is not ideal. Setting it to 15 secs for testing.
         self.workspace_api = WorkspaceDaemonClient(
             host=self.host,
             port=self.port_expose,
             logger=self.logger,
-            timeout=self.args.timeout_ready if self.args.timeout_ready != -1 else None,
+            timeout=15,
         )
         self.pea_api = PeaDaemonClient(
             host=self.host,
             port=self.port_expose,
             logger=self.logger,
-            timeout=self.args.timeout_ready if self.args.timeout_ready != -1 else None,
+            timeout=15,
         )
 
     def cancel(self):

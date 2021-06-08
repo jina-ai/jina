@@ -238,6 +238,9 @@ class BasePea(metaclass=PeaType):
         if not self.runtime_cls:
             if self.args.host != __default_host__:
                 self.args.runtime_cls = 'JinadRuntime'
+                # NOTE: remote pea would also create a remote workspace which might take alot of time.
+                # setting it to -1 so that wait_start_success doesn't fail
+                self.args.timeout_ready = -1
             if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
                 'docker://'
             ):

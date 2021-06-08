@@ -28,8 +28,6 @@ COPY . /codebase/
 WORKDIR /codebase
 RUN pip install .[devel]
 
-# COPY /usr/local/lib/python3.7/site-packages/daemon/Dockerfiles/entrypoint.sh entrypoint.sh
 STOPSIGNAL SIGINT
 
 WORKDIR /workspace
-ENTRYPOINT [ "bash", "/codebase/daemon/Dockerfiles/entrypoint.sh" ]

@@ -32,7 +32,7 @@ class DaemonClient:
         host: str,
         port: int,
         logger: 'JinaLogger' = None,
-        timeout: int = None,
+        timeout: int = 15,
         **kwargs,
     ):
         self.logger = logger or JinaLogger(host)
