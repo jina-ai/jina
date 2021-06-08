@@ -23,23 +23,23 @@ PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
     """
-    Create a memory-map to an DocumentArray stored in binary files on disk.
+    Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.
 
     Memory-mapped files are used for accessing :class:`Document` of large :class:`DocumentArray` on disk,
     without reading the entire file into memory.
 
-    The DocumentArrayMemmap on-disk storage consists of two parts:
+    The :class:`DocumentArrayMemmap` on-disk storage consists of two files:
         - `header.bin`: stores id, offset, length and boundary info of each Document in `body.bin`;
         - `body.bin`: stores Documents continuously
 
-    When loading DocumentArrayMemmap, it only loads the content of `header.bin` into memory, while storing all `body.bin`
-    data on disk. As `header.bin` is often much smaller than `body.bin`, memory is saved.
+    When loading :class:`DocumentArrayMemmap`, it only loads the content of `header.bin` into memory, while storing
+    all `body.bin` data on disk. As `header.bin` is often much smaller than `body.bin`, memory is saved.
 
     This class is designed to work similarly as :class:`DocumentArray` but differs in the following aspects:
-        - one can not set the attribute of elements in a DocumentArrayMemmap;
-        - one can not use slice to index elements in a DocumentArrayMemmap
+        - one can not set the attribute of elements in a :class:`DocumentArrayMemmap`;
+        - one can not use slice to index elements in a :class:`DocumentArrayMemmap`;
 
-    To convert between a DocumentArrayMemmap and a DocumentArray
+    To convert between a :class:`DocumentArrayMemmap` and a :class:`DocumentArray`
 
     .. highlight:: python
     .. code-block:: python
@@ -73,6 +73,11 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         self._load_header_body()
 
     def _load_header_body(self, mode: str = 'a'):
+        if hasattr(self, '_header'):
+            self._header.close()
+        if hasattr(self, '_body'):
+            self._body.close()
+
         open(self._header_path, mode).close()
         open(self._body_path, mode).close()
 
