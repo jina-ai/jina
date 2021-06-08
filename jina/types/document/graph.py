@@ -57,9 +57,9 @@ class GraphDocument(Document):
         if JINA_GLOBAL.scipy_installed is None:
             JINA_GLOBAL.scipy_installed = False
             with ImportExtensions(
-                required=False,
-                pkg_name="scipy",
-                help_text=f"GraphDocument needs scipy ",
+                required=True,
+                pkg_name='scipy',
+                help_text=f'GraphDocument needs scipy ',
             ):
                 import scipy
 
@@ -378,7 +378,7 @@ class GraphDocument(Document):
         if JINA_GLOBAL.dgl_installed is None:
             JINA_GLOBAL.dgl_installed = False
             with ImportExtensions(
-                required=False,
+                required=True,
                 pkg_name='dgl',
                 help_text=f'to_dgl_graph method requires dgl to be installed',
             ):
@@ -389,7 +389,7 @@ class GraphDocument(Document):
         if JINA_GLOBAL.torch_installed is None:
             JINA_GLOBAL.torch_installed = False
             with ImportExtensions(
-                required=False,
+                required=True,
                 pkg_name='torch',
                 help_text=f'to_dgl_graph method requires torch to be installed',
             ):
