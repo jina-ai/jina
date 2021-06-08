@@ -43,25 +43,23 @@ def client_instance(request):
 @pytest.mark.timeout(360)
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose, doc_to_index, client_instance, mocker):
-    print(client_instance)
-    print(type(client_instance))
-    # def validate_resp(resp):
-    #     assert len(resp.data.docs) == 2
-    #     assert resp.data.docs[0].text == 'test'
-    #     assert resp.data.docs[1].text == 'test'
-    #
-    # mock = mocker.Mock()
-    # flow_id = create_flow(flow_yaml=flow_yaml, pod_dir=os.path.join(cur_dir, 'pods'))
-    #
-    # client.search(inputs=[doc_to_index], on_done=mock)
-    #
-    # assert_request(method='get', url=f'http://localhost:8000/flows/{flow_id}')
-    #
-    # assert_request(
-    #     method='delete',
-    #     url=f'http://localhost:8000/flows/{flow_id}',
-    #     payload={'workspace': False},
-    # )
-    #
-    # mock.assert_called_once()
-    # validate_callback(mock, validate_resp)
+    def validate_resp(resp):
+        assert len(resp.data.docs) == 2
+        assert resp.data.docs[0].text == 'test'
+        assert resp.data.docs[1].text == 'test'
+
+    mock = mocker.Mock()
+    flow_id = create_flow(flow_yaml=flow_yaml, pod_dir=os.path.join(cur_dir, 'pods'))
+
+    client.search(inputs=[doc_to_index], on_done=mock)
+
+    assert_request(method='get', url=f'http://localhost:8000/flows/{flow_id}')
+
+    assert_request(
+        method='delete',
+        url=f'http://localhost:8000/flows/{flow_id}',
+        payload={'workspace': False},
+    )
+
+    mock.assert_called_once()
+    validate_callback(mock, validate_resp)
