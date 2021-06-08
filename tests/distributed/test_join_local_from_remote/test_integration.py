@@ -3,7 +3,8 @@ import os
 import pytest
 
 from jina import Document
-from jina.clients import Client
+from jina.clients import Client, GrpcClient
+from jina.parsers import set_client_cli_parser
 from tests import validate_callback
 from ..helpers import create_flow, assert_request
 
@@ -25,9 +26,23 @@ def client():
     return Client(host='localhost', port_expose=45678)
 
 
+@pytest.fixture
+def grpc_client():
+    args = set_client_cli_parser().parse_args(
+        ['--host', 'localhost', '--port-expose', '45678']
+    )
+
+    return GrpcClient(args)
+
+
+@pytest.fixture(params=['client', 'grpc_client'])
+def client_instance(request):
+    return request.getfixturevalue(request.param)
+
+
 @pytest.mark.timeout(360)
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_flow(docker_compose, doc_to_index, client, mocker):
+def test_flow(docker_compose, doc_to_index, client_instance, mocker):
     def validate_resp(resp):
         assert len(resp.data.docs) == 2
         assert resp.data.docs[0].text == 'test'
