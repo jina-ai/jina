@@ -62,9 +62,7 @@ class ContainerStore(BaseStore):
             self.host = f'http://0.0.0.0:{minid_port}'
             self.params = params.dict(exclude={'log_config'})
             command = f'jinad --port-expose {minid_port} --mode {self._kind}'
-            print(f'ports before {ports}')
             ports.update({f'{minid_port}/tcp': minid_port})
-            print(f'ports after {ports}')
 
             container, network, ports = Dockerizer.run(
                 workspace_id=workspace_id,

@@ -146,12 +146,10 @@ class PeaDepends:
     def validate(self):
         # Each pea is inside a container
         # TODO: Handle host if pea uses a docker image
-        print(f'\n\n\nparams: {self.params}\n\n')
         self.params.host_in = self.host_in
         self.params.host_out = self.host_out
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
-        print(f'\n\n\nparams: {self.params}\n\n')
 
 
 class PodDepends(PeaDepends):

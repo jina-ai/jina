@@ -10,7 +10,7 @@ class PeaStore(ContainerStore):
         try:
             requests.post(
                 url=f'{self.host}/{self._kind}',
-                json={self._kind: self.params}
+                json=self.params
             )
         except requests.exceptions.RequestException as ex:
             raise
