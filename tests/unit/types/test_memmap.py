@@ -108,8 +108,12 @@ def test_persist(tmpdir):
     dam2 = DocumentArrayMemmap(tmpdir)
     assert len(dam2) == 100
 
+    assert dam == dam2
+
     for d1, d2 in zip(dam, dam2):
         assert d1.proto == d2.proto
+
+    assert '1' in dam
 
     del dam['1']
     assert len(dam2) == 100

@@ -234,6 +234,16 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         """
         return len(self) > 0
 
+    def __eq__(self, other):
+        return (
+            type(self) is type(other)
+            and self._header_path == other._header_path
+            and self._body_path == other._body_path
+        )
+
+    def __contains__(self, item: str):
+        return item in self._header_map
+
     def prune(self) -> None:
         """Prune deleted Documents from this object, this yields a smaller on-disk storage. """
         tdir = tempfile.mkdtemp()
