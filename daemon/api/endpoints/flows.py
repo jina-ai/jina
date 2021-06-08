@@ -1,10 +1,16 @@
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 
-from ..dependencies import FlowDepends
 from ... import Runtime400Exception
-from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel
+from ...models.enums import UpdateOperation
+from ..dependencies import FlowDepends
 from ...stores import flow_store as store
+from ...models import (
+    DaemonID,
+    ContainerItem,
+    ContainerStoreStatus,
+    FlowModel
+)
 
 router = APIRouter(prefix='/flows', tags=['flows'])
 
@@ -29,14 +35,31 @@ async def _fetch_flow_params():
 )
 async def _create(flow: FlowDepends = Depends(FlowDepends)):
     try:
+        print(flow.ports)
         return store.add(
             id=flow.id,
             workspace_id=flow.workspace_id,
             params=flow.params,
             ports=flow.ports,
+            port_expose=flow.port_expose
         )
     except Exception as ex:
         raise Runtime400Exception from ex
+
+
+@router.put(
+    path='/{id}',
+    summary='Run an update operation on the Flow object',
+    description='Types supported: "rolling_update" and "dump"',
+)
+def update(
+    id: DaemonID,
+    kind: UpdateOperation,
+    dump_path: str,
+    pod_name: str,
+    shards: int = None,
+):
+    return store.update(id, kind, dump_path, pod_name, shards)
 
 
 # order matters! this must be put in front of del {id}

@@ -45,3 +45,18 @@ class PythonVersion(DaemonEnum):
     @classproperty
     def default(cls):
         return cls.PY38
+
+
+class PartialDaemonModes(DaemonEnum):
+    PEA = 'pea'
+    POD = 'pod'
+    FLOW = 'flow'
+
+
+class UpdateOperation(DaemonEnum):
+    """
+    Represents the type of operation to perform in the update
+    We consider these an `update` operation since they **change** the underlying state
+    """
+    DUMP = 'dump'
+    ROLLING_UPDATE = 'rolling_update'

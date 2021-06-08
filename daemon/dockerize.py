@@ -132,8 +132,8 @@ class Dockerizer:
                 _log_stream(build_log, 'stream')
             elif 'message' in build_log:
                 _log_stream(build_log, 'message')
-            else:
-                logger.critical(build_log)
+            elif 'status' in build_log:
+                _log_stream(build_log, 'status')
 
         try:
             image = cls.client.images.get(name=workspace_id.tag)
@@ -149,28 +149,22 @@ class Dockerizer:
         container_id: DaemonID,
         command: str,
         ports: Dict,
-        additional_ports: Tuple[int, int],
-    ) -> Tuple['Container', str, Dict, bool, str]:
+    ) -> Tuple['Container', str, Dict]:
         from .stores import workspace_store
 
         metadata = workspace_store[workspace_id].metadata
-        _image = cls.client.images.get(name=metadata.image_id)
-        _network = metadata.network
-        _min_port, _max_port = additional_ports
-        # TODO: Handle port mappings
-        # ports.update(
-        #     {f'{port}/tcp': port for port in range(_min_port, _max_port + 1)}
-        # )
+        image = cls.client.images.get(name=metadata.image_id)
+        network = metadata.network
         cls.logger.info(
-            f'Creating a container using image {_image} in network {_network} and ports {ports}'
+            f'Creating a container using image {image} in network {network} and ports {ports}'
         )
         try:
             container: 'Container' = cls.client.containers.run(
-                image=_image,
+                image=image,
                 name=container_id,
                 volumes=cls.volume(workspace_id),
-                environment=cls.environment(workspace_id, _min_port, _max_port),
-                network=_network,
+                environment=cls.environment(),
+                network=network,
                 ports=ports,
                 detach=True,
                 command=command,
@@ -178,35 +172,14 @@ class Dockerizer:
             )
         except docker.errors.NotFound as e:
             cls.logger.critical(
-                f'Image {_image} or Network {_network} not found locally {e!r}'
+                f'Image {image} or Network {network} not found locally {e!r}'
             )
         except docker.errors.APIError as e:
             import traceback
             traceback.print_exc()
             cls.logger.critical(f'API Error {e!r} during docker network creation')
             raise DockerRunException()
-
-        _msg_to_check = __flow_ready__ if container_id.type == 'flow' else __ready_msg__
-
-        # TODO: Super ugly way of knowing if the "start" was successful
-        # Must be changed with mini jinad
-        _success = False
-        for run_logs in container.logs(stream=True, follow=True):
-            _log_line = run_logs.splitlines()[0].decode()
-            cls.logger.info(_log_line)
-            if _msg_to_check in _log_line or 'will use' in _log_line:
-                cls.logger.info(_log_line)
-                cls.logger.success(
-                    f'{container_id.type.title()} object is now ready to use!'
-                )
-                _success = True
-                break
-
-        updated_container = cls.client.containers.get(container.attrs["Id"])
-        ip_address = list(
-            updated_container.attrs["NetworkSettings"]["Networks"].values()
-        )[0]['IPAddress']
-        return container, _network, ports, _success, ip_address
+        return container, network, ports
 
     @classmethod
     def volume(cls, workspace_id: DaemonID) -> Dict[str, Dict]:
@@ -220,14 +193,10 @@ class Dockerizer:
         }
 
     @classmethod
-    def environment(
-        cls, workspace_id: DaemonID, min_port: int, max_port: int
-    ) -> Dict[str, str]:
+    def environment(cls) -> Dict[str, str]:
         return {
             'JINA_LOG_WORKSPACE': '/workspace/logs',
-            'JINA_RANDOM_PORTS': 'True',
-            'JINA_RANDOM_PORT_MIN': str(min_port),
-            'JINA_RANDOM_PORT_MAX': str(max_port),
+            'JINA_RANDOM_PORTS': 'True'
         }
 
     def remove(cls, id: DaemonID):

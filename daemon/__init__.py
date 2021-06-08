@@ -9,24 +9,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
-from jina import __version__, __resources_path__, Flow
+from jina import __version__, __resources_path__
 from jina.logging.logger import JinaLogger
-from jina.parsers import set_pea_parser, set_pod_parser
-from jina.parsers.flow import set_flow_parser
-from jina.peapods.peas import BasePea
-from jina.peapods.pods.factory import PodFactory
-from jina.peapods.runtimes import ZEDRuntime
 from .excepts import (
     RequestValidationError,
     Runtime400Exception,
     daemon_runtime_exception_handler,
     validation_exception_handler,
 )
-from .parser import get_main_parser, _get_run_args, get_partial_parser
+from .parser import get_main_parser, _get_run_args
 
 jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
-nested_args = ''  # used by mini jinad, forwarded to pea/pod/flow
 
 __task_queue__ = Queue()
 __dockerhost__ = 'host.docker.internal'
@@ -137,8 +131,8 @@ def _start_uvicorn(app: 'FastAPI'):
     )
     server = Server(config=config)
     server.run()
-    from jina import __stop_msg__
 
+    from jina import __stop_msg__
     daemon_logger.success(__stop_msg__)
 
 
@@ -166,15 +160,15 @@ def _start_consumer():
     ConsumerThread().start()
 
 
-def main():
-    """Entrypoint for jinad"""
+def _update_default_args():
     global jinad_args, __root_workspace__
     jinad_args = _get_run_args()
-    __root_workspace__ = jinad_args.workspace
-    if jinad_args.mode is not None:
-        global nested_args
-        _, nested_args = get_partial_parser().parse_known_args()
+    __root_workspace__ = '/workspace' if jinad_args.mode else jinad_args.workspace
 
+
+def main():
+    """Entrypoint for jinad"""
+    _update_default_args()
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     if not jinad_args.no_fluentd:
         Thread(target=_start_fluentd, daemon=True).start()

@@ -5,7 +5,7 @@ from jina.parsers import set_pea_parser
 from ....models import DaemonID, PeaModel
 from ....excepts import Runtime400Exception
 from ....models.partial import PartialStoreItem
-from ....stores.partial import partial_store as store
+from ....stores import partial_store as store
 
 router = APIRouter(prefix='/pea', tags=['pea'])
 

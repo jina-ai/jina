@@ -4,7 +4,7 @@ from ....models import DaemonID
 from ....models.enums import UpdateOperation
 from ....models.partial import PartialFlowItem
 from ....excepts import Runtime400Exception
-from ....stores.partial import partial_store as store
+from ....stores import partial_store as store
 
 router = APIRouter(prefix='/flow', tags=['flow'])
 
@@ -24,9 +24,9 @@ async def _status():
     status_code=201,
     response_model=DaemonID,
 )
-async def _create(filename: str, id: DaemonID):
+async def _create(filename: str, id: DaemonID, port_expose: int):
     try:
-        return store.add(filename, id)
+        return store.add(filename, id, port_expose)
     except Exception as ex:
         raise Runtime400Exception from ex
 

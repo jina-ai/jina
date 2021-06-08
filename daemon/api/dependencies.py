@@ -1,19 +1,17 @@
 from pathlib import Path
 from typing import Dict, List, Optional
 from pydantic import FilePath
-from fastapi import HTTPException, UploadFile, File
 from pydantic.errors import PathNotAFileError
-from pydantic.main import BaseModel
+from fastapi import HTTPException, UploadFile, File
 
 from jina import __default_host__, Flow
 from jina.enums import PeaRoleType, SocketType
-from jina.helper import ArgNamespace, cached_property
+from jina.helper import ArgNamespace, cached_property, random_port
 
 from .. import __dockerhost__
 from ..helper import get_workspace_path
 from ..models.enums import WorkspaceState
 from ..stores import workspace_store as store
-from ..models.workspaces import WorkspaceItem
 from ..models import DaemonID, FlowModel, PodModel, PeaModel
 
 
@@ -24,26 +22,26 @@ class FlowDepends:
         self.localpath = self.validate()
         self.id = DaemonID('jflow')
         self.params = FlowModel(
-            uses=self.filename, workspace_id=self.workspace_id.jid, identity=self.id.jid
+            uses=self.filename, workspace_id=self.workspace_id.jid, identity=self.id
         )
 
-    @property
-    def command(self) -> str:
-        return (
-            f'jina flow --uses /workspace/{self.params.uses} '
-            f'--identity {self.params.identity} '
-            f'--workspace-id {self.params.workspace_id}'
-        )
-
-    @property
-    def ports(self) -> Dict[str, str]:
-        # TODO: Super ugly way of knowing, if the yaml file has port_expose set
+    @cached_property
+    def port_expose(self):
+        """
+        `port_expose` for gateway needs to be set before starting the container.
+        Flow yaml might have `port_expose` set already, if not, set it to random_port
+        """
         f = Flow.load_config(str(self.localpath))
-        port_expose = f._common_kwargs.get('port_expose')
-        # TODO: How to set port_expose which starting a Flow via CLI
-        return {f'{port_expose}/tcp': port_expose} if port_expose else {}
+        _port_expose = f._common_kwargs.get('port_expose')
+        if not _port_expose:
+            _port_expose = random_port()
+        return _port_expose
 
-    def validate(self):
+    @cached_property
+    def ports(self) -> Dict[str, str]:
+        return {f'{self.port_expose}/tcp': self.port_expose}
+
+    def validate(self) -> Path:
         try:
             return FilePath.validate(
                 Path(get_workspace_path(self.workspace_id, self.filename))
