@@ -46,6 +46,7 @@ def _create_flow():
             network='',
             ports={},
             rest_api_uri='',
+            host="",
         ),
         arguments=ContainerArguments(command='command'),
         workspace_id=workspace_id,
