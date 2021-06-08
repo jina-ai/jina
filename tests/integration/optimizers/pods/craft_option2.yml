@@ -1,4 +1,4 @@
-!DummyCrafterGood
+!DummyCrafterOption2
 with:
   param4: ${{JINA_DUMMYCRAFTER_PARAM4_VAR}}
   param5: ${{JINA_DUMMYCRAFTER_PARAM5_VAR}}

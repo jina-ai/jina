@@ -32,25 +32,24 @@ def config(tmpdir):
     del os.environ['JINA_OPTIMIZER_DATA_FILE']
 
 
-def validate_result(result, tmpdir):
-    result_path = os.path.join(tmpdir, 'out/best_parameters.yml')
-    result.save_parameters(result_path)
-    print(f' result_bestparams {result.best_parameters}')
-    assert result.best_parameters == BEST_PARAMETERS
-    assert yaml.load(open(result_path)) == BEST_PARAMETERS
-
-
-def document_generator(num_doc):
+def document_generator_option1(num_doc):
     for _ in range(num_doc):
-        doc = Document(content='hello')
+        doc = Document(content='DummyCrafterOption1')
         groundtruth_doc = Document(content='hello')
         yield doc, groundtruth_doc
 
 
-def test_optimizer_single_flow(tmpdir, config):
+def document_generator_option2(num_doc):
+    for _ in range(num_doc):
+        doc = Document(content='DummyCrafterOption2')
+        groundtruth_doc = Document(content='hello')
+        yield doc, groundtruth_doc
+
+
+def test_optimizer_single_flow_option1(tmpdir, config):
     eval_flow_runner = SingleFlowRunner(
         flow_yaml=os.path.join(cur_dir, 'flow_pod_choice.yml'),
-        documents=document_generator(10),
+        documents=document_generator_option1(10),
         request_size=1,
         execution_endpoint='search',
     )
@@ -59,7 +58,35 @@ def test_optimizer_single_flow(tmpdir, config):
         parameter_yaml=os.path.join(cur_dir, 'parameter_pod_choice.yml'),
         evaluation_callback=MeanEvaluationCallback(),
         workspace_base_dir=str(tmpdir),
-        n_trials=5,
+        n_trials=10,
     )
     result = opt.optimize_flow()
-    validate_result(result, tmpdir)
+    assert (
+        result.best_parameters['JINA_DUMMYCRAFTER_CHOICE'] == 'pods/craft_option1.yml'
+    )
+    assert result.best_parameters['JINA_DUMMYCRAFTER_PARAM1'] == 0
+    assert result.best_parameters['JINA_DUMMYCRAFTER_PARAM2'] == 1
+    assert result.best_parameters['JINA_DUMMYCRAFTER_PARAM3'] == 1
+
+
+def test_optimizer_single_flow_option2(tmpdir, config):
+    eval_flow_runner = SingleFlowRunner(
+        flow_yaml=os.path.join(cur_dir, 'flow_pod_choice.yml'),
+        documents=document_generator_option2(10),
+        request_size=1,
+        execution_endpoint='search',
+    )
+    opt = FlowOptimizer(
+        flow_runner=eval_flow_runner,
+        parameter_yaml=os.path.join(cur_dir, 'parameter_pod_choice.yml'),
+        evaluation_callback=MeanEvaluationCallback(),
+        workspace_base_dir=str(tmpdir),
+        n_trials=20,
+    )
+    result = opt.optimize_flow()
+    assert (
+        result.best_parameters['JINA_DUMMYCRAFTER_CHOICE'] == 'pods/craft_option2.yml'
+    )
+    assert result.best_parameters['JINA_DUMMYCRAFTER_PARAM4'] == 0
+    assert result.best_parameters['JINA_DUMMYCRAFTER_PARAM5'] == 1
+    assert result.best_parameters['JINA_DUMMYCRAFTER_PARAM6'] == 1

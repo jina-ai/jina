@@ -17,7 +17,6 @@ class OptimizationParameter(JAMLCompatible):
         jaml_variable: Optional[str] = None,
     ):
         self.parameter_name = parameter_name
-        print(f' Init OptimizationParameter {self.parameter_name} and jaml_variable {jaml_variable}')
         if jaml_variable is None:
             self.jaml_variable = f'{prefix}_{executor_name}_{parameter_name}'.upper()
         else:
@@ -180,34 +179,20 @@ class DiscreteUniformParameter(OptimizationParameter):
         )
 
 
-class PodOptimizationParameter(OptimizationParameter):
+class PodOptimizationParameter(CategoricalParameter):
     """Base class for all optimization parameters."""
 
     def __init__(
         self,
-        pod_choices: List[Optional[str]],
         inner_parameters: Dict[str, List[OptimizationParameter]],
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        assert len(pod_choices) == len(
+        assert len(self.choices) == len(
             inner_parameters.keys()
         ), 'Every pod alternative needs to have its set of parameters'
-        self.pod_parameter_selector = CategoricalParameter(pod_choices, *args, **kwargs)
         self.inner_parameters = inner_parameters
-
-    def suggest(self, trial: 'Trial'):
-        """
-        Suggest an instance of the parameter for a given trial.
-
-        :param trial: An instance of an Optuna Trial object
-            # noqa: DAR201
-        """
-        import os
-        val = self.pod_parameter_selector.suggest(trial)
-        #os.environ[self.jaml_variable] = val
-        return val
 
 
 def load_optimization_parameters(filepath: str):

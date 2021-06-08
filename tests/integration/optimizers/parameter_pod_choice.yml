@@ -1,11 +1,11 @@
 - !PodOptimizationParameter
   parameter_name: pod_choice
   jaml_variable: JINA_DUMMYCRAFTER_CHOICE
-  pod_choices:
-    - pods/craft_bad.yml
-    - pods/craft_good.yml
+  choices:
+    - pods/craft_option1.yml
+    - pods/craft_option2.yml
   inner_parameters:
-    pods/craft_bad.yml:
+    pods/craft_option1.yml:
       - !IntegerParameter
         jaml_variable: JINA_DUMMYCRAFTER_PARAM1
         high: 1
@@ -24,7 +24,7 @@
         low: 1
         step_size: 1
         parameter_name: param3
-    pods/craft_good.yml:
+    pods/craft_option2.yml:
       - !IntegerParameter
         jaml_variable: JINA_DUMMYCRAFTER_PARAM4
         high: 1

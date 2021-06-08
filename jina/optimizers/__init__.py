@@ -194,7 +194,6 @@ class FlowOptimizer(JAMLCompatible):
         for param in parameters:
             if isinstance(param, PodOptimizationParameter):
                 value = param.suggest(trial)
-                print(f'HEY PODOPTIMIZATION {param.jaml_variable} => value {value}')
                 trial_parameters[param.jaml_variable] = value
                 for inner_params in param.inner_parameters[value]:
                     trial_parameters[inner_params.jaml_variable] = inner_params.suggest(
