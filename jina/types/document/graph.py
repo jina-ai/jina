@@ -83,11 +83,6 @@ class GraphDocument(Document):
         Remove a node from the graph along with the edges that may contain it
 
         :param node: the node to be removed from the graph
-
-        nodes= [1,2]
-        conectivity nodes
-        [2]
-        [5]
         """
         from scipy.sparse import coo_matrix
 
