@@ -4,20 +4,20 @@ from .helper import callback_exec
 from .mixin import PostMixin
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
+from ..parsers import set_client_cli_parser
 
-__all__ = ['Client', 'GRPCClient', 'WebSocketClient']
-
-
-class Client(BaseClient):
-    @property
-    def client(self):
-        if not self.args.is_restful:
-            return GRPCClient
-        else:
-            return WebSocketClient
+__all__ = ['GrpcClient', 'WebSocketClient']
 
 
-class GRPCClient(PostMixin, BaseClient):
+def Client(is_restful: bool = False, **kwargs):
+    args = set_client_cli_parser()
+    if is_restful:
+        return WebSocketClient(args, **kwargs)
+    else:
+        return GrpcClient(args, **kwargs)
+
+
+class GrpcClient(PostMixin, BaseClient):
     """A simple Python client for connecting to the gRPC gateway.
 
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
