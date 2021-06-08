@@ -19,6 +19,21 @@ def set_hub_pushpull_parser(parser=None):
     return parser
 
 
+def set_hub_push_parser(parser=None):
+    """Set the parser for the hub push
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    from .pushpull import mixin_hub_push_parser
+
+    mixin_hub_push_parser(parser)
+    return parser
+
+
 def set_hub_build_parser(parser=None):
     """Set the parser for `hub build`
 
@@ -110,7 +125,7 @@ def set_hub_parser(parser=None):
         )
     )
 
-    set_hub_pushpull_parser(
+    set_hub_push_parser(
         spp.add_parser(
             'push',
             help='push an image to the Jina hub registry',

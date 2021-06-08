@@ -10,7 +10,7 @@ import webbrowser
 from typing import Dict, Any, List
 
 from .checker import *
-from .helper import credentials_file
+from .helper import credentials_file, archive_package
 from .hubapi.local import _list_local, _load_local_hub_manifest
 from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
 from .. import __version__ as jina_version, __resources_path__
@@ -40,18 +40,14 @@ from ..parsers import set_pod_parser
 from ..peapods import Pod
 
 _allowed = {
-    'name',
-    'description',
-    'author',
-    'url',
-    'documentation',
-    'version',
-    'vendor',
-    'license',
-    'avatar',
-    'platform',
-    'update',
-    'keywords',
+    'name',  # Human-readable title of the image
+    'alias',  # The Docker image name
+    'description',  # Human-readable description of the software packaged in the image
+    'author',  # Contact details of the people or organization responsible for the image (string)
+    'url',  # URL to find more information on the image (string)
+    'version',  # The version of the manifest protocol
+    'avatar',  # A picture that personalizes and distinguishes your image
+    'keywords',  # A list of strings help user to filter and locate your package
 }
 
 _label_prefix = 'ai.jina.hub.'
@@ -60,12 +56,13 @@ _label_prefix = 'ai.jina.hub.'
 class HubIO:
     """:class:`HubIO` provides the way to interact with Jina Hub registry.
 
-    You can use it with CLI to package a directory into a Jina Hub image and publish it to the world.
+    You can use it with CLI to package a directory into a Jina Hub and publish it to the world.
 
     Examples:
-        - :command:`jina hub build my_pod/` build the image
-        - :command:`jina hub build my_pod/ --push` build the image and push to the public registry
-        - :command:`jina hub pull jinahub/pod.dummy_mwu_encoder:0.0.6` to download the image
+        - :command:`jina hub build my_executor/` build the image
+        - :command:`jina hub build my_executor/ --push` build the image and push to the public registry
+        - :command:`jina hub push my_executor/` push the executor package to Jina Hub
+        - :command:`jina hub pull jinahub/exec.dummy_mwu_encoder:0.0.6` to download the image
     """
 
     def __init__(self, args: 'argparse.Namespace'):
@@ -215,7 +212,65 @@ class HubIO:
                 image_keywords=self.args.keywords,
             )
 
-    def push(
+    def push(self) -> None:
+        """Push the executor pacakge to Jina Hub."""
+
+        import requests
+        import hashlib
+        from pathlib import Path
+
+        is_public = False
+        if self.args.public:
+            is_public = True
+
+        pkg_path = Path(self.args.path)
+        if not pkg_path.exists():
+            self.logger.critical(
+                f'The given executor package folder "{self.args.path}" does not exist, can not push'
+            )
+            raise FileNotFoundError(
+                f'The given executor package folder "{self.args.path}" does not exist, can not push'
+            )
+
+        # validate the executor package
+
+        try:
+
+            # archive the executor package
+            md5_hash = hashlib.md5()
+            bytesio = archive_package(pkg_path)
+            content = bytesio.getvalue()
+            md5_hash.update(content)
+
+            md5_digest = md5_hash.hexdigest()
+
+            # upload the archived package
+            data = {'md5sum': md5_digest, 'jina_version': 'master'}
+
+            # TODO: replace with official jina hub url, e.g., http://hub.jina.ai/
+            url = 'http://localhost:3001/upload'
+            files = {'file': content}
+            resp = requests.post(url, files=files, data=data)
+
+            if resp.status_code == 201 and resp.json()['success']:
+                # result = {
+                #     'work_dir': self.args.path,
+                #     'hub_url': resp.json()['data']['image'],
+                # }
+                # return result
+                print(resp.json())
+            else:
+                self.logger.critical(
+                    f'There is some errors while pushing executor "{self.args.path}"'
+                )
+
+        except Exception as e:  # IO related errors
+            self.logger.error(
+                f'Error when trying to push the given executor at {self.args.path}: {e!r}'
+            )
+            raise e
+
+    def _push(
         self,
         name: Optional[str] = None,
         build_result: Optional[Dict] = None,
@@ -546,7 +601,7 @@ class HubIO:
             if result['is_build_success']:
                 self._write_summary_to_file(summary=result)
                 if self.args.push:
-                    self.push(image.tags[0], result)
+                    self._push(image.tags[0], result)
 
         if not result['is_build_success'] and self.args.raise_error:
             # remove the very verbose build log when throw error
