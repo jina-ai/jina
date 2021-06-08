@@ -1,21 +1,17 @@
 import asyncio
 import json
-import uuid
 from pathlib import Path
 from typing import List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
-from starlette.endpoints import WebSocketEndpoint
-from starlette.types import Receive, Scope, Send
 from websockets import ConnectionClosedOK
 from websockets.exceptions import ConnectionClosedError
 
 from ... import daemon_logger, jinad_args
-from ...helper import get_workspace_path
+from ...helper import get_log_file_path
 from ...models import DaemonID
-from ...models.enums import IDLiterals
 from ...stores import get_store_from_id
 
 router = APIRouter(tags=['logs'])
@@ -24,7 +20,7 @@ router = APIRouter(tags=['logs'])
 @router.get(path='/logs/{log_id}')
 async def _export_logs(log_id: DaemonID):
     try:
-        filepath, workspace_id = _get_log_file_path(log_id)
+        filepath, workspace_id = get_log_file_path(log_id)
     except KeyError:
         raise HTTPException(
             status_code=404,
@@ -37,16 +33,6 @@ async def _export_logs(log_id: DaemonID):
         )
     else:
         return FileResponse(filepath)
-
-
-def _get_log_file_path(log_id):
-    if IDLiterals.JWORKSPACE == log_id.jtype:
-        workspace_id = log_id
-        filepath = get_workspace_path(log_id, 'logs', 'logging.log')
-    else:
-        workspace_id = get_store_from_id(log_id)[log_id].workspace_id
-        filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
-    return filepath, workspace_id
 
 
 def _websocket_details(websocket: WebSocket):
@@ -109,7 +95,7 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 0):
     manager = ConnectionManager()
     await manager.connect(websocket)
     client_details = _websocket_details(websocket)
-    filepath, _ = _get_log_file_path(log_id)
+    filepath, _ = get_log_file_path(log_id)
     try:
         if jinad_args.no_fluentd:
             daemon_logger.warning(
