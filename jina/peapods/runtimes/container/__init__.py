@@ -82,7 +82,8 @@ class ContainerRuntime(ZMQRuntime):
 
         if self.args.uses.startswith('docker://'):
             uses_img = self.args.uses.replace('docker://', '')
-            uses_img = HubIO._alias_to_docker_image_name(uses_img)
+            # TODO: `_alias_to_docker_image_name` is deprecated now
+            # uses_img = HubIO._alias_to_docker_image_name(uses_img)
             self.logger.info(f'will use Docker image: {uses_img}')
         else:
             warnings.warn(
