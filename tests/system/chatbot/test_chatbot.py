@@ -38,7 +38,5 @@ def test_chatbot(helloworld_args, expected_result, payload, post_uri):
     time.sleep(30)
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
-    print('-------------------------1111111----')
-    print(resp.text)
     assert expected_result in resp.text
     p.terminate()
