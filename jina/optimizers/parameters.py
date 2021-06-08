@@ -203,12 +203,7 @@ class PodOptimizationParameter(OptimizationParameter):
         :param trial: An instance of an Optuna Trial object
             # noqa: DAR201
         """
-        result = {}
-        key = self.pod_parameter_selector.suggest(trial)
-        result[key] = {}
-        for param in self.inner_parameters[key]:
-            result[key][param.jaml_variable] = param.suggest(trial)
-        return result
+        return self.pod_parameter_selector.suggest(trial)
 
 
 def load_optimization_parameters(filepath: str):

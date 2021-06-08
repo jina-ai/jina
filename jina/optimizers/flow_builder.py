@@ -10,4 +10,5 @@ class FlowBuilder:
 
     def build(self, params) -> 'Flow':
         trial_parameters = self._build_from_params(params)
+        print(f' context {trial_parameters}')
         return Flow.load_config(self._flow_yaml_template, context=trial_parameters)
