@@ -13,7 +13,7 @@ from typing import Optional, Union, Tuple, List, Set, Dict
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients.base import BaseClient
-from ..clients import Client, GrpcClient, WebSocketClient
+from ..clients import GrpcClient, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
