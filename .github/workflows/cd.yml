@@ -105,7 +105,7 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git checkout gh-pages
-          git merge master
+          git merge origin/master
           pip install .[devel]
           cd docs
           pip install -r requirements.txt
@@ -177,7 +177,7 @@ jobs:
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
-          platforms: linux/armhf,linux/amd64,linux/arm/v6
+          platforms: linux/armhf,linux/amd64,linux/arm/v6,linux/arm64
           push: true
           tags: jinaai/jina:master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
@@ -234,7 +234,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[cicd,test,daemon]" --no-cache-dir
-          jina check
+          jina
           export JINA_LOG_LEVEL="ERROR"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 from jina import Flow
-from jina.helper import countdown
 from jina.parsers.helloworld import set_hw_parser
 
 if __name__ == '__main__':
@@ -12,9 +11,8 @@ if __name__ == '__main__':
         download_data,
         index_generator,
         query_generator,
-        colored,
     )
-    from executors import MyEncoder, MyIndexer, MyEvaluator
+    from my_executors import MyEncoder, MyIndexer, MyEvaluator
 else:
     from .helper import (
         print_result,
@@ -22,9 +20,8 @@ else:
         download_data,
         index_generator,
         query_generator,
-        colored,
     )
-    from .executors import MyEncoder, MyIndexer, MyEvaluator
+    from .my_executors import MyEncoder, MyIndexer, MyEvaluator
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -83,16 +80,6 @@ def hello_world(args):
         f.index(
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
             request_size=args.request_size,
-        )
-
-        # wait for couple of seconds
-        countdown(
-            3,
-            reason=colored(
-                'behold! im going to switch to query mode',
-                'cyan',
-                attrs=['underline', 'bold', 'reverse'],
-            ),
         )
 
         # f.search(

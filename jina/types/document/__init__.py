@@ -32,14 +32,13 @@ from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
 from ...excepts import BadDocType
 from ...helper import (
-    is_url,
     typename,
     random_identity,
     download_mermaid_url,
     dunder_get,
 )
 from ...importer import ImportExtensions
-from ...logging import default_logger
+from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
 if False:
@@ -50,8 +49,8 @@ if False:
     import tensorflow as tf
     import torch
 
-    EmbeddingType = TypeVar(
-        'EmbeddingType',
+    ArrayType = TypeVar(
+        'ArrayType',
         np.ndarray,
         scipy.sparse.csr_matrix,
         scipy.sparse.coo_matrix,
@@ -61,8 +60,8 @@ if False:
         tf.SparseTensor,
     )
 
-    SparseEmbeddingType = TypeVar(
-        'SparseEmbeddingType',
+    SparseArrayType = TypeVar(
+        'SparseArrayType',
         np.ndarray,
         scipy.sparse.csr_matrix,
         scipy.sparse.coo_matrix,
@@ -83,6 +82,7 @@ DocumentSourceType = TypeVar(
 _all_mime_types = set(mimetypes.types_map.values())
 
 _all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
+_all_doc_array_keys = ('blob', 'embedding')
 
 
 class Document(ProtoTypeMixin):
@@ -193,6 +193,21 @@ class Document(ProtoTypeMixin):
                 if isinstance(document, str):
                     document = json.loads(document)
 
+                def _update_doc(d: Dict):
+                    for key in _all_doc_array_keys:
+                        if key in d:
+                            value = d[key]
+                            if isinstance(value, list):
+                                d[key] = NdArray(np.array(d[key])).dict()
+                        if 'chunks' in d:
+                            for chunk in d['chunks']:
+                                _update_doc(chunk)
+                        if 'matches' in d:
+                            for match in d['matches']:
+                                _update_doc(match)
+
+                _update_doc(document)
+
                 if field_resolver:
                     document = {
                         field_resolver.get(k, k): v for k, v in document.items()
@@ -282,22 +297,6 @@ class Document(ProtoTypeMixin):
     def clear(self) -> None:
         """Remove all values from all fields of this Document."""
         self._pb_body.Clear()
-
-    @property
-    def siblings(self) -> int:
-        """
-        The number of siblings of the :class:``Document``
-
-        .. # noqa: DAR201
-        :getter: number of siblings
-        :setter: number of siblings
-        :type: int
-        """
-        return self._pb_body.siblings
-
-    @siblings.setter
-    def siblings(self, value: int):
-        self._pb_body.siblings = value
 
     @property
     def weight(self) -> float:
@@ -484,18 +483,40 @@ class Document(ProtoTypeMixin):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> 'np.ndarray':
+    def blob(self) -> 'ArrayType':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
             Use :attr:`content` to return the content of a Document
 
+            This property will return the `blob` of the `Document` as a `Dense` or `Sparse` array depending on the actual
+            proto instance stored. In the case where the `blob` stored is sparse, it will return them as a `coo` matrix.
+            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_blob`.
+
         :return: the blob content from the proto
         """
         return NdArray(self._pb_body.blob).value
 
+    def get_sparse_blob(
+        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
+    ) -> 'SparseArrayType':
+        """Return ``blob`` of the content of a Document as an sparse array.
+
+        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
+        :param kwargs: Additional key value argument, for `scipy` backend, we need to set
+            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
+            or `csr`.
+        :return: the blob from the proto as an sparse array
+        """
+        return NdArray(
+            self._pb_body.blob,
+            sparse_cls=sparse_ndarray_cls_type,
+            is_sparse=True,
+            **kwargs,
+        ).value
+
     @blob.setter
-    def blob(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def blob(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
         """Set the `blob` to :param:`value`.
 
         :param value: the array value to set the blob
@@ -503,8 +524,13 @@ class Document(ProtoTypeMixin):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'EmbeddingType':
+    def embedding(self) -> 'SparseArrayType':
         """Return ``embedding`` of the content of a Document.
+
+         .. note::
+            This property will return the `embedding` of the `Document` as a `Dense` or `Sparse` array depending on the actual
+            proto instance stored. In the case where the `embedding` stored is sparse, it will return them as a `coo` matrix.
+            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_embedding`.
 
         :return: the embedding from the proto
         """
@@ -512,7 +538,7 @@ class Document(ProtoTypeMixin):
 
     def get_sparse_embedding(
         self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'SparseEmbeddingType':
+    ) -> 'SparseArrayType':
         """Return ``embedding`` of the content of a Document as an sparse array.
 
         :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
@@ -529,7 +555,7 @@ class Document(ProtoTypeMixin):
         ).value
 
     @embedding.setter
-    def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def embedding(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
         """Set the ``embedding`` of the content of a Document.
 
         :param value: the array value to set the embedding
@@ -1169,9 +1195,56 @@ class Document(ProtoTypeMixin):
         if output:
             download_mermaid_url(url, output)
         elif not showed:
-            from jina.logging import default_logger
+            from jina.logging.predefined import default_logger
 
             default_logger.info(f'Document visualization: {url}')
+
+    def _prettify_doc_dict(self, d: Dict):
+        """Changes recursively a dictionary to show nd array fields as lists of values
+
+        :param d: the dictionary to prettify
+        """
+        for key in _all_doc_array_keys:
+            if key in d:
+                value = getattr(self, key)
+                if isinstance(value, np.ndarray):
+                    d[key] = value.tolist()
+            if 'chunks' in d:
+                for chunk_doc, chunk_dict in zip(self.chunks, d['chunks']):
+                    chunk_doc._prettify_doc_dict(chunk_dict)
+            if 'matches' in d:
+                for match_doc, match_dict in zip(self.matches, d['matches']):
+                    match_doc._prettify_doc_dict(match_dict)
+
+    def dict(self, prettify_ndarrays=False, *args, **kwargs):
+        """Return the object in Python dictionary
+
+        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
+        :return: dict representation of the object
+        """
+        d = super().dict(*args, **kwargs)
+        if prettify_ndarrays:
+            self._prettify_doc_dict(d)
+        return d
+
+    def json(self, prettify_ndarrays=False, *args, **kwargs):
+        """Return the object in JSON string
+
+        :param prettify_ndarrays: boolean indicating if the ndarrays need to be prettified to be shown as lists of values
+        :param args: Extra positional arguments
+        :param kwargs: Extra keyword arguments
+        :return: JSON string of the object
+        """
+        if prettify_ndarrays:
+            import json
+
+            d = super().dict(*args, **kwargs)
+            self._prettify_doc_dict(d)
+            return json.dumps(d, sort_keys=True, **kwargs)
+        else:
+            return super().json(*args, **kwargs)
 
     @property
     def non_empty_fields(self) -> Tuple[str]:
@@ -1225,7 +1298,7 @@ class Document(ProtoTypeMixin):
 def _is_uri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
     return (
-        (scheme in {'http', 'https'} and is_url(value))
+        (scheme in {'http', 'https'})
         or (scheme in {'data'})
         or os.path.exists(value)
         or os.access(os.path.dirname(value), os.W_OK)
@@ -1234,7 +1307,7 @@ def _is_uri(value: str) -> bool:
 
 def _is_datauri(value: str) -> bool:
     scheme = urllib.parse.urlparse(value).scheme
-    return is_url(value) and scheme in {'data'}
+    return scheme in {'data'}
 
 
 def _contains_conflicting_content(**kwargs):

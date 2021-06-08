@@ -9,7 +9,7 @@ import numpy as np
 
 from jina import Document
 from jina.helper import colored
-from jina.logging import default_logger
+from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
 
 result_html = []

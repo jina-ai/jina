@@ -39,6 +39,7 @@ Table of Contents
   - [Switch REST & gRPC Request](#switch-rest--grpc-request)
   - [`curl` with HTTP Request](#curl-with-http-request)
   - [Python Client with REST Request](#python-client-with-rest-request)
+  - [Extend FastAPI interface](#extend-fastapi-interface)
 - [Remarks](#remarks)
   - [Joining/Merging](#joiningmerging)
 
@@ -847,6 +848,36 @@ WebSocketClient@27622[S]:Connected to the gateway at 192.168.1.14:12345
   |█                   | 📃    100 ⏱️ 0.0s 🐎 19476.6/s      1   requests takes 0 seconds (0.00s)
 	✅ done in ⏱ 0 seconds 🐎 18578.9/s
 ```
+
+
+### Extend FastAPI interface
+
+If you want to add more customized routes, configs, options to FastAPI's REST interface, you can simply override `jina.helper.extend_rest_interface` function as follows:
+
+```python
+import jina.helper
+from jina import Flow
+
+
+def extend_rest_function(app):
+
+    @app.get('/hello', tags=['My Extended APIs'])
+    async def foo():
+        return 'hello'
+
+    return app
+
+
+jina.helper.extend_rest_interface = extend_rest_function
+f = Flow(restful=True)
+
+with f:
+    f.block()
+```
+
+And you will see `/hello` is now available:
+
+![img.png](../swagger-extend.png)
 
 ---
 

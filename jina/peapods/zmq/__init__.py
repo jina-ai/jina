@@ -14,7 +14,8 @@ from ... import __default_host__
 from ...enums import SocketType
 from ...helper import colored, random_identity, get_readable_size, get_or_reuse_loop
 from ...importer import ImportExtensions
-from ...logging import default_logger, profile_logger, JinaLogger
+from ...logging.predefined import default_logger
+from ...logging.logger import JinaLogger
 from ...types.message import Message
 from ...types.message.common import ControlMessage
 from ...types.request import Request
@@ -228,14 +229,6 @@ class Zmqlet:
             f'#recv: {self.msg_recv} '
             f'sent_size: {get_readable_size(self.bytes_sent)} '
             f'recv_size: {get_readable_size(self.bytes_recv)}'
-        )
-        profile_logger.info(
-            {
-                'msg_sent': self.msg_sent,
-                'msg_recv': self.msg_recv,
-                'bytes_sent': self.bytes_sent,
-                'bytes_recv': self.bytes_recv,
-            }
         )
 
     def send_message(self, msg: 'Message'):

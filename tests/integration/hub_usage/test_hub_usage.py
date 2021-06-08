@@ -3,7 +3,7 @@ from pathlib import Path
 
 import docker
 import pytest
-from jina.logging import JinaLogger
+from jina.logging.logger import JinaLogger
 
 from jina.enums import BuildTestLevel
 

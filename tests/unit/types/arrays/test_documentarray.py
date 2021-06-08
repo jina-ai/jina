@@ -1,11 +1,13 @@
+import os
 from copy import deepcopy
 
-import pytest
 import numpy as np
+import pytest
 from scipy.sparse import coo_matrix
 
-from jina import Document
-from jina.types.arrays import DocumentArray
+from jina import Document, DocumentArray
+from jina.logging.profile import TimeContext
+from tests import random_docs
 
 DOCUMENTS_PER_LEVEL = 1
 
@@ -98,10 +100,18 @@ def test_clear(docarray):
     assert len(docarray) == 0
 
 
-def test_delete(docarray, document_factory):
+def test_delete_by_index(docarray, document_factory):
     doc = document_factory.create(4, 'test 4')
     docarray.append(doc)
     del docarray[-1]
+    assert len(docarray) == 3
+    assert docarray == docarray
+
+
+def test_delete_by_id(docarray: DocumentArray, document_factory):
+    doc = document_factory.create(4, 'test 4')
+    docarray.append(doc)
+    del docarray[doc.id]
     assert len(docarray) == 3
     assert docarray == docarray
 
@@ -204,3 +214,36 @@ def test_doc_array_from_generator():
 
     doc_array = DocumentArray(generate())
     assert len(doc_array) == NUM_DOCS
+
+
+@pytest.mark.parametrize('method', ['json', 'binary'])
+def test_document_save_load(method, tmp_path):
+    da1 = DocumentArray(random_docs(1000))
+    da2 = DocumentArray()
+    for doc in random_docs(10):
+        da2.append(doc)
+    for da in [da1, da2]:
+        tmp_file = os.path.join(tmp_path, 'test')
+        with TimeContext(f'w/{method}'):
+            da.save(tmp_file, file_format=method)
+        with TimeContext(f'r/{method}'):
+            da_r = DocumentArray.load(tmp_file, file_format=method)
+        assert len(da) == len(da_r)
+        for d, d_r in zip(da, da_r):
+            assert d.id == d_r.id
+            np.testing.assert_equal(d.embedding, d_r.embedding)
+            assert d.content == d_r.content
+
+
+def test_documentarray_filter():
+    da = DocumentArray([Document() for _ in range(6)])
+
+    for j in range(6):
+        da[j].score.value = j
+
+    da = filter(lambda d: d.score.value > 2, da)
+
+    assert len(DocumentArray(list(da))) == 3
+
+    for d in da:
+        assert d.score.value > 2

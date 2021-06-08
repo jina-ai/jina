@@ -108,7 +108,6 @@ def parse_config_source(
     path: Union[str, TextIO, Dict],
     allow_stream: bool = True,
     allow_yaml_file: bool = True,
-    allow_builtin_resource: bool = True,
     allow_raw_yaml_content: bool = True,
     allow_class_type: bool = True,
     allow_dict: bool = True,
@@ -123,7 +122,6 @@ def parse_config_source(
     :param path: the multi-kind source of the configs.
     :param allow_stream: flag
     :param allow_yaml_file: flag
-    :param allow_builtin_resource: flag
     :param allow_raw_yaml_content: flag
     :param allow_class_type: flag
     :param allow_dict: flag
@@ -134,7 +132,6 @@ def parse_config_source(
             if available.
     """
     import io
-    from pkg_resources import resource_filename
 
     if not path:
         raise BadConfigSource
@@ -148,18 +145,6 @@ def parse_config_source(
         return path, None
     elif allow_yaml_file and is_yaml_filepath(path):
         comp_path = complete_path(path)
-        return open(comp_path, encoding='utf8'), comp_path
-    elif (
-        allow_builtin_resource
-        and path.lstrip().startswith('_')
-        and os.path.exists(
-            resource_filename('jina', '/'.join(('resources', f'executors.{path}.yml')))
-        )
-    ):
-        # NOTE: this returns a binary stream
-        comp_path = resource_filename(
-            'jina', '/'.join(('resources', f'executors.{path}.yml'))
-        )
         return open(comp_path, encoding='utf8'), comp_path
     elif allow_raw_yaml_content and path.lstrip().startswith(('!', 'jtype')):
         # possible YAML content

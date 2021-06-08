@@ -30,11 +30,13 @@ Table of Contents
     - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
     - [Conversion between `doc.content`](#conversion-between-doccontent)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
+    - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
     - [Construct from JSON, CSV, `ndarray` and Files](#construct-from-json-csv-ndarray-and-files)
   - [Serialize `Document`](#serialize-document)
   - [Add Recursion to `Document`](#add-recursion-to-document)
     - [Recursive Attributes](#recursive-attributes)
+  - [Represent `Document` as Dictionary or JSON](#represent-document-as-dictionary-or-json)
   - [Visualize `Document`](#visualize-document)
   - [Add Relevancy to `Document`s](#add-relevancy-to-documents)
     - [Relevance Attributes](#relevance-attributes)
@@ -46,6 +48,7 @@ Table of Contents
   - [Filter Elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
+  - [Access nested attributes from tags](#access-nested-attributes-from-tags)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -230,7 +233,7 @@ d = Document(uri='https://jina.ai',
 
 ```text
 <jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
-
+```
 
 #### Construct from Dict or JSON String
 
@@ -313,10 +316,10 @@ d = Document(
 )
 
 # only update `id` field
-d.update(s, include_fields=('id',))
+d.update(s, fields=['id'])
 
-# only preserve `id` field
-d.update(s, exclude_fields=('id',))
+# update all fields. `tags` field as `dict` will be merged.
+d.update(s)
 ```
 
 #### Construct from JSON, CSV, `ndarray` and Files
@@ -417,6 +420,75 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
 
 Note that both `doc.chunks` and `doc.matches` return `DocumentArray`, which we will introduce later.
 
+### Represent `Document` as Dictionary or JSON
+
+Any `Document` can be converted into a `Python dictionary` or into `Json string` by calling their `.dict()` or `.json()` methods. 
+
+```python
+import pprint
+import numpy as np
+
+from jina import Document
+
+d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
+pprint.pprint(d0.dict())
+pprint.pprint(d0.json())
+```
+
+```text
+{'embedding': {'dense': {'buffer': 'AAAAAAAAAAAAAAAAAAAAAA==',
+                         'dtype': '<i8',
+                         'shape': [2]}},
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+('{\n'
+ '  "embedding": {\n'
+ '    "dense": {\n'
+ '      "buffer": "AAAAAAAAAAAAAAAAAAAAAA==",\n'
+ '      "dtype": "<i8",\n'
+ '      "shape": [\n'
+ '        2\n'
+ '      ]\n'
+ '    }\n'
+ '  },\n'
+ '  "id": "identifier",\n'
+ '  "mime_type": "text/plain",\n'
+ '  "tags": {\n'
+ '    "cool": true\n'
+ '  },\n'
+ '  "text": "I am a Jina Document"\n'
+ '}')
+```
+
+As it can be observed, the output seems quite noisy when representing the `embedding`. This is because Jina `Document` stores `embeddings` in an `inner` structure
+supported by `protobuf`. In order to have a nicer representation of the `embeddings` and any `ndarray` field, you can call `dict` and `json` with the option `prettify_ndarrays=True`.
+
+```python
+import pprint
+import numpy as np
+
+from jina import Document
+
+d0 = Document(id='🐲identifier', text='I am a Jina Document', tags={'cool': True}, embedding=np.array([0, 0]))
+pprint.pprint(d0.dict(prettify_ndarrays=True))
+pprint.pprint(d0.json(prettify_ndarrays=True))
+```
+
+```text
+{'embedding': [0, 0],
+ 'id': '🐲identifier',
+ 'mime_type': 'text/plain',
+ 'tags': {'cool': True},
+ 'text': 'I am a Jina Document'}
+
+('{"embedding": [0, 0], "id": "identifier", "mime_type": '
+ '"text/plain", "tags": {"cool": true}, "text": "I am a Jina Document"}')
+```
+
+This can be useful to understand the contents of the `Document` and to send to backends that can process vectors as `lists` of values.
+
 ### Visualize `Document`
 
 To better see the Document's recursive structure, you can use `.plot()` function. If you are using JupyterLab/Notebook,
@@ -496,9 +568,9 @@ Methods supported by `DocumentArray`:
 
 | | |
 |--- |--- |
-| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `pop`, `remove`, `__iadd__`, `__add__`, `__iter__`, `__clear__`, `sort` |
+| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort` |
 | Persistence | `save`, `load` |
-| Advanced getters | `get_attributes`, `get_attributes_with_docs` |
+| Advanced getters | `get_attributes`, `get_attributes_with_docs`, `traverse_flat`, `traverse` |
 
 ### Construct `DocumentArray`
 
@@ -528,6 +600,17 @@ da = DocumentArray([Document(), Document()])
 
 da.save('data.json')
 da1 = DocumentArray.load('data.json')
+```
+
+`DocumentArray` can be also stored in binary format, which is much faster and yields smaller file:
+
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([Document(), Document()])
+
+da.save('data.bin', file_format='binary')
+da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
 ### Access Element
@@ -720,4 +803,168 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 
 ```text
 [[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
+```
+
+## `DocumentArrayMemmap` API
+
+When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on the disk, while only keeps a small lookup table in memory. This lookup table contains the offset and length of each `Document`, hence it is much smaller than the full `DocumentArray`. Elements are loaded on-demand to memory during the access.
+
+The next table show the speed and memory consumption when writing and reading 50,000 `Documents`.
+
+|| `DocumentArrayMemmap` | `DocumentArray` |
+|---|---|---|
+|Write to disk | 0.62s | 0.71s |
+|Read from disk | 0.11s | 0.20s |
+|Memory usage | 20MB | 342MB |
+|Disk storage | 14.3MB | 12.6MB |
+
+### Create `DocumentArrayMemmap` object
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+
+dam = DocumentArrayMemmap('./my-memmap')
+```
+
+### Add Documents to `DocumentArrayMemmap` object
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend([d1, d2])
+```
+
+The `dam` object stores all future Documents into `./my-memmap`, there is no need to manually call `save`/`load`. In fact, `save`/`load` methods are not available in `DocumentArrayMemmap`.
+
+### Clear a `DocumentArrayMemmap` object
+
+To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
+
+#### Pruning
+
+One may notice another method `.prune()` that shares similar semantics. `.prune()` method is designed for "post-optimizing" the on-disk data structure of `DocumentArrayMemmap` object. It can reduce the on-disk usage.
+
+### Mutable sequence with "read-only" elements
+
+The biggest caveat in `DocumentArrayMemmap` is that you can **not** modify element's attribute inplace. Though the `DocumentArrayMemmap` is mutable, each of its element is not. For example:
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend([d1, d2])
+
+dam[0].text = 'goodbye'
+
+print(dam[0].text)
+```
+
+```text
+hello
+```
+
+One can see the `text` field has not changed!
+
+To update an existing `Document` in a `DocumentArrayMemmap`, you need to assign it to a new `Document` object.
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend([d1, d2])
+
+dam[0] = Document(text='goodbye')
+
+for d in dam:
+    print(d)
+```
+
+```text
+{'id': '44a74b56-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'goodbye'}
+{'id': '44a73562-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'world'}
+```
+
+### Side-by-side vs. `DocumentArray`
+
+Accessing elements in `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`, you can use integer/string index to access element; you can loop over a `DocumentArrayMemmap` to get all `Document`; you can use `get_attributes` or `traverse_flat` to achieve advanced traversal or getter.
+
+This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray`:
+
+|| `DocumentArrayMemmap` | `DocumentArray` |
+|---|---|---|
+| `__getitem__`, `__setitem__`, `__delitem__` (int) | ✅|✅|
+| `__getitem__`, `__setitem__`, `__delitem__` (string) | ✅|✅|
+| `__getitem__`, `__setitem__`, `__delitem__` (slice)  |❌ |✅|
+| `__iter__` |✅|✅|
+| `__contains__` |✅|✅|
+| `__len__` | ✅|✅|
+| `append` | ✅|✅|
+| `extend` | ✅|✅|
+| `traverse_flat`, `traverse` | ✅|✅|
+| `get_attributes`, `get_attributes_with_docs` | ✅|✅|
+| `insert` |❌ |✅|
+| `reverse` (inplace) |❌ |✅|
+| `sort` (inplace) | ❌|✅|
+| `__add__`, `__iadd__` | ❌|✅|
+| `__bool__` |✅|✅|
+| `__eq__` |✅|✅|
+| `save`, `load` |❌ unnecessary |✅|
+
+### Convert between `DocumentArray` and `DocumentArrayMemmap`
+
+```python
+from jina import Document, DocumentArray
+from jina.types.arrays.memmap import DocumentArrayMemmap
+
+da = DocumentArray([Document(text='hello'), Document(text='world')])
+
+# convert DocumentArray to DocumentArrayMemmap
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend(da)
+
+# convert DocumentArrayMemmap to DocumentArray
+da = DocumentArray(dam)
+```
+
+
+### Maintaining Consistency via `.reload()`
+
+Considering two `DocumentArrayMemmap` objects that share the same on-disk storage `./memmap` but sit in different processes/threads. After some writing ops, the consistency of the lookup table may be corrupted, as each `DocumentArrayMemmap` object has its own version of lookup table in memory. `.reload()` method is for solving this issue:
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam2 = DocumentArrayMemmap('./my-memmap')
+
+dam.extend([d1, d2])
+assert len(dam) == 2
+assert len(dam2) == 0
+
+dam2.reload()
+assert len(dam2) == 2
+
+dam.clear()
+assert len(dam) == 0
+assert len(dam2) == 2
+
+dam2.reload()
+assert len(dam2) == 0
 ```

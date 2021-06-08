@@ -6,7 +6,7 @@ from typing import Callable
 from ..excepts import BadClientCallback
 from ..helper import colored
 from ..importer import ImportExtensions
-from ..logging import JinaLogger
+from ..logging.logger import JinaLogger
 from ..proto import jina_pb2
 from ..types.request import Response
 

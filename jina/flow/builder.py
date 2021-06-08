@@ -4,7 +4,7 @@ from typing import Dict, List, Callable
 
 from .. import __default_host__
 from ..enums import SocketType, FlowBuildLevel, PodRoleType
-from ..excepts import FlowBuildLevelError, SocketTypeError
+from ..excepts import FlowBuildLevelError, SocketTypeError, FlowTopologyError
 from ..peapods import BasePod
 
 # noinspection PyUnreachableCode
@@ -107,7 +107,7 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
             # first node is on remote, second is local. in this case, local node is often behind router/private
             # network, there is no way that first node can send data "actively" (CONNECT) to it
             first_socket_type = SocketType.PUSH_BIND
-        _connect(start_node, end_node, first_socket_type=first_socket_type)
+        _connect(start_node, end_node, first_out_socket_type=first_socket_type)
         flow.logger.debug(
             f'Connect {start_node_name} '
             f'with {end_node_name} {str(end_node.role)} require '
@@ -118,38 +118,80 @@ def _build_flow(op_flow: 'Flow', outgoing_map: Dict[str, List[str]]) -> 'Flow':
 
 
 def _connect(
-    first: 'BasePod', second: 'BasePod', first_socket_type: 'SocketType'
+    first: 'BasePod', second: 'BasePod', first_out_socket_type: 'SocketType'
 ) -> None:
-    """Connect two Pods
+    """Connect two Pods.
 
+    This will change the args of the tail Pea of the first, and the args of the head pea of the second.
 
     .. # noqa: DAR401
     :param first: the first BasePod
     :param second: the second BasePod
-    :param first_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND
+    :param first_out_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND
     """
-    first.tail_args.socket_out = first_socket_type
-    second.head_args.socket_in = first.tail_args.socket_out.paired
 
-    if first_socket_type == SocketType.PUSH_BIND:
-        first.tail_args.host_out = __default_host__
-        second.head_args.host_in = BasePod._fill_in_host(
-            bind_args=first.tail_args, connect_args=second.head_args
+    def _valid_update(node_to_update: BasePod, attr_to_set: str, value_to_set):
+        import functools
+
+        def _rgetattr(obj, attr, *args):
+            def _getattr(obj, attr):
+                return getattr(obj, attr, *args)
+
+            return functools.reduce(_getattr, [obj] + attr.split('.'))
+
+        def _rsetattr(obj, attr, val):
+            pre, _, post = attr.rpartition('.')
+            return setattr(_rgetattr(obj, pre) if pre else obj, post, val)
+
+        if (
+            node_to_update.args.freeze_network_settings
+            and _rgetattr(node_to_update, attr_to_set) != value_to_set
+        ):
+            org_value = _rgetattr(node_to_update, attr_to_set)
+            raise FlowTopologyError(
+                f'Cannot set `{node_to_update.args.name}.{attr_to_set}={value_to_set!s}` '
+                f'because it is frozen to {org_value!s} by --freeze-network-settings'
+            )
+        _rsetattr(node_to_update, attr_to_set, value_to_set)
+
+    _valid_update(first, 'tail_args.socket_out', first_out_socket_type)
+    _valid_update(second, 'head_args.socket_in', first.tail_args.socket_out.paired)
+
+    if first_out_socket_type == SocketType.PUSH_BIND:
+        _valid_update(first, 'tail_args.host_out', __default_host__)
+        _valid_update(
+            second,
+            'head_args.host_in',
+            BasePod._fill_in_host(
+                bind_args=first.tail_args, connect_args=second.head_args
+            ),
         )
-        second.head_args.port_in = first.tail_args.port_out
-    elif first_socket_type == SocketType.PUSH_CONNECT:
-        first.tail_args.host_out = BasePod._fill_in_host(
-            connect_args=first.tail_args, bind_args=second.head_args
+        _valid_update(second, 'head_args.port_in', first.tail_args.port_out)
+    elif first_out_socket_type == SocketType.PUSH_CONNECT:
+        _valid_update(
+            first,
+            'tail_args.host_out',
+            BasePod._fill_in_host(
+                connect_args=first.tail_args, bind_args=second.head_args
+            ),
         )
         # (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)
         # https://github.com/jina-ai/jina/pull/1654
         # second.head_args.host_in = __default_host__
-        first.tail_args.port_out = second.head_args.port_in
-    elif first_socket_type == SocketType.PUB_BIND:
-        first.tail_args.host_out = __default_host__  # bind always get default 0.0.0.0
-        second.head_args.host_in = BasePod._fill_in_host(
-            bind_args=first.tail_args, connect_args=second.head_args
+        _valid_update(first, 'tail_args.port_out', second.head_args.port_in)
+    elif first_out_socket_type == SocketType.PUB_BIND:
+        _valid_update(
+            first, 'tail_args.host_out', __default_host__
+        )  # bind always get default 0.0.0.0
+        _valid_update(
+            second,
+            'head_args.host_in',
+            BasePod._fill_in_host(
+                bind_args=first.tail_args, connect_args=second.head_args
+            ),
         )  # the hostname of s_pod
-        second.head_args.port_in = first.tail_args.port_out
+        _valid_update(
+            second, 'head_args.port_in', first.tail_args.port_out
+        )  # the hostname of s_pod
     else:
-        raise SocketTypeError(f'{first_socket_type!r} is not supported here')
+        raise SocketTypeError(f'{first_out_socket_type!r} is not supported here')

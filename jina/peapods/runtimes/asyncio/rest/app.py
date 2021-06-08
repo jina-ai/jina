@@ -10,7 +10,8 @@ from ..... import __version__
 from .....clients.request import request_generator
 from .....helper import get_full_version, random_identity
 from .....importer import ImportExtensions
-from .....logging import JinaLogger, default_logger
+from .....logging.logger import JinaLogger
+from .....logging.predefined import default_logger
 from .....logging.profile import used_memory_readable
 from .....types.message import Message
 from .....types.request import Request

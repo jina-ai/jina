@@ -1,0 +1,3 @@
+!DummyTextEvaluator
+metas:
+  py_modules: 'dummy_evaluate.py'

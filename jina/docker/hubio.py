@@ -13,7 +13,7 @@ from .checker import *
 from .helper import credentials_file
 from .hubapi.local import _list_local, _load_local_hub_manifest
 from .hubapi.remote import _list, _register_to_mongodb, _fetch_docker_auth
-from .. import __version__ as jina_version
+from .. import __version__ as jina_version, __resources_path__
 from ..enums import BuildTestLevel
 from ..excepts import (
     HubBuilderError,
@@ -34,7 +34,7 @@ from ..helper import (
     countdown,
 )
 from ..importer import ImportExtensions
-from ..logging import JinaLogger
+from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext, ProgressBar
 from ..parsers import set_pod_parser
 from ..peapods import Pod
@@ -123,7 +123,7 @@ class HubIO:
         """Login using Github Device flow to allow push access to Jina Hub Registry."""
         import requests
 
-        with resource_stream('jina', '/'.join(('resources', 'hubapi.yml'))) as fp:
+        with open(os.path.join(__resources_path__, 'hubapi.yml')) as fp:
             hubapi_yml = JAML.load(fp)
 
         client_id = hubapi_yml['github']['client_id']
@@ -783,8 +783,8 @@ class HubIO:
         return completeness
 
     def _read_manifest(self, path: str, validate: bool = True) -> Dict:
-        with resource_stream(
-            'jina', '/'.join(('resources', 'hub-builder', 'manifest.yml'))
+        with open(
+            os.path.join(__resources_path__, 'hub-builder', 'manifest.yml')
         ) as fp:
             tmp = JAML.load(
                 fp
@@ -846,9 +846,10 @@ class HubIO:
             return v
 
         if 'JINAHUB_SLACK_WEBHOOK' in os.environ:
-            with resource_stream(
-                'jina',
-                '/'.join(('resources', 'hub-builder-success', 'slack-jinahub.json')),
+            with open(
+                os.path.join(
+                    __resources_path__, 'hub-builder-success', 'slack-jinahub.json'
+                )
             ) as fp:
                 tmp = expand_dict(json.load(fp), _expand_fn, resolve_cycle_ref=False)
                 req = urllib.request.Request(os.environ['JINAHUB_SLACK_WEBHOOK'])

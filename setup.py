@@ -19,6 +19,18 @@ elif sys.version_info >= (3, 8, 0):
 elif sys.version_info >= (3, 7, 0):
     py_tag = PY37
 
+if (3, 7, 0) <= sys.version_info < (3, 8, 0):
+    # https://github.com/pypa/setuptools/issues/926#issuecomment-294369342
+    try:
+        import fastentrypoints
+    except ImportError:
+        from setuptools.command import easy_install
+        import pkg_resources
+
+        easy_install.main(['fastentrypoints'])
+        pkg_resources.require('fastentrypoints')
+        import fastentrypoint
+
 try:
     pkg_name = 'jina'
     libinfo_py = path.join(pkg_name, '__init__.py')

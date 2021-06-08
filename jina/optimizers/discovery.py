@@ -2,7 +2,7 @@ import os
 import shutil
 
 from jina.executors import BaseExecutor
-from jina.logging import default_logger as logger
+from jina.logging.predefined import default_logger as logger
 from jina.jaml import JAML
 
 

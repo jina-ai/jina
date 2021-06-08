@@ -27,7 +27,7 @@ def post_uri():
 
 @pytest.fixture
 def expected_result():
-    return '''no evidence from the outbreak that eating garlic, sipping water every 15 minutes or taking vitamin C will protect people from the new coronavirus.'''
+    return '''It's not completely up to you.'''
 
 
 def test_chatbot(helloworld_args, expected_result, payload, post_uri):
@@ -38,5 +38,7 @@ def test_chatbot(helloworld_args, expected_result, payload, post_uri):
     time.sleep(30)
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
+    print('-------------------------1111111----')
+    print(resp.text)
     assert expected_result in resp.text
     p.terminate()

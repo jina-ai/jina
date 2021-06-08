@@ -45,17 +45,6 @@ def gateway(args: 'Namespace'):
     pod(args)
 
 
-def check(args: 'Namespace'):
-    """
-    Check jina config, settings, imports, network etc
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.checker import ImportChecker
-
-    ImportChecker(args)
-
-
 def ping(args: 'Namespace'):
     """
     Check the connectivity of a Pea
@@ -88,7 +77,7 @@ def export_api(args: 'Namespace'):
     from .export import api_to_dict
     from jina.jaml import JAML
     from jina import __version__
-    from jina.logging import default_logger
+    from jina.logging.predefined import default_logger
     from jina.schemas import get_full_schema
 
     if args.yaml_path:
@@ -155,7 +144,7 @@ def flow(args: 'Namespace'):
         with f:
             f.block()
     else:
-        from jina.logging import default_logger
+        from jina.logging.predefined import default_logger
 
         default_logger.critical('start a flow from CLI requires a valid "--uses"')
 

@@ -3,12 +3,13 @@ from typing import Tuple, Dict
 import numpy as np
 
 from jina import Executor, DocumentArray, requests, Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 class MyIndexer(Executor):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArray()
+        self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -16,7 +17,6 @@ class MyIndexer(Executor):
 
     @requests(on=['/search', '/eval'])
     def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
-
         a = np.stack(docs.get_attributes('embedding'))
         b = np.stack(self._docs.get_attributes('embedding'))
         q_emb = _ext_A(_norm(a))
