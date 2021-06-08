@@ -281,10 +281,13 @@ class JAML:
 
             return v
 
+        print(f'A- d {d}, expand {expand_map}')
         _scan(d, expand_map)
+        print(f'B- d {d}, expand {expand_map}')
         _scan(dict(os.environ), env_map)
         # first do var replacement
         _replace(d, expand_map)
+        print(f'C- d {d}, expand {expand_map}')
 
         # do three rounds of scan-replace to resolve internal references
         for _ in range(resolve_passes):
@@ -508,7 +511,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 )
             if substitute:
                 # expand variables
+                print(f' no_tag_yml-before {no_tag_yml}')
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
+                print(f' no_tag_yml-after {no_tag_yml}')
             if allow_py_modules:
                 # also add YAML parent path to the search paths
                 load_py_modules(
