@@ -76,4 +76,4 @@ bs4:                        test
 aiostream:                  devel, cicd
 click:                      cicd
 jsonschema:                 cicd
-dgl==0.6.1:                 test, cicd
+dgl==0.6.1:                 cicd
