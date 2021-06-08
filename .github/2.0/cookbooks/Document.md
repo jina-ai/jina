@@ -568,9 +568,9 @@ Methods supported by `DocumentArray`:
 
 | | |
 |--- |--- |
-| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `pop`, `remove`, `__iadd__`, `__add__`, `__iter__`, `__clear__`, `sort` |
+| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort` |
 | Persistence | `save`, `load` |
-| Advanced getters | `get_attributes`, `get_attributes_with_docs` |
+| Advanced getters | `get_attributes`, `get_attributes_with_docs`, `traverse_flat`, `traverse` |
 
 ### Construct `DocumentArray`
 
@@ -804,3 +804,117 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 ```text
 [[5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]]
 ```
+
+## `DocumentArrayMemmap` API
+
+When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on the disk, while only keeps a small lookup table in memory. This lookup table contains the offset and length of each `Document`, hence it is much smaller than the full `DocumentArray`. Elements are loaded on-demand to memory during the access.
+
+The next table show the speed and memory consumption when writing and reading 50,000 `Documents`.
+
+|| `DocumentArrayMemmap` | `DocumentArray` |
+|---|---|---|
+|Write | 0.62s | 0.71s |
+|Read | 0.11s | 0.20s |
+|Memory | 20MB | 342MB |
+|On-disk storage | 14.3MB | 12.6MB |
+
+### Create `DocumentArrayMemmap` object
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+
+dam = DocumentArrayMemmap('./my-memmap')
+```
+
+### Add Documents to `DocumentArrayMemmap` object
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend([d1, d2])
+```
+
+The `dam` object stores all future Documents into `./my-memmap`, there is no need to manually call `save`/`load`. In fact, `save`/`load` methods are not available in `DocumentArrayMemmap`.
+
+### Clear a `DocumentArrayMemmap` object
+
+To clear all contents in a `DocumentArrayMemmap` object, simply call `.clear()`. It will clean all content on disk.
+
+### Mutable sequence with "read-only" elements
+
+The biggest caveat in `DocumentArrayMemmap` is that you can **not** modify element's attribute inplace. Though the `DocumentArrayMemmap` is mutable, each of its element is not. For example:
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend([d1, d2])
+
+dam[0].text = 'goodbye'
+
+print(dam[0].text)
+```
+
+```text
+hello
+```
+
+One can see the `text` field has not changed!
+
+To update an existing `Document` in a `DocumentArrayMemmap`, you need to assign it to a new `Document` object.
+
+```python
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina import Document
+
+d1 = Document(text='hello')
+d2 = Document(text='world')
+
+dam = DocumentArrayMemmap('./my-memmap')
+dam.extend([d1, d2])
+
+dam[0] = Document(text='goodbye')
+
+for d in dam:
+    print(d)
+```
+
+```text
+{'id': '44a74b56-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'goodbye'}
+{'id': '44a73562-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'world'}
+```
+
+### Side-by-side vs. `DocumentArray`
+
+Accessing elements in `DocumentArrayMemmap` is _almost_ the same as `DocumentArray`, you can use integer/string index to access element; you can loop over a `DocumentArrayMemmap` to get all `Document`; you can use `get_attributes` or `traverse_flat` to achieve advanced traversal or getter.
+
+This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray`:
+
+|| `DocumentArrayMemmap` | `DocumentArray` |
+|---|---|---|
+| `__getitem__`, `__setitem__`, `__delitem__` (int) | ✅|✅|
+| `__getitem__`, `__setitem__`, `__delitem__` (string) | ✅|✅|
+| `__getitem__`, `__setitem__`, `__delitem__` (slice)  |❌ |✅|
+| `__iter__` |✅|✅|
+| `__contains__` |✅|✅|
+| `__len__` | ✅|✅|
+| `append` | ✅|✅|
+| `extend` | ✅|✅|
+| `traverse_flat`, `traverse` | ✅|✅|
+| `get_attributes`, `get_attributes_with_docs` | ✅|✅|
+| `insert` |❌ |✅|
+| `reverse` (inplace) |❌ |✅|
+| `sort` (inplace) | ❌|✅|
+| `__add__`, `__iadd__` | ❌|✅|
+| `__bool__` |✅|✅|
+| `__eq__` |✅|✅|
+| `save`, `load` |❌ unnecessary |✅|
