@@ -37,15 +37,10 @@ def test_img_2():
     return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAA2ElEQVR4nADIADf/AvdGjTZeOlQq07xSYPgJjlWRwfWEBx2+CgAVrPrP+O5ghhOa+a0cocoWnaMJFAsBuCQCgiJOKDBcIQTiLieOrPD/cp/6iZ/Iu4HqAh5dGzggIQVJI3WqTxwVTDjs5XJOy38AlgHoaKgY+xJEXeFTyR7FOfF7JNWjs3b8evQE6B2dTDvQZx3n3Rz6rgOtVlaZRLvR9geCAxuY3G+0mepEAhrTISES3bwPWYYi48OUrQOc//IaJeij9xZGGmDIG9kc73fNI7eA8VMBAAD//0SxXMMT90UdAAAAAElFTkSuQmCC'
 
 
-@pytest.fixture(scope='function')
-def args():
-    return set_client_cli_parser()
-
-
 @pytest.mark.parametrize(
     'inputs', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])]
 )
-def test_check_input_success(inputs, args):
+def test_check_input_success(inputs):
     client = Client(host='localhost', port_expose=12345)
     client.check_input(inputs)
 
@@ -53,7 +48,7 @@ def test_check_input_success(inputs, args):
 @pytest.mark.parametrize(
     'inputs', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])]
 )
-def test_check_input_fail(inputs, args):
+def test_check_input_fail(inputs):
     client = Client(host='localhost', port_expose=12345)
     with pytest.raises(BadClientInput):
         client.check_input(inputs)
@@ -129,7 +124,7 @@ def test_client_csv(restful, mocker, func_name):
 
 # Timeout is necessary to fail in case of hanging client requests
 @pytest.mark.timeout(5)
-def test_client_websocket(mocker, flow_with_rest_api_enabled, args):
+def test_client_websocket(mocker, flow_with_rest_api_enabled):
     with flow_with_rest_api_enabled:
         time.sleep(0.5)
         client = Client(
