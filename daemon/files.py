@@ -167,5 +167,6 @@ class DaemonFile:
     def __repr__(self) -> str:
         return (
             f'DaemonFile(build={self.build}, python={self.python}, run={self.run}, '
-            f'context={self.dockercontext}, args={self.dockerargs})'
+            f'context={self.dockercontext}, args={self.dockerargs}), '
+            f'ports={self.ports}'
         )

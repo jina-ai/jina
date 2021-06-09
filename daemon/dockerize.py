@@ -1,5 +1,5 @@
 from jina.helper import colored
-from typing import Dict, List, Tuple, TYPE_CHECKING
+from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
 from fastapi import HTTPException
@@ -152,12 +152,25 @@ class Dockerizer:
         return id_cleaner(image.id)
 
     @classmethod
+    def run_custom(
+        cls, workspace_id: DaemonID, daemon_file: 'DaemonFile'
+    ) -> Tuple['Container', str, Dict]:
+        return cls.run(
+            workspace_id=workspace_id,
+            container_id=workspace_id,
+            command=None,
+            entrypoint=daemon_file.run,
+            ports={f'{port}/tcp': port for port in daemon_file.ports},
+        )
+
+    @classmethod
     def run(
         cls,
         workspace_id: DaemonID,
         container_id: DaemonID,
         command: str,
         ports: Dict,
+        entrypoint: Optional[str] = None,
     ) -> Tuple['Container', str, Dict]:
         from .stores import workspace_store
 
@@ -182,6 +195,7 @@ class Dockerizer:
                 ports=ports,
                 detach=True,
                 command=command,
+                entrypoint=entrypoint,
                 extra_hosts={__dockerhost__: 'host-gateway'},
             )
         except docker.errors.NotFound as e:

@@ -87,6 +87,16 @@ class DaemonWorker(Thread):
             workspace_id=self.id, daemon_file=self.daemon_file, logger=self._logger
         )
 
+    @cached_property
+    def container_id(self):
+        if self.daemon_file.run:
+            container, _, _ = Dockerizer.run_custom(
+                workspace_id=self.id, daemon_file=self.daemon_file
+            )
+            return container.id
+        else:
+            return None
+
     def run(self) -> None:
         try:
             # TODO: Handle diff in case of "update"
@@ -105,6 +115,8 @@ class DaemonWorker(Thread):
                     arguments=self.arguments,
                 ),
             )
+            # this needs to be done after the initial update, otherwise run won't find the necessary metadata
+            store[self.id].metadata.container_id = self.container_id
             self._logger.success(
                 f'workspace {colored(str(self.id), "cyan")} is updated'
             )

@@ -19,6 +19,7 @@ class WorkspaceMetadata(BaseModel):
     network: str
     ports: Dict[str, int]
     workdir: str
+    container_id: Optional[str]
 
 
 class WorkspaceItem(StoreItem):

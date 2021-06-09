@@ -1,4 +1,4 @@
 build = devel
 python = 3.7
-ports = 12345,123456
-run = "echo Hello"
+ports = 12345,12344
+run = echo Hello
