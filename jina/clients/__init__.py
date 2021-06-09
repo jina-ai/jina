@@ -6,8 +6,6 @@ from .helper import callback_exec
 from .mixin import PostMixin
 from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
-from ..parsers import set_client_cli_parser
-from ..helper import ArgNamespace
 
 __all__ = ['Client', 'GRPCClient', 'WebSocketClient']
 
