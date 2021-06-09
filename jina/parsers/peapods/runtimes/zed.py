@@ -22,9 +22,8 @@ def mixin_zed_runtime_parser(parser):
         help='''
             The config of the executor, it could be one of the followings:
             * an Executor-level YAML file path (.yml, .yaml, .jaml)
-            * a name of a class inherited from `jina.Executor`
             * a docker image (must start with `docker://`)
-            * the string literal of a YAML config (must start with `!`)
+            * the string literal of a YAML config (must start with `!` or `jtype: `)
             * the string literal of a JSON config
             
             When use it under Python, one can use the following values additionally:
