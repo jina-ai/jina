@@ -161,7 +161,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         # `name` is important as it serves as an identifier of the executor
         # if not given, then set a name by the rule
         if not getattr(target, 'name', None):
-            setattr(target, 'name', typename(self))
+            setattr(target, 'name', self.__class__.__name__)
 
         self.metas = target
 
