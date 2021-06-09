@@ -42,13 +42,13 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
         '--private',
         action='store_true',
         default=False,
-        help='If set, the executor is in private',
+        help='If set, the published executor is invisible',
     )
     gp.add_argument(
         '--public',
         action='store_true',
         default=False,
-        help='If set, the executor is in public',
+        help='If set, the published executor is visible to public',
     )
     gp.add_argument(
         '--overwrite',
