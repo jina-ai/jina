@@ -22,6 +22,7 @@ def graph():
 
 
 def validate_graph(graph):
+    assert graph.mime_type == 'graph'
     assert graph.num_nodes == 4
     assert graph.num_edges == 5
 

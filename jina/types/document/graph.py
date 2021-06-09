@@ -48,7 +48,9 @@ class GraphDocument(Document):
         super().__init__(document=document, copy=copy, **kwargs)
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
-        }  # dangerous because document is stateless, try to work only with proto,
+        }  # dangerous because document is stateless, try to work only with proto
+
+        self.mime_type = 'graph'
 
     @staticmethod
     def _check_installed_array_packages():

@@ -114,13 +114,19 @@ def test_oneof_validation_error():
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc', buffer=b'abc')
-    assert "only one field among ['buffer', 'blob', 'text', 'uri']" in str(error.value)
+    assert (
+        "only one field among ['buffer', 'blob', 'text', 'uri', 'graph_info']"
+        in str(error.value)
+    )
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
             text='abc', buffer=b'abc', blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
         )
-    assert "only one field among ['buffer', 'blob', 'text', 'uri']" in str(error.value)
+    assert (
+        "only one field among ['buffer', 'blob', 'text', 'uri', 'graph_info']"
+        in str(error.value)
+    )
 
 
 def test_tags_document():
