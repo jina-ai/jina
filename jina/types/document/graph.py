@@ -48,7 +48,7 @@ class GraphDocument(Document):
         super().__init__(document=document, copy=copy, **kwargs)
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
-        }  # dangerous because document is stateless, try to work only with proto,
+        }  # dangerous because document is stateless, try to work only with proto
 
     @staticmethod
     def _check_installed_array_packages():
@@ -59,7 +59,7 @@ class GraphDocument(Document):
             with ImportExtensions(
                 required=True,
                 pkg_name='scipy',
-                help_text=f'GraphDocument needs scipy ',
+                help_text=f'GraphDocument requires scipy to be installed for sparse matrix support.',
             ):
                 import scipy
 
@@ -72,7 +72,7 @@ class GraphDocument(Document):
         :param node: the node to be added to the graph
         """
         if node.id in self._node_id_to_offset:
-            default_logger.warning(f"Document {node.id} is already a node of the graph")
+            default_logger.warning(f'Document {node.id} is already a node of the graph')
             return
 
         self._node_id_to_offset[node.id] = len(self.nodes)
@@ -88,7 +88,7 @@ class GraphDocument(Document):
 
         if node.id not in self._node_id_to_offset:
             default_logger.warning(
-                f"Trying to remove document {node.id} from the graph while is not a node of the graph"
+                f'Trying to remove document {node.id} from the graph while is not a node of the graph'
             )
             return
 
@@ -101,7 +101,7 @@ class GraphDocument(Document):
             ):
                 if row.item() == offset or col.item() == offset:
                     edge_features_keys = (
-                        f"{self.nodes[row.item()].id}-{self.nodes[col.item()]}"
+                        f'{self.nodes[row.item()].id}-{self.nodes[col.item()]}'
                     )
                     edges_to_remove.append((edge_id, edge_features_keys))
 
@@ -136,8 +136,8 @@ class GraphDocument(Document):
         """
         from scipy.sparse import coo_matrix
 
-        for doc in [doc1, doc2]:
-            self.add_node(doc)
+        self.add_node(doc1)
+        self.add_node(doc2)
 
         current_adjacency = self.adjacency
         doc1_node_offset = self._node_id_to_offset[doc1.id]
@@ -159,7 +159,7 @@ class GraphDocument(Document):
         )
         self.adjacency = coo_matrix((data, (row, col)))
         if features is not None:
-            self.edge_features[f"{doc1.id}-{doc2.id}"] = features
+            self.edge_features[f'{doc1.id}-{doc2.id}'] = features
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -167,7 +167,7 @@ class GraphDocument(Document):
         if self.adjacency is not None:
             if edge_id > self.num_edges:
                 raise Exception(
-                    f"Trying to remove edge {edge_id} while number of edges is {self.num_edges}"
+                    f'Trying to remove edge {edge_id} while number of edges is {self.num_edges}'
                 )
             row = np.delete(self.adjacency.row, edge_id)
             col = np.delete(self.adjacency.col, edge_id)
@@ -193,7 +193,7 @@ class GraphDocument(Document):
             zip(self.adjacency.row, self.adjacency.col)
         ):
             if row.item() == offset1 and col.item() == offset2:
-                self._remove_edge_id(edge_id, f"{doc1.id}-{doc2.id}")
+                self._remove_edge_id(edge_id, f'{doc1.id}-{doc2.id}')
 
     @property
     def edge_features(self):
@@ -202,7 +202,7 @@ class GraphDocument(Document):
 
         .. # noqa: DAR201
         """
-        return StructView(self._pb_body.graph_info.edge_features)
+        return StructView(self._pb_body.graph.edge_features)
 
     @edge_features.setter
     def edge_features(self, value: Dict):
@@ -210,8 +210,8 @@ class GraphDocument(Document):
 
         :param value: a Python dict
         """
-        self._pb_body.graph_info.edge_features.Clear()
-        self._pb_body.graph_info.edge_features.update(value)
+        self._pb_body.graph.edge_features.Clear()
+        self._pb_body.graph.edge_features.update(value)
 
     @property
     def adjacency(self):
@@ -220,16 +220,16 @@ class GraphDocument(Document):
 
         .. # noqa: DAR201
         """
-        return SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value
+        return SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value
 
     @adjacency.setter
-    def adjacency(self, value: "coo_matrix"):
+    def adjacency(self, value: 'coo_matrix'):
         """
         Set the adjacency list of this graph.
 
         :param value: the float weight of the document.
         """
-        SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value = value
+        SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value = value
 
     @property
     def num_nodes(self) -> int:
@@ -294,7 +294,7 @@ class GraphDocument(Document):
 
         :param value: the float weight of the document.
         """
-        SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value = value
+        SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value = value
 
     def get_outgoing_nodes(self, doc: 'Document') -> Optional[ChunkArray]:
         """
