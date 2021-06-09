@@ -72,7 +72,7 @@ class GraphDocument(Document):
         :param node: the node to be added to the graph
         """
         if node.id in self._node_id_to_offset:
-            default_logger.warning(f"Document {node.id} is already a node of the graph")
+            default_logger.debug(f"Document {node.id} is already a node of the graph")
             return
 
         self._node_id_to_offset[node.id] = len(self.nodes)
@@ -87,7 +87,7 @@ class GraphDocument(Document):
         from scipy.sparse import coo_matrix
 
         if node.id not in self._node_id_to_offset:
-            default_logger.warning(
+            default_logger.debug(
                 f"Trying to remove document {node.id} from the graph while is not a node of the graph"
             )
             return
