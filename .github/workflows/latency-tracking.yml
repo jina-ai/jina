@@ -1,13 +1,7 @@
 name: CI
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches-ignore:
-  #     - '**'  # temporally ignore all
-
-#on:
-#  pull_request_target:
+ pull_request_target:
 
 jobs:
   latency-tracking:
