@@ -17,7 +17,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 _document_fields = sorted(set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)))
 
 # check if this can be bypassed
-IGNORED_FIELDS = ['embedding', 'score']
+IGNORED_FIELDS = ['embedding', 'score', 'graph_info']
 
 
 @pytest.fixture
