@@ -159,7 +159,10 @@ class DocumentArray(
         from ..document import Document
 
         for d in self._docs_proto:
-            yield Document(d)
+            if not isinstance(d, Document):
+                yield Document(d)
+            else:
+                yield d
 
     def __contains__(self, item: str):
         return item in self._id_to_index
@@ -168,7 +171,11 @@ class DocumentArray(
         from ..document import Document
 
         if isinstance(item, int):
-            return Document(self._docs_proto[item])
+            view = self._docs_proto[item]
+            if not isinstance(view, Document):
+                return Document(view)
+            else:
+                return view
         elif isinstance(item, str):
             return self[self._id_to_index[item]]
         elif isinstance(item, slice):
