@@ -49,6 +49,15 @@ Table of Contents
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
   - [Access nested attributes from tags](#access-nested-attributes-from-tags)
+- [`DocumentArrayMemmap` API](#documentarraymemmap-api)
+  - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
+  - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
+  - [Clear a `DocumentArrayMemmap` object](#clear-a-documentarraymemmap-object)
+    - [Pruning](#pruning)
+  - [Mutable sequence with "read-only" elements](#mutable-sequence-with-read-only-elements)
+  - [Side-by-side vs. `DocumentArray`](#side-by-side-vs-documentarray)
+  - [Convert between `DocumentArray` and `DocumentArrayMemmap`](#convert-between-documentarray-and-documentarraymemmap)
+  - [Maintaining Consistency via `.reload()`](#maintaining-consistency-via-reload)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

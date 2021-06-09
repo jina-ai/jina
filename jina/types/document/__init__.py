@@ -569,7 +569,8 @@ class Document(ProtoTypeMixin):
             proto=getattr(self._pb_body, k),
         ).value = v
 
-    def _check_installed_array_packages(self):
+    @staticmethod
+    def _check_installed_array_packages():
         from ... import JINA_GLOBAL
 
         if JINA_GLOBAL.scipy_installed is None:
@@ -598,7 +599,7 @@ class Document(ProtoTypeMixin):
         from ... import JINA_GLOBAL
 
         v_valid_sparse_type = False
-        self._check_installed_array_packages()
+        Document._check_installed_array_packages()
 
         if JINA_GLOBAL.scipy_installed:
             import scipy
@@ -637,7 +638,6 @@ class Document(ProtoTypeMixin):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
-
         else:
             v_valid_sparse_type = self._update_if_sparse(k, v)
 
