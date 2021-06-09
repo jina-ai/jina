@@ -70,6 +70,48 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     _cls_client = Client  #: the type of the Client, can be changed to other class
 
+    # overload_inject_start_flow
+    @overload
+    def __init__(
+        self,
+        description: Optional[str] = None,
+        inspect: Optional[str] = 'COLLECT',
+        log_config: Optional[str] = None,
+        name: Optional[str] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        uses: Optional[str] = None,
+        workspace: Optional[str] = './',
+        **kwargs,
+    ):
+        """Create a Flow. Flow is how Jina streamlines and scales Executors
+
+        :param description: The description of this object. It will be used in automatics docs UI.
+        :param inspect: The strategy on those inspect pods in the flow.
+
+          If `REMOVE` is given then all inspect pods are removed when building the flow.
+        :param log_config: The YAML config of the logger used in this object.
+        :param name: The name of this object.
+
+          This will be used in the following places:
+          - how you refer to this object in Python/YAML/CLI
+          - visualization
+          - log message header
+          - automatics docs UI
+          - ...
+
+          When not given, then the default naming strategy will apply.
+        :param quiet: If set, then no log will be emitted from this object.
+        :param quiet_error: If set, then exception stack information will not be added to the log
+        :param uses: The YAML file represents a flow
+        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+
+    # overload_inject_end_flow
     def __init__(
         self,
         args: Optional['argparse.Namespace'] = None,
@@ -218,6 +260,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return self.needs(name=name, needs=needs, *args, **kwargs)
 
+    # overload_inject_start_pod
     @overload
     def add(
         self,
@@ -232,9 +275,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
-        log_config: Optional[
-            str
-        ] = '/Users/hanxiao/Documents/jina/jina/resources/logging.default.yml',
+        log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
         on_error_strategy: Optional[str] = 'IGNORE',
@@ -270,16 +311,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         workspace_id: Optional[str] = None,
+        **kwargs,
     ) -> 'BaseFlow':
-        """Add a Pod to the current Flow object and return the new modified Flow object.
+        """Add an Executor to the current Flow object.
 
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param description: The description of this object. It will be used in automatics docs UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
-            container.
+          container.
 
-            More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
@@ -291,29 +333,29 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
 
-            This will be used in the following places:
-            - how you refer to this object in Python/YAML/CLI
-            - visualization
-            - log message header
-            - automatics docs UI
-            - ...
+          This will be used in the following places:
+          - how you refer to this object in Python/YAML/CLI
+          - visualization
+          - log message header
+          - automatics docs UI
+          - ...
 
-            When not given, then the default naming strategy will apply.
+          When not given, then the default naming strategy will apply.
         :param on_error_strategy: The skip strategy on exceptions.
 
-            - IGNORE: Ignore it, keep running all Executors in the sequel flow
-            - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
-            - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
+          - IGNORE: Ignore it, keep running all Executors in the sequel flow
+          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
+          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
 
-            Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
-            is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
+          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
+          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
         :param parallel: The number of parallel peas in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param peas_hosts: The hosts of the peas when parallel greater than 1.
-                    Peas will be evenly distributed among the hosts. By default,
-                    peas are running on host provided by the argument ``host``
+                  Peas will be evenly distributed among the hosts. By default,
+                  peas are running on host provided by the argument ``host``
         :param polling: The polling strategy of the Pod (when `parallel>1`)
-            - ANY: only one (whoever is idle) Pea polls the message
-            - ALL: all Peas poll the message (like a broadcast)
+          - ANY: only one (whoever is idle) Pea polls the message
+          - ALL: all Peas poll the message (like a broadcast)
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_expose: The port of the host exposed to the public
         :param port_in: The port for input data, default a random port between [49152, 65535]
@@ -322,10 +364,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
-            Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
-            reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
+          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
+          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
 
-            --py-modules __init__.py --py-modules B.py --py-modules A.py
+          --py-modules __init__.py --py-modules B.py --py-modules A.py
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
@@ -341,42 +383,45 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
-            workspace. This can be useful when your Pod has more
-            file dependencies beyond a single YAML file, e.g.
-            Python files, data files.
+          workspace. This can be useful when your Pod has more
+          file dependencies beyond a single YAML file, e.g.
+          Python files, data files.
 
-            Note,
-            - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
-            - by default, `--uses` YAML file is always uploaded.
-            - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
+          Note,
+          - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.
+          - by default, `--uses` YAML file is always uploaded.
+          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
-                        * an Executor-level YAML file path (.yml, .yaml, .jaml)
-                        * a docker image (must start with `docker://`)
-                        * the string literal of a YAML config (must start with `!` or `jtype: `)
-                        * the string literal of a JSON config
+                      * an Executor-level YAML file path (.yml, .yaml, .jaml)
+                      * a docker image (must start with `docker://`)
+                      * the string literal of a YAML config (must start with `!` or `jtype: `)
+                      * the string literal of a JSON config
 
-                        When use it under Python, one can use the following values additionally:
-                        - a Python dict that represents the config
-                        - a text file stream has `.read()` interface
+                      When use it under Python, one can use the following values additionally:
+                      - a Python dict that represents the config
+                      - a text file stream has `.read()` interface
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`
         :param uses_internal: The config runs inside the Docker container.
 
-            Syntax and function are the same as `--uses`. This is designed when `--uses="docker://..."` this config is passed to
-            the Docker container.
+          Syntax and function are the same as `--uses`. This is designed when `--uses="docker://..."` this config is passed to
+          the Docker container.
         :param volumes: The path on the host to be mounted inside the container.
 
-            Note,
-            - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
-            - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
-            - All volumes are mounted with read-write mode.
+          Note,
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+          - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param workspace_id: the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same `workspace-id`.
         :return: a (new) Flow object with modification
 
         .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
         """
 
+    # overload_inject_end_pod
     def add(
         self,
         needs: Optional[Union[str, Tuple[str], List[str]]] = None,
