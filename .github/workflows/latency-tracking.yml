@@ -1,17 +1,13 @@
 name: CI
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches-ignore:
-  #     - '**'  # temporally ignore all
-
-#on:
-#  pull_request_target:
+  pull_request_target:
 
 jobs:
   latency-tracking:
     runs-on: ubuntu-latest
+    env:
+      NUM_LAST_RELEASE: 1
     steps:
       - uses: actions/checkout@v2
 #        with:
@@ -32,9 +28,9 @@ jobs:
           cd latency
           docker build --build-arg JINA_VER=master . -t latency-tracking
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
-          bash batch.sh 1
+          bash batch.sh ${{ env.NUM_LAST_RELEASE }}
           pip install prettytable
-          python ppstat.py > comment.txt
+          python ppstat.py ${{ env.NUM_LAST_RELEASE }}>  comment.txt
       - id: get-comment-body
         run: |
           body=$(cat latency/comment.txt)
