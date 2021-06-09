@@ -229,7 +229,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.check/">jina.parsers.check module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
@@ -399,16 +398,6 @@
     <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1"> arguments'</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UUIDString"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.UUIDString">[docs]</a><span class="k">def</span> <span class="nf">UUIDString</span><span class="p">(</span><span class="n">astring</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">"""argparse type to check if a string is a valid UUID string</span>
-
-<span class="sd">    :param astring: the string to check</span>
-<span class="sd">    :return: the string</span>
-<span class="sd">    """</span>
-    <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">astring</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">astring</span></div>
-
-
 <div class="viewcode-block" id="KVAppendAction"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.KVAppendAction">[docs]</a><span class="k">class</span> <span class="nc">KVAppendAction</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
     <span class="sd">"""argparse action to split an argument into KEY=VALUE form</span>
 <span class="sd">    on the first = and append to a dictionary.</span>
@@ -441,42 +430,6 @@
                         <span class="sa">f</span><span class="s1">'could not parse argument </span><span class="se">\"</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\"</span><span class="s1"> as k=v format'</span>
                     <span class="p">)</span>
                 <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">parse_arg</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="DockerKwargsAppendAction"><a class="viewcode-back" href="../../../../api/jina.parsers.helper/#jina.parsers.helper.DockerKwargsAppendAction">[docs]</a><span class="k">class</span> <span class="nc">DockerKwargsAppendAction</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
-    <span class="sd">"""argparse action to split an argument into KEY: VALUE form</span>
-<span class="sd">    on the first : and append to a dictionary.</span>
-<span class="sd">    This is used for setting up arbitrary kwargs for docker sdk</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        call the DockerKwargsAppendAction</span>
-
-
-<span class="sd">        .. # noqa: DAR401</span>
-<span class="sd">        :param parser: the parser</span>
-<span class="sd">        :param args: args to initialize the values</span>
-<span class="sd">        :param values: the values to add to the parser</span>
-<span class="sd">        :param option_string: inherited, not used</span>
-<span class="sd">        """</span>
-        <span class="kn">import</span> <span class="nn">json</span>
-
-        <span class="n">d</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
-
-        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'could not parse argument </span><span class="se">\"</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="se">\"</span><span class="s1"> as k:v format'</span>
-                    <span class="p">)</span>
-                <span class="c1"># transform from text to actual type (int, list, etc...)</span>
-                <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span></div>
 
 
@@ -571,9 +524,6 @@
 
     <span class="k">def</span> <span class="nf">_get_default_metavar_for_optional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">''</span>
-
-    <span class="c1"># def _get_default_metavar_for_positional(self, action):</span>
-    <span class="c1">#     return ''</span>
 
     <span class="k">def</span> <span class="nf">_expand_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">action</span><span class="p">),</span> <span class="n">prog</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prog</span><span class="p">)</span>

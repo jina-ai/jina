@@ -229,7 +229,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.check/">jina.parsers.check module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
@@ -375,7 +374,6 @@
         </label>
         <h1>Source code for jina.parsers.hub</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">_chf</span>
 
 
 <div class="viewcode-block" id="set_hub_pushpull_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hub/#jina.parsers.hub.set_hub_pushpull_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_pushpull_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -443,75 +441,6 @@
     <span class="n">mixin_hub_new_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
-
-
-<div class="viewcode-block" id="set_hub_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hub/#jina.parsers.hub.set_hub_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">"""Set the parser for the hub</span>
-
-<span class="sd">    :param parser: the parser configure</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
-        <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
-
-    <span class="n">spp</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'hub'</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">'use `</span><span class="si">%(prog)-8s</span><span class="s1"> [sub-command] --help` '</span>
-        <span class="s1">'to get detailed information about each sub-command'</span><span class="p">,</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-        <span class="s1">'login'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'login via Github to push images to Jina hub registry'</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">'Login via Github to push images to Jina hub registry'</span><span class="p">,</span>
-        <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">set_hub_new_parser</span><span class="p">(</span>
-        <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-            <span class="s1">'new'</span><span class="p">,</span>
-            <span class="n">aliases</span><span class="o">=</span><span class="p">[</span><span class="s1">'init'</span><span class="p">,</span> <span class="s1">'create'</span><span class="p">],</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">'create a new Hub executor or app using cookiecutter'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Create a new Hub executor or app using cookiecutter'</span><span class="p">,</span>
-            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">set_hub_build_parser</span><span class="p">(</span>
-        <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-            <span class="s1">'build'</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">'build a directory into Jina hub image'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Build a directory into Jina hub image'</span><span class="p">,</span>
-            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">set_hub_pushpull_parser</span><span class="p">(</span>
-        <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-            <span class="s1">'push'</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">'push an image to the Jina hub registry'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Push an image to the Jina hub registry'</span><span class="p">,</span>
-            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">set_hub_pushpull_parser</span><span class="p">(</span>
-        <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-            <span class="s1">'pull'</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">'pull an image from the Jina hub registry to local'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Pull an image to the Jina hub registry to local'</span><span class="p">,</span>
-            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
-
-    <span class="n">set_hub_list_parser</span><span class="p">(</span>
-        <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-            <span class="s1">'list'</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">'list hub executors from jina hub registry'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'List hub executors from jina hub registry'</span><span class="p">,</span>
-            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

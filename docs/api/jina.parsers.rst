@@ -17,7 +17,6 @@ Submodules
    :maxdepth: 4
 
    jina.parsers.base
-   jina.parsers.check
    jina.parsers.client
    jina.parsers.export_api
    jina.parsers.flow

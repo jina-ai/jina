@@ -229,7 +229,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.base/">jina.parsers.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.check/">jina.parsers.check module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.client/">jina.parsers.client module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
@@ -504,7 +503,6 @@
     <span class="kn">from</span> <span class="nn">.helloworld</span> <span class="kn">import</span> <span class="n">set_hw_parser</span><span class="p">,</span> <span class="n">set_hello_parser</span>
     <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_chf</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 
-    <span class="kn">from</span> <span class="nn">.check</span> <span class="kn">import</span> <span class="n">set_check_parser</span>
     <span class="kn">from</span> <span class="nn">.export_api</span> <span class="kn">import</span> <span class="n">set_export_api_parser</span>
     <span class="kn">from</span> <span class="nn">.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
     <span class="kn">from</span> <span class="nn">.ping</span> <span class="kn">import</span> <span class="n">set_ping_parser</span>
@@ -611,25 +609,6 @@
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="c1"># set_optimizer_parser(</span>
-    <span class="c1">#     sp.add_parser(</span>
-    <span class="c1">#         'optimizer',</span>
-    <span class="c1">#         description='Start a FlowOptimizer from a YAML configuration file',</span>
-    <span class="c1">#         **(dict(help='Start an FlowOptimizer from a YAML file')) if _SHOW_ALL_ARGS else {},</span>
-    <span class="c1">#         formatter_class=_chf,</span>
-    <span class="c1">#     )</span>
-    <span class="c1"># )</span>
-
-    <span class="n">set_check_parser</span><span class="p">(</span>
-        <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
-            <span class="s1">'check'</span><span class="p">,</span>
-            <span class="o">**</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">'Check the import of all Executors'</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
-            <span class="k">else</span> <span class="p">{},</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Check the import status of all executors'</span><span class="p">,</span>
-            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span></div>
 </pre></div>
       </article>

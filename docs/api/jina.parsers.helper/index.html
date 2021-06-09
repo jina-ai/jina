@@ -234,7 +234,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.parsers.base/">jina.parsers.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.check/">jina.parsers.check module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.parsers.client/">jina.parsers.client module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.parsers.flow/">jina.parsers.flow module</a></li>
@@ -397,22 +396,6 @@
 </dd>
 </dl>
 </dd></dl>
-<dl class="py function">
-<dt id="jina.parsers.helper.UUIDString">
-<code class="sig-prename descclassname"><span class="pre">jina.parsers.helper.</span></code><code class="sig-name descname"><span class="pre">UUIDString</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">astring</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/helper/#UUIDString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.helper.UUIDString" title="Permalink to this definition">¶</a></dt>
-<dd><p>argparse type to check if a string is a valid UUID string</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>astring</strong> – the string to check</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the string</p>
-</dd>
-</dl>
-</dd></dl>
 <dl class="py class">
 <dt id="jina.parsers.helper.KVAppendAction">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.parsers.helper.</span></code><code class="sig-name descname"><span class="pre">KVAppendAction</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/helper/#KVAppendAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.helper.KVAppendAction" title="Permalink to this definition">¶</a></dt>
@@ -420,14 +403,6 @@
 <p>argparse action to split an argument into KEY=VALUE form
 on the first = and append to a dictionary.
 This is used for setting up –env</p>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.parsers.helper.DockerKwargsAppendAction">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.parsers.helper.</span></code><code class="sig-name descname"><span class="pre">DockerKwargsAppendAction</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_strings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">const</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metavar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/helper/#DockerKwargsAppendAction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.helper.DockerKwargsAppendAction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.Action</span></code></p>
-<p>argparse action to split an argument into KEY: VALUE form
-on the first : and append to a dictionary.
-This is used for setting up arbitrary kwargs for docker sdk</p>
 </dd></dl>
 </div>
 

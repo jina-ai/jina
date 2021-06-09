@@ -6,7 +6,7 @@
   <meta property="og:title" content="Jina Command-Line Interface" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="cli/index.html" />
-  <meta property="og:description" content="usage: sphinx-build [-h] [-v] [-vf] {hello, executor, pod, flow ... 6 more choices} ... Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ vers..." />
+  <meta property="og:description" content="usage: sphinx-build [-h] [-v] [-vf] {hello, executor, pod, flow ... 5 more choices} ... Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ vers..." />
   <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Jina Protobuf Specification" href="../proto/" /><link rel="prev" title="jina.importer module" href="../api/jina.importer/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
@@ -234,7 +234,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.base/">jina.parsers.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.check/">jina.parsers.check module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.client/">jina.parsers.client module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
@@ -381,7 +380,7 @@
         <div class="section" id="jina-command-line-interface">
 <h1>Jina Command-Line Interface<a class="headerlink" href="#jina-command-line-interface" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">vf</span><span class="p">]</span>
-                    <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">flow</span> <span class="o">...</span> <span class="mi">6</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+                    <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">flow</span> <span class="o">...</span> <span class="mi">5</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments">
@@ -403,7 +402,7 @@
 </div></blockquote>
 <dl class="option-list">
 <dt><kbd>cli</kbd></dt>
-<dd><p>Possible choices: hello, executor, pod, flow, ping, gateway, pea, client, export-api, check</p>
+<dd><p>Possible choices: hello, executor, pod, flow, ping, gateway, pea, client, export-api</p>
 </dd>
 </dl>
 </div>
@@ -440,7 +439,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “f1a6e544-f0d9-4a43-9d9c-35a08a532ab2”</p>
+<p>Default: “7d82775c-4bae-415d-83fb-8cf447a12fa8”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -515,7 +514,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “c2878cef-f0b8-47ab-a1f9-fc1c8321723e”</p>
+<p>Default: “761fceb9-cd5b-4338-8d0c-ac229e612c7b”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -548,7 +547,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1e4213bd-6bbe-48cd-ba17-756958210e9c”</p>
+<p>Default: “a3d76bb1-c890-446a-b99e-cc14b4027ac6”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -647,7 +646,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 45777</p>
+<p>Default: 41953</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -692,11 +691,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 42555</p>
+<p>Default: 56645</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 53521</p>
+<p>Default: 44497</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -784,7 +783,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 48859</p>
+<p>Default: 43501</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -811,7 +810,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “952f56a5-ed47-4f6a-82e2-e85cc20b298b”</p>
+<p>Default: “970d001e-e497-47a5-ae87-643bf8ee12f1”</p>
 </dd>
 </dl>
 </div>
@@ -1072,7 +1071,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 45083</p>
+<p>Default: 38133</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1117,11 +1116,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 39169</p>
+<p>Default: 40299</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 57451</p>
+<p>Default: 40373</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1235,7 +1234,7 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 42801</p>
+<p>Default: 58825</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1349,7 +1348,7 @@ and oneof fields are not affected by this option.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 34161</p>
+<p>Default: 47023</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1394,11 +1393,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 43689</p>
+<p>Default: 41755</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 47915</p>
+<p>Default: 44351</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1486,7 +1485,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 33297</p>
+<p>Default: 51093</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1513,7 +1512,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “15aa8616-25bd-4194-9a6f-cd07f9570443”</p>
+<p>Default: “77fdcca7-012b-4e70-8f5e-de057627c73b”</p>
 </dd>
 </dl>
 </div>
@@ -1600,7 +1599,7 @@ process Responses in bulk instead of using callback.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 46089</p>
+<p>Default: 59145</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1628,21 +1627,6 @@ process Responses in bulk instead of using callback.</p>
 </dd>
 <dt><kbd>--schema-path</kbd></dt>
 <dd><p>The JSONSchema file path for storing the exported API</p>
-</dd>
-</dl>
-</div>
-</div>
-<div class="section" id="check">
-<h3>check<a class="headerlink" href="#check" title="Permalink to this headline">¶</a></h3>
-<p>Check the import status of all executors</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">check</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">summary</span><span class="o">-</span><span class="n">exec</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="section" id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--summary-exec</kbd></dt>
-<dd><p>The markdown file path for all executors summary</p>
 </dd>
 </dl>
 </div>
@@ -1781,10 +1765,6 @@ process Responses in bulk instead of using callback.</p>
 </li>
 <li><a class="reference internal" href="#export-api">export-api</a><ul>
 <li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#check">check</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 </ul>
 </li>
 </ul>
