@@ -117,7 +117,7 @@ class JinadRuntime(AsyncZMQRuntime):
             state = workspace_status.get('state', None)
             if not state:
                 self.logger.info(
-                    f'creating workspace {self.workspace_id} on remote. This might take some time.'
+                    f'creating workspace {colored(self.workspace_id, "cyan")} on remote. This might take some time.'
                 )
                 self.workspace_api.post(
                     dependencies=self.args.upload_files, workspace_id=self.workspace_id

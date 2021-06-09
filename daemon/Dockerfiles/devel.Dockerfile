@@ -1,6 +1,6 @@
-ARG PY_VERSION=3.7
+ARG LOCALTAG=test
 
-FROM python:${PY_VERSION}-slim AS jina_base
+FROM jinaai/jina:$LOCALTAG-daemon
 
 # ARG COMMANDS
 ARG PIP_REQUIREMENTS
@@ -13,8 +13,8 @@ ARG PIP_REQUIREMENTS
 #         done; \
 #     fi
 
-RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
-    gem install fluentd --no-doc
+# RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
+#     gem install fluentd --no-doc
 
 RUN if [ -n "$PIP_REQUIREMENTS" ]; then \
         echo -e "Installing ${PIP_REQUIREMENTS}"; \
@@ -22,12 +22,5 @@ RUN if [ -n "$PIP_REQUIREMENTS" ]; then \
             pip install "${package}"; \
         done; \
     fi
-
-COPY . /codebase/
-
-WORKDIR /codebase
-RUN pip install .[devel]
-
-STOPSIGNAL SIGINT
 
 WORKDIR /workspace

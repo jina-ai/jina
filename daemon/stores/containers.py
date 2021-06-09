@@ -4,9 +4,10 @@ from typing import Dict, TYPE_CHECKING
 import requests
 
 from jina import __default_host__
-from jina.helper import colored, random_port
+from jina.helper import cached_property, colored, random_port
 
 from .base import BaseStore
+from .. import __dockerhost__
 from ..models import DaemonID
 from ..helper import id_cleaner
 from ..dockerize import Dockerizer
@@ -45,9 +46,20 @@ class ContainerStore(BaseStore):
                 if r.status_code == requests.codes.ok:
                     return True
             except Exception:
-                time.sleep(0.2)
+                time.sleep(0.5)
                 continue
         return False
+
+    @cached_property
+    def minid_port(self):
+        return random_port()
+
+    @cached_property
+    def host(self):
+        # TODO: jinad when running inside a container needs to access other containers via dockerhost
+        # mac/wsl: this would work as is, as dockerhost is accessible.
+        # linux: this would only work if we start jinad passing extra_hosts.
+        return f'http://{__dockerhost__}:{self.minid_port}'
 
     @BaseStore.dump
     def add(
@@ -58,13 +70,11 @@ class ContainerStore(BaseStore):
             if workspace_id not in workspace_store:
                 raise KeyError(f'{workspace_id} not found in workspace store')
 
-            minid_port = random_port()
-            self.host = f'http://0.0.0.0:{minid_port}'
             self.params = params.dict(exclude={'log_config'})
-
+            # NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`
             # NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container
-            command = f'jinad --port-expose {minid_port} --mode {self._kind} --workspace-id {workspace_id}'
-            ports.update({f'{minid_port}/tcp': minid_port})
+            command = f'--port-expose {self.minid_port} --mode {self._kind} --workspace-id {workspace_id}'
+            ports.update({f'{self.minid_port}/tcp': self.minid_port})
 
             container, network, ports = Dockerizer.run(
                 workspace_id=workspace_id,
@@ -73,6 +83,7 @@ class ContainerStore(BaseStore):
                 ports=ports
             )
             if not self.ready:
+                self._logger.error('couldn\'t reach container after 10secs')
                 raise Runtime400Exception(f'{id.type} creation failed')
             self._add(**kwargs)
         except Exception as e:

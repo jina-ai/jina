@@ -22,7 +22,6 @@ class ContainerRuntime(ZMQRuntime):
         self.ctrl_addr = Zmqlet.get_ctrl_address(
             self._host_ctrl, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
-        self.logger.critical(f'_host_ctrl: {self._host_ctrl}, ctrl_addr: {self.ctrl_addr}')
         self._set_network_for_dind_linux()
 
     @property

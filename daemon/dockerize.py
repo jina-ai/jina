@@ -1,4 +1,5 @@
 
+from jina.helper import colored
 from typing import Dict, List, Tuple, TYPE_CHECKING
 
 import docker
@@ -125,7 +126,7 @@ class Dockerizer:
             buildargs=daemon_file.dockerargs,
             tag=workspace_id.tag,
             rm=True,
-            pull=True,
+            pull=False,
             decode=True,
         ):
             if 'stream' in build_log:
@@ -154,11 +155,12 @@ class Dockerizer:
 
         metadata = workspace_store[workspace_id].metadata
         if not metadata:
-            raise DockerBuildException('Docker image not built properly')
+            raise DockerBuildException('Docker image not built properly, cannot proceed for run')
         image = cls.client.images.get(name=metadata.image_id)
         network = metadata.network
         cls.logger.info(
-            f'Creating a container using image {image} in network {network} and ports {ports}'
+            f'Creating a container using image {colored(metadata.image_id, "cyan")} in network '
+            f'{colored(network, "cyan")} and ports {colored(ports, "cyan")}'
         )
         try:
             container: 'Container' = cls.client.containers.run(
@@ -176,6 +178,7 @@ class Dockerizer:
             cls.logger.critical(
                 f'Image {image} or Network {network} not found locally {e!r}'
             )
+            raise DockerBuildException('Docker image not built properly, cannot proceed for run')
         except docker.errors.APIError as e:
             import traceback
             traceback.print_exc()
