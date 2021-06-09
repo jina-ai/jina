@@ -50,7 +50,6 @@ class GraphDocument(Document):
             node.id: offset for offset, node in enumerate(self.nodes)
         }  # dangerous because document is stateless, try to work only with proto
 
-        self.mime_type = 'graph'
 
     @staticmethod
     def _check_installed_array_packages():
