@@ -19,6 +19,21 @@ def set_hub_pushpull_parser(parser=None):
     return parser
 
 
+def set_hub_push_parser(parser=None):
+    """Set the parser for the hub push
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    from .pushpull import mixin_hub_push_parser
+
+    mixin_hub_push_parser(parser)
+    return parser
+
+
 def set_hub_build_parser(parser=None):
     """Set the parser for `hub build`
 
@@ -84,37 +99,37 @@ def set_hub_parser(parser=None):
         required=True,
     )
 
-    spp.add_parser(
-        'login',
-        help='login via Github to push images to Jina hub registry',
-        description='Login via Github to push images to Jina hub registry',
-        formatter_class=_chf,
-    )
+    # spp.add_parser(
+    #     'login',
+    #     help='login via Github to push images to Jina hub registry',
+    #     description='Login via Github to push images to Jina hub registry',
+    #     formatter_class=_chf,
+    # )
 
     set_hub_new_parser(
         spp.add_parser(
             'new',
             aliases=['init', 'create'],
-            help='create a new Hub executor or app using cookiecutter',
-            description='Create a new Hub executor or app using cookiecutter',
+            help='create a new Hub executor using cookiecutter',
+            description='Create a new Hub executor using cookiecutter',
             formatter_class=_chf,
         )
     )
 
-    set_hub_build_parser(
-        spp.add_parser(
-            'build',
-            help='build a directory into Jina hub image',
-            description='Build a directory into Jina hub image',
-            formatter_class=_chf,
-        )
-    )
+    # set_hub_build_parser(
+    #     spp.add_parser(
+    #         'build',
+    #         help='build a directory into Jina hub image',
+    #         description='Build a directory into Jina hub image',
+    #         formatter_class=_chf,
+    #     )
+    # )
 
-    set_hub_pushpull_parser(
+    set_hub_push_parser(
         spp.add_parser(
             'push',
-            help='push an image to the Jina hub registry',
-            description='Push an image to the Jina hub registry',
+            help='push an executor package to the Jina hub registry',
+            description='Push an executor package to the Jina hub registry',
             formatter_class=_chf,
         )
     )
@@ -122,17 +137,17 @@ def set_hub_parser(parser=None):
     set_hub_pushpull_parser(
         spp.add_parser(
             'pull',
-            help='pull an image from the Jina hub registry to local',
-            description='Pull an image to the Jina hub registry to local',
+            help='pull an executor package from the Jina hub registry to local',
+            description='Pull an executor package to the Jina hub registry to local',
             formatter_class=_chf,
         )
     )
 
-    set_hub_list_parser(
-        spp.add_parser(
-            'list',
-            help='list hub executors from jina hub registry',
-            description='List hub executors from jina hub registry',
-            formatter_class=_chf,
-        )
-    )
+    # set_hub_list_parser(
+    #     spp.add_parser(
+    #         'list',
+    #         help='list hub executors from jina hub registry',
+    #         description='List hub executors from jina hub registry',
+    #         formatter_class=_chf,
+    #     )
+    # )
