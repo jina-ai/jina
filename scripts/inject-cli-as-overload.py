@@ -125,9 +125,7 @@ def fill_overload(
             f'{indent}{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
         )
     else:
-        doc_str = '\n'.join(
-            f'{indent}:param {k[0]}: {k[1]["description"]}' for k in a
-        )
+        doc_str = '\n'.join(f'{indent}:param {k[0]}: {k[1]["description"]}' for k in a)
         noqa_str = '\n'.join(
             f'{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
         )
