@@ -3,7 +3,7 @@ import os
 import pytest
 
 from jina import Document
-from jina.clients import Client, GrpcClient
+from jina.clients import Client, GRPCClient
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
 from ..helpers import create_flow, assert_request
@@ -32,7 +32,7 @@ def grpc_client():
         ['--host', 'localhost', '--port-expose', '45678']
     )
 
-    return GrpcClient(args)
+    return GRPCClient(args)
 
 
 @pytest.fixture(params=['client', 'grpc_client'])

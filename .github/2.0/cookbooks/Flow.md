@@ -717,7 +717,7 @@ c.post('/')
 ```
 
 ```text
-         GrpcClient@27219[S]:connected to the gateway at 192.168.1.14:12345!
+         GRPCClient@27219[S]:connected to the gateway at 192.168.1.14:12345!
   |█                   | 📃    100 ⏱️ 0.0s 🐎 26690.1/s      1   requests takes 0 seconds (0.00s)
 	✅ done in ⏱ 0 seconds 🐎 24854.8/s
 ```

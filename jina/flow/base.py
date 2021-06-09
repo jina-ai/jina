@@ -13,7 +13,7 @@ from typing import Optional, Union, Tuple, List, Set, Dict
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients.base import BaseClient
-from ..clients import GrpcClient, WebSocketClient
+from ..clients import GRPCClient, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
@@ -70,7 +70,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     """
 
     _cls_client = (
-        GrpcClient  #: the type of the GrpcClient, can be changed to other class
+        GRPCClient  #: the type of the GRPCClient, can be changed to other class
     )
 
     def __init__(
@@ -172,7 +172,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                 runtime_cls='GRPCRuntime'
-                if self._cls_client == GrpcClient
+                if self._cls_client == GRPCClient
                 else 'RESTRuntime',
                 pod_role=PodRoleType.GATEWAY,
                 identity=self.args.identity,
@@ -914,7 +914,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _switch_gateway(self, gateway: str, port: int):
         restful = gateway == 'RESTRuntime'
-        client = WebSocketClient if gateway == 'RESTRuntime' else GrpcClient
+        client = WebSocketClient if gateway == 'RESTRuntime' else GRPCClient
 
         # globally register this at Flow level
         self._cls_client = client

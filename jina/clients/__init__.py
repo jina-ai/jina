@@ -6,7 +6,7 @@ from .request import GeneratorSourceType
 from .websocket import WebSocketClientMixin
 from ..parsers import set_client_cli_parser
 
-__all__ = ['Client', 'GrpcClient', 'WebSocketClient']
+__all__ = ['Client', 'GRPCClient', 'WebSocketClient']
 
 
 def Client(host: str, port_expose: int, restful: bool = False) -> 'BaseClient':
@@ -15,7 +15,7 @@ def Client(host: str, port_expose: int, restful: bool = False) -> 'BaseClient':
     :param host: Host address of the flow.
     :param port_expose: Port number of the flow.
     :param restful: If connect to a Restful gateway, default is ``False``, connect to GrpcGateway.
-    :return: An instance of :class:`GrpcClient` or :class:`WebSocketClient`.
+    :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.
     """
     args = set_client_cli_parser().parse_args(
         ['--host', host, '--port-expose', str(port_expose)]
@@ -23,23 +23,23 @@ def Client(host: str, port_expose: int, restful: bool = False) -> 'BaseClient':
     if restful:
         return WebSocketClient(args)
     else:
-        return GrpcClient(args)
+        return GRPCClient(args)
 
 
-class GrpcClient(PostMixin, BaseClient):
+class GRPCClient(PostMixin, BaseClient):
     """A simple Python client for connecting to the gRPC gateway.
 
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
 
     @property
-    def client(self) -> 'GrpcClient':
+    def client(self) -> 'GRPCClient':
         """Return the client object itself
         .. # noqa: DAR201"""
         return self
 
 
-class WebSocketClient(GrpcClient, WebSocketClientMixin):
+class WebSocketClient(GRPCClient, WebSocketClientMixin):
     """A Python Client to stream requests from a Flow with a REST Gateway.
 
     :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like
