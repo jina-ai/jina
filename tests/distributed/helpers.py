@@ -5,6 +5,7 @@ from typing import List, Optional, Dict
 
 import requests
 
+from jina import __default_host__
 from daemon.models import DaemonID
 from daemon.models.enums import WorkspaceState
 from jina.parsers import set_client_cli_parser
@@ -34,11 +35,17 @@ def get_results(
         method=method, url=url, payload={'top_k': top_k, 'data': [query]}
     )
 
+
+def _jinad_url(host: str, port: int, kind: str):
+    return f'http://{host}:{port}/{kind}'
+
+
 def create_workspace(
     filepaths: Optional[List[str]] = None,
     dirpath: Optional[str] = None,
     workspace_id: Optional[DaemonID] = None,
-    url: str = 'http://localhost:8000/workspaces'
+    host: str = __default_host__,
+    port: int = 8000
 ) -> Optional[str]:
     with ExitStack() as file_stack:
         def _to_file_tuple(path):
@@ -54,7 +61,8 @@ def create_workspace(
             print('nothing to upload')
             return
 
-        print(f'will upload files: {files_to_upload}')
+        url = _jinad_url(host, port, 'workspaces')
+        print(f'will upload files: {files_to_upload} to {url}')
         r = requests.post(url,
                           files=list(files_to_upload))
         print(f'Checking if the upload is succeeded: {r.json()}')
@@ -63,10 +71,13 @@ def create_workspace(
         workspace_id = next(iter(json_response))
         return workspace_id
 
+
 def wait_for_workspace(
     workspace_id: DaemonID,
-    url: str = 'http://localhost:8000/workspaces'
+    host: str = __default_host__,
+    port: int = 8000,
 ) -> bool:
+    url = _jinad_url(host, port, 'workspaces')
     while True:
         r = requests.get(f'{url}/{workspace_id}')
         try:
@@ -85,11 +96,14 @@ def wait_for_workspace(
             print(f'workspace creation failed. please check logs')
             return False
 
+
 def create_flow(
     workspace_id: DaemonID,
     filename: str,
-    url: str = 'http://localhost:8000/flows',
+    host: str = __default_host__,
+    port: int = 8000
 ) -> str:
+    url = _jinad_url(host, port, 'flows')
     r = requests.post(
         url,
         params={

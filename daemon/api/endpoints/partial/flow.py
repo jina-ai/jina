@@ -10,9 +10,7 @@ router = APIRouter(prefix='/flow', tags=['flow'])
 
 
 @router.get(
-    path='',
-    summary='Get the status of a running Flow',
-    response_model=PartialFlowItem
+    path='', summary='Get the status of a running Flow', response_model=PartialFlowItem
 )
 async def _status():
     return store.status
@@ -26,6 +24,9 @@ async def _status():
 )
 async def _create(filename: str, id: DaemonID, port_expose: int):
     try:
+        print(
+            f'in endpoint: filename: {filename}, id: {id}, port_expose: {port_expose}'
+        )
         return store.add(filename, id, port_expose)
     except Exception as ex:
         raise Runtime400Exception from ex

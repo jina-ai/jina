@@ -29,6 +29,7 @@ def get_workspace_path(workspace_id: 'DaemonID', *args):
     :return: the full path
     """
     from . import __root_workspace__
+
     return os.path.join(__root_workspace__, workspace_id, *[str(a) for a in args])
 
 

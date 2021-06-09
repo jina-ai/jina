@@ -6,13 +6,15 @@ services:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile
     ports:
-      - "8000:8000"
+      - "8001:8000"
     env_file:
       - tests/distributed/test_join_local_from_remote/.env
     expose:
       - 10000-60000
   pod_one:
     image: test_join_local_from_remote
+    ports:
+      - "8002:8000"
     expose:
       - 8000
       - 10000-60000
@@ -20,6 +22,8 @@ services:
       - tests/distributed/test_join_local_from_remote/.env
   pod_two:
     image: test_join_local_from_remote
+    ports:
+      - "8002:8000"
     expose:
       - 8000
       - 10000-60000
@@ -27,6 +31,8 @@ services:
       - tests/distributed/test_join_local_from_remote/.env
   pod_three:
     image: test_join_local_from_remote
+    ports:
+      - "8003:8000"
     expose:
       - 8000
       - 10000-60000

@@ -5,12 +5,7 @@ from ... import Runtime400Exception
 from ...models.enums import UpdateOperation
 from ..dependencies import FlowDepends
 from ...stores import flow_store as store
-from ...models import (
-    DaemonID,
-    ContainerItem,
-    ContainerStoreStatus,
-    FlowModel
-)
+from ...models import DaemonID, ContainerItem, ContainerStoreStatus, FlowModel
 
 router = APIRouter(prefix='/flows', tags=['flows'])
 
@@ -41,7 +36,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
             workspace_id=flow.workspace_id,
             params=flow.params,
             ports=flow.ports,
-            port_expose=flow.port_expose
+            port_expose=flow.port_expose,
         )
     except Exception as ex:
         raise Runtime400Exception from ex

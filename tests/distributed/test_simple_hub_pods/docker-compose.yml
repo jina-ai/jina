@@ -16,8 +16,11 @@ services:
       - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
   pod1:
     image: test_simple_hub_pods
+    ports:
+      - "8001:8000"
     expose:
       - 8000
       - 10000-60000
@@ -25,8 +28,11 @@ services:
       - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
   pod2:
     image: test_simple_hub_pods
+    ports:
+      - "8002:8000"
     expose:
       - 8000
       - 10000-60000
@@ -34,3 +40,4 @@ services:
       - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp

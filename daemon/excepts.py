@@ -40,8 +40,8 @@ async def daemon_runtime_exception_handler(request: Request, ex: 'Runtime400Exce
     )
 
 
-async def validation_exception_handler(request: Request, exc: 'RequestValidationError'):
+async def validation_exception_handler(request: Request, ex: 'RequestValidationError'):
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=jsonable_encoder({"detail": exc.errors(), "body": str(exc)}),
+        content=jsonable_encoder({"detail": ex.errors(), "body": str(ex)}),
     )

@@ -108,17 +108,21 @@ class PeaDepends:
         TODO: check the host_in/host_out for CONNECT sockets
         TODO: HEAD/TAIL - can `uses_before` or `uses_after` be `docker://`
         """
-        return __dockerhost__ \
-            if self.params.runtime_cls == 'ZEDRuntime' or \
-            PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL \
+        return (
+            __dockerhost__
+            if self.params.runtime_cls == 'ZEDRuntime'
+            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
             else self.params.host_in
+        )
 
     @property
     def host_out(self):
-        return __dockerhost__ \
-            if self.params.runtime_cls == 'ZEDRuntime' or \
-            PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL \
+        return (
+            __dockerhost__
+            if self.params.runtime_cls == 'ZEDRuntime'
+            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
             else self.params.host_in
+        )
 
     @cached_property
     def ports(self) -> Dict:

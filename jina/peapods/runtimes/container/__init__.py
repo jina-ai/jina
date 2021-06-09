@@ -31,8 +31,13 @@ class ContainerRuntime(ZMQRuntime):
         If yes, set host_ctrl to _docker_host, else set it to localhost
         """
         _docker_host = 'host.docker.internal'
-        return _docker_host if self.args.docker_kwargs and 'extra_hosts' in self.args.docker_kwargs and \
-            _docker_host in self.args.docker_kwargs['extra_hosts'] else self.host
+        return (
+            _docker_host
+            if self.args.docker_kwargs
+            and 'extra_hosts' in self.args.docker_kwargs
+            and _docker_host in self.args.docker_kwargs['extra_hosts']
+            else self.args.host
+        )
 
     def setup(self):
         """Run the container."""

@@ -1,4 +1,3 @@
-
 from jina.helper import colored
 from typing import Dict, List, Tuple, TYPE_CHECKING
 
@@ -12,12 +11,18 @@ from jina.docker.checker import is_error_message
 from .models import DaemonID
 from .models.enums import IDLiterals
 from .helper import id_cleaner, classproperty
-from . import __rootdir__, __dockerfiles__, __root_workspace__, jinad_args
+from . import (
+    __rootdir__,
+    __dockerfiles__,
+    __root_workspace__,
+    jinad_args,
+    __dockerhost__,
+)
 from .excepts import (
     DockerNotFoundException,
     DockerBuildException,
     DockerNetworkException,
-    DockerRunException
+    DockerRunException,
 )
 
 __flow_ready__ = 'Flow is ready to use'
@@ -35,7 +40,9 @@ class Dockerizer:
     logger = JinaLogger('Dockerizer', **vars(jinad_args))
     try:
         client: 'DockerClient' = docker.from_env()
-        raw_client: 'APIClient' = docker.APIClient(base_url='unix://var/run/docker.sock')
+        raw_client: 'APIClient' = docker.APIClient(
+            base_url='unix://var/run/docker.sock'
+        )
     except docker.errors.DockerException:
         logger.critical(
             f'docker client cannot connect to dockerd. '
@@ -94,12 +101,13 @@ class Dockerizer:
             )
             try:
                 network: 'Network' = cls.client.networks.create(
-                    name=workspace_id, driver='bridge',  # ipam=ipam_config
+                    name=workspace_id, driver='bridge', ipam=ipam_config
                 )
             except docker.errors.APIError as e:
                 import traceback
+
                 traceback.print_exc()
-                cls.logger.critical(f'API Error {e!r} during docker network creation')
+                cls.logger.critical(f'{e!r} during docker network creation')
                 raise DockerNetworkException()
         return network.id
 
@@ -155,7 +163,9 @@ class Dockerizer:
 
         metadata = workspace_store[workspace_id].metadata
         if not metadata:
-            raise DockerBuildException('Docker image not built properly, cannot proceed for run')
+            raise DockerBuildException(
+                'Docker image not built properly, cannot proceed for run'
+            )
         image = cls.client.images.get(name=metadata.image_id)
         network = metadata.network
         cls.logger.info(
@@ -172,17 +182,20 @@ class Dockerizer:
                 ports=ports,
                 detach=True,
                 command=command,
-                extra_hosts={'host.docker.internal': 'host-gateway'},
+                extra_hosts={__dockerhost__: 'host-gateway'},
             )
         except docker.errors.NotFound as e:
             cls.logger.critical(
                 f'Image {image} or Network {network} not found locally {e!r}'
             )
-            raise DockerBuildException('Docker image not built properly, cannot proceed for run')
+            raise DockerBuildException(
+                'Docker image not built properly, cannot proceed for run'
+            )
         except docker.errors.APIError as e:
             import traceback
-            traceback.print_exc()
-            cls.logger.critical(f'API Error {e!r} during docker network creation')
+
+            cls.logger.critical(traceback.format_exc())
+            cls.logger.critical(f'API Error while starting the docker container \n{e}')
             raise DockerRunException()
         return container, network, ports
 
@@ -199,10 +212,7 @@ class Dockerizer:
 
     @classmethod
     def environment(cls) -> Dict[str, str]:
-        return {
-            'JINA_LOG_WORKSPACE': '/workspace/logs',
-            'JINA_RANDOM_PORTS': 'True'
-        }
+        return {'JINA_LOG_WORKSPACE': '/workspace/logs', 'JINA_RANDOM_PORTS': 'True'}
 
     def remove(cls, id: DaemonID):
         if id.jtype == IDLiterals.JNETWORK:

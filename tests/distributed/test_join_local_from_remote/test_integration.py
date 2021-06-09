@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from jina import Document
+from jina import Document, __default_host__
 from jina.clients import Client
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
@@ -17,6 +17,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 flow_yaml = os.path.join(cur_dir, 'flow.yml')
 pod_dir = os.path.join(cur_dir, 'pods')
+
+
+JINAD_HOST = __default_host__
+GATEWAY_HOST = __default_host__
+JINAD_PORT = 8000
+GATEWAY_PORT = 45678
 
 
 @pytest.fixture
@@ -57,11 +63,11 @@ def test_flow(docker_compose, doc_to_index, client, mocker):
     client.search(inputs=[doc_to_index], on_done=mock)
     assert_request(
         method='get',
-        url=f'http://localhost:8000/flows/{flow_id}'
+        url=f'http://{JINAD_HOST}:8000/flows/{flow_id}'
     )
     assert_request(
         method='delete',
-        url=f'http://localhost:8000/flows/{flow_id}',
+        url=f'http://{JINAD_HOST}:8000/flows/{flow_id}',
         payload={'workspace': False},
     )
 

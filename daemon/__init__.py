@@ -133,6 +133,7 @@ def _start_uvicorn(app: 'FastAPI'):
     server.run()
 
     from jina import __stop_msg__
+
     daemon_logger.success(__stop_msg__)
 
 

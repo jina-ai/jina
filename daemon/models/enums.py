@@ -58,5 +58,6 @@ class UpdateOperation(DaemonEnum):
     Represents the type of operation to perform in the update
     We consider these an `update` operation since they **change** the underlying state
     """
+
     DUMP = 'dump'
     ROLLING_UPDATE = 'rolling_update'

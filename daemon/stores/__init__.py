@@ -32,6 +32,7 @@ def _get_store(kind: str):
 def _get_partial_store() -> Optional['PartialStore']:
     from ..models.enums import PartialDaemonModes
     from .partial import PartialPeaStore, PartialPodStore, PartialFlowStore
+
     if jinad_args.mode == PartialDaemonModes.PEA:
         return PartialPeaStore()
     elif jinad_args.mode == PartialDaemonModes.POD:
@@ -47,6 +48,7 @@ pod_store: PodStore = _get_store('pod')
 flow_store: FlowStore = _get_store('flow')
 workspace_store: WorkspaceStore = _get_store('workspace')
 partial_store = _get_partial_store()
+
 
 def get_store_from_id(entity_id: DaemonID) -> BaseStore:
     if entity_id.jtype == IDLiterals.JPOD:

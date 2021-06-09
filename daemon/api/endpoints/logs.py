@@ -115,7 +115,7 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 0):
         # on connection the fluentd file may not flushed (aka exist) yet
         n = 0
         while not Path(filepath).is_file():
-            daemon_logger.info(f'still waiting {filepath} to be ready...')
+            daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1
             if timeout > 0 and n >= timeout:

@@ -13,6 +13,11 @@ from ..models.partial import PartialFlowItem, PartialStoreItem, PartialStoreStat
 
 
 class PartialStore:
+    """
+    `mini-jinad` should always be managed by jinad & not by the user.
+    PartialStore creates Flows/Pods/Peas inside `mini-jinad`.
+    """
+
     _status_model = PartialStoreStatus
 
     def __init__(self):
@@ -46,29 +51,26 @@ class PartialPeaStore(PartialStore):
     _status_model = PartialStoreStatus
 
     def add(self, args: Namespace, **kwargs) -> 'DaemonID':
+        """Starts a Pea in `mini-jinad`
+
+        :return: DaemonID of the pea object
+        """
         try:
             _id = args.identity
             # This is set so that ContainerRuntime sets host_ctrl to __dockerhost__
             # and on linux machines, we can access dockerhost inside containers
-            args.docker_kwargs = {
-                'extra_hosts': {
-                    __dockerhost__: 'host-gateway'
-                }
-            }
+            args.docker_kwargs = {'extra_hosts': {__dockerhost__: 'host-gateway'}}
             self.object = self.peapod_cls(args).start()
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
         else:
-            self.status.items = PartialStoreItem(
-                arguments=vars(args)
-            )
-            self._logger.success(
-                f'{colored(_id, "cyan")} is created'
-            )
+            self.status.items = PartialStoreItem(arguments=vars(args))
+            self._logger.success(f'{colored(_id, "cyan")} is created')
             return _id
 
     def delete(self):
+        """Terminates a Pea in `mini-jinad`"""
         self.object.close()
 
 
@@ -87,6 +89,10 @@ class PartialFlowStore(PartialStore):
     def add(
         self, filename: str, id: DaemonID, port_expose: Optional[int]
     ) -> 'DaemonID':
+        """Starts a Flow in `mini-jinad`.
+
+        :return: DaemonID of the pea object
+        """
         try:
             with open(filename) as f:
                 y_spec = f.read()
@@ -102,8 +108,7 @@ class PartialFlowStore(PartialStore):
             raise
         else:
             self.status.items = PartialFlowItem(
-                arguments=vars(self.flow.args),
-                yaml_source=y_spec
+                arguments=vars(self.flow.args), yaml_source=y_spec
             )
             self._logger.success(f'{colored(id, "cyan")} is created')
             return id

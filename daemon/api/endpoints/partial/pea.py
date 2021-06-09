@@ -11,9 +11,7 @@ router = APIRouter(prefix='/pea', tags=['pea'])
 
 
 @router.get(
-    path='',
-    summary='Get status of a running Pea',
-    response_model=PartialStoreItem
+    path='', summary='Get status of a running Pea', response_model=PartialStoreItem
 )
 async def _status():
     return store.status
