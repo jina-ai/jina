@@ -114,6 +114,7 @@ class HubIO:
             self.logger.critical(f'Can not find any executors defined in {pkg_path}')
             raise Exception(f'Can not find any executors defined in {pkg_path}')
 
+        # TODO: draft commit: more elegant interation later
         choice = 0
         if len(executors) > 1:
             print('Please choose which executor you want to push:')
