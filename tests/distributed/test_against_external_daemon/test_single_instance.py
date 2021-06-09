@@ -43,9 +43,7 @@ def test_l_r_simple(silent_log, parallels, mocker):
     f = (
         Flow()
         .add(parallel=parallels)
-        .add(host=CLOUD_HOST,
-             parallel=parallels,
-             quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
     )
     with f:
         f.index(
@@ -62,13 +60,9 @@ def test_r_l_r_simple(silent_log, parallels, mocker):
 
     f = (
         Flow()
-        .add(host=CLOUD_HOST,
-             parallel=parallels,
-             quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
         .add()
-        .add(host=CLOUD_HOST,
-             parallel=parallels,
-             quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
     )
     with f:
         f.index(
@@ -85,15 +79,9 @@ def test_r_r_r_simple(silent_log, parallels, mocker):
 
     f = (
         Flow()
-        .add(host=CLOUD_HOST,
-             parallel=parallels,
-             quiet_remote_logs=silent_log)
-        .add(host=CLOUD_HOST,
-             parallel=parallels,
-             quiet_remote_logs=silent_log)
-        .add(host=CLOUD_HOST,
-             parallel=parallels,
-             quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
+        .add(host=CLOUD_HOST, parallel=parallels, quiet_remote_logs=silent_log)
     )
     with f:
         f.index(

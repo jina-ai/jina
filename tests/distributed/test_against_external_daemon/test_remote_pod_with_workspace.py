@@ -54,7 +54,7 @@ def test_upload_multiple_workspaces(parallels, mocker):
             py_modules=[_path(encoder_workspace, 'tf_encoder.py')],
             upload_files=[
                 _path(encoder_workspace, '.jinad'),
-                _path(encoder_workspace, 'requirements.txt')
+                _path(encoder_workspace, 'requirements.txt'),
             ],
         )
         .add()
@@ -66,7 +66,7 @@ def test_upload_multiple_workspaces(parallels, mocker):
             py_modules=[_path(indexer_workspace, 'tdb_indexer.py')],
             upload_files=[
                 _path(indexer_workspace, '.jinad'),
-                _path(indexer_workspace, 'requirements.txt')
+                _path(indexer_workspace, 'requirements.txt'),
             ],
         )
     )

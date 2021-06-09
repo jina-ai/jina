@@ -31,10 +31,12 @@ def test_r_l_docker(parallels, docker_image, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}',
-             host=CLOUD_HOST,
-             parallel=parallels,
-             timeout_ready=-1)
+        .add(
+            uses=f'docker://{docker_image}',
+            host=CLOUD_HOST,
+            parallel=parallels,
+            timeout_ready=-1,
+        )
         .add(parallel=parallels)
     )
     with f:
@@ -53,9 +55,7 @@ def test_l_r_docker(parallels, docker_image, mocker):
     f = (
         Flow()
         .add(parallel=parallels)
-        .add(uses=f'docker://{docker_image}',
-             host=CLOUD_HOST,
-             parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -71,13 +71,9 @@ def test_r_l_r_docker(parallels, docker_image, mocker):
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}',
-             host=CLOUD_HOST,
-             parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
         .add()
-        .add(uses=f'docker://{docker_image}',
-             host=CLOUD_HOST,
-             parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -94,15 +90,9 @@ def test_r_r_r_docker(parallels, docker_image, mocker):
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}',
-             host=CLOUD_HOST,
-             parallel=parallels)
-        .add(uses=f'docker://{docker_image}',
-             host=CLOUD_HOST,
-             parallel=parallels)
-        .add(uses=f'docker://{docker_image}',
-             host=CLOUD_HOST,
-             parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -118,10 +108,7 @@ def test_l_r_l_docker(parallels, docker_image, mocker):
     f = (
         Flow()
         .add()
-        .add(
-            uses=f'docker://{docker_image}',
-            host=CLOUD_HOST,
-            parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
         .add()
     )
     with f:
