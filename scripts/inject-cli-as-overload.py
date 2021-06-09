@@ -66,6 +66,14 @@ entries = [
         filepath='../jina/flow/base.py',
         overload_fn='__init__',
     ),
+    dict(
+        cli_entrypoint='client',
+        doc_str_title='Create a Client. Client is how user interact with Flow',
+        doc_str_return='the new Client object',
+        return_type='BaseClient',
+        filepath='../jina/clients/__init__.py',
+        overload_fn='Client',
+    ),
 ]
 
 
