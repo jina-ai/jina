@@ -565,8 +565,25 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PodAlternativeParameter"><a class="viewcode-back" href="../../../../api/jina.optimizers.parameters/#jina.optimizers.parameters.PodAlternativeParameter">[docs]</a><span class="k">class</span> <span class="nc">PodAlternativeParameter</span><span class="p">(</span><span class="n">CategoricalParameter</span><span class="p">):</span>
-    <span class="sd">"""Base class for all optimization parameters."""</span>
+<div class="viewcode-block" id="ExecutorAlternativeParameter"><a class="viewcode-back" href="../../../../api/jina.optimizers.parameters/#jina.optimizers.parameters.ExecutorAlternativeParameter">[docs]</a><span class="k">class</span> <span class="nc">ExecutorAlternativeParameter</span><span class="p">(</span><span class="n">CategoricalParameter</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Used for optimizing alternative executor parameters.</span>
+<span class="sd">    It selects from choices the same way as :class::CategoricalParameter does. Plus adds some inner parameters</span>
+<span class="sd">    that expose different `OptimizationParameters` for each of the specific options.</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            choices = ['executorA', 'executorB']</span>
+<span class="sd">            inner_parameters = {</span>
+<span class="sd">                    'executorA': [IntegerParameter(..., parameter_name='executorA_param1'),</span>
+<span class="sd">                        CategoricalParameter(..., parameter_name='executorA_param2')],</span>
+<span class="sd">                    'executorB': [IntegerParameter(..., parameter_name='executorB_param1'),</span>
+<span class="sd">                        CategoricalParameter(..., parameter_name='executorB_param2')]</span>
+<span class="sd">                    }</span>
+
+<span class="sd">            parameter = ExecutorAlternativeParameter(choices=choices, inner_parameters=inner_parameters)</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -577,10 +594,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">choices</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span>
             <span class="n">inner_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="p">),</span> <span class="s1">'Every pod alternative needs to have its set of parameters'</span>
+        <span class="p">),</span> <span class="s1">'Every executor alternative needs to have its set of parameters'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inner_parameters</span> <span class="o">=</span> <span class="n">inner_parameters</span>
 
-<div class="viewcode-block" id="PodAlternativeParameter.update_trial_params"><a class="viewcode-back" href="../../../../api/jina.optimizers.parameters/#jina.optimizers.parameters.PodAlternativeParameter.update_trial_params">[docs]</a>    <span class="k">def</span> <span class="nf">update_trial_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="s1">'Trial'</span><span class="p">,</span> <span class="n">trial_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+<div class="viewcode-block" id="ExecutorAlternativeParameter.update_trial_params"><a class="viewcode-back" href="../../../../api/jina.optimizers.parameters/#jina.optimizers.parameters.ExecutorAlternativeParameter.update_trial_params">[docs]</a>    <span class="k">def</span> <span class="nf">update_trial_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trial</span><span class="p">:</span> <span class="s1">'Trial'</span><span class="p">,</span> <span class="n">trial_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Update the trial parameters given the variables and the trials</span>
 
