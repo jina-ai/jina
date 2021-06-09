@@ -49,6 +49,7 @@ class GraphDocument(Document):
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
         }  # dangerous because document is stateless, try to work only with proto
+
         self.mime_type = 'graph'
 
     @staticmethod
@@ -84,11 +85,6 @@ class GraphDocument(Document):
         Remove a node from the graph along with the edges that may contain it
 
         :param node: the node to be removed from the graph
-
-        nodes= [1,2]
-        conectivity nodes
-        [2]
-        [5]
         """
         from scipy.sparse import coo_matrix
 
@@ -341,7 +337,7 @@ class GraphDocument(Document):
     @staticmethod
     def load_from_dgl_graph(dgl_graph: 'DGLGraph') -> 'GraphDocument':
         """
-        Construct a GraphDocument from of graph with type `dgl.DGLGraph`
+        Construct a GraphDocument from of graph with type `DGLGraph`
 
         .. # noqa: DAR201
         :param dgl_graph: the graph from which to construct a `GraphDocument`.
@@ -364,7 +360,7 @@ class GraphDocument(Document):
 
         return jina_graph
 
-    def to_dgl_graph(self) -> 'dgl.DGLGraph':
+    def to_dgl_graph(self) -> 'DGLGraph':
         """
         Construct a  `dgl.DGLGraph` from a `GraphDocument` instance.
 
