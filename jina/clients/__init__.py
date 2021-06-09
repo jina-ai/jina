@@ -1,4 +1,6 @@
 """Module wrapping the Client of Jina."""
+from typing import overload
+
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
 from .helper import callback_exec
 from .mixin import PostMixin
@@ -10,6 +12,7 @@ from ..helper import ArgNamespace
 __all__ = ['Client', 'GRPCClient', 'WebSocketClient']
 
 
+@overload
 def Client(
     host: str, port_expose: int, restful: bool = False, **kwargs
 ) -> 'BaseClient':
