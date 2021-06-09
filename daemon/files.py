@@ -52,6 +52,7 @@ class DaemonFile:
         self._build = DaemonBuild.default
         self._python = PythonVersion.default
         self._run = ''
+        self._ports = []
         self.process_file()
 
     @property
@@ -89,6 +90,14 @@ class DaemonFile:
     @run.setter
     def run(self, run: str):
         self._run = run
+
+    @property
+    def ports(self) -> List[int]:
+        return self._ports
+
+    @ports.setter
+    def ports(self, ports: List[int]):
+        self._ports = ports
 
     @cached_property
     def requirements(self) -> str:
@@ -148,6 +157,12 @@ class DaemonFile:
         self.build = params.get('build')
         self.python = params.get('python')
         self.run = params.get('run', '')
+        try:
+            ports_string = params.get('ports', '')
+            self.ports = list(map(int, filter(None, ports_string.split(','))))
+        except ValueError:
+            self._logger.warning(f'invalid value `{ports_string}` passed for \'ports\'')
+            self.ports = []
 
     def __repr__(self) -> str:
         return (
