@@ -1,16 +1,10 @@
-import json
 import os
 
 import pytest
-import yaml
-from google.protobuf.json_format import MessageToJson
 
 from jina import Document
-from jina.jaml import JAML
 from jina.optimizers import FlowOptimizer, MeanEvaluationCallback
-from jina.optimizers import run_optimizer_cli
-from jina.optimizers.flow_runner import SingleFlowRunner, MultiFlowRunner
-from jina.parsers.optimizer import set_optimizer_parser
+from jina.optimizers.flow_runner import SingleFlowRunner
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
