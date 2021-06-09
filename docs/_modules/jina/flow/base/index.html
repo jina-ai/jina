@@ -384,7 +384,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">build_required</span><span class="p">,</span> <span class="n">_build_flow</span><span class="p">,</span> <span class="n">_hanging_pods</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
@@ -446,6 +446,48 @@
 
     <span class="n">_cls_client</span> <span class="o">=</span> <span class="n">Client</span>  <span class="c1">#: the type of the Client, can be changed to other class</span>
 
+    <span class="c1"># overload_inject_start_flow</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'COLLECT'</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'./'</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors</span>
+
+<span class="sd">        :param description: The description of this object. It will be used in automatics docs UI.</span>
+<span class="sd">        :param inspect: The strategy on those inspect pods in the flow.</span>
+
+<span class="sd">          If `REMOVE` is given then all inspect pods are removed when building the flow.</span>
+<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param name: The name of this object.</span>
+
+<span class="sd">          This will be used in the following places:</span>
+<span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
+<span class="sd">          - visualization</span>
+<span class="sd">          - log message header</span>
+<span class="sd">          - automatics docs UI</span>
+<span class="sd">          - ...</span>
+
+<span class="sd">          When not given, then the default naming strategy will apply.</span>
+<span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
+<span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param uses: The YAML file represents a flow</span>
+<span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+<span class="sd">        """</span>
+
+    <span class="c1"># overload_inject_end_flow</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'argparse.Namespace'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -594,6 +636,168 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">needs</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="n">needs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
+    <span class="c1"># overload_inject_start_pod</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ctrl_with_ipc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">daemon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_public</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">host_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">memory_hwm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">on_error_strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'IGNORE'</span><span class="p">,</span>
+        <span class="n">parallel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">peas_hosts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
+        <span class="n">port_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">pull_latest</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_remote_logs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">runtime_backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PROCESS'</span><span class="p">,</span>
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ZEDRuntime'</span><span class="p">,</span>
+        <span class="n">scheduling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'LOAD_BALANCE'</span><span class="p">,</span>
+        <span class="n">socket_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PULL_BIND'</span><span class="p">,</span>
+        <span class="n">socket_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PUSH_BIND'</span><span class="p">,</span>
+        <span class="n">ssh_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssh_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssh_server</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span>
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
+        <span class="n">upload_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
+        <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_internal</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
+        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseFlow'</span><span class="p">:</span>
+        <span class="sd">"""Add an Executor to the current Flow object.</span>
+
+<span class="sd">        :param ctrl_with_ipc: If set, use ipc protocol for control socket</span>
+<span class="sd">        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing</span>
+<span class="sd">        :param description: The description of this object. It will be used in automatics docs UI.</span>
+<span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '</span>
+<span class="sd">          container.</span>
+
+<span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
+<span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
+<span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
+<span class="sd">        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</span>
+<span class="sd">        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow, and is considered with `--freeze-network-settings`</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host_in: The host address for input, by default it is 0.0.0.0</span>
+<span class="sd">        :param host_out: The host address for output, by default it is 0.0.0.0</span>
+<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</span>
+<span class="sd">        :param name: The name of this object.</span>
+
+<span class="sd">          This will be used in the following places:</span>
+<span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
+<span class="sd">          - visualization</span>
+<span class="sd">          - log message header</span>
+<span class="sd">          - automatics docs UI</span>
+<span class="sd">          - ...</span>
+
+<span class="sd">          When not given, then the default naming strategy will apply.</span>
+<span class="sd">        :param on_error_strategy: The skip strategy on exceptions.</span>
+
+<span class="sd">          - IGNORE: Ignore it, keep running all Executors in the sequel flow</span>
+<span class="sd">          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called</span>
+<span class="sd">          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all</span>
+
+<span class="sd">          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something</span>
+<span class="sd">          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</span>
+<span class="sd">        :param parallel: The number of parallel peas in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary</span>
+<span class="sd">        :param peas_hosts: The hosts of the peas when parallel greater than 1.</span>
+<span class="sd">                  Peas will be evenly distributed among the hosts. By default,</span>
+<span class="sd">                  peas are running on host provided by the argument ``host``</span>
+<span class="sd">        :param polling: The polling strategy of the Pod (when `parallel&gt;1`)</span>
+<span class="sd">          - ANY: only one (whoever is idle) Pea polls the message</span>
+<span class="sd">          - ALL: all Peas poll the message (like a broadcast)</span>
+<span class="sd">        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]</span>
+<span class="sd">        :param port_expose: The port of the host exposed to the public</span>
+<span class="sd">        :param port_in: The port for input data, default a random port between [49152, 65535]</span>
+<span class="sd">        :param port_out: The port for output data, default a random port between [49152, 65535]</span>
+<span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
+<span class="sd">        :param pull_latest: Pull the latest image before running</span>
+<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
+
+<span class="sd">          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in</span>
+<span class="sd">          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:</span>
+
+<span class="sd">          --py-modules __init__.py --py-modules B.py --py-modules A.py</span>
+<span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
+<span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param quiet_remote_logs: Do not display the streaming of remote logs on local console</span>
+<span class="sd">        :param replicas: The number of replicas in the pod, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary</span>
+<span class="sd">        :param runtime_backend: The parallel backend of the runtime inside the Pea</span>
+<span class="sd">        :param runtime_cls: The runtime class to run inside the Pea</span>
+<span class="sd">        :param scheduling: The strategy of scheduling workload among Peas</span>
+<span class="sd">        :param socket_in: The socket type for input port</span>
+<span class="sd">        :param socket_out: The socket type for output port</span>
+<span class="sd">        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.</span>
+<span class="sd">        :param ssh_password: The ssh password to the ssh server.</span>
+<span class="sd">        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.</span>
+<span class="sd">        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever</span>
+<span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever</span>
+<span class="sd">        :param upload_files: The files on the host to be uploaded to the remote</span>
+<span class="sd">          workspace. This can be useful when your Pod has more</span>
+<span class="sd">          file dependencies beyond a single YAML file, e.g.</span>
+<span class="sd">          Python files, data files.</span>
+
+<span class="sd">          Note,</span>
+<span class="sd">          - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.</span>
+<span class="sd">          - by default, `--uses` YAML file is always uploaded.</span>
+<span class="sd">          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.</span>
+<span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                      * an Executor-level YAML file path (.yml, .yaml, .jaml)</span>
+<span class="sd">                      * a docker image (must start with `docker://`)</span>
+<span class="sd">                      * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
+<span class="sd">                      * the string literal of a JSON config</span>
+
+<span class="sd">                      When use it under Python, one can use the following values additionally:</span>
+<span class="sd">                      - a Python dict that represents the config</span>
+<span class="sd">                      - a text file stream has `.read()` interface</span>
+<span class="sd">        :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`</span>
+<span class="sd">        :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`</span>
+<span class="sd">        :param uses_internal: The config runs inside the Docker container.</span>
+
+<span class="sd">          Syntax and function are the same as `--uses`. This is designed when `--uses="docker://..."` this config is passed to</span>
+<span class="sd">          the Docker container.</span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
+
+<span class="sd">          Note,</span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.</span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.</span>
+<span class="sd">          - All volumes are mounted with read-write mode.</span>
+<span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
+<span class="sd">        :param workspace_id: the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same `workspace-id`.</span>
+<span class="sd">        :return: a (new) Flow object with modification</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+<span class="sd">        """</span>
+
+    <span class="c1"># overload_inject_end_pod</span>
 <div class="viewcode-block" id="BaseFlow.add"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.flow.base.BaseFlow.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -605,14 +809,9 @@
 <span class="sd">        Add a Pod to the current Flow object and return the new modified Flow object.</span>
 <span class="sd">        The attribute of the Pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`</span>
 
-<span class="sd">        Note there are shortcut versions of this method.</span>
-<span class="sd">        Recommend to use :py:meth:`add_encoder`, :py:meth:`add_preprocessor`,</span>
-<span class="sd">        :py:meth:`add_router`, :py:meth:`add_indexer` whenever possible.</span>
-
-
 <span class="sd">        .. # noqa: DAR401</span>
 <span class="sd">        :param needs: the name of the Pod(s) that this Pod receives data from.</span>
-<span class="sd">                           One can also use 'pod.Gateway' to indicate the connection with the gateway.</span>
+<span class="sd">                           One can also use 'gateway' to indicate the connection with the gateway.</span>
 <span class="sd">        :param pod_role: the role of the Pod, used for visualization and route planning</span>
 <span class="sd">        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification</span>
 <span class="sd">        :param kwargs: other keyword-value arguments that the Pod CLI supports</span>
