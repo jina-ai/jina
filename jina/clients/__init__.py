@@ -18,6 +18,7 @@ def Client(
     :param host: Host address of the flow.
     :param port_expose: Port number of the flow.
     :param restful: If connect to a Restful gateway, default is ``False``, connect to GrpcGateway.
+    :param kwargs: Additional arguments.
     :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.
     """
     kwargs['host'] = host
