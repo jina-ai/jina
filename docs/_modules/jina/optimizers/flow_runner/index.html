@@ -377,13 +377,13 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
 
 <span class="kn">from</span> <span class="nn">..types.document.generators</span> <span class="kn">import</span> <span class="n">from_lines</span>
-<span class="kn">from</span> <span class="nn">..flow</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">..logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span> <span class="k">as</span> <span class="n">logger</span>
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
+<span class="kn">from</span> <span class="nn">..flow</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 
 <div class="viewcode-block" id="FlowRunner"><a class="viewcode-back" href="../../../../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">[docs]</a><span class="k">class</span> <span class="nc">FlowRunner</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">):</span>
@@ -393,7 +393,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">trial_parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'workspace'</span><span class="p">,</span>
-        <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
@@ -471,13 +471,13 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">trial_parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'workspace'</span><span class="p">,</span>
-        <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Running method of :class:`SingleFlowRunner`.</span>
 
-<span class="sd">        :param trial_parameters: parameters need to be tried</span>
+<span class="sd">        :param trial_parameters: parameters that need to be tried</span>
 <span class="sd">        :param workspace: path of workspace</span>
 <span class="sd">        :param callback: callback function</span>
 <span class="sd">        :param kwargs: keyword argument</span>
@@ -510,7 +510,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">trial_parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'workspace'</span><span class="p">,</span>
-        <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">callback</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>

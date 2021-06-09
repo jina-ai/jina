@@ -393,7 +393,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trial_parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Parameters to be used as context</p></li>
 <li><p><strong>workspace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Directory to be used for the flows</p></li>
-<li><p><strong>callback</strong> – Callback that will be called by the Flows. Should store the evaluation results.</p></li>
+<li><p><strong>callback</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[…, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]) – Callback that will be called by the Flows. Should store the evaluation results.</p></li>
 <li><p><strong>kwargs</strong> – Further arguments passed to the Flow(s) as <cite>context</cite></p></li>
 </ul>
 </dd>
@@ -434,9 +434,9 @@ Otherwise, the following settings will work:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>trial_parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – parameters need to be tried</p></li>
+<li><p><strong>trial_parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – parameters that need to be tried</p></li>
 <li><p><strong>workspace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path of workspace</p></li>
-<li><p><strong>callback</strong> – callback function</p></li>
+<li><p><strong>callback</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[…, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]) – callback function</p></li>
 <li><p><strong>kwargs</strong> – keyword argument</p></li>
 </ul>
 </dd>
@@ -463,7 +463,7 @@ It is an interface for common patterns like IndexFlow -&gt; SearchFlow.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trial_parameters</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – parameters need to be tried</p></li>
 <li><p><strong>workspace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – path of workspace</p></li>
-<li><p><strong>callback</strong> – callback function</p></li>
+<li><p><strong>callback</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[…, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]) – callback function</p></li>
 <li><p><strong>kwargs</strong> – keyword argument</p></li>
 </ul>
 </dd>
