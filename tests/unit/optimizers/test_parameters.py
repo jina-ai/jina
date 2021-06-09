@@ -7,7 +7,7 @@ from jina.optimizers.parameters import (
     LogUniformParameter,
     CategoricalParameter,
     DiscreteUniformParameter,
-    PodAlternativeParameter,
+    ExecutorAlternativeParameter,
 )
 
 
@@ -135,11 +135,11 @@ def test_pod_alternative_parameter(optuna_sampler):
             ),
         ],
     }
-    parameter = PodAlternativeParameter(
+    parameter = ExecutorAlternativeParameter(
         jaml_variable='JINA_DUMMY',
         choices=['pod1', 'pod2'],
         inner_parameters=inner_parameters,
-        parameter_name='podalternative',
+        parameter_name='executoralternative',
     )
 
     def objective(trial):
