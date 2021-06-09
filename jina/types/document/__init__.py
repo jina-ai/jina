@@ -49,8 +49,8 @@ if False:
     import tensorflow as tf
     import torch
 
-    EmbeddingType = TypeVar(
-        'EmbeddingType',
+    ArrayType = TypeVar(
+        'ArrayType',
         np.ndarray,
         scipy.sparse.csr_matrix,
         scipy.sparse.coo_matrix,
@@ -60,8 +60,8 @@ if False:
         tf.SparseTensor,
     )
 
-    SparseEmbeddingType = TypeVar(
-        'SparseEmbeddingType',
+    SparseArrayType = TypeVar(
+        'SparseArrayType',
         np.ndarray,
         scipy.sparse.csr_matrix,
         scipy.sparse.coo_matrix,
@@ -483,18 +483,40 @@ class Document(ProtoTypeMixin):
         self._pb_body.parent_id = str(value)
 
     @property
-    def blob(self) -> 'np.ndarray':
+    def blob(self) -> 'ArrayType':
         """Return ``blob``, one of the content form of a Document.
 
         .. note::
             Use :attr:`content` to return the content of a Document
 
+            This property will return the `blob` of the `Document` as a `Dense` or `Sparse` array depending on the actual
+            proto instance stored. In the case where the `blob` stored is sparse, it will return them as a `coo` matrix.
+            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_blob`.
+
         :return: the blob content from the proto
         """
         return NdArray(self._pb_body.blob).value
 
+    def get_sparse_blob(
+        self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
+    ) -> 'SparseArrayType':
+        """Return ``blob`` of the content of a Document as an sparse array.
+
+        :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
+        :param kwargs: Additional key value argument, for `scipy` backend, we need to set
+            the keyword `sp_format` as one of the scipy supported sparse format, such as `coo`
+            or `csr`.
+        :return: the blob from the proto as an sparse array
+        """
+        return NdArray(
+            self._pb_body.blob,
+            sparse_cls=sparse_ndarray_cls_type,
+            is_sparse=True,
+            **kwargs,
+        ).value
+
     @blob.setter
-    def blob(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def blob(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
         """Set the `blob` to :param:`value`.
 
         :param value: the array value to set the blob
@@ -502,8 +524,13 @@ class Document(ProtoTypeMixin):
         self._update_ndarray('blob', value)
 
     @property
-    def embedding(self) -> 'EmbeddingType':
+    def embedding(self) -> 'SparseArrayType':
         """Return ``embedding`` of the content of a Document.
+
+         .. note::
+            This property will return the `embedding` of the `Document` as a `Dense` or `Sparse` array depending on the actual
+            proto instance stored. In the case where the `embedding` stored is sparse, it will return them as a `coo` matrix.
+            If any other type of `sparse` type is desired, use the `:meth:`get_sparse_embedding`.
 
         :return: the embedding from the proto
         """
@@ -511,7 +538,7 @@ class Document(ProtoTypeMixin):
 
     def get_sparse_embedding(
         self, sparse_ndarray_cls_type: Type[BaseSparseNdArray], **kwargs
-    ) -> 'SparseEmbeddingType':
+    ) -> 'SparseArrayType':
         """Return ``embedding`` of the content of a Document as an sparse array.
 
         :param sparse_ndarray_cls_type: Sparse class type, such as `SparseNdArray`.
@@ -528,7 +555,7 @@ class Document(ProtoTypeMixin):
         ).value
 
     @embedding.setter
-    def embedding(self, value: Union['np.ndarray', 'jina_pb2.NdArrayProto', 'NdArray']):
+    def embedding(self, value: Union['ArrayType', 'jina_pb2.NdArrayProto', 'NdArray']):
         """Set the ``embedding`` of the content of a Document.
 
         :param value: the array value to set the embedding
@@ -542,7 +569,8 @@ class Document(ProtoTypeMixin):
             proto=getattr(self._pb_body, k),
         ).value = v
 
-    def _check_installed_array_packages(self):
+    @staticmethod
+    def _check_installed_array_packages():
         from ... import JINA_GLOBAL
 
         if JINA_GLOBAL.scipy_installed is None:
@@ -571,7 +599,7 @@ class Document(ProtoTypeMixin):
         from ... import JINA_GLOBAL
 
         v_valid_sparse_type = False
-        self._check_installed_array_packages()
+        Document._check_installed_array_packages()
 
         if JINA_GLOBAL.scipy_installed:
             import scipy
@@ -610,7 +638,6 @@ class Document(ProtoTypeMixin):
         elif isinstance(v, NdArray):
             NdArray(getattr(self._pb_body, k)).is_sparse = v.is_sparse
             NdArray(getattr(self._pb_body, k)).value = v.value
-
         else:
             v_valid_sparse_type = self._update_if_sparse(k, v)
 
