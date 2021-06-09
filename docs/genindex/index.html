@@ -305,6 +305,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
@@ -404,6 +405,8 @@
         </ul></li>
         <li><a href="../api/jina.parsers.helper/#jina.parsers.helper.add_arg_group">add_arg_group() (in module jina.parsers.helper)</a>
 </li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_edge">add_edge() (jina.types.document.graph.GraphDocument method)</a>
+</li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.add_exception">add_exception() (jina.types.message.Message method)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.add_handlers">add_handlers() (jina.logging.logger.JinaLogger method)</a>
@@ -411,6 +414,8 @@
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server">add_JinaRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
 </li>
         <li><a href="../api/jina.importer/#jina.importer.PathImporter.add_modules">add_modules() (jina.importer.PathImporter static method)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_node">add_node() (jina.types.document.graph.GraphDocument method)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.add_route">add_route() (jina.types.message.Message method)</a>
 </li>
@@ -430,6 +435,8 @@
           <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray.adjacency">(jina.types.arrays.match.MatchArray property)</a>
 </li>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.adjacency">(jina.types.document.Document property)</a>
+</li>
+          <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.adjacency">(jina.types.document.graph.GraphDocument property)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL">ALL (jina.enums.PollingType attribute)</a>
@@ -1204,6 +1211,8 @@
   <h2>E</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.edge_features">edge_features() (jina.types.document.graph.GraphDocument property)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.embedding">embedding() (jina.Document property)</a>
 
         <ul>
@@ -1415,6 +1424,10 @@
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_hashable_key">get_hashable_key() (jina.jaml.helper.JinaConstructor method)</a>
 </li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_in_degree">get_in_degree() (jina.types.document.graph.GraphDocument method)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_incoming_nodes">get_incoming_nodes() (jina.types.document.graph.GraphDocument method)</a>
+</li>
         <li><a href="../api/jina.helper/#jina.helper.get_internal_ip">get_internal_ip() (in module jina.helper)</a>
 </li>
         <li><a href="../api/daemon.parser/#daemon.parser.get_main_parser">get_main_parser() (in module daemon.parser)</a>
@@ -1425,10 +1438,14 @@
         </ul></li>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.get_non_defaults_args">get_non_defaults_args() (jina.helper.ArgNamespace static method)</a>
 </li>
-        <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.get_parsed_args">get_parsed_args() (jina.helper.ArgNamespace static method)</a>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_out_degree">get_out_degree() (jina.types.document.graph.GraphDocument method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_outgoing_nodes">get_outgoing_nodes() (jina.types.document.graph.GraphDocument method)</a>
+</li>
+        <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.get_parsed_args">get_parsed_args() (jina.helper.ArgNamespace static method)</a>
+</li>
         <li><a href="../api/jina.jaml.parsers/#jina.jaml.parsers.get_parser">get_parser() (in module jina.jaml.parsers)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_public_ip">get_public_ip() (in module jina.helper)</a>
@@ -1466,6 +1483,8 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.FlowBuildLevel.GRAPH">GRAPH (jina.enums.FlowBuildLevel attribute)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument">GraphDocument (class in jina.types.document.graph)</a>
 </li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin">GroundtruthPropertyMixin (class in jina.types.request.mixin)</a>
 </li>
@@ -2575,6 +2594,13 @@
 </li>
         </ul></li>
         <li>
+    jina.types.document.graph
+
+        <ul>
+          <li><a href="../api/jina.types.document.graph/#module-jina.types.document.graph">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.types.document.helper
 
         <ul>
@@ -2839,6 +2865,8 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAMLCompatible.load_config">load_config() (jina.jaml.JAMLCompatible class method)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.load_from_dgl_graph">load_from_dgl_graph() (jina.types.document.graph.GraphDocument static method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -3290,6 +3318,8 @@
 </li>
           <li><a href="../api/jina.types.document.generators/#module-jina.types.document.generators">jina.types.document.generators</a>
 </li>
+          <li><a href="../api/jina.types.document.graph/#module-jina.types.document.graph">jina.types.document.graph</a>
+</li>
           <li><a href="../api/jina.types.document.helper/#module-jina.types.document.helper">jina.types.document.helper</a>
 </li>
           <li><a href="../api/jina.types.document.multimodal/#module-jina.types.document.multimodal">jina.types.document.multimodal</a>
@@ -3373,6 +3403,8 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.NoAvailablePortError">NoAvailablePortError</a>
 </li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.nodes">nodes() (jina.types.document.graph.GraphDocument property)</a>
+</li>
         <li><a href="../api/jina.excepts/#jina.excepts.NoExplicitMessage">NoExplicitMessage</a>
 </li>
         <li><a href="../api/jina/#jina.Document.non_empty_fields">non_empty_fields() (jina.Document property)</a>
@@ -3408,6 +3440,10 @@
         <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.num_add">num_add (daemon.models.status.StoreStatus attribute)</a>
 </li>
         <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.num_del">num_del (daemon.models.status.StoreStatus attribute)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_edges">num_edges() (jina.types.document.graph.GraphDocument property)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_nodes">num_nodes() (jina.types.document.graph.GraphDocument property)</a>
 </li>
         <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.num_peas">num_peas() (jina.flow.base.BaseFlow property)</a>
 
@@ -3691,6 +3727,10 @@
 </li>
         <li><a href="../api/jina.docker.checker/#jina.docker.checker.remove_control_characters">remove_control_characters() (in module jina.docker.checker)</a>
 </li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.remove_edge">remove_edge() (jina.types.document.graph.GraphDocument method)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.remove_node">remove_node() (jina.types.document.graph.GraphDocument method)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.replace_enum_to_str">replace_enum_to_str() (in module jina.enums)</a>
 </li>
         <li><a href="../api/jina.types.request/#jina.types.request.Request">Request (class in jina.types.request)</a>
@@ -3737,10 +3777,10 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.RequestType">RequestType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/jina.excepts/#jina.excepts.RequestTypeError">RequestTypeError</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.excepts/#jina.excepts.RequestTypeError">RequestTypeError</a>
+</li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.reset">reset() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
@@ -4135,10 +4175,10 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.text">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.TF">TF (jina.enums.EmbeddingClsType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.RuntimeBackendType.THREAD">THREAD (jina.enums.RuntimeBackendType attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy.THROW_EARLY">THROW_EARLY (jina.enums.OnErrorStrategy attribute)</a>
@@ -4160,6 +4200,8 @@
         <li><a href="../api/jina.excepts/#jina.excepts.TimedOutException">TimedOutException</a>
 </li>
         <li><a href="../api/jina.types.document.converters/#jina.types.document.converters.to_datauri">to_datauri() (in module jina.types.document.converters)</a>
+</li>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.to_dgl_graph">to_dgl_graph() (jina.types.document.graph.GraphDocument method)</a>
 </li>
         <li><a href="../api/jina.types.document.converters/#jina.types.document.converters.to_image_blob">to_image_blob() (in module jina.types.document.converters)</a>
 </li>
@@ -4397,7 +4439,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 08, 2021.
+            Last updated on Jun 09, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

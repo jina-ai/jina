@@ -10,6 +10,7 @@
     - [EnvelopeProto](#jina.EnvelopeProto)
     - [EnvelopeProto.CompressConfigProto](#jina.EnvelopeProto.CompressConfigProto)
     - [EnvelopeProto.VersionProto](#jina.EnvelopeProto.VersionProto)
+    - [GraphProto](#jina.GraphProto)
     - [HeaderProto](#jina.HeaderProto)
     - [MessageProto](#jina.MessageProto)
     - [NamedScoreProto](#jina.NamedScoreProto)
@@ -104,6 +105,7 @@ Represents a Document
 | score | [NamedScoreProto](#jina.NamedScoreProto) |  | TODO: List of matching scores performed on the document, each element corresponds to a metric |
 | modality | [string](#string) |  | modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search |
 | evaluations | [NamedScoreProto](#jina.NamedScoreProto) | repeated | List of evaluations performed on the document, each element corresponds to a metric |
+| graph_info | [GraphProto](#jina.GraphProto) |  | Related information to be used when a Document represents a graph with its chunks as nodes |
 
 
 
@@ -164,6 +166,22 @@ Represents a the version information
 | jina | [string](#string) |  | jina&#39;s version |
 | proto | [string](#string) |  | protobuf&#39;s version |
 | vcs | [string](#string) |  | vcs&#39;s version |
+
+
+
+
+
+
+<a name="jina.GraphProto"></a>
+
+### GraphProto
+Represents a Graph
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| adjacency | [SparseNdArrayProto](#jina.SparseNdArrayProto) |  | adjacency list |
+| edge_features | [google.protobuf.Struct](#google.protobuf.Struct) |  | Container structure to store edge features |
 
 
 

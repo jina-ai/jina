@@ -306,6 +306,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
@@ -518,7 +519,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">NamedScore</span><span class="p">(</span><span class="n">operand</span><span class="p">)</span> <span class="k">for</span> <span class="n">operand</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">operands</span><span class="p">]</span>
 
 <div class="viewcode-block" id="NamedScore.set_attrs"><a class="viewcode-back" href="../../../../api/jina.types.score/#jina.types.score.NamedScore.set_attrs">[docs]</a>    <span class="k">def</span> <span class="nf">set_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Udate Document fields with key-value specified in kwargs.</span>
+        <span class="sd">"""Udate NamedScore fields with key-value specified in kwargs.</span>
 
 <span class="sd">        :param kwargs: Key-value parameters to be set</span>
 <span class="sd">        """</span>
@@ -570,7 +571,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 08, 2021.
+            Last updated on Jun 09, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

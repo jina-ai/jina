@@ -9,6 +9,7 @@ Submodules
 
    jina.types.document.converters
    jina.types.document.generators
+   jina.types.document.graph
    jina.types.document.helper
    jina.types.document.multimodal
 

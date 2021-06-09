@@ -306,6 +306,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
@@ -944,7 +945,8 @@
             <span class="n">proto</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span>
         <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
 
-    <span class="k">def</span> <span class="nf">_check_installed_array_packages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_installed_array_packages</span><span class="p">():</span>
         <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">JINA_GLOBAL</span>
 
         <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -973,7 +975,7 @@
         <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">JINA_GLOBAL</span>
 
         <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_installed_array_packages</span><span class="p">()</span>
+        <span class="n">Document</span><span class="o">.</span><span class="n">_check_installed_array_packages</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">JINA_GLOBAL</span><span class="o">.</span><span class="n">scipy_installed</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">scipy</span>
@@ -1012,7 +1014,6 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">NdArray</span><span class="p">):</span>
             <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">is_sparse</span>
             <span class="n">NdArray</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span>
-
         <span class="k">else</span><span class="p">:</span>
             <span class="n">v_valid_sparse_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_if_sparse</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
@@ -1706,7 +1707,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 08, 2021.
+            Last updated on Jun 09, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

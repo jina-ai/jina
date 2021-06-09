@@ -6,7 +6,7 @@
   <meta property="og:title" content="Protocol Documentation" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="proto/docs.html" />
-  <meta property="og:description" content="Table of Contents: jina.proto- DenseNdArrayProto, DocumentArrayProto, DocumentProto, EnvelopeProto, EnvelopeProto.CompressConfigProto, EnvelopeProto.VersionProto, HeaderProto, MessageProto, NamedSc..." />
+  <meta property="og:description" content="Table of Contents: jina.proto- DenseNdArrayProto, DocumentArrayProto, DocumentProto, EnvelopeProto, EnvelopeProto.CompressConfigProto, EnvelopeProto.VersionProto, GraphProto, HeaderProto, MessagePr..." />
   <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="prev" title="Jina Protobuf Specification" href="../" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
@@ -311,6 +311,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.helper/">jina.types.document.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
@@ -391,6 +392,7 @@
 <li><p><a class="reference external" href="#jina.EnvelopeProto">EnvelopeProto</a></p></li>
 <li><p><a class="reference external" href="#jina.EnvelopeProto.CompressConfigProto">EnvelopeProto.CompressConfigProto</a></p></li>
 <li><p><a class="reference external" href="#jina.EnvelopeProto.VersionProto">EnvelopeProto.VersionProto</a></p></li>
+<li><p><a class="reference external" href="#jina.GraphProto">GraphProto</a></p></li>
 <li><p><a class="reference external" href="#jina.HeaderProto">HeaderProto</a></p></li>
 <li><p><a class="reference external" href="#jina.MessageProto">MessageProto</a></p></li>
 <li><p><a class="reference external" href="#jina.NamedScoreProto">NamedScoreProto</a></p></li>
@@ -633,6 +635,12 @@
 <td>repeated</td>
 <td>List of evaluations performed on the document, each element corresponds to a metric</td>
 </tr>
+<tr>
+<td>graph_info</td>
+<td><a href="#jina.GraphProto">GraphProto</a></td>
+<td></td>
+<td>Related information to be used when a Document represents a graph with its chunks as nodes</td>
+</tr>
 </tbody>
 </table></div><p><a name="jina.EnvelopeProto"></a></p>
 </div>
@@ -788,6 +796,34 @@
 <td><a href="#string">string</a></td>
 <td></td>
 <td>vcs's version</td>
+</tr>
+</tbody>
+</table></div><p><a name="jina.GraphProto"></a></p>
+</div>
+<div class="section" id="graphproto">
+<h3>GraphProto<a class="headerlink" href="#graphproto" title="Permalink to this headline">¶</a></h3>
+<p>Represents a Graph</p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>adjacency</td>
+<td><a href="#jina.SparseNdArrayProto">SparseNdArrayProto</a></td>
+<td></td>
+<td>adjacency list</td>
+</tr>
+<tr>
+<td>edge_features</td>
+<td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
+<td></td>
+<td>Container structure to store edge features</td>
 </tr>
 </tbody>
 </table></div><p><a name="jina.HeaderProto"></a></p>
@@ -1551,7 +1587,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 08, 2021.
+            Last updated on Jun 09, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
@@ -1582,6 +1618,7 @@
 <li><a class="reference internal" href="#envelopeproto">EnvelopeProto</a></li>
 <li><a class="reference internal" href="#envelopeproto-compressconfigproto">EnvelopeProto.CompressConfigProto</a></li>
 <li><a class="reference internal" href="#envelopeproto-versionproto">EnvelopeProto.VersionProto</a></li>
+<li><a class="reference internal" href="#graphproto">GraphProto</a></li>
 <li><a class="reference internal" href="#headerproto">HeaderProto</a></li>
 <li><a class="reference internal" href="#messageproto">MessageProto</a></li>
 <li><a class="reference internal" href="#namedscoreproto">NamedScoreProto</a></li>
