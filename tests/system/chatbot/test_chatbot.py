@@ -1,5 +1,4 @@
 import multiprocessing as mp
-import sys
 
 import pytest
 import requests
@@ -38,4 +37,4 @@ def test_chatbot(helloworld_args, expected_result, payload, post_uri):
     resp = requests.post(post_uri, json=payload)
     assert resp.status_code == 200
     assert expected_result in resp.text
-    p.kill()
+    p.terminate()
