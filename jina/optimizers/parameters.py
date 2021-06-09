@@ -189,8 +189,25 @@ class DiscreteUniformParameter(OptimizationParameter):
         )
 
 
-class PodAlternativeParameter(CategoricalParameter):
-    """Base class for all optimization parameters."""
+class ExecutorAlternativeParameter(CategoricalParameter):
+    """
+    Used for optimizing alternative executor parameters.
+    It selects from choices the same way as :class::CategoricalParameter does. Plus adds some inner parameters
+    that expose different `OptimizationParameters` for each of the specific options.
+
+        .. highlight:: python
+        .. code-block:: python
+
+            choices = ['executorA', 'executorB']
+            inner_parameters = {
+                    'executorA': [IntegerParameter(..., parameter_name='executorA_param1'),
+                        CategoricalParameter(..., parameter_name='executorA_param2')],
+                    'executorB': [IntegerParameter(..., parameter_name='executorB_param1'),
+                        CategoricalParameter(..., parameter_name='executorB_param2')]
+                    }
+
+            parameter = ExecutorAlternativeParameter(choices=choices, inner_parameters=inner_parameters)
+    """
 
     def __init__(
         self,
@@ -201,7 +218,7 @@ class PodAlternativeParameter(CategoricalParameter):
         super().__init__(*args, **kwargs)
         assert len(self.choices) == len(
             inner_parameters.keys()
-        ), 'Every pod alternative needs to have its set of parameters'
+        ), 'Every executor alternative needs to have its set of parameters'
         self.inner_parameters = inner_parameters
 
     def update_trial_params(self, trial: 'Trial', trial_params: Dict):
