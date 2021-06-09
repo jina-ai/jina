@@ -3,9 +3,10 @@
 import argparse
 import glob
 from typing import Dict
+from pathlib import Path
 
 from .checker import *
-from .helper import archive_package
+from .helper import archive_package, inspect_executors
 from .. import __version__ as jina_version, __resources_path__
 from ..flow import Flow
 from ..helper import (
@@ -90,7 +91,6 @@ class HubIO:
 
         import requests
         import hashlib
-        from pathlib import Path
 
         is_public = False
         if self.args.public:
@@ -105,7 +105,24 @@ class HubIO:
                 f'The given executor package folder "{self.args.path}" does not exist, can not push'
             )
 
-        # validate the executor package
+        completeness = self._check_completeness()
+
+        # inspect executors in package
+        executors = inspect_executors(completeness['*.py'])
+
+        if len(executors) == 0:
+            self.logger.critical(f'Can not find any executors defined in {pkg_path}')
+            raise Exception(f'Can not find any executors defined in {pkg_path}')
+
+        choice = 0
+        if len(executors) > 1:
+            print('Please choose which executor you want to push:')
+            for i, (e, p) in enumerate(executors):
+                print(f'> [{i}]: {e} ({p})')
+            choice = int(input())
+            print(f'Your choice is: {choice}: {executors[choice]}')
+
+        executor_class, executor_py = executors[choice]
 
         try:
             # archive the executor package
@@ -119,6 +136,8 @@ class HubIO:
 
             # upload the archived package
             data = {
+                'executor_class': executor_class,
+                'executor_py': executor_py,
                 'is_public': is_public,
                 'md5sum': md5_digest,
                 'jina_version': jina_version,
@@ -151,6 +170,8 @@ class HubIO:
             )
             raise e
 
+        self.logger.success(f'🎉 {pkg_path} is now published!')
+
     def pull(self) -> None:
         """Pull docker image."""
         check_registry(self.args.registry, self.args.name, self.args.repository)
@@ -170,112 +191,60 @@ class HubIO:
             )
 
     def _check_completeness(self) -> Dict:
-        self.args.path = self._alias_to_local_path(self.args.path)
-        dockerfile_path = get_exist_path(self.args.path, self.args.file)
-        manifest_path = get_exist_path(self.args.path, 'manifest.yml')
-        self.config_yaml_path = get_exist_path(self.args.path, 'config.yml')
-        readme_path = get_exist_path(self.args.path, 'README.md')
-        requirements_path = get_exist_path(self.args.path, 'requirements.txt')
+        work_path = Path(self.args.path)
 
-        yaml_glob = set(glob.glob(os.path.join(self.args.path, '*.yml')))
-        yaml_glob.difference_update({manifest_path, self.config_yaml_path})
+        dockerfile_path = work_path / 'Dockerfile'
+        manifest_path = work_path / 'manifest.yml'
+        config_yaml_path = work_path / 'config.yml'
+        readme_path = work_path / 'README.md'
+        requirements_path = work_path / 'requirements.txt'
 
-        if not self.config_yaml_path:
-            self.config_yaml_path = yaml_glob.pop()
-
-        py_glob = glob.glob(os.path.join(self.args.path, '*.py'))
-
-        test_glob = glob.glob(os.path.join(self.args.path, 'tests/test_*.py'))
+        py_glob = list(work_path.glob('*.py'))
+        test_glob = list(work_path.glob('tests/test_*.py'))
 
         completeness = {
             'Dockerfile': dockerfile_path,
             'manifest.yml': manifest_path,
-            'config.yml': self.config_yaml_path,
+            'config.yml': config_yaml_path,
             'README.md': readme_path,
             'requirements.txt': requirements_path,
-            '*.yml': yaml_glob,
             '*.py': py_glob,
             'tests': test_glob,
         }
 
-        self.logger.info(
-            f'completeness check\n'
-            + '\n'.join(
-                f'{colored("✓", "green") if v else colored("✗", "red"):>4} {k:<20} {v}'
-                for k, v in completeness.items()
-            )
-            + '\n'
-        )
+        # self.logger.info(
+        #     f'completeness check\n'
+        #     + '\n'.join(
+        #         f'{colored("✓", "green") if v else colored("✗", "red"):>4} {k:<20} {v}'
+        #         for k, v in completeness.items()
+        #     )
+        #     + '\n'
+        # )
 
-        if not (completeness['Dockerfile'] and completeness['manifest.yml']):
-            self.logger.critical(
-                'Dockerfile or manifest.yml is not given, can not build'
-            )
-            raise FileNotFoundError(
-                'Dockerfile or manifest.yml is not given, can not build'
-            )
-
-        self.manifest = self._read_manifest(manifest_path)
+        # if not (completeness['Dockerfile'] and completeness['manifest.yml']):
+        #     self.logger.critical(
+        #         'Dockerfile or manifest.yml is not given, can not build'
+        #     )
+        #     raise FileNotFoundError(
+        #         'Dockerfile or manifest.yml is not given, can not build'
+        #     )
+        self.manifest = {}
+        if manifest_path.exists():
+            self.manifest = self._read_manifest(manifest_path)
         self.manifest['jina_version'] = jina_version
-        self.executor_name = safe_url_name(
-            f'{self.args.repository}/'
-            + f'{self.manifest["type"]}.{self.manifest["kind"]}.{self.manifest["name"]}'
-        )
-        self.tag = self.executor_name + f':{self.manifest["version"]}-{jina_version}'
+
         return completeness
 
-    def _read_manifest(self, path: str, validate: bool = True) -> Dict:
-        with open(
-            os.path.join(__resources_path__, 'hub-builder', 'manifest.yml')
-        ) as fp:
+    def _read_manifest(self, path: Path) -> Dict:
+        with open(Path(__resources_path__) / 'hub-builder' / 'manifest.yml') as fp:
             tmp = JAML.load(
                 fp
             )  # do not expand variables at here, i.e. DO NOT USE expand_dict(yaml.load(fp))
 
-        with open(path) as fp:
+        with path.open() as fp:
             tmp.update(JAML.load(fp))
 
-        if validate:
-            self._validate_manifest(tmp)
-
         return tmp
-
-    def _validate_manifest(self, manifest: Dict) -> None:
-        required = {'name', 'type', 'version'}
-
-        # check the required field in manifest
-        for r in required:
-            if r not in manifest:
-                raise ValueError(f'{r} is missing in the manifest.yaml, it is required')
-
-        # check if all fields are there
-        for r in _allowed:
-            if r not in manifest:
-                self.logger.warning(
-                    f'{r} is missing in your manifest.yml, you may want to check it'
-                )
-
-        # check name
-        check_name(manifest['name'])
-        # check_image_type
-        check_image_type(manifest['type'])
-        # check version number
-        check_version(manifest['version'])
-        # check version number
-        check_license(manifest['license'])
-        # check platform
-        if not isinstance(manifest['platform'], list):
-            manifest['platform'] = list(manifest['platform'])
-        check_platform(manifest['platform'])
-
-        # replace all chars in value to safe chars
-        for k, v in manifest.items():
-            if v and isinstance(v, str):
-                manifest[k] = remove_control_characters(v)
-
-        # show manifest key-values
-        for k, v in manifest.items():
-            self.logger.debug(f'{k}: {v}')
 
     # alias of "new" in cli
     create = new
