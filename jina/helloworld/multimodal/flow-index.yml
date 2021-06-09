@@ -3,7 +3,7 @@ version: '1'
 with:
   workspace: $HW_WORKDIR
   py_modules:
-    - executors.py
+    - my_executors.py
 executors:
   - name: segment
     uses:

@@ -143,7 +143,7 @@ class NamedScore(ProtoTypeMixin):
         return [NamedScore(operand) for operand in self._pb_body.operands]
 
     def set_attrs(self, **kwargs):
-        """Udate Document fields with key-value specified in kwargs.
+        """Udate NamedScore fields with key-value specified in kwargs.
 
         :param kwargs: Key-value parameters to be set
         """

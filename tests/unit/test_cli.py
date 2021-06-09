@@ -83,7 +83,7 @@ def test_fork(tmpdir, project):
     subprocess.check_call(['jina', 'hello', 'fork', project, f'{tmpdir}/tmp'])
 
     assert os.path.exists(f'{tmpdir}/tmp/app.py')
-    assert os.path.exists(f'{tmpdir}/tmp/executors.py')
+    assert os.path.exists(f'{tmpdir}/tmp/my_executors.py')
     if project == 'multimodal':
         assert os.path.exists(f'{tmpdir}/tmp/flow-index.yml')
         assert os.path.exists(f'{tmpdir}/tmp/flow-search.yml')

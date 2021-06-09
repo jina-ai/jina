@@ -11,9 +11,9 @@ from jina.parsers.helloworld import set_hw_chatbot_parser
 from jina.types.document.generators import from_csv
 
 if __name__ == '__main__':
-    from executors import MyTransformer, MyIndexer
+    from my_executors import MyTransformer, MyIndexer
 else:
-    from .executors import MyTransformer, MyIndexer
+    from .my_executors import MyTransformer, MyIndexer
 
 
 def hello_world(args):
