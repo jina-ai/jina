@@ -1,4 +1,6 @@
 import json
+import warnings
+from abc import abstractmethod
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -15,7 +17,6 @@ from typing import (
 
 from .traversable import TraversableSequence
 from ...helper import typename, cached_property
-from ...logging.predefined import default_logger
 from ...proto.jina_pb2 import DocumentProto, DocumentArrayProto
 
 try:
@@ -29,13 +30,69 @@ except:
         RepeatedCompositeFieldContainer as RepeatedContainer,
     )
 
-__all__ = ['DocumentArray']
+__all__ = ['DocumentArray', 'DocumentArrayGetAttrMixin']
 
 if False:
     from ..document import Document
 
 
-class DocumentArray(TraversableSequence, MutableSequence, Itr):
+class DocumentArrayGetAttrMixin:
+    """A mixin that provides attributes getter in bulk """
+
+    @abstractmethod
+    def __iter__(self):
+        ...
+
+    def get_attributes(self, *fields: str) -> Union[List, List[List]]:
+        """Return all nonempty values of the fields from all docs this array contains
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list.
+        """
+        return self.get_attributes_with_docs(*fields)[0]
+
+    def get_attributes_with_docs(
+        self,
+        *fields: str,
+    ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
+        """Return all nonempty values of the fields together with their nonempty docs
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns a tuple. The first element is  a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.
+        """
+
+        contents = []
+        docs_pts = []
+        bad_docs = []
+
+        for doc in self:
+            r = doc.get_attributes(*fields)
+            if r is None:
+                bad_docs.append(doc)
+                continue
+            contents.append(r)
+            docs_pts.append(doc)
+
+        if len(fields) > 1:
+            contents = list(map(list, zip(*contents)))
+
+        if bad_docs:
+            warnings.warn(
+                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
+                f'following fields: {fields} '
+            )
+
+        if not docs_pts:
+            warnings.warn('no documents are extracted')
+
+        return contents, DocumentArray(docs_pts)
+
+
+class DocumentArray(
+    TraversableSequence, MutableSequence, DocumentArrayGetAttrMixin, Itr
+):
     """
     :class:`DocumentArray` is a mutable sequence of :class:`Document`.
     It gives an efficient view of a list of Document. One can iterate over it like
@@ -51,7 +108,9 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     ):
         super().__init__()
         if docs_proto is not None:
-            if isinstance(docs_proto, Generator):
+            from .memmap import DocumentArrayMemmap
+
+            if isinstance(docs_proto, (Generator, DocumentArrayMemmap)):
                 self._docs_proto = list(docs_proto)
             else:
                 self._docs_proto = docs_proto
@@ -180,52 +239,6 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
         self._docs_proto.sort(*args, **kwargs)
-
-    def get_attributes(self, *fields: str) -> Union[List, List[List]]:
-        """Return all nonempty values of the fields from all docs this array contains
-
-        :param fields: Variable length argument with the name of the fields to extract
-        :return: Returns a list of the values for these fields.
-            When `fields` has multiple values, then it returns a list of list.
-        """
-        return self.get_attributes_with_docs(*fields)[0]
-
-    def get_attributes_with_docs(
-        self,
-        *fields: str,
-    ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
-        """Return all nonempty values of the fields together with their nonempty docs
-
-        :param fields: Variable length argument with the name of the fields to extract
-        :return: Returns a tuple. The first element is  a list of the values for these fields.
-            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.
-        """
-
-        contents = []
-        docs_pts = []
-        bad_docs = []
-
-        for doc in self:
-            r = doc.get_attributes(*fields)
-            if r is None:
-                bad_docs.append(doc)
-                continue
-            contents.append(r)
-            docs_pts.append(doc)
-
-        if len(fields) > 1:
-            contents = list(map(list, zip(*contents)))
-
-        if bad_docs:
-            default_logger.warning(
-                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
-                f'following fields: {fields} '
-            )
-
-        if not docs_pts:
-            default_logger.warning('no documents are extracted')
-
-        return contents, DocumentArray(docs_pts)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```

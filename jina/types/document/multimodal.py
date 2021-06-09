@@ -41,7 +41,6 @@ class MultimodalDocument(Document):
         copy: bool = False,
         **kwargs,
     ):
-
         super().__init__(document=document, copy=copy, **kwargs)
         if chunks or modality_content_map:
             if chunks:

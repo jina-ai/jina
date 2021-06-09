@@ -55,7 +55,7 @@ class SingleFlowRunner(FlowRunner):
             (e.g. a list of documents for `index` or a .jsonlines file for `index_lines`)
         :param request_size: Request size used in the flow
         :param execution_endpoint: The endpoint, `f.post(on=)` should point to
-        :param overwrite_workspace: True, means workspace created by the Flow will be overwriten with each execution.
+        :param overwrite_workspace: True, means workspace created by the Flow will be overwritten with each execution.
         :raises TypeError: When the documents are neither a `str` nor an `Iterable`
         """
         super().__init__()

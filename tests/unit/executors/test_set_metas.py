@@ -48,3 +48,28 @@ def test_default_args_from_python():
     assert isinstance(b.metas, SimpleNamespace)
     # name is always auto-assigned
     assert b.metas.name
+
+
+def test_name_python_jaml_identical():
+    # There are two different ways of importing the executors in jina 2.0.
+    # We want the executors to have the same metas.name field regardless of
+    # the way they were imported!
+
+    # First way of import using py_modules argument in jaml file
+    from jina.jaml.helper import load_py_modules
+
+    load_py_modules({'py_modules': ['metas_executors.py']})
+    from metas_executors import TestExecutor
+
+    jaml_executor = TestExecutor()
+    jaml_metas_name = jaml_executor.metas.name
+
+    # Second way of importing directly via path in python
+    from .metas_executors import TestExecutor
+
+    py_executor = TestExecutor()
+    py_metas_name = py_executor.metas.name
+
+    # Make sure that the executor meta name is equal to only the class name
+    assert jaml_metas_name == 'TestExecutor'
+    assert py_metas_name == 'TestExecutor'

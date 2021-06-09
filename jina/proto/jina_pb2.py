@@ -390,6 +390,45 @@ _NAMEDSCOREPROTO = _descriptor.Descriptor(
 )
 
 
+_GRAPHPROTO = _descriptor.Descriptor(
+  name='GraphProto',
+  full_name='jina.GraphProto',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='adjacency', full_name='jina.GraphProto.adjacency', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='edge_features', full_name='jina.GraphProto.edge_features', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=707,
+  serialized_end=812,
+)
+
+
 _DOCUMENTPROTO = _descriptor.Descriptor(
   name='DocumentProto',
   full_name='jina.DocumentProto',
@@ -535,6 +574,13 @@ _DOCUMENTPROTO = _descriptor.Descriptor(
       name='evaluations', full_name='jina.DocumentProto.evaluations', index=19,
       number=23, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='graph_info', full_name='jina.DocumentProto.graph_info', index=20,
+      number=26, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -1196,6 +1242,8 @@ _NDARRAYPROTO.fields_by_name['sparse'].containing_oneof = _NDARRAYPROTO.oneofs_b
 _SPARSENDARRAYPROTO.fields_by_name['indices'].message_type = _DENSENDARRAYPROTO
 _SPARSENDARRAYPROTO.fields_by_name['values'].message_type = _DENSENDARRAYPROTO
 _NAMEDSCOREPROTO.fields_by_name['operands'].message_type = _NAMEDSCOREPROTO
+_GRAPHPROTO.fields_by_name['adjacency'].message_type = _SPARSENDARRAYPROTO
+_GRAPHPROTO.fields_by_name['edge_features'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
 _DOCUMENTPROTO.fields_by_name['blob'].message_type = _NDARRAYPROTO
 _DOCUMENTPROTO.fields_by_name['chunks'].message_type = _DOCUMENTPROTO
 _DOCUMENTPROTO.fields_by_name['matches'].message_type = _DOCUMENTPROTO
@@ -1203,6 +1251,7 @@ _DOCUMENTPROTO.fields_by_name['tags'].message_type = google_dot_protobuf_dot_str
 _DOCUMENTPROTO.fields_by_name['embedding'].message_type = _NDARRAYPROTO
 _DOCUMENTPROTO.fields_by_name['score'].message_type = _NAMEDSCOREPROTO
 _DOCUMENTPROTO.fields_by_name['evaluations'].message_type = _NAMEDSCOREPROTO
+_DOCUMENTPROTO.fields_by_name['graph_info'].message_type = _GRAPHPROTO
 _DOCUMENTPROTO.oneofs_by_name['content'].fields.append(
   _DOCUMENTPROTO.fields_by_name['buffer'])
 _DOCUMENTPROTO.fields_by_name['buffer'].containing_oneof = _DOCUMENTPROTO.oneofs_by_name['content']
@@ -1255,6 +1304,7 @@ DESCRIPTOR.message_types_by_name['DenseNdArrayProto'] = _DENSENDARRAYPROTO
 DESCRIPTOR.message_types_by_name['NdArrayProto'] = _NDARRAYPROTO
 DESCRIPTOR.message_types_by_name['SparseNdArrayProto'] = _SPARSENDARRAYPROTO
 DESCRIPTOR.message_types_by_name['NamedScoreProto'] = _NAMEDSCOREPROTO
+DESCRIPTOR.message_types_by_name['GraphProto'] = _GRAPHPROTO
 DESCRIPTOR.message_types_by_name['DocumentProto'] = _DOCUMENTPROTO
 DESCRIPTOR.message_types_by_name['RouteProto'] = _ROUTEPROTO
 DESCRIPTOR.message_types_by_name['EnvelopeProto'] = _ENVELOPEPROTO
@@ -1292,6 +1342,13 @@ NamedScoreProto = _reflection.GeneratedProtocolMessageType('NamedScoreProto', (_
   # @@protoc_insertion_point(class_scope:jina.NamedScoreProto)
   })
 _sym_db.RegisterMessage(NamedScoreProto)
+
+GraphProto = _reflection.GeneratedProtocolMessageType('GraphProto', (_message.Message,), {
+  'DESCRIPTOR' : _GRAPHPROTO,
+  '__module__' : 'jina_pb2'
+  # @@protoc_insertion_point(class_scope:jina.GraphProto)
+  })
+_sym_db.RegisterMessage(GraphProto)
 
 DocumentProto = _reflection.GeneratedProtocolMessageType('DocumentProto', (_message.Message,), {
   'DESCRIPTOR' : _DOCUMENTPROTO,
