@@ -94,6 +94,7 @@ Represents a Document
 | blob | [NdArrayProto](#jina.NdArrayProto) |  | the ndarray of the image/audio/video document |
 | text | [string](#string) |  | a text document |
 | uri | [string](#string) |  | a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme |
+| graph | [GraphProto](#jina.GraphProto) |  | Related information to be used when a Document represents a graph with its chunks as nodes |
 | chunks | [DocumentProto](#jina.DocumentProto) | repeated | list of the sub-documents of this document (recursive structure) |
 | weight | [float](#float) |  | The weight of this document |
 | matches | [DocumentProto](#jina.DocumentProto) | repeated | the matched documents on the same level (recursive structure) |
@@ -105,7 +106,6 @@ Represents a Document
 | score | [NamedScoreProto](#jina.NamedScoreProto) |  | TODO: List of matching scores performed on the document, each element corresponds to a metric |
 | modality | [string](#string) |  | modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search |
 | evaluations | [NamedScoreProto](#jina.NamedScoreProto) | repeated | List of evaluations performed on the document, each element corresponds to a metric |
-| graph_info | [GraphProto](#jina.GraphProto) |  | Related information to be used when a Document represents a graph with its chunks as nodes |
 
 
 

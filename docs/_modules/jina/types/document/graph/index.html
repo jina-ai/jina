@@ -424,7 +424,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">document</span><span class="o">=</span><span class="n">document</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">offset</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
-        <span class="p">}</span>  <span class="c1"># dangerous because document is stateless, try to work only with proto,</span>
+        <span class="p">}</span>  <span class="c1"># dangerous because document is stateless, try to work only with proto</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_check_installed_array_packages</span><span class="p">():</span>
@@ -435,7 +435,7 @@
             <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
                 <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">pkg_name</span><span class="o">=</span><span class="s1">'scipy'</span><span class="p">,</span>
-                <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'GraphDocument needs scipy '</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'GraphDocument requires scipy to be installed for sparse matrix support.'</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="kn">import</span> <span class="nn">scipy</span>
 
@@ -448,7 +448,7 @@
 <span class="sd">        :param node: the node to be added to the graph</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">:</span>
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Document </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> is already a node of the graph"</span><span class="p">)</span>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Document </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> is already a node of the graph'</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
@@ -464,7 +464,7 @@
 
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">:</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"Trying to remove document </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> from the graph while is not a node of the graph"</span>
+                <span class="sa">f</span><span class="s1">'Trying to remove document </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1"> from the graph while is not a node of the graph'</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
@@ -477,7 +477,7 @@
             <span class="p">):</span>
                 <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset</span> <span class="ow">or</span> <span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset</span><span class="p">:</span>
                     <span class="n">edge_features_keys</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="si">}</span><span class="s2">"</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()]</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
                     <span class="n">edges_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">edge_id</span><span class="p">,</span> <span class="n">edge_features_keys</span><span class="p">))</span>
 
@@ -512,8 +512,8 @@
 <span class="sd">        """</span>
         <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="p">[</span><span class="n">doc1</span><span class="p">,</span> <span class="n">doc2</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">doc1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">doc2</span><span class="p">)</span>
 
         <span class="n">current_adjacency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span>
         <span class="n">doc1_node_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span><span class="p">[</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
@@ -535,7 +535,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span>
         <span class="k">if</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_edge_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">edge_feature_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
@@ -543,7 +543,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">edge_id</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Trying to remove edge </span><span class="si">{</span><span class="n">edge_id</span><span class="si">}</span><span class="s2"> while number of edges is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="si">}</span><span class="s2">"</span>
+                    <span class="sa">f</span><span class="s1">'Trying to remove edge </span><span class="si">{</span><span class="n">edge_id</span><span class="si">}</span><span class="s1"> while number of edges is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_edges</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
             <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">)</span>
             <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">)</span>
@@ -569,7 +569,7 @@
             <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset1</span> <span class="ow">and</span> <span class="n">col</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">==</span> <span class="n">offset2</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_remove_edge_id</span><span class="p">(</span><span class="n">edge_id</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_remove_edge_id</span><span class="p">(</span><span class="n">edge_id</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">edge_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -578,7 +578,7 @@
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">edge_features</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_features</span><span class="p">)</span>
 
     <span class="nd">@edge_features</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">edge_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
@@ -586,8 +586,8 @@
 
 <span class="sd">        :param value: a Python dict</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">edge_features</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">edge_features</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_features</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_features</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -596,16 +596,16 @@
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s2">"coo"</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
 
     <span class="nd">@adjacency</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">"coo_matrix"</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'coo_matrix'</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Set the adjacency list of this graph.</span>
 
 <span class="sd">        :param value: the float weight of the document.</span>
 <span class="sd">        """</span>
-        <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s2">"coo"</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -670,7 +670,7 @@
 
 <span class="sd">        :param value: the float weight of the document.</span>
 <span class="sd">        """</span>
-        <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph_info</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s2">"coo"</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="GraphDocument.get_outgoing_nodes"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_outgoing_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_outgoing_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChunkArray</span><span class="p">]:</span>
         <span class="sd">"""</span>
