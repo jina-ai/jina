@@ -1,4 +1,5 @@
 """Module wrapping the Client of Jina."""
+import argparse
 from typing import overload, Optional
 
 from .base import BaseClient, CallbackFnType, InputType, InputDeleteType
