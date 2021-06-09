@@ -43,7 +43,6 @@ ac_table = {
         'pea',
         'client',
         'export-api',
-        'check',
     ],
     'completions': {
         'hello fashion': [
