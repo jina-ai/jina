@@ -537,7 +537,7 @@
         <span class="c1"># `name` is important as it serves as an identifier of the executor</span>
         <span class="c1"># if not given, then set a name by the rule</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">metas</span> <span class="o">=</span> <span class="n">target</span>
 
