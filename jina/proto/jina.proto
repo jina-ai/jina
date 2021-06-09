@@ -108,7 +108,7 @@ message DocumentProto {
         string uri = 9;
 
         // Related information to be used when a Document represents a graph with its chunks as nodes
-        GraphProto graph_info = 27;
+        GraphProto graph = 27;
     }
 
     // list of the sub-documents of this document (recursive structure)

@@ -204,7 +204,7 @@ class GraphDocument(Document):
 
         .. # noqa: DAR201
         """
-        return StructView(self._pb_body.graph_info.edge_features)
+        return StructView(self._pb_body.graph.edge_features)
 
     @edge_features.setter
     def edge_features(self, value: Dict):
@@ -212,8 +212,8 @@ class GraphDocument(Document):
 
         :param value: a Python dict
         """
-        self._pb_body.graph_info.edge_features.Clear()
-        self._pb_body.graph_info.edge_features.update(value)
+        self._pb_body.graph.edge_features.Clear()
+        self._pb_body.graph.edge_features.update(value)
 
     @property
     def adjacency(self):
@@ -222,7 +222,7 @@ class GraphDocument(Document):
 
         .. # noqa: DAR201
         """
-        return SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value
+        return SparseNdArray(self._pb_body.graph.adjacency, sp_format="coo").value
 
     @adjacency.setter
     def adjacency(self, value: "coo_matrix"):
@@ -231,7 +231,7 @@ class GraphDocument(Document):
 
         :param value: the float weight of the document.
         """
-        SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value = value
+        SparseNdArray(self._pb_body.graph.adjacency, sp_format="coo").value = value
 
     @property
     def num_nodes(self) -> int:
@@ -296,7 +296,7 @@ class GraphDocument(Document):
 
         :param value: the float weight of the document.
         """
-        SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value = value
+        SparseNdArray(self._pb_body.graph.adjacency, sp_format="coo").value = value
 
     def get_outgoing_nodes(self, doc: 'Document') -> Optional[ChunkArray]:
         """
