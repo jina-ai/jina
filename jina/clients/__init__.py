@@ -34,8 +34,8 @@ def Client(
     :param restful: If set, use RESTful interface instead of gRPC as the main interface
     :param return_results: This feature is only used for AsyncClient.
 
-      If set, the results of all Requests will be returned as a list. This is useful when one wants
-      process Responses in bulk instead of using callback.
+          If set, the results of all Requests will be returned as a list. This is useful when one wants
+          process Responses in bulk instead of using callback.
     :param show_progress: If set, client will show a progress bar on receiving every request.
     :return: the new Client object
 
