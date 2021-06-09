@@ -187,12 +187,12 @@ class FlowOptimizer(JAMLCompatible):
         self._sampler = sampler
         self._direction = direction
         self._seed = seed
+        self.parameters = load_optimization_parameters(self._parameter_yaml)
 
     def _trial_parameter_sampler(self, trial: 'Trial'):
         trial_parameters = {}
-        parameters = load_optimization_parameters(self._parameter_yaml)
-        for param in parameters:
-            trial_parameters[param.jaml_variable] = param.suggest(trial)
+        for param in self.parameters:
+            param.update_trial_params(trial, trial_parameters)
 
         trial.workspace = (
             self._workspace_base_dir
