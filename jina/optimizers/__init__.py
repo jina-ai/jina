@@ -11,7 +11,7 @@ from .parameters import (
     CategoricalParameter,
     DiscreteUniformParameter,
 )
-from .parameters import load_optimization_parameters, PodAlternativeParameter
+from .parameters import load_optimization_parameters
 from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
