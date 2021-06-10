@@ -49,7 +49,7 @@ if False:
 
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
-    """Flow  is how Jina streamlines and distributes Executors. """
+    """Flow is how Jina streamlines and distributes Executors. """
 
     # overload_inject_start_flow
     @overload
