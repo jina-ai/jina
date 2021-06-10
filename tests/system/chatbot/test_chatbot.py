@@ -1,9 +1,8 @@
 import pytest
 
-from jina import Flow, Document
-from jina.helloworld.chatbot.app import hello_world
+from jina import Document
+from jina.helloworld.chatbot.app import hello_world, create_chatbot_flow
 from jina.parsers.helloworld import set_hw_chatbot_parser
-from jina.helloworld.chatbot.my_executors import MyTransformer, MyIndexer
 from tests import validate_callback
 
 
@@ -26,7 +25,7 @@ def test_chatbot_helloworld(helloworld_args):
     hello_world(helloworld_args)  # ensure no error is raised.
 
 
-def test_chatbot(tmpdir, mocker):
+def test_chatbot(tmpdir, mocker, helloworld_args):
     #  test the index and query flow.
     def validate_response(resp):
         assert len(resp.data.docs) == 1
@@ -40,11 +39,7 @@ def test_chatbot(tmpdir, mocker):
     mock_on_done = mocker.Mock()
     mock_on_fail = mocker.Mock()
 
-    flow = (
-        Flow()
-        .add(uses=MyTransformer, parallel=1)
-        .add(uses=MyIndexer, workspace=str(tmpdir))
-    )
+    flow = create_chatbot_flow(helloworld_args)
     with flow as f:
         f.index(
             inputs=Document(
