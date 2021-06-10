@@ -5,7 +5,7 @@ import time
 import pytest
 from urllib import request
 
-from jina.flow import Flow
+from jina import Flow
 from jina.proto import jina_pb2
 from jina import Document
 from jina import helper
@@ -50,7 +50,7 @@ class MockExecutor(Executor):
 
 def test_no_matches_rest(query_dict):
     port = helper.random_port()
-    with Flow(rest_api=True, port_expose=port, including_default_value_fields=True).add(
+    with Flow(restful=True, port_expose=port, including_default_value_fields=True).add(
         uses=MockExecutor
     ):
         # temporarily adding sleep

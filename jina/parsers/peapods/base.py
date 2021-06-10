@@ -6,9 +6,10 @@ from ..helper import add_arg_group, _SHOW_ALL_ARGS
 from ...helper import random_identity
 
 
-def mixin_base_ppr_parser(parser):
+def mixin_base_ppr_parser(parser, with_identity: bool = True):
     """Mixing in arguments required by pea/pod/runtime module into the given parser.
     :param parser: the parser instance to which we add arguments
+    :param with_identity: if to include identity in the parser
     """
 
     gp = add_arg_group(parser, title='Essential')
@@ -66,15 +67,15 @@ When not given, then the default naming strategy will apply.
     )
 
     # hidden CLI used for internal only
-
-    gp.add_argument(
-        '--identity',
-        type=str,
-        default=random_identity(),
-        help='A UUID string to represent the logger identity of this object'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
+    if with_identity:
+        gp.add_argument(
+            '--identity',
+            type=str,
+            default=random_identity(),
+            help='A UUID string to represent the logger identity of this object'
+            if _SHOW_ALL_ARGS
+            else argparse.SUPPRESS,
+        )
 
     gp.add_argument(
         '--workspace-id',

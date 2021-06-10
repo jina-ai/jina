@@ -3,7 +3,7 @@ version: '1'
 with:
   port_expose: 45678
   show_exc_info: true
-  rest_api: false
+  restful: false
 pods:
   - name: pod1
     host: $JINA_POD1_HOST

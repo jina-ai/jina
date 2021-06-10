@@ -7,6 +7,7 @@ from scipy.sparse import coo_matrix
 
 from jina import Document, DocumentArray
 from jina.logging.profile import TimeContext
+from jina.types.document.graph import GraphDocument
 from tests import random_docs
 
 DOCUMENTS_PER_LEVEL = 1
@@ -247,3 +248,12 @@ def test_documentarray_filter():
 
     for d in da:
         assert d.score.value > 2
+
+
+def test_da_with_graphs():
+    da = DocumentArray([GraphDocument() for _ in range(6)])
+
+    for d in da:
+        assert isinstance(d, GraphDocument) is True
+
+    assert isinstance(da[0], GraphDocument) is True

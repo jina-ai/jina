@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from jina.excepts import BadClientCallback
-from jina.flow import Flow
+from jina import Flow
 from jina.types.document.generators import from_ndarray
 
 

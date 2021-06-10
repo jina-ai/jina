@@ -227,7 +227,7 @@ class BasePea(metaclass=PeaType):
                     'environment variables should not be set when runtime="thread".'
                 )
             else:
-                os.environ.update(self._envs)
+                os.environ.update({k: str(v) for k, v in self._envs.items()})
 
     def _unset_envs(self):
         if self._envs and self.args.runtime_backend != RuntimeBackendType.THREAD:

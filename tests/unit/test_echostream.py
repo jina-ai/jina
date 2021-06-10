@@ -1,6 +1,6 @@
 import logging
 
-from jina.flow import Flow
+from jina import Flow
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
 from jina.peapods.zmq import Zmqlet

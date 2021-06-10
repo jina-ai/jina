@@ -597,21 +597,21 @@ This is useful to control `Executor` objects in the runtime.
 
 ### Asynchronous Flow
 
-`AsyncFlow` is an "async version" of the `Flow` class.
+There is also an "async version" of the `Flow` object, given by `Flow(asyncio=True)`.
 
-The quote mark represents the explicit async when using `AsyncFlow`.
+The quote mark represents the explicit async when using the Flow.
 
 While synchronous from outside, `Flow` also runs asynchronously under the hood: it manages the eventloop(s) for
-scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
+scheduling the jobs. If the user wants more control over the eventloop, then `Flow(asyncio=True)` can be used.
 
-Unlike `Flow`, `AsyncFlow` accepts input and output functions
+Unlike `Flow` object, `Flow(asyncio=True)` object accepts input and output functions
 as [async generators](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other
 asynchronous libraries (e.g. motor for MongoDB):
 
 ```python
 import asyncio
 
-from jina import AsyncFlow, Document
+from jina import Flow, Document
 
 
 async def async_inputs():
@@ -620,18 +620,18 @@ async def async_inputs():
         await asyncio.sleep(0.1)
 
 
-with AsyncFlow().add() as f:
+with Flow(asyncio=True).add() as f:
     async for resp in f.post('/', async_inputs):
         print(resp)
 ```
 
-`AsyncFlow` is particularly useful when Jina and another heavy-lifting job are running concurrently:
+`Flow(asyncio=True)` is particularly useful when Jina and another heavy-lifting job are running concurrently:
 
 ```python
 import time
 import asyncio
 
-from jina import AsyncFlow, Document, Executor, requests
+from jina import Flow, Executor, requests
 
 
 class HeavyWork(Executor):
@@ -642,7 +642,7 @@ class HeavyWork(Executor):
 
 
 async def run_async_flow_5s():
-    with AsyncFlow().add(uses=HeavyWork) as f:
+    with Flow(asyncio=True).add(uses=HeavyWork) as f:
         async for resp in f.post('/'):
             print(resp)
 
@@ -661,7 +661,7 @@ if __name__ == '__main__':
     asyncio.run(concurrent_main())
 ```
 
-`AsyncFlow` is very useful when using Jina inside a Jupyter Notebook, where it can run out-of-the-box.
+`Flow(asyncio=True)` is very useful when using Jina inside a Jupyter Notebook, where it can run out-of-the-box.
 
 
 

@@ -28,7 +28,6 @@ def _update_autocomplete():
 if __name__ == '__main__':
     _update_autocomplete()
 
-
 ac_table = {
     'commands': [
         '--help',
@@ -202,8 +201,17 @@ ac_table = {
             '--log-config',
             '--quiet',
             '--quiet-error',
-            '--identity',
+            '--host',
+            '--port-expose',
+            '--proxy',
+            '--restful',
+            '--asyncio',
+            '--request-size',
+            '--continue-on-error',
+            '--show-progress',
+            '--return-results',
             '--uses',
+            '--env',
             '--inspect',
         ],
         'ping': ['--help', '--timeout', '--retries', '--print-response'],
@@ -258,7 +266,6 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
             '--restful',
-            '--rest-api',
         ],
         'pea': [
             '--help',
@@ -311,15 +318,16 @@ ac_table = {
         ],
         'client': [
             '--help',
+            '--host',
+            '--port-expose',
+            '--proxy',
+            '--restful',
+            '--asyncio',
             '--request-size',
             '--continue-on-error',
             '--show-progress',
             '--return-results',
-            '--host',
-            '--port-expose',
-            '--proxy',
         ],
         'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
-        'check': ['--help', '--summary-exec'],
     },
 }
