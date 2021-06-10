@@ -201,7 +201,6 @@ ac_table = {
             '--log-config',
             '--quiet',
             '--quiet-error',
-            '--identity',
             '--host',
             '--port-expose',
             '--proxy',

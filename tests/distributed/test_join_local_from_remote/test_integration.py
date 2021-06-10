@@ -3,7 +3,8 @@ import os
 import pytest
 
 from jina import Document
-from jina.clients import Client, GRPCClient
+from jina.clients import Client
+from jina.clients.grpc import GRPCClient
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
 from ..helpers import create_flow, assert_request

@@ -150,9 +150,11 @@ class Flow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self._update_args(args, **kwargs)
 
         if isinstance(self.args, argparse.Namespace):
-            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
+            self.logger = JinaLogger(
+                self.__class__.__name__, **vars(self.args), **self._common_kwargs
+            )
         else:
-            self.logger = JinaLogger(self.__class__.__name__)
+            self.logger = JinaLogger(self.__class__.__name__, **self._common_kwargs)
 
     def _update_args(self, args, **kwargs):
         from ..parsers.flow import set_flow_parser
