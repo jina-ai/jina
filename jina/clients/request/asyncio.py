@@ -2,8 +2,8 @@
 
 from typing import AsyncIterator, Optional, Dict
 
+from . import GeneratorSourceType
 from .helper import _new_data_request_from_batch, _new_data_request
-from .. import GeneratorSourceType
 from ...enums import DataInputType
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger

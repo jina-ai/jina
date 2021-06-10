@@ -7,7 +7,7 @@ from ..types.document.generators import from_lines
 from ..helper import colored
 from ..logging.predefined import default_logger as logger
 from ..jaml import JAMLCompatible
-from ..flow import Flow
+from .. import Flow
 
 
 class FlowRunner(JAMLCompatible):

@@ -8,7 +8,7 @@ from jina import Executor, DocumentArray, requests as req
 from jina import helper, Document
 from jina.clients import Client
 from jina.excepts import BadClientInput
-from jina.flow import Flow
+from jina import Flow
 from jina.parsers import set_gateway_parser, set_client_cli_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
@@ -19,12 +19,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture(scope='function')
 def flow():
-    return Flow(rest_api=False).add()
+    return Flow(restful=False).add()
 
 
 @pytest.fixture(scope='function')
 def flow_with_rest_api_enabled():
-    return Flow(rest_api=True).add()
+    return Flow(restful=True).add()
 
 
 @pytest.fixture(scope='function')

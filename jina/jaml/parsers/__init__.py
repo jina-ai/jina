@@ -13,9 +13,9 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
     :return: a tuple of two elements; first is a list of all parsers, second is the legacy parser for default fallback
     """
     from ...executors import BaseExecutor
-    from ...flow import BaseFlow
+    from ...flow.base import Flow
 
-    if issubclass(cls, BaseFlow):
+    if issubclass(cls, Flow):
         return _get_flow_parser()
     elif issubclass(cls, BaseExecutor):
         return _get_exec_parser()

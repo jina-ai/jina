@@ -1,7 +1,7 @@
 import os
 
 from jina.enums import SocketType
-from jina.flow import Flow
+from jina import Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

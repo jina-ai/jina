@@ -8,12 +8,11 @@ import uuid
 import warnings
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, overload
+from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
 
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
-from ..clients.base import BaseClient
-from ..clients import GRPCClient, WebSocketClient
+from ..clients import Client
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
@@ -26,13 +25,12 @@ from ..helper import (
 )
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
-from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
-
-__all__ = ['BaseFlow']
-
+from ..parsers import set_gateway_parser, set_pod_parser
 from ..peapods import Pod
 from ..peapods.pods.compound import CompoundPod
 from ..peapods.pods.factory import PodFactory
+
+__all__ = ['Flow']
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -45,9 +43,11 @@ _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|6
 
 if False:
     from ..peapods import BasePod
+    from ..executors import BaseExecutor
+    from ..clients.base import BaseClient
 
 
-class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
+class Flow(JAMLCompatible, ExitStack, metaclass=FlowType):
     """An abstract Flow object in Jina.
 
     .. note::
@@ -69,30 +69,40 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     :param env: environment variables shared by all Pods
     """
 
-    _cls_client = (
-        GRPCClient  #: the type of the GRPCClient, can be changed to other class
-    )
-
     # overload_inject_start_flow
     @overload
     def __init__(
         self,
+        asyncio: Optional[bool] = False,
+        continue_on_error: Optional[bool] = False,
         description: Optional[str] = None,
+        env: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
+        port_expose: Optional[int] = None,
+        proxy: Optional[bool] = False,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        uses: Optional[str] = None,
+        request_size: Optional[int] = 100,
+        restful: Optional[bool] = False,
+        return_results: Optional[bool] = False,
+        show_progress: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         workspace: Optional[str] = './',
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors
 
+        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+        :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.
         :param description: The description of this object. It will be used in automatics docs UI.
+        :param env: The map of environment variables that are available inside runtime
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param inspect: The strategy on those inspect pods in the flow.
 
-          If `REMOVE` is given then all inspect pods are removed when building the flow.
+              If `REMOVE` is given then all inspect pods are removed when building the flow.
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
 
@@ -104,8 +114,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param port_expose: The port of the host exposed to the public
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param request_size: The number of Documents in each Request.
+        :param restful: If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with --restful as well.
+        :param return_results: This feature is only used for AsyncClient.
+
+          If set, the results of all Requests will be returned as a list. This is useful when one wants
+          process Responses in bulk instead of using callback.
+        :param show_progress: If set, client will show a progress bar on receiving every request.
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -118,7 +137,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         args: Optional['argparse.Namespace'] = None,
-        env: Optional[Dict] = None,
         **kwargs,
     ):
         super().__init__()
@@ -130,11 +148,13 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             'gateway'
         ]  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
-        self._env = env
+
         if isinstance(self.args, argparse.Namespace):
-            self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
+            self.logger = JinaLogger(
+                self.__class__.__name__, **vars(self.args), **self._common_kwargs
+            )
         else:
-            self.logger = JinaLogger(self.__class__.__name__)
+            self.logger = JinaLogger(self.__class__.__name__, **self._common_kwargs)
 
     def _update_args(self, args, **kwargs):
         from ..parsers.flow import set_flow_parser
@@ -144,10 +164,23 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser)
         self.args = args
-        self._common_kwargs = kwargs
+        # common args should be the ones that can not be parsed by _flow_parser
+        known_keys = vars(args)
+        self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
+
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser
         )  #: for yaml dump
+
+        from ..clients.mixin import AsyncPostMixin, PostMixin
+
+        if not isinstance(self, (AsyncPostMixin, PostMixin)):
+            base_cls = self.__class__
+            base_cls_name = self.__class__.__name__
+            if self.args.asyncio:
+                self.__class__ = type(base_cls_name, (AsyncPostMixin, base_cls), {})
+            else:
+                self.__class__ = type(base_cls_name, (PostMixin, base_cls), {})
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
@@ -213,14 +246,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                runtime_cls='GRPCRuntime'
-                if self._cls_client == GRPCClient
-                else 'RESTRuntime',
+                runtime_cls='RESTRuntime' if self.args.restful else 'GRPCRuntime',
                 pod_role=PodRoleType.GATEWAY,
-                identity=self.args.identity,
             )
         )
 
+        kwargs.update(vars(self.args))
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
@@ -228,7 +259,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def needs(
         self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """
         Add a blocker to the Flow, wait until all peas defined in **needs** completed.
 
@@ -248,7 +279,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs
         )
 
-    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
+    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Collect all hanging Pods so far and add a blocker to the Flow; wait until all handing peas completed.
 
@@ -307,15 +338,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
-        uses: Optional[str] = 'BaseExecutor',
-        uses_after: Optional[str] = None,
-        uses_before: Optional[str] = None,
-        uses_internal: Optional[str] = 'BaseExecutor',
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_internal: Optional[
+            Union[str, Type['BaseExecutor'], dict]
+        ] = 'BaseExecutor',
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         workspace_id: Optional[str] = None,
         **kwargs,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """Add an Executor to the current Flow object.
 
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
@@ -431,7 +464,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         copy_flow: bool = True,
         pod_role: 'PodRoleType' = PodRoleType.POD,
         **kwargs,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """
         Add a Pod to the current Flow object and return the new modified Flow object.
         The attribute of the Pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
@@ -504,7 +537,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return op_flow
 
-    def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'BaseFlow':
+    def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
         """Add an inspection on the last changed Pod in the Flow
 
         Internally, it adds two Pods to the Flow. But don't worry, the overhead is minimized and you
@@ -559,7 +592,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         include_last_pod: bool = True,
         *args,
         **kwargs,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
         is returned.
 
@@ -595,7 +628,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             # no inspect node is in the graph, return the current graph
             return self
 
-    def build(self, copy_flow: bool = False) -> 'BaseFlow':
+    def build(self, copy_flow: bool = False) -> 'Flow':
         """
         Build the current Flow and make it ready to use
 
@@ -668,7 +701,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
-        op_flow._update_client()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -706,8 +738,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         super().__exit__(exc_type, exc_val, exc_tb)
 
         # unset all envs to avoid any side-effect
-        if self._env:
-            for k in self._env.keys():
+        if self.args.env:
+            for k in self.args.env.keys():
                 os.unsetenv(k)
         if 'gateway' in self._pod_nodes:
             self._pod_nodes.pop('gateway')
@@ -735,8 +767,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.build(copy_flow=False)
 
         # set env only before the Pod get started
-        if self._env:
-            for k, v in self._env.items():
+        if self.args.env:
+            for k, v in self.args.env.items():
                 os.environ[k] = str(v)
 
         for k, v in self:
@@ -780,7 +812,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR201"""
         return sum(v.num_peas for v in self._pod_nodes.values())
 
-    def __eq__(self, other: 'BaseFlow') -> bool:
+    def __eq__(self, other: 'Flow') -> bool:
         """
         Compare the topology of a Flow with another Flow.
         Identification is defined by whether two flows share the same set of edges.
@@ -807,19 +839,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """Return a :class:`BaseClient` object attach to this Flow.
 
         .. # noqa: DAR201"""
-        kwargs = {}
-        kwargs.update(self._common_kwargs)
-        if 'port_expose' not in kwargs:
-            kwargs['port_expose'] = self.port_expose
-        if 'host' not in kwargs:
-            kwargs['host'] = self.host
 
-        args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
-
-        # show progress when client is used inside the flow, for better log readability
-        if 'show_progress' not in kwargs:
-            args.show_progress = True
-        return self._cls_client(args)
+        self.args.port_expose = self.port_expose
+        self.args.host = self.host
+        self.args.show_progress = True
+        return Client(self.args)
 
     @property
     def _mermaid_str(self):
@@ -941,7 +965,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         inline_display: bool = False,
         build: bool = True,
         copy_flow: bool = False,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """
         Visualize the Flow up to the current point
         If a file name is provided it will create a jpg image with that name,
@@ -1113,13 +1137,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _switch_gateway(self, gateway: str, port: int):
         restful = gateway == 'RESTRuntime'
-        client = WebSocketClient if gateway == 'RESTRuntime' else GRPCClient
 
         # globally register this at Flow level
-        self._cls_client = client
-        self._common_kwargs['restful'] = restful
+        self.args.restful = restful
         if port:
-            self._common_kwargs['port_expose'] = port
+            self.args.port_expose = port
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
@@ -1151,10 +1173,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             return list(self._pod_nodes.values())[item]
         else:
             raise TypeError(f'{typename(item)} is not supported')
-
-    def _update_client(self):
-        if self._pod_nodes['gateway'].args.restful:
-            self._cls_client = WebSocketClient
 
     @property
     def workspace(self) -> str:
@@ -1216,7 +1234,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param value: a hexadecimal UUID string
         """
         uuid.UUID(value)
-        self.args.identity = value
         # Re-initiating logger with new identity
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         for _, p in self:

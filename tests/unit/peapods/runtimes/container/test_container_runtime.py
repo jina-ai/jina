@@ -7,7 +7,7 @@ import pytest
 from jina.checker import NetworkChecker
 from jina.executors import BaseExecutor
 from jina.executors.decorators import requests
-from jina.flow import Flow
+from jina import Flow
 from jina.helper import random_name
 from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
