@@ -401,10 +401,15 @@ class GraphDocument(Document):
         return dgl.graph((source_nodes, destination_nodes))
 
     def __iter__(self) -> Iterator[Tuple['Document']]:
-        for (row, col) in zip(self.adjacency.row, self.adjacency.col):
-            yield self.nodes[row.item()], self.nodes[col.item()]
+        if self.adjacency is not None:
+            for (row, col) in zip(self.adjacency.row, self.adjacency.col):
+                yield self.nodes[row.item()], self.nodes[col.item()]
 
     def __mermaid_str__(self):
+
+        if len(self.nodes) == 0:
+            return super().__mermaid_str__()
+
         results = []
         printed_ids = set()
         _node_id_node_mermaid_id = {}
