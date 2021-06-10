@@ -2,6 +2,12 @@ import os
 import re
 import sys
 from os import path
+# Workaround for issue https://github.com/sphinx-contrib/googleanalytics/issues/2
+# Note that a warning still will be issued "unsupported object from its setup() function"
+# Remove this workaround when the issue has been resolved upstream
+import sphinx.application
+import sphinx.errors
+sphinx.application.ExtensionError = sphinx.errors.ExtensionError
 
 sys.path.insert(0, path.abspath('..'))
 
@@ -51,7 +57,6 @@ sitemap_filename = "sitemap.xml"
 googleanalytics_id = 'G-48ZDWC8GT6'
 
 html_theme_options = {
-    'analytics_id': 'UA-164627626-3',  # Provided by Google in your dashboard
     'light_logo': 'logo-light.svg',
     'dark_logo': 'logo-dark.svg',
 }
