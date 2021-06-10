@@ -1,5 +1,5 @@
-Table of contents
-**********************
+Jina Documentation
+******************
 
 .. toctree::
    :maxdepth: 2
