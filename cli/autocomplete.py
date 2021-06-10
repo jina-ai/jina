@@ -315,11 +315,11 @@ ac_table = {
             '--continue-on-error',
             '--show-progress',
             '--return-results',
+            '--restful',
             '--host',
             '--port-expose',
             '--proxy',
         ],
         'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
-        'check': ['--help', '--summary-exec'],
     },
 }

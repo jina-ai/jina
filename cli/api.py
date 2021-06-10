@@ -158,14 +158,3 @@ def optimizer(args: 'Namespace'):
     from jina.optimizers import run_optimizer_cli
 
     run_optimizer_cli(args)
-
-
-def hub(args: 'Namespace'):
-    """
-    Start a hub builder for build, push, pull
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.docker.hubio import HubIO
-
-    getattr(HubIO(args), args.hub)()
