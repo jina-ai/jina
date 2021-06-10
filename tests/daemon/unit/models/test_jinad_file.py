@@ -10,12 +10,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 @pytest.mark.parametrize(
     'workdir, expected_response',
     [
-        ('good_ws', ('devel', '3.7', '"echo Hello"')),
-        ('good_ws_filename', ('gpu', '3.9', '')),
-        ('good_ws_nofile', ('devel', '3.8', '')),
-        ('good_ws_emptyfile', ('devel', '3.8', '')),
-        ('good_ws_multiple_files', ('devel', '3.7', '"echo Hello"')),
-        ('good_ws_wrong_values', ('devel', '3.8', '')),
+        ('good_ws', ('devel', '3.7', '"echo Hello"', [12345, 123456])),
+        ('good_ws_filename', ('gpu', '3.9', '', [12345, 123456])),
+        ('good_ws_nofile', ('devel', '3.8', '', [])),
+        ('good_ws_emptyfile', ('devel', '3.8', '', [])),
+        ('good_ws_multiple_files', ('devel', '3.7', '"echo Hello"', [12345, 123456])),
+        ('good_ws_wrong_values', ('devel', '3.8', '', [])),
     ],
 )
 def test_jinad_good_ws(workdir, expected_response):
@@ -23,6 +23,7 @@ def test_jinad_good_ws(workdir, expected_response):
     assert d.build == expected_response[0]
     assert d.python == expected_response[1]
     assert d.run == expected_response[2]
+    assert d.ports == expected_response[3]
 
 
 @pytest.mark.parametrize('workdir', ['bad_ws_multiple_files'])
