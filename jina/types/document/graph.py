@@ -35,6 +35,11 @@ class GraphDocument(Document):
             it builds a view or a copy from it.
     :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
             view (i.e. weak reference) from it or a deep copy from it.
+    :param force_undirected: indicates if the actual `proto` object represented by this `GraphDocument` must be updated to set its
+            `undirected` property to `True`. Otherwise, the value providing by the `document` source or the default value is mantained.
+            This parameter is called `force_undirected` and not `undirected` to make sure that if a `valid` `DocumentSourceType` is provided
+            with an `undirected` flag set, it can be respected and not silently overriden by a missleading default. This is specially needed
+            when a `GraphDocument` is distributed to `Executors`.
     :param kwargs: further key value arguments
     """
 
@@ -42,6 +47,7 @@ class GraphDocument(Document):
         self,
         document: Optional[DocumentSourceType] = None,
         copy: bool = False,
+        force_undirected: bool = False,
         **kwargs,
     ):
         self._check_installed_array_packages()
@@ -49,6 +55,8 @@ class GraphDocument(Document):
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
         }  # dangerous because document is stateless, try to work only with proto
+        if force_undirected:
+            self.undirected = force_undirected
 
     @staticmethod
     def _check_installed_array_packages():
@@ -216,7 +224,7 @@ class GraphDocument(Document):
     @property
     def adjacency(self):
         """
-        The adjacency list for this graph,
+        The adjacency list for this graph.
 
         .. # noqa: DAR201
         """
@@ -230,6 +238,24 @@ class GraphDocument(Document):
         :param value: the float weight of the document.
         """
         SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value = value
+
+    @property
+    def undirected(self):
+        """
+        The undirected flag of this graph.
+
+        .. # noqa: DAR201
+        """
+        return self._pb_body.graph.undirected
+
+    @undirected.setter
+    def undirected(self, value: bool):
+        """
+        Set the undirected flag of this graph.
+
+        :param value: teh flag indicating wether this graph is undirected
+        """
+        self._pb_body.graph.undirected = value
 
     @property
     def num_nodes(self) -> int:
@@ -341,8 +367,10 @@ class GraphDocument(Document):
         :param dgl_graph: the graph from which to construct a `GraphDocument`.
 
         .. warning::
-        - This method only deals with the graph structure (nodes and conectivity) graph
-          features that are task specific  are ignored.
+            - This method only deals with the graph structure (nodes and conectivity) graph
+                features that are task specific  are ignored.
+            - This method has no way to know id the origin `dgl_graph` is an undirected graph, and therefore
+              the property `undirected` will by `False` by default. If you want you can set the property manually.
         """
         jina_graph = GraphDocument()
         nodeid_to_doc = {}
@@ -404,8 +432,14 @@ class GraphDocument(Document):
             dgl_graph.add_nodes(self.num_nodes)
             return dgl_graph
         else:
-            source_nodes = torch.tensor(self.adjacency.row.copy())
-            destination_nodes = torch.tensor(self.adjacency.col.copy())
+            rows = self.adjacency.row.copy()
+            cols = self.adjacency.col.copy()
+            if not self.undirected:
+                source_nodes = torch.tensor(rows)
+                destination_nodes = torch.tensor(cols)
+            else:
+                source_nodes = torch.tensor(np.concatenate((rows, cols)))
+                destination_nodes = torch.tensor(np.concatenate((cols, rows)))
 
             return dgl.graph((source_nodes, destination_nodes))
 

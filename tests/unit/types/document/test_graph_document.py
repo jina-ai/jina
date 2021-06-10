@@ -1,5 +1,7 @@
 import pytest
 
+import numpy as np
+
 from jina.types.document.graph import GraphDocument
 from jina.types.document import Document
 
@@ -159,7 +161,6 @@ def test_remove_edges(graph):
 
 
 def test_to_dgl_graph(graph):
-
     dgl_graph = graph.to_dgl_graph()
     dgl_adj_coo = dgl_graph.adjacency_matrix(scipy_fmt='coo')
 
@@ -170,7 +171,6 @@ def test_to_dgl_graph(graph):
 
 
 def test_from_dgl_graph(graph):
-
     dgl_graph = graph.to_dgl_graph()
     jina_graph = GraphDocument.load_from_dgl_graph(dgl_graph)
     assert graph.num_nodes == jina_graph.num_nodes
@@ -191,3 +191,42 @@ def test_from_dgl_graph_without_edges():
 def test_validate_iteration_graph_without_edges():
     graph = GraphDocument()
     assert len([x for x in graph]) == 0
+
+
+def test_undirected_graph():
+    graph = GraphDocument()
+    assert graph.undirected is False
+
+    undirected_graph = GraphDocument(force_undirected=True)
+    assert undirected_graph.undirected is True
+
+    graph_from_undirected_no_force = GraphDocument(undirected_graph)
+    assert graph_from_undirected_no_force.undirected is True
+
+    graph_from_undirected_proto_no_force = GraphDocument(undirected_graph.proto)
+    assert graph_from_undirected_proto_no_force.undirected is True
+
+
+def test_undirected_graph_to_dgl(graph):
+    dgl_graph = graph.to_dgl_graph()
+    dgl_adj_coo = dgl_graph.adjacency_matrix(scipy_fmt='coo')
+
+    assert dgl_graph.num_nodes() == graph.num_nodes
+    assert dgl_graph.num_edges() == graph.num_edges
+    assert (graph.adjacency.row == dgl_adj_coo.row).all()
+    assert (graph.adjacency.col == dgl_adj_coo.col).all()
+
+    undirected_graph = GraphDocument(graph, force_undirected=True)
+    dgl_undirected_graph = undirected_graph.to_dgl_graph()
+    dgl_undirected_adj_coo = dgl_undirected_graph.adjacency_matrix(scipy_fmt='coo')
+
+    assert dgl_undirected_graph.num_nodes() == graph.num_nodes
+    assert dgl_undirected_graph.num_edges() == graph.num_edges * 2
+    assert (
+        np.concatenate((undirected_graph.adjacency.row, undirected_graph.adjacency.col))
+        == dgl_undirected_adj_coo.row
+    ).all()
+    assert (
+        np.concatenate((undirected_graph.adjacency.col, undirected_graph.adjacency.row))
+        == dgl_undirected_adj_coo.col
+    ).all()
