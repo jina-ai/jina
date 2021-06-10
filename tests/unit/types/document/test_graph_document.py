@@ -178,6 +178,13 @@ def test_from_dgl_graph(graph):
     assert (graph.adjacency.col == jina_graph.adjacency.col).all()
     assert (graph.adjacency.col == jina_graph.adjacency.col).all()
 
+    from dgl import DGLGraph
+
+    dummy_graph = DGLGraph()
+    dummy_graph.add_nodes(2)
+    jina_graph = GraphDocument.load_from_dgl_graph(dummy_graph)
+    assert jina_graph.num_nodes == 2
+
 
 def test_validate_iteration_graph_without_edges():
     graph = GraphDocument()
