@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 4
 
    jina.clients
-   jina.docker
    jina.executors
    jina.flow
    jina.helloworld
