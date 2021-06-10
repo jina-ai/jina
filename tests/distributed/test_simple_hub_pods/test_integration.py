@@ -31,8 +31,10 @@ def test_simple_hub_pods(docker_compose):
 
     assert expected_text + ' hurray' * 2 == response['data']['docs'][0]['text']
 
-    assert_request(method='get', url=f'http://{JINAD_HOST}:{JINAD_PORT}/flow/{flow_id}')
+    assert_request(
+        method='get', url=f'http://{JINAD_HOST}:{JINAD_PORT}/flows/{flow_id}'
+    )
     assert_request(
         method='delete',
-        url=f'http://{JINAD_HOST}:{JINAD_PORT}/flow/{flow_id}',
+        url=f'http://{JINAD_HOST}:{JINAD_PORT}/flows/{flow_id}',
     )
