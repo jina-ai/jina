@@ -41,7 +41,7 @@ def _cli_to_schema(
         if p['name'] == 'log_config':
             pv['default_literal'] = None
         if p['name'].startswith('uses'):
-            pv['type'] = 'Union[str, Type[BaseExecutor], dict]'
+            pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
 
@@ -128,7 +128,7 @@ entries = [
         cli_entrypoint='pod',
         doc_str_title='Add an Executor to the current Flow object.',
         doc_str_return='a (new) Flow object with modification',
-        return_type='BaseFlow',
+        return_type='Flow',
         filepath='../jina/flow/base.py',
         overload_fn='add',
         class_method=True,  # if it is a method inside class.

@@ -47,7 +47,8 @@ def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    mixin_base_ppr_parser(parser)
+    mixin_base_ppr_parser(parser, with_identity=False)
+
     parser.set_defaults(workspace='./')
 
     mixin_remote_parser(parser)

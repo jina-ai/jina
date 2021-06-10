@@ -165,7 +165,7 @@ from jina.executors import BaseExecutor as Executor
 from jina.executors.decorators import requests
 
 # Flow
-from jina.flow.base import BaseFlow as Flow
+from jina.flow.base import Flow
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)

@@ -2,7 +2,7 @@ from typing import Dict, Any, Type
 
 from ..base import VersionedYAMLParser
 from ....enums import PodRoleType
-from ....flow.base import BaseFlow
+from ....flow.base import Flow
 from ....helper import expand_env_var, ArgNamespace
 from ....parsers import set_gateway_parser, set_pod_parser
 
@@ -12,7 +12,7 @@ class LegacyParser(VersionedYAMLParser):
 
     version = 'legacy'  # the version number this parser designed for
 
-    def parse(self, cls: Type['BaseFlow'], data: Dict) -> 'BaseFlow':
+    def parse(self, cls: Type['Flow'], data: Dict) -> 'Flow':
         """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
@@ -35,7 +35,7 @@ class LegacyParser(VersionedYAMLParser):
 
         return obj
 
-    def dump(self, data: 'BaseFlow') -> Dict:
+    def dump(self, data: 'Flow') -> Dict:
         """
         :param data: versioned flow object
         :return: the dictionary given a versioned flow object

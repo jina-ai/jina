@@ -1,8 +1,8 @@
-from .base import BaseFlow
+from .base import Flow
 from ..clients.mixin import AsyncPostMixin
 
 
-class AsyncFlow(AsyncPostMixin, BaseFlow):
+class AsyncFlow(AsyncPostMixin, Flow):
     """
     .. warning::
         This class is deprecated, use `Flow(asyncio=True)`

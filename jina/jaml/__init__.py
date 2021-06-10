@@ -515,9 +515,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     no_tag_yml,
                     extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
                 )
-            from ..flow.base import BaseFlow
+            from ..flow.base import Flow
 
-            if issubclass(cls, BaseFlow):
+            if issubclass(cls, Flow):
                 tag_yml = JAML.unescape(
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,

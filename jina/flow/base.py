@@ -30,7 +30,7 @@ from ..peapods import Pod
 from ..peapods.pods.compound import CompoundPod
 from ..peapods.pods.factory import PodFactory
 
-__all__ = ['BaseFlow']
+__all__ = ['Flow']
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -47,7 +47,7 @@ if False:
     from ..clients.base import BaseClient
 
 
-class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
+class Flow(JAMLCompatible, ExitStack, metaclass=FlowType):
     """An abstract Flow object in Jina.
 
     .. note::
@@ -89,7 +89,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         restful: Optional[bool] = False,
         return_results: Optional[bool] = False,
         show_progress: Optional[bool] = False,
-        uses: Optional[Union[str, Type[BaseExecutor], dict]] = None,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         workspace: Optional[str] = './',
         **kwargs,
     ):
@@ -250,13 +250,14 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
         kwargs.update(vars(self.args))
+        kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         self._pod_nodes[pod_name] = Pod(args, needs)
 
     def needs(
         self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """
         Add a blocker to the Flow, wait until all peas defined in **needs** completed.
 
@@ -276,7 +277,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             name=name, needs=needs, pod_role=PodRoleType.JOIN, *args, **kwargs
         )
 
-    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'BaseFlow':
+    def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Collect all hanging Pods so far and add a blocker to the Flow; wait until all handing peas completed.
 
@@ -335,15 +336,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
-        uses: Optional[Union[str, Type[BaseExecutor], dict]] = 'BaseExecutor',
-        uses_after: Optional[Union[str, Type[BaseExecutor], dict]] = None,
-        uses_before: Optional[Union[str, Type[BaseExecutor], dict]] = None,
-        uses_internal: Optional[Union[str, Type[BaseExecutor], dict]] = 'BaseExecutor',
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_internal: Optional[
+            Union[str, Type['BaseExecutor'], dict]
+        ] = 'BaseExecutor',
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         workspace_id: Optional[str] = None,
         **kwargs,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """Add an Executor to the current Flow object.
 
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
@@ -459,7 +462,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         copy_flow: bool = True,
         pod_role: 'PodRoleType' = PodRoleType.POD,
         **kwargs,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """
         Add a Pod to the current Flow object and return the new modified Flow object.
         The attribute of the Pod can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
@@ -532,7 +535,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return op_flow
 
-    def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'BaseFlow':
+    def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
         """Add an inspection on the last changed Pod in the Flow
 
         Internally, it adds two Pods to the Flow. But don't worry, the overhead is minimized and you
@@ -587,7 +590,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         include_last_pod: bool = True,
         *args,
         **kwargs,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """Gather all inspect Pods output into one Pod. When the Flow has no inspect Pod then the Flow itself
         is returned.
 
@@ -623,7 +626,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             # no inspect node is in the graph, return the current graph
             return self
 
-    def build(self, copy_flow: bool = False) -> 'BaseFlow':
+    def build(self, copy_flow: bool = False) -> 'Flow':
         """
         Build the current Flow and make it ready to use
 
@@ -807,7 +810,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         .. # noqa: DAR201"""
         return sum(v.num_peas for v in self._pod_nodes.values())
 
-    def __eq__(self, other: 'BaseFlow') -> bool:
+    def __eq__(self, other: 'Flow') -> bool:
         """
         Compare the topology of a Flow with another Flow.
         Identification is defined by whether two flows share the same set of edges.
@@ -960,7 +963,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         inline_display: bool = False,
         build: bool = True,
         copy_flow: bool = False,
-    ) -> 'BaseFlow':
+    ) -> 'Flow':
         """
         Visualize the Flow up to the current point
         If a file name is provided it will create a jpg image with that name,
@@ -1229,7 +1232,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         :param value: a hexadecimal UUID string
         """
         uuid.UUID(value)
-        self.args.identity = value
         # Re-initiating logger with new identity
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         for _, p in self:

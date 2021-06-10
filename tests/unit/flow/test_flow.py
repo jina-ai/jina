@@ -415,14 +415,6 @@ def test_flow_with_publish_driver(mocker, restful):
     validate_callback(response_mock, validate)
 
 
-def test_flow_arguments_priorities():
-    f = Flow(port_expose=12345).add(name='test', port_expose=23456)
-    assert f._pod_nodes['test'].args.port_expose == 23456
-
-    f = Flow(port_expose=12345).add(name='test')
-    assert f._pod_nodes['test'].args.port_expose == 12345
-
-
 @pytest.mark.parametrize('restful', [False])
 def test_flow_arbitrary_needs(restful):
     f = (
@@ -559,7 +551,6 @@ def test_flow_identity():
     f.identity = new_id
     assert len(set(f.identity.values())) == 1
     assert list(f.identity.values())[0] == new_id
-    assert f.args.identity == new_id
 
 
 def test_flow_identity_override():

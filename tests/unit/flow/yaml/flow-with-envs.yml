@@ -1,7 +1,8 @@
 !Flow
 version: '1'
-env:
-  key_parent: value3  # all pods share this env var
+with:
+  env:
+    key_parent: value3  # all pods share this env var
 pods:
   - uses: EnvChecker1
     env:
