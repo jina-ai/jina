@@ -12,7 +12,8 @@ from typing import Optional, Union, Tuple, List, Set, Dict, overload
 
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
-from ..clients import Client, WebSocketClient
+from ..clients.base import BaseClient
+from ..clients import GRPCClient, WebSocketClient
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
@@ -68,7 +69,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     :param env: environment variables shared by all Pods
     """
 
-    _cls_client = Client  #: the type of the Client, can be changed to other class
+    _cls_client = (
+        GRPCClient  #: the type of the GRPCClient, can be changed to other class
+    )
 
     # overload_inject_start_flow
     @overload
@@ -211,7 +214,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                 runtime_cls='GRPCRuntime'
-                if self._cls_client == Client
+                if self._cls_client == GRPCClient
                 else 'RESTRuntime',
                 pod_role=PodRoleType.GATEWAY,
                 identity=self.args.identity,
@@ -800,8 +803,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @property
     @build_required(FlowBuildLevel.GRAPH)
-    def client(self) -> 'Client':
-        """Return a :class:`Client` object attach to this Flow.
+    def client(self) -> 'BaseClient':
+        """Return a :class:`BaseClient` object attach to this Flow.
 
         .. # noqa: DAR201"""
         kwargs = {}
@@ -816,7 +819,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         # show progress when client is used inside the flow, for better log readability
         if 'show_progress' not in kwargs:
             args.show_progress = True
-
         return self._cls_client(args)
 
     @property
@@ -1093,7 +1095,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         self.logger.info('\n' + '\n'.join(address_table))
 
     def block(self):
-        """Block the process until user hits KeyboardInterrupt """
+        """Block the process until user hits KeyboardInterrupt"""
         try:
             threading.Event().wait()
         except KeyboardInterrupt:
@@ -1111,7 +1113,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _switch_gateway(self, gateway: str, port: int):
         restful = gateway == 'RESTRuntime'
-        client = WebSocketClient if gateway == 'RESTRuntime' else Client
+        client = WebSocketClient if gateway == 'RESTRuntime' else GRPCClient
 
         # globally register this at Flow level
         self._cls_client = client

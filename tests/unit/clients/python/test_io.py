@@ -17,6 +17,11 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope='function')
+def client():
+    return Client(host='localhost', port_expose=123456)
+
+
+@pytest.fixture(scope='function')
 def filepath(tmpdir):
     input_filepath = os.path.join(tmpdir, 'input_file.csv')
     with open(input_filepath, 'w') as input_file:
@@ -148,8 +153,8 @@ def test_input_lines_with_jsonlines_docs_groundtruth():
         ('*.*', True, None, 0.5, None),
     ],
 )
-def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
-    Client.check_input(
+def test_input_files(patterns, recursive, size, sampling_rate, read_mode, client):
+    client.check_input(
         from_files(
             patterns=patterns,
             recursive=recursive,
@@ -160,13 +165,13 @@ def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
     )
 
 
-def test_input_files_with_invalid_read_mode():
+def test_input_files_with_invalid_read_mode(client):
     with pytest.raises(BadClientInput):
-        Client.check_input(from_files(patterns='*.*', read_mode='invalid'))
+        client.check_input(from_files(patterns='*.*', read_mode='invalid'))
 
 
 @pytest.mark.parametrize(
     'array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']]
 )
-def test_input_numpy(array):
-    Client.check_input(from_ndarray(array))
+def test_input_numpy(array, client):
+    client.check_input(from_ndarray(array))
