@@ -1,3 +1,4 @@
+import inspect
 import os
 
 import numpy as np
@@ -719,3 +720,9 @@ def test_flow_common_kwargs():
         restful=True, continue_on_error=False, something_random=True, asyncio=False
     ).add() as f:
         assert f._common_kwargs == {'something_random': True}
+
+
+@pytest.mark.parametrize('is_async', [True, False])
+def test_flow_set_asyncio_switch_post(is_async):
+    f = Flow(asyncio=is_async)
+    assert inspect.isasyncgenfunction(f.post) == is_async

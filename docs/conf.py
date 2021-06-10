@@ -2,6 +2,12 @@ import os
 import re
 import sys
 from os import path
+# Workaround for issue https://github.com/sphinx-contrib/googleanalytics/issues/2
+# Note that a warning still will be issued "unsupported object from its setup() function"
+# Remove this workaround when the issue has been resolved upstream
+import sphinx.application
+import sphinx.errors
+sphinx.application.ExtensionError = sphinx.errors.ExtensionError
 
 sys.path.insert(0, path.abspath('..'))
 
@@ -48,9 +54,9 @@ html_baseurl = 'https://docs2.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
+googleanalytics_id = 'G-48ZDWC8GT6'
 
 html_theme_options = {
-    'analytics_id': 'UA-164627626-3',  # Provided by Google in your dashboard
     'light_logo': 'logo-light.svg',
     'dark_logo': 'logo-dark.svg',
 }
@@ -78,7 +84,6 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
-    'sphinx_rtd_theme',
     'recommonmark',
     'sphinx_markdown_tables',
     'sphinx_copybutton',
@@ -86,6 +91,7 @@ extensions = [
     'sphinx_sitemap',
     'sphinx.ext.intersphinx',
     'sphinxext.opengraph',
+    'sphinxcontrib.googleanalytics'
 ]
 
 # -- Custom 404 page
@@ -135,6 +141,20 @@ linkcheck_timeout = 20
 linkcheck_retries = 2
 linkcheck_anchors = False
 
+ogp_site_url = 'https://docs2.jina.ai/'
+ogp_image = 'https://docs2.jina.ai/banner.png'
+ogp_use_first_image = True
+ogp_description_length = 300
+ogp_type = 'website'
+ogp_site_name = 'Jina Documentation'
+
+ogp_custom_meta_tags = [
+    '<meta name="twitter:card" content="summary_large_image">',
+    '<meta name="twitter:site" content="@JinaAI_">',
+    '<meta name="twitter:creator" content="@JinaAI_">',
+    '<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+    '<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+]
 
 def setup(app):
     from sphinx.domains.python import PyField
