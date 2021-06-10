@@ -270,6 +270,10 @@ class JAML:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
                 v = v.format(root=expand_map, this=p, ENV=env_map)
+            except AttributeError as ex:
+                raise AttributeError(
+                    'variable replacement is failed, please check your YAML file.'
+                ) from ex
             except KeyError:
                 pass
 
