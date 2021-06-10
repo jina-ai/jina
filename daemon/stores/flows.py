@@ -17,10 +17,14 @@ class FlowStore(ContainerStore):
 
             r = requests.post(url=f'{self.host}/{self._kind}', params=params)
             if r.status_code != requests.codes.created:
-                raise Runtime400Exception(f'Flow creation failed {r.json()}')
+                raise Runtime400Exception(
+                    f'{self._kind.title()} creation failed \n{r.json()}'
+                )
         except requests.exceptions.RequestException as ex:
             self._logger.error(f'{ex!r}')
-            raise
+            raise Runtime400Exception(
+                f'{self._kind.title()} creation failed: {r.json()}'
+            )
 
     def _update(self):
         try:
@@ -34,10 +38,13 @@ class FlowStore(ContainerStore):
         try:
             r = requests.delete(url=f'{self.host}/{self._kind}')
             if r.status_code != requests.codes.ok:
-                self._logger.critical(f'')
-                raise Runtime400Exception(f'Flow deletion failed {r.json()}')
+                raise Runtime400Exception(
+                    f'{self._kind.title()} deletion failed: {r.json()}'
+                )
         except requests.exceptions.RequestException as ex:
-            raise
+            raise Runtime400Exception(
+                f'{self._kind.title()} deletion failed: {r.json()}'
+            )
 
     def update(self, id: DaemonID) -> DaemonID:
         # TODO

@@ -100,7 +100,7 @@ class ConnectionManager:
 
 
 @router.websocket('/logstream/{log_id}')
-async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 0):
+async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 30):
     manager = ConnectionManager()
     await manager.connect(websocket)
     client_details = _websocket_details(websocket)
@@ -114,11 +114,17 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 0):
 
         # on connection the fluentd file may not flushed (aka exist) yet
         n = 0
-        while not Path(filepath).is_file():
+        while (
+            not Path(filepath).is_file()
+            and websocket.application_state == WebSocketState.CONNECTED
+        ):
             daemon_logger.debug(f'still waiting {filepath} to be ready...')
             await asyncio.sleep(1)
             n += 1
             if timeout > 0 and n >= timeout:
+                daemon_logger.error(
+                    f'waited for {timeout} secs for {filepath} to be ready, exiting'
+                )
                 return
 
         daemon_logger.success(f'{filepath} is ready for streaming')

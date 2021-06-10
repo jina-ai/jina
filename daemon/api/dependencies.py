@@ -149,7 +149,6 @@ class PeaDepends:
 
     def validate(self):
         # Each pea is inside a container
-        # TODO: Handle host if pea uses a docker image
         self.params.host_in = self.host_in
         self.params.host_out = self.host_out
         self.params.identity = self.id

@@ -35,7 +35,7 @@ def test_upload_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1])
+@pytest.mark.parametrize('parallels', [1, 2])
 def test_upload_multiple_workspaces(parallels, mocker):
     response_mock = mocker.Mock()
     encoder_workspace = 'tf_encoder_ws'
@@ -57,7 +57,6 @@ def test_upload_multiple_workspaces(parallels, mocker):
                 _path(encoder_workspace, 'requirements.txt'),
             ],
         )
-        .add()
         .add(
             name='tdb_indexer',
             uses=_path(indexer_workspace, 'tdb.yml'),

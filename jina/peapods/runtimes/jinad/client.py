@@ -140,6 +140,23 @@ class DaemonClient:
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
         _args.host = __default_host__
 
+        # NOTE: on remote relative filepaths should be converted to filename only
+        def basename(field):
+            if field and not field.startswith('docker://'):
+                try:
+                    return os.path.basename(complete_path(field))
+                except FileNotFoundError:
+                    pass
+            return field
+
+        for f in ('uses', 'uses_after', 'uses_before', 'uses_internal', 'py_modules'):
+            attr = getattr(_args, f, None)
+            if not attr:
+                continue
+            setattr(_args, f, [basename(m) for m in attr]) if isinstance(
+                attr, list
+            ) else setattr(_args, f, basename(attr))
+
         _args.log_config = ''  # do not use local log_config
         _args.upload_files = []  # reset upload files
         _args.noblock_on_start = False  # wait until start success
