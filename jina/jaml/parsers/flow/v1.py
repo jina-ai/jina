@@ -83,9 +83,6 @@ class V1Parser(VersionedYAMLParser):
         if data._version:
             r['version'] = data._version
 
-        if data._env:
-            r['env'] = data._env
-
         if data._kwargs:
             r['with'] = data._kwargs
 

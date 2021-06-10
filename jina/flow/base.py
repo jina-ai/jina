@@ -114,7 +114,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         args: Optional['argparse.Namespace'] = None,
-        env: Optional[Dict] = None,
         **kwargs,
     ):
         super().__init__()
@@ -126,7 +125,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             'gateway'
         ]  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
-        self._env = env
+
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         else:
@@ -140,7 +139,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         if args is None:
             args = ArgNamespace.kwargs2namespace(kwargs, _flow_parser)
         self.args = args
-        self._common_kwargs = kwargs
+        # common args should be the ones that can not be parsed by _flow_parser
+        known_keys = vars(args)
+        self._common_kwargs = {k: v for k, v in kwargs.items() if k not in known_keys}
+
         self._kwargs = ArgNamespace.get_non_defaults_args(
             args, _flow_parser
         )  #: for yaml dump
@@ -209,9 +211,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                runtime_cls='RESTRuntime'
-                if self._common_kwargs.get('restful', False)
-                else 'GRPCRuntime',
+                runtime_cls='RESTRuntime' if self.args.restful else 'GRPCRuntime',
                 pod_role=PodRoleType.GATEWAY,
                 identity=self.args.identity,
             )
@@ -701,8 +701,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         super().__exit__(exc_type, exc_val, exc_tb)
 
         # unset all envs to avoid any side-effect
-        if self._env:
-            for k in self._env.keys():
+        if self.args.env:
+            for k in self.args.env.keys():
                 os.unsetenv(k)
         if 'gateway' in self._pod_nodes:
             self._pod_nodes.pop('gateway')
@@ -730,8 +730,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             self.build(copy_flow=False)
 
         # set env only before the Pod get started
-        if self._env:
-            for k, v in self._env.items():
+        if self.args.env:
+            for k, v in self.args.env.items():
                 os.environ[k] = str(v)
 
         for k, v in self:
@@ -802,18 +802,11 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         """Return a :class:`BaseClient` object attach to this Flow.
 
         .. # noqa: DAR201"""
-        kwargs = {}
-        kwargs.update(self._common_kwargs)
-        if 'port_expose' not in kwargs:
-            kwargs['port_expose'] = self.port_expose
-        if 'host' not in kwargs:
-            kwargs['host'] = self.host
-        # show progress when client is used inside the flow, for better log readability
-        if 'show_progress' not in kwargs:
-            kwargs['show_progress'] = True
 
-        args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
-        return Client(args)
+        self.args.port_expose = self.port_expose
+        self.args.host = self.host
+        self.args.show_progress = True
+        return Client(self.args)
 
     @property
     def _mermaid_str(self):
@@ -1109,9 +1102,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         restful = gateway == 'RESTRuntime'
 
         # globally register this at Flow level
-        self._common_kwargs['restful'] = restful
+        self.args.restful = restful
         if port:
-            self._common_kwargs['port_expose'] = port
+            self.args.port_expose = port
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
