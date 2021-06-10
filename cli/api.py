@@ -144,9 +144,7 @@ def flow(args: 'Namespace'):
         with f:
             f.block()
     else:
-        from jina.logging.predefined import default_logger
-
-        default_logger.critical('start a flow from CLI requires a valid "--uses"')
+        raise ValueError('start a flow from CLI requires a valid `--uses`')
 
 
 def optimizer(args: 'Namespace'):
