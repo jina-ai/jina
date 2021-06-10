@@ -7,7 +7,7 @@ from ..types.request import Response
 
 
 class PostMixin:
-    """The Post Mixin class for Client and Flow """
+    """The Post Mixin class for Client and Flow"""
 
     def post(
         self,
@@ -63,7 +63,7 @@ class PostMixin:
 
 
 class AsyncPostMixin:
-    """The Async Post Mixin class for AsyncClient and AsyncFlow """
+    """The Async Post Mixin class for AsyncClient and AsyncFlow"""
 
     async def post(
         self,

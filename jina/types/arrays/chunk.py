@@ -11,19 +11,19 @@ class ChunkArray(DocumentArray):
     :class:`ChunkArray` inherits from :class:`DocumentArray`.
     It's a subset of Documents.
 
-    :param docs_proto: Set of sub-documents (i.e chunks) of `reference_doc`
+    :param doc_views: Set of sub-documents (i.e chunks) of `reference_doc`
     :param reference_doc: Reference :class:`Document` for the sub-documents
     """
 
-    def __init__(self, docs_proto, reference_doc: 'Document'):
+    def __init__(self, doc_views, reference_doc: 'Document'):
         """
         Set constructor method.
 
-        :param docs_proto: protobuf representation of the chunks
+        :param doc_views: protobuf representation of the chunks
         :param reference_doc: parent document
         """
         self._ref_doc = reference_doc
-        super().__init__(docs_proto)
+        super().__init__(doc_views)
 
     def append(self, document: 'Document', **kwargs) -> 'Document':
         """Add a sub-document (i.e chunk) to the current Document.
