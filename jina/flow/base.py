@@ -8,7 +8,7 @@ import uuid
 import warnings
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
-from typing import Optional, Union, Tuple, List, Set, Dict, overload
+from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
 
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
@@ -43,6 +43,7 @@ _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|6
 
 if False:
     from ..peapods import BasePod
+    from ..executors import BaseExecutor
     from ..clients.base import BaseClient
 
 
@@ -88,7 +89,7 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         restful: Optional[bool] = False,
         return_results: Optional[bool] = False,
         show_progress: Optional[bool] = False,
-        uses: Optional[str] = None,
+        uses: Optional[Union[str, Type[BaseExecutor], dict]] = None,
         workspace: Optional[str] = './',
         **kwargs,
     ):
@@ -334,10 +335,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ctrl: Optional[int] = 5000,
         timeout_ready: Optional[int] = 600000,
         upload_files: Optional[List[str]] = None,
-        uses: Optional[str] = 'BaseExecutor',
-        uses_after: Optional[str] = None,
-        uses_before: Optional[str] = None,
-        uses_internal: Optional[str] = 'BaseExecutor',
+        uses: Optional[Union[str, Type[BaseExecutor], dict]] = 'BaseExecutor',
+        uses_after: Optional[Union[str, Type[BaseExecutor], dict]] = None,
+        uses_before: Optional[Union[str, Type[BaseExecutor], dict]] = None,
+        uses_internal: Optional[Union[str, Type[BaseExecutor], dict]] = 'BaseExecutor',
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         workspace_id: Optional[str] = None,

@@ -40,6 +40,8 @@ def _cli_to_schema(
         # special cases
         if p['name'] == 'log_config':
             pv['default_literal'] = None
+        if p['name'].startswith('uses'):
+            pv['type'] = 'Union[str, Type[BaseExecutor], dict]'
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
 
