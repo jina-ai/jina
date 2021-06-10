@@ -6,7 +6,7 @@ import requests
 
 from jina import Executor, DocumentArray, requests as req
 from jina import helper, Document
-from jina.clients import Client, WebSocketClient
+from jina.clients import Client
 from jina.excepts import BadClientInput
 from jina.flow import Flow
 from jina.parsers import set_gateway_parser, set_client_cli_parser
@@ -41,15 +41,17 @@ def test_img_2():
     'inputs', [iter([b'1234', b'45467']), iter([DocumentProto(), DocumentProto()])]
 )
 def test_check_input_success(inputs):
-    Client.check_input(inputs)
+    client = Client(host='localhost', port_expose=12345)
+    client.check_input(inputs)
 
 
 @pytest.mark.parametrize(
     'inputs', [iter([list(), list(), [12, 2, 3]]), iter([set(), set()])]
 )
 def test_check_input_fail(inputs):
+    client = Client(host='localhost', port_expose=12345)
     with pytest.raises(BadClientInput):
-        Client.check_input(inputs)
+        client.check_input(inputs)
 
 
 @pytest.mark.parametrize(
@@ -125,15 +127,10 @@ def test_client_csv(restful, mocker, func_name):
 def test_client_websocket(mocker, flow_with_rest_api_enabled):
     with flow_with_rest_api_enabled:
         time.sleep(0.5)
-        client = WebSocketClient(
-            set_client_cli_parser().parse_args(
-                [
-                    '--host',
-                    'localhost',
-                    '--port-expose',
-                    str(flow_with_rest_api_enabled.port_expose),
-                ]
-            )
+        client = Client(
+            host='localhost',
+            port_expose=str(flow_with_rest_api_enabled.port_expose),
+            restful=True,
         )
         # Test that a regular index request triggers the correct callbacks
         on_always_mock = mocker.Mock()
@@ -158,16 +155,16 @@ def test_client_websocket(mocker, flow_with_rest_api_enabled):
         mock.assert_not_called()
 
 
-@pytest.mark.parametrize('client_cls', [Client, WebSocketClient])
-def test_client_from_kwargs(client_cls):
-    client_cls(port_expose=12345, host='0.0.0.1')
+def test_client_from_kwargs():
+    Client(port_expose=12345, host='0.0.0.1')
+    Client(port_expose=12345, host='0.0.0.1', restful=True)
 
 
 def test_independent_client():
     with Flow() as f:
-        c = Client(port_expose=f.port_expose)
+        c = Client(host='localhost', port_expose=f.port_expose)
         c.post('/')
 
     with Flow(restful=True) as f:
-        c = WebSocketClient(port_expose=f.port_expose)
+        c = Client(host='localhost', port_expose=f.port_expose, restful=True)
         c.post('/')
