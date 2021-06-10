@@ -25,9 +25,6 @@ def from_ndarray(
     :param size: the maximum number of the sub arrays
     :param shuffle: shuffle the numpy data source beforehand
     :yield: ndarray
-
-    .. note::
-        This function should not be directly used, use :meth:`Flow.index_ndarray`, :meth:`Flow.search_ndarray` instead
     """
 
     from ..document import Document
