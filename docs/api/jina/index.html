@@ -678,22 +678,24 @@ will use the eventloop that already spawned in Jupyter/ipython to run Jina Flow 
 can use this feature to schedule Jina <code class="docutils literal notranslate"><span class="pre">index()</span></code> and <code class="docutils literal notranslate"><span class="pre">heavylifting()</span></code> concurrently.</p>
 <p>One can think of <a class="reference internal" href="#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> as Jina-managed eventloop, whereas <a class="reference internal" href="#jina.AsyncFlow" title="jina.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a> is self-managed eventloop.</p>
 </dd></dl>
-<dl class="py class">
+<dl class="py function">
 <dt id="jina.Client">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.</span></code><code class="sig-name descname"><span class="pre">Client</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin" title="jina.clients.mixin.PostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.mixin.PostMixin</span></code></a>, <a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient" title="jina.clients.base.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.BaseClient</span></code></a></p>
-<p>A simple Python client for connecting to the gRPC gateway.</p>
-<p>It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.</p>
-<dl class="py method">
-<dt id="jina.Client.client">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">client</span></code><a class="headerlink" href="#jina.Client.client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the client object itself</p>
+<code class="sig-prename descclassname"><span class="pre">jina.</span></code><code class="sig-name descname"><span class="pre">Client</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/#Client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Jina Python client.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.clients/#jina.clients.Client" title="jina.clients.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>]) – Namespace args.</p></li>
+<li><p><strong>kwargs</strong> – Additional arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient" title="jina.clients.base.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseClient</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCClient</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClient</span></code>.</p>
 </dd>
 </dl>
-</dd></dl>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.Document">
@@ -1661,7 +1663,7 @@ That means, it is the fallback handler for endpoints that are not found.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 09, 2021.
+            Last updated on Jun 10, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

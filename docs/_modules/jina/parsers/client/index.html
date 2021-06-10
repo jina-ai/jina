@@ -416,6 +416,13 @@
 <span class="s1">If set, the results of all Requests will be returned as a list. This is useful when one wants </span>
 <span class="s1">process Responses in bulk instead of using callback. </span>
 <span class="s1">                    '''</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--restful'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, use RESTful interface instead of gRPC as the main interface'</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>
@@ -429,7 +436,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 09, 2021.
+            Last updated on Jun 10, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

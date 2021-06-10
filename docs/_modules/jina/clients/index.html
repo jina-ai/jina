@@ -374,30 +374,81 @@
         </label>
         <h1>Source code for jina.clients</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module wrapping the Client of Jina."""</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Optional</span>
+
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseClient</span><span class="p">,</span> <span class="n">CallbackFnType</span><span class="p">,</span> <span class="n">InputType</span><span class="p">,</span> <span class="n">InputDeleteType</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
 <span class="kn">from</span> <span class="nn">.mixin</span> <span class="kn">import</span> <span class="n">PostMixin</span>
 <span class="kn">from</span> <span class="nn">.request</span> <span class="kn">import</span> <span class="n">GeneratorSourceType</span>
 <span class="kn">from</span> <span class="nn">.websocket</span> <span class="kn">import</span> <span class="n">WebSocketClientMixin</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Client'</span><span class="p">,</span> <span class="s1">'WebSocketClient'</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Client'</span><span class="p">,</span> <span class="s1">'GRPCClient'</span><span class="p">,</span> <span class="s1">'WebSocketClient'</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../../api/jina.clients/#jina.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">BaseClient</span><span class="p">):</span>
+<span class="c1"># overload_inject_start_client</span>
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">Client</span><span class="p">(</span>
+    <span class="n">continue_on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+    <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">request_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">restful</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_progress</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseClient'</span><span class="p">:</span>
+    <span class="sd">"""Create a Client. Client is how user interact with Flow</span>
+
+<span class="sd">    :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.</span>
+<span class="sd">    :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">    :param port_expose: The port of the host exposed to the public</span>
+<span class="sd">    :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
+<span class="sd">    :param request_size: The number of Documents in each Request.</span>
+<span class="sd">    :param restful: If set, use RESTful interface instead of gRPC as the main interface</span>
+<span class="sd">    :param return_results: This feature is only used for AsyncClient.</span>
+
+<span class="sd">          If set, the results of all Requests will be returned as a list. This is useful when one wants</span>
+<span class="sd">          process Responses in bulk instead of using callback.</span>
+<span class="sd">    :param show_progress: If set, client will show a progress bar on receiving every request.</span>
+<span class="sd">    :return: the new Client object</span>
+
+<span class="sd">    .. # noqa: DAR202</span>
+<span class="sd">    .. # noqa: DAR101</span>
+<span class="sd">    .. # noqa: DAR003</span>
+<span class="sd">    """</span>
+    <span class="c1"># overload_inject_end_client</span>
+
+
+<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../../api/jina.clients/#jina.Client">[docs]</a><span class="k">def</span> <span class="nf">Client</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'argparse.Namespace'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseClient'</span><span class="p">:</span>
+    <span class="sd">"""Jina Python client.</span>
+
+<span class="sd">    :param args: Namespace args.</span>
+<span class="sd">    :param kwargs: Additional arguments.</span>
+<span class="sd">    :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.</span>
+<span class="sd">    """</span>
+    <span class="n">is_restful</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'restful'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_restful</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">WebSocketClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">GRPCClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GRPCClient"><a class="viewcode-back" href="../../../api/jina.clients/#jina.GRPCClient">[docs]</a><span class="k">class</span> <span class="nc">GRPCClient</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">BaseClient</span><span class="p">):</span>
     <span class="sd">"""A simple Python client for connecting to the gRPC gateway.</span>
 
 <span class="sd">    It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Client'</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'GRPCClient'</span><span class="p">:</span>
         <span class="sd">"""Return the client object itself</span>
-
 <span class="sd">        .. # noqa: DAR201"""</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-<div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../api/jina.clients/#jina.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">Client</span><span class="p">,</span> <span class="n">WebSocketClientMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../api/jina.clients/#jina.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">GRPCClient</span><span class="p">,</span> <span class="n">WebSocketClientMixin</span><span class="p">):</span>
     <span class="sd">"""A Python Client to stream requests from a Flow with a REST Gateway.</span>
 
 <span class="sd">    :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like</span>
@@ -449,7 +500,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 09, 2021.
+            Last updated on Jun 10, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

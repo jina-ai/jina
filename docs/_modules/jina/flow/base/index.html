@@ -387,7 +387,8 @@
 
 <span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">build_required</span><span class="p">,</span> <span class="n">_build_flow</span><span class="p">,</span> <span class="n">_hanging_pods</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
-<span class="kn">from</span> <span class="nn">..clients</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">WebSocketClient</span>
+<span class="kn">from</span> <span class="nn">..clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
+<span class="kn">from</span> <span class="nn">..clients</span> <span class="kn">import</span> <span class="n">GRPCClient</span><span class="p">,</span> <span class="n">WebSocketClient</span>
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">FlowInspectType</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowTopologyError</span><span class="p">,</span> <span class="n">FlowMissingPodError</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
@@ -443,7 +444,9 @@
 <span class="sd">    :param env: environment variables shared by all Pods</span>
 <span class="sd">    """</span>
 
-    <span class="n">_cls_client</span> <span class="o">=</span> <span class="n">Client</span>  <span class="c1">#: the type of the Client, can be changed to other class</span>
+    <span class="n">_cls_client</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">GRPCClient</span>  <span class="c1">#: the type of the GRPCClient, can be changed to other class</span>
+    <span class="p">)</span>
 
     <span class="c1"># overload_inject_start_flow</span>
     <span class="nd">@overload</span>
@@ -586,7 +589,7 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">pod_name</span><span class="p">,</span>
                 <span class="n">ctrl_with_ipc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># otherwise ctrl port would be conflicted</span>
                 <span class="n">runtime_cls</span><span class="o">=</span><span class="s1">'GRPCRuntime'</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_client</span> <span class="o">==</span> <span class="n">Client</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_client</span> <span class="o">==</span> <span class="n">GRPCClient</span>
                 <span class="k">else</span> <span class="s1">'RESTRuntime'</span><span class="p">,</span>
                 <span class="n">pod_role</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
                 <span class="n">identity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
@@ -1175,8 +1178,8 @@
 
     <span class="nd">@property</span>
     <span class="nd">@build_required</span><span class="p">(</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Client'</span><span class="p">:</span>
-        <span class="sd">"""Return a :class:`Client` object attach to this Flow.</span>
+    <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseClient'</span><span class="p">:</span>
+        <span class="sd">"""Return a :class:`BaseClient` object attach to this Flow.</span>
 
 <span class="sd">        .. # noqa: DAR201"""</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1191,7 +1194,6 @@
         <span class="c1"># show progress when client is used inside the flow, for better log readability</span>
         <span class="k">if</span> <span class="s1">'show_progress'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="kc">True</span>
-
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cls_client</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -1468,7 +1470,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">address_table</span><span class="p">))</span>
 
 <div class="viewcode-block" id="BaseFlow.block"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.flow.base.BaseFlow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Block the process until user hits KeyboardInterrupt """</span>
+        <span class="sd">"""Block the process until user hits KeyboardInterrupt"""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
@@ -1486,7 +1488,7 @@
 
     <span class="k">def</span> <span class="nf">_switch_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gateway</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">restful</span> <span class="o">=</span> <span class="n">gateway</span> <span class="o">==</span> <span class="s1">'RESTRuntime'</span>
-        <span class="n">client</span> <span class="o">=</span> <span class="n">WebSocketClient</span> <span class="k">if</span> <span class="n">gateway</span> <span class="o">==</span> <span class="s1">'RESTRuntime'</span> <span class="k">else</span> <span class="n">Client</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">WebSocketClient</span> <span class="k">if</span> <span class="n">gateway</span> <span class="o">==</span> <span class="s1">'RESTRuntime'</span> <span class="k">else</span> <span class="n">GRPCClient</span>
 
         <span class="c1"># globally register this at Flow level</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cls_client</span> <span class="o">=</span> <span class="n">client</span>
@@ -1633,7 +1635,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 09, 2021.
+            Last updated on Jun 10, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
