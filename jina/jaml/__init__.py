@@ -525,7 +525,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 tag_yml = JAML.unescape(
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,
-                    jtype_whitelist=('Flow', 'AsyncFlow'),
+                    jtype_whitelist=('Flow',),
                 )
             else:
                 # revert yaml's tag and load again, this time with substitution
