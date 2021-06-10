@@ -20,7 +20,7 @@ GATEWAY_PORT = 45678
 def test_simple_hub_pods(docker_compose):
     workspace_id = create_workspace(filepaths=[flow_yaml])
     assert wait_for_workspace(workspace_id)
-    index_flow_id = create_flow(workspace_id=workspace_id, filename='flow.yml')
+    flow_id = create_flow(workspace_id=workspace_id, filename='flow.yml')
     expected_text = 'text:hey, dude'
     response = assert_request(
         method='post',
@@ -29,20 +29,10 @@ def test_simple_hub_pods(docker_compose):
     )
     print(f'Response is: {response}')
 
-    print(f'\nQuerying any text')
-    r = assert_request(
-        method='post',
-        url=f'http://{GATEWAY_HOST}:{GATEWAY_PORT}/search',
-        payload={'top_k': 10, 'data': ['text:anything will match the same']},
-    )
-    print(f'returned: {r}')
-    text_matched = r['data']['docs'][0]['matches'][0]['text']
-    assert expected_text == text_matched
+    assert expected_text + ' hurray' * 2 == response['data']['docs'][0]['text']
 
-    assert_request(
-        method='get', url=f'http://{JINAD_HOST}:{JINAD_PORT}/flow/{index_flow_id}'
-    )
+    assert_request(method='get', url=f'http://{JINAD_HOST}:{JINAD_PORT}/flow/{flow_id}')
     assert_request(
         method='delete',
-        url=f'http://{JINAD_HOST}:{JINAD_PORT}/flow?flow_id={index_flow_id}',
+        url=f'http://{JINAD_HOST}:{JINAD_PORT}/flow/{flow_id}',
     )

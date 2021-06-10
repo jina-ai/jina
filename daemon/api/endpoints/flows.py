@@ -30,7 +30,6 @@ async def _fetch_flow_params():
 )
 async def _create(flow: FlowDepends = Depends(FlowDepends)):
     try:
-        print(flow.ports)
         return store.add(
             id=flow.id,
             workspace_id=flow.workspace_id,

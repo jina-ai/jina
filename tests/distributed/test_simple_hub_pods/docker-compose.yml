@@ -10,6 +10,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile
+    extra_hosts:
+      host.docker.internal: host-gateway
     ports:
       - "8000:8000"
     env_file:
@@ -19,6 +21,8 @@ services:
       - /tmp:/tmp
   pod1:
     image: test_simple_hub_pods
+    extra_hosts:
+      host.docker.internal: host-gateway
     ports:
       - "8001:8000"
     expose:
@@ -31,6 +35,8 @@ services:
       - /tmp:/tmp
   pod2:
     image: test_simple_hub_pods
+    extra_hosts:
+      host.docker.internal: host-gateway
     ports:
       - "8002:8000"
     expose:
