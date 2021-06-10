@@ -137,7 +137,7 @@ def flow(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.flow import Flow
+    from jina import Flow
 
     if args.uses:
         f = Flow.load_config(args.uses)

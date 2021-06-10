@@ -1,7 +1,7 @@
 import uuid
 from typing import Optional, BinaryIO
 
-from jina.flow import Flow
+from jina import Flow
 from jina.helper import colored, random_uuid
 from .base import BaseStore
 from .helper import jina_workspace

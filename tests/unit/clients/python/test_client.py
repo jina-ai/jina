@@ -8,7 +8,7 @@ from jina import Executor, DocumentArray, requests as req
 from jina import helper, Document
 from jina.clients import Client
 from jina.excepts import BadClientInput
-from jina.flow import Flow
+from jina import Flow
 from jina.parsers import set_gateway_parser, set_client_cli_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto

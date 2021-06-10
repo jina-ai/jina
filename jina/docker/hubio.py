@@ -23,7 +23,7 @@ from ..excepts import (
     ImageAlreadyExists,
 )
 from ..executors import BaseExecutor
-from ..flow import Flow
+from .. import Flow
 from ..helper import (
     colored,
     get_readable_size,

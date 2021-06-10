@@ -3,7 +3,7 @@ from typing import Dict, Any
 
 from ..base import VersionedYAMLParser
 from ....enums import PodRoleType
-from ....flow import Flow
+from .... import Flow
 from ....helper import expand_env_var, ArgNamespace
 from ....parsers import set_pod_parser, set_gateway_parser
 

@@ -1,7 +1,7 @@
 import pytest
 
 from jina import Executor, requests, __default_executor__
-from jina.flow import Flow
+from jina import Flow
 from tests import random_docs
 
 

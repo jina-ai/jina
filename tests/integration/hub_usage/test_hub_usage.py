@@ -12,7 +12,7 @@ from jina.docker import hubapi
 from jina.docker.hubio import HubIO
 from jina.excepts import RuntimeFailToStart, HubBuilderError, ImageAlreadyExists
 from jina.executors import BaseExecutor
-from jina.flow import Flow
+from jina import Flow
 from jina.helper import expand_dict
 from jina.jaml import JAML
 from jina.parsers import set_pod_parser
