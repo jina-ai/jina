@@ -421,12 +421,6 @@
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">:</span>
                 <span class="n">tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'store_args_kwargs'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
-                <span class="n">tmp</span><span class="p">[</span><span class="s1">'args'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
-            <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-                <span class="n">tmp</span><span class="p">[</span><span class="s1">'kwargs'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">taboo</span><span class="p">}</span>
-
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_init_kwargs_dict'</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_kwargs_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
