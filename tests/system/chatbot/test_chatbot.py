@@ -22,10 +22,12 @@ def helloworld_args(tmpdir):
     )
 
 
-def test_chatbot(helloworld_args, tmpdir, mocker):
-    """Regression test for chatbot example."""
-    hello_world(helloworld_args)
+def test_chatbot_helloworld(helloworld_args):
+    hello_world(helloworld_args)  # ensure no error is raised.
 
+
+def test_chatbot(tmpdir, mocker):
+    #  test the index and query flow.
     def validate_response(resp):
         assert len(resp.data.docs) == 1
         for doc in resp.data.docs:
