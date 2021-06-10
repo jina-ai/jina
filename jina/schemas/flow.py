@@ -18,7 +18,7 @@ schema_flow = {
                 'The input and output data of Flows are Documents.',
                 'type': 'string',
                 'default': 'Flow',
-                'enum': ['Flow', 'AsyncFlow'],
+                'enum': ['Flow'],
             },
             'version': {
                 'description': 'The YAML version of this Flow.',

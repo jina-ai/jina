@@ -13,6 +13,7 @@ from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
+from ..clients.mixin import AsyncPostMixin, PostMixin
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
@@ -47,27 +48,8 @@ if False:
     from ..clients.base import BaseClient
 
 
-class Flow(JAMLCompatible, ExitStack, metaclass=FlowType):
-    """An abstract Flow object in Jina.
-
-    .. note::
-
-        :class:`BaseFlow` does not provide `train`, `index`, `search` interfaces.
-        Please use :class:`Flow` or :class:`AsyncFlow`.
-
-    Explanation on ``optimize_level``:
-
-    As an example, the following Flow will generate 6 Peas,
-
-    .. highlight:: python
-    .. code-block:: python
-
-        f = Flow.add(uses='forward', parallel=3)
-
-    :param kwargs: other keyword arguments that will be shared by all Pods in this Flow
-    :param args: Namespace args
-    :param env: environment variables shared by all Pods
-    """
+class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
+    """Flow  is how Jina streamlines and distributes Executors. """
 
     # overload_inject_start_flow
     @overload
@@ -172,15 +154,10 @@ class Flow(JAMLCompatible, ExitStack, metaclass=FlowType):
             args, _flow_parser
         )  #: for yaml dump
 
-        from ..clients.mixin import AsyncPostMixin, PostMixin
-
-        if not isinstance(self, (AsyncPostMixin, PostMixin)):
-            base_cls = self.__class__
-            base_cls_name = self.__class__.__name__
-            if self.args.asyncio:
-                self.__class__ = type(base_cls_name, (AsyncPostMixin, base_cls), {})
-            else:
-                self.__class__ = type(base_cls_name, (PostMixin, base_cls), {})
+        base_cls = self.__class__
+        base_cls_name = self.__class__.__name__
+        if self.args.asyncio and not isinstance(self, AsyncPostMixin):
+            self.__class__ = type(base_cls_name, (AsyncPostMixin, base_cls), {})
 
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
