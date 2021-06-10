@@ -95,20 +95,3 @@ class WorkspaceStore(BaseStore):
             )
             deleted_entities.append(id)
         return deleted_entities
-
-    @BaseStore.dump
-    def delete_container_only(self, id: DaemonID):
-        if id not in self:
-            raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
-        container_id = self[id].metadata.container_id
-        if not container_id:
-            raise ValueError(
-                f'There is no container to kill for store {colored(str(id), "cyan")}'
-            )
-
-        Dockerizer.rm_container(container_id)
-        self._logger.success(
-            f'{colored(container_id, "cyan")} is killed and removed from the store.'
-        )
-        self[id].metadata.container_id = None
-        return container_id
