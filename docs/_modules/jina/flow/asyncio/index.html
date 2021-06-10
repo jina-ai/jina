@@ -388,10 +388,11 @@
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        from jina import AsyncFlow</span>
+<span class="sd">        from jina.types.document.generators import from_ndarray</span>
 <span class="sd">        import numpy as np</span>
 
 <span class="sd">        with AsyncFlow().add() as f:</span>
-<span class="sd">            await f.index_ndarray(np.random.random([5, 4]), on_done=print)</span>
+<span class="sd">            await f.index(from_ndarray(np.random.random([5, 4])), on_done=print)</span>
 
 <span class="sd">    Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements "autoawait".</span>
 

@@ -504,33 +504,10 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">num_bytes</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> GB'</span>
 
 
-<span class="k">def</span> <span class="nf">call_obj_fn</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Get a named attribute from an object; getattr(obj, 'fn') is equivalent to obj.fn.</span>
-
-<span class="sd">    :param obj: Target object.</span>
-<span class="sd">    :param fn: Desired attribute.</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
-        <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">fn</span><span class="p">)()</span>
-
-
-<span class="k">def</span> <span class="nf">touch_dir</span><span class="p">(</span><span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Create a directory from given path if it doesn't exist.</span>
-
-<span class="sd">    :param base_dir: Path of target path.</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">base_dir</span><span class="p">):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span>
-
-
 <div class="viewcode-block" id="batch_iterator"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.batch_iterator">[docs]</a><span class="k">def</span> <span class="nf">batch_iterator</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">yield_slice</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">yield_dict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
     <span class="sd">"""</span>
 <span class="sd">    Get an iterator of batches of data.</span>
@@ -538,14 +515,12 @@
 <span class="sd">    For example:</span>
 <span class="sd">    .. highlight:: python</span>
 <span class="sd">    .. code-block:: python</span>
-<span class="sd">            for batch in batch_iterator(data, batch_size, split_over_axis, yield_slice=yield_slice):</span>
+<span class="sd">            for req in batch_iterator(data, batch_size, split_over_axis):</span>
 <span class="sd">                # Do something with batch</span>
 
 <span class="sd">    :param data: Data source.</span>
 <span class="sd">    :param batch_size: Size of one batch.</span>
 <span class="sd">    :param axis: Determine which axis to iterate for np.ndarray data.</span>
-<span class="sd">    :param yield_slice: Return tuple type of data if True else return np.ndarray type.</span>
-<span class="sd">    :param yield_dict: Return dict type of data if True else return tuple type.</span>
 <span class="sd">    :yield: data</span>
 <span class="sd">    :return: An Iterator of batch data.</span>
 <span class="sd">    """</span>
@@ -559,18 +534,12 @@
         <span class="n">_d</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span>
         <span class="n">sl</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">_d</span>
         <span class="k">if</span> <span class="n">batch_size</span> <span class="o">&gt;=</span> <span class="n">_l</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">yield_slice</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sl</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">data</span>
+            <span class="k">yield</span> <span class="n">data</span>
             <span class="k">return</span>
         <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_l</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">_l</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="n">batch_size</span><span class="p">)</span>
             <span class="n">sl</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">yield_slice</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sl</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="n">data</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sl</span><span class="p">)]</span>
+            <span class="k">yield</span> <span class="n">data</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sl</span><span class="p">)]</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">batch_size</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">data</span>
@@ -580,10 +549,7 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
         <span class="c1"># as iterator, there is no way to know the length of it</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">yield_dict</span><span class="p">:</span>
-                <span class="n">chunk</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">chunk</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">))</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
                 <span class="k">return</span>
             <span class="k">yield</span> <span class="n">chunk</span>
@@ -1066,36 +1032,6 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">p_args</span></div>
 
-<div class="viewcode-block" id="ArgNamespace.get_parsed_args"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.get_parsed_args">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_parsed_args</span><span class="p">(</span>
-        <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Get all parsed args info in a dict.</span>
-
-<span class="sd">        :param kwargs: dictionary of key-values to be converted</span>
-<span class="sd">        :param parser: the parser for building kwargs into a namespace</span>
-<span class="sd">        :return: argument namespace, positional arguments and unknown arguments</span>
-<span class="sd">        """</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2list</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">unknown_args</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
-
-                <span class="n">default_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'parser </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span><span class="si">}</span><span class="s1"> can not '</span>
-                    <span class="sa">f</span><span class="s1">'recognize the following args: </span><span class="si">{</span><span class="n">unknown_args</span><span class="si">}</span><span class="s1">, '</span>
-                    <span class="sa">f</span><span class="s1">'they are ignored. if you are using them from a global args (e.g. Flow), '</span>
-                    <span class="sa">f</span><span class="s1">'then please ignore this message'</span>
-                <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'bad arguments "</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">" with parser </span><span class="si">{</span><span class="n">parser</span><span class="si">}</span><span class="s1">, '</span>
-                <span class="s1">'you may want to double check your args '</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">args</span><span class="p">,</span> <span class="n">p_args</span><span class="p">,</span> <span class="n">unknown_args</span></div>
-
 <div class="viewcode-block" id="ArgNamespace.get_non_defaults_args"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace.get_non_defaults_args">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_non_defaults_args</span><span class="p">(</span>
         <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">taboo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1485,43 +1421,6 @@
     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'(?u)[^-\w.]'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
 
 
-<span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">change_cwd</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.</span>
-<span class="sd">    Yields nothing</span>
-
-<span class="sd">    :param path: Target path.</span>
-<span class="sd">    :yields: nothing</span>
-<span class="sd">    """</span>
-    <span class="n">curdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">curdir</span><span class="p">)</span>
-
-
-<span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">change_env</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.</span>
-
-<span class="sd">    :param key: Old environment variable.</span>
-<span class="sd">    :param val: New environment variable.</span>
-<span class="sd">    :yields: nothing</span>
-<span class="sd">    """</span>
-    <span class="n">old_var</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">old_var</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">old_var</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-
-
 <span class="k">def</span> <span class="nf">is_yaml_filepath</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Check if the file is YAML file.</span>
@@ -1585,30 +1484,6 @@
     <span class="n">V</span><span class="o">.</span><span class="n">visit_FunctionDef</span> <span class="o">=</span> <span class="n">visit_function_def</span>
     <span class="n">V</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="nb">compile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">target</span><span class="p">),</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'exec'</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">PyCF_ONLY_AST</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">res</span>
-
-
-<span class="k">def</span> <span class="nf">_canonical_request_name</span><span class="p">(</span><span class="n">req_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">"""Return the canonical name of a request</span>
-
-<span class="sd">    :param req_name: the original request name</span>
-<span class="sd">    :return: canonical form of the request</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="n">req_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'/'</span><span class="p">):</span>
-        <span class="c1"># new data request</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'data://</span><span class="si">{</span><span class="n">req_name</span><span class="si">}</span><span class="s1">'</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># legacy request type</span>
-        <span class="k">return</span> <span class="n">req_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'request'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">physical_size</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">"""Return the size of the given directory in bytes</span>
-
-<span class="sd">    :param directory: directory as :str:</span>
-<span class="sd">    :return: byte size of the given directory</span>
-<span class="sd">    """</span>
-    <span class="n">root_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">root_directory</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'**/*'</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">())</span>
 
 
 <span class="k">def</span> <span class="nf">dunder_get</span><span class="p">(</span><span class="n">_dict</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>

@@ -384,10 +384,11 @@ is controlling and wrapping the eventloop internally, making the Flow looks sync
 For example, the following code
 will use the eventloop that already spawned in Jupyter/ipython to run Jina Flow (instead of creating a new one).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
+<span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_ndarray</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">with</span> <span class="n">AsyncFlow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">f</span><span class="o">.</span><span class="n">index_ndarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_ndarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])),</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements “autoawait”.</p>
