@@ -23,6 +23,7 @@ Jina Documentation
    :caption: Links
 
    GitHub repository <https://github.com/jina-ai/jina>
+   Slack community <https://slack.jina.ai>
 
 
 * :ref:`genindex`
