@@ -8,11 +8,13 @@ Jina Documentation
    api/jina
 
 .. toctree::
+   :titlesonly:
    :caption: Command Line Interface
 
    cli/index
 
 .. toctree::
+   :titlesonly:
    :caption: Protobuf Specification
 
    proto/index
@@ -21,6 +23,7 @@ Jina Documentation
    :caption: Links
 
    GitHub repository <https://github.com/jina-ai/jina>
+   Slack community <https://slack.jina.ai>
 
 
 * :ref:`genindex`
