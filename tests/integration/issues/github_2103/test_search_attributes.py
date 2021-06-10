@@ -50,7 +50,7 @@ class MockExecutor(Executor):
 
 def test_no_matches_rest(query_dict):
     port = helper.random_port()
-    with Flow(rest_api=True, port_expose=port, including_default_value_fields=True).add(
+    with Flow(restful=True, port_expose=port, including_default_value_fields=True).add(
         uses=MockExecutor
     ):
         # temporarily adding sleep

@@ -47,5 +47,13 @@ process Responses in bulk instead of using callback.
         '--restful',
         action='store_true',
         default=False,
-        help='If set, use RESTful interface instead of gRPC as the main interface',
+        help='If set, use RESTful interface instead of gRPC as the main interface. '
+        'This expects the corresponding Flow to be set with --restful as well.',
+    )
+
+    gp.add_argument(
+        '--asyncio',
+        action='store_true',
+        default=False,
+        help='If set, then the input and output of this Client work in an asynchronous manner. ',
     )

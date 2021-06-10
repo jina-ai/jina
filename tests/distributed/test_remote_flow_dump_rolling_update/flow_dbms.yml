@@ -2,7 +2,7 @@ jtype: Flow
 version: '1'
 with:
   read_only: false
-  rest_api: true
+  restful: true
   port_expose: 9000
 pods:
   - name: indexer_dbms

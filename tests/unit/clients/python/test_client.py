@@ -19,12 +19,12 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture(scope='function')
 def flow():
-    return Flow(rest_api=False).add()
+    return Flow(restful=False).add()
 
 
 @pytest.fixture(scope='function')
 def flow_with_rest_api_enabled():
-    return Flow(rest_api=True).add()
+    return Flow(restful=True).add()
 
 
 @pytest.fixture(scope='function')

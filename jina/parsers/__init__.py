@@ -91,7 +91,6 @@ def set_gateway_parser(parser=None):
 
     parser.add_argument(
         '--restful',
-        '--rest-api',
         action='store_true',
         default=False,
         help='If set, use RESTful interface instead of gRPC as the main interface',

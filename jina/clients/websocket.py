@@ -4,6 +4,7 @@ from abc import ABC
 from typing import Callable, Optional
 
 from .base import BaseClient, InputType
+from .grpc import GRPCClient
 from .helper import callback_exec
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
@@ -111,3 +112,45 @@ class WebSocketClientMixin(BaseClient, ABC):
             self.logger.error(
                 f'Got following error while streaming requests via websocket: {e!r}'
             )
+
+
+class WebSocketClient(GRPCClient, WebSocketClientMixin):
+    """A Python Client to stream requests from a Flow with a REST Gateway.
+
+    :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like
+    :meth:`index`, "meth:`search`, :meth:`train`, :meth:`update` & :meth:`delete`.
+
+    It is used by default while running operations when we create a `Flow` with `restful=True`
+
+    .. highlight:: python
+    .. code-block:: python
+
+        from jina.flow import Flow
+        f = Flow(restful=True).add().add()
+
+        with f:
+            f.index(['abc'])
+
+
+    :class:`WebSocketClient` can also be used to run operations for a remote Flow
+
+    .. highlight:: python
+    .. code-block:: python
+
+        # A Flow running on remote
+        from jina.flow import Flow
+        f = Flow(restful=True, port_expose=34567).add().add()
+
+        with f:
+            f.block()
+
+        # Local WebSocketClient running index & search
+        from jina.clients import WebSocketClient
+
+        client = WebSocketClient(...)
+        client.index(...)
+        client.search(...)
+
+
+    :class:`WebSocketClient` internally handles an event loop to run operations asynchronously.
+    """

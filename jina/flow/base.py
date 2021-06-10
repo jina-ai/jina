@@ -12,8 +12,7 @@ from typing import Optional, Union, Tuple, List, Set, Dict, overload
 
 from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
-from ..clients.base import BaseClient
-from ..clients import GRPCClient, WebSocketClient
+from ..clients import Client
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
@@ -45,6 +44,7 @@ _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|6
 
 if False:
     from ..peapods import BasePod
+    from ..clients.base import BaseClient
 
 
 class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -68,10 +68,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     :param args: Namespace args
     :param env: environment variables shared by all Pods
     """
-
-    _cls_client = (
-        GRPCClient  #: the type of the GRPCClient, can be changed to other class
-    )
 
     # overload_inject_start_flow
     @overload
@@ -213,9 +209,9 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                runtime_cls='GRPCRuntime'
-                if self._cls_client == GRPCClient
-                else 'RESTRuntime',
+                runtime_cls='RESTRuntime'
+                if self._common_kwargs.get('restful', False)
+                else 'GRPCRuntime',
                 pod_role=PodRoleType.GATEWAY,
                 identity=self.args.identity,
             )
@@ -668,7 +664,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
-        op_flow._update_client()
         return op_flow
 
     def __call__(self, *args, **kwargs):
@@ -813,13 +808,12 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             kwargs['port_expose'] = self.port_expose
         if 'host' not in kwargs:
             kwargs['host'] = self.host
-
-        args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
-
         # show progress when client is used inside the flow, for better log readability
         if 'show_progress' not in kwargs:
-            args.show_progress = True
-        return self._cls_client(args)
+            kwargs['show_progress'] = True
+
+        args = ArgNamespace.kwargs2namespace(kwargs, set_client_cli_parser())
+        return Client(args)
 
     @property
     def _mermaid_str(self):
@@ -1113,10 +1107,8 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _switch_gateway(self, gateway: str, port: int):
         restful = gateway == 'RESTRuntime'
-        client = WebSocketClient if gateway == 'RESTRuntime' else GRPCClient
 
         # globally register this at Flow level
-        self._cls_client = client
         self._common_kwargs['restful'] = restful
         if port:
             self._common_kwargs['port_expose'] = port
@@ -1151,10 +1143,6 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             return list(self._pod_nodes.values())[item]
         else:
             raise TypeError(f'{typename(item)} is not supported')
-
-    def _update_client(self):
-        if self._pod_nodes['gateway'].args.restful:
-            self._cls_client = WebSocketClient
 
     @property
     def workspace(self) -> str:
