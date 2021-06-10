@@ -134,7 +134,7 @@ linkcheck_retries = 2
 linkcheck_anchors = False
 
 ogp_site_url = 'https://docs2.jina.ai/'
-ogp_image = 'https://docs2.jina.ai/banner.png'
+ogp_image = 'https://docs2.jina.ai/_static/banner.png'
 ogp_use_first_image = True
 ogp_description_length = 300
 ogp_type = 'website'
