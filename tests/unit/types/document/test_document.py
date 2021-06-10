@@ -824,6 +824,13 @@ def test_doc_update_given_fields_and_source_has_more_attributes(test_docs):
     assert doc1.chunks != doc2.chunks
 
 
+def test_doc_update_given_content_hash_updated(test_docs):
+    doc1, doc2 = test_docs
+    doc1.update_content_hash()
+    doc2.update(doc1)
+    assert doc1.content_hash == doc2.content_hash
+
+
 def test_document_pretty_dict():
     doc = Document(
         blob=np.array([[0, 1, 2], [2, 1, 0]]),
