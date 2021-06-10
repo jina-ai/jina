@@ -1,4 +1,5 @@
 import os
+import re
 import random
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -7,6 +8,8 @@ from contextlib import contextmanager
 
 if TYPE_CHECKING:
     from .models import DaemonID
+
+EXCEPTS_REGEX = r'\b(error|failed|FAILURES)\b'
 
 
 class classproperty:
@@ -58,6 +61,15 @@ def random_port_range(port_min: int = 49153, port_max: int = 65535, count: int =
                     break
         else:
             return _jina_random_port_min, _jina_random_port_min + count
+
+
+def is_error_message(s) -> bool:
+    """
+    Check if the string matches an exception regex.
+    :param s: the string to check
+    :return: whether or not it matches
+    """
+    return re.search(EXCEPTS_REGEX, s, re.IGNORECASE | re.UNICODE) is not None
 
 
 @contextmanager

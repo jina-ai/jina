@@ -6,11 +6,10 @@ from fastapi import HTTPException
 
 from jina import __ready_msg__
 from jina.logging.logger import JinaLogger
-from jina.docker.checker import is_error_message
 
 from .models import DaemonID
 from .models.enums import IDLiterals
-from .helper import id_cleaner, classproperty
+from .helper import id_cleaner, classproperty, is_error_message
 from . import (
     __rootdir__,
     __dockerfiles__,
