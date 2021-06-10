@@ -72,22 +72,36 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def __init__(
         self,
+        asyncio: Optional[bool] = False,
+        continue_on_error: Optional[bool] = False,
         description: Optional[str] = None,
+        env: Optional[dict] = None,
+        host: Optional[str] = '0.0.0.0',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
+        port_expose: Optional[int] = None,
+        proxy: Optional[bool] = False,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
+        request_size: Optional[int] = 100,
+        restful: Optional[bool] = False,
+        return_results: Optional[bool] = False,
+        show_progress: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors
 
+        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+        :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.
         :param description: The description of this object. It will be used in automatics docs UI.
+        :param env: The map of environment variables that are available inside runtime
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param inspect: The strategy on those inspect pods in the flow.
 
-          If `REMOVE` is given then all inspect pods are removed when building the flow.
+              If `REMOVE` is given then all inspect pods are removed when building the flow.
         :param log_config: The YAML config of the logger used in this object.
         :param name: The name of this object.
 
@@ -99,8 +113,17 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param port_expose: The port of the host exposed to the public
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param request_size: The number of Documents in each Request.
+        :param restful: If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with --restful as well.
+        :param return_results: This feature is only used for AsyncClient.
+
+          If set, the results of all Requests will be returned as a list. This is useful when one wants
+          process Responses in bulk instead of using callback.
+        :param show_progress: If set, client will show a progress bar on receiving every request.
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
