@@ -124,6 +124,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -368,6 +369,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseClient</span><span class="p">,</span> <span class="n">InputType</span>
+<span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCClient</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span><span class="p">,</span> <span class="n">ProgressBar</span>
@@ -475,6 +477,48 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Got following error while streaming requests via websocket: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../../api/jina.clients.websocket/#jina.clients.websocket.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">GRPCClient</span><span class="p">,</span> <span class="n">WebSocketClientMixin</span><span class="p">):</span>
+    <span class="sd">"""A Python Client to stream requests from a Flow with a REST Gateway.</span>
+
+<span class="sd">    :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like</span>
+<span class="sd">    :meth:`index`, "meth:`search`, :meth:`train`, :meth:`update` &amp; :meth:`delete`.</span>
+
+<span class="sd">    It is used by default while running operations when we create a `Flow` with `restful=True`</span>
+
+<span class="sd">    .. highlight:: python</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from jina.flow import Flow</span>
+<span class="sd">        f = Flow(restful=True).add().add()</span>
+
+<span class="sd">        with f:</span>
+<span class="sd">            f.index(['abc'])</span>
+
+
+<span class="sd">    :class:`WebSocketClient` can also be used to run operations for a remote Flow</span>
+
+<span class="sd">    .. highlight:: python</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        # A Flow running on remote</span>
+<span class="sd">        from jina.flow import Flow</span>
+<span class="sd">        f = Flow(restful=True, port_expose=34567).add().add()</span>
+
+<span class="sd">        with f:</span>
+<span class="sd">            f.block()</span>
+
+<span class="sd">        # Local WebSocketClient running index &amp; search</span>
+<span class="sd">        from jina.clients import WebSocketClient</span>
+
+<span class="sd">        client = WebSocketClient(...)</span>
+<span class="sd">        client.index(...)</span>
+<span class="sd">        client.search(...)</span>
+
+
+<span class="sd">    :class:`WebSocketClient` internally handles an event loop to run operations asynchronously.</span>
+<span class="sd">    """</span></div>
 </pre></div>
       </article>
       <footer>

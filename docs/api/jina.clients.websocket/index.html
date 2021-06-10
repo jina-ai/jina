@@ -129,6 +129,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">jina.clients.websocket module</a></li>
@@ -374,6 +375,39 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.clients.websocket.</span></code><code class="sig-name descname"><span class="pre">WebSocketClientMixin</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/websocket/#WebSocketClientMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.websocket.WebSocketClientMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient" title="jina.clients.base.BaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.BaseClient</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>A MixIn for Websocket Client.</p>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.clients.websocket.WebSocketClient">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.clients.websocket.</span></code><code class="sig-name descname"><span class="pre">WebSocketClient</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/websocket/#WebSocketClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.websocket.WebSocketClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient" title="jina.clients.grpc.GRPCClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.grpc.GRPCClient</span></code></a>, <a class="reference internal" href="#jina.clients.websocket.WebSocketClientMixin" title="jina.clients.websocket.WebSocketClientMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.websocket.WebSocketClientMixin</span></code></a></p>
+<p>A Python Client to stream requests from a Flow with a REST Gateway.</p>
+<p><a class="reference internal" href="#jina.clients.websocket.WebSocketClient" title="jina.clients.websocket.WebSocketClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClient</span></code></a> shares the same interface as <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code> and provides methods like
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">index()</span></code>, “meth:<cite>search</cite>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">train()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code> &amp; <code class="xref py py-meth docutils literal notranslate"><span class="pre">delete()</span></code>.</p>
+<p>It is used by default while running operations when we create a <cite>Flow</cite> with <cite>restful=True</cite></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.flow</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">restful</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">([</span><span class="s1">'abc'</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#jina.clients.websocket.WebSocketClient" title="jina.clients.websocket.WebSocketClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClient</span></code></a> can also be used to run operations for a remote Flow</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># A Flow running on remote</span>
+<span class="kn">from</span> <span class="nn">jina.flow</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">restful</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">port_expose</span><span class="o">=</span><span class="mi">34567</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+
+<span class="c1"># Local WebSocketClient running index &amp; search</span>
+<span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">WebSocketClient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">WebSocketClient</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#jina.clients.websocket.WebSocketClient" title="jina.clients.websocket.WebSocketClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketClient</span></code></a> internally handles an event loop to run operations asynchronously.</p>
 </dd></dl>
 </div>
 

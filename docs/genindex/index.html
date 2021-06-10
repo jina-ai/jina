@@ -123,6 +123,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -388,7 +389,9 @@
 </li>
           <li><a href="../api/daemon.stores.workspace/#daemon.stores.workspace.WorkspaceStore.add">(daemon.stores.workspace.WorkspaceStore method)</a>
 </li>
-          <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.add">(jina.flow.base.BaseFlow method)</a>
+          <li><a href="../api/jina/#jina.Flow.add">(jina.Flow method)</a>
+</li>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.add">(jina.flow.base.Flow method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.parsers.helper/#jina.parsers.helper.add_arg_group">add_arg_group() (in module jina.parsers.helper)</a>
@@ -411,10 +414,18 @@
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.address_out">address_out() (jina.peapods.pods.BasePod property)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.address_private">address_private() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.address_private">address_private() (jina.Flow property)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.address_private">(jina.flow.base.Flow property)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.address_public">address_public() (jina.flow.base.BaseFlow property)</a>
+        </ul></li>
+        <li><a href="../api/jina/#jina.Flow.address_public">address_public() (jina.Flow property)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.address_public">(jina.flow.base.Flow property)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina/#jina.Document.adjacency">adjacency() (jina.Document property)</a>
 
         <ul>
@@ -437,6 +448,8 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ANY">ANY (jina.enums.PollingType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/cli.export/#cli.export.api_to_dict">api_to_dict() (in module cli.export)</a>
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.append">append() (jina.DocumentArray method)</a>
@@ -451,8 +464,6 @@
           <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.append">(jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace">ArgNamespace (class in jina.helper)</a>
 </li>
         <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus.arguments">arguments (daemon.models.status.StoreItemStatus attribute)</a>
@@ -491,12 +502,8 @@
         </ul></li>
         <li><a href="../api/jina.clients.asyncio/#jina.clients.asyncio.AsyncClient">AsyncClient (class in jina.clients.asyncio)</a>
 </li>
-        <li><a href="../api/jina/#jina.AsyncFlow">AsyncFlow (class in jina)</a>
-
-        <ul>
-          <li><a href="../api/jina.flow.asyncio/#jina.flow.asyncio.AsyncFlow">(class in jina.flow.asyncio)</a>
+        <li><a href="../api/jina.flow.asyncio/#jina.flow.asyncio.AsyncFlow">AsyncFlow (class in jina.flow.asyncio)</a>
 </li>
-        </ul></li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.base/#jina.peapods.runtimes.asyncio.base.AsyncNewLoopRuntime">AsyncNewLoopRuntime (class in jina.peapods.runtimes.asyncio.base)</a>
 </li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin">AsyncPostMixin (class in jina.clients.mixin)</a>
@@ -563,18 +570,16 @@
         </ul></li>
         <li><a href="../api/jina.executors/#jina.executors.BaseExecutor">BaseExecutor (class in jina.executors)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow">BaseFlow (class in jina.flow.base)</a>
-</li>
         <li><a href="../api/jina.types.ndarray/#jina.types.ndarray.BaseNdArray">BaseNdArray (class in jina.types.ndarray)</a>
 </li>
         <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea">BasePea (class in jina.peapods.peas)</a>
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod">BasePod (class in jina.peapods.pods)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime">BaseRuntime (class in jina.peapods.runtimes.base)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.ndarray.sparse/#jina.types.ndarray.sparse.BaseSparseNdArray">BaseSparseNdArray (class in jina.types.ndarray.sparse)</a>
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore">BaseStore (class in daemon.stores.base)</a>
@@ -593,8 +598,12 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.blob">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.block">block() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.block">block() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.block">(jina.flow.base.Flow method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.request/#jina.types.request.Request.body">body() (jina.types.request.Request property)</a>
 </li>
         <li><a href="../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager.broadcast">broadcast() (daemon.api.endpoints.logs.ConnectionManager method)</a>
@@ -605,8 +614,12 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.buffer">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.build">build() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.build">build() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.build">(jina.flow.base.Flow method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.peapods.pods.factory/#jina.peapods.pods.factory.PodFactory.build_pod">build_pod() (jina.peapods.pods.factory.PodFactory static method)</a>
 </li>
         <li><a href="../api/daemon.models.custom/#daemon.models.custom.build_pydantic_model">build_pydantic_model() (in module daemon.models.custom)</a>
@@ -715,10 +728,12 @@
           <li><a href="../api/jina.clients/#jina.clients.Client">(in module jina.clients)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.clients/#jina.clients.GRPCClient.client">client() (jina.clients.GRPCClient property)</a>
+        <li><a href="../api/jina.clients.grpc/#jina.clients.grpc.GRPCClient.client">client() (jina.clients.grpc.GRPCClient property)</a>
 
         <ul>
-          <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.client">(jina.flow.base.BaseFlow property)</a>
+          <li><a href="../api/jina/#jina.Flow.client">(jina.Flow property)</a>
+</li>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.client">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.close">close() (jina.executors.BaseExecutor method)</a>
@@ -1273,7 +1288,7 @@
         <li><a href="../api/jina/#jina.Flow">Flow (class in jina)</a>
 
         <ul>
-          <li><a href="../api/jina.flow/#jina.flow.Flow">(class in jina.flow)</a>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow">(class in jina.flow.base)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.FLOW">FLOW (jina.enums.BuildTestLevel attribute)</a>
@@ -1346,8 +1361,12 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.GatewayPartialMessage">GatewayPartialMessage</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.gather_inspect">gather_inspect() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.gather_inspect">gather_inspect() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.gather_inspect">(jina.flow.base.Flow method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/fastentrypoints/#fastentrypoints.get_args">get_args() (in module fastentrypoints)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.get_attributes">get_attributes() (jina.Document method)</a>
@@ -1450,7 +1469,7 @@
         </ul></li>
         <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.groundtruths_matrix">groundtruths_matrix() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
 </li>
-        <li><a href="../api/jina.clients/#jina.clients.GRPCClient">GRPCClient (class in jina.clients)</a>
+        <li><a href="../api/jina.clients.grpc/#jina.clients.grpc.GRPCClient">GRPCClient (class in jina.clients.grpc)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.grpc/#jina.peapods.runtimes.asyncio.grpc.GRPCRuntime">GRPCRuntime (class in jina.peapods.runtimes.asyncio.grpc)</a>
 </li>
@@ -1492,9 +1511,11 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.host">host() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.host">host() (jina.Flow property)</a>
 
         <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.host">(jina.flow.base.Flow property)</a>
+</li>
           <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.host">(jina.peapods.pods.compound.CompoundPod property)</a>
 </li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.host">(jina.peapods.pods.Pod property)</a>
@@ -1526,8 +1547,12 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.id">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.identity">identity() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.identity">identity() (jina.Flow property)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.identity">(jina.flow.base.Flow property)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy.IGNORE">IGNORE (jina.enums.OnErrorStrategy attribute)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.ImageAlreadyExists">ImageAlreadyExists</a>
@@ -1558,8 +1583,12 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType.INSPECT">INSPECT (jina.enums.PodRoleType attribute)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.inspect">inspect() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.inspect">inspect() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.inspect">(jina.flow.base.Flow method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType.INSPECT_AUX_PASS">INSPECT_AUX_PASS (jina.enums.PodRoleType attribute)</a>
 </li>
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.IntegerParameter">IntegerParameter (class in jina.optimizers.parameters)</a>
@@ -1572,10 +1601,10 @@
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.is_data_request">is_data_request() (jina.types.message.Message property)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_dense">is_dense() (jina.enums.EmbeddingClsType property)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_dense">is_dense() (jina.enums.EmbeddingClsType property)</a>
+</li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.is_error">is_error() (jina.types.message.Message property)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_idle">is_idle() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
@@ -1683,6 +1712,13 @@
 
         <ul>
           <li><a href="../api/jina.clients.base/#module-jina.clients.base">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.clients.grpc
+
+        <ul>
+          <li><a href="../api/jina.clients.grpc/#module-jina.clients.grpc">module</a>
 </li>
         </ul></li>
         <li>
@@ -2670,9 +2706,11 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType.JOIN">JOIN (jina.enums.PodRoleType attribute)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.join">join() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.join">join() (jina.Flow method)</a>
 
         <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.join">(jina.flow.base.Flow method)</a>
+</li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.join">(jina.peapods.pods.BasePod method)</a>
 </li>
           <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.join">(jina.peapods.pods.compound.CompoundPod method)</a>
@@ -2726,8 +2764,12 @@
   <h2>L</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.last_pod">last_pod() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.last_pod">last_pod() (jina.Flow property)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.last_pod">(jina.flow.base.Flow property)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser">LegacyParser (class in jina.jaml.parsers.executor.legacy)</a>
 
         <ul>
@@ -2756,10 +2798,10 @@
         </ul></li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAMLCompatible.load_config">load_config() (jina.jaml.JAMLCompatible class method)</a>
 </li>
-        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.load_from_dgl_graph">load_from_dgl_graph() (jina.types.document.graph.GraphDocument static method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.load_from_dgl_graph">load_from_dgl_graph() (jina.types.document.graph.GraphDocument static method)</a>
+</li>
         <li><a href="../api/jina/#jina.DocumentArray.load_json">load_json() (jina.DocumentArray class method)</a>
 
         <ul>
@@ -2854,13 +2896,17 @@
 </li>
         <li><a href="../api/jina.parsers.peapods.base/#jina.parsers.peapods.base.mixin_base_ppr_parser">mixin_base_ppr_parser() (in module jina.parsers.peapods.base)</a>
 </li>
-        <li><a href="../api/jina.parsers.client/#jina.parsers.client.mixin_client_cli_parser">mixin_client_cli_parser() (in module jina.parsers.client)</a>
+        <li><a href="../api/jina.parsers.client/#jina.parsers.client.mixin_client_features_parser">mixin_client_features_parser() (in module jina.parsers.client)</a>
+</li>
+        <li><a href="../api/jina.parsers.client/#jina.parsers.client.mixin_client_type_parser">mixin_client_type_parser() (in module jina.parsers.client)</a>
 </li>
         <li><a href="../api/jina.parsers.peapods.runtimes.container/#jina.parsers.peapods.runtimes.container.mixin_container_runtime_parser">mixin_container_runtime_parser() (in module jina.parsers.peapods.runtimes.container)</a>
 </li>
         <li><a href="../api/daemon.parser/#daemon.parser.mixin_daemon_parser">mixin_daemon_parser() (in module daemon.parser)</a>
 </li>
         <li><a href="../api/jina.parsers.peapods.runtimes.distributed/#jina.parsers.peapods.runtimes.distributed.mixin_distributed_feature_parser">mixin_distributed_feature_parser() (in module jina.parsers.peapods.runtimes.distributed)</a>
+</li>
+        <li><a href="../api/jina.parsers.flow/#jina.parsers.flow.mixin_flow_features_parser">mixin_flow_features_parser() (in module jina.parsers.flow)</a>
 </li>
         <li><a href="../api/jina.parsers.peapods.runtimes.remote/#jina.parsers.peapods.runtimes.remote.mixin_grpc_server_parser">mixin_grpc_server_parser() (in module jina.parsers.peapods.runtimes.remote)</a>
 </li>
@@ -2961,6 +3007,8 @@
           <li><a href="../api/jina.clients.asyncio/#module-jina.clients.asyncio">jina.clients.asyncio</a>
 </li>
           <li><a href="../api/jina.clients.base/#module-jina.clients.base">jina.clients.base</a>
+</li>
+          <li><a href="../api/jina.clients.grpc/#module-jina.clients.grpc">jina.clients.grpc</a>
 </li>
           <li><a href="../api/jina.clients.helper/#module-jina.clients.helper">jina.clients.helper</a>
 </li>
@@ -3265,10 +3313,18 @@
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.needs">needs (jina.peapods.pods.BasePod attribute)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.needs">needs() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.needs">needs() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.needs">(jina.flow.base.Flow method)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.needs_all">needs_all() (jina.flow.base.BaseFlow method)</a>
+        </ul></li>
+        <li><a href="../api/jina/#jina.Flow.needs_all">needs_all() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.needs_all">(jina.flow.base.Flow method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.checker/#jina.checker.NetworkChecker">NetworkChecker (class in jina.checker)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.NoAvailablePortError">NoAvailablePortError</a>
@@ -3315,16 +3371,22 @@
 </li>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_nodes">num_nodes() (jina.types.document.graph.GraphDocument property)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.num_peas">num_peas() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.num_peas">num_peas() (jina.Flow property)</a>
 
         <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.num_peas">(jina.flow.base.Flow property)</a>
+</li>
           <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.num_peas">(jina.peapods.pods.compound.CompoundPod property)</a>
 </li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.num_peas">(jina.peapods.pods.Pod property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.num_pods">num_pods() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.num_pods">num_pods() (jina.Flow property)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.num_pods">(jina.flow.base.Flow property)</a>
 </li>
+        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -3432,7 +3494,9 @@
         <li><a href="../api/jina/#jina.Document.plot">plot() (jina.Document method)</a>
 
         <ul>
-          <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.plot">(jina.flow.base.BaseFlow method)</a>
+          <li><a href="../api/jina/#jina.Flow.plot">(jina.Flow method)</a>
+</li>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.plot">(jina.flow.base.Flow method)</a>
 </li>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.plot">(jina.types.document.Document method)</a>
 </li>
@@ -3471,9 +3535,11 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.pop">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.port_expose">port_expose() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.port_expose">port_expose() (jina.Flow property)</a>
 
         <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.port_expose">(jina.flow.base.Flow property)</a>
+</li>
           <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.port_expose">(jina.peapods.pods.compound.CompoundPod property)</a>
 </li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.port_expose">(jina.peapods.pods.Pod property)</a>
@@ -3641,10 +3707,10 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.RequestType">RequestType (class in jina.enums)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.excepts/#jina.excepts.RequestTypeError">RequestTypeError</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.reset">reset() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
@@ -3679,9 +3745,11 @@
         </ul></li>
         <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum.rolling_update">rolling_update (daemon.models.UpdateOperationEnum attribute)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.rolling_update">rolling_update() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.rolling_update">rolling_update() (jina.Flow method)</a>
 
         <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.rolling_update">(jina.flow.base.Flow method)</a>
+</li>
           <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.rolling_update">(jina.peapods.pods.compound.CompoundPod method)</a>
 </li>
         </ul></li>
@@ -3923,9 +3991,11 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.ssh/#jina.peapods.runtimes.ssh.SSHRuntime">SSHRuntime (class in jina.peapods.runtimes.ssh)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.start">start() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.start">start() (jina.Flow method)</a>
 
         <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.start">(jina.flow.base.Flow method)</a>
+</li>
           <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.start">(jina.peapods.peas.BasePea method)</a>
 </li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.start">(jina.peapods.pods.BasePod method)</a>
@@ -4103,10 +4173,10 @@
           <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.update_content_hash">(jina.types.document.multimodal.MultimodalDocument method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar.update_tick">update_tick() (jina.logging.profile.ProgressBar method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.update_timestamp">update_timestamp() (jina.types.message.Message method)</a>
 </li>
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.ExecutorAlternativeParameter.update_trial_params">update_trial_params() (jina.optimizers.parameters.ExecutorAlternativeParameter method)</a>
@@ -4127,10 +4197,18 @@
         </ul></li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.rest.models/#jina.peapods.runtimes.asyncio.rest.models.CustomConfig.use_enum_values">use_enum_values (jina.peapods.runtimes.asyncio.rest.models.CustomConfig attribute)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.use_grpc_gateway">use_grpc_gateway() (jina.flow.base.BaseFlow method)</a>
+        <li><a href="../api/jina/#jina.Flow.use_grpc_gateway">use_grpc_gateway() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.use_grpc_gateway">(jina.flow.base.Flow method)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.use_rest_gateway">use_rest_gateway() (jina.flow.base.BaseFlow method)</a>
+        </ul></li>
+        <li><a href="../api/jina/#jina.Flow.use_rest_gateway">use_rest_gateway() (jina.Flow method)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.use_rest_gateway">(jina.flow.base.Flow method)</a>
 </li>
+        </ul></li>
         <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.used_memory">used_memory (daemon.models.status.DaemonStatus attribute)</a>
 
         <ul>
@@ -4201,7 +4279,7 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.WARNING">WARNING (jina.enums.LogVerbosity attribute)</a>
 </li>
-        <li><a href="../api/jina.clients/#jina.clients.WebSocketClient">WebSocketClient (class in jina.clients)</a>
+        <li><a href="../api/jina.clients.websocket/#jina.clients.websocket.WebSocketClient">WebSocketClient (class in jina.clients.websocket)</a>
 </li>
         <li><a href="../api/jina.clients.websocket/#jina.clients.websocket.WebSocketClientMixin">WebSocketClientMixin (class in jina.clients.websocket)</a>
 </li>
@@ -4211,20 +4289,26 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.weight">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus.workdir">workdir (daemon.models.status.StoreItemStatus attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.workspace">workspace() (jina.executors.BaseExecutor property)</a>
 
         <ul>
-          <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.workspace">(jina.flow.base.BaseFlow property)</a>
+          <li><a href="../api/jina/#jina.Flow.workspace">(jina.Flow property)</a>
+</li>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.workspace">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
         <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus.workspace_id">workspace_id (daemon.models.status.StoreItemStatus attribute)</a>
 </li>
-        <li><a href="../api/jina.flow.base/#jina.flow.base.BaseFlow.workspace_id">workspace_id() (jina.flow.base.BaseFlow property)</a>
+        <li><a href="../api/jina/#jina.Flow.workspace_id">workspace_id() (jina.Flow property)</a>
+
+        <ul>
+          <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.workspace_id">(jina.flow.base.Flow property)</a>
 </li>
+        </ul></li>
         <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.workspaces">workspaces (daemon.models.status.DaemonStatus attribute)</a>
 </li>
         <li><a href="../api/daemon.stores.workspace/#daemon.stores.workspace.WorkspaceStore">WorkspaceStore (class in daemon.stores.workspace)</a>

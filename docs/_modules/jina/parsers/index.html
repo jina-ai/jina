@@ -124,6 +124,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -455,7 +456,6 @@
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--restful'</span><span class="p">,</span>
-        <span class="s1">'--rest-api'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'If set, use RESTful interface instead of gRPC as the main interface'</span><span class="p">,</span>
@@ -475,10 +475,11 @@
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
-    <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">mixin_client_cli_parser</span>
+    <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">mixin_client_features_parser</span><span class="p">,</span> <span class="n">mixin_client_type_parser</span>
 
-    <span class="n">mixin_client_cli_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_client_type_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_client_features_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
 

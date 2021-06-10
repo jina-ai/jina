@@ -17,6 +17,7 @@ Submodules
 
    jina.clients.asyncio
    jina.clients.base
+   jina.clients.grpc
    jina.clients.helper
    jina.clients.mixin
    jina.clients.websocket

@@ -124,6 +124,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -366,8 +367,8 @@
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">GeneratorSourceType</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_new_data_request_from_batch</span><span class="p">,</span> <span class="n">_new_data_request</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">GeneratorSourceType</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>

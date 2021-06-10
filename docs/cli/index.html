@@ -129,6 +129,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -428,7 +429,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “da025dcd-f4c1-45a2-8765-ed8d8cdda4bc”</p>
+<p>Default: “be0bca14-6b1f-45cd-9847-5865586d1be3”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -503,7 +504,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “cdd7d947-688f-4482-9e1b-b803b84020aa”</p>
+<p>Default: “1645244e-3a66-467e-bada-5e773afd6d5b”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -536,7 +537,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “bb55b6b9-0b42-4370-85ff-e73ee5d9f342”</p>
+<p>Default: “4212c889-d9ab-4c73-a14f-3c93ccad7b7b”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -635,7 +636,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 60675</p>
+<p>Default: 56333</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -680,11 +681,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 56421</p>
+<p>Default: 46589</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 59827</p>
+<p>Default: 37429</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -772,7 +773,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 58239</p>
+<p>Default: 36779</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -799,7 +800,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “87379d9f-4f36-45e9-a707-cb016b05a641”</p>
+<p>Default: “fcc6a6a8-97cf-408c-89d7-406d859b7e67”</p>
 </dd>
 </dl>
 </div>
@@ -896,23 +897,12 @@ peas are running on host provided by the argument <code class="docutils literal 
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this headline">¶</a></h3>
 <p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span>
-                  <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                   <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
-</div>
-<div class="section" id="Named Arguments_repeat3">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--uses</kbd></dt>
-<dd><p>The YAML file represents a flow</p>
-</dd>
-<dt><kbd>--inspect</kbd></dt>
-<dd><p>Possible choices: HANG, REMOVE, COLLECT</p>
-<p>The strategy on those inspect pods in the flow.</p>
-<p>If <cite>REMOVE</cite> is given then all inspect pods are removed when building the flow.</p>
-<p>Default: 2</p>
-</dd>
-</dl>
 </div>
 <div class="section" id="Essential arguments_repeat1">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments_repeat1" title="Permalink to this headline">¶</a></h4>
@@ -948,6 +938,78 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 </dl>
 </div>
+<div class="section" id="Expose arguments_repeat1">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--port-expose</kbd></dt>
+<dd><p>The port of the host exposed to the public</p>
+<p>Default: 59483</p>
+</dd>
+<dt><kbd>--proxy</kbd></dt>
+<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Client Interface arguments">
+<h4>Client Interface arguments<a class="headerlink" href="#Client Interface arguments" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--restful</kbd></dt>
+<dd><p>If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with –restful as well.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--asyncio</kbd></dt>
+<dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Client Features arguments">
+<h4>Client Features arguments<a class="headerlink" href="#Client Features arguments" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--request-size</kbd></dt>
+<dd><p>The number of Documents in each Request.</p>
+<p>Default: 100</p>
+</dd>
+<dt><kbd>--continue-on-error</kbd></dt>
+<dd><p>If set, a Request that causes error will be logged only without blocking the further requests.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--show-progress</kbd></dt>
+<dd><p>If set, client will show a progress bar on receiving every request.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--return-results</kbd></dt>
+<dd><p>This feature is only used for AsyncClient.</p>
+<p>If set, the results of all Requests will be returned as a list. This is useful when one wants
+process Responses in bulk instead of using callback.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Flow Feature arguments">
+<h4>Flow Feature arguments<a class="headerlink" href="#Flow Feature arguments" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--uses</kbd></dt>
+<dd><p>The YAML file represents a flow</p>
+</dd>
+<dt><kbd>--env</kbd></dt>
+<dd><p>The map of environment variables that are available inside runtime</p>
+</dd>
+<dt><kbd>--inspect</kbd></dt>
+<dd><p>Possible choices: HANG, REMOVE, COLLECT</p>
+<blockquote>
+<div><p>The strategy on those inspect pods in the flow.</p>
+<p>If <cite>REMOVE</cite> is given then all inspect pods are removed when building the flow.</p>
+</div></blockquote>
+<p>Default: 2</p>
+</dd>
+</dl>
+</div>
 </div>
 <div class="section" id="ping">
 <h3>ping<a class="headerlink" href="#ping" title="Permalink to this headline">¶</a></h3>
@@ -966,8 +1028,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 </dl>
 </div>
-<div class="section" id="Named Arguments_repeat4">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
@@ -1012,10 +1074,10 @@ peas are running on host provided by the argument <code class="docutils literal 
                      <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat5">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat4">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
-<dt><kbd>--restful, --rest-api</kbd></dt>
+<dt><kbd>--restful</kbd></dt>
 <dd><p>If set, use RESTful interface instead of gRPC as the main interface</p>
 <p>Default: False</p>
 </dd>
@@ -1060,7 +1122,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 51607</p>
+<p>Default: 32949</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1105,11 +1167,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 37209</p>
+<p>Default: 56585</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 38119</p>
+<p>Default: 51001</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1214,8 +1276,8 @@ and oneof fields are not affected by this option.</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="Expose arguments_repeat1">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Expose arguments_repeat2">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
@@ -1223,7 +1285,7 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 52157</p>
+<p>Default: 36963</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1337,7 +1399,7 @@ and oneof fields are not affected by this option.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 58083</p>
+<p>Default: 38713</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1382,11 +1444,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 41507</p>
+<p>Default: 43037</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 48291</p>
+<p>Default: 56331</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1465,8 +1527,8 @@ container.</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="Expose arguments_repeat2">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Expose arguments_repeat3">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
@@ -1474,7 +1536,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 34701</p>
+<p>Default: 45851</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1501,7 +1563,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “d0eef325-ce07-4a69-a323-72dbc67bfd94”</p>
+<p>Default: “b9e51bc3-0824-4c56-af3e-2fea448439bd”</p>
 </dd>
 </dl>
 </div>
@@ -1551,13 +1613,43 @@ Python files, data files.</p>
 <div class="section" id="client">
 <h3>client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
 <p>Start a Python client that connects to a remote Jina gateway</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">results</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Client arguments">
-<h4>Client arguments<a class="headerlink" href="#Client arguments" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Expose arguments_repeat4">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--host</kbd></dt>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--port-expose</kbd></dt>
+<dd><p>The port of the host exposed to the public</p>
+<p>Default: 47079</p>
+</dd>
+<dt><kbd>--proxy</kbd></dt>
+<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Client Interface arguments_repeat1">
+<h4>Client Interface arguments<a class="headerlink" href="#Client Interface arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--restful</kbd></dt>
+<dd><p>If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with –restful as well.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--asyncio</kbd></dt>
+<dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Client Features arguments_repeat1">
+<h4>Client Features arguments<a class="headerlink" href="#Client Features arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--request-size</kbd></dt>
 <dd><p>The number of Documents in each Request.</p>
@@ -1577,27 +1669,6 @@ Python files, data files.</p>
 process Responses in bulk instead of using callback.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--restful</kbd></dt>
-<dd><p>If set, use RESTful interface instead of gRPC as the main interface</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Expose arguments_repeat3">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat3" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--port-expose</kbd></dt>
-<dd><p>The port of the host exposed to the public</p>
-<p>Default: 46717</p>
-</dd>
-<dt><kbd>--proxy</kbd></dt>
-<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
-<p>Default: False</p>
-</dd>
 </dl>
 </div>
 </div>
@@ -1609,8 +1680,8 @@ process Responses in bulk instead of using callback.</p>
                         <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat6">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat5">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
 <dd><p>The YAML file path for storing the exported API</p>
@@ -1721,23 +1792,26 @@ process Responses in bulk instead of using callback.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#flow">flow</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat1">Expose arguments</a></li>
+<li><a class="reference internal" href="#Client Interface arguments">Client Interface arguments</a></li>
+<li><a class="reference internal" href="#Client Features arguments">Client Features arguments</a></li>
+<li><a class="reference internal" href="#Flow Feature arguments">Flow Feature arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ping">ping</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat1">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat1">ZEDRuntime arguments</a></li>
 <li><a class="reference internal" href="#GRPC arguments">GRPC arguments</a></li>
 <li><a class="reference internal" href="#REST JSON arguments">REST JSON arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat1">Expose arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat2">Expose arguments</a></li>
 <li><a class="reference internal" href="#Pea arguments_repeat1">Pea arguments</a></li>
 </ul>
 </li>
@@ -1746,18 +1820,19 @@ process Responses in bulk instead of using callback.</p>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat2">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat2">ZEDRuntime arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat2">Expose arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat3">Expose arguments</a></li>
 <li><a class="reference internal" href="#Distributed arguments_repeat1">Distributed arguments</a></li>
 <li><a class="reference internal" href="#Pea arguments_repeat2">Pea arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Client arguments">Client arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat3">Expose arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat4">Expose arguments</a></li>
+<li><a class="reference internal" href="#Client Interface arguments_repeat1">Client Interface arguments</a></li>
+<li><a class="reference internal" href="#Client Features arguments_repeat1">Client Features arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#export-api">export-api</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
 </ul>
 </li>
 </ul>

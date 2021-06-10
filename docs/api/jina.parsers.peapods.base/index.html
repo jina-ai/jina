@@ -129,6 +129,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -371,9 +372,11 @@
 <p>Base argparser module for Pea and Pod runtime</p>
 <dl class="py function">
 <dt id="jina.parsers.peapods.base.mixin_base_ppr_parser">
-<code class="sig-prename descclassname"><span class="pre">jina.parsers.peapods.base.</span></code><code class="sig-name descname"><span class="pre">mixin_base_ppr_parser</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/peapods/base/#mixin_base_ppr_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.peapods.base.mixin_base_ppr_parser" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.parsers.peapods.base.</span></code><code class="sig-name descname"><span class="pre">mixin_base_ppr_parser</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_identity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/peapods/base/#mixin_base_ppr_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.peapods.base.mixin_base_ppr_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mixing in arguments required by pea/pod/runtime module into the given parser.
-:param parser: the parser instance to which we add arguments</p>
+:param parser: the parser instance to which we add arguments
+:type with_identity: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param with_identity: if to include identity in the parser</p>
 </dd></dl>
 </div>
 

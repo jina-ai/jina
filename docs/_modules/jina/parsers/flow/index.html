@@ -124,6 +124,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -364,8 +365,38 @@
         <h1>Source code for jina.parsers.flow</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Argparser module for Flow"""</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
-<span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowInspectType</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">KVAppendAction</span>
+
+
+<div class="viewcode-block" id="mixin_flow_features_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.flow/#jina.parsers.flow.mixin_flow_features_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_flow_features_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the arguments for the Flow features to the parser</span>
+
+<span class="sd">    :param parser: the parser configure</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowInspectType</span>
+
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Flow Feature'</span><span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'--uses'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">'The YAML file represents a flow'</span><span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--env'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY=VALUE'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The map of environment variables that are available inside runtime'</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--inspect'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">FlowInspectType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">FlowInspectType</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">FlowInspectType</span><span class="o">.</span><span class="n">COLLECT</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">    The strategy on those inspect pods in the flow.</span>
+
+<span class="s1">    If `REMOVE` is given then all inspect pods are removed when building the flow.</span>
+<span class="s1">    '''</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="set_flow_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.flow/#jina.parsers.flow.set_flow_parser">[docs]</a><span class="k">def</span> <span class="nf">set_flow_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -374,24 +405,24 @@
 <span class="sd">    :param parser: an (optional) initial parser to build upon</span>
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
+    <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
+    <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">mixin_client_type_parser</span><span class="p">,</span> <span class="n">mixin_client_features_parser</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">with_identity</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'--uses'</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">'The YAML file represents a flow'</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--inspect'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="n">FlowInspectType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">FlowInspectType</span><span class="p">),</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">FlowInspectType</span><span class="o">.</span><span class="n">COLLECT</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">The strategy on those inspect pods in the flow.</span>
-
-<span class="s1">If `REMOVE` is given then all inspect pods are removed when building the flow.</span>
-<span class="s1">'''</span><span class="p">,</span>
-    <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">workspace</span><span class="o">=</span><span class="s1">'./'</span><span class="p">)</span>
+
+    <span class="n">mixin_remote_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="c1"># add client parser</span>
+    <span class="n">mixin_client_type_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">mixin_client_features_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">mixin_flow_features_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
 </pre></div>

@@ -128,6 +128,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -383,12 +384,12 @@
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="../jina.flow.base/#jina.flow.base.BaseFlow" title="jina.flow.base.BaseFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFlow</span></code></a>]) – target class type to parse into, must be a <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> type</p></li>
+<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code>[<a class="reference internal" href="../jina.flow.base/#jina.flow.base.Flow" title="jina.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>]) – target class type to parse into, must be a <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> type</p></li>
 <li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – flow yaml file loaded as python dict</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="../jina.flow.base/#jina.flow.base.BaseFlow" title="jina.flow.base.BaseFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFlow</span></code></a></p>
+<dd class="field-even"><p><a class="reference internal" href="../jina.flow.base/#jina.flow.base.Flow" title="jina.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the Flow YAML parser given the syntax version number</p>
@@ -400,7 +401,7 @@
 <code class="sig-name descname"><span class="pre">dump</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/jaml/parsers/flow/legacy/#LegacyParser.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.flow.legacy.LegacyParser.dump" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="../jina.flow.base/#jina.flow.base.BaseFlow" title="jina.flow.base.BaseFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFlow</span></code></a>) – versioned flow object</p>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="../jina.flow.base/#jina.flow.base.Flow" title="jina.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>) – versioned flow object</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>

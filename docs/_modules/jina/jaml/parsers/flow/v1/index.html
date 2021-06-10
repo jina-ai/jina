@@ -124,6 +124,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -367,7 +368,7 @@
 
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">VersionedYAMLParser</span>
 <span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
-<span class="kn">from</span> <span class="nn">....flow</span> <span class="kn">import</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">expand_env_var</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">....parsers</span> <span class="kn">import</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_gateway_parser</span>
 
@@ -418,14 +419,13 @@
 <span class="sd">        :param data: flow yaml file loaded as python dict</span>
 <span class="sd">        :return: the Flow YAML parser given the syntax version number</span>
 <span class="sd">        """</span>
-        <span class="n">envs</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'env'</span><span class="p">,</span> <span class="p">{})</span>  <span class="c1"># type: Dict[str, str]</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'with'</span><span class="p">,</span> <span class="p">{})</span>  <span class="c1"># type: Dict[str, Any]</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'args'</span><span class="p">)</span> <span class="k">if</span> <span class="s1">'args'</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="p">()</span>
         <span class="n">k</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'kwargs'</span><span class="p">)</span> <span class="k">if</span> <span class="s1">'kwargs'</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">else</span> <span class="p">{}</span>
         <span class="c1"># maybe there are some hanging kwargs in "parameters"</span>
         <span class="n">tmp_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">expand_env_var</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">a</span><span class="p">)</span>
         <span class="n">tmp_p</span> <span class="o">=</span> <span class="p">{</span><span class="n">kk</span><span class="p">:</span> <span class="n">expand_env_var</span><span class="p">(</span><span class="n">vv</span><span class="p">)</span> <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">vv</span> <span class="ow">in</span> <span class="p">{</span><span class="o">**</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">p</span><span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">tmp_a</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">envs</span><span class="p">,</span> <span class="o">**</span><span class="n">tmp_p</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">tmp_a</span><span class="p">,</span> <span class="o">**</span><span class="n">tmp_p</span><span class="p">)</span>
 
         <span class="n">pp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'executors'</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'pods'</span><span class="p">,</span> <span class="p">[]))</span>
         <span class="k">for</span> <span class="n">pods</span> <span class="ow">in</span> <span class="n">pp</span><span class="p">:</span>
@@ -446,9 +446,6 @@
         <span class="n">r</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">_version</span><span class="p">:</span>
             <span class="n">r</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_version</span>
-
-        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">_env</span><span class="p">:</span>
-            <span class="n">r</span><span class="p">[</span><span class="s1">'env'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_env</span>
 
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">_kwargs</span><span class="p">:</span>
             <span class="n">r</span><span class="p">[</span><span class="s1">'with'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">_kwargs</span>

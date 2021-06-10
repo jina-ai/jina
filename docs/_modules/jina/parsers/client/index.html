@@ -124,6 +124,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.asyncio/">jina.clients.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.base/">jina.clients.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
@@ -366,12 +367,35 @@
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
 
 
-<div class="viewcode-block" id="mixin_client_cli_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.client/#jina.parsers.client.mixin_client_cli_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_client_cli_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+<div class="viewcode-block" id="mixin_client_type_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.client/#jina.parsers.client.mixin_client_type_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_client_type_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
     <span class="sd">"""Add the arguments for the client to the parser</span>
 
 <span class="sd">    :param parser: the parser configure</span>
 <span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Client'</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Client Interface'</span><span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--restful'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, use RESTful interface instead of gRPC as the main interface. '</span>
+        <span class="s1">'This expects the corresponding Flow to be set with --restful as well.'</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--asyncio'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, then the input and output of this Client work in an asynchronous manner. '</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mixin_client_features_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.client/#jina.parsers.client.mixin_client_features_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_client_features_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the arguments for the client to the parser</span>
+
+<span class="sd">    :param parser: the parser configure</span>
+<span class="sd">    """</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Client Features'</span><span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--request-size'</span><span class="p">,</span>
@@ -405,13 +429,6 @@
 <span class="s1">If set, the results of all Requests will be returned as a list. This is useful when one wants </span>
 <span class="s1">process Responses in bulk instead of using callback. </span>
 <span class="s1">                    '''</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--restful'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, use RESTful interface instead of gRPC as the main interface'</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>
