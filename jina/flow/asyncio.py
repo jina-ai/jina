@@ -24,10 +24,11 @@ class AsyncFlow(AsyncPostMixin, BaseFlow):
     .. code-block:: python
 
         from jina import AsyncFlow
+        from jina.types.document.generators import from_ndarray
         import numpy as np
 
         with AsyncFlow().add() as f:
-            await f.index_ndarray(np.random.random([5, 4]), on_done=print)
+            await f.index(from_ndarray(np.random.random([5, 4])), on_done=print)
 
     Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements "autoawait".
 
