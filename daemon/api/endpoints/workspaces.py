@@ -31,9 +31,21 @@ async def _clear_all():
     path='/{id}',
     summary='Deleting an existing Workspace',
 )
-async def _delete(id: DaemonID, container: bool = False):
+async def _delete(
+    id: DaemonID,
+    container: bool = False,
+    network: bool = False,
+    files: bool = False,
+    everything: bool = True,
+):
     try:
-        return store.delete(id=id, container=container)
+        return store.delete(
+            id=id,
+            container=container,
+            network=network,
+            files=files,
+            everything=everything,
+        )
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
     except ValueError:

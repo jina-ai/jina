@@ -1,13 +1,9 @@
 import os
 
-import docker
-import numpy as np
 import pytest
-import requests
 
 from jina import Flow, Document
 from tests import random_docs
-from tests.distributed.helpers import wait_for_workspace, create_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -129,24 +125,3 @@ def test_create_pea_timeout(parallels):
     )
     with f:
         f.index(inputs=random_docs(10))
-
-
-def test_create_custom_container():
-    workspace_id = create_workspace(
-        filepaths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]
-    )
-    wait_for_workspace(workspace_id)
-
-    container_id = requests.get(
-        f'http://{CLOUD_HOST}/workspaces/{workspace_id}'
-    ).json()['metadata']['container_id']
-    assert container_id
-    container = docker.from_env().containers.get(container_id)
-    assert container.name == workspace_id
-
-    workspace_id = create_workspace(filepaths=[os.path.join(cur_dir, 'no_run.jinad')])
-    wait_for_workspace(workspace_id)
-    container_id = requests.get(
-        f'http://{CLOUD_HOST}/workspaces/{workspace_id}'
-    ).json()['metadata']['container_id']
-    assert not container_id
