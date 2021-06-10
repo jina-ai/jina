@@ -25,13 +25,12 @@ from ..helper import (
 )
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
-from ..parsers import set_client_cli_parser, set_gateway_parser, set_pod_parser
-
-__all__ = ['BaseFlow']
-
+from ..parsers import set_gateway_parser, set_pod_parser
 from ..peapods import Pod
 from ..peapods.pods.compound import CompoundPod
 from ..peapods.pods.factory import PodFactory
+
+__all__ = ['BaseFlow']
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -147,6 +146,16 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
             args, _flow_parser
         )  #: for yaml dump
 
+        from ..clients.mixin import AsyncPostMixin, PostMixin
+
+        if not isinstance(self, (AsyncPostMixin, PostMixin)):
+            base_cls = self.__class__
+            base_cls_name = self.__class__.__name__
+            if self.args.asyncio:
+                self.__class__ = type(base_cls_name, (AsyncPostMixin, base_cls), {})
+            else:
+                self.__class__ = type(base_cls_name, (PostMixin, base_cls), {})
+
     @staticmethod
     def _parse_endpoints(op_flow, pod_name, endpoint, connect_to_last_pod=False) -> Set:
         # parsing needs
@@ -213,11 +222,10 @@ class BaseFlow(JAMLCompatible, ExitStack, metaclass=FlowType):
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                 runtime_cls='RESTRuntime' if self.args.restful else 'GRPCRuntime',
                 pod_role=PodRoleType.GATEWAY,
-                identity=self.args.identity,
             )
         )
 
-        kwargs.update(self._common_kwargs)
+        kwargs.update(vars(self.args))
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         self._pod_nodes[pod_name] = Pod(args, needs)

@@ -1,11 +1,14 @@
 """Module wrapping the Client of Jina."""
 import argparse
-from typing import overload, Optional
+from typing import overload, Optional, Union
 
 __all__ = ['Client']
 
 if False:
     from .base import BaseClient
+    from .asyncio import AsyncClient, AsyncWebSocketClient
+    from .grpc import GRPCClient
+    from .websocket import WebSocketClient
 
 
 # overload_inject_start_client
@@ -45,7 +48,9 @@ def Client(
 # overload_inject_end_client
 
 
-def Client(args: Optional['argparse.Namespace'] = None, **kwargs) -> 'BaseClient':
+def Client(
+    args: Optional['argparse.Namespace'] = None, **kwargs
+) -> Union['AsyncWebSocketClient', 'WebSocketClient', 'AsyncClient', 'GRPCClient']:
     """Jina Python client.
 
     :param args: Namespace args.
