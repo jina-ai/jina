@@ -1,6 +1,5 @@
 import os
 
-import numpy as np
 import pytest
 
 from jina import Flow, Document

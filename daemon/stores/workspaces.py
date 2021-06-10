@@ -53,10 +53,45 @@ class WorkspaceStore(BaseStore):
         return id
 
     @BaseStore.dump
-    def delete(self, id: DaemonID, **kwargs):
+    def delete(
+        self,
+        id: DaemonID,
+        container: bool,
+        network: bool,
+        files: bool,
+        everything: bool,
+        **kwargs,
+    ):
+        deleted_entities = []
+        if everything:
+            container = True
+            network = True
+            files = True
+
         if id not in self:
             raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
-        Dockerizer.rm_image(id=self[id].metadata.image_id)
-        Dockerizer.rm_network(id=self[id].metadata.network)
-        del self[id]
-        self._logger.success(f'{colored(str(id), "cyan")} is released from the store.')
+
+        if container:
+            container_id = self[id].metadata.container_id
+            if not container_id:
+                raise ValueError(
+                    f'There is no container to kill for store {colored(str(id), "cyan")}'
+                )
+
+            Dockerizer.rm_container(container_id)
+            self._logger.success(
+                f'{colored(container_id, "cyan")} is killed and removed from the store.'
+            )
+            self[id].metadata.container_id = None
+            deleted_entities.append(container_id)
+
+        # TODO: add network and file deletion
+        if everything:
+            Dockerizer.rm_image(id=self[id].metadata.image_id)
+            Dockerizer.rm_network(id=self[id].metadata.network)
+            del self[id]
+            self._logger.success(
+                f'{colored(str(id), "cyan")} is released from the store.'
+            )
+            deleted_entities.append(id)
+        return deleted_entities
