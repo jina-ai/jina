@@ -2,7 +2,18 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
+    <meta name="color-scheme" content="light dark"><script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'G-48ZDWC8GT6']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
         <title>jina.flow.base - Jina 2.0.0rc7 documentation</title>
@@ -136,7 +147,6 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.asyncio/">jina.flow.asyncio module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.base/">jina.flow.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.flow.builder/">jina.flow.builder module</a></li>
 </ul>
@@ -349,6 +359,10 @@
 </ul>
 </li>
 </ul>
+<p class="caption"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina">GitHub repository</a></li>
+</ul>
 
 </div>
 </div>
@@ -378,6 +392,7 @@
 <span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">build_required</span><span class="p">,</span> <span class="n">_build_flow</span><span class="p">,</span> <span class="n">_hanging_pods</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">..clients</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">..clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">PostMixin</span>
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">FlowInspectType</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowTopologyError</span><span class="p">,</span> <span class="n">FlowMissingPodError</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
@@ -412,27 +427,8 @@
     <span class="kn">from</span> <span class="nn">..clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
 
 
-<div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
-    <span class="sd">"""An abstract Flow object in Jina.</span>
-
-<span class="sd">    .. note::</span>
-
-<span class="sd">        :class:`BaseFlow` does not provide `train`, `index`, `search` interfaces.</span>
-<span class="sd">        Please use :class:`Flow` or :class:`AsyncFlow`.</span>
-
-<span class="sd">    Explanation on ``optimize_level``:</span>
-
-<span class="sd">    As an example, the following Flow will generate 6 Peas,</span>
-
-<span class="sd">    .. highlight:: python</span>
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        f = Flow.add(uses='forward', parallel=3)</span>
-
-<span class="sd">    :param kwargs: other keyword arguments that will be shared by all Pods in this Flow</span>
-<span class="sd">    :param args: Namespace args</span>
-<span class="sd">    :param env: environment variables shared by all Pods</span>
-<span class="sd">    """</span>
+<div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
+    <span class="sd">"""Flow is how Jina streamlines and distributes Executors. """</span>
 
     <span class="c1"># overload_inject_start_flow</span>
     <span class="nd">@overload</span>
@@ -537,15 +533,10 @@
             <span class="n">args</span><span class="p">,</span> <span class="n">_flow_parser</span>
         <span class="p">)</span>  <span class="c1">#: for yaml dump</span>
 
-        <span class="kn">from</span> <span class="nn">..clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">PostMixin</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">PostMixin</span><span class="p">)):</span>
-            <span class="n">base_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
-            <span class="n">base_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">asyncio</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_cls_name</span><span class="p">,</span> <span class="p">(</span><span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">base_cls</span><span class="p">),</span> <span class="p">{})</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_cls_name</span><span class="p">,</span> <span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">base_cls</span><span class="p">),</span> <span class="p">{})</span>
+        <span class="n">base_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
+        <span class="n">base_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">asyncio</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">AsyncPostMixin</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_cls_name</span><span class="p">,</span> <span class="p">(</span><span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">base_cls</span><span class="p">),</span> <span class="p">{})</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parse_endpoints</span><span class="p">(</span><span class="n">op_flow</span><span class="p">,</span> <span class="n">pod_name</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">connect_to_last_pod</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">:</span>

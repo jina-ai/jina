@@ -5,8 +5,26 @@
     <meta name="color-scheme" content="light dark">
   <meta property="og:title" content="jina.flow.asyncio module" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="api/jina.flow.asyncio.html" />
-  <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.flow.base module" href="../jina.flow.base/" /><link rel="prev" title="jina.flow package" href="../jina.flow/" />
+  <meta property="og:url" content="https://docs2.jina.ai/api/jina.flow.asyncio.html" />
+  <meta property="og:site_name" content="Jina Documentation" />
+  <meta property="og:image" content="https://docs2.jina.ai/banner.png" />
+  <meta property="og:image:alt" content="Jina Documentation" />
+  <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@JinaAI_">
+<meta name="twitter:creator" content="@JinaAI_">
+<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">
+<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning"><script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'G-48ZDWC8GT6']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script><link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
         <title>jina.flow.asyncio module - Jina 2.0.0rc7 documentation</title>
@@ -118,8 +136,8 @@
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Python API</span></p>
-<ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
@@ -139,8 +157,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.executors.metas/">jina.executors.metas module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.flow/">jina.flow package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">jina.flow.asyncio module</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.flow/">jina.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label for="toctree-checkbox-5"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.flow.base/">jina.flow.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.flow.builder/">jina.flow.builder module</a></li>
 </ul>
@@ -353,6 +370,10 @@
 </ul>
 </li>
 </ul>
+<p class="caption"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jina">GitHub repository</a></li>
+</ul>
 
 </div>
 </div>
@@ -366,72 +387,16 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="module-jina.flow.asyncio">
-<span id="jina-flow-asyncio-module"></span><h1>jina.flow.asyncio module<a class="headerlink" href="#module-jina.flow.asyncio" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="jina.flow.asyncio.AsyncFlow">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.flow.asyncio.</span></code><code class="sig-name descname"><span class="pre">AsyncFlow</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asyncio</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'0.0.0.0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inspect</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'COLLECT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_expose</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proxy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quiet_error</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">restful</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_results</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uses</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">BaseExecutor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'./'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/flow/asyncio/#AsyncFlow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.flow.asyncio.AsyncFlow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin" title="jina.clients.mixin.AsyncPostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.mixin.AsyncPostMixin</span></code></a>, <a class="reference internal" href="../jina.flow.base/#jina.flow.base.Flow" title="jina.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.base.Flow</span></code></a></p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This class is deprecated, use <cite>Flow(asyncio=True)</cite></p>
-</div>
-<p><a class="reference internal" href="#jina.flow.asyncio.AsyncFlow" title="jina.flow.asyncio.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a> is the asynchronous version of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>. They share the same interface, except
-in <a class="reference internal" href="#jina.flow.asyncio.AsyncFlow" title="jina.flow.asyncio.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a> <code class="xref py py-meth docutils literal notranslate"><span class="pre">train()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">index()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">search()</span></code> methods are coroutines
-(i.e. declared with the async/await syntax), simply calling them will not schedule them to be executed.
-To actually run a coroutine, user need to put them in an eventloop, e.g. via <code class="docutils literal notranslate"><span class="pre">asyncio.run()</span></code>,
-<code class="docutils literal notranslate"><span class="pre">asyncio.create_task()</span></code>.</p>
-<p><a class="reference internal" href="#jina.flow.asyncio.AsyncFlow" title="jina.flow.asyncio.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a> can be very useful in
-the integration settings, where Jina/Jina Flow is NOT the main logic, but rather served as a part of other program.
-In this case, users often do not want to let Jina control the <code class="docutils literal notranslate"><span class="pre">asyncio.eventloop</span></code>. On contrary, <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code>
-is controlling and wrapping the eventloop internally, making the Flow looks synchronous from outside.</p>
-<p>In particular, <a class="reference internal" href="#jina.flow.asyncio.AsyncFlow" title="jina.flow.asyncio.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a> makes Jina usage in Jupyter Notebook more natural and reliable.
-For example, the following code
-will use the eventloop that already spawned in Jupyter/ipython to run Jina Flow (instead of creating a new one).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
-<span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_ndarray</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="k">with</span> <span class="n">AsyncFlow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="k">await</span> <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">from_ndarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">])),</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements “autoawait”.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>Asynchronous in REPL: Autoawait</p>
-<p><a class="reference external" href="https://ipython.readthedocs.io/en/stable/interactive/autoawait.html">https://ipython.readthedocs.io/en/stable/interactive/autoawait.html</a></p>
-</div>
-<p>Another example is when using Jina as an integration. Say you have another IO-bounded job <code class="docutils literal notranslate"><span class="pre">heavylifting()</span></code>, you
-can use this feature to schedule Jina <code class="docutils literal notranslate"><span class="pre">index()</span></code> and <code class="docutils literal notranslate"><span class="pre">heavylifting()</span></code> concurrently.</p>
-<p>One can think of <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> as Jina-managed eventloop, whereas <a class="reference internal" href="#jina.flow.asyncio.AsyncFlow" title="jina.flow.asyncio.AsyncFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a> is self-managed eventloop.</p>
-</dd></dl>
+        <div class="section" id="jina-flow-asyncio-module">
+<h1>jina.flow.asyncio module<a class="headerlink" href="#jina-flow-asyncio-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../jina.flow.base/">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">jina.flow.base module</div>
-              </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="../jina.flow/">
-              <svg><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">jina.flow package</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
 
         <div class="related-information">
