@@ -128,7 +128,6 @@ def get_main_parser():
     from .helloworld import set_hw_parser, set_hello_parser
     from .helper import _chf, _SHOW_ALL_ARGS
 
-    from .check import set_check_parser
     from .export_api import set_export_api_parser
     from .flow import set_flow_parser
     from .ping import set_ping_parser
@@ -235,23 +234,4 @@ def get_main_parser():
         )
     )
 
-    # set_optimizer_parser(
-    #     sp.add_parser(
-    #         'optimizer',
-    #         description='Start a FlowOptimizer from a YAML configuration file',
-    #         **(dict(help='Start an FlowOptimizer from a YAML file')) if _SHOW_ALL_ARGS else {},
-    #         formatter_class=_chf,
-    #     )
-    # )
-
-    set_check_parser(
-        sp.add_parser(
-            'check',
-            **(dict(help='Check the import of all Executors'))
-            if _SHOW_ALL_ARGS
-            else {},
-            description='Check the import status of all executors',
-            formatter_class=_chf,
-        )
-    )
     return parser

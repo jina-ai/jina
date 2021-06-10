@@ -17,7 +17,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 _document_fields = sorted(set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)))
 
 # check if this can be bypassed
-IGNORED_FIELDS = ['embedding', 'score']
+IGNORED_FIELDS = ['embedding', 'score', 'graph_info']
 
 
 @pytest.fixture
@@ -65,5 +65,11 @@ def test_no_matches_rest(query_dict):
         doc = json.loads(resp)['data']['docs'][0]
         present_keys = sorted(doc.keys())
         for field in _document_fields:
-            if field not in IGNORED_FIELDS + ['buffer', 'content', 'blob', 'uri']:
+            if field not in IGNORED_FIELDS + [
+                'buffer',
+                'content',
+                'blob',
+                'uri',
+                'graph',
+            ]:
                 assert field in present_keys

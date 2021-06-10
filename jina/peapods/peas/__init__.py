@@ -37,6 +37,13 @@ class BasePea(metaclass=PeaType):
         self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
         self.logger = JinaLogger(self.name, **vars(self.args))
 
+        if self.args.runtime_backend == RuntimeBackendType.THREAD:
+            self.logger.warning(
+                f' Using Thread as runtime backend is not recommended for production purposes. It is '
+                f'just supposed to be used for easier debugging. Besides the performance considerations, it is'
+                f'specially dangerous to mix `Executors` running in different types of `RuntimeBackends`.'
+            )
+
         self._envs = {'JINA_POD_NAME': self.name, 'JINA_LOG_ID': self.args.identity}
         if self.args.quiet:
             self._envs['JINA_LOG_CONFIG'] = 'QUIET'

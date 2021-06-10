@@ -17,6 +17,11 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture(scope='function')
+def client():
+    return Client(host='localhost', port_expose=123456)
+
+
+@pytest.fixture(scope='function')
 def filepath(tmpdir):
     input_filepath = os.path.join(tmpdir, 'input_file.csv')
     with open(input_filepath, 'w') as input_file:
@@ -75,10 +80,56 @@ def test_input_lines_with_empty_filepath_and_lines():
 
 
 def test_input_lines_with_jsonlines_docs():
-    result = list(from_lines(filepath='tests/unit/clients/python/docs.jsonlines'))
+    result = list(from_lines(filepath=os.path.join(cur_dir, 'docs.jsonlines')))
     assert len(result) == 2
     assert result[0].text == "a"
     assert result[1].text == "b"
+
+
+@pytest.mark.parametrize(
+    'size, sampling_rate',
+    [
+        (None, None),
+        (1, None),
+        (None, 0.5),
+    ],
+)
+def test_input_lines_with_jsonlines_file(size, sampling_rate):
+    result = list(
+        from_lines(
+            filepath=os.path.join(cur_dir, 'docs.jsonlines'),
+            size=size,
+            sampling_rate=sampling_rate,
+        )
+    )
+    assert len(result) == size if size is not None else 2
+    if sampling_rate is None:
+        assert result[0].text == "a"
+        if size is None:
+            assert result[1].text == "b"
+
+
+@pytest.mark.parametrize(
+    'size, sampling_rate',
+    [
+        (None, None),
+        (1, None),
+        (None, 0.5),
+    ],
+)
+def test_input_lines_with_jsonslines(size, sampling_rate):
+    with open(os.path.join(cur_dir, 'docs.jsonlines')) as fp:
+        lines = fp.readlines()
+    result = list(
+        from_lines(
+            lines=lines, line_format='json', size=size, sampling_rate=sampling_rate
+        )
+    )
+    assert len(result) == size if size is not None else 2
+    if sampling_rate is None:
+        assert result[0].text == "a"
+        if size is None:
+            assert result[1].text == "b"
 
 
 def test_input_lines_with_jsonlines_docs_groundtruth():
@@ -102,8 +153,8 @@ def test_input_lines_with_jsonlines_docs_groundtruth():
         ('*.*', True, None, 0.5, None),
     ],
 )
-def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
-    Client.check_input(
+def test_input_files(patterns, recursive, size, sampling_rate, read_mode, client):
+    client.check_input(
         from_files(
             patterns=patterns,
             recursive=recursive,
@@ -114,13 +165,13 @@ def test_input_files(patterns, recursive, size, sampling_rate, read_mode):
     )
 
 
-def test_input_files_with_invalid_read_mode():
+def test_input_files_with_invalid_read_mode(client):
     with pytest.raises(BadClientInput):
-        Client.check_input(from_files(patterns='*.*', read_mode='invalid'))
+        client.check_input(from_files(patterns='*.*', read_mode='invalid'))
 
 
 @pytest.mark.parametrize(
     'array', [np.random.random([100, 4, 2]), ['asda', 'dsadas asdasd']]
 )
-def test_input_numpy(array):
-    Client.check_input(from_ndarray(array))
+def test_input_numpy(array, client):
+    client.check_input(from_ndarray(array))

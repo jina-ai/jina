@@ -42,3 +42,10 @@ If set, the results of all Requests will be returned as a list. This is useful w
 process Responses in bulk instead of using callback. 
                     ''',
     )
+
+    gp.add_argument(
+        '--restful',
+        action='store_true',
+        default=False,
+        help='If set, use RESTful interface instead of gRPC as the main interface',
+    )

@@ -1,4 +1,6 @@
 import json
+import warnings
+from abc import abstractmethod
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -15,7 +17,6 @@ from typing import (
 
 from .traversable import TraversableSequence
 from ...helper import typename, cached_property
-from ...logging.predefined import default_logger
 from ...proto.jina_pb2 import DocumentProto, DocumentArrayProto
 
 try:
@@ -29,157 +30,18 @@ except:
         RepeatedCompositeFieldContainer as RepeatedContainer,
     )
 
-__all__ = ['DocumentArray']
+__all__ = ['DocumentArray', 'DocumentArrayGetAttrMixin']
 
 if False:
     from ..document import Document
 
 
-class DocumentArray(TraversableSequence, MutableSequence, Itr):
-    """
-    :class:`DocumentArray` is a mutable sequence of :class:`Document`.
-    It gives an efficient view of a list of Document. One can iterate over it like
-    a generator but ALSO modify it, count it, get item, or union two 'DocumentArray's using the '+' and '+=' operators.
+class DocumentArrayGetAttrMixin:
+    """A mixin that provides attributes getter in bulk """
 
-    :param docs_proto: A list of :class:`Document`
-    :type docs_proto: Optional[Union['RepeatedContainer', Iterable['Document']]]
-    """
-
-    def __init__(
-        self,
-        docs_proto: Optional[Union['RepeatedContainer', Iterable['Document']]] = None,
-    ):
-        super().__init__()
-        if docs_proto is not None:
-            if isinstance(docs_proto, Generator):
-                self._docs_proto = list(docs_proto)
-            else:
-                self._docs_proto = docs_proto
-        else:
-            self._docs_proto = []
-
-    def insert(self, index: int, doc: 'Document') -> None:
-        """
-        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentArray` .
-
-        :param index: Position of the insertion.
-        :param doc: The doc needs to be inserted.
-        """
-        self._docs_proto.insert(index, doc.proto)
-
-    def __setitem__(self, key, value: 'Document'):
-        if isinstance(key, int):
-            self[key].CopyFrom(value)
-        elif isinstance(key, str):
-            self[self._id_to_index[key]].CopyFrom(value)
-        else:
-            raise IndexError(f'do not support this index {key}')
-
-    def __delitem__(self, index: Union[int, str, slice]):
-        if isinstance(index, int):
-            del self._docs_proto[index]
-        elif isinstance(index, str):
-            del self[self._id_to_index[index]]
-        elif isinstance(index, slice):
-            del self._docs_proto[index]
-        else:
-            raise IndexError(
-                f'do not support this index type {typename(index)}: {index}'
-            )
-
-    def __eq__(self, other):
-        return (
-            type(self._docs_proto) is type(other._docs_proto)
-            and self._docs_proto == other._docs_proto
-        )
-
-    def __len__(self):
-        return len(self._docs_proto)
-
-    def __iter__(self) -> Iterator['Document']:
-        from ..document import Document
-
-        for d in self._docs_proto:
-            yield Document(d)
-
-    def __contains__(self, item: str):
-        return item in self._id_to_index
-
-    def __getitem__(self, item: Union[int, str, slice]):
-        from ..document import Document
-
-        if isinstance(item, int):
-            return Document(self._docs_proto[item])
-        elif isinstance(item, str):
-            return self[self._id_to_index[item]]
-        elif isinstance(item, slice):
-            return DocumentArray(self._docs_proto[item])
-        else:
-            raise IndexError(f'do not support this index type {typename(item)}: {item}')
-
-    def __add__(self, other: Iterable['Document']):
-        v = DocumentArray()
-        for doc in self:
-            v.append(doc)
-        for doc in other:
-            v.append(doc)
-        return v
-
-    def __iadd__(self, other: Iterable['Document']):
-        for doc in other:
-            self.append(doc)
-        return self
-
-    def append(self, doc: 'Document'):
-        """
-        Append :param:`doc` in :class:`DocumentArray`.
-
-        :param doc: The doc needs to be appended.
-        """
-        self._docs_proto.append(doc.proto)
-
-    def extend(self, iterable: Iterable['Document']) -> None:
-        """
-        Extend the :class:`DocumentArray` by appending all the items from the iterable.
-
-        :param iterable: the iterable of Documents to extend this array with
-        """
-        for doc in iterable:
-            self.append(doc)
-
-    def clear(self):
-        """Clear the data of :class:`DocumentArray`"""
-        del self._docs_proto[:]
-
-    def reverse(self):
-        """In-place reverse the sequence."""
-        if isinstance(self._docs_proto, RepeatedContainer):
-            size = len(self._docs_proto)
-            hi_idx = size - 1
-            for i in range(int(size / 2)):
-                tmp = DocumentProto()
-                tmp.CopyFrom(self._docs_proto[hi_idx])
-                self._docs_proto[hi_idx].CopyFrom(self._docs_proto[i])
-                self._docs_proto[i].CopyFrom(tmp)
-                hi_idx -= 1
-        elif isinstance(self._docs_proto, list):
-            self._docs_proto.reverse()
-
-    @cached_property
-    def _id_to_index(self):
-        """Returns a doc_id to index in list
-
-        .. # noqa: DAR201"""
-        return {d.id: i for i, d in enumerate(self._docs_proto)}
-
-    def sort(self, *args, **kwargs):
-        """
-        Sort the items of the :class:`DocumentArray` in place.
-
-        :param args: variable set of arguments to pass to the sorting underlying function
-        :param kwargs: keyword arguments to pass to the sorting underlying function
-        """
-        self._docs_proto.sort(*args, **kwargs)
+    @abstractmethod
+    def __iter__(self):
+        ...
 
     def get_attributes(self, *fields: str) -> Union[List, List[List]]:
         """Return all nonempty values of the fields from all docs this array contains
@@ -217,15 +79,166 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
             contents = list(map(list, zip(*contents)))
 
         if bad_docs:
-            default_logger.warning(
+            warnings.warn(
                 f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
                 f'following fields: {fields} '
             )
 
         if not docs_pts:
-            default_logger.warning('no documents are extracted')
+            warnings.warn('no documents are extracted')
 
         return contents, DocumentArray(docs_pts)
+
+
+class DocumentArray(
+    TraversableSequence, MutableSequence, DocumentArrayGetAttrMixin, Itr
+):
+    """
+    :class:`DocumentArray` is a mutable sequence of :class:`Document`.
+    It gives an efficient view of a list of Document. One can iterate over it like
+    a generator but ALSO modify it, count it, get item, or union two 'DocumentArray's using the '+' and '+=' operators.
+
+    :param doc_views: A list of :class:`Document`
+    :type doc_views: Optional[Union['RepeatedContainer', Iterable['Document']]]
+    """
+
+    def __init__(
+        self,
+        doc_views: Optional[Union['RepeatedContainer', Iterable['Document']]] = None,
+    ):
+        super().__init__()
+        if doc_views is not None:
+            from .memmap import DocumentArrayMemmap
+
+            if isinstance(doc_views, (Generator, DocumentArrayMemmap)):
+                self._doc_views = list(doc_views)
+            else:
+                self._doc_views = doc_views
+        else:
+            self._doc_views = []
+
+    def insert(self, index: int, doc: 'Document') -> None:
+        """
+        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentArray` .
+
+        :param index: Position of the insertion.
+        :param doc: The doc needs to be inserted.
+        """
+        self._doc_views.insert(index, doc.proto)
+
+    def __setitem__(self, key, value: 'Document'):
+        if isinstance(key, int):
+            self[key].CopyFrom(value)
+        elif isinstance(key, str):
+            self[self._id_to_index[key]].CopyFrom(value)
+        else:
+            raise IndexError(f'do not support this index {key}')
+
+    def __delitem__(self, index: Union[int, str, slice]):
+        if isinstance(index, int):
+            del self._doc_views[index]
+        elif isinstance(index, str):
+            del self[self._id_to_index[index]]
+        elif isinstance(index, slice):
+            del self._doc_views[index]
+        else:
+            raise IndexError(
+                f'do not support this index type {typename(index)}: {index}'
+            )
+
+    def __eq__(self, other):
+        return (
+            type(self._doc_views) is type(other._doc_views)
+            and self._doc_views == other._doc_views
+        )
+
+    def __len__(self):
+        return len(self._doc_views)
+
+    def __iter__(self) -> Iterator['Document']:
+        from ..document import Document
+
+        for d in self._doc_views:
+            yield Document(d)
+
+    def __contains__(self, item: str):
+        return item in self._id_to_index
+
+    def __getitem__(self, item: Union[int, str, slice]):
+        from ..document import Document
+
+        if isinstance(item, int):
+            return Document(self._doc_views[item])
+        elif isinstance(item, str):
+            return self[self._id_to_index[item]]
+        elif isinstance(item, slice):
+            return DocumentArray(self._doc_views[item])
+        else:
+            raise IndexError(f'do not support this index type {typename(item)}: {item}')
+
+    def __add__(self, other: Iterable['Document']):
+        v = DocumentArray()
+        for doc in self:
+            v.append(doc)
+        for doc in other:
+            v.append(doc)
+        return v
+
+    def __iadd__(self, other: Iterable['Document']):
+        for doc in other:
+            self.append(doc)
+        return self
+
+    def append(self, doc: 'Document'):
+        """
+        Append :param:`doc` in :class:`DocumentArray`.
+
+        :param doc: The doc needs to be appended.
+        """
+        self._doc_views.append(doc.proto)
+
+    def extend(self, iterable: Iterable['Document']) -> None:
+        """
+        Extend the :class:`DocumentArray` by appending all the items from the iterable.
+
+        :param iterable: the iterable of Documents to extend this array with
+        """
+        for doc in iterable:
+            self.append(doc)
+
+    def clear(self):
+        """Clear the data of :class:`DocumentArray`"""
+        del self._doc_views[:]
+
+    def reverse(self):
+        """In-place reverse the sequence."""
+        if isinstance(self._doc_views, RepeatedContainer):
+            size = len(self._doc_views)
+            hi_idx = size - 1
+            for i in range(int(size / 2)):
+                tmp = DocumentProto()
+                tmp.CopyFrom(self._doc_views[hi_idx])
+                self._doc_views[hi_idx].CopyFrom(self._doc_views[i])
+                self._doc_views[i].CopyFrom(tmp)
+                hi_idx -= 1
+        elif isinstance(self._doc_views, list):
+            self._doc_views.reverse()
+
+    @cached_property
+    def _id_to_index(self):
+        """Returns a doc_id to index in list
+
+        .. # noqa: DAR201"""
+        return {d.id: i for i, d in enumerate(self._doc_views)}
+
+    def sort(self, *args, **kwargs):
+        """
+        Sort the items of the :class:`DocumentArray` in place.
+
+        :param args: variable set of arguments to pass to the sorting underlying function
+        :param kwargs: keyword arguments to pass to the sorting underlying function
+        """
+        self._doc_views.sort(*args, **kwargs)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
@@ -237,22 +250,22 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
     def __str__(self):
         from ..document import Document
 
-        if hasattr(self._docs_proto, '__len__'):
-            content = f'{self.__class__.__name__} has {len(self._docs_proto)} items'
+        if hasattr(self._doc_views, '__len__'):
+            content = f'{self.__class__.__name__} has {len(self._doc_views)} items'
 
-            if len(self._docs_proto) > 3:
+            if len(self._doc_views) > 3:
                 content += ' (showing first three)'
         else:
             content = 'unknown length array'
 
         content += ':\n'
-        content += ',\n'.join(str(Document(d)) for d in self._docs_proto[:3])
+        content += ',\n'.join(str(Document(d)) for d in self._doc_views[:3])
 
         return content
 
     def __repr__(self):
         content = ' '.join(
-            f'{k}={v}' for k, v in {'length': len(self._docs_proto)}.items()
+            f'{k}={v}' for k, v in {'length': len(self._doc_views)}.items()
         )
         content += f' at {id(self)}'
         content = content.strip()
@@ -307,7 +320,11 @@ class DocumentArray(TraversableSequence, MutableSequence, Itr):
 
         with file_ctx as fp:
             dap = DocumentArrayProto()
-            dap.docs.extend([d.proto for d in self._docs_proto])
+            if self._doc_views:
+                if isinstance(self._doc_views[0], DocumentProto):
+                    dap.docs.extend(self._doc_views)
+                else:
+                    dap.docs.extend([d.proto for d in self._doc_views])
             fp.write(dap.SerializeToString())
 
     def save_json(self, file: Union[str, TextIO]) -> None:

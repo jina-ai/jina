@@ -5,6 +5,7 @@ import torch
 from transformers import AutoModel, AutoTokenizer
 
 from jina import Executor, DocumentArray, requests, Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 class MyTransformer(Executor):
@@ -12,7 +13,7 @@ class MyTransformer(Executor):
 
     def __init__(
         self,
-        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        pretrained_model_name_or_path: str = 'sentence-transformers/paraphrase-mpnet-base-v2',
         base_tokenizer_model: Optional[str] = None,
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
@@ -89,7 +90,7 @@ class MyIndexer(Executor):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._docs = DocumentArray()
+        self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):

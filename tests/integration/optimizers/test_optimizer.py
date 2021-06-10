@@ -46,21 +46,31 @@ def document_generator(num_doc):
         yield doc, groundtruth_doc
 
 
-def test_optimizer_single_flow(tmpdir, config):
+@pytest.mark.parametrize('sampler', ['TPESampler', 'GridSampler', 'RandomSampler'])
+def test_optimizer_single_flow(tmpdir, config, sampler):
     eval_flow_runner = SingleFlowRunner(
         flow_yaml=os.path.join(cur_dir, 'flow.yml'),
         documents=document_generator(10),
         request_size=1,
         execution_endpoint='search',
     )
+    grid_sampler_search_space = {
+        'JINA_DUMMYCRAFTER_PARAM1': [0, 1],
+        'JINA_DUMMYCRAFTER_PARAM2': [0, 1, 2],
+        'JINA_DUMMYCRAFTER_PARAM3': [1],
+    }
     opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
         parameter_yaml=os.path.join(cur_dir, 'parameter.yml'),
         evaluation_callback=MeanEvaluationCallback(),
         workspace_base_dir=str(tmpdir),
         n_trials=5,
+        sampler=sampler,
     )
-    result = opt.optimize_flow()
+    if sampler == 'GridSampler':
+        result = opt.optimize_flow(search_space=grid_sampler_search_space)
+    else:
+        result = opt.optimize_flow()
     validate_result(result, tmpdir)
 
 
@@ -105,13 +115,14 @@ with:
             flow_yaml: '{os.path.join(cur_dir, 'flow.yml')}'
             documents: {jsonlines_file}
             request_size: 1
-            execution_endpoint: 'index_lines'
+            execution_endpoint: '
+index'
         - !SingleFlowRunner
           with:
             flow_yaml: '{os.path.join(cur_dir, 'flow.yml')}'
             documents: {jsonlines_file}
             request_size: 1
-            execution_endpoint: 'search_lines'
+            execution_endpoint: 'search'
   evaluation_callback: !MeanEvaluationCallback {{}}
   parameter_yaml: '{os.path.join(cur_dir, 'parameter.yml')}'
   workspace_base_dir: {tmpdir}

@@ -1,9 +1,16 @@
 import os
 
 import pytest
-
 from jina import Executor
 from jina.executors.metas import get_default_metas
+
+
+def test_executor_import_with_external_dependencies(capsys):
+    ex = Executor.load_config('../hubble-executor/config.yml')
+    assert ex.bar == 123
+    ex.foo()
+    out, err = capsys.readouterr()
+    assert 'hello' in out
 
 
 @property

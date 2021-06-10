@@ -1,0 +1,5 @@
+!GoodCrafter1
+metas:
+  py_modules:
+    - helper.py
+    - custom_crafter.py

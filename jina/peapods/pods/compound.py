@@ -147,7 +147,7 @@ class CompoundPod(BasePod):
         try:
             if getattr(self, 'head_pea', None):
                 self.head_pea.join()
-            if getattr(self, 'head_pea', None):
+            if getattr(self, 'tail_pea', None):
                 self.tail_pea.join()
             for p in self.replicas:
                 p.join()
@@ -203,7 +203,7 @@ class CompoundPod(BasePod):
             _args.replica_id = idx
             _args.identity = random_identity()
             if _args.name:
-                _args.name += f'/{idx}'
+                _args.name += f'/rep-{idx}'
             else:
                 _args.name = f'{idx}'
 

@@ -68,6 +68,14 @@ message NamedScoreProto {
 }
 
 /**
+ * Represents a Graph
+ */
+message GraphProto {
+    SparseNdArrayProto adjacency = 1; // adjacency list
+    google.protobuf.Struct edge_features = 2; // Container structure to store edge features
+}
+
+/**
  * Represents a Document
  */
 message DocumentProto {
@@ -98,6 +106,9 @@ message DocumentProto {
 
         // a uri of the document could be: a local file path, a remote url starts with http or https or data URI scheme
         string uri = 9;
+
+        // Related information to be used when a Document represents a graph with its chunks as nodes
+        GraphProto graph = 27;
     }
 
     // list of the sub-documents of this document (recursive structure)
@@ -105,9 +116,6 @@ message DocumentProto {
 
     // The weight of this document
     float weight = 5;
-
-    // total number of siblings of this document (docs that are in the same granularity and have the same parent_id)
-    uint32 siblings = 25;
 
     // the matched documents on the same level (recursive structure)
     repeated DocumentProto matches = 8;
@@ -135,7 +143,6 @@ message DocumentProto {
 
     // List of evaluations performed on the document, each element corresponds to a metric
     repeated NamedScoreProto evaluations = 23;
-
 }
 
 /**

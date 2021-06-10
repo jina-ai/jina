@@ -7,6 +7,7 @@ import torchvision.models as models
 from transformers import AutoModel, AutoTokenizer
 
 from jina import Executor, DocumentArray, requests, Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 class Segmenter(Executor):
@@ -27,7 +28,7 @@ class TextEncoder(Executor):
 
     def __init__(
         self,
-        pretrained_model_name_or_path: str = 'sentence-transformers/distilbert-base-nli-stsb-mean-tokens',
+        pretrained_model_name_or_path: str = 'sentence-transformers/paraphrase-mpnet-base-v2',
         base_tokenizer_model: Optional[str] = None,
         pooling_strategy: str = 'mean',
         layer_index: int = -1,
@@ -203,20 +204,7 @@ class ImageEncoder(Executor):
 class DocVectorIndexer(Executor):
     def __init__(self, index_file_name: str, **kwargs):
         super().__init__(**kwargs)
-        self.index_file_name = index_file_name
-        if os.path.exists(self.save_path):
-            self._docs = DocumentArray.load(self.save_path)
-        else:
-            self._docs = DocumentArray()
-
-    @property
-    def save_path(self):
-        if not os.path.exists(self.workspace):
-            os.makedirs(self.workspace)
-        return os.path.join(self.workspace, self.index_file_name)
-
-    def close(self):
-        self._docs.save(self.save_path)
+        self._docs = DocumentArrayMemmap(self.workspace + f'/{index_file_name}')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
@@ -256,19 +244,13 @@ class DocVectorIndexer(Executor):
 class KeyValueIndexer(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if os.path.exists(self.save_path):
-            self._docs = DocumentArray.load(self.save_path)
-        else:
-            self._docs = DocumentArray()
+        self._docs = DocumentArrayMemmap(self.workspace + '/kv-idx')
 
     @property
     def save_path(self):
         if not os.path.exists(self.workspace):
             os.makedirs(self.workspace)
         return os.path.join(self.workspace, 'kv.json')
-
-    def close(self):
-        self._docs.save(self.save_path)
 
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):

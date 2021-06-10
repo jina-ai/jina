@@ -1,13 +1,13 @@
 import os
 import shutil
 from collections.abc import Iterable
-from typing import Optional, Union, List
+from typing import Union, List, Optional, Callable
 
 from ..types.document.generators import from_lines
-from ..flow import Flow
 from ..helper import colored
 from ..logging.predefined import default_logger as logger
 from ..jaml import JAMLCompatible
+from ..flow import Flow
 
 
 class FlowRunner(JAMLCompatible):
@@ -17,7 +17,7 @@ class FlowRunner(JAMLCompatible):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
-        callback=None,
+        callback: Optional[Callable[..., None]] = None,
         **kwargs,
     ):
         """
@@ -55,7 +55,7 @@ class SingleFlowRunner(FlowRunner):
             (e.g. a list of documents for `index` or a .jsonlines file for `index_lines`)
         :param request_size: Request size used in the flow
         :param execution_endpoint: The endpoint, `f.post(on=)` should point to
-        :param overwrite_workspace: True, means workspace created by the Flow will be overwriten with each execution.
+        :param overwrite_workspace: True, means workspace created by the Flow will be overwritten with each execution.
         :raises TypeError: When the documents are neither a `str` nor an `Iterable`
         """
         super().__init__()
@@ -95,13 +95,13 @@ class SingleFlowRunner(FlowRunner):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
-        callback=None,
+        callback: Optional[Callable[..., None]] = None,
         **kwargs,
     ):
         """
         Running method of :class:`SingleFlowRunner`.
 
-        :param trial_parameters: parameters need to be tried
+        :param trial_parameters: parameters that need to be tried
         :param workspace: path of workspace
         :param callback: callback function
         :param kwargs: keyword argument
@@ -134,7 +134,7 @@ class MultiFlowRunner(FlowRunner):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
-        callback=None,
+        callback: Optional[Callable[..., None]] = None,
         **kwargs,
     ):
         """
