@@ -386,19 +386,19 @@
 <span class="sd">    :class:`ChunkArray` inherits from :class:`DocumentArray`.</span>
 <span class="sd">    It's a subset of Documents.</span>
 
-<span class="sd">    :param docs_proto: Set of sub-documents (i.e chunks) of `reference_doc`</span>
+<span class="sd">    :param doc_views: Set of sub-documents (i.e chunks) of `reference_doc`</span>
 <span class="sd">    :param reference_doc: Reference :class:`Document` for the sub-documents</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_proto</span><span class="p">,</span> <span class="n">reference_doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_views</span><span class="p">,</span> <span class="n">reference_doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Set constructor method.</span>
 
-<span class="sd">        :param docs_proto: protobuf representation of the chunks</span>
+<span class="sd">        :param doc_views: protobuf representation of the chunks</span>
 <span class="sd">        :param reference_doc: parent document</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span> <span class="o">=</span> <span class="n">reference_doc</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">docs_proto</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">doc_views</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ChunkArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
         <span class="sd">"""Add a sub-document (i.e chunk) to the current Document.</span>

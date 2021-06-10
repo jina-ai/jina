@@ -384,13 +384,13 @@
 <span class="sd">    :class:`MatchArray` inherits from :class:`DocumentArray`.</span>
 <span class="sd">    It's a subset of Documents that represents the matches</span>
 
-<span class="sd">    :param docs_proto: Set of matches of the `reference_doc`</span>
+<span class="sd">    :param doc_views: Set of matches of the `reference_doc`</span>
 <span class="sd">    :param reference_doc: Reference :class:`Document` for the sub-documents</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs_proto</span><span class="p">,</span> <span class="n">reference_doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_views</span><span class="p">,</span> <span class="n">reference_doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span> <span class="o">=</span> <span class="n">reference_doc</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">docs_proto</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">doc_views</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MatchArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
         <span class="sd">"""Add a matched document to the current Document.</span>
