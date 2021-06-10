@@ -737,7 +737,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     """
     from . import __version__, __proto_version__, __jina_env__, __resources_path__
     from google.protobuf.internal import api_implementation
-    import os, zmq, numpy, google.protobuf, grpc, yaml
+    import os, grpc, zmq, numpy, google.protobuf, yaml
     from grpc import _grpcio_metadata
     import platform
     from jina.logging.predefined import default_logger

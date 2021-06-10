@@ -7,7 +7,7 @@ from jina.logging.logger import JinaLogger
 from jina import __version__ as jina_version
 from jina.excepts import RuntimeFailToStart, HubBuilderError, ImageAlreadyExists
 from jina.executors import BaseExecutor
-from jina.flow import Flow
+from jina import Flow
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 

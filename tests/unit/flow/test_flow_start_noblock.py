@@ -4,7 +4,7 @@ import pytest
 
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
-from jina.flow import Flow
+from jina import Flow
 from jina.logging.profile import TimeContext
 
 

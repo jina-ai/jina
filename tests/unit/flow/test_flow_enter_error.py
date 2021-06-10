@@ -29,8 +29,8 @@ class BrokenFlow(Flow):
             self.build(copy_flow=False)
 
         # set env only before the Pod get started
-        if self._env:
-            for k, v in self._env.items():
+        if self.args.env:
+            for k, v in self.args.env.items():
                 os.environ[k] = str(v)
 
         for k, v in self:

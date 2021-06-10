@@ -40,44 +40,14 @@ def _cli_to_schema(
         # special cases
         if p['name'] == 'log_config':
             pv['default_literal'] = None
+        if p['name'].startswith('uses'):
+            pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
 
         _schema['properties'][p['name']] = pv
 
     return sorted(_schema['properties'].items(), key=lambda k: k[0])
-
-
-# param
-entries = [
-    dict(
-        cli_entrypoint='pod',
-        doc_str_title='Add an Executor to the current Flow object.',
-        doc_str_return='a (new) Flow object with modification',
-        return_type='BaseFlow',
-        filepath='../jina/flow/base.py',
-        overload_fn='add',
-        class_method=True,  # if it is a method inside class.
-    ),
-    dict(
-        cli_entrypoint='flow',
-        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors',
-        doc_str_return='the new Flow object',
-        return_type=None,
-        filepath='../jina/flow/base.py',
-        overload_fn='__init__',
-        class_method=True,
-    ),
-    dict(
-        cli_entrypoint='client',
-        doc_str_title='Create a Client. Client is how user interact with Flow',
-        doc_str_return='the new Client object',
-        return_type='BaseClient',
-        filepath='../jina/clients/__init__.py',
-        overload_fn='Client',
-        class_method=False,
-    ),
-]
 
 
 def fill_overload(
@@ -151,6 +121,37 @@ def fill_overload(
     with open(filepath, 'w') as fp:
         fp.write(final_code)
 
+
+# param
+entries = [
+    dict(
+        cli_entrypoint='pod',
+        doc_str_title='Add an Executor to the current Flow object.',
+        doc_str_return='a (new) Flow object with modification',
+        return_type='Flow',
+        filepath='../jina/flow/base.py',
+        overload_fn='add',
+        class_method=True,  # if it is a method inside class.
+    ),
+    dict(
+        cli_entrypoint='flow',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors',
+        doc_str_return='the new Flow object',
+        return_type=None,
+        filepath='../jina/flow/base.py',
+        overload_fn='__init__',
+        class_method=True,
+    ),
+    dict(
+        cli_entrypoint='client',
+        doc_str_title='Create a Client. Client is how user interact with Flow',
+        doc_str_return='the new Client object',
+        return_type='BaseClient',
+        filepath='../jina/clients/__init__.py',
+        overload_fn='Client',
+        class_method=False,
+    ),
+]
 
 if __name__ == '__main__':
     for d in entries:
