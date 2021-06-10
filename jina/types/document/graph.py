@@ -395,16 +395,32 @@ class GraphDocument(Document):
         import torch
         import dgl
 
-        source_nodes = torch.tensor(self.adjacency.row.copy())
-        destination_nodes = torch.tensor(self.adjacency.col.copy())
+        if self.adjacency is None:
+            default_logger.debug(
+                f'Trying to convert to dgl graph without \
+                                  for GraphDocument.id = {self.id} without adjacency matrix'
+            )
+            dgl_graph = dgl.DGLGraph()
+            dgl_graph.add_nodes(self.num_nodes)
+            return dgl_graph
+        else:
+            source_nodes = torch.tensor(self.adjacency.row.copy())
+            destination_nodes = torch.tensor(self.adjacency.col.copy())
 
-        return dgl.graph((source_nodes, destination_nodes))
+            return dgl.graph((source_nodes, destination_nodes))
 
     def __iter__(self) -> Iterator[Tuple['Document']]:
-        for (row, col) in zip(self.adjacency.row, self.adjacency.col):
-            yield self.nodes[row.item()], self.nodes[col.item()]
+        if self.adjacency is not None:
+            for (row, col) in zip(self.adjacency.row, self.adjacency.col):
+                yield self.nodes[row.item()], self.nodes[col.item()]
+        else:
+            default_logger.debug(f'Trying to iterate over a graph without edges')
 
     def __mermaid_str__(self):
+
+        if len(self.nodes) == 0:
+            return super().__mermaid_str__()
+
         results = []
         printed_ids = set()
         _node_id_node_mermaid_id = {}
