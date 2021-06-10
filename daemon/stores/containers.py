@@ -88,7 +88,9 @@ class ContainerStore(BaseStore):
                 workspace_id=workspace_id, container_id=id, command=command, ports=ports
             )
             if not self.ready:
-                raise Runtime400Exception(f'{id.type.title()} creation failed')
+                raise Runtime400Exception(
+                    f'{id.type.title()} creation failed, couldn\'t reach the container at {self.host} after 10secs'
+                )
             self._add(**kwargs)
         except Exception as e:
             self._logger.error(f'{e}')
