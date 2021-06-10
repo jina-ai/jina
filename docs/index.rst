@@ -8,11 +8,13 @@ Jina Documentation
    api/jina
 
 .. toctree::
+   :titlesonly:
    :caption: Command Line Interface
 
    cli/index
 
 .. toctree::
+   :titlesonly:
    :caption: Protobuf Specification
 
    proto/index

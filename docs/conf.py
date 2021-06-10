@@ -2,12 +2,6 @@ import os
 import re
 import sys
 from os import path
-# Workaround for issue https://github.com/sphinx-contrib/googleanalytics/issues/2
-# Note that a warning still will be issued "unsupported object from its setup() function"
-# Remove this workaround when the issue has been resolved upstream
-import sphinx.application
-import sphinx.errors
-sphinx.application.ExtensionError = sphinx.errors.ExtensionError
 
 sys.path.insert(0, path.abspath('..'))
 
@@ -54,7 +48,6 @@ html_baseurl = 'https://docs2.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
-googleanalytics_id = 'G-48ZDWC8GT6'
 
 html_theme_options = {
     'light_logo': 'logo-light.svg',
@@ -91,7 +84,6 @@ extensions = [
     'sphinx_sitemap',
     'sphinx.ext.intersphinx',
     'sphinxext.opengraph',
-    'sphinxcontrib.googleanalytics'
 ]
 
 # -- Custom 404 page
@@ -154,6 +146,17 @@ ogp_custom_meta_tags = [
     '<meta name="twitter:creator" content="@JinaAI_">',
     '<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
     '<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+    '''
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+    '''
 ]
 
 def setup(app):
