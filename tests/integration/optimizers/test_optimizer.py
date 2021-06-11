@@ -7,7 +7,7 @@ from google.protobuf.json_format import MessageToJson
 
 from jina import Document
 from jina.jaml import JAML
-from jina.optimizers import FlowOptimizer, MeanEvaluationCallback
+from jina.optimizers import FlowOptimizer, EvaluationCallback
 from jina.optimizers import run_optimizer_cli
 from jina.optimizers.flow_runner import SingleFlowRunner, MultiFlowRunner
 from jina.parsers.optimizer import set_optimizer_parser
@@ -62,7 +62,7 @@ def test_optimizer_single_flow(tmpdir, config, sampler):
     opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
         parameter_yaml=os.path.join(cur_dir, 'parameter.yml'),
-        evaluation_callback=MeanEvaluationCallback(),
+        evaluation_callback=EvaluationCallback(),
         workspace_base_dir=str(tmpdir),
         n_trials=5,
         sampler=sampler,
@@ -94,7 +94,7 @@ def test_optimizer_multi_flow(tmpdir, config):
     opt = FlowOptimizer(
         flow_runner=multi_flow_runner,
         parameter_yaml=os.path.join(cur_dir, 'parameter.yml'),
-        evaluation_callback=MeanEvaluationCallback(),
+        evaluation_callback=EvaluationCallback(),
         workspace_base_dir=str(tmpdir),
         n_trials=5,
     )
@@ -123,7 +123,7 @@ index'
             documents: {jsonlines_file}
             request_size: 1
             execution_endpoint: 'search'
-  evaluation_callback: !MeanEvaluationCallback {{}}
+  evaluation_callback: !EvaluationCallback {{}}
   parameter_yaml: '{os.path.join(cur_dir, 'parameter.yml')}'
   workspace_base_dir: {tmpdir}
   n_trials: 5
@@ -160,7 +160,7 @@ with:
       documents: {jsonlines_file}
       request_size: 1
       execution_endpoint: 'search'
-  evaluation_callback: !MeanEvaluationCallback {{}}
+  evaluation_callback: !EvaluationCallback {{}}
   parameter_yaml: '{os.path.join(cur_dir, 'parameter.yml')}'
   workspace_base_dir: {tmpdir}
   n_trials: 5
