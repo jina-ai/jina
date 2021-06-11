@@ -430,20 +430,28 @@ Should be used, whenever a custom evaluation aggregation during an Flow optimiza
 </dd></dl>
 </dd></dl>
 <dl class="py class">
-<dt id="jina.optimizers.MeanEvaluationCallback">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.optimizers.</span></code><code class="sig-name descname"><span class="pre">MeanEvaluationCallback</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/#MeanEvaluationCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.MeanEvaluationCallback" title="Permalink to this definition">¶</a></dt>
+<dt id="jina.optimizers.EvaluationCallback">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.optimizers.</span></code><code class="sig-name descname"><span class="pre">EvaluationCallback</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/#EvaluationCallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.EvaluationCallback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.optimizers.OptimizerCallback" title="jina.optimizers.OptimizerCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.optimizers.OptimizerCallback</span></code></a></p>
-<p>Calculates the mean of all evaluations during a single <code class="xref py py-class docutils literal notranslate"><span class="pre">FlowRunner</span></code>
-execution from the <a class="reference internal" href="#jina.optimizers.FlowOptimizer" title="jina.optimizers.FlowOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowOptimizer</span></code></a>.</p>
+<p>Calculates an aggregation of all evaluations during a single <code class="xref py py-class docutils literal notranslate"><span class="pre">FlowRunner</span></code>
+execution from the <a class="reference internal" href="#jina.optimizers.FlowOptimizer" title="jina.optimizers.FlowOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowOptimizer</span></code></a> with a given operator.</p>
+<p>Valid operators are: <cite>[‘min’, ‘max’, ‘mean’, ‘median’, ‘sum’, ‘prod’]</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>eval_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – evaluation name as required by the evaluator. Not needed if only 1 evaluator is used</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eval_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – evaluation name as required by the evaluator. Not needed if only 1 evaluator is used</p></li>
+<li><p><strong>operation</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – name of the operation to be performed when getting the final evaluation</p></li>
+</ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt id="jina.optimizers.EvaluationCallback.AGGREGATE_FUNCTIONS">
+<code class="sig-name descname"><span class="pre">AGGREGATE_FUNCTIONS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['min',</span> <span class="pre">'max',</span> <span class="pre">'mean',</span> <span class="pre">'median',</span> <span class="pre">'sum',</span> <span class="pre">'prod']</span></em><a class="headerlink" href="#jina.optimizers.EvaluationCallback.AGGREGATE_FUNCTIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py method">
-<dt id="jina.optimizers.MeanEvaluationCallback.get_empty_copy">
-<code class="sig-name descname"><span class="pre">get_empty_copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/#MeanEvaluationCallback.get_empty_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.MeanEvaluationCallback.get_empty_copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an empty copy of the <a class="reference internal" href="#jina.optimizers.OptimizerCallback" title="jina.optimizers.OptimizerCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">OptimizerCallback</span></code></a>.</p>
+<dt id="jina.optimizers.EvaluationCallback.get_empty_copy">
+<code class="sig-name descname"><span class="pre">get_empty_copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/#EvaluationCallback.get_empty_copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.EvaluationCallback.get_empty_copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an empty copy of the <a class="reference internal" href="#jina.optimizers.EvaluationCallback" title="jina.optimizers.EvaluationCallback"><code class="xref py py-class docutils literal notranslate"><span class="pre">EvaluationCallback</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Evaluation values</p>
@@ -451,9 +459,9 @@ execution from the <a class="reference internal" href="#jina.optimizers.FlowOpti
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.optimizers.MeanEvaluationCallback.get_final_evaluation">
-<code class="sig-name descname"><span class="pre">get_final_evaluation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/#MeanEvaluationCallback.get_final_evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.MeanEvaluationCallback.get_final_evaluation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates and returns mean evaluation value on the metric defined in the <a href="#id3"><span class="problematic" id="id4">:method:`__init__`</span></a>.</p>
+<dt id="jina.optimizers.EvaluationCallback.get_final_evaluation">
+<code class="sig-name descname"><span class="pre">get_final_evaluation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/optimizers/#EvaluationCallback.get_final_evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.optimizers.EvaluationCallback.get_final_evaluation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and returns evaluation value on the metric defined in the <a href="#id3"><span class="problematic" id="id4">:method:`__init__`</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return:</dt>
 <dd class="field-odd"><p>The aggregation of all evaluation collected via <a href="#id5"><span class="problematic" id="id6">:method:`__call__`</span></a></p>
