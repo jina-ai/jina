@@ -2,6 +2,7 @@
 
 import os
 import argparse
+import json
 from pathlib import Path
 
 from ..helper import (
@@ -63,9 +64,9 @@ class HubIO:
 
             # upload the archived package
             meta, env = get_full_version()
-            payload = {
-                'meta': meta,
-                'env': env,
+            form_data = {
+                'meta': json.dumps(meta),
+                'env': json.dumps(env),
                 'is_public': is_public,
                 'md5sum': md5_digest,
                 'force': self.args.force,
@@ -75,7 +76,9 @@ class HubIO:
             # upload the archived executor to Jina Hub
             upload_url = HUBBLE_REGISTRY + '/upload'
             with TimeContext(f'uploading to {upload_url}', self.logger):
-                resp = requests.post(upload_url, files={'file': content}, data=payload)
+                resp = requests.post(
+                    upload_url, files={'file': content}, data=form_data
+                )
 
             if resp.status_code == 201 and resp.json()['success']:
                 # TODO: better logging info
