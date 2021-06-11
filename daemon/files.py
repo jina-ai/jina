@@ -26,6 +26,9 @@ def workspace_files(
     for f in files:
         dest = os.path.join(workdir, f.filename)
         if os.path.isfile(dest):
+            if f.filename == 'requirements.txt':
+                _merge_requirement_file(dest, f)
+                continue
             logger.warning(
                 f'file {f.filename} already exists in workspace {workspace_id}, will be replaced'
             )
@@ -33,6 +36,25 @@ def workspace_files(
             content = f.file.read()
             fp.write(content)
         logger.info(f'saved uploads to {dest}')
+
+
+def _merge_requirement_file(dest, f: UploadFile):
+    new_requirements = _read_requirements_file(f.file)
+    with open(dest, "r") as existing_requirements_file:
+        old_requirements = _read_requirements_file(existing_requirements_file)
+    old_requirements.update(new_requirements)
+    with open(dest, "w") as req_file:
+        req_file.write("\n".join(list(old_requirements.values())))
+
+
+# TODO this is terrible, improve this pattern
+def _read_requirements_file(f):
+    requirements = {}
+    for line in f.readlines():
+        if type(line) != str:
+            line = line.decode("utf-8")
+        requirements[line.split('=')[0]] = line.replace("\n", "")
+    return requirements
 
 
 class DaemonFile:

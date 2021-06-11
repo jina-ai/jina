@@ -31,6 +31,52 @@ def test_create_custom_container():
     assert not container_id
 
 
+def test_update_custom_container():
+    workspace_id = create_workspace(
+        filepaths=[
+            os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad'),
+            os.path.join(cur_dir, 'flow_app_ws/requirements.txt'),
+        ]
+    )
+    wait_for_workspace(workspace_id)
+
+    container_id, requirements, image_id = _container_info(workspace_id)
+    assert container_id
+    assert len(requirements) == 2
+    assert image_id
+
+    from contextlib import ExitStack
+
+    with ExitStack() as file_stack:
+        requests.put(
+            f'http://{CLOUD_HOST}/workspaces/{workspace_id}',
+            files=[
+                (
+                    'files',
+                    file_stack.enter_context(
+                        open(f'{cur_dir}/tf_encoder_ws/requirements.txt', 'rb')
+                    ),
+                )
+            ],
+        )
+        wait_for_workspace(workspace_id)
+        new_container_id, requirements, new_image_id = _container_info(workspace_id)
+        assert new_container_id
+        assert new_container_id != container_id
+        assert new_image_id
+        assert new_image_id != image_id
+        assert len(requirements) == 3
+
+
+def _container_info(workspace_id):
+    response = requests.get(f'http://{CLOUD_HOST}/workspaces/{workspace_id}').json()
+    return (
+        response['metadata']['container_id'],
+        (response['arguments']['requirements']).split(),
+        response['metadata']['image_id'],
+    )
+
+
 def test_delete_custom_container():
     workspace_id = create_workspace(
         filepaths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]

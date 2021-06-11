@@ -72,12 +72,11 @@ async def _create(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
     path='/{id}',
     summary='Update files in a workspace',
     description='Return a DaemonID to the workspace, which can be used later when create Pea/Pod/Flow',
-    response_model=DaemonID,
     status_code=200,
 )
-async def _update(id: DaemonID, files: List[UploadFile] = File(None)):
+async def _update(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
     try:
-        return store.update(id=id, files=files)
+        return workspace.j
     except Exception as ex:
         raise Runtime400Exception from ex
 
