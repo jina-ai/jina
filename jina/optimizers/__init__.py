@@ -1,8 +1,8 @@
 import os
 from collections import defaultdict
 from typing import Optional
-import numpy as np
 
+import numpy as np
 import yaml
 
 from .parameters import (
@@ -62,7 +62,7 @@ class OptimizerCallback(JAMLCompatible):
 
 class EvaluationCallback(OptimizerCallback):
     """
-    Calculates an aggrefation of all evaluations during a single :py:class:`FlowRunner`
+    Calculates an aggregation of all evaluations during a single :py:class:`FlowRunner`
     execution from the :py:class:`FlowOptimizer` with a given operator.
 
     Valid operators are: `['min', 'max', 'mean', 'median', 'sum', 'prod']`
