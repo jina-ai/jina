@@ -2,6 +2,7 @@ import os
 from collections import defaultdict
 from typing import Optional
 
+import numpy as np
 import yaml
 
 from .parameters import (
@@ -16,6 +17,7 @@ from ..helper import colored
 from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
 from ..logging.predefined import default_logger as logger
+from ..types.request import Response
 
 if False:
     from .flow_runner import FlowRunner
@@ -48,7 +50,7 @@ class OptimizerCallback(JAMLCompatible):
         """
         raise NotImplementedError
 
-    def __call__(self, response):
+    def __call__(self, response: 'Response'):
         """
         Collects the results of evaluators in the response object for aggregation.
 
@@ -58,31 +60,44 @@ class OptimizerCallback(JAMLCompatible):
         raise NotImplementedError
 
 
-class MeanEvaluationCallback(OptimizerCallback):
+class EvaluationCallback(OptimizerCallback):
     """
-    Calculates the mean of all evaluations during a single :py:class:`FlowRunner`
-    execution from the :py:class:`FlowOptimizer`.
+    Calculates an aggregation of all evaluations during a single :py:class:`FlowRunner`
+    execution from the :py:class:`FlowOptimizer` with a given operator.
+
+    Valid operators are: `['min', 'max', 'mean', 'median', 'sum', 'prod']`
     """
 
-    def __init__(self, eval_name: Optional[str] = None):
+    AGGREGATE_FUNCTIONS = ['min', 'max', 'mean', 'median', 'sum', 'prod']
+
+    def __init__(self, eval_name: Optional[str] = None, operation: str = 'mean'):
         """
         :param eval_name: evaluation name as required by the evaluator. Not needed if only 1 evaluator is used
+        :param operation: name of the operation to be performed when getting the final evaluation
         """
+        self._operation = operation
+        if operation in self.AGGREGATE_FUNCTIONS:
+            self.np_aggregate_function = getattr(np, operation)
+        else:
+            raise ValueError(
+                f'The operation "{operation}" is not among the supported operators "{self.AGGREGATE_FUNCTIONS}".'
+            )
+
         self._eval_name = eval_name
-        self._evaluation_values = defaultdict(float)
+        self._evaluation_values = defaultdict(list)
         self._n_docs = 0
 
     def get_empty_copy(self):
         """
-        Return an empty copy of the :class:`OptimizerCallback`.
+        Return an empty copy of the :class:`EvaluationCallback`.
 
         :return: Evaluation values
         """
-        return MeanEvaluationCallback(self._eval_name)
+        return EvaluationCallback(self._eval_name, self._operation)
 
     def get_final_evaluation(self):
         """
-        Calculates and returns mean evaluation value on the metric defined in the :method:`__init__`.
+        Calculates and returns evaluation value on the metric defined in the :method:`__init__`.
 
         :return:: The aggregation of all evaluation collected via :method:`__call__`
         """
@@ -95,9 +110,9 @@ class MeanEvaluationCallback(OptimizerCallback):
                     f'More than one evaluation metric found. Please define the right eval_name. Currently {evaluation_name} is used'
                 )
 
-        return self._evaluation_values[evaluation_name] / self._n_docs
+        return self.np_aggregate_function(self._evaluation_values[evaluation_name])
 
-    def __call__(self, response):
+    def __call__(self, response: 'Response'):
         """
         Store the evaluation values
 
@@ -107,7 +122,7 @@ class MeanEvaluationCallback(OptimizerCallback):
         logger.info(f'Num of docs evaluated: {self._n_docs}')
         for doc in response.data.docs:
             for evaluation in doc.evaluations:
-                self._evaluation_values[evaluation.op_name] += evaluation.value
+                self._evaluation_values[evaluation.op_name].append(evaluation.value)
 
 
 class ResultProcessor(JAMLCompatible):
