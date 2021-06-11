@@ -7,7 +7,7 @@ jobs:
   latency-tracking:
     runs-on: ubuntu-latest
     env:
-      NUM_LAST_RELEASE: 1
+      NUM_LAST_RELEASE: 3
     steps:
       - uses: actions/checkout@v2
 #        with:
