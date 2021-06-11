@@ -156,7 +156,15 @@ class DaemonFile:
             params = dict(config.items(DEFAULTSECT))
         self.build = params.get('build')
         self.python = params.get('python')
-        self.run = params.get('run', '')
+        # remove any leading/trailing spaces and quotes
+        stripped_run = params.get('run', '').strip()
+        if (
+            len(stripped_run) > 1
+            and stripped_run[0] == '\"'
+            and stripped_run[-1] == '\"'
+        ):
+            stripped_run = stripped_run.strip('\"')
+        self.run = stripped_run
         try:
             ports_string = params.get('ports', '')
             self.ports = list(map(int, filter(None, ports_string.split(','))))
