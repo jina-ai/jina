@@ -22,7 +22,7 @@ async def _status():
     summary='Create a Pea',
     description='Create a Pea and add it to the store',
     status_code=201,
-    response_model=DaemonID,
+    response_model=PartialStoreItem,
 )
 async def _create(pea: 'PeaModel'):
     try:

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from pydantic import BaseModel, Field
 
 from .id import DaemonID
@@ -6,6 +6,7 @@ from .base import StoreItem, StoreStatus
 
 
 class ContainerArguments(BaseModel):
+    object: Dict
     command: str
 
 

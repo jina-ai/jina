@@ -1,3 +1,4 @@
+from typing import Dict, List
 import requests
 
 from ..models import DaemonID
@@ -8,7 +9,7 @@ from ..excepts import Runtime400Exception
 class FlowStore(ContainerStore):
     _kind = 'flow'
 
-    def _add(self, **kwargs):
+    def _add(self, **kwargs) -> Dict:
         """Sends `post` request to `mini-jinad` to create a Flow."""
         try:
             params = {
@@ -21,16 +22,18 @@ class FlowStore(ContainerStore):
                 raise Runtime400Exception(
                     f'{self._kind.title()} creation failed \n{r.json()}'
                 )
+            return r.json()
         except requests.exceptions.RequestException as ex:
             self._logger.error(f'{ex!r}')
             raise Runtime400Exception(
                 f'{self._kind.title()} creation failed: {r.json()}'
             )
 
-    def _update(self):
+    def _update(self) -> Dict:
         try:
             # TODO
             r = requests.post(url=f'{self.host}/{self._kind}')
+
         except requests.exceptions.RequestException as ex:
             raise
 

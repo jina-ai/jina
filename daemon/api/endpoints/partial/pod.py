@@ -24,7 +24,7 @@ async def _status():
     summary='Create a Pod',
     description='Create a Pod and add it to the store',
     status_code=201,
-    response_model=DaemonID,
+    response_model=PartialStoreItem,
 )
 async def _create(pod: 'PodModel'):
     try:

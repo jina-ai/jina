@@ -13,14 +13,14 @@ router = APIRouter(prefix='/flow', tags=['flow'])
     path='', summary='Get the status of a running Flow', response_model=PartialFlowItem
 )
 async def _status():
-    return store.status
+    return store.item
 
 
 @router.post(
     path='',
     summary='Create a Flow from a YAML config',
     status_code=201,
-    response_model=DaemonID,
+    response_model=PartialFlowItem,
 )
 async def _create(filename: str, id: DaemonID, port_expose: int):
     try:
@@ -33,6 +33,7 @@ async def _create(filename: str, id: DaemonID, port_expose: int):
     path='',
     summary='Run an update operation on the Flow object',
     description='Types supported: "rolling_update" and "dump"',
+    response_model=PartialFlowItem,
 )
 def update(
     kind: UpdateOperation,

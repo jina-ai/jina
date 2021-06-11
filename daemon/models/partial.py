@@ -1,17 +1,15 @@
-from typing import Dict, Union
-
-from jina import Flow
-from jina.peapods import Pea, Pod
+from typing import Dict
+from pydantic import Field
 
 from .base import StoreItem, StoreStatus
 
 
 class PartialStoreItem(StoreItem):
-    arguments: Dict
+    arguments: Dict = Field(default_factory=dict)
 
 
 class PartialFlowItem(PartialStoreItem):
-    yaml_source: str
+    yaml_source: str = ''
 
 
 class PartialStoreStatus(StoreStatus):

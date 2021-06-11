@@ -33,12 +33,12 @@ class ContainerStore(BaseStore):
         """Implements jina object creation in `mini-jinad`"""
         raise NotImplementedError
 
-    def _delete(self, *args, **kwargs):
-        """Implements jina object termination in `mini-jinad`"""
-        raise NotImplementedError
-
     def _update(self, *args, **kwargs):
         """Implements jina object update in `mini-jinad`"""
+        raise NotImplementedError
+
+    def _delete(self, *args, **kwargs):
+        """Implements jina object termination in `mini-jinad`"""
         raise NotImplementedError
 
     @property
@@ -90,7 +90,7 @@ class ContainerStore(BaseStore):
                 raise Runtime400Exception(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {self.host} after 10secs'
                 )
-            self._add()
+            object = self._add()
         except Exception as e:
             self._logger.error(f'{e}')
             raise
@@ -104,7 +104,10 @@ class ContainerStore(BaseStore):
                     ports=ports,
                     host=self.host,
                 ),
-                arguments=ContainerArguments(command=command),
+                arguments=ContainerArguments(
+                    command=command,
+                    object=object,
+                ),
                 workspace_id=workspace_id,
             )
             self._logger.success(
