@@ -166,8 +166,14 @@ class GraphDocument(Document):
             else np.array([1])
         )
         self.adjacency = coo_matrix((data, (row, col)))
+
         if features is not None:
-            self.edge_features[f'{doc1.id}-{doc2.id}'] = features
+
+            if self.undirected:
+                self.edge_features[f'{doc1.id}-{doc2.id}'] = features
+                self.edge_features[f'{doc2.id}-{doc1.id}'] = features
+            else:
+                self.edge_features[f'{doc1.id}-{doc2.id}'] = features
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -202,6 +208,9 @@ class GraphDocument(Document):
         ):
             if row.item() == offset1 and col.item() == offset2:
                 self._remove_edge_id(edge_id, f'{doc1.id}-{doc2.id}')
+
+            if self.undirected:
+                self._remove_edge_id(edge_id, f'{doc2.id}-{doc1.id}')
 
     @property
     def edge_features(self):
@@ -434,12 +443,13 @@ class GraphDocument(Document):
         else:
             rows = self.adjacency.row.copy()
             cols = self.adjacency.col.copy()
-            if not self.undirected:
-                source_nodes = torch.tensor(rows)
-                destination_nodes = torch.tensor(cols)
-            else:
+
+            if self.undirected:
                 source_nodes = torch.tensor(np.concatenate((rows, cols)))
                 destination_nodes = torch.tensor(np.concatenate((cols, rows)))
+            else:
+                source_nodes = torch.tensor(rows)
+                destination_nodes = torch.tensor(cols)
 
             return dgl.graph((source_nodes, destination_nodes))
 
