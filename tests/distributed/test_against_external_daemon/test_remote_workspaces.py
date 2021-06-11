@@ -87,15 +87,31 @@ def test_upload_multiple_workspaces(parallels, mocker):
     response_mock.assert_called()
 
 
-def test_custom_project(mocker):
-    response_mock = mocker.Mock()
+def test_custom_project():
 
     workspace_id = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
     assert wait_for_workspace(workspace_id)
     # we need to wait for the flow to start in the custom project
-    time.sleep(5.0)
-    Client(host='0.0.0.0', port_expose=42860, show_progress=True).index(
-        inputs=(Document(text='hello') for _ in range(NUM_DOCS)), on_done=response_mock
+    time.sleep(5)
+
+    def gen_docs():
+        import string
+
+        d = iter(string.ascii_lowercase)
+        while True:
+            try:
+                yield Document(tags={'first': next(d), 'second': next(d)})
+            except StopIteration:
+                return
+
+    Client(host='0.0.0.0', port_expose=42860, show_progress=True).post(
+        on='/index', inputs=gen_docs
     )
-    response_mock.assert_called()
+    res = Client(host='0.0.0.0', port_expose=42860, show_progress=True).post(
+        on='/search',
+        inputs=Document(tags={'key': 'first', 'value': 's'}),
+        return_results=True,
+    )
+    assert res[0].data.docs[0].matches[0].tags.fields['first'].string_value == 's'
+    assert res[0].data.docs[0].matches[0].tags.fields['second'].string_value == 't'
     delete_workspace(workspace_id)

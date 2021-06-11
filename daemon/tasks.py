@@ -64,7 +64,6 @@ class DaemonWorker(Thread):
                 image_name=self.id.tag,
                 network=id_cleaner(self.network_id),
                 workdir=self.workdir,
-                container_id=self.container_id,
             )
         return _metadata
 
@@ -112,6 +111,8 @@ class DaemonWorker(Thread):
                     arguments=self.arguments,
                 ),
             )
+            # this needs to be done after the initial update, otherwise run won't find the necessary metadata
+            store[self.id].metadata.container_id = self.container_id
             self._logger.success(
                 f'workspace {colored(str(self.id), "cyan")} is updated'
             )

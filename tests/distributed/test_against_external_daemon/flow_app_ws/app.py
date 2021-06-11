@@ -1,12 +1,10 @@
 import sys
 from jina import Flow
-from helper import foo, bar
+from executors import TinyDBIndexer, TorchExecutor
 
 
 def main(port_expose):
-    f = Flow(port_expose=port_expose).add()
-    foo()
-    bar()
+    f = Flow(port_expose=port_expose).add(uses=TinyDBIndexer).add(uses=TorchExecutor)
     with f:
         f.block()
 
