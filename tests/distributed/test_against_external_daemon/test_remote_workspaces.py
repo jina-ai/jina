@@ -91,9 +91,9 @@ def test_custom_project(mocker):
     response_mock = mocker.Mock()
 
     workspace_id = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
+    assert wait_for_workspace(workspace_id)
     # we need to wait for the flow to start in the custom project
     time.sleep(5.0)
-    assert wait_for_workspace(workspace_id)
     Client(host='0.0.0.0', port_expose=42860, show_progress=True).index(
         inputs=(Document(text='hello') for _ in range(NUM_DOCS)), on_done=response_mock
     )
