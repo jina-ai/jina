@@ -68,7 +68,6 @@ class HubIO:
                 'force': self.args.force,
                 'secret': self.args.secret,
             }
-            print(payload)
 
             # upload the archived executor to Jina Hub
             upload_url = HUBBLE_REGISTRY + '/upload'
