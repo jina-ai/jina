@@ -1150,6 +1150,8 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     if isinstance(part1, int):
         result = _dict[part1]
+    elif isinstance(_dict, Iterable):
+        result = _dict[part1]
     elif isinstance(_dict, (dict, Struct)):
         if part1 in _dict:
             result = _dict[part1]

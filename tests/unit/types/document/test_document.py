@@ -541,7 +541,7 @@ def test_get_attr_values():
         'text',
         'tags__name',
         'tags__feature1',
-        'score__value',
+        'scores__0__value',
         'tags__c',
         'tags__id',
         'tags__inexistant',
@@ -556,7 +556,7 @@ def test_get_attr_values():
     assert res[required_keys.index('text')] == 'document'
     assert res[required_keys.index('tags__c')] == 'd'
     assert res[required_keys.index('tags__id')] == 'identity'
-    assert res[required_keys.index('score__value')] == 42
+    assert res[required_keys.index('scores__0__value')] == 42
     assert res[required_keys.index('tags__inexistant')] is None
     assert res[required_keys.index('inexistant')] is None
 

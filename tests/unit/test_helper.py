@@ -76,6 +76,13 @@ def test_dunder_get():
     assert dunder_get(a, 'b__c') == 1
 
 
+def test_dunder_get_with_array():
+    a = SimpleNamespace()
+    a.b = {'c': {'d': [{'e': 5}, {'f': 10}]}}
+    assert dunder_get(a, 'b__c__d__0__e') == 5
+    assert dunder_get(a, 'b__c__d__1__f') == 10
+
+
 def test_check_update():
     assert _is_latest_version()
     # now mock it as old version
