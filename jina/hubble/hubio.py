@@ -40,6 +40,7 @@ class HubIO:
         is_public = True
         if self.args.private:
             is_public = False
+            self.args.public = False
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
