@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from queue import Empty
 from threading import Thread
 
@@ -12,7 +12,7 @@ from .dockerize import Dockerizer
 from .models.enums import WorkspaceState
 from .stores import workspace_store as store
 from .files import DaemonFile, workspace_files
-from .excepts import DockerBuildException, DockerNetworkException
+from .excepts import DockerImageException, DockerNetworkException
 from .helper import id_cleaner, get_workspace_path, random_port_range
 from .models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata
 
@@ -59,13 +59,12 @@ class DaemonWorker(Thread):
             _metadata.image_id = self.image_id
             _metadata.image_name = self.id.tag
         except AttributeError:
-            _min, _max = random_port_range()
             _metadata = WorkspaceMetadata(
                 image_id=self.image_id,
                 image_name=self.id.tag,
                 network=id_cleaner(self.network_id),
-                ports={'min': _min, 'max': _max},
                 workdir=self.workdir,
+                container_id=self.container_id,
             )
         return _metadata
 
@@ -88,14 +87,12 @@ class DaemonWorker(Thread):
         )
 
     @cached_property
-    def container_id(self):
+    def container_id(self) -> Optional[str]:
         if self.daemon_file.run:
             container, _, _ = Dockerizer.run_custom(
                 workspace_id=self.id, daemon_file=self.daemon_file
             )
-            return container.id
-        else:
-            return None
+            return id_cleaner(container.id)
 
     def run(self) -> None:
         try:
@@ -115,18 +112,17 @@ class DaemonWorker(Thread):
                     arguments=self.arguments,
                 ),
             )
-            # this needs to be done after the initial update, otherwise run won't find the necessary metadata
-            store[self.id].metadata.container_id = self.container_id
             self._logger.success(
                 f'workspace {colored(str(self.id), "cyan")} is updated'
             )
         except DockerNetworkException as e:
             store.update(id=self.id, value=WorkspaceState.FAILED)
             self._logger.error(f'Error while creating the docker network: {e!r}')
-        except DockerBuildException as e:
+        except DockerImageException as e:
             store.update(id=self.id, value=WorkspaceState.FAILED)
             self._logger.error(f'Error while building the docker image: {e!r}')
         except Exception as e:
+            # TODO: how to communicate errors to users? users track it via logs?
             # TODO: Handle cleanup in case of exception
             store.update(id=self.id, value=WorkspaceState.FAILED)
             self._logger.error(f'{e!r}')

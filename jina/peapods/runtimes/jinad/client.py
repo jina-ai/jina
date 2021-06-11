@@ -241,9 +241,9 @@ class PeaDaemonClient(DaemonClient):
 
     def delete(self, id: str, **kwargs) -> bool:
         """
-        Delete a remote pea/pod/workspace
+        Delete a remote pea/pod
 
-        :param id: the identity of that pea/pod/workspace
+        :param id: the identity of that pea/pod
         :param kwargs: keyword arguments
         :return: True if the deletion is successful
         """
@@ -304,3 +304,27 @@ class WorkspaceDaemonClient(PeaDaemonClient):
                     raise requests.exceptions.RequestException(rj)
             except requests.exceptions.RequestException as ex:
                 self.logger.error(f'fail to upload as {ex!r}')
+
+    def delete(self, id: str, **kwargs) -> bool:
+        """
+        Delete a remote workspace
+
+        :param id: the identity of that pea/pod/workspace
+        :param kwargs: keyword arguments
+        :return: True if the deletion is successful
+        """
+        with ImportExtensions(required=True):
+            import requests
+
+        try:
+            # NOTE: This deletes the container, network by default & leaves the files as-is on remote.
+            # TODO: do we parameterize it?
+            r = requests.delete(
+                url=f'{self.store_api}/{id}',
+                params={'container': True, 'network': True, 'files': False},
+                timeout=self.timeout,
+            )
+            return r.status_code == 200
+        except requests.exceptions.RequestException as ex:
+            self.logger.error(f'failed to delete {id} as {ex!r}')
+            return False

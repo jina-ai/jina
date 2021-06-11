@@ -71,7 +71,7 @@ class JinadRuntime(AsyncZMQRuntime):
         self._logging_task = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs
-            else self.pea_api.logstream(self.workspace_id, self._remote_id)
+            else self.pea_api.logstream(self.args.workspace_id, self._remote_id)
         )
 
     async def async_cancel(self):
@@ -85,12 +85,9 @@ class JinadRuntime(AsyncZMQRuntime):
         Terminates the remote Workspace/Pod/Pea using :class:`JinadAPI`
         """
         self.pea_api.delete(id=self._remote_id)
-        # self.workspace_api.delete(id=self.workspace_id)
+        # TODO: don't fail if workspace deletion fails. all peas would make this call. can be optimized
+        self.workspace_api.delete(id=self.args.workspace_id)
         super().teardown()
-
-    @property
-    def workspace_id(self) -> str:
-        return self.args.workspace_id
 
     def create_workspace(self):
         """Create a workspace on remote (includes file upload & docker build)
@@ -111,16 +108,17 @@ class JinadRuntime(AsyncZMQRuntime):
         sleep = 2
         retries = 100
         for retry in range(retries):
-            workspace_status = self.workspace_api.get(id=self.workspace_id)
+            workspace_status = self.workspace_api.get(id=self.args.workspace_id)
             if not workspace_status:
                 raise DaemonConnectivityError
             state = workspace_status.get('state', None)
             if not state:
                 self.logger.info(
-                    f'creating workspace {colored(self.workspace_id, "cyan")} on remote. This might take some time.'
+                    f'creating workspace {colored(self.args.workspace_id, "cyan")} on remote. This might take some time.'
                 )
                 self.workspace_api.post(
-                    dependencies=self.args.upload_files, workspace_id=self.workspace_id
+                    dependencies=self.args.upload_files,
+                    workspace_id=self.args.workspace_id,
                 )
             elif state in [
                 'PENDING',
@@ -129,12 +127,12 @@ class JinadRuntime(AsyncZMQRuntime):
             ]:  # TODO: move enum from daemon to core
                 if retry % 10 == 0:
                     self.logger.info(
-                        f'workspace {self.workspace_id} is getting created on remote. waiting..'
+                        f'workspace {self.args.workspace_id} is getting created on remote. waiting..'
                     )
                 time.sleep(sleep)
             elif state == 'ACTIVE':
                 self.logger.success(
-                    f'successfully created a remote workspace: {colored(self.workspace_id, "cyan")}'
+                    f'successfully created a remote workspace: {colored(self.args.workspace_id, "cyan")}'
                 )
                 break
             else:

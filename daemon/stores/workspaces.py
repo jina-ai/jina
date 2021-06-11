@@ -1,4 +1,6 @@
 from typing import Union
+from pathlib import Path
+from shutil import rmtree
 
 from jina.helper import colored
 
@@ -52,17 +54,75 @@ class WorkspaceStore(BaseStore):
             self._logger.error(f'invalid arguments for workspace: {value}')
         return id
 
+    def rm_files(self, id: DaemonID, logs: bool = False):
+        workdir = self[id].metadata.workdir
+        if not workdir or not Path(workdir).is_dir():
+            self._logger.info(f'there\'s nothing to remove in workdir {workdir}')
+            return
+        if logs:
+            self._logger.info(f'asked to remove complete directory: {workdir}')
+            rmtree(workdir)
+            self[id].metadata.workdir = ''
+        else:
+            for path in Path(workdir).rglob('[!logging.log]*'):
+                if path.is_file():
+                    self._logger.debug(f'file to be deleted: {path}')
+                    path.unlink()
+
+    def rm_network(self, id: DaemonID):
+        try:
+            network = self[id].metadata.network
+            # TODO: check what containers are using this network
+            if id in Dockerizer.networks:
+                Dockerizer.rm_network(network)
+                assert id not in Dockerizer.networks
+                self._logger.success(
+                    f'network {colored(network, "cyan")} is successfully removed'
+                )
+            else:
+                self._logger.info(f'no network to delete for id {colored(id, "cyan")}')
+            if network:
+                self[id].metadata.network = None
+        except AttributeError as e:
+            self._logger.info(f'there\'s no network to remove {e!r}')
+        except AssertionError as e:
+            self._logger.error(f'something went wrong while removing the container')
+            raise
+
+    def rm_container(self, id: DaemonID):
+        try:
+            container_id = self[id].metadata.container_id
+            if id in Dockerizer.containers:
+                Dockerizer.rm_container(container_id)
+                assert id not in Dockerizer.containers
+                self._logger.success(
+                    f'container {colored(container_id, "cyan")} is successfully removed'
+                )
+            else:
+                self._logger.info(
+                    f'no container to delete for id {colored(id, "cyan")}'
+                )
+            if container_id:
+                self[id].metadata.container_id = None
+        except AttributeError as e:
+            self._logger.error(f'there\'s no containers to remove {e!r}')
+        except AssertionError as e:
+            self._logger.error(f'something went wrong while removing the container')
+            raise
+        except Exception as e:
+            self._logger.error(f'something went wrong while removing the container')
+            raise
+
     @BaseStore.dump
     def delete(
         self,
         id: DaemonID,
-        container: bool,
-        network: bool,
-        files: bool,
-        everything: bool,
+        container: bool = True,
+        network: bool = True,
+        files: bool = True,
+        everything: bool = False,
         **kwargs,
-    ):
-        deleted_entities = []
+    ) -> None:
         if everything:
             container = True
             network = True
@@ -72,26 +132,15 @@ class WorkspaceStore(BaseStore):
             raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
 
         if container:
-            container_id = self[id].metadata.container_id
-            if container_id:
-                Dockerizer.rm_container(container_id)
-                self._logger.success(
-                    f'{colored(container_id, "cyan")} is killed and removed from the store.'
-                )
-                self[id].metadata.container_id = None
-                deleted_entities.append(container_id)
-            else:
-                self._logger.info(
-                    f'No container to delete for store {colored(str(id), "cyan")}'
-                )
+            self.rm_container(id)
+        if network:
+            self.rm_network(id)
+        if files:
+            # TODO: deleting files when not deleting container seems unwise
+            self.rm_files(id, logs=everything)
 
-        # TODO: add network and file deletion
         if everything:
-            Dockerizer.rm_image(id=self[id].metadata.image_id)
-            Dockerizer.rm_network(id=self[id].metadata.network)
             del self[id]
             self._logger.success(
                 f'{colored(str(id), "cyan")} is released from the store.'
             )
-            deleted_entities.append(id)
-        return deleted_entities

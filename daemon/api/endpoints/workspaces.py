@@ -24,7 +24,7 @@ async def _get_items():
     summary='Deleting all Workspaces',
 )
 async def _clear_all():
-    store.clear(everything=True, network=True, container=True, files=True)
+    store.clear(everything=True)
 
 
 @router.delete(
@@ -33,10 +33,10 @@ async def _clear_all():
 )
 async def _delete(
     id: DaemonID,
-    container: bool = False,
-    network: bool = False,
-    files: bool = False,
-    everything: bool = True,
+    container: bool = True,
+    network: bool = True,
+    files: bool = True,
+    everything: bool = False,
 ):
     try:
         return store.delete(

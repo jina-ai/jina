@@ -17,7 +17,6 @@ class WorkspaceMetadata(BaseModel):
     image_id: str
     image_name: str
     network: str
-    ports: Dict[str, int]
     workdir: str
     container_id: Optional[str]
 

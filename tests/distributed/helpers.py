@@ -77,7 +77,7 @@ def create_workspace(
 
 def delete_workspace(
     workspace_id: DaemonID, host: str = __default_host__, port: int = 8000
-) -> Optional[str]:
+) -> None:
     url = _jinad_url(host, port, f'workspaces/{workspace_id}')
     print(f'will delete workspace {workspace_id}')
     r = requests.delete(url, params={'everything': True})

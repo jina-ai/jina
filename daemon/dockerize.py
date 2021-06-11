@@ -2,7 +2,6 @@ from jina.helper import colored
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
-from fastapi import HTTPException
 
 from jina import __ready_msg__
 from jina.logging.logger import JinaLogger
@@ -19,9 +18,9 @@ from . import (
 )
 from .excepts import (
     DockerNotFoundException,
-    DockerBuildException,
+    DockerImageException,
     DockerNetworkException,
-    DockerRunException,
+    DockerContainerException,
 )
 
 if TYPE_CHECKING:
@@ -144,7 +143,7 @@ class Dockerizer:
             image = cls.client.images.get(name=workspace_id.tag)
         except docker.errors.ImageNotFound as e:
             logger.critical(f'Couldn\'t find image with name: {workspace_id.tag} {e!r}')
-            raise DockerBuildException(e)
+            raise DockerImageException(e)
         return id_cleaner(image.id)
 
     @classmethod
@@ -172,7 +171,7 @@ class Dockerizer:
 
         metadata = workspace_store[workspace_id].metadata
         if not metadata:
-            raise DockerBuildException(
+            raise DockerImageException(
                 'Docker image not built properly, cannot proceed for run'
             )
         image = cls.client.images.get(name=metadata.image_id)
@@ -198,15 +197,12 @@ class Dockerizer:
             cls.logger.critical(
                 f'Image {image} or Network {network} not found locally {e!r}'
             )
-            raise DockerBuildException(
+            raise DockerImageException(
                 'Docker image not built properly, cannot proceed for run'
             )
         except docker.errors.APIError as e:
-            import traceback
-
-            cls.logger.critical(traceback.format_exc())
             cls.logger.critical(f'API Error while starting the docker container \n{e}')
-            raise DockerRunException()
+            raise DockerContainerException()
         return container, network, ports
 
     @classmethod
@@ -240,13 +236,13 @@ class Dockerizer:
             network.remove()
         except docker.errors.NotFound as e:
             cls.logger.error(f'Couldn\'t fetch network with id: `{id}`')
-            raise HTTPException(status_code=404, detail=f'Network `{id}` not found')
+            raise KeyError(f'network {id} not found')
         except docker.errors.APIError as e:
             cls.logger.error(
                 f'dockerd threw an error while removing the network `{id}`: {e}'
             )
-            raise HTTPException(
-                status_code=400, detail=f'dockerd error while removing network `{id}`'
+            raise DockerNetworkException(
+                f'dockerd error while removing network {id} {e!r}'
             )
 
     @classmethod
@@ -256,18 +252,29 @@ class Dockerizer:
             cls.client.images.remove(id, force=True)
         except docker.errors.ImageNotFound as e:
             cls.logger.error(f'Couldn\'t fetch image with name: `{id}`')
-            raise HTTPException(status_code=404, detail=f'Image `{id}` not found')
+            raise KeyError(f'image `{id}` not found')
+        except docker.errors.APIError as e:
+            cls.logger.error(
+                f'dockerd threw an error while removing the network `{id}`: {e}'
+            )
+            raise DockerImageException(f'dockerd error while removing image {id} {e!r}')
 
     @classmethod
     def rm_container(cls, id: str):
         try:
             container: 'Container' = cls.client.containers.get(id)
-        except docker.errors.NotFound as e:
-            cls.logger.error(f'Couldn\'t fetch container with name: `{id}`')
-            raise HTTPException(status_code=404, detail=f'Container `{id}` not found')
-        else:
             container.stop()
             container.remove()
+        except docker.errors.NotFound as e:
+            cls.logger.error(f'Couldn\'t fetch container with name: `{id}`')
+            raise KeyError(f'container `{id}` not found')
+        except docker.errors.APIError as e:
+            cls.logger.error(
+                f'dockerd threw an error while removing the container `{id}`: {e}'
+            )
+            raise DockerContainerException(
+                f'dockerd error while removing network {id} {e!r}'
+            )
 
     @classmethod
     def validate(cls):
