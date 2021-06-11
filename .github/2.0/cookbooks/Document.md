@@ -536,8 +536,11 @@ d0.plot()  # simply `d0` on JupyterLab
 
 |     |     |
 | --- | --- |
-| `doc.score` | The relevance information of this Document |
+| `doc.scores` | The relevance information of this Document |
 | `doc.evaluations` | The evaluation information of this Document |
+
+Jina Document supports multiple relevance fields in the same instance to support, however for simple cases it also
+offers the interface to access these values as if there was a single relevance field.
 
 You can add a relevance score to a `Document` object via:
 
@@ -545,13 +548,13 @@ You can add a relevance score to a `Document` object via:
 from jina import Document
 
 d = Document()
-d.score.value = 0.96
+d.score = 0.96
 d.score.description = 'cosine similarity'
 d.score.op_name = 'cosine()'
 ```
 
 ```text
-<jina.types.document.Document id=0a986c50-aeff-11eb-84c1-1e008a366d48 score={'value': 0.96, 'opName': 'cosine()', 'description': 'cosine similarity'} at 6281686928>
+<jina.types.document.Document id=0a986c50-aeff-11eb-84c1-1e008a366d48 scores=[{'value': 0.96, 'opName': 'cosine()', 'description': 'cosine similarity'}] at 6281686928>
 ```
 
 Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
@@ -564,8 +567,28 @@ from jina import Document
 q = Document()
 # get match Document `m`
 m = Document()
-m.score.value = 0.96
+m.score = 0.96
 q.matches.append(m)
+```
+
+```text
+<jina.types.document.Document id=184049a9-cac1-11eb-8d87-e86a64801cb1 scores=[{'value': 0.96, 'op_name': 'score', 'ref_id': '184049a8-cac1-11eb-8d87-e86a64801cb1'}] adjacency=1 at 140519623882704>
+```
+
+You can also set `score` or `evaluation` with a `metric` name by calling:
+```python
+from jina import Document
+
+d = Document()
+d.set_score('cosine distance', 0.5)
+d.set_score('relevance', 10.0)
+d.set_evaluation('precision', 0.5)
+d.set_evaluation('ndcg', 0.1)
+d
+```
+
+```text
+<jina.types.document.Document id=8dd0e8f8-cac1-11eb-8d87-e86a64801cb1 scores=[{'value': 0.5, 'op_name': 'cosine distance'}, {'value': 10.0, 'op_name': 'relevance'}] evaluations=[{'value': 0.5, 'op_name': 'precision'}, {'value': 0.1, 'op_name': 'ndcg'}] at 139794689627920>
 ```
 
 ## `DocumentArray` API
@@ -769,7 +792,7 @@ np.stack(da.get_attributes('embedding'))
  [7 8 9]]
 ```
 
-### Access nested attributes from tags
+### Access nested attributes from tags and array fields
 
 `Document` contains the `tags` field that can hold a map-like structure that can map arbitrary values.
 
@@ -798,6 +821,23 @@ doc.tags__dimensions__weight
 
 ```text
 10.0
+```
+
+This can also be used to access nested attributes of repeated `Document` fields such as `scores` or `evaluations`.
+
+```python
+from jina import Document
+
+doc = Document()
+doc.scores.add()
+doc.scores[0].value = 50
+doc.scores.add()
+doc.scores[1].value = 100
+doc.get_attributes('scores__0__value', 'scores__1__value')
+```
+
+```text
+[50.0, 100.0]
 ```
 
 This also allows to access nested metadata attributes in `bulk` from a `DocumentArray`.
