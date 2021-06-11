@@ -19,16 +19,21 @@ docker run --add-host host.docker.internal:host-gateway \
 #### Why?
 
 - `jinaai/jina:test-daemon` ?
+
   All images created by JinaD during local tests use image with this name (hard-coded). Once 2.0 is released, it would be pulled from `docker hub` or a better naming would get used.
 
 - `--add-host`?
+
   `DOCKERHOST = 'host.docker.internal'`
+  
   JinaD itself always runs inside a container and creates all images/networks/containers on localhost. `DOCKERHOST` allows JinaD to communicate with other child containers. Must for linux. Not needed for Mac/WSL
 
 - `-v /var/run/docker.sock:/var/run/docker.sock` ?
+
   Allows JinaD to talk to DOCKERHOST
 
 - `-v /tmp/jinad:/tmp/jinad` ?
+
   This is the default root workspace for JinaD. This gets mounted internally to all child containers. If we don't mount this while starting, `/tmp/jinad` local to JinaD would get mounted to child containers, which is not accessible by DOCKERHOST
 
 ## User journey
