@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from jina.flow import Flow
+from jina import Flow
 from jina.types.ndarray.generic import NdArray
 from tests import random_docs
 

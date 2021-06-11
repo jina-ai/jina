@@ -1,3 +1,4 @@
+import inspect
 import os
 
 import numpy as np
@@ -415,14 +416,6 @@ def test_flow_with_publish_driver(mocker, restful):
     validate_callback(response_mock, validate)
 
 
-def test_flow_arguments_priorities():
-    f = Flow(port_expose=12345).add(name='test', port_expose=23456)
-    assert f._pod_nodes['test'].args.port_expose == 23456
-
-    f = Flow(port_expose=12345).add(name='test')
-    assert f._pod_nodes['test'].args.port_expose == 12345
-
-
 @pytest.mark.parametrize('restful', [False])
 def test_flow_arbitrary_needs(restful):
     f = (
@@ -559,7 +552,6 @@ def test_flow_identity():
     f.identity = new_id
     assert len(set(f.identity.values())) == 1
     assert list(f.identity.values())[0] == new_id
-    assert f.args.identity == new_id
 
 
 def test_flow_identity_override():
@@ -720,3 +712,17 @@ def test_flow_empty_data_request(mocker):
         f.post('/hello', parameters={'hello': 'world'}, on_done=mock)
 
     mock.assert_called()
+
+
+def test_flow_common_kwargs():
+
+    with Flow(
+        restful=True, continue_on_error=False, something_random=True, asyncio=False
+    ).add() as f:
+        assert f._common_kwargs == {'something_random': True}
+
+
+@pytest.mark.parametrize('is_async', [True, False])
+def test_flow_set_asyncio_switch_post(is_async):
+    f = Flow(asyncio=is_async)
+    assert inspect.isasyncgenfunction(f.post) == is_async

@@ -3,7 +3,7 @@ from typing import Dict, Any
 
 from ..base import VersionedYAMLParser
 from ....enums import PodRoleType
-from ....flow import Flow
+from .... import Flow
 from ....helper import expand_env_var, ArgNamespace
 from ....parsers import set_pod_parser, set_gateway_parser
 
@@ -54,14 +54,13 @@ class V1Parser(VersionedYAMLParser):
         :param data: flow yaml file loaded as python dict
         :return: the Flow YAML parser given the syntax version number
         """
-        envs = data.get('env', {})  # type: Dict[str, str]
         p = data.get('with', {})  # type: Dict[str, Any]
         a = p.pop('args') if 'args' in p else ()
         k = p.pop('kwargs') if 'kwargs' in p else {}
         # maybe there are some hanging kwargs in "parameters"
         tmp_a = (expand_env_var(v) for v in a)
         tmp_p = {kk: expand_env_var(vv) for kk, vv in {**k, **p}.items()}
-        obj = cls(*tmp_a, env=envs, **tmp_p)
+        obj = cls(*tmp_a, **tmp_p)
 
         pp = data.get('executors', data.get('pods', []))
         for pods in pp:
@@ -82,9 +81,6 @@ class V1Parser(VersionedYAMLParser):
         r = {}
         if data._version:
             r['version'] = data._version
-
-        if data._env:
-            r['env'] = data._env
 
         if data._kwargs:
             r['with'] = data._kwargs

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from daemon.stores import FlowStore
-from jina.flow import Flow
+from jina import Flow
 
 cur_dir = Path(__file__).parent
 

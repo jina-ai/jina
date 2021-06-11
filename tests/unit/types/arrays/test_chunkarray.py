@@ -39,7 +39,7 @@ def chunks(document_factory):
 
 @pytest.fixture
 def chunkarray(chunks, reference_doc):
-    return ChunkArray(docs_proto=chunks, reference_doc=reference_doc)
+    return ChunkArray(doc_views=chunks, reference_doc=reference_doc)
 
 
 def test_append_from_documents(chunkarray, document_factory, reference_doc):

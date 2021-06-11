@@ -137,16 +137,14 @@ def flow(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.flow import Flow
+    from jina import Flow
 
     if args.uses:
         f = Flow.load_config(args.uses)
         with f:
             f.block()
     else:
-        from jina.logging.predefined import default_logger
-
-        default_logger.critical('start a flow from CLI requires a valid "--uses"')
+        raise ValueError('start a flow from CLI requires a valid `--uses`')
 
 
 def optimizer(args: 'Namespace'):
@@ -158,14 +156,3 @@ def optimizer(args: 'Namespace'):
     from jina.optimizers import run_optimizer_cli
 
     run_optimizer_cli(args)
-
-
-def hub(args: 'Namespace'):
-    """
-    Start a hub builder for build, push, pull
-
-    :param args: arguments coming from the CLI.
-    """
-    from jina.docker.hubio import HubIO
-
-    getattr(HubIO(args), args.hub)()

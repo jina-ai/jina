@@ -4,6 +4,7 @@ import pytest
 
 from jina import Document
 from jina.clients import Client
+from jina.clients.grpc import GRPCClient
 from jina.parsers import set_client_cli_parser
 from tests import validate_callback
 from ..helpers import create_flow, assert_request
@@ -23,16 +24,26 @@ def doc_to_index():
 
 @pytest.fixture
 def client():
+    return Client(host='localhost', port_expose=45678)
+
+
+@pytest.fixture
+def grpc_client():
     args = set_client_cli_parser().parse_args(
         ['--host', 'localhost', '--port-expose', '45678']
     )
 
-    return Client(args)
+    return GRPCClient(args)
+
+
+@pytest.fixture(params=['client', 'grpc_client'])
+def client_instance(request):
+    return request.getfixturevalue(request.param)
 
 
 @pytest.mark.timeout(360)
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_flow(docker_compose, doc_to_index, client, mocker):
+def test_flow(docker_compose, doc_to_index, client_instance, mocker):
     def validate_resp(resp):
         assert len(resp.data.docs) == 2
         assert resp.data.docs[0].text == 'test'
@@ -41,7 +52,7 @@ def test_flow(docker_compose, doc_to_index, client, mocker):
     mock = mocker.Mock()
     flow_id = create_flow(flow_yaml=flow_yaml, pod_dir=os.path.join(cur_dir, 'pods'))
 
-    client.search(inputs=[doc_to_index], on_done=mock)
+    client_instance.search(inputs=[doc_to_index], on_done=mock)
 
     assert_request(method='get', url=f'http://localhost:8000/flows/{flow_id}')
 

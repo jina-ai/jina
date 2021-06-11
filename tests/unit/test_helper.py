@@ -15,7 +15,6 @@ from jina.helper import (
     convert_tuple_to_list,
     deprecated_alias,
     is_yaml_filepath,
-    touch_dir,
     random_port,
     find_request_binding,
     dunder_get,
@@ -252,11 +251,6 @@ def test_yaml_filepath_validate_good(val):
 )
 def test_yaml_filepath_validate_bad(val):
     assert not is_yaml_filepath(val)
-
-
-def test_touch_dir(tmpdir):
-    touch_dir(tmpdir)
-    assert os.path.exists(tmpdir)
 
 
 @pytest.fixture

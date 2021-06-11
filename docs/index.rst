@@ -1,5 +1,5 @@
-Table of contents
-**********************
+Jina Documentation
+******************
 
 .. toctree::
    :maxdepth: 2
@@ -9,17 +9,21 @@ Table of contents
 
 .. toctree::
    :titlesonly:
-   :glob:
    :caption: Command Line Interface
 
    cli/index
 
 .. toctree::
    :titlesonly:
-   :glob:
    :caption: Protobuf Specification
 
    proto/index
+
+.. toctree::
+   :caption: Links
+
+   GitHub repository <https://github.com/jina-ai/jina>
+   Slack community <https://slack.jina.ai>
 
 
 * :ref:`genindex`

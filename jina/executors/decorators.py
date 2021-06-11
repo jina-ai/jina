@@ -57,12 +57,6 @@ def store_init_kwargs(func: Callable) -> Callable:
             if k in tmp:
                 tmp[k] = v
 
-        if getattr(self, 'store_args_kwargs', None):
-            if args:
-                tmp['args'] = args
-            if kwargs:
-                tmp['kwargs'] = {k: v for k, v in kwargs.items() if k not in taboo}
-
         if hasattr(self, '_init_kwargs_dict'):
             self._init_kwargs_dict.update(tmp)
         else:
