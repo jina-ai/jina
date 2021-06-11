@@ -52,6 +52,7 @@ sitemap_filename = "sitemap.xml"
 html_theme_options = {
     'light_logo': 'logo-light.svg',
     'dark_logo': 'logo-dark.svg',
+    "sidebar_hide_name": True,
 }
 
 html_static_path = ['_static']
