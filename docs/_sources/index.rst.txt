@@ -1,22 +1,18 @@
 Jina Documentation
 ******************
 
+.. include:: ../README.md
+   :start-after: <!-- start elevator-pitch -->
+   :end-before: <!-- end elevator-pitch -->
+
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Python API
+   :titlesonly:
+   :maxdepth: 1
+   :caption: Developer Reference
 
    api/jina
-
-.. toctree::
-   :titlesonly:
-   :caption: Command Line Interface
-
    cli/index
-
-.. toctree::
-   :titlesonly:
-   :caption: Protobuf Specification
-
    proto/index
 
 .. toctree::
@@ -25,7 +21,6 @@ Jina Documentation
    GitHub repository <https://github.com/jina-ai/jina>
    Slack community <https://slack.jina.ai>
 
-
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
+

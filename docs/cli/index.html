@@ -129,15 +129,14 @@
     <img class="sidebar-logo only-dark" src="../_static/logo-dark.svg" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Jina 2.0.0rc7 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search/">
   <input class="sidebar-search" placeholder=Search name="q">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption"><span class="caption-text">Python API</span></p>
-<ul>
+  <p class="caption"><span class="caption-text">Developer Reference</span></p>
+<ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -359,13 +358,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/jina.importer/">jina.importer module</a></li>
 </ul>
 </li>
-</ul>
-<p class="caption"><span class="caption-text">Command Line Interface</span></p>
-<ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Jina Command-Line Interface</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Protobuf Specification</span></p>
-<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
 </ul>
@@ -451,7 +444,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “8706c543-180d-4eb4-a941-514fc8f10328”</p>
+<p>Default: “81147907-4ff9-4b09-89b3-78cd2b715eff”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -526,7 +519,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “3d9c5d68-2bc6-43f1-bd0c-95749bf1399b”</p>
+<p>Default: “947314dd-e1a1-461a-8b8a-681731e6e798”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -559,7 +552,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1404d675-f13f-4cfe-9d6f-48395594e980”</p>
+<p>Default: “b53ab8bd-360b-4910-8de9-49b537fd9647”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -658,7 +651,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 45075</p>
+<p>Default: 59837</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -703,11 +696,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 41063</p>
+<p>Default: 47413</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 35583</p>
+<p>Default: 54217</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -795,7 +788,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 60657</p>
+<p>Default: 32823</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -822,7 +815,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “3e4a01bf-d8b6-45e8-b0d5-302a4dc30443”</p>
+<p>Default: “30e829ad-2aa1-4cf5-8986-e925fcee6ed1”</p>
 </dd>
 </dl>
 </div>
@@ -969,7 +962,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 41121</p>
+<p>Default: 55349</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1144,7 +1137,7 @@ process Responses in bulk instead of using callback.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 60391</p>
+<p>Default: 53631</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1189,11 +1182,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 36761</p>
+<p>Default: 58889</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 58267</p>
+<p>Default: 48177</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1307,7 +1300,7 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 43317</p>
+<p>Default: 36465</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1421,7 +1414,7 @@ and oneof fields are not affected by this option.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 37553</p>
+<p>Default: 54887</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1466,11 +1459,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 52275</p>
+<p>Default: 45387</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 51881</p>
+<p>Default: 43751</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1558,7 +1551,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 35429</p>
+<p>Default: 55305</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1585,7 +1578,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “7f59599c-66f2-4253-8287-9113041282a5”</p>
+<p>Default: “65103b35-c379-4f65-9709-2cf8258fecfd”</p>
 </dd>
 </dl>
 </div>
@@ -1649,7 +1642,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 57895</p>
+<p>Default: 43221</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1749,7 +1742,7 @@ process Responses in bulk instead of using callback.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 10, 2021.
+            Last updated on Jun 11, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
