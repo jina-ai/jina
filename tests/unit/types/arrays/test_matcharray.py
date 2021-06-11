@@ -51,7 +51,24 @@ def test_append_from_documents(matcharray, document_factory, reference_doc):
     assert rv.granularity == reference_doc.granularity
     assert rv.adjacency == reference_doc.adjacency + 1
     assert rv.mime_type == 'text/plain'
-    assert rv.score.ref_id == reference_doc.id
+    assert rv.score.ref_id == ''
+
+
+def test_append_from_documents_with_score(matcharray, document_factory, reference_doc):
+    match = document_factory.create(4, 'test 4')
+    match.add_score(50)
+    match.add_score(100)
+    rv = matcharray.append(match)
+    assert len(matcharray) == 4
+    assert matcharray[-1].text == 'test 4'
+    assert rv.text == match.text
+    assert rv.granularity == reference_doc.granularity
+    assert rv.adjacency == reference_doc.adjacency + 1
+    assert rv.mime_type == 'text/plain'
+    assert rv.scores[0].ref_id == reference_doc.id
+    assert rv.scores[0].value == 50
+    assert rv.scores[1].ref_id == reference_doc.id
+    assert rv.scores[1].value == 100
 
 
 def test_mime_type_not_reassigned():

@@ -85,9 +85,6 @@ _all_mime_types = set(mimetypes.types_map.values())
 _all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
 _all_doc_array_keys = ('blob', 'embedding')
 
-_default_score_name = 'score'
-_default_evaluation_name = 'evaluation'
-
 
 class Document(ProtoTypeMixin):
     """
@@ -294,14 +291,16 @@ class Document(ProtoTypeMixin):
     def _evaluations_offset_map(self):
         map = defaultdict(int)
         for idx, evaluation in enumerate(self.evaluations):
-            map[evaluation.op_name] = idx
+            if evaluation.op_name not in map:
+                map[evaluation.op_name] = idx
         return map
 
     @property
     def _scores_offset_map(self):
         map = defaultdict(int)
         for idx, score in enumerate(self.scores):
-            map[score.op_name] = idx
+            if score.op_name not in map:
+                map[score.op_name] = idx
         return map
 
     def pop(self, *fields) -> None:
@@ -984,8 +983,9 @@ class Document(ProtoTypeMixin):
 
         :return: the score attached to this document as `:class:NamedScore`
         """
-        if len(self._pb_body.scores) > 0:
-            return NamedScore(self._pb_body.scores[0])
+        if len(self._pb_body.scores) == 0:
+            self._pb_body.scores.add()
+        return NamedScore(self._pb_body.scores[0])
 
     @score.setter
     def score(
@@ -1000,8 +1000,6 @@ class Document(ProtoTypeMixin):
         if len(self._pb_body.scores) == 0:
             self._pb_body.scores.add()
         self._set_score(0, value)
-        if not self.score.op_name:
-            self.score.op_name = _default_score_name
 
     def set_score(
         self,
@@ -1012,6 +1010,9 @@ class Document(ProtoTypeMixin):
 
         You can assign a scalar variable directly.
 
+        .. warning::
+            If multiple `scores` exist with op_name equals to `name`, then the first one is updated
+
         :param name: the operation name of the score to be added
         :param value: the value to set the score of the Document from
         """
@@ -1020,6 +1021,20 @@ class Document(ProtoTypeMixin):
             self._pb_body.scores.add()
         self._set_score(idx, value)
         self._pb_body.scores[idx].op_name = name
+
+    def add_score(
+        self,
+        value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic],
+    ):
+        """Add a score to the document scores.
+
+        You can assign a scalar variable directly.
+
+        :param value: the value to set the score of the Document from
+        """
+        idx = len(self.scores)
+        self._pb_body.scores.add()
+        self._set_score(idx, value)
 
     def get_score(self, name: str) -> Optional['NamedScore']:
         """Get the score of the document for a given metric name.
@@ -1064,8 +1079,9 @@ class Document(ProtoTypeMixin):
 
         :return: the evaluation attached to this document as `:class:NamedScore`
         """
-        if len(self._pb_body.evaluations) > 0:
-            return NamedScore(self._pb_body.evaluations[0])
+        if len(self._pb_body.evaluations) == 0:
+            self._pb_body.evaluations.add()
+        return NamedScore(self._pb_body.evaluations[0])
 
     @evaluation.setter
     def evaluation(
@@ -1080,8 +1096,6 @@ class Document(ProtoTypeMixin):
         if len(self._pb_body.evaluations) == 0:
             self._pb_body.evaluations.add()
         self._set_evaluation(0, value)
-        if not self.evaluation.op_name:
-            self.evaluation.op_name = _default_evaluation_name
 
     def set_evaluation(
         self,
@@ -1092,6 +1106,9 @@ class Document(ProtoTypeMixin):
 
         You can assign a scalar variable directly.
 
+        .. warning::
+            If multiple `evaluations` exist with op_name equals to `name`, then the first one is updated
+
         :param name: the operation name of the evaluation to be added
         :param value: the value to set the evaluation of the Document from
         """
@@ -1100,6 +1117,20 @@ class Document(ProtoTypeMixin):
             self._pb_body.evaluations.add()
         self._set_evaluation(idx, value)
         self._pb_body.evaluations[idx].op_name = name
+
+    def add_evaluation(
+        self,
+        value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic],
+    ):
+        """Add an evaluation to the document evaluations.
+
+        You can assign a scalar variable directly.
+
+        :param value: the value to set the evaluation of the Document from
+        """
+        idx = len(self.evaluations)
+        self._pb_body.evaluations.add()
+        self._set_evaluation(idx, value)
 
     def get_evaluation(self, name: str) -> Optional['NamedScore']:
         """Get the evaluation of the document for a given evaluation name.

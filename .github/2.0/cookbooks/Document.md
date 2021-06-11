@@ -829,10 +829,8 @@ This can also be used to access nested attributes of repeated `Document` fields 
 from jina import Document
 
 doc = Document()
-doc.scores.add()
-doc.scores[0].value = 50
-doc.scores.add()
-doc.scores[1].value = 100
+doc.add_score(50)
+doc.add_score(100)
 doc.get_attributes('scores__0__value', 'scores__1__value')
 ```
 

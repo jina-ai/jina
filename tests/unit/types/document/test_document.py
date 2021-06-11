@@ -288,13 +288,22 @@ def test_doc_score():
     assert doc.score.ref_id == doc.id
 
 
+def test_doc_score_by_getter():
+    with Document() as doc:
+        doc.text = 'text'
+
+    doc.score.value = 50
+    assert doc.score.value == 50
+    assert doc.score.op_name == ''
+
+
 def test_doc_score_by_value():
     with Document() as doc:
         doc.text = 'text'
 
     doc.score = 50
     assert doc.score.value == 50
-    assert doc.score.op_name == 'score'
+    assert doc.score.op_name == ''
 
 
 def test_doc_score_by_name():
@@ -313,6 +322,31 @@ def test_doc_score_by_name():
     assert doc.scores[1].op_name == 'euclidean'
 
 
+def test_doc_scores_add():
+    from jina import Document
+
+    doc = Document()
+    doc.add_score(50)
+    doc.add_score(100)
+    assert doc.scores[0].value == 50
+    assert doc.scores[1].value == 100
+
+
+def test_doc_scores_same_op_name_update_only_first():
+    from jina import Document
+
+    doc = Document()
+    doc.add_score(50)
+    doc.add_score(100)
+    assert doc.scores[0].value == 50
+    assert doc.scores[1].value == 100
+    doc.scores[0].op_name = 'score'
+    doc.scores[1].op_name = 'score'
+    doc.set_score('score', 200)
+    assert doc.scores[0].value == 200
+    assert doc.scores[1].value == 100
+
+
 def test_doc_evaluation():
     from jina.types.score import NamedScore
 
@@ -327,13 +361,22 @@ def test_doc_evaluation():
     assert doc.evaluation.ref_id == doc.id
 
 
+def test_doc_evaluation_by_getter():
+    with Document() as doc:
+        doc.text = 'text'
+
+    doc.evaluation.value = 50
+    assert doc.evaluation.value == 50
+    assert doc.evaluation.op_name == ''
+
+
 def test_doc_evaluation_by_value():
     with Document() as doc:
         doc.text = 'text'
 
     doc.evaluation = 50
     assert doc.evaluation.value == 50
-    assert doc.evaluation.op_name == 'evaluation'
+    assert doc.evaluation.op_name == ''
 
 
 def test_doc_evaluation_by_name():
@@ -350,6 +393,31 @@ def test_doc_evaluation_by_name():
 
     assert doc.evaluations[1].value == 1.0
     assert doc.evaluations[1].op_name == 'recall'
+
+
+def test_doc_evaluations_add():
+    from jina import Document
+
+    doc = Document()
+    doc.add_evaluation(50)
+    doc.add_evaluation(100)
+    assert doc.evaluations[0].value == 50
+    assert doc.evaluations[1].value == 100
+
+
+def test_doc_evaluations_same_op_name_update_only_first():
+    from jina import Document
+
+    doc = Document()
+    doc.add_evaluation(50)
+    doc.add_evaluation(100)
+    assert doc.evaluations[0].value == 50
+    assert doc.evaluations[1].value == 100
+    doc.evaluations[0].op_name = 'eval'
+    doc.evaluations[1].op_name = 'eval'
+    doc.set_evaluation('eval', 200)
+    assert doc.evaluations[0].value == 200
+    assert doc.evaluations[1].value == 100
 
 
 def test_content_hash_not_dependent_on_chunks_or_matches():
