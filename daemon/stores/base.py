@@ -127,11 +127,11 @@ class BaseStore(MutableMapping):
         else:
             return cls()
 
-    def clear(self) -> None:
+    def clear(self, **kwargs) -> None:
         """delete all the objects in the store"""
 
         for k in self.status.items.keys():
-            self.delete(id=k, workspace=True)
+            self.delete(id=k, workspace=True, **kwargs)
 
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """

@@ -1,10 +1,11 @@
 import os
+import time
 
 import numpy as np
 import pytest
 
 from jina import Flow, Client, Document
-from ..helpers import create_workspace, wait_for_workspace
+from ..helpers import create_workspace, wait_for_workspace, delete_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -90,8 +91,11 @@ def test_custom_project(mocker):
     response_mock = mocker.Mock()
 
     workspace_id = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
+    # we need to wait for the flow to start in the custom project
+    time.sleep(1.0)
     assert wait_for_workspace(workspace_id)
     Client(host='0.0.0.0', port_expose=42860, show_progress=True).index(
         inputs=(Document(text='hello') for _ in range(NUM_DOCS)), on_done=response_mock
     )
     response_mock.assert_called()
+    delete_workspace(workspace_id)

@@ -73,17 +73,17 @@ class WorkspaceStore(BaseStore):
 
         if container:
             container_id = self[id].metadata.container_id
-            if not container_id:
-                raise ValueError(
-                    f'There is no container to kill for store {colored(str(id), "cyan")}'
+            if container_id:
+                Dockerizer.rm_container(container_id)
+                self._logger.success(
+                    f'{colored(container_id, "cyan")} is killed and removed from the store.'
                 )
-
-            Dockerizer.rm_container(container_id)
-            self._logger.success(
-                f'{colored(container_id, "cyan")} is killed and removed from the store.'
-            )
-            self[id].metadata.container_id = None
-            deleted_entities.append(container_id)
+                self[id].metadata.container_id = None
+                deleted_entities.append(container_id)
+            else:
+                self._logger.info(
+                    f'No container to delete for store {colored(str(id), "cyan")}'
+                )
 
         # TODO: add network and file deletion
         if everything:

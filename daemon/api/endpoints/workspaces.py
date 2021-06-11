@@ -24,7 +24,7 @@ async def _get_items():
     summary='Deleting all Workspaces',
 )
 async def _clear_all():
-    store.clear()
+    store.clear(everything=True, network=True, container=True, files=True)
 
 
 @router.delete(
