@@ -195,10 +195,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: returns the workspace of the shard of this Executor.
         """
-        if getattr(self.runtime_args, 'workspace', None):
-            complete_workspace = os.path.join(
-                self.runtime_args.workspace, self.metas.name
-            )
+        if getattr(self.metas, 'workspace', None):
+            complete_workspace = os.path.join(self.metas.workspace, self.metas.name)
             replica_id = getattr(self.runtime_args, 'replica_id', None)
             pea_id = getattr(self.runtime_args, 'pea_id', None)
             if replica_id is not None and replica_id != -1:
@@ -206,8 +204,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if pea_id is not None and pea_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(pea_id))
             return os.path.abspath(complete_workspace)
-        elif self.metas.workspace is not None:
-            return os.path.abspath(self.metas.workspace)
         else:
             raise Exception('can not find metas.workspace or runtime_args.workspace')
 
