@@ -62,8 +62,10 @@ class HubIO:
                 md5_digest = md5_hash.hexdigest()
 
             # upload the archived package
+            meta, env = get_full_version()
             payload = {
-                "meta": get_full_version(),
+                'meta': meta,
+                'env': env,
                 'is_public': is_public,
                 'md5sum': md5_digest,
                 'force': self.args.force,
