@@ -24,7 +24,7 @@ class Segmenter(Executor):
 
 
 class TextEncoder(Executor):
-    """Transformer executor class """
+    """Transformer executor class"""
 
     def __init__(
         self,
@@ -270,7 +270,10 @@ class WeightedRanker(Executor):
         self, docs_matrix: List['DocumentArray'], parameters: Dict, **kwargs
     ) -> 'DocumentArray':
         """
-        :param docs: the doc which gets bubbled up matches
+        :param docs_matrix: list of :class:`DocumentArray` on multiple requests to
+          get bubbled up matches.
+        :param parameters: the parameters passed into the ranker, in this case stores :attr`top_k`
+          to filter k results based on score.
         :param kwargs: not used (kept to maintain interface)
         """
 
