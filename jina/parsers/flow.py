@@ -34,10 +34,11 @@ def mixin_flow_features_parser(parser):
     )
 
 
-def set_flow_parser(parser=None):
+def set_flow_parser(parser=None, with_identity=False):
     """Set the parser for the flow
 
     :param parser: an (optional) initial parser to build upon
+    :param with_identity: if to include identity in the parser
     :return: the parser
     """
     from .peapods.base import mixin_base_ppr_parser
@@ -47,7 +48,7 @@ def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    mixin_base_ppr_parser(parser, with_identity=False)
+    mixin_base_ppr_parser(parser, with_identity=with_identity)
 
     parser.set_defaults(workspace='./')
 

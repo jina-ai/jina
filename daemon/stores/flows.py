@@ -11,10 +11,11 @@ class FlowStore(ContainerStore):
     def _add(self, **kwargs):
         """Sends `post` request to `mini-jinad` to create a Flow."""
         try:
-            params = {'filename': self.params['uses'], 'id': self.params['identity']}
-            if 'port_expose' in kwargs:
-                params.update({'port_expose': kwargs['port_expose']})
-
+            params = {
+                'filename': self.params['uses'],
+                'id': self.params['identity'],
+                'port_expose': self.params['port_expose'],
+            }
             r = requests.post(url=f'{self.host}/{self._kind}', params=params)
             if r.status_code != requests.codes.created:
                 raise Runtime400Exception(

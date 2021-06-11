@@ -3,7 +3,7 @@ import os
 import docker
 import requests
 
-from tests.distributed.helpers import create_workspace, wait_for_workspace
+from ..helpers import create_workspace, wait_for_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

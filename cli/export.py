@@ -39,14 +39,14 @@ def api_to_dict():
     return all_d
 
 
-def _export_parser_args(parser_fn, type_as_str: bool = False):
+def _export_parser_args(parser_fn, type_as_str: bool = False, **kwargs):
     from jina.enums import BetterEnum
     from argparse import _StoreAction, _StoreTrueAction
     from jina.parsers.helper import KVAppendAction, _SHOW_ALL_ARGS
 
     port_attr = ('help', 'choices', 'default', 'required', 'option_strings', 'dest')
-    parser = parser_fn()
-    parser2 = parser_fn()
+    parser = parser_fn(**kwargs)
+    parser2 = parser_fn(**kwargs)
     random_dest = set()
     for a, b in zip(parser._actions, parser2._actions):
         if a.default != b.default:

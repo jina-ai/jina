@@ -86,9 +86,7 @@ class PartialFlowStore(PartialStore):
     _kind = 'flow'
     _status_model = PartialStoreStatus
 
-    def add(
-        self, filename: str, id: DaemonID, port_expose: Optional[int]
-    ) -> 'DaemonID':
+    def add(self, filename: str, id: DaemonID, port_expose: int) -> 'DaemonID':
         """Starts a Flow in `mini-jinad`.
 
         :return: DaemonID of the pea object
@@ -99,9 +97,8 @@ class PartialFlowStore(PartialStore):
             self.flow: Flow = Flow.load_config(y_spec)
             self.flow.identity = id.jid
             self.flow.workspace_id = jinad_args.workspace_id
-            # If port_expose is not defined in yaml source and passed by main jinad
-            if 'port_expose' not in self.flow._common_kwargs and port_expose:
-                self.flow._common_kwargs['port_expose'] = port_expose
+            # Main jinad sets Flow's port_expose so that it is exposed before starting the container.
+            self.flow.args.port_expose = port_expose
             self.flow.start()
         except Exception as e:
             self._logger.error(f'{e!r}')

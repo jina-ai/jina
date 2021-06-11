@@ -64,7 +64,6 @@ class ContainerStore(BaseStore):
         workspace_id: DaemonID,
         params: 'BaseModel',
         ports: Dict,
-        **kwargs,
     ):
         try:
             from . import workspace_store
@@ -91,7 +90,7 @@ class ContainerStore(BaseStore):
                 raise Runtime400Exception(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {self.host} after 10secs'
                 )
-            self._add(**kwargs)
+            self._add()
         except Exception as e:
             self._logger.error(f'{e}')
             raise

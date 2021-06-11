@@ -3,16 +3,25 @@ import os
 import numpy as np
 import pytest
 
-from jina import Flow, Document
+from jina import Flow, Client, Document
+from ..helpers import create_workspace, wait_for_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+"""
+Run below commands for local tests
+docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
+docker run --add-host host.docker.internal:host-gateway \
+    --name jinad -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad \
+    -p 8000:8000 -d jinaai/jina:test-daemon
+"""
 
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
-@pytest.mark.parametrize('silent_log', [True, False])
-@pytest.mark.parametrize('parallels', [1, 2])
+@pytest.mark.parametrize('silent_log', [False])
+@pytest.mark.parametrize('parallels', [1])
 def test_upload_simple(silent_log, parallels, mocker):
     response_mock = mocker.Mock()
     f = (
@@ -35,7 +44,7 @@ def test_upload_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1, 2])
+@pytest.mark.parametrize('parallels', [1])
 def test_upload_multiple_workspaces(parallels, mocker):
     response_mock = mocker.Mock()
     encoder_workspace = 'tf_encoder_ws'
@@ -74,4 +83,15 @@ def test_upload_multiple_workspaces(parallels, mocker):
             inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
             on_done=response_mock,
         )
+    response_mock.assert_called()
+
+
+def test_custom_project(mocker):
+    response_mock = mocker.Mock()
+
+    workspace_id = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
+    assert wait_for_workspace(workspace_id)
+    Client(host='0.0.0.0', port_expose=42860, show_progress=True).index(
+        inputs=(Document(text='hello') for _ in range(NUM_DOCS)), on_done=response_mock
+    )
     response_mock.assert_called()

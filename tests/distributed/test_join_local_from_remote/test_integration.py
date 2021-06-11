@@ -56,23 +56,21 @@ def test_flow(docker_compose, doc_to_index, client_instance, mocker):
         assert resp.data.docs[1].text == 'test'
 
     mock = mocker.Mock()
-    workspace_id = create_workspace(
-        filepaths=[flow_yaml], dirpath=os.path.join(cur_dir, 'pods')
-    )
+    workspace_id = create_workspace(filepaths=[flow_yaml], dirpath=pod_dir)
     assert wait_for_workspace(workspace_id)
     flow_id = create_flow(
         workspace_id=workspace_id,
-        flow_yaml='flow.yml',
+        filename='flow.yml',
     )
 
     client_instance.search(inputs=[doc_to_index], on_done=mock)
 
-    assert_request(method='get', url=f'http://localhost:8000/flows/{flow_id}')
+    assert_request(method='get', url=f'http://{JINAD_HOST}:8000/flows/{flow_id}')
 
     assert_request(
         method='delete',
         url=f'http://{JINAD_HOST}:8000/flows/{flow_id}',
-        payload={'workspace': False},
+        # payload={'workspace': False},
     )
 
     mock.assert_called_once()

@@ -17,7 +17,7 @@ ARG PIP_REQUIREMENTS
 #     gem install fluentd --no-doc
 
 RUN if [ -n "$PIP_REQUIREMENTS" ]; then \
-        echo -e "Installing ${PIP_REQUIREMENTS}"; \
+        echo "Installing ${PIP_REQUIREMENTS}"; \
         for package in ${PIP_REQUIREMENTS}; do \
             pip install "${package}"; \
         done; \

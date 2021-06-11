@@ -19,29 +19,13 @@ class FlowDepends:
     def __init__(self, workspace_id: DaemonID, filename: str) -> None:
         self.workspace_id = workspace_id
         self.filename = filename
-        self.localpath = self.validate()
         self.id = DaemonID('jflow')
         self.params = FlowModel(
             uses=self.filename, workspace_id=self.workspace_id.jid, identity=self.id
         )
+        self.validate()
 
-    @cached_property
-    def port_expose(self):
-        """
-        `port_expose` for gateway needs to be set before starting the container.
-        Flow yaml might have `port_expose` set already, if not, set it to random_port
-        """
-        f = Flow.load_config(str(self.localpath))
-        _port_expose = f._common_kwargs.get('port_expose')
-        if not _port_expose:
-            _port_expose = random_port()
-        return _port_expose
-
-    @cached_property
-    def ports(self) -> Dict[str, str]:
-        return {f'{self.port_expose}/tcp': self.port_expose}
-
-    def validate(self) -> Path:
+    def localpath(self) -> Path:
         try:
             return FilePath.validate(
                 Path(get_workspace_path(self.workspace_id, self.filename))
@@ -51,6 +35,19 @@ class FlowDepends:
                 status_code=404,
                 detail=f'File `{self.filename}` not found in workspace `{self.workspace_id}`',
             )
+
+    @cached_property
+    def port_expose(self):
+        """
+        Sets `port_expose` for the Flow started in `mini-jinad`.
+        NOTE: this port needs to be exposed before starting `mini-jinad`, hence set here.
+        """
+        f = Flow.load_config(str(self.localpath()))
+        return f.args.port_expose
+
+    def validate(self):
+        self.params.port_expose = self.port_expose
+        self.ports = {f'{self.port_expose}/tcp': self.port_expose}
 
 
 class PeaDepends:
@@ -62,10 +59,6 @@ class PeaDepends:
         self.params = pea
         self.id = DaemonID('jpea')
         self.validate()
-
-    @property
-    def command(self) -> str:
-        return f'jina {self._kind} {" ".join(ArgNamespace.kwargs2list(self.params.dict(exclude={"log_config"})))}'
 
     @property
     def host_in(self):
