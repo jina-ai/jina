@@ -15,7 +15,11 @@
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-600%2B-blueviolet"></a>
 </p>
 
+<!-- start elevator-pitch -->
+
 Jina allows you to build deep learning-powered search-as-a-service in just minutes.
+
+<!-- end elevator-pitch -->
 
 🌌 **All data type** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
 
@@ -26,6 +30,8 @@ containerizing, distributing, streaming, paralleling, sharding, async scheduling
 
 🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid integration pitfalls with
 fragmented, multi-vendor, generic legacy tools.
+
+
 
 ## Run Quick Demo
 
