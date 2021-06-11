@@ -24,9 +24,6 @@ from .excepts import (
     DockerRunException,
 )
 
-__flow_ready__ = 'Flow is ready to use'
-
-
 if TYPE_CHECKING:
     from .files import DaemonFile
     from docker.models.networks import Network
@@ -227,6 +224,7 @@ class Dockerizer:
     def environment(cls) -> Dict[str, str]:
         return {'JINA_LOG_WORKSPACE': '/workspace/logs', 'JINA_RANDOM_PORTS': 'True'}
 
+    @classmethod
     def remove(cls, id: DaemonID):
         if id.jtype == IDLiterals.JNETWORK:
             cls.rm_network(id)

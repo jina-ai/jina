@@ -17,7 +17,7 @@ async def _get_items():
     return store.status
 
 
-@router.get(path='/arguments', summary='Get all accept arguments of a Pod')
+@router.get(path='/arguments', summary='Get all accepted arguments of a Pod')
 async def _fetch_pod_params():
     return PodModel.schema()['properties']
 
@@ -80,8 +80,3 @@ async def _rolling_update(id: DaemonID, dump_path: str):
         )
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
-
-
-# @router.on_event('shutdown')
-# def _shutdown():
-#     store.reset()

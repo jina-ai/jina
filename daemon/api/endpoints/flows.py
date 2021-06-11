@@ -17,7 +17,7 @@ async def _get_items():
     return store.status
 
 
-@router.get(path='/arguments', summary='Get all accept arguments of a Flow')
+@router.get(path='/arguments', summary='Get all accepted arguments of a Flow')
 async def _fetch_flow_params():
     return FlowModel.schema()['properties']
 

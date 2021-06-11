@@ -17,7 +17,7 @@ async def _get_items():
 
 @router.get(
     path='/arguments',
-    summary='Get all accept arguments of a Pea',
+    summary='Get all accepted arguments of a Pea',
 )
 async def _fetch_pea_params():
     return PeaModel.schema()['properties']

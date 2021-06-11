@@ -14,6 +14,7 @@ class PeaStore(ContainerStore):
                 raise Runtime400Exception(
                     f'{self._kind.title()} creation failed: {r.json()}'
                 )
+            return r.json()
         except requests.exceptions.RequestException as ex:
             self._logger.error(f'{ex!r}')
             raise Runtime400Exception(
@@ -21,6 +22,7 @@ class PeaStore(ContainerStore):
             )
 
     def _update(self):
+        # TODO
         pass
 
     def _delete(self):
