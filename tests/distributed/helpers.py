@@ -45,17 +45,21 @@ def create_workspace(
     dirpath: Optional[str] = None,
     workspace_id: Optional[DaemonID] = None,
     host: str = __default_host__,
-    port: int = 8000
+    port: int = 8000,
 ) -> Optional[str]:
     with ExitStack() as file_stack:
+
         def _to_file_tuple(path):
             return ('files', file_stack.enter_context(open(path, 'rb')))
+
         files_to_upload = set()
         if filepaths:
             files_to_upload.update([_to_file_tuple(filepath) for filepath in filepaths])
         if dirpath:
             for ext in ['*yml', '*yaml', '*py', '*.jinad', 'requirements.txt']:
-                files_to_upload.update([_to_file_tuple(filepath) for filepath in Path(dirpath).rglob(ext)])
+                files_to_upload.update(
+                    [_to_file_tuple(filepath) for filepath in Path(dirpath).rglob(ext)]
+                )
 
         if not files_to_upload:
             print('nothing to upload')
@@ -63,13 +67,21 @@ def create_workspace(
 
         url = _jinad_url(host, port, 'workspaces')
         print(f'will upload files: {files_to_upload} to {url}')
-        r = requests.post(url,
-                          files=list(files_to_upload))
+        r = requests.post(url, files=list(files_to_upload))
         print(f'Checking if the upload is succeeded: {r.json()}')
         assert r.status_code == 201
         json_response = r.json()
         workspace_id = next(iter(json_response))
         return workspace_id
+
+
+def delete_workspace(
+    workspace_id: DaemonID, host: str = __default_host__, port: int = 8000
+) -> Optional[str]:
+    url = _jinad_url(host, port, f'workspaces/{workspace_id}')
+    print(f'will delete workspace {workspace_id}')
+    r = requests.delete(url, params={'everything': True})
+    assert r.status_code == 200
 
 
 def wait_for_workspace(
@@ -85,7 +97,11 @@ def wait_for_workspace(
         except KeyError as e:
             print(f'KeyError: {e!r}')
             return False
-        if state in [WorkspaceState.PENDING, WorkspaceState.CREATING, WorkspaceState.UPDATING]:
+        if state in [
+            WorkspaceState.PENDING,
+            WorkspaceState.CREATING,
+            WorkspaceState.UPDATING,
+        ]:
             print(f'workspace still {state}, sleeping for 2 secs')
             time.sleep(2)
             continue
@@ -101,16 +117,10 @@ def create_flow(
     workspace_id: DaemonID,
     filename: str,
     host: str = __default_host__,
-    port: int = 8000
+    port: int = 8000,
 ) -> str:
     url = _jinad_url(host, port, 'flows')
-    r = requests.post(
-        url,
-        params={
-            'workspace_id': workspace_id,
-            'filename': filename
-        }
-    )
+    r = requests.post(url, params={'workspace_id': workspace_id, 'filename': filename})
     print(f'Checking if the flow creation is succeeded: {r.json()}')
     assert r.status_code == 201
     return r.json()

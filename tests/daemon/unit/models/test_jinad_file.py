@@ -10,11 +10,11 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 @pytest.mark.parametrize(
     'workdir, expected_response',
     [
-        ('good_ws', ('devel', '3.7', '"echo Hello"', [12345, 123456])),
+        ('good_ws', ('devel', '3.7', 'echo Hello', [12345, 12344])),
         ('good_ws_filename', ('gpu', '3.9', '', [12345, 123456])),
         ('good_ws_nofile', ('devel', '3.8', '', [])),
         ('good_ws_emptyfile', ('devel', '3.8', '', [])),
-        ('good_ws_multiple_files', ('devel', '3.7', '"echo Hello"', [12345, 123456])),
+        ('good_ws_multiple_files', ('devel', '3.7', 'echo Hello', [12345, 123456])),
         ('good_ws_wrong_values', ('devel', '3.8', '', [])),
     ],
 )

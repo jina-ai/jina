@@ -1,6 +1,6 @@
 import sys
 from jina import Flow
-from .helper import foo, bar
+from helper import foo, bar
 
 
 def main(port_expose):
