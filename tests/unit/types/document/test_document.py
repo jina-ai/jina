@@ -515,7 +515,7 @@ def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
 
 def test_non_empty_fields():
     d_score = Document(score=NamedScore(value=42))
-    assert d_score.non_empty_fields == ('id', 'score')
+    assert d_score.non_empty_fields == ('id', 'scores')
 
     d = Document()
     assert d.non_empty_fields == ('id',)

@@ -7,6 +7,7 @@ import urllib.parse
 import urllib.request
 import warnings
 from hashlib import blake2b
+from collections import defaultdict
 from typing import (
     Iterable,
     Union,
@@ -83,6 +84,9 @@ _all_mime_types = set(mimetypes.types_map.values())
 
 _all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
 _all_doc_array_keys = ('blob', 'embedding')
+
+_default_score_name = 'score'
+_default_evaluation_name = 'evaluation'
 
 
 class Document(ProtoTypeMixin):
@@ -285,6 +289,20 @@ class Document(ProtoTypeMixin):
             )
         self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
+
+    @property
+    def _evaluations_offset_map(self):
+        map = defaultdict(int)
+        for idx, evaluation in enumerate(self.evaluations):
+            map[evaluation.op_name] = idx
+        return map
+
+    @property
+    def _scores_offset_map(self):
+        map = defaultdict(int)
+        for idx, score in enumerate(self.scores):
+            map[score.op_name] = idx
+        return map
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
@@ -936,13 +954,38 @@ class Document(ProtoTypeMixin):
         """
         self._pb_body.adjacency = value
 
+    def _set_score(
+        self,
+        index: int,
+        value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic],
+    ):
+        """Set a score of the document.
+
+        You can assign a scalar variable directly.
+
+        :param index: the index of the scores list to set the value in
+        :param value: the value to set the score of the Document from
+        """
+        if isinstance(value, jina_pb2.NamedScoreProto):
+            self._pb_body.scores[index].CopyFrom(value)
+        elif isinstance(value, NamedScore):
+            self._pb_body.scores[index].CopyFrom(value._pb_body)
+        elif isinstance(value, (float, int)):
+            self._pb_body.scores[index].value = value
+        elif isinstance(value, np.generic):
+            self._pb_body.scores[index].value = value.item()
+        else:
+            raise TypeError(f'score is in unsupported type {typename(value)}')
+
     @property
     def score(self):
-        """Return the score of the document.
+        """Return the first score of the document scores.
+            This interface is intended to be used in simple cases where a single `score` metric is used.
 
         :return: the score attached to this document as `:class:NamedScore`
         """
-        return NamedScore(self._pb_body.score)
+        if len(self._pb_body.scores) > 0:
+            return NamedScore(self._pb_body.scores[0])
 
     @score.setter
     def score(
@@ -954,16 +997,122 @@ class Document(ProtoTypeMixin):
 
         :param value: the value to set the score of the Document from
         """
+        if len(self._pb_body.scores) == 0:
+            self._pb_body.scores.add()
+        self._set_score(0, value)
+        if not self.score.op_name:
+            self.score.op_name = _default_score_name
+
+    def set_score(
+        self,
+        name: str,
+        value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic],
+    ):
+        """Set the score of the document for a given metric name.
+
+        You can assign a scalar variable directly.
+
+        :param name: the operation name of the score to be added
+        :param value: the value to set the score of the Document from
+        """
+        idx = self._scores_offset_map.get(name, len(self.scores))
+        if idx == len(self.scores):
+            self._pb_body.scores.add()
+        self._set_score(idx, value)
+        self._pb_body.scores[idx].op_name = name
+
+    def get_score(self, name: str) -> Optional['NamedScore']:
+        """Get the score of the document for a given metric name.
+
+        You can assign a scala variable directly.
+
+        .. # noqa: DAR201
+
+        :param name: the operation name of the score to be added
+        """
+        idx = self._scores_offset_map.get(name, None)
+        if idx is not None:
+            return NamedScore(self._pb_body.scores[idx])
+
+    def _set_evaluation(
+        self,
+        index: int,
+        value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic],
+    ):
+        """Set an evaluation of the document.
+
+        You can assign a scalar variable directly.
+
+        :param index: the index of the evaluations list to set the value in
+        :param value: the value to set the evaluation of the Document from
+        """
         if isinstance(value, jina_pb2.NamedScoreProto):
-            self._pb_body.score.CopyFrom(value)
+            self._pb_body.evaluations[index].CopyFrom(value)
         elif isinstance(value, NamedScore):
-            self._pb_body.score.CopyFrom(value._pb_body)
+            self._pb_body.evaluations[index].CopyFrom(value._pb_body)
         elif isinstance(value, (float, int)):
-            self._pb_body.score.value = value
+            self._pb_body.evaluations[index].value = value
         elif isinstance(value, np.generic):
-            self._pb_body.score.value = value.item()
+            self._pb_body.evaluations[index].value = value.item()
         else:
-            raise TypeError(f'score is in unsupported type {typename(value)}')
+            raise TypeError(f'evaluation is in unsupported type {typename(value)}')
+
+    @property
+    def evaluation(self):
+        """Return the first evaluation of the document evaluation.
+            This interface is intended to be used in simple cases where a single `evaluation` metric is used.
+
+        :return: the evaluation attached to this document as `:class:NamedScore`
+        """
+        if len(self._pb_body.evaluations) > 0:
+            return NamedScore(self._pb_body.evaluations[0])
+
+    @score.setter
+    def evaluation(
+        self, value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic]
+    ):
+        """Set the evaluation of the document.
+
+        You can assign a scala variable directly.
+
+        :param value: the value to set the evaluation of the Document from
+        """
+        if len(self._pb_body.evaluations) == 0:
+            self._pb_body.evaluations.add()
+        self._set_evaluation(0, value)
+        if not self.evaluation.op_name:
+            self.evaluation.op_name = _default_evaluation_name
+
+    def set_evaluation(
+        self,
+        name: str,
+        value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic],
+    ):
+        """Set the evaluation of the document for a given evaluation name.
+
+        You can assign a scalar variable directly.
+
+        :param name: the operation name of the evaluation to be added
+        :param value: the value to set the evaluation of the Document from
+        """
+        idx = self._evaluations_offset_map.get(name, len(self.evaluations))
+        if idx == len(self.evaluations):
+            self._pb_body.evaluations.add()
+        self._set_evaluation(idx, value)
+        self._pb_body.evaluations[idx].op_name = name
+
+    def get_evaluation(self, name: str) -> Optional['NamedScore']:
+        """Get the evaluation of the document for a given evaluation name.
+
+        You can assign a scala variable directly.
+
+        .. # noqa: DAR201
+
+        :param name: the operation name of the score to be added
+        """
+        idx = self._evaluations_offset_map.get(name, None)
+        if idx is not None:
+            return NamedScore(self._pb_body.evaluations[idx])
 
     def convert_image_buffer_to_blob(self, color_axis: int = -1):
         """Convert an image buffer to blob
