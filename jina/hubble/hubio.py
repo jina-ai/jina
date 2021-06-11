@@ -74,7 +74,7 @@ class HubIO:
             }
 
             # upload the archived executor to Jina Hub
-            upload_url = HUBBLE_REGISTRY + '/upload'
+            upload_url = HUBBLE_REGISTRY + '/v1/executors/push'
             with TimeContext(f'uploading to {upload_url}', self.logger):
                 resp = requests.post(
                     upload_url, files={'file': content}, data=form_data
