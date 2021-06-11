@@ -288,6 +288,70 @@ def test_doc_score():
     assert doc.score.ref_id == doc.id
 
 
+def test_doc_score_by_value():
+    with Document() as doc:
+        doc.text = 'text'
+
+    doc.score = 50
+    assert doc.score.value == 50
+    assert doc.score.op_name == 'score'
+
+
+def test_doc_score_by_name():
+    with Document() as doc:
+        doc.text = 'text'
+
+    doc.set_score('cosine', 0.5)
+    doc.set_score('euclidean', 1.0)
+    assert doc.score.value == 0.5
+    assert doc.score.op_name == 'cosine'
+
+    assert doc.scores[0].value == 0.5
+    assert doc.scores[0].op_name == 'cosine'
+
+    assert doc.scores[1].value == 1.0
+    assert doc.scores[1].op_name == 'euclidean'
+
+
+def test_doc_evaluation():
+    from jina.types.score import NamedScore
+
+    with Document() as doc:
+        doc.text = 'text'
+
+    evaluation = NamedScore(op_name='operation', value=10.0, ref_id=doc.id)
+    doc.evaluation = evaluation
+
+    assert doc.evaluation.op_name == 'operation'
+    assert doc.evaluation.value == 10.0
+    assert doc.evaluation.ref_id == doc.id
+
+
+def test_doc_evaluation_by_value():
+    with Document() as doc:
+        doc.text = 'text'
+
+    doc.evaluation = 50
+    assert doc.evaluation.value == 50
+    assert doc.evaluation.op_name == 'evaluation'
+
+
+def test_doc_evaluation_by_name():
+    with Document() as doc:
+        doc.text = 'text'
+
+    doc.set_evaluation('precision', 0.5)
+    doc.set_evaluation('recall', 1.0)
+    assert doc.evaluation.value == 0.5
+    assert doc.evaluation.op_name == 'precision'
+
+    assert doc.evaluations[0].value == 0.5
+    assert doc.evaluations[0].op_name == 'precision'
+
+    assert doc.evaluations[1].value == 1.0
+    assert doc.evaluations[1].op_name == 'recall'
+
+
 def test_content_hash_not_dependent_on_chunks_or_matches():
     doc1 = Document()
     doc1.content = 'one'

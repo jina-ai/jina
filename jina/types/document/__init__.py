@@ -1018,6 +1018,7 @@ class Document(ProtoTypeMixin):
         idx = self._scores_offset_map.get(name, len(self.scores))
         if idx == len(self.scores):
             self._pb_body.scores.add()
+        print(f' value {value}')
         self._set_score(idx, value)
         self._pb_body.scores[idx].op_name = name
 
@@ -1067,7 +1068,7 @@ class Document(ProtoTypeMixin):
         if len(self._pb_body.evaluations) > 0:
             return NamedScore(self._pb_body.evaluations[0])
 
-    @score.setter
+    @evaluation.setter
     def evaluation(
         self, value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic]
     ):
