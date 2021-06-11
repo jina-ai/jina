@@ -3,7 +3,7 @@ import os
 import pytest
 
 from jina import Document
-from jina.optimizers import FlowOptimizer, MeanEvaluationCallback
+from jina.optimizers import FlowOptimizer, EvaluationCallback
 from jina.optimizers.flow_runner import SingleFlowRunner
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,7 +44,7 @@ def test_optimizer_single_flow_option1(tmpdir, config):
     opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
         parameter_yaml=os.path.join(cur_dir, 'parameter_pod_choice.yml'),
-        evaluation_callback=MeanEvaluationCallback(),
+        evaluation_callback=EvaluationCallback(),
         workspace_base_dir=str(tmpdir),
         n_trials=10,
     )
@@ -67,7 +67,7 @@ def test_optimizer_single_flow_option2(tmpdir, config):
     opt = FlowOptimizer(
         flow_runner=eval_flow_runner,
         parameter_yaml=os.path.join(cur_dir, 'parameter_pod_choice.yml'),
-        evaluation_callback=MeanEvaluationCallback(),
+        evaluation_callback=EvaluationCallback(),
         workspace_base_dir=str(tmpdir),
         n_trials=20,
     )
