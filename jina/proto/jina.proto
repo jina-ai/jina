@@ -52,7 +52,7 @@ message SparseNdArrayProto {
     // A 1-D tensor of any type and shape [N], which supplies the values for each element in indices.
     DenseNdArrayProto values = 2;
 
-    // A 1-D int64 tensor of shape [ndims], which specifies the dense_shape of the sparse tensor.
+    // A 1-D int64 tensor of shape [ndims], which specifies the shape of the sparse tensor.
     repeated int64 shape = 3;
 }
 

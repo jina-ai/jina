@@ -58,7 +58,7 @@ class BaseSparseNdArray(BaseNdArray):
         """Get the value of protobuf message in :class:`SparseNdArray`."""
         idx = DenseNdArray(self._pb_body.indices).value
         val = DenseNdArray(self._pb_body.values).value
-        shape = self._pb_body.dense_shape
+        shape = self._pb_body.shape
         if idx is not None and val is not None and shape:
             return self.sparse_constructor(idx, val, shape)
 
@@ -68,5 +68,5 @@ class BaseSparseNdArray(BaseNdArray):
         r = self.sparse_parser(value)
         DenseNdArray(self._pb_body.indices).value = r['indices']
         DenseNdArray(self._pb_body.values).value = r['values']
-        self._pb_body.ClearField('dense_shape')
-        self._pb_body.dense_shape.extend(r['shape'])
+        self._pb_body.ClearField('shape')
+        self._pb_body.shape.extend(r['shape'])
