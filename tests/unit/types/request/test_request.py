@@ -5,7 +5,7 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina.types.arrays.document import DocumentArray
-from jina.types.request import Request
+from jina.types.request import Request, Response
 
 
 @pytest.fixture(scope='function')
@@ -89,3 +89,11 @@ def test_access_header(req):
     assert not request.is_used
     request.header
     assert request.is_used
+
+
+def test_as_response(req):
+    request = Request(request=req)
+    response = request.as_response()
+    assert isinstance(response, Response)
+    assert isinstance(response, Request)
+    assert response._pb_body == request._pb_body

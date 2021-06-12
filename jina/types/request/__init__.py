@@ -50,7 +50,9 @@ class Request(ProtoTypeMixin):
 
     def __init__(
         self,
-        request: Optional[Union[bytes, dict, str, 'jina_pb2.RequestProto']] = None,
+        request: Optional[
+            Union[bytes, dict, str, 'jina_pb2.RequestProto', 'Request']
+        ] = None,
         envelope: Optional['jina_pb2.EnvelopeProto'] = None,
         copy: bool = False,
     ):
@@ -76,6 +78,8 @@ class Request(ProtoTypeMixin):
             elif isinstance(request, bytes):
                 self._buffer = request
                 self._pb_body = None
+            elif isinstance(request, Request):
+                self._pb_body = request._pb_body
             elif request is None:
                 # make sure every new request has a request id
                 self._pb_body.request_id = random_identity()
@@ -230,10 +234,10 @@ class Request(ProtoTypeMixin):
         """
         Return a weak reference of this object but as :class:`Response` object. It gives a more
         consistent semantics on the client.
+
+        :return: `self` as an instance of `Response`
         """
-        base_cls = self.__class__
-        base_cls_name = self.__class__.__name__
-        self.__class__ = type(base_cls_name, (base_cls, Response), {})
+        return Response(self)
 
     @property
     def parameters(self) -> Dict:
@@ -253,7 +257,7 @@ class Request(ProtoTypeMixin):
         self._pb_body.parameters.update(value)
 
 
-class Response:
+class Response(Request):
     """
     Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
     :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
