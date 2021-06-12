@@ -1,13 +1,13 @@
 import os
 import shutil
 from collections.abc import Iterable
-from typing import Optional, Union, List
+from typing import Union, List, Optional, Callable
 
 from ..types.document.generators import from_lines
-from ..flow import Flow
 from ..helper import colored
 from ..logging.predefined import default_logger as logger
 from ..jaml import JAMLCompatible
+from .. import Flow
 
 
 class FlowRunner(JAMLCompatible):
@@ -17,7 +17,7 @@ class FlowRunner(JAMLCompatible):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
-        callback=None,
+        callback: Optional[Callable[..., None]] = None,
         **kwargs,
     ):
         """
@@ -95,13 +95,13 @@ class SingleFlowRunner(FlowRunner):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
-        callback=None,
+        callback: Optional[Callable[..., None]] = None,
         **kwargs,
     ):
         """
         Running method of :class:`SingleFlowRunner`.
 
-        :param trial_parameters: parameters need to be tried
+        :param trial_parameters: parameters that need to be tried
         :param workspace: path of workspace
         :param callback: callback function
         :param kwargs: keyword argument
@@ -134,7 +134,7 @@ class MultiFlowRunner(FlowRunner):
         self,
         trial_parameters: dict,
         workspace: str = 'workspace',
-        callback=None,
+        callback: Optional[Callable[..., None]] = None,
         **kwargs,
     ):
         """

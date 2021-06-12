@@ -3,7 +3,7 @@ import os
 import pytest
 
 from jina import Document
-from jina.flow import Flow
+from jina import Flow
 from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

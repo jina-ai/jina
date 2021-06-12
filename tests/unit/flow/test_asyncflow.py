@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pytest
 
-from jina import Document
+from jina import Document, Flow
 from jina.flow.asyncio import AsyncFlow
 from jina.logging.profile import TimeContext
 from jina.types.document.generators import from_ndarray
@@ -38,9 +38,10 @@ def documents(start_index, end_index):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('restful', [False])
-async def test_run_async_flow(restful, mocker):
+@pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
+async def test_run_async_flow(restful, mocker, flow_cls):
     r_val = mocker.Mock()
-    with AsyncFlow(restful=restful).add() as f:
+    with flow_cls(restful=restful, asyncio=True).add() as f:
         async for r in f.index(
             from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
         ):
@@ -73,7 +74,7 @@ async def async_input_function2():
 )
 async def test_run_async_flow_async_input(restful, inputs, mocker):
     r_val = mocker.Mock()
-    with AsyncFlow(restful=restful).add() as f:
+    with AsyncFlow(asyncio=True).add() as f:
         async for r in f.index(inputs, on_done=r_val):
             assert isinstance(r, Response)
     validate_callback(r_val, validate)
@@ -89,7 +90,7 @@ async def run_async_flow_5s(restful):
             print('im called!')
             time.sleep(5)
 
-    with AsyncFlow(restful=restful).add(uses=Wait5s) as f:
+    with Flow(restful=restful, asyncio=True).add(uses=Wait5s) as f:
         async for r in f.index(
             from_ndarray(np.random.random([num_docs, 4])),
             on_done=validate,
@@ -137,8 +138,11 @@ async def test_run_async_flow_other_task_concurrent(restful):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('return_results', [False])
 @pytest.mark.parametrize('restful', [False])
-async def test_return_results_async_flow(return_results, restful):
-    with AsyncFlow(restful=restful, return_results=return_results).add() as f:
+@pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
+async def test_return_results_async_flow(return_results, restful, flow_cls):
+    with flow_cls(
+        restful=restful, asyncio=True, return_results=return_results
+    ).add() as f:
         async for r in f.index(from_ndarray(np.random.random([10, 2]))):
             assert isinstance(r, Response)
 
@@ -147,14 +151,20 @@ async def test_return_results_async_flow(return_results, restful):
 @pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('restful', [False])
 @pytest.mark.parametrize('flow_api', ['delete', 'index', 'update', 'search'])
-async def test_return_results_async_flow_crud(return_results, restful, flow_api):
-    with AsyncFlow(restful=restful, return_results=return_results).add() as f:
+@pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
+async def test_return_results_async_flow_crud(
+    return_results, restful, flow_api, flow_cls
+):
+    with flow_cls(
+        restful=restful, asyncio=True, return_results=return_results
+    ).add() as f:
         async for r in getattr(f, flow_api)(documents(0, 10)):
             assert isinstance(r, Response)
 
 
 @pytest.mark.asyncio
-async def test_async_flow_empty_data():
+@pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
+async def test_async_flow_empty_data(flow_cls):
     from jina import Executor, requests
 
     class MyExec(Executor):
@@ -162,6 +172,6 @@ async def test_async_flow_empty_data():
         def foo(self, parameters, **kwargs):
             assert parameters['hello'] == 'world'
 
-    with AsyncFlow().add(uses=MyExec) as f:
+    with flow_cls(asyncio=True).add(uses=MyExec) as f:
         async for r in f.post('/hello', parameters={'hello': 'world'}):
             assert isinstance(r, Response)

@@ -140,33 +140,10 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
-def call_obj_fn(obj, fn: str):
-    """
-    Get a named attribute from an object; getattr(obj, 'fn') is equivalent to obj.fn.
-
-    :param obj: Target object.
-    :param fn: Desired attribute.
-    """
-    if obj is not None and hasattr(obj, fn):
-        getattr(obj, fn)()
-
-
-def touch_dir(base_dir: str) -> None:
-    """
-    Create a directory from given path if it doesn't exist.
-
-    :param base_dir: Path of target path.
-    """
-    if not os.path.exists(base_dir):
-        os.makedirs(base_dir)
-
-
 def batch_iterator(
     data: Iterable[Any],
     batch_size: int,
     axis: int = 0,
-    yield_slice: bool = False,
-    yield_dict: bool = False,
 ) -> Iterator[Any]:
     """
     Get an iterator of batches of data.
@@ -174,14 +151,12 @@ def batch_iterator(
     For example:
     .. highlight:: python
     .. code-block:: python
-            for batch in batch_iterator(data, batch_size, split_over_axis, yield_slice=yield_slice):
+            for req in batch_iterator(data, batch_size, split_over_axis):
                 # Do something with batch
 
     :param data: Data source.
     :param batch_size: Size of one batch.
     :param axis: Determine which axis to iterate for np.ndarray data.
-    :param yield_slice: Return tuple type of data if True else return np.ndarray type.
-    :param yield_dict: Return dict type of data if True else return tuple type.
     :yield: data
     :return: An Iterator of batch data.
     """
@@ -195,18 +170,12 @@ def batch_iterator(
         _d = data.ndim
         sl = [slice(None)] * _d
         if batch_size >= _l:
-            if yield_slice:
-                yield tuple(sl)
-            else:
-                yield data
+            yield data
             return
         for start in range(0, _l, batch_size):
             end = min(_l, start + batch_size)
             sl[axis] = slice(start, end)
-            if yield_slice:
-                yield tuple(sl)
-            else:
-                yield data[tuple(sl)]
+            yield data[tuple(sl)]
     elif isinstance(data, Sequence):
         if batch_size >= len(data):
             yield data
@@ -216,10 +185,7 @@ def batch_iterator(
     elif isinstance(data, Iterable):
         # as iterator, there is no way to know the length of it
         while True:
-            if yield_dict:
-                chunk = dict(islice(data, batch_size))
-            else:
-                chunk = tuple(islice(data, batch_size))
+            chunk = tuple(islice(data, batch_size))
             if not chunk:
                 return
             yield chunk
@@ -703,36 +669,6 @@ class ArgNamespace:
         return p_args
 
     @staticmethod
-    def get_parsed_args(
-        kwargs: Dict[str, Union[str, int, bool]], parser: ArgumentParser
-    ) -> Tuple[List[str], Namespace, List[Any]]:
-        """
-        Get all parsed args info in a dict.
-
-        :param kwargs: dictionary of key-values to be converted
-        :param parser: the parser for building kwargs into a namespace
-        :return: argument namespace, positional arguments and unknown arguments
-        """
-        args = ArgNamespace.kwargs2list(kwargs)
-        try:
-            p_args, unknown_args = parser.parse_known_args(args)
-            if unknown_args:
-                from jina.logging.predefined import default_logger
-
-                default_logger.debug(
-                    f'parser {typename(parser)} can not '
-                    f'recognize the following args: {unknown_args}, '
-                    f'they are ignored. if you are using them from a global args (e.g. Flow), '
-                    f'then please ignore this message'
-                )
-        except SystemExit:
-            raise ValueError(
-                f'bad arguments "{args}" with parser {parser}, '
-                'you may want to double check your args '
-            )
-        return args, p_args, unknown_args
-
-    @staticmethod
     def get_non_defaults_args(
         args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
     ) -> Dict:
@@ -801,7 +737,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     """
     from . import __version__, __proto_version__, __jina_env__, __resources_path__
     from google.protobuf.internal import api_implementation
-    import os, zmq, numpy, google.protobuf, grpc, yaml
+    import os, grpc, zmq, numpy, google.protobuf, yaml
     from grpc import _grpcio_metadata
     import platform
     from jina.logging.predefined import default_logger
@@ -1103,7 +1039,7 @@ def run_async(func, *args, **kwargs):
             raise RuntimeError(
                 'you have an eventloop running but not using Jupyter/ipython, '
                 'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use AsyncClient/AsyncFlow instead of Client/Flow. If not, then '
+                'may want to use Clien/Flow(asyncio=True). If not, then '
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
@@ -1119,43 +1055,6 @@ def slugify(value):
     """
     s = str(value).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
-
-
-@contextmanager
-def change_cwd(path):
-    """
-    Change the current working dir to ``path`` in a context and set it back to the original one when leaves the context.
-    Yields nothing
-
-    :param path: Target path.
-    :yields: nothing
-    """
-    curdir = os.getcwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(curdir)
-
-
-@contextmanager
-def change_env(key, val):
-    """
-    Change the environment of ``key`` to ``val`` in a context and set it back to the original one when leaves the context.
-
-    :param key: Old environment variable.
-    :param val: New environment variable.
-    :yields: nothing
-    """
-    old_var = os.environ.get(key, None)
-    os.environ[key] = val
-    try:
-        yield
-    finally:
-        if old_var:
-            os.environ[key] = old_var
-        else:
-            os.environ.pop(key)
 
 
 def is_yaml_filepath(val) -> bool:
@@ -1221,30 +1120,6 @@ def find_request_binding(target):
     V.visit_FunctionDef = visit_function_def
     V.visit(compile(inspect.getsource(target), '?', 'exec', ast.PyCF_ONLY_AST))
     return res
-
-
-def _canonical_request_name(req_name: str):
-    """Return the canonical name of a request
-
-    :param req_name: the original request name
-    :return: canonical form of the request
-    """
-    if req_name.startswith('/'):
-        # new data request
-        return f'data://{req_name}'
-    else:
-        # legacy request type
-        return req_name.lower().replace('request', '')
-
-
-def physical_size(directory: str) -> int:
-    """Return the size of the given directory in bytes
-
-    :param directory: directory as :str:
-    :return: byte size of the given directory
-    """
-    root_directory = Path(directory)
-    return sum(f.stat().st_size for f in root_directory.glob('**/*') if f.is_file())
 
 
 def dunder_get(_dict: Any, key: str) -> Any:

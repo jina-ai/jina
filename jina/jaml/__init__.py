@@ -270,6 +270,10 @@ class JAML:
                 # "root" context is now the global namespace
                 # "this" context is now the current node namespace
                 v = v.format(root=expand_map, this=p, ENV=env_map)
+            except AttributeError as ex:
+                raise AttributeError(
+                    'variable replacement is failed, please check your YAML file.'
+                ) from ex
             except KeyError:
                 pass
 
@@ -445,7 +449,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         *,
         allow_py_modules: bool = True,
         substitute: bool = True,
-        context: Dict[str, Any] = None,
+        context: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -515,13 +519,13 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     no_tag_yml,
                     extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
                 )
-            from ..flow import BaseFlow
+            from ..flow.base import Flow
 
-            if issubclass(cls, BaseFlow):
+            if issubclass(cls, Flow):
                 tag_yml = JAML.unescape(
                     JAML.dump(no_tag_yml),
                     include_unknown_tags=False,
-                    jtype_whitelist=('Flow', 'AsyncFlow'),
+                    jtype_whitelist=('Flow',),
                 )
             else:
                 # revert yaml's tag and load again, this time with substitution

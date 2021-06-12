@@ -1,4 +1,4 @@
-from jina.flow import Flow
+from jina import Flow
 from jina import Document, Executor, requests
 
 

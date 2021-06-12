@@ -604,6 +604,22 @@ The quote mark represents the explicit async when using `AsyncFlow`.
 While synchronous from outside, `Flow` also runs asynchronously under the hood: it manages the eventloop(s) for
 scheduling the jobs. If the user wants more control over the eventloop, then `AsyncFlow` can be used.
 
+To create an `AsyncFlow`, simply
+
+```python
+from jina import AsyncFlow
+
+f = AsyncFlow()
+```
+
+There is also a sugary syntax `Flow(asyncio=True)` for initiating an `AsyncFlow` object.
+
+```python
+from jina import Flow
+
+f = Flow(asyncio=True)
+```
+
 Unlike `Flow`, `AsyncFlow` accepts input and output functions
 as [async generators](https://www.python.org/dev/peps/pep-0525/). This is useful when your data sources involve other
 asynchronous libraries (e.g. motor for MongoDB):
@@ -631,7 +647,7 @@ with AsyncFlow().add() as f:
 import time
 import asyncio
 
-from jina import AsyncFlow, Document, Executor, requests
+from jina import AsyncFlow, Executor, requests
 
 
 class HeavyWork(Executor):
@@ -662,7 +678,6 @@ if __name__ == '__main__':
 ```
 
 `AsyncFlow` is very useful when using Jina inside a Jupyter Notebook, where it can run out-of-the-box.
-
 
 
 ## Flow as a Service
@@ -717,7 +732,7 @@ c.post('/')
 ```
 
 ```text
-         Client@27219[S]:connected to the gateway at 192.168.1.14:12345!
+         GRPCClient@27219[S]:connected to the gateway at 192.168.1.14:12345!
   |█                   | 📃    100 ⏱️ 0.0s 🐎 26690.1/s      1   requests takes 0 seconds (0.00s)
 	✅ done in ⏱ 0 seconds 🐎 24854.8/s
 ```
@@ -834,17 +849,17 @@ When use `curl`, make sure to pass the `-N/--no-buffer` flag.
 
 ### Python Client with REST Request
 
-In some case when `restful=True`, you may still need a Python client to query the server for debugging. You can use `WebsocketClient` in this case.
+In some case when `restful=True`, you may still need a Python client to query the server for debugging. You can use `Client` with an additional parameter `restful` in this case.
 
 ```python
-from jina.clients import WebSocketClient
+from jina import Client
 
-c = WebSocketClient(host='192.168.1.14', port_expose=12345)
+c = Client(host='192.168.1.14', port_expose=12345, restful=True)
 c.post('/')
 ```
 
 ```text
-WebSocketClient@27622[S]:Connected to the gateway at 192.168.1.14:12345
+         WebSocketClient@27622[S]:Connected to the gateway at 192.168.1.14:12345
   |█                   | 📃    100 ⏱️ 0.0s 🐎 19476.6/s      1   requests takes 0 seconds (0.00s)
 	✅ done in ⏱ 0 seconds 🐎 18578.9/s
 ```

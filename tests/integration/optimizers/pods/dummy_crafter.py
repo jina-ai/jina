@@ -1,5 +1,3 @@
-from typing import Dict
-
 from jina import Executor, requests
 
 from jina.optimizers.parameters import IntegerParameter
@@ -49,7 +47,7 @@ class DummyCrafter(Executor):
         )
 
     @requests
-    def craft(self, docs, *args, **kwargs) -> Dict:
+    def craft(self, docs, *args, **kwargs):
         for doc in docs:
             if not self.good_params:
                 doc.text = ''

@@ -48,7 +48,7 @@ class GraphDocument(Document):
         super().__init__(document=document, copy=copy, **kwargs)
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
-        }  # dangerous because document is stateless, try to work only with proto,
+        }  # dangerous because document is stateless, try to work only with proto
 
     @staticmethod
     def _check_installed_array_packages():
@@ -59,7 +59,7 @@ class GraphDocument(Document):
             with ImportExtensions(
                 required=True,
                 pkg_name='scipy',
-                help_text=f'GraphDocument needs scipy ',
+                help_text=f'GraphDocument requires scipy to be installed for sparse matrix support.',
             ):
                 import scipy
 
@@ -72,7 +72,7 @@ class GraphDocument(Document):
         :param node: the node to be added to the graph
         """
         if node.id in self._node_id_to_offset:
-            default_logger.warning(f"Document {node.id} is already a node of the graph")
+            default_logger.debug(f'Document {node.id} is already a node of the graph')
             return
 
         self._node_id_to_offset[node.id] = len(self.nodes)
@@ -87,8 +87,8 @@ class GraphDocument(Document):
         from scipy.sparse import coo_matrix
 
         if node.id not in self._node_id_to_offset:
-            default_logger.warning(
-                f"Trying to remove document {node.id} from the graph while is not a node of the graph"
+            default_logger.debug(
+                f'Trying to remove document {node.id} from the graph while is not a node of the graph'
             )
             return
 
@@ -101,7 +101,7 @@ class GraphDocument(Document):
             ):
                 if row.item() == offset or col.item() == offset:
                     edge_features_keys = (
-                        f"{self.nodes[row.item()].id}-{self.nodes[col.item()]}"
+                        f'{self.nodes[row.item()].id}-{self.nodes[col.item()]}'
                     )
                     edges_to_remove.append((edge_id, edge_features_keys))
 
@@ -117,7 +117,9 @@ class GraphDocument(Document):
                         row[i] = row[i] - 1
                     if self.adjacency.col[i] > offset:
                         col[i] = col[i] - 1
-                self.adjacency = coo_matrix((data, (row, col)))
+                SparseNdArray(
+                    self._pb_body.graph.adjacency, sp_format='coo'
+                ).value = coo_matrix((data, (row, col)))
 
         del self.nodes[offset]
         self._node_id_to_offset = {
@@ -136,8 +138,8 @@ class GraphDocument(Document):
         """
         from scipy.sparse import coo_matrix
 
-        for doc in [doc1, doc2]:
-            self.add_node(doc)
+        self.add_node(doc1)
+        self.add_node(doc2)
 
         current_adjacency = self.adjacency
         doc1_node_offset = self._node_id_to_offset[doc1.id]
@@ -157,9 +159,11 @@ class GraphDocument(Document):
             if current_adjacency is not None
             else np.array([1])
         )
-        self.adjacency = coo_matrix((data, (row, col)))
+        SparseNdArray(
+            self._pb_body.graph.adjacency, sp_format='coo'
+        ).value = coo_matrix((data, (row, col)))
         if features is not None:
-            self.edge_features[f"{doc1.id}-{doc2.id}"] = features
+            self.edge_features[f'{doc1.id}-{doc2.id}'] = features
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -167,15 +171,19 @@ class GraphDocument(Document):
         if self.adjacency is not None:
             if edge_id > self.num_edges:
                 raise Exception(
-                    f"Trying to remove edge {edge_id} while number of edges is {self.num_edges}"
+                    f'Trying to remove edge {edge_id} while number of edges is {self.num_edges}'
                 )
             row = np.delete(self.adjacency.row, edge_id)
             col = np.delete(self.adjacency.col, edge_id)
             data = np.delete(self.adjacency.data, edge_id)
             if row.shape[0] > 0:
-                self.adjacency = coo_matrix((data, (row, col)))
+                SparseNdArray(
+                    self._pb_body.graph.adjacency, sp_format='coo'
+                ).value = coo_matrix((data, (row, col)))
             else:
-                self.adjacency = coo_matrix((0, 0))
+                SparseNdArray(
+                    self._pb_body.graph.adjacency, sp_format='coo'
+                ).value = coo_matrix((0, 0))
 
             if edge_feature_key in self.edge_features:
                 del self.edge_features[edge_feature_key]
@@ -193,7 +201,7 @@ class GraphDocument(Document):
             zip(self.adjacency.row, self.adjacency.col)
         ):
             if row.item() == offset1 and col.item() == offset2:
-                self._remove_edge_id(edge_id, f"{doc1.id}-{doc2.id}")
+                self._remove_edge_id(edge_id, f'{doc1.id}-{doc2.id}')
 
     @property
     def edge_features(self):
@@ -202,16 +210,7 @@ class GraphDocument(Document):
 
         .. # noqa: DAR201
         """
-        return StructView(self._pb_body.graph_info.edge_features)
-
-    @edge_features.setter
-    def edge_features(self, value: Dict):
-        """Set the `edge_features` field of this Graph to a Python dict
-
-        :param value: a Python dict
-        """
-        self._pb_body.graph_info.edge_features.Clear()
-        self._pb_body.graph_info.edge_features.update(value)
+        return StructView(self._pb_body.graph.edge_features)
 
     @property
     def adjacency(self):
@@ -220,16 +219,7 @@ class GraphDocument(Document):
 
         .. # noqa: DAR201
         """
-        return SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value
-
-    @adjacency.setter
-    def adjacency(self, value: "coo_matrix"):
-        """
-        Set the adjacency list of this graph.
-
-        :param value: the float weight of the document.
-        """
-        SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value = value
+        return SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value
 
     @property
     def num_nodes(self) -> int:
@@ -286,15 +276,6 @@ class GraphDocument(Document):
         :param value: the array of nodes of this document
         """
         self.chunks = value
-
-    @adjacency.setter
-    def adjacency(self, value: "coo_matrix"):
-        """
-        Set the adjacency list of this graph.
-
-        :param value: the float weight of the document.
-        """
-        SparseNdArray(self._pb_body.graph_info.adjacency, sp_format="coo").value = value
 
     def get_outgoing_nodes(self, doc: 'Document') -> Optional[ChunkArray]:
         """
@@ -395,16 +376,32 @@ class GraphDocument(Document):
         import torch
         import dgl
 
-        source_nodes = torch.tensor(self.adjacency.row.copy())
-        destination_nodes = torch.tensor(self.adjacency.col.copy())
+        if self.adjacency is None:
+            default_logger.debug(
+                f'Trying to convert to dgl graph without \
+                                  for GraphDocument.id = {self.id} without adjacency matrix'
+            )
+            dgl_graph = dgl.DGLGraph()
+            dgl_graph.add_nodes(self.num_nodes)
+            return dgl_graph
+        else:
+            source_nodes = torch.tensor(self.adjacency.row.copy())
+            destination_nodes = torch.tensor(self.adjacency.col.copy())
 
-        return dgl.graph((source_nodes, destination_nodes))
+            return dgl.graph((source_nodes, destination_nodes))
 
     def __iter__(self) -> Iterator[Tuple['Document']]:
-        for (row, col) in zip(self.adjacency.row, self.adjacency.col):
-            yield self.nodes[row.item()], self.nodes[col.item()]
+        if self.adjacency is not None:
+            for (row, col) in zip(self.adjacency.row, self.adjacency.col):
+                yield self.nodes[row.item()], self.nodes[col.item()]
+        else:
+            default_logger.debug(f'Trying to iterate over a graph without edges')
 
     def __mermaid_str__(self):
+
+        if len(self.nodes) == 0:
+            return super().__mermaid_str__()
+
         results = []
         printed_ids = set()
         _node_id_node_mermaid_id = {}

@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xfd\x01\n\x11\x44\x65nseNdArrayProto\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\x12\r\n\x05shape\x18\x02 \x03(\x03\x12\r\n\x05\x64type\x18\x03 \x01(\t\x12>\n\x0cquantization\x18\x04 \x01(\x0e\x32(.jina.DenseNdArrayProto.QuantizationMode\x12\x0f\n\x07max_val\x18\x05 \x01(\x02\x12\x0f\n\x07min_val\x18\x06 \x01(\x02\x12\r\n\x05scale\x18\x07 \x01(\x02\x12\x16\n\x0eoriginal_dtype\x18\x08 \x01(\t\"1\n\x10QuantizationMode\x12\x08\n\x04NONE\x10\x00\x12\x08\n\x04\x46P16\x10\x01\x12\t\n\x05UINT8\x10\x02\"o\n\x0cNdArrayProto\x12(\n\x05\x64\x65nse\x18\x01 \x01(\x0b\x32\x17.jina.DenseNdArrayProtoH\x00\x12*\n\x06sparse\x18\x02 \x01(\x0b\x32\x18.jina.SparseNdArrayProtoH\x00\x42\t\n\x07\x63ontent\"v\n\x12SparseNdArrayProto\x12(\n\x07indices\x18\x01 \x01(\x0b\x32\x17.jina.DenseNdArrayProto\x12\'\n\x06values\x18\x02 \x01(\x0b\x32\x17.jina.DenseNdArrayProto\x12\r\n\x05shape\x18\x03 \x03(\x03\"\x7f\n\x0fNamedScoreProto\x12\r\n\x05value\x18\x01 \x01(\x02\x12\x0f\n\x07op_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\'\n\x08operands\x18\x04 \x03(\x0b\x32\x15.jina.NamedScoreProto\x12\x0e\n\x06ref_id\x18\x05 \x01(\t\"\x8e\x04\n\rDocumentProto\x12\n\n\x02id\x18\x01 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x18 \x01(\t\x12\x13\n\x0bgranularity\x18\x0e \x01(\r\x12\x11\n\tadjacency\x18\x16 \x01(\r\x12\x11\n\tparent_id\x18\x10 \x01(\t\x12\x10\n\x06\x62uffer\x18\x03 \x01(\x0cH\x00\x12\"\n\x04\x62lob\x18\x0c \x01(\x0b\x32\x12.jina.NdArrayProtoH\x00\x12\x0e\n\x04text\x18\r \x01(\tH\x00\x12\r\n\x03uri\x18\t \x01(\tH\x00\x12#\n\x06\x63hunks\x18\x04 \x03(\x0b\x32\x13.jina.DocumentProto\x12\x0e\n\x06weight\x18\x05 \x01(\x02\x12$\n\x07matches\x18\x08 \x03(\x0b\x32\x13.jina.DocumentProto\x12\x11\n\tmime_type\x18\n \x01(\t\x12%\n\x04tags\x18\x0b \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08location\x18\x11 \x03(\r\x12\x0e\n\x06offset\x18\x12 \x01(\r\x12%\n\tembedding\x18\x13 \x01(\x0b\x32\x12.jina.NdArrayProto\x12$\n\x05score\x18\x14 \x01(\x0b\x32\x15.jina.NamedScoreProto\x12\x10\n\x08modality\x18\x15 \x01(\t\x12*\n\x0b\x65valuations\x18\x17 \x03(\x0b\x32\x15.jina.NamedScoreProtoB\t\n\x07\x63ontent\"\xaa\x01\n\nRouteProto\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12!\n\x06status\x18\x05 \x01(\x0b\x32\x11.jina.StatusProto\"\x99\x04\n\rEnvelopeProto\x12\x11\n\tsender_id\x18\x01 \x01(\t\x12\x13\n\x0breceiver_id\x18\x02 \x01(\t\x12\x12\n\nrequest_id\x18\x03 \x01(\t\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x12\x31\n\x07version\x18\x06 \x01(\x0b\x32 .jina.EnvelopeProto.VersionProto\x12\x14\n\x0crequest_type\x18\x07 \x01(\t\x12\x15\n\rcheck_version\x18\x08 \x01(\x08\x12<\n\x0b\x63ompression\x18\t \x01(\x0b\x32\'.jina.EnvelopeProto.CompressConfigProto\x12 \n\x06routes\x18\n \x03(\x0b\x32\x10.jina.RouteProto\x12!\n\x06status\x18\x0b \x01(\x0b\x32\x11.jina.StatusProto\x12!\n\x06header\x18\x0c \x01(\x0b\x32\x11.jina.HeaderProto\x1a\x38\n\x0cVersionProto\x12\x0c\n\x04jina\x18\x01 \x01(\t\x12\r\n\x05proto\x18\x02 \x01(\t\x12\x0b\n\x03vcs\x18\x03 \x01(\t\x1a{\n\x13\x43ompressConfigProto\x12\x11\n\talgorithm\x18\x01 \x01(\t\x12\x11\n\tmin_bytes\x18\x02 \x01(\x04\x12\x11\n\tmin_ratio\x18\x03 \x01(\x02\x12+\n\nparameters\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct\"Q\n\x0bHeaderProto\x12\x15\n\rexec_endpoint\x18\x01 \x01(\t\x12\x15\n\rtarget_peapod\x18\x02 \x01(\t\x12\x14\n\x0cno_propagate\x18\x03 \x01(\x08\"\xcf\x02\n\x0bStatusProto\x12*\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x1c.jina.StatusProto.StatusCode\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x33\n\texception\x18\x03 \x01(\x0b\x32 .jina.StatusProto.ExceptionProto\x1aN\n\x0e\x45xceptionProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\x12\x0e\n\x06stacks\x18\x03 \x03(\t\x12\x10\n\x08\x65xecutor\x18\x04 \x01(\t\"z\n\nStatusCode\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07PENDING\x10\x01\x12\t\n\x05READY\x10\x02\x12\t\n\x05\x45RROR\x10\x03\x12\x13\n\x0f\x45RROR_DUPLICATE\x10\x04\x12\x14\n\x10\x45RROR_NOTALLOWED\x10\x05\x12\x11\n\rERROR_CHAINED\x10\x06\"Z\n\x0cMessageProto\x12%\n\x08\x65nvelope\x18\x01 \x01(\x0b\x32\x13.jina.EnvelopeProto\x12#\n\x07request\x18\x02 \x01(\x0b\x32\x12.jina.RequestProto\"7\n\x12\x44ocumentArrayProto\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.jina.DocumentProto\"\xcf\x04\n\x0cRequestProto\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x39\n\x07\x63ontrol\x18\x02 \x01(\x0b\x32&.jina.RequestProto.ControlRequestProtoH\x00\x12\x33\n\x04\x64\x61ta\x18\x03 \x01(\x0b\x32#.jina.RequestProto.DataRequestProtoH\x00\x12!\n\x06header\x18\x04 \x01(\x0b\x32\x11.jina.HeaderProto\x12+\n\nparameters\x18\x05 \x01(\x0b\x32\x17.google.protobuf.Struct\x12 \n\x06routes\x18\x06 \x03(\x0b\x32\x10.jina.RouteProto\x12!\n\x06status\x18\x07 \x01(\x0b\x32\x11.jina.StatusProto\x1a`\n\x10\x44\x61taRequestProto\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.jina.DocumentProto\x12)\n\x0cgroundtruths\x18\x02 \x03(\x0b\x32\x13.jina.DocumentProto\x1a\xbb\x01\n\x13\x43ontrolRequestProto\x12?\n\x07\x63ommand\x18\x01 \x01(\x0e\x32..jina.RequestProto.ControlRequestProto.Command\"c\n\x07\x43ommand\x12\r\n\tTERMINATE\x10\x00\x12\n\n\x06STATUS\x10\x01\x12\x08\n\x04IDLE\x10\x02\x12\n\n\x06\x43\x41NCEL\x10\x03\x12\t\n\x05SCALE\x10\x04\x12\x0c\n\x08\x41\x43TIVATE\x10\x05\x12\x0e\n\nDEACTIVATE\x10\x06\x42\x06\n\x04\x62ody2?\n\x07JinaRPC\x12\x34\n\x04\x43\x61ll\x12\x12.jina.RequestProto\x1a\x12.jina.RequestProto\"\x00(\x01\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\njina.proto\x12\x04jina\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xfd\x01\n\x11\x44\x65nseNdArrayProto\x12\x0e\n\x06\x62uffer\x18\x01 \x01(\x0c\x12\r\n\x05shape\x18\x02 \x03(\r\x12\r\n\x05\x64type\x18\x03 \x01(\t\x12>\n\x0cquantization\x18\x04 \x01(\x0e\x32(.jina.DenseNdArrayProto.QuantizationMode\x12\x0f\n\x07max_val\x18\x05 \x01(\x02\x12\x0f\n\x07min_val\x18\x06 \x01(\x02\x12\r\n\x05scale\x18\x07 \x01(\x02\x12\x16\n\x0eoriginal_dtype\x18\x08 \x01(\t\"1\n\x10QuantizationMode\x12\x08\n\x04NONE\x10\x00\x12\x08\n\x04\x46P16\x10\x01\x12\t\n\x05UINT8\x10\x02\"o\n\x0cNdArrayProto\x12(\n\x05\x64\x65nse\x18\x01 \x01(\x0b\x32\x17.jina.DenseNdArrayProtoH\x00\x12*\n\x06sparse\x18\x02 \x01(\x0b\x32\x18.jina.SparseNdArrayProtoH\x00\x42\t\n\x07\x63ontent\"|\n\x12SparseNdArrayProto\x12(\n\x07indices\x18\x01 \x01(\x0b\x32\x17.jina.DenseNdArrayProto\x12\'\n\x06values\x18\x02 \x01(\x0b\x32\x17.jina.DenseNdArrayProto\x12\x13\n\x0b\x64\x65nse_shape\x18\x03 \x03(\x03\"\x7f\n\x0fNamedScoreProto\x12\r\n\x05value\x18\x01 \x01(\x02\x12\x0f\n\x07op_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\'\n\x08operands\x18\x04 \x03(\x0b\x32\x15.jina.NamedScoreProto\x12\x0e\n\x06ref_id\x18\x05 \x01(\t\"i\n\nGraphProto\x12+\n\tadjacency\x18\x01 \x01(\x0b\x32\x18.jina.SparseNdArrayProto\x12.\n\redge_features\x18\x02 \x01(\x0b\x32\x17.google.protobuf.Struct\"\xb1\x04\n\rDocumentProto\x12\n\n\x02id\x18\x01 \x01(\t\x12\x14\n\x0c\x63ontent_hash\x18\x18 \x01(\t\x12\x13\n\x0bgranularity\x18\x0e \x01(\r\x12\x11\n\tadjacency\x18\x16 \x01(\r\x12\x11\n\tparent_id\x18\x10 \x01(\t\x12\x10\n\x06\x62uffer\x18\x03 \x01(\x0cH\x00\x12\"\n\x04\x62lob\x18\x0c \x01(\x0b\x32\x12.jina.NdArrayProtoH\x00\x12\x0e\n\x04text\x18\r \x01(\tH\x00\x12\r\n\x03uri\x18\t \x01(\tH\x00\x12!\n\x05graph\x18\x1b \x01(\x0b\x32\x10.jina.GraphProtoH\x00\x12#\n\x06\x63hunks\x18\x04 \x03(\x0b\x32\x13.jina.DocumentProto\x12\x0e\n\x06weight\x18\x05 \x01(\x02\x12$\n\x07matches\x18\x08 \x03(\x0b\x32\x13.jina.DocumentProto\x12\x11\n\tmime_type\x18\n \x01(\t\x12%\n\x04tags\x18\x0b \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x10\n\x08location\x18\x11 \x03(\r\x12\x0e\n\x06offset\x18\x12 \x01(\r\x12%\n\tembedding\x18\x13 \x01(\x0b\x32\x12.jina.NdArrayProto\x12$\n\x05score\x18\x14 \x01(\x0b\x32\x15.jina.NamedScoreProto\x12\x10\n\x08modality\x18\x15 \x01(\t\x12*\n\x0b\x65valuations\x18\x17 \x03(\x0b\x32\x15.jina.NamedScoreProtoB\t\n\x07\x63ontent\"\xaa\x01\n\nRouteProto\x12\x0b\n\x03pod\x18\x01 \x01(\t\x12\x0e\n\x06pod_id\x18\x02 \x01(\t\x12.\n\nstart_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12!\n\x06status\x18\x05 \x01(\x0b\x32\x11.jina.StatusProto\"\x99\x04\n\rEnvelopeProto\x12\x11\n\tsender_id\x18\x01 \x01(\t\x12\x13\n\x0breceiver_id\x18\x02 \x01(\t\x12\x12\n\nrequest_id\x18\x03 \x01(\t\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x12\x31\n\x07version\x18\x06 \x01(\x0b\x32 .jina.EnvelopeProto.VersionProto\x12\x14\n\x0crequest_type\x18\x07 \x01(\t\x12\x15\n\rcheck_version\x18\x08 \x01(\x08\x12<\n\x0b\x63ompression\x18\t \x01(\x0b\x32\'.jina.EnvelopeProto.CompressConfigProto\x12 \n\x06routes\x18\n \x03(\x0b\x32\x10.jina.RouteProto\x12!\n\x06status\x18\x0b \x01(\x0b\x32\x11.jina.StatusProto\x12!\n\x06header\x18\x0c \x01(\x0b\x32\x11.jina.HeaderProto\x1a\x38\n\x0cVersionProto\x12\x0c\n\x04jina\x18\x01 \x01(\t\x12\r\n\x05proto\x18\x02 \x01(\t\x12\x0b\n\x03vcs\x18\x03 \x01(\t\x1a{\n\x13\x43ompressConfigProto\x12\x11\n\talgorithm\x18\x01 \x01(\t\x12\x11\n\tmin_bytes\x18\x02 \x01(\x04\x12\x11\n\tmin_ratio\x18\x03 \x01(\x02\x12+\n\nparameters\x18\x04 \x01(\x0b\x32\x17.google.protobuf.Struct\"Q\n\x0bHeaderProto\x12\x15\n\rexec_endpoint\x18\x01 \x01(\t\x12\x15\n\rtarget_peapod\x18\x02 \x01(\t\x12\x14\n\x0cno_propagate\x18\x03 \x01(\x08\"\xcf\x02\n\x0bStatusProto\x12*\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x1c.jina.StatusProto.StatusCode\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x33\n\texception\x18\x03 \x01(\x0b\x32 .jina.StatusProto.ExceptionProto\x1aN\n\x0e\x45xceptionProto\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0c\n\x04\x61rgs\x18\x02 \x03(\t\x12\x0e\n\x06stacks\x18\x03 \x03(\t\x12\x10\n\x08\x65xecutor\x18\x04 \x01(\t\"z\n\nStatusCode\x12\x0b\n\x07SUCCESS\x10\x00\x12\x0b\n\x07PENDING\x10\x01\x12\t\n\x05READY\x10\x02\x12\t\n\x05\x45RROR\x10\x03\x12\x13\n\x0f\x45RROR_DUPLICATE\x10\x04\x12\x14\n\x10\x45RROR_NOTALLOWED\x10\x05\x12\x11\n\rERROR_CHAINED\x10\x06\"Z\n\x0cMessageProto\x12%\n\x08\x65nvelope\x18\x01 \x01(\x0b\x32\x13.jina.EnvelopeProto\x12#\n\x07request\x18\x02 \x01(\x0b\x32\x12.jina.RequestProto\"7\n\x12\x44ocumentArrayProto\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.jina.DocumentProto\"\xcf\x04\n\x0cRequestProto\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x39\n\x07\x63ontrol\x18\x02 \x01(\x0b\x32&.jina.RequestProto.ControlRequestProtoH\x00\x12\x33\n\x04\x64\x61ta\x18\x03 \x01(\x0b\x32#.jina.RequestProto.DataRequestProtoH\x00\x12!\n\x06header\x18\x04 \x01(\x0b\x32\x11.jina.HeaderProto\x12+\n\nparameters\x18\x05 \x01(\x0b\x32\x17.google.protobuf.Struct\x12 \n\x06routes\x18\x06 \x03(\x0b\x32\x10.jina.RouteProto\x12!\n\x06status\x18\x07 \x01(\x0b\x32\x11.jina.StatusProto\x1a`\n\x10\x44\x61taRequestProto\x12!\n\x04\x64ocs\x18\x01 \x03(\x0b\x32\x13.jina.DocumentProto\x12)\n\x0cgroundtruths\x18\x02 \x03(\x0b\x32\x13.jina.DocumentProto\x1a\xbb\x01\n\x13\x43ontrolRequestProto\x12?\n\x07\x63ommand\x18\x01 \x01(\x0e\x32..jina.RequestProto.ControlRequestProto.Command\"c\n\x07\x43ommand\x12\r\n\tTERMINATE\x10\x00\x12\n\n\x06STATUS\x10\x01\x12\x08\n\x04IDLE\x10\x02\x12\n\n\x06\x43\x41NCEL\x10\x03\x12\t\n\x05SCALE\x10\x04\x12\x0c\n\x08\x41\x43TIVATE\x10\x05\x12\x0e\n\nDEACTIVATE\x10\x06\x42\x06\n\x04\x62ody2?\n\x07JinaRPC\x12\x34\n\x04\x43\x61ll\x12\x12.jina.RequestProto\x1a\x12.jina.RequestProto\"\x00(\x01\x30\x01\x62\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,])
 
@@ -102,8 +102,8 @@ _STATUSPROTO_STATUSCODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2240,
-  serialized_end=2362,
+  serialized_start=2388,
+  serialized_end=2510,
 )
 _sym_db.RegisterEnumDescriptor(_STATUSPROTO_STATUSCODE)
 
@@ -152,8 +152,8 @@ _REQUESTPROTO_CONTROLREQUESTPROTO_COMMAND = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2998,
-  serialized_end=3097,
+  serialized_start=3146,
+  serialized_end=3245,
 )
 _sym_db.RegisterEnumDescriptor(_REQUESTPROTO_CONTROLREQUESTPROTO_COMMAND)
 
@@ -501,86 +501,86 @@ _DOCUMENTPROTO = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='chunks', full_name='jina.DocumentProto.chunks', index=9,
+      name='graph', full_name='jina.DocumentProto.graph', index=9,
+      number=27, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='chunks', full_name='jina.DocumentProto.chunks', index=10,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='weight', full_name='jina.DocumentProto.weight', index=10,
+      name='weight', full_name='jina.DocumentProto.weight', index=11,
       number=5, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='matches', full_name='jina.DocumentProto.matches', index=11,
+      name='matches', full_name='jina.DocumentProto.matches', index=12,
       number=8, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mime_type', full_name='jina.DocumentProto.mime_type', index=12,
+      name='mime_type', full_name='jina.DocumentProto.mime_type', index=13,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='tags', full_name='jina.DocumentProto.tags', index=13,
+      name='tags', full_name='jina.DocumentProto.tags', index=14,
       number=11, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='location', full_name='jina.DocumentProto.location', index=14,
+      name='location', full_name='jina.DocumentProto.location', index=15,
       number=17, type=13, cpp_type=3, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='offset', full_name='jina.DocumentProto.offset', index=15,
+      name='offset', full_name='jina.DocumentProto.offset', index=16,
       number=18, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='embedding', full_name='jina.DocumentProto.embedding', index=16,
+      name='embedding', full_name='jina.DocumentProto.embedding', index=17,
       number=19, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='score', full_name='jina.DocumentProto.score', index=17,
+      name='score', full_name='jina.DocumentProto.score', index=18,
       number=20, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='modality', full_name='jina.DocumentProto.modality', index=18,
+      name='modality', full_name='jina.DocumentProto.modality', index=19,
       number=21, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='evaluations', full_name='jina.DocumentProto.evaluations', index=19,
+      name='evaluations', full_name='jina.DocumentProto.evaluations', index=20,
       number=23, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='graph_info', full_name='jina.DocumentProto.graph_info', index=20,
-      number=26, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -601,8 +601,8 @@ _DOCUMENTPROTO = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=702,
-  serialized_end=1228,
+  serialized_start=815,
+  serialized_end=1376,
 )
 
 
@@ -661,8 +661,8 @@ _ROUTEPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1231,
-  serialized_end=1401,
+  serialized_start=1379,
+  serialized_end=1549,
 )
 
 
@@ -707,8 +707,8 @@ _ENVELOPEPROTO_VERSIONPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1760,
-  serialized_end=1816,
+  serialized_start=1908,
+  serialized_end=1964,
 )
 
 _ENVELOPEPROTO_COMPRESSCONFIGPROTO = _descriptor.Descriptor(
@@ -759,8 +759,8 @@ _ENVELOPEPROTO_COMPRESSCONFIGPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1818,
-  serialized_end=1941,
+  serialized_start=1966,
+  serialized_end=2089,
 )
 
 _ENVELOPEPROTO = _descriptor.Descriptor(
@@ -860,8 +860,8 @@ _ENVELOPEPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1404,
-  serialized_end=1941,
+  serialized_start=1552,
+  serialized_end=2089,
 )
 
 
@@ -906,8 +906,8 @@ _HEADERPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1943,
-  serialized_end=2024,
+  serialized_start=2091,
+  serialized_end=2172,
 )
 
 
@@ -959,8 +959,8 @@ _STATUSPROTO_EXCEPTIONPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2160,
-  serialized_end=2238,
+  serialized_start=2308,
+  serialized_end=2386,
 )
 
 _STATUSPROTO = _descriptor.Descriptor(
@@ -1005,8 +1005,8 @@ _STATUSPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2027,
-  serialized_end=2362,
+  serialized_start=2175,
+  serialized_end=2510,
 )
 
 
@@ -1044,8 +1044,8 @@ _MESSAGEPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2364,
-  serialized_end=2454,
+  serialized_start=2512,
+  serialized_end=2602,
 )
 
 
@@ -1076,8 +1076,8 @@ _DOCUMENTARRAYPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2456,
-  serialized_end=2511,
+  serialized_start=2604,
+  serialized_end=2659,
 )
 
 
@@ -1115,8 +1115,8 @@ _REQUESTPROTO_DATAREQUESTPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2811,
-  serialized_end=2907,
+  serialized_start=2959,
+  serialized_end=3055,
 )
 
 _REQUESTPROTO_CONTROLREQUESTPROTO = _descriptor.Descriptor(
@@ -1147,8 +1147,8 @@ _REQUESTPROTO_CONTROLREQUESTPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2910,
-  serialized_end=3097,
+  serialized_start=3058,
+  serialized_end=3245,
 )
 
 _REQUESTPROTO = _descriptor.Descriptor(
@@ -1225,8 +1225,8 @@ _REQUESTPROTO = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=2514,
-  serialized_end=3105,
+  serialized_start=2662,
+  serialized_end=3253,
 )
 
 _DENSENDARRAYPROTO.fields_by_name['quantization'].enum_type = _DENSENDARRAYPROTO_QUANTIZATIONMODE
@@ -1245,13 +1245,13 @@ _NAMEDSCOREPROTO.fields_by_name['operands'].message_type = _NAMEDSCOREPROTO
 _GRAPHPROTO.fields_by_name['adjacency'].message_type = _SPARSENDARRAYPROTO
 _GRAPHPROTO.fields_by_name['edge_features'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
 _DOCUMENTPROTO.fields_by_name['blob'].message_type = _NDARRAYPROTO
+_DOCUMENTPROTO.fields_by_name['graph'].message_type = _GRAPHPROTO
 _DOCUMENTPROTO.fields_by_name['chunks'].message_type = _DOCUMENTPROTO
 _DOCUMENTPROTO.fields_by_name['matches'].message_type = _DOCUMENTPROTO
 _DOCUMENTPROTO.fields_by_name['tags'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
 _DOCUMENTPROTO.fields_by_name['embedding'].message_type = _NDARRAYPROTO
 _DOCUMENTPROTO.fields_by_name['score'].message_type = _NAMEDSCOREPROTO
 _DOCUMENTPROTO.fields_by_name['evaluations'].message_type = _NAMEDSCOREPROTO
-_DOCUMENTPROTO.fields_by_name['graph_info'].message_type = _GRAPHPROTO
 _DOCUMENTPROTO.oneofs_by_name['content'].fields.append(
   _DOCUMENTPROTO.fields_by_name['buffer'])
 _DOCUMENTPROTO.fields_by_name['buffer'].containing_oneof = _DOCUMENTPROTO.oneofs_by_name['content']
@@ -1264,6 +1264,9 @@ _DOCUMENTPROTO.fields_by_name['text'].containing_oneof = _DOCUMENTPROTO.oneofs_b
 _DOCUMENTPROTO.oneofs_by_name['content'].fields.append(
   _DOCUMENTPROTO.fields_by_name['uri'])
 _DOCUMENTPROTO.fields_by_name['uri'].containing_oneof = _DOCUMENTPROTO.oneofs_by_name['content']
+_DOCUMENTPROTO.oneofs_by_name['content'].fields.append(
+  _DOCUMENTPROTO.fields_by_name['graph'])
+_DOCUMENTPROTO.fields_by_name['graph'].containing_oneof = _DOCUMENTPROTO.oneofs_by_name['content']
 _ROUTEPROTO.fields_by_name['start_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _ROUTEPROTO.fields_by_name['end_time'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
 _ROUTEPROTO.fields_by_name['status'].message_type = _STATUSPROTO
@@ -1455,8 +1458,8 @@ _JINARPC = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=3107,
-  serialized_end=3170,
+  serialized_start=3255,
+  serialized_end=3318,
   methods=[
   _descriptor.MethodDescriptor(
     name='Call',

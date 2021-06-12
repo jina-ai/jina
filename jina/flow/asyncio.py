@@ -1,9 +1,8 @@
-from .base import BaseFlow
-from ..clients.asyncio import AsyncClient, AsyncWebSocketClient
+from .base import Flow
 from ..clients.mixin import AsyncPostMixin
 
 
-class AsyncFlow(AsyncPostMixin, BaseFlow):
+class AsyncFlow(AsyncPostMixin, Flow):
     """
     :class:`AsyncFlow` is the asynchronous version of the :class:`Flow`. They share the same interface, except
     in :class:`AsyncFlow` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
@@ -24,10 +23,11 @@ class AsyncFlow(AsyncPostMixin, BaseFlow):
     .. code-block:: python
 
         from jina import AsyncFlow
+        from jina.types.document.generators import from_ndarray
         import numpy as np
 
         with AsyncFlow().add() as f:
-            await f.index_ndarray(np.random.random([5, 4]), on_done=print)
+            await f.index(from_ndarray(np.random.random([5, 4])), on_done=print)
 
     Notice that the above code will NOT work in standard Python REPL, as only Jupyter/ipython implements "autoawait".
 
@@ -41,9 +41,3 @@ class AsyncFlow(AsyncPostMixin, BaseFlow):
 
     One can think of :class:`Flow` as Jina-managed eventloop, whereas :class:`AsyncFlow` is self-managed eventloop.
     """
-
-    _cls_client = AsyncClient  #: the type of the Client, can be changed to other class
-
-    def _update_client(self):
-        if self._pod_nodes['gateway'].args.restful:
-            self._cls_client = AsyncWebSocketClient

@@ -4,9 +4,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from jina import Flow, AsyncFlow, Executor
+from jina import Executor
 from jina.excepts import BadFlowYAMLVersion
-from jina.flow import BaseFlow
+from jina import Flow
 from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
@@ -25,8 +25,6 @@ def test_load_flow_from_empty_yaml():
 
 def test_support_versions():
     assert get_supported_versions(Flow) == ['1', 'legacy']
-    assert get_supported_versions(AsyncFlow) == ['1', 'legacy']
-    assert get_supported_versions(BaseFlow) == ['1', 'legacy']
 
 
 def test_load_legacy_and_v1():
