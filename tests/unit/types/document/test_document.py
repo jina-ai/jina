@@ -45,7 +45,7 @@ def scipy_sparse_matrix(request, row, column, data):
 @pytest.fixture
 def tf_sparse_matrix(row, column, data):
     indices = [(x, y) for x, y in zip(row, column)]
-    return tf.SparseTensor(indices=indices, values=data, shape=[4, 10])
+    return tf.SparseTensor(indices=indices, values=data, dense_shape=[4, 10])
 
 
 @pytest.fixture
