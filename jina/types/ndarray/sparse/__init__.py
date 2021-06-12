@@ -73,7 +73,7 @@ class BaseSparseNdArray(BaseNdArray):
         idx = DenseNdArray(self._pb_body.indices).value
         val = DenseNdArray(self._pb_body.values).value
         shape = self._pb_body.shape
-        if idx and val and shape:
+        if idx is not None and val is not None and shape:
             return self.sparse_constructor(idx, val, shape)
 
     @value.setter
