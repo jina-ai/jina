@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.flow.asyncio
    jina.flow.base
    jina.flow.builder
 
