@@ -46,6 +46,8 @@ class BaseSparseNdArray(BaseNdArray):
         :param values: the values of the sparse array
         :param shape: the shape of the sparse array
         :return: Sparse NdArray
+
+        .. # noqa: DAR202
         """
         raise NotImplementedError
 
@@ -57,6 +59,8 @@ class BaseSparseNdArray(BaseNdArray):
 
         :param value: the sparse ndarray
         :return: a Dict with three entries {'indices': ..., 'values':..., 'shape':...}
+
+        .. # noqa: DAR202
         """
         raise NotImplementedError
 
