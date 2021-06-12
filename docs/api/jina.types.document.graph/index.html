@@ -488,6 +488,11 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 <dd><p>The dictionary of edge features, indexed by <cite>edge_id</cite> in the <cite>edge list</cite></p>
 </dd></dl>
 <dl class="py method">
+<dt id="jina.types.document.graph.GraphDocument.adjacency">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">adjacency</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.adjacency" title="Permalink to this definition">¶</a></dt>
+<dd><p>The adjacency list for this graph,</p>
+</dd></dl>
+<dl class="py method">
 <dt id="jina.types.document.graph.GraphDocument.num_nodes">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">num_nodes</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.num_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>The number of nodes in the graph</p>
@@ -537,11 +542,6 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 <dt id="jina.types.document.graph.GraphDocument.nodes">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">nodes</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>The nodes list for this graph</p>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.document.graph.GraphDocument.adjacency">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">adjacency</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.adjacency" title="Permalink to this definition">¶</a></dt>
-<dd><p>The adjacency list for this graph,</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.document.graph.GraphDocument.get_outgoing_nodes">
@@ -634,7 +634,7 @@ features that are task specific are ignored.</p></li>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 11, 2021.
+            Last updated on Jun 12, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

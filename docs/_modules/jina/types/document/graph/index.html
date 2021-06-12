@@ -479,7 +479,9 @@
                         <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">offset</span><span class="p">:</span>
                         <span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span>
+                <span class="n">SparseNdArray</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span>
 
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_to_offset</span> <span class="o">=</span> <span class="p">{</span>
@@ -519,7 +521,9 @@
             <span class="k">if</span> <span class="n">current_adjacency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
             <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span>
+        <span class="n">SparseNdArray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span>
         <span class="k">if</span> <span class="n">features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">doc1</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">doc2</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span></div>
 
@@ -535,9 +539,13 @@
             <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span>
+                <span class="n">SparseNdArray</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">SparseNdArray</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">edge_feature_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_features</span><span class="p">[</span><span class="n">edge_feature_key</span><span class="p">]</span>
@@ -566,15 +574,6 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_features</span><span class="p">)</span>
 
-    <span class="nd">@edge_features</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">edge_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
-        <span class="sd">"""Set the `edge_features` field of this Graph to a Python dict</span>
-
-<span class="sd">        :param value: a Python dict</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_features</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">edge_features</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -583,15 +582,6 @@
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-
-    <span class="nd">@adjacency</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'coo_matrix'</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Set the adjacency list of this graph.</span>
-
-<span class="sd">        :param value: the float weight of the document.</span>
-<span class="sd">        """</span>
-        <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -648,15 +638,6 @@
 <span class="sd">        :param value: the array of nodes of this document</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@adjacency</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s2">"coo_matrix"</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Set the adjacency list of this graph.</span>
-
-<span class="sd">        :param value: the float weight of the document.</span>
-<span class="sd">        """</span>
-        <span class="n">SparseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="n">sp_format</span><span class="o">=</span><span class="s1">'coo'</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="GraphDocument.get_outgoing_nodes"><a class="viewcode-back" href="../../../../../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.get_outgoing_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_outgoing_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChunkArray</span><span class="p">]:</span>
         <span class="sd">"""</span>
@@ -819,7 +800,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 11, 2021.
+            Last updated on Jun 12, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
