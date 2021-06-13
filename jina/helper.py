@@ -11,16 +11,15 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
-from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
-from pathlib import Path
 from types import SimpleNamespace
 from typing import (
     Tuple,
     Optional,
     Iterator,
     Any,
+    Callable,
     Union,
     List,
     Dict,
@@ -1163,12 +1162,18 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
 if False:
     from fastapi import FastAPI
+    from jina.peapods.runtimes.asyncio.rest.models import JinaRequestModel
+    from starlette.responses import StreamingResponse
 
 
-def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
+def extend_rest_interface(
+    app: 'FastAPI',
+    client: Optional[Callable[['JinaRequestModel', str], 'StreamingResponse']] = None,
+) -> 'FastAPI':
     """Extend Jina built-in FastAPI instance with customized APIs, routing, etc.
 
     :param app: the built-in FastAPI instance given by Jina
+    :param client: function to send requests to the Flow
     :return: the extended FastAPI instance
 
     .. highlight:: python

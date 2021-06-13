@@ -1,4 +1,4 @@
-from .app import get_fastapi_app
+from .app import AppWrapper
 from ..base import AsyncNewLoopRuntime
 from .....importer import ImportExtensions
 
@@ -53,9 +53,19 @@ class RESTRuntime(AsyncNewLoopRuntime):
         from .....helper import extend_rest_interface
         import os
 
+        app_wrapper = AppWrapper(self.args, self.logger)
+        fastapi_app = app_wrapper.get_fastapi_app()
+        print(
+            '# extend_rest_interface.__code__.co_argcount',
+            extend_rest_interface.__code__.co_argcount,
+        )
+        if extend_rest_interface.__code__.co_argcount == 2:
+            fastapi_app = extend_rest_interface(fastapi_app, app_wrapper.send_request)
+        else:
+            fastapi_app = extend_rest_interface(fastapi_app)
         self._server = UviServer(
             config=Config(
-                app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
+                app=fastapi_app,
                 host=self.args.host,
                 port=self.args.port_expose,
                 ws='wsproto',

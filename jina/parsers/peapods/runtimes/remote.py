@@ -74,6 +74,12 @@ def mixin_rest_server_parser(parser=None):
         help='If set, use this to specify float field valid digits.',
     )
 
+    gp.add_argument(
+        'use_default_endpoints',
+        default=True,
+        help='If set, use the default endpoints for index, update, delete, search',
+    )
+
 
 def mixin_grpc_server_parser(parser=None):
     """Add the options for gRPC
