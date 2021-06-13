@@ -59,7 +59,7 @@ class RESTRuntime(AsyncNewLoopRuntime):
                 host=self.args.host,
                 port=self.args.port_expose,
                 ws='wsproto',
-                log_level=os.getenv('JINA_LOG_LEVEL', 'error'),
+                log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
             )
         )
         await self._server.setup()
