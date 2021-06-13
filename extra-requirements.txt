@@ -1,5 +1,12 @@
+# JINA PACKAGE DEPENDENCIES
+#
+# Essential: only 6, they are labeled with `core`: numpy, pyzmq, tornado, grpcio, protobuf, pyyaml. They will be installed
+#           when you do `pip install jina`. They are essential to run 90% features & functionalities of Jina.
+# Extensions: they are labeled with different tags. They will NOT be installed by default. One can install a group of
+#           of dependencies labeled `tag` by `pip install "jina[tag]"`
+#
+# FILE FORMAT
 # https://hanxiao.io/2019/11/07/A-Better-Practice-for-Managing-extras-require-Dependencies-in-Python/
-# FORMAT
 # Put your extra requirements here in the following format
 #
 # package[version]: tag1, tag2, ...
@@ -9,7 +16,7 @@
 # 1. Try to reuse the existing tags if possible.
 #    If you intend to create a new tag, keep it alphabetical, short and general
 # 2. Package name itself is a tag already, so you don't need to tag it again.
-#    For example, 'flair>=0.4.1: flair' is redundant
+#    For example, 'numpy>=0.4.1: numpy' is redundant
 # 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
 # 4. Tag `all` is reserved for representing all packages
 
