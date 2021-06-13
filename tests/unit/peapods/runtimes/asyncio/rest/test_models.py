@@ -250,10 +250,9 @@ def test_2jina_document_to_pydantic_document_sparse():
             jina_doc['embedding']['sparse']['values']['buffer']
             == pydantic_doc.embedding.sparse.values.buffer.decode()
         )
-        assert (
-            jina_doc['embedding']['sparse']['values']['shape']
-            == pydantic_doc.embedding.sparse.values.shape
-        )
+        assert [
+            int(item) for item in jina_doc['embedding']['sparse']['values']['shape']
+        ] == pydantic_doc.embedding.sparse.values.shape
         assert (
             jina_doc['embedding']['sparse']['values']['dtype']
             == pydantic_doc.embedding.sparse.values.dtype
