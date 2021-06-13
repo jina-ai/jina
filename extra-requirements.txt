@@ -4,9 +4,6 @@
 #
 # package[version]: tag1, tag2, ...
 #
-# AVAILABLE TAGS
-#
-# nlp, cv, audio, numeric, index, http, sse, framework, perf, network
 #
 # REMARKS ON TAGS
 # 1. Try to reuse the existing tags if possible.
