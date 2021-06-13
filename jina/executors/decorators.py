@@ -70,7 +70,7 @@ def store_init_kwargs(func: Callable) -> Callable:
 
 def requests(
     func: Callable[
-        [DocumentArray, DocumentArray, Dict, List[DocumentArray], List[DocumentArray]],
+        [DocumentArray, Dict, DocumentArray, List[DocumentArray], List[DocumentArray]],
         Optional[DocumentArray],
     ] = None,
     *,
