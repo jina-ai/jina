@@ -58,7 +58,7 @@ class RESTRuntime(AsyncNewLoopRuntime):
                 host=self.args.host,
                 port=self.args.port_expose,
                 ws='wsproto',
-                log_level='critical',
+                log_level='info',
             )
         )
         await self._server.setup()
