@@ -205,9 +205,10 @@ def test_jina_document_to_pydantic_document():
         assert jina_doc['text'] == pydantic_doc.text
         assert jina_doc['mime_type'] == pydantic_doc.mime_type
         assert jina_doc['content_hash'] == pydantic_doc.content_hash
-        assert [
-            int(item) for item in jina_doc['embedding']['dense']['shape']
-        ] == pydantic_doc.embedding.dense.shape
+        assert (
+            list(map(int, jina_doc['embedding']['dense']['shape']))
+            == pydantic_doc.embedding.dense.shape
+        )
         assert (
             jina_doc['embedding']['dense']['dtype']
             == pydantic_doc.embedding.dense.dtype
@@ -225,7 +226,7 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['content_hash'] == pydantic_doc_chunk.content_hash
 
 
-def test_2jina_document_to_pydantic_document_sparse():
+def test_jina_document_to_pydantic_document_sparse():
     document_proto_model = PROTO_TO_PYDANTIC_MODELS.DocumentProto
 
     for jina_doc in random_docs(num_docs=10, sparse_embedding=True):
@@ -239,9 +240,10 @@ def test_2jina_document_to_pydantic_document_sparse():
             jina_doc['embedding']['sparse']['indices']['buffer']
             == pydantic_doc.embedding.sparse.indices.buffer.decode()
         )
-        assert [
-            int(item) for item in jina_doc['embedding']['sparse']['indices']['shape']
-        ] == pydantic_doc.embedding.sparse.indices.shape
+        assert (
+            list(map(int, jina_doc['embedding']['sparse']['indices']['shape']))
+            == pydantic_doc.embedding.sparse.indices.shape
+        )
         assert (
             jina_doc['embedding']['sparse']['indices']['dtype']
             == pydantic_doc.embedding.sparse.indices.dtype
@@ -250,9 +252,10 @@ def test_2jina_document_to_pydantic_document_sparse():
             jina_doc['embedding']['sparse']['values']['buffer']
             == pydantic_doc.embedding.sparse.values.buffer.decode()
         )
-        assert [
-            int(item) for item in jina_doc['embedding']['sparse']['values']['shape']
-        ] == pydantic_doc.embedding.sparse.values.shape
+        assert (
+            list(map(int, jina_doc['embedding']['sparse']['values']['shape']))
+            == pydantic_doc.embedding.sparse.values.shape
+        )
         assert (
             jina_doc['embedding']['sparse']['values']['dtype']
             == pydantic_doc.embedding.sparse.values.dtype
