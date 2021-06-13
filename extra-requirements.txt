@@ -54,6 +54,7 @@ websockets:                 http, devel, cicd, ws, daemon
 wsproto:                    http, devel, cicd, ws, daemon, chatbot, multimodal
 pydantic:                   http, devel, cicd, daemon, chatbot, multimodal
 python-multipart:           http, devel, cicd, daemon
+aiofiles:                   devel, cicd, http, daemon
 pytest-custom_exit_code:    test
 bs4:                        cicd
 aiostream:                  devel, cicd
