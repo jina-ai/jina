@@ -161,7 +161,7 @@ class BaseClient:
                 with cm1 as p_bar, cm2:
                     async for resp in stub.Call(req_iter):
                         resp.as_typed_request(resp.request_type)
-                        resp.as_response()
+                        resp = resp.as_response()
                         callback_exec(
                             response=resp,
                             on_error=on_error,
