@@ -8,8 +8,6 @@ from . import __resources_path__
 
 IMPORTED = SimpleNamespace()
 IMPORTED.executors = False
-IMPORTED.executors = False
-IMPORTED.hub = False
 IMPORTED.schema_executors = {}
 
 
