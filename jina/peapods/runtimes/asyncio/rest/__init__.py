@@ -51,6 +51,7 @@ class RESTRuntime(AsyncNewLoopRuntime):
         # as 'wsproto' is less performant and adds another dependency.
 
         from .....helper import extend_rest_interface
+        import os
 
         self._server = UviServer(
             config=Config(
@@ -58,7 +59,7 @@ class RESTRuntime(AsyncNewLoopRuntime):
                 host=self.args.host,
                 port=self.args.port_expose,
                 ws='wsproto',
-                log_level='info',
+                log_level=os.getenv('JINA_LOG_LEVEL', 'error'),
             )
         )
         await self._server.setup()
