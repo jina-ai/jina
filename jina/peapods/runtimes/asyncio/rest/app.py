@@ -134,7 +134,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict() if body else {'data': None}
+        bd = body.dict()
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -153,7 +153,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict() if body else {'data': None}
+        bd = body.dict()
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -172,7 +172,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict() if body else {'data': None}
+        bd = body.dict()
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -191,7 +191,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict() if body else {'data': None}
+        bd = body.dict()
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
