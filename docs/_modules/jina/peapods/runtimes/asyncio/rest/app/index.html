@@ -363,7 +363,7 @@
         <h1>Source code for jina.peapods.runtimes.asyncio.rest.app</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToJson</span>
 
@@ -468,7 +468,7 @@
         <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'Data Request'</span><span class="p">],</span>
         <span class="n">response_model</span><span class="o">=</span><span class="n">JinaRequestModel</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">JinaRequestModel</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaRequestModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Request mode service and return results in JSON, a deprecated interface.</span>
 
@@ -477,7 +477,7 @@
 <span class="sd">        :return: Results in JSONresponse.</span>
 <span class="sd">        """</span>
 
-        <span class="n">bd</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="n">bd</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">body</span> <span class="k">else</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
         <span class="n">bd</span><span class="p">[</span><span class="s1">'exec_endpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">endpoint</span>
         <span class="k">return</span> <span class="n">StreamingResponse</span><span class="p">(</span>
             <span class="n">result_in_stream</span><span class="p">(</span><span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">bd</span><span class="p">)),</span> <span class="n">media_type</span><span class="o">=</span><span class="s1">'application/json'</span>
