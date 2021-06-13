@@ -1,6 +1,6 @@
 import argparse
 import asyncio
-from typing import Any
+from typing import Any, Optional
 
 from google.protobuf.json_format import MessageToJson
 
@@ -105,7 +105,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         tags=['Data Request'],
         response_model=JinaRequestModel,
     )
-    async def post(endpoint: str, body: JinaRequestModel):
+    async def post(endpoint: str, body: Optional[JinaRequestModel] = None):
         """
         Request mode service and return results in JSON, a deprecated interface.
 
@@ -114,7 +114,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Results in JSONresponse.
         """
 
-        bd = body.dict()
+        bd = body.dict() if body else {'data': None}
         bd['exec_endpoint'] = endpoint
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
@@ -134,7 +134,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict()
+        bd = body.dict() if body else {'data': None}
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -153,7 +153,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict()
+        bd = body.dict() if body else {'data': None}
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -172,7 +172,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict()
+        bd = body.dict() if body else {'data': None}
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -191,7 +191,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :return: Response of the results.
         """
 
-        bd = body.dict()
+        bd = body.dict() if body else {'data': None}
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
