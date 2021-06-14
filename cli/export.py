@@ -21,7 +21,7 @@ def api_to_dict():
         'source': 'https://github.com/jina-ai/jina/tree/'
         + os.environ.get('JINA_VCS_VERSION', 'master'),
         'url': 'https://jina.ai',
-        'docs': 'https://docs2.jina.ai',
+        'docs': 'https://docs.jina.ai',
         'authors': 'dev-team@jina.ai',
         'version': __version__,
         'methods': [],
