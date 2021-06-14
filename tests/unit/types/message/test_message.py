@@ -208,12 +208,12 @@ def test_lazy_request_fields(algo):
     ],
 )
 def test_empty_request_type(typ, pb_typ):
-    r = Request().as_typed_request(typ)
+    r = Request()
     assert r.request_type is None
     with pytest.raises(ValueError):
         print(r.body)
 
-    r.request_type = typ
+    r = r.as_typed_request(typ)
     assert r._request_type == typ
     assert isinstance(r.body, pb_typ)
 
