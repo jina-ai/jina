@@ -51,8 +51,8 @@ def test_request_type_set_get(req):
 
 
 def test_request_type_set_get_fail(req):
-    with pytest.raises(ValueError):
-        request = Request(request=req, copy=False).as_typed_request('random')
+    with pytest.raises(TypeError):
+        Request(request=req, copy=False).as_typed_request('random')
 
 
 def test_command(req):

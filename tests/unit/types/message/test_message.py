@@ -143,7 +143,7 @@ def test_lazy_nested_clear_access(algo):
 
 
 def test_lazy_msg_access():
-    reqs = [
+    messages = [
         Message(
             None,
             r.SerializeToString(),
@@ -154,23 +154,23 @@ def test_lazy_msg_access():
         )
         for r in request_generator('/', random_docs(10))
     ]
-    for r in reqs:
-        r.request.is_used = False
-        assert r.envelope
-        assert len(r.dump()) == 3
-        assert not r.request.is_used
+    for m in messages:
+        m.request.is_used = False
+        assert m.envelope
+        assert len(m.dump()) == 3
+        assert not m.request.is_used
 
-    for r in reqs:
-        assert not r.request.is_used
-        assert r.request
-        assert len(r.dump()) == 3
-        assert not r.request.is_used
+    for m in messages:
+        assert not m.request.is_used
+        assert m.request
+        assert len(m.dump()) == 3
+        assert not m.request.is_used
 
-    for r in reqs:
-        assert not r.request.is_used
-        assert r.request.data.docs
-        assert len(r.dump()) == 3
-        assert r.request.is_used
+    for m in messages:
+        assert not m.request.is_used
+        assert m.request.data.docs
+        assert len(m.dump()) == 3
+        assert m.request.is_used
 
 
 def test_message_size():

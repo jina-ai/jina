@@ -59,6 +59,8 @@ class Request(ProtoTypeMixin):
     ):
         self._buffer = None
         self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
+        self.is_used = False
+        self._compression_algorithm = compression_algorithm
         try:
             if isinstance(request, jina_pb2.RequestProto):
                 if copy:
@@ -81,9 +83,6 @@ class Request(ProtoTypeMixin):
         except Exception as ex:
             raise BadRequestType(f'fail to construct a request from {request}') from ex
 
-        self._compression_algorithm = compression_algorithm
-        self.is_used = False  #: Return True when request has been r/w at least once
-
     def __getattr__(self, name: str):
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__
         if name in _trigger_body_fields:
@@ -93,7 +92,9 @@ class Request(ProtoTypeMixin):
 
     @classmethod
     def _from_request(cls, req: 'Request'):
-        instance = cls(req._pb_body)
+        instance = cls()
+        instance._pb_body = req._pb_body
+        instance._buffer = req._buffer
         instance.is_used = req.is_used
         return instance
 
@@ -134,7 +135,7 @@ class Request(ProtoTypeMixin):
         from .data import DataRequest
 
         if request_type in _body_type:
-            getattr(self.proto, request_type).SetInParent()
+            getattr(self._pb_body, request_type).SetInParent()
         rt = request_type.upper()
         if rt.startswith(str(RequestType.DATA)):
             return DataRequest._from_request(self)
@@ -185,6 +186,7 @@ class Request(ProtoTypeMixin):
             return self._pb_body
         else:
             # if not then build one from buffer
+
             r = jina_pb2.RequestProto()
             _buffer = self._decompress(
                 self._buffer,
