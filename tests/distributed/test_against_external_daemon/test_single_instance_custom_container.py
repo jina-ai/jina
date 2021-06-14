@@ -78,9 +78,7 @@ def _container_info(workspace_id):
 
 
 def test_delete_custom_container():
-    workspace_id = create_workspace(
-        filepaths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]
-    )
+    workspace_id = create_workspace(filepaths=[os.path.join(cur_dir, 'blocking.jinad')])
     wait_for_workspace(workspace_id)
 
     # check that container was created
@@ -89,11 +87,15 @@ def test_delete_custom_container():
     assert container_id
 
     # delete container
-    response = requests.delete(
+    requests.delete(
         f'http://{CLOUD_HOST}/workspaces/{workspace_id}',
-        params={'container': True, 'everything': False},
+        params={
+            'container': True,
+            'everything': False,
+            'network': False,
+            'files': False,
+        },
     )
-    assert response.json()[0] == container_id
 
     # check that deleted container is gone
     response = requests.get(f'http://{CLOUD_HOST}/workspaces/{workspace_id}')
