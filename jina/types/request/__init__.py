@@ -253,7 +253,7 @@ class Request(ProtoTypeMixin):
         self._pb_body.parameters.update(value)
 
 
-class Response:
+class Response(Request):
     """
     Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
     :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
