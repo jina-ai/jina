@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from daemon.stores.helper import get_workspace_path
+from daemon.helper import get_workspace_path
 
 cur_dir = Path(__file__).parent
 
