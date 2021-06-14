@@ -44,7 +44,7 @@ pygments_style = 'rainbow_dash'
 html_theme = 'furo'
 
 base_url = '/'
-html_baseurl = 'https://docs2.jina.ai'
+html_baseurl = 'https://docs.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
@@ -134,8 +134,8 @@ linkcheck_timeout = 20
 linkcheck_retries = 2
 linkcheck_anchors = False
 
-ogp_site_url = 'https://docs2.jina.ai/'
-ogp_image = 'https://docs2.jina.ai/_static/banner.png'
+ogp_site_url = 'https://docs.jina.ai/'
+ogp_image = 'https://docs.jina.ai/_static/banner.png'
 ogp_use_first_image = True
 ogp_description_length = 300
 ogp_type = 'website'

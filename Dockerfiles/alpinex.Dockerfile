@@ -7,7 +7,7 @@ ARG JINA_VERSION
 LABEL org.opencontainers.image.created=$BUILD_DATE \
       org.opencontainers.image.authors="dev-team@jina.ai" \
       org.opencontainers.image.url="https://jina.ai" \
-      org.opencontainers.image.documentation="https://docs2.jina.ai" \
+      org.opencontainers.image.documentation="https://docs.jina.ai" \
       org.opencontainers.image.source="https://github.com/jina-ai/jina/commit/$VCS_REF" \
       org.opencontainers.image.version=$JINA_VERSION \
       org.opencontainers.image.revision=$VCS_REF \
