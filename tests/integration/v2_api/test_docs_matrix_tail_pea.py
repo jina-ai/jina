@@ -15,8 +15,7 @@ class DummyExecutor(Executor):
     def do_something(self, docs, **kwargs):
         for doc in docs:
             chunks = ChunkArray(
-                (d for d in doc.chunks if d.modality == self._mode),
-                doc
+                (d for d in doc.chunks if d.modality == self._mode), doc
             )
             assert chunks[0].content == self._mode
             assert len(chunks) == 1
