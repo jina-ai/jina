@@ -69,7 +69,44 @@ def test_metas_workspace_replica_peas(tmpdir, replica_id, pea_id):
 def test_executor_workspace_simple(test_metas_workspace_simple):
     executor = Executor(metas=test_metas_workspace_simple)
     assert executor.workspace == os.path.abspath(
-        test_metas_workspace_simple['workspace']
+        os.path.join(
+            test_metas_workspace_simple['workspace'],
+            test_metas_workspace_simple['name'],
+        )
+    )
+
+
+def test_executor_workspace_simple_workspace(tmpdir):
+    workspace = os.path.join(tmpdir, 'some_folder')
+    name = 'test_meta'
+
+    executor = Executor(metas={'name': name, 'workspace': workspace})
+    assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
+
+    executor = Executor(metas={'name': name}, runtime_args={'workspace': workspace})
+    assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
+
+    # metas before runtime_args
+    executor = Executor(
+        metas={'name': name, 'workspace': workspace},
+        runtime_args={'workspace': 'test2'},
+    )
+    assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
+
+    executor = Executor(
+        metas={'name': name, 'workspace': workspace},
+        runtime_args={'pea_id': 1, 'replica_id': 2},
+    )
+    assert executor.workspace == os.path.abspath(
+        os.path.join(workspace, name, '2', '1')
+    )
+
+    executor = Executor(
+        metas={'name': name},
+        runtime_args={'workspace': workspace, 'pea_id': 1, 'replica_id': 2},
+    )
+    assert executor.workspace == os.path.abspath(
+        os.path.join(workspace, name, '2', '1')
     )
 
 
