@@ -169,8 +169,7 @@ def test_doc_content():
 
 def test_request_docs_mutable_iterator():
     """To test the weak reference work in docs"""
-    r = Request()
-    r.request_type = 'data'
+    r = Request().as_typed_request('data')
     for d in random_docs(10):
         r.docs.append(d)
 
@@ -204,8 +203,7 @@ def test_request_docs_mutable_iterator():
 
 def test_request_docs_chunks_mutable_iterator():
     """Test if weak reference work in nested docs"""
-    r = Request()
-    r.request_type = 'data'
+    r = Request().as_typed_request('data')
     for d in random_docs(10):
         r.docs.append(d)
 

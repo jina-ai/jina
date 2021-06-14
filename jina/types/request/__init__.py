@@ -72,8 +72,6 @@ class Request(ProtoTypeMixin):
             elif isinstance(request, bytes):
                 self._buffer = request
                 self._pb_body = None
-            elif isinstance(request, Request):
-                self._pb_body = request._pb_body
             elif request is None:
                 # make sure every new request has a request id
                 self._pb_body.request_id = random_identity()
@@ -92,6 +90,12 @@ class Request(ProtoTypeMixin):
             return getattr(self.body, name)
         else:
             return getattr(self.proto, name)
+
+    @classmethod
+    def _from_request(cls, req: 'Request'):
+        instance = cls(req._pb_body)
+        instance.is_used = req.is_used
+        return instance
 
     @property
     def body(self):
@@ -129,28 +133,15 @@ class Request(ProtoTypeMixin):
         from .control import ControlRequest
         from .data import DataRequest
 
+        if request_type in _body_type:
+            getattr(self.proto, request_type).SetInParent()
         rt = request_type.upper()
         if rt.startswith(str(RequestType.DATA)):
-            self.__class__ = DataRequest
+            return DataRequest._from_request(self)
         elif rt.startswith(str(RequestType.CONTROL)):
-            self.__class__ = ControlRequest
+            return ControlRequest._from_request(self)
         else:
             raise TypeError(f'{request_type} is not recognized')
-        return self
-
-    @request_type.setter
-    def request_type(self, value: str):
-        """
-        Set the type of this request, but keep the body empty.
-
-        :param value: string representation of request type
-        """
-        value = value.lower()
-        if value in _body_type:
-            getattr(self.proto, value).SetInParent()
-        else:
-            raise ValueError(f'{value} is not valid, must be one of {_body_type}')
-        self.as_typed_request(self._request_type)
 
     @staticmethod
     def _decompress(data: bytes, algorithm: Optional[CompressAlgo]) -> bytes:
@@ -230,7 +221,7 @@ class Request(ProtoTypeMixin):
 
         :return: `self` as an instance of `Response`
         """
-        return Response(self)
+        return Response._from_request(self)
 
     @property
     def parameters(self) -> Dict:
@@ -250,9 +241,13 @@ class Request(ProtoTypeMixin):
         self._pb_body.parameters.update(value)
 
 
-class Response(Request, DocsPropertyMixin, GroundtruthPropertyMixin, CommandMixin):
+class Response(Request, DocsPropertyMixin, GroundtruthPropertyMixin):
     """
     Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
     :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
     the client API: send a :class:`Request` and receive a :class:`Response`.
+
+    .. note::
+        For now it only exposes `Docs` and `GroundTruth`. Users should very rarely access `Control` commands, so preferably
+        not confuse the user by adding `CommandMixin`.
     """

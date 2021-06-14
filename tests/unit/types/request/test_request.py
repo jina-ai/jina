@@ -30,8 +30,7 @@ def test_init_fail():
 
 
 def test_docs(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'data'
+    request = Request(request=req, copy=False).as_typed_request('data')
     docs = request.docs
     assert request.is_used
     assert isinstance(docs, DocumentArray)
@@ -39,8 +38,7 @@ def test_docs(req):
 
 
 def test_groundtruth(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'data'
+    request = Request(request=req, copy=False).as_typed_request('data')
     groundtruths = request.groundtruths
     assert request.is_used
     assert isinstance(groundtruths, DocumentArray)
@@ -48,20 +46,17 @@ def test_groundtruth(req):
 
 
 def test_request_type_set_get(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'data'
+    request = Request(request=req, copy=False).as_typed_request('data')
     assert request.request_type == 'DataRequestProto'
 
 
 def test_request_type_set_get_fail(req):
-    request = Request(request=req, copy=False)
     with pytest.raises(ValueError):
-        request.request_type = 'random'
+        request = Request(request=req, copy=False).as_typed_request('random')
 
 
 def test_command(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'control'
+    request = Request(request=req, copy=False).as_typed_request('control')
     cmd = request.command
     assert request.is_used
     assert cmd

@@ -101,7 +101,7 @@ def test_lazy_append_access(algo):
     )
     for r in reqs:
         assert not r.is_used
-        r.request_type = 'data'
+        r = Request().as_typed_request('data')
         # write access r.train
         r.docs.append(Document())
         # now it is read
@@ -208,7 +208,7 @@ def test_lazy_request_fields(algo):
     ],
 )
 def test_empty_request_type(typ, pb_typ):
-    r = Request()
+    r = Request().as_typed_request(typ)
     assert r.request_type is None
     with pytest.raises(ValueError):
         print(r.body)
@@ -225,8 +225,7 @@ def test_empty_request_type(typ, pb_typ):
     ],
 )
 def test_add_doc_to_type(typ, pb_typ):
-    r = Request()
-    r.request_type = typ
+    r = Request().as_typed_request(typ)
     for _ in range(10):
         r.docs.append(Document())
         r.groundtruths.append(Document())
