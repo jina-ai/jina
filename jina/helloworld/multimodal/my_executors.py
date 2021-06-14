@@ -246,12 +246,6 @@ class KeyValueIndexer(Executor):
         super().__init__(*args, **kwargs)
         self._docs = DocumentArrayMemmap(self.workspace + '/kv-idx')
 
-    @property
-    def save_path(self):
-        if not os.path.exists(self.workspace):
-            os.makedirs(self.workspace)
-        return os.path.join(self.workspace, 'kv.json')
-
     @requests(on='/index')
     def index(self, docs: DocumentArray, **kwargs):
         self._docs.extend(docs)
