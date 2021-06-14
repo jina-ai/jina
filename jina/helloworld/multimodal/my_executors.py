@@ -71,9 +71,7 @@ class TextEncoder(Executor):
     def encode(self, docs: 'DocumentArray', *args, **kwargs):
 
         chunks = DocumentArray(
-            list(
-                filter(lambda d: d.mime_type == 'text/plain', docs.traverse_flat(['c']))
-            )
+            d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
         )
 
         texts = chunks.get_attributes('text')
@@ -130,9 +128,7 @@ class ImageCrafter(Executor):
 
     def craft(self, docs: DocumentArray, fn):
         chunks = DocumentArray(
-            list(
-                filter(lambda d: d.mime_type == 'image/jpeg', docs.traverse_flat(['c']))
-            )
+            d for d in docs.traverse_flat(['c']) if d.mime_type == 'image/jpeg'
         )
         for doc in chunks:
             getattr(doc, fn)()

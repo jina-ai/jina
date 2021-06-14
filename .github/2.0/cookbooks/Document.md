@@ -700,6 +700,7 @@ from jina import DocumentArray, Document
 
 da = DocumentArray([Document(weight=j) for j in range(6)])
 da2 = DocumentArray(list(filter(lambda d: d.weight > 2, da)))
+da2 = DocumentArray(d for d in da if d.weight > 2)
 
 print(da2)
 ```
