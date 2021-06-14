@@ -4,9 +4,6 @@ from ..clients.mixin import AsyncPostMixin
 
 class AsyncFlow(AsyncPostMixin, Flow):
     """
-    .. warning::
-        This class is deprecated, use `Flow(asyncio=True)`
-
     :class:`AsyncFlow` is the asynchronous version of the :class:`Flow`. They share the same interface, except
     in :class:`AsyncFlow` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
     (i.e. declared with the async/await syntax), simply calling them will not schedule them to be executed.

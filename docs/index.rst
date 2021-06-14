@@ -1,27 +1,26 @@
-Table of contents
-**********************
+Jina Documentation
+******************
+
+.. include:: ../README.md
+   :start-after: <!-- start elevator-pitch -->
+   :end-before: <!-- end elevator-pitch -->
+
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Python API
+   :titlesonly:
+   :maxdepth: 1
+   :caption: Developer Reference
 
    api/jina
-
-.. toctree::
-   :titlesonly:
-   :glob:
-   :caption: Command Line Interface
-
    cli/index
-
-.. toctree::
-   :titlesonly:
-   :glob:
-   :caption: Protobuf Specification
-
    proto/index
 
+.. toctree::
+   :caption: Links
+
+   GitHub repository <https://github.com/jina-ai/jina>
+   Slack community <https://slack.jina.ai>
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
+

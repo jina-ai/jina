@@ -8,7 +8,7 @@
        documents: ${{JINA_OPTIMIZER_DATA_FILE}}
        request_size: 1
        execution_endpoint: 'search'
-   evaluation_callback: !MeanEvaluationCallback {}
+   evaluation_callback: !EvaluationCallback {}
    parameter_yaml: ${{JINA_OPTIMIZER_PARAMETER_FILE}}
    workspace_base_dir: ${{JINA_OPTIMIZER_WORKSPACE_DIR}}
    n_trials: 5

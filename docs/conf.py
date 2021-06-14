@@ -50,9 +50,9 @@ sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
 
 html_theme_options = {
-    'analytics_id': 'UA-164627626-3',  # Provided by Google in your dashboard
     'light_logo': 'logo-light.svg',
     'dark_logo': 'logo-dark.svg',
+    "sidebar_hide_name": True,
 }
 
 html_static_path = ['_static']
@@ -78,7 +78,6 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
-    'sphinx_rtd_theme',
     'recommonmark',
     'sphinx_markdown_tables',
     'sphinx_copybutton',
@@ -135,6 +134,31 @@ linkcheck_timeout = 20
 linkcheck_retries = 2
 linkcheck_anchors = False
 
+ogp_site_url = 'https://docs2.jina.ai/'
+ogp_image = 'https://docs2.jina.ai/_static/banner.png'
+ogp_use_first_image = True
+ogp_description_length = 300
+ogp_type = 'website'
+ogp_site_name = 'Jina Documentation'
+
+ogp_custom_meta_tags = [
+    '<meta name="twitter:card" content="summary_large_image">',
+    '<meta name="twitter:site" content="@JinaAI_">',
+    '<meta name="twitter:creator" content="@JinaAI_">',
+    '<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+    '<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+    '''
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+    '''
+]
 
 def setup(app):
     from sphinx.domains.python import PyField
