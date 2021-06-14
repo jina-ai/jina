@@ -124,6 +124,7 @@ jobs:
           rm -rf ./_build/dirhtml/
           ls -la
           touch .nojekyll
+          cp 404/index.html 404.html
           echo docs2.jina.ai > CNAME
           git add api cli proto
           git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
