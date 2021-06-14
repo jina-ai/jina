@@ -1,9 +1,9 @@
-!Flow
+jtype: Flow
 version: '1'
 with:
   read_only: true
   rest_api: true
-  port_expose: 45678
+  port_expose: 45630
 pods:
   - name: pod1
     uses: docker://hubpod:test

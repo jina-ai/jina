@@ -13,7 +13,7 @@ flow_yaml = os.path.join(cur_dir, 'flow.yml')
 JINAD_HOST = __default_host__
 GATEWAY_HOST = __default_host__
 JINAD_PORT = 8000
-GATEWAY_PORT = 45678
+GATEWAY_PORT = 45630
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
