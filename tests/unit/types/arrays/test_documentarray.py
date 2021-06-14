@@ -242,7 +242,8 @@ def test_documentarray_filter():
     for j in range(6):
         da[j].score.value = j
 
-    assert len(DocumentArray(d for d in da if d.score.value > 2)) == 3
+    da = [d for d in da if d.score.value > 2]
+    assert len(DocumentArray(da)) == 3
 
     for d in da:
         assert d.score.value > 2
