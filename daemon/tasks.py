@@ -107,7 +107,7 @@ class DaemonWorker(Thread):
             store.update(
                 id=self.id,
                 value=WorkspaceItem(
-                    state=WorkspaceState.ACTIVE,
+                    state=WorkspaceState.UPDATING,
                     metadata=self.metadata,
                     arguments=self.arguments,
                 ),
@@ -124,6 +124,7 @@ class DaemonWorker(Thread):
 
             # Create a new container if necessary
             store[self.id].metadata.container_id = self.container_id
+            store[self.id].state = WorkspaceState.ACTIVE
 
             self._logger.success(
                 f'workspace {colored(str(self.id), "cyan")} is updated'
