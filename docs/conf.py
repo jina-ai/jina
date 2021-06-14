@@ -98,7 +98,7 @@ notfound_context = {
 <p>Oops, we couldn't find that page. </p>
 <p>You can try using the search box or check our menu on the left hand side of this page.</p>
 
-<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond. Please use the tag <pre>Documentation</pre>. </p>
+<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond.</p>
 
 ''',
 }
