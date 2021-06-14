@@ -54,13 +54,14 @@ class DaemonWorker(Thread):
 
     @cached_property
     def metadata(self):
+        image_id = self.generate_image()
         try:
             _metadata = store[self.id].metadata.copy(deep=True)
-            _metadata.image_id = self.image_id
+            _metadata.image_id = image_id
             _metadata.image_name = self.id.tag
         except AttributeError:
             _metadata = WorkspaceMetadata(
-                image_id=self.image_id,
+                image_id=image_id,
                 image_name=self.id.tag,
                 network=id_cleaner(self.network_id),
                 workdir=self.workdir,
@@ -79,8 +80,7 @@ class DaemonWorker(Thread):
     def network_id(self):
         return Dockerizer.network(workspace_id=self.id)
 
-    @cached_property
-    def image_id(self):
+    def generate_image(self):
         return Dockerizer.build(
             workspace_id=self.id, daemon_file=self.daemon_file, logger=self._logger
         )
@@ -92,10 +92,11 @@ class DaemonWorker(Thread):
                 workspace_id=self.id, daemon_file=self.daemon_file
             )
             return id_cleaner(container.id)
+        else:
+            return None
 
     def run(self) -> None:
         try:
-            # TODO: Handle diff in case of "update"
             store.update(
                 id=self.id,
                 value=WorkspaceState.UPDATING
@@ -106,13 +107,25 @@ class DaemonWorker(Thread):
             store.update(
                 id=self.id,
                 value=WorkspaceItem(
-                    state=WorkspaceState.ACTIVE,
+                    state=WorkspaceState.UPDATING,
                     metadata=self.metadata,
                     arguments=self.arguments,
                 ),
             )
+
             # this needs to be done after the initial update, otherwise run won't find the necessary metadata
+            # If a container exists already, kill it before running again
+            previous_container = store[self.id].metadata.container_id
+            if previous_container:
+                self._logger.info(f'Deleting previous container {previous_container}')
+                store[self.id].metadata.container_id = None
+                del self.container_id
+                Dockerizer.rm_container(previous_container)
+
+            # Create a new container if necessary
             store[self.id].metadata.container_id = self.container_id
+            store[self.id].state = WorkspaceState.ACTIVE
+
             self._logger.success(
                 f'workspace {colored(str(self.id), "cyan")} is updated'
             )

@@ -26,6 +26,9 @@ def workspace_files(
     for f in files:
         dest = os.path.join(workdir, f.filename)
         if os.path.isfile(dest):
+            if f.filename == 'requirements.txt':
+                _merge_requirement_file(dest, f)
+                continue
             logger.warning(
                 f'file {f.filename} already exists in workspace {workspace_id}, will be replaced'
             )
@@ -33,6 +36,25 @@ def workspace_files(
             content = f.file.read()
             fp.write(content)
         logger.info(f'saved uploads to {dest}')
+
+
+def _merge_requirement_file(dest, f: UploadFile):
+    # Open existing requirements in binary mode
+    # UploadFile is also in binary mode
+    with open(dest, "rb") as existing_requirements_file:
+        old_requirements = _read_requirements_file(existing_requirements_file)
+    old_requirements.update(_read_requirements_file(f.file))
+    # Store merged requirements
+    with open(dest, "w") as req_file:
+        req_file.write("\n".join(list(old_requirements.values())))
+
+
+def _read_requirements_file(f):
+    requirements = {}
+    for line in f.readlines():
+        line = line.decode()
+        requirements[line.split('=')[0]] = line.replace("\n", "")
+    return requirements
 
 
 class DaemonFile:
