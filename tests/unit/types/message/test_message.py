@@ -5,9 +5,9 @@ import pytest
 from jina import Document
 from jina.clients.request import request_generator
 from jina.proto import jina_pb2
-from jina.proto.jina_pb2 import EnvelopeProto
 from jina.types.message import Message
 from jina.types.request import _trigger_fields, Request
+from jina.enums import CompressAlgo
 from tests import random_docs
 
 
@@ -15,9 +15,13 @@ from tests import random_docs
     'field',
     _trigger_fields.difference({'command', 'args', 'flush', 'propagate', 'targets'}),
 )
-def test_lazy_access(field):
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_lazy_access(field, algo):
     reqs = (
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
@@ -30,9 +34,13 @@ def test_lazy_access(field):
         assert r.is_used
 
 
-def test_multiple_access():
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_multiple_access(algo):
     reqs = [
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     ]
     for r in reqs:
@@ -46,9 +54,13 @@ def test_multiple_access():
         assert r.is_used
 
 
-def test_lazy_nest_access():
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_lazy_nest_access(algo):
     reqs = (
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
@@ -60,9 +72,13 @@ def test_lazy_nest_access():
         assert r.data.docs[0].id == '1' * 16
 
 
-def test_lazy_change_message_type():
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_lazy_change_message_type(algo):
     reqs = (
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
@@ -74,9 +90,13 @@ def test_lazy_change_message_type():
         assert len(r.data.docs) == 0
 
 
-def test_lazy_append_access():
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_lazy_append_access(algo):
     reqs = (
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
@@ -88,9 +108,13 @@ def test_lazy_append_access():
         assert r.is_used
 
 
-def test_lazy_clear_access():
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_lazy_clear_access(algo):
     reqs = (
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
@@ -101,9 +125,13 @@ def test_lazy_clear_access():
         assert r.is_used
 
 
-def test_lazy_nested_clear_access():
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_lazy_nested_clear_access(algo):
     reqs = (
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
@@ -159,9 +187,13 @@ def test_message_size():
         )
 
 
-def test_lazy_request_fields():
+@pytest.mark.parametrize(
+    'algo',
+    [None, CompressAlgo.NONE],
+)
+def test_lazy_request_fields(algo):
     reqs = (
-        Request(r.SerializeToString(), EnvelopeProto())
+        Request(r.SerializeToString(), algo)
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:

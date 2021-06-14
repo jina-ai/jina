@@ -93,7 +93,13 @@ class Message:
         :param val: serialized Request
         """
         if isinstance(val, bytes):
-            self._request = Request(val, self.envelope)
+
+            self._request = Request(
+                val,
+                CompressAlgo.from_string(self.envelope.compression.algorithm)
+                if self.envelope
+                else None,
+            )
             self._size += sys.getsizeof(val)
         elif isinstance(val, (Request, jina_pb2.RequestProto)):
             self._request = val  # type: Union['Request', 'jina_pb2.RequestProto']

@@ -53,7 +53,7 @@ class Request(ProtoTypeMixin):
         request: Optional[
             Union[bytes, dict, str, 'jina_pb2.RequestProto', 'Request']
         ] = None,
-        compression_algorithm: Optional[str] = None,
+        compression_algorithm: Optional[CompressAlgo] = None,
         copy: bool = False,
     ):
         self._buffer = None
@@ -152,28 +152,27 @@ class Request(ProtoTypeMixin):
         self.as_typed_request(self._request_type)
 
     @staticmethod
-    def _decompress(data: bytes, algorithm: str) -> bytes:
+    def _decompress(data: bytes, algorithm: Optional[CompressAlgo]) -> bytes:
         if not algorithm:
             return data
 
-        ctag = CompressAlgo.from_string(algorithm)
-        if ctag == CompressAlgo.LZ4:
+        if algorithm == CompressAlgo.LZ4:
             import lz4.frame
 
             data = lz4.frame.decompress(data)
-        elif ctag == CompressAlgo.BZ2:
+        elif algorithm == CompressAlgo.BZ2:
             import bz2
 
             data = bz2.decompress(data)
-        elif ctag == CompressAlgo.LZMA:
+        elif algorithm == CompressAlgo.LZMA:
             import lzma
 
             data = lzma.decompress(data)
-        elif ctag == CompressAlgo.ZLIB:
+        elif algorithm == CompressAlgo.ZLIB:
             import zlib
 
             data = zlib.decompress(data)
-        elif ctag == CompressAlgo.GZIP:
+        elif algorithm == CompressAlgo.GZIP:
             import gzip
 
             data = gzip.decompress(data)
