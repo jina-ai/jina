@@ -18,6 +18,7 @@ Jina Documentation
 .. toctree::
    :caption: Links
 
+   Tutorials <https://github.com/jina-ai/jina#read-tutorials>
    GitHub repository <https://github.com/jina-ai/jina>
    Slack community <https://slack.jina.ai>
 
