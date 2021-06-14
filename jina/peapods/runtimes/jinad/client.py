@@ -86,10 +86,9 @@ class DaemonClient:
     def _daemonize_id(self, id: str, kind: str = 'workspace') -> str:
         return f'j{kind}-{id}'
 
-    async def logstream(self, workspace_id: str, id: str):
+    async def logstream(self, id: str):
         """Websocket log stream from remote Pea / Pod
 
-        :param workspace_id: the identity of the workspace
         :param id:  the identity of that Pea / Pod
         """
         with ImportExtensions(required=True):

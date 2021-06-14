@@ -1,23 +1,30 @@
 import os
-from daemon.models.id import DaemonID
-from daemon.api import dependencies
-from daemon.api.dependencies import FlowDepends
 
 import pytest
 
+from fastapi import HTTPException
+from daemon.api import dependencies
+from daemon.models.id import DaemonID
+from daemon.api.dependencies import FlowDepends
+
+
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+filename = os.path.join(cur_dir, 'flow1.yml')
 
 
-@pytest.mark.parametrize(
-    'filename, expected',
-    [
-        ('flow1.yml', 28956),
-        ('flow2.yml', 34567)
-    ]
-)
-def test_flow_depends_ports(filename, expected, monkeypatch):
-    monkeypatch.setattr(dependencies, 'random_port', lambda: expected)
-    monkeypatch.setattr(FlowDepends, 'validate', lambda *args: os.path.join(cur_dir, filename))
+def test_flow_depends_localpath(monkeypatch):
+    monkeypatch.setattr(dependencies, "get_workspace_path", lambda *args: filename)
     f = FlowDepends(DaemonID('jworkspace'), filename)
-    assert f.port_expose == expected
-    assert f.ports == {f'{expected}/tcp': expected}
+    assert str(f.localpath()) == filename
+
+    with pytest.raises(HTTPException) as e:
+        monkeypatch.setattr(dependencies, "get_workspace_path", lambda *args: 'abc')
+        f = FlowDepends(DaemonID('jworkspace'), filename)
+        f.localpath()
+
+
+def test_flow_depends_ports():
+    expected_port = 28956
+    f = FlowDepends(DaemonID('jworkspace'), filename)
+    assert f.params.port_expose == expected_port
+    assert f.ports == {f'{expected_port}/tcp': expected_port}

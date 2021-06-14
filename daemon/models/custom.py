@@ -33,7 +33,7 @@ def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser'], **kwa
     choices_validators = {}
 
     for a in _export_parser_args(parser, **kwargs):
-        if a.get('choices', None):
+        if a.get('choices', None) and a.get('default', None):
             choices_validators[f'validator_for_{a["name"]}'] = _get_validator(
                 field=a['name'], choices=set(a['choices'])
             )

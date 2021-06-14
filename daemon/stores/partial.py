@@ -1,3 +1,5 @@
+import os
+import signal
 from argparse import Namespace
 
 from jina import Flow
@@ -36,11 +38,17 @@ class PartialStore:
         raise NotImplementedError
 
     def delete(self) -> None:
-        """Deletes an element from the store. This method needs to be overridden by the subclass
-
-
-        .. #noqa: DAR101"""
-        raise NotImplementedError
+        """Terminates the object in the store & stops the server"""
+        try:
+            if getattr(self, 'object', None):
+                self.object.close()
+            else:
+                self._logger.info(f'nothing to close. exiting')
+        except Exception as e:
+            self._logger.error(f'{e!r}')
+            raise
+        else:
+            os.kill(os.getpid(), signal.SIGINT)
 
 
 class PartialPeaStore(PartialStore):
@@ -68,10 +76,6 @@ class PartialPeaStore(PartialStore):
     def update(self) -> PartialStoreItem:
         # TODO
         pass
-
-    def delete(self) -> None:
-        """Terminates a Pea in `mini-jinad`"""
-        self.object.close()
 
 
 class PartialPodStore(PartialPeaStore):
@@ -117,13 +121,3 @@ class PartialFlowStore(PartialStore):
         else:
             self.item.arguments = vars(self.object.args)
             return self.item
-
-    def delete(self) -> None:
-        try:
-            self.object.close()
-            # Server should exit here
-        except Exception as e:
-            self._logger.error(f'{e!r}')
-            raise
-        else:
-            self.item = PartialStoreItem()

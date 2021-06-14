@@ -2,6 +2,7 @@ import os
 import shutil
 import pickle
 from pathlib import Path
+from copy import deepcopy
 from datetime import datetime
 from collections.abc import MutableMapping
 from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union
@@ -130,7 +131,8 @@ class BaseStore(MutableMapping):
     def clear(self, **kwargs) -> None:
         """delete all the objects in the store"""
 
-        for k in self.status.items.keys():
+        _status = deepcopy(self.status)
+        for k in _status.items.keys():
             self.delete(id=k, workspace=True, **kwargs)
 
     def reset(self) -> None:

@@ -6,7 +6,7 @@ from fastapi import HTTPException, UploadFile, File
 
 from jina import __default_host__, Flow
 from jina.enums import PeaRoleType, SocketType
-from jina.helper import ArgNamespace, cached_property, random_port
+from jina.helper import cached_property
 
 from .. import __dockerhost__
 from ..helper import get_workspace_path
@@ -152,8 +152,8 @@ class PodDepends(PeaDepends):
     def __init__(self, workspace_id: DaemonID, pod: PodModel):
         self.workspace_id = workspace_id
         self.params = pod
-        self.validate()
         self.id = DaemonID('jpod')
+        self.validate()
 
 
 class WorkspaceDepends:

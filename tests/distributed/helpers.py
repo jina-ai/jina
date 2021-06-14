@@ -8,7 +8,6 @@ import requests
 from jina import __default_host__
 from daemon.models import DaemonID
 from daemon.models.enums import WorkspaceState
-from jina.parsers import set_client_cli_parser
 
 
 def assert_request(
@@ -65,8 +64,8 @@ def create_workspace(
             print('nothing to upload')
             return
 
+        print(f'will upload files: {files_to_upload}')
         url = _jinad_url(host, port, 'workspaces')
-        print(f'will upload files: {files_to_upload} to {url}')
         r = requests.post(url, files=list(files_to_upload))
         print(f'Checking if the upload is succeeded: {r.json()}')
         assert r.status_code == 201
@@ -76,10 +75,12 @@ def create_workspace(
 
 
 def delete_workspace(
-    workspace_id: DaemonID, host: str = __default_host__, port: int = 8000
+    workspace_id: DaemonID,
+    host: str = __default_host__,
+    port: int = 8000,
 ) -> None:
-    url = _jinad_url(host, port, f'workspaces/{workspace_id}')
     print(f'will delete workspace {workspace_id}')
+    url = _jinad_url(host, port, f'workspaces/{workspace_id}')
     r = requests.delete(url, params={'everything': True})
     assert r.status_code == 200
 

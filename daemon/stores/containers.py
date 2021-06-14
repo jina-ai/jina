@@ -92,7 +92,10 @@ class ContainerStore(BaseStore):
                 )
             object = self._add()
         except Exception as e:
-            self._logger.error(f'{e}')
+            self._logger.error(f'got an error while creating the {self._kind}: \n{e}')
+            if id in Dockerizer.containers:
+                self._logger.info(f'removing container {id_cleaner(container.id)}')
+                Dockerizer.rm_container(container.id)
             raise
         else:
             self[id] = ContainerItem(

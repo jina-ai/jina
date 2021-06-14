@@ -23,9 +23,12 @@ def _get_store(kind: str):
     elif kind == 'workspace':
         cls = WorkspaceStore
 
-    try:
-        return cls.load()
-    except Exception:
+    if jinad_args.store:
+        try:
+            return cls.load()
+        except Exception:
+            return cls()
+    else:
         return cls()
 
 
@@ -43,13 +46,6 @@ def _get_partial_store() -> Optional['PartialStore']:
         return None
 
 
-pea_store: PeaStore = _get_store('pea')
-pod_store: PodStore = _get_store('pod')
-flow_store: FlowStore = _get_store('flow')
-workspace_store: WorkspaceStore = _get_store('workspace')
-partial_store = _get_partial_store()
-
-
 def get_store_from_id(entity_id: DaemonID) -> BaseStore:
     if entity_id.jtype == IDLiterals.JPOD:
         return pod_store
@@ -61,3 +57,10 @@ def get_store_from_id(entity_id: DaemonID) -> BaseStore:
         return workspace_store
     else:
         return None
+
+
+pea_store: PeaStore = _get_store('pea')
+pod_store: PodStore = _get_store('pod')
+flow_store: FlowStore = _get_store('flow')
+workspace_store: WorkspaceStore = _get_store('workspace')
+partial_store = _get_partial_store()
