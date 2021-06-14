@@ -39,20 +39,20 @@ def workspace_files(
 
 
 def _merge_requirement_file(dest, f: UploadFile):
-    new_requirements = _read_requirements_file(f.file)
-    with open(dest, "r") as existing_requirements_file:
+    # Open existing requirements in binary mode
+    # UploadFile is also in binary mode
+    with open(dest, "rb") as existing_requirements_file:
         old_requirements = _read_requirements_file(existing_requirements_file)
-    old_requirements.update(new_requirements)
+    old_requirements.update(_read_requirements_file(f.file))
+    # Store merged requirements
     with open(dest, "w") as req_file:
         req_file.write("\n".join(list(old_requirements.values())))
 
 
-# TODO this is terrible, improve this pattern
 def _read_requirements_file(f):
     requirements = {}
     for line in f.readlines():
-        if type(line) != str:
-            line = line.decode("utf-8")
+        line = line.decode()
         requirements[line.split('=')[0]] = line.replace("\n", "")
     return requirements
 
