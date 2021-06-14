@@ -44,7 +44,7 @@ class Request(ProtoTypeMixin):
     :class:`jina_pb2.RequestProto` object.
 
     :param request: The request.
-    :param envelope: EnvelopeProto object.
+    :param compression_algorithm: The compression algorithm to use.
     :param copy: Copy the request if ``copy`` is True.
     """
 
@@ -53,16 +53,9 @@ class Request(ProtoTypeMixin):
         request: Optional[
             Union[bytes, dict, str, 'jina_pb2.RequestProto', 'Request']
         ] = None,
-        envelope: Optional['jina_pb2.EnvelopeProto'] = None,
+        compression_algorithm: Optional[str] = None,
         copy: bool = False,
     ):
-        """
-        Set constructor method.
-
-        :param request: request object as bytes, dictionary, string or protobuf instance
-        :param envelope: envelope of the request
-        :param copy: if true, request is copied
-        """
         self._buffer = None
         self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
         try:
@@ -89,7 +82,7 @@ class Request(ProtoTypeMixin):
         except Exception as ex:
             raise BadRequestType(f'fail to construct a request from {request}') from ex
 
-        self._envelope = envelope
+        self._compression_algorithm = compression_algorithm
         self.is_used = False  #: Return True when request has been r/w at least once
 
     def __getattr__(self, name: str):
@@ -204,7 +197,7 @@ class Request(ProtoTypeMixin):
             r = jina_pb2.RequestProto()
             _buffer = self._decompress(
                 self._buffer,
-                self._envelope.compression.algorithm if self._envelope else None,
+                self._compression_algorithm,
             )
             r.ParseFromString(_buffer)
             self.is_used = True
