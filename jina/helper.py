@@ -10,11 +10,12 @@ import threading
 import time
 import uuid
 import warnings
+
+from google.protobuf.pyext._message import MessageMapContainer
+
 from argparse import ArgumentParser, Namespace
-from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
-from pathlib import Path
 from types import SimpleNamespace
 from typing import (
     Tuple,
@@ -1150,7 +1151,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
 
     if isinstance(part1, int):
         result = _dict[part1]
-    elif isinstance(_dict, (dict, Struct)):
+    elif isinstance(_dict, (dict, Struct, MessageMapContainer)):
         if part1 in _dict:
             result = _dict[part1]
         else:
