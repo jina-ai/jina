@@ -16,6 +16,8 @@ from ..models import DaemonID, FlowModel, PodModel, PeaModel
 
 
 class FlowDepends:
+    """Validates & Sets host/port dependencies during Flow creation/update"""
+
     def __init__(self, workspace_id: DaemonID, filename: str) -> None:
         self.workspace_id = workspace_id
         self.filename = filename
@@ -26,6 +28,12 @@ class FlowDepends:
         self.validate()
 
     def localpath(self) -> Path:
+        """
+        Validates local filepath in workspace from filename.
+        Raise 404 if filepath doesn't exist in workspace.
+
+        :return: filepath for flow yaml
+        """
         try:
             return FilePath.validate(
                 Path(get_workspace_path(self.workspace_id, self.filename))
@@ -46,12 +54,15 @@ class FlowDepends:
         return f.args.port_expose
 
     def validate(self):
+        """
+        Validates and sets arguments to be used in store
+        """
         self.params.port_expose = self.port_expose
         self.ports = {f'{self.port_expose}/tcp': self.port_expose}
 
 
 class PeaDepends:
-    _kind = 'pea'
+    """Validates & Sets host/port dependencies during Pea creation/update"""
 
     def __init__(self, workspace_id: DaemonID, pea: PeaModel):
         # Deepankar: adding quotes around PeaModel breaks things
@@ -63,6 +74,62 @@ class PeaDepends:
     @property
     def host_in(self):
         """
+        host_in for the pea/pod
+
+        :return: host_in
+        """
+        return (
+            __dockerhost__
+            if self.params.runtime_cls == 'ZEDRuntime'
+            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
+            else self.params.host_in
+        )
+
+    @property
+    def host_out(self) -> str:
+        """
+        host_out for the pea/pod
+
+        :return: host_out
+        """
+        return (
+            __dockerhost__
+            if self.params.runtime_cls == 'ZEDRuntime'
+            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
+            else self.params.host_in
+        )
+
+    @cached_property
+    def ports(self) -> Dict:
+        """
+        Determines ports to be mapped to dockerhost
+
+        :return: dict of port mappings
+        """
+        _mapping = {
+            'port_in': 'socket_in',
+            'port_out': 'socket_out',
+            'port_ctrl': 'socket_ctrl',
+        }
+        # Map only "bind" ports for HEAD, TAIL & SINGLETON
+        if self.params.runtime_cls == 'ContainerRuntime':
+            # For `ContainerRuntime`, port mapping gets handled internally
+            return {}
+        if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
+            return {
+                f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
+                for i in self.params.__fields__
+                if i in _mapping
+                and SocketType.from_string(
+                    getattr(self.params, _mapping[i], 'PAIR_BIND')
+                ).is_bind
+            }
+        else:
+            return {f'{self.params.port_ctrl}/tcp': self.params.port_ctrl}
+
+    def validate(self):
+        """
+        Validates and sets arguments to be used in store
         DOCKER_HOST = 'host.docker.internal'
 
         SINGLETON
@@ -101,46 +168,6 @@ class PeaDepends:
         TODO: check the host_in/host_out for CONNECT sockets
         TODO: HEAD/TAIL - can `uses_before` or `uses_after` be `docker://`
         """
-        return (
-            __dockerhost__
-            if self.params.runtime_cls == 'ZEDRuntime'
-            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
-            else self.params.host_in
-        )
-
-    @property
-    def host_out(self):
-        return (
-            __dockerhost__
-            if self.params.runtime_cls == 'ZEDRuntime'
-            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
-            else self.params.host_in
-        )
-
-    @cached_property
-    def ports(self) -> Dict:
-        _mapping = {
-            'port_in': 'socket_in',
-            'port_out': 'socket_out',
-            'port_ctrl': 'socket_ctrl',
-        }
-        # Map only "bind" ports for HEAD, TAIL & SINGLETON
-        if self.params.runtime_cls == 'ContainerRuntime':
-            # For `ContainerRuntime`, port mapping gets handled internally
-            return {}
-        if PeaRoleType.from_string(self.params.pea_role) != PeaRoleType.PARALLEL:
-            return {
-                f'{getattr(self.params, i)}/tcp': getattr(self.params, i)
-                for i in self.params.__fields__
-                if i in _mapping
-                and SocketType.from_string(
-                    getattr(self.params, _mapping[i], 'PAIR_BIND')
-                ).is_bind
-            }
-        else:
-            return {f'{self.params.port_ctrl}/tcp': self.params.port_ctrl}
-
-    def validate(self):
         # Each pea is inside a container
         self.params.host_in = self.host_in
         self.params.host_out = self.host_out
@@ -149,6 +176,8 @@ class PeaDepends:
 
 
 class PodDepends(PeaDepends):
+    """Validates & Sets host/port dependencies during Pod creation/update"""
+
     def __init__(self, workspace_id: DaemonID, pod: PodModel):
         self.workspace_id = workspace_id
         self.params = pod
@@ -157,6 +186,8 @@ class PodDepends(PeaDepends):
 
 
 class WorkspaceDepends:
+    """Interacts with task queue to inform about workspace creation/update"""
+
     def __init__(
         self, id: Optional[DaemonID] = None, files: List[UploadFile] = File(None)
     ) -> None:

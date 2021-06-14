@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 
 
 class Dockerizer:
+    """Helper class to interact with docker client & dockerd"""
 
     logger = JinaLogger('Dockerizer', **vars(jinad_args))
     try:
@@ -46,7 +47,7 @@ class Dockerizer:
         raise DockerNotFoundException()
 
     @classmethod
-    def daemonize(cls, ids: List, attrs: str):
+    def _daemonize(cls, ids: List, attrs: str):
         for id in ids:
             try:
                 field = getattr(id, attrs)
@@ -61,18 +62,38 @@ class Dockerizer:
 
     @classproperty
     def networks(cls) -> List[DaemonID]:
-        return list(cls.daemonize(cls.client.networks.list(), 'name'))
+        """
+        Returns all local docker networks with name in a pattern of `DaemonID`
+        :return: list of networks created by jinad
+        """
+        return list(cls._daemonize(cls.client.networks.list(), 'name'))
 
     @classproperty
     def images(cls) -> List[DaemonID]:
-        return list(cls.daemonize(cls.client.images.list(), 'tags'))
+        """
+        Returns all local docker images with name in a pattern of `DaemonID`
+        :return: list of images created by jinad
+        """
+        return list(cls._daemonize(cls.client.images.list(), 'tags'))
 
     @classproperty
     def containers(cls) -> List[DaemonID]:
-        return list(cls.daemonize(cls.client.containers.list(), 'name'))
+        """
+        Returns all local docker containers with name in a pattern of `DaemonID`
+        :return: list of containers created by jinad
+        """
+        return list(cls._daemonize(cls.client.containers.list(), 'name'))
 
     @classmethod
     def network(cls, workspace_id: DaemonID) -> str:
+        """
+        Create a docker bridge network with name `workspace_id` using a predefined ipam config.
+        All containers under `workspace_id` would use this network.
+
+        :param workspace_id: workspace id
+        :raises DockerNetworkException: if there are issues during network creation
+        :return: id of the network
+        """
         if workspace_id in cls.networks:
             network = cls.client.networks.get(network_id=workspace_id)
         else:
@@ -110,6 +131,15 @@ class Dockerizer:
     def build(
         cls, workspace_id: 'DaemonID', daemon_file: 'DaemonFile', logger: 'JinaLogger'
     ) -> str:
+        """
+        Build docker image using daemon file & tag it with `workspace_id`
+
+        :param workspace_id: workspace id
+        :param daemon_file: daemon file describing content inside the workdir
+        :param logger: logger to be used
+        :raises DockerImageException: if there are issues during image building
+        :return: id of the image
+        """
         logger.info(f'about to build image using {daemon_file}')
 
         def _log_stream(chunk, key):
@@ -150,6 +180,15 @@ class Dockerizer:
     def run_custom(
         cls, workspace_id: DaemonID, daemon_file: 'DaemonFile'
     ) -> Tuple['Container', str, Dict]:
+        """
+        Run a custom container during workspace creation.
+
+        .. note::
+            This invalidates the default entrypint (mini-jinad) & uses the entrypoint provided
+            mentioned in the .jinad file (`run` section)
+
+        :return: [description]
+        """
         return cls.run(
             workspace_id=workspace_id,
             container_id=workspace_id,
@@ -167,6 +206,17 @@ class Dockerizer:
         ports: Dict,
         entrypoint: Optional[str] = None,
     ) -> Tuple['Container', str, Dict]:
+        """
+        Runs a container using an existing image (tagged with `workspace_id`).
+        Maps `ports` to local dockerhost & tags the container with name `container_id`
+
+        .. note::
+            This uses the default entrypoint (mini-jinad) & appends `command` for execution.
+
+        :raises DockerImageException: [description]
+        :raises DockerContainerException: [description]
+        :return: tuple of container object, network id & ports
+        """
         from .stores import workspace_store
 
         metadata = workspace_store[workspace_id].metadata
@@ -177,7 +227,7 @@ class Dockerizer:
         image = cls.client.images.get(name=metadata.image_id)
         network = metadata.network
         cls.logger.info(
-            f'Creating a container using image {colored(metadata.image_id, "cyan")} in network '
+            f'creating a container using image {colored(metadata.image_id, "cyan")} in network '
             f'{colored(network, "cyan")} and ports {colored(ports, "cyan")}'
         )
         try:
@@ -203,10 +253,21 @@ class Dockerizer:
         except docker.errors.APIError as e:
             cls.logger.critical(f'API Error while starting the docker container \n{e}')
             raise DockerContainerException()
+        # TODO: network & ports return can be avoided?
         return container, network, ports
 
     @classmethod
     def volume(cls, workspace_id: DaemonID) -> Dict[str, Dict]:
+        """
+        Local volumes to be mounted inside the container during `run`.
+
+        .. note::
+            Local workspace should always be mounted to fefault WORKDIR for the container (/workspace).
+            docker sock on dockerhost should also be mounted to make sure DIND works
+
+        :param workspace_id: workspace id
+        :return: dict of volume mappings
+        """
         return {
             f'{__root_workspace__}/{workspace_id}': {
                 'bind': '/workspace',
@@ -218,10 +279,20 @@ class Dockerizer:
 
     @classmethod
     def environment(cls) -> Dict[str, str]:
+        """
+        Environment variables to be set inside the container during `run`
+
+        :return: dict of env vars
+        """
         return {'JINA_LOG_WORKSPACE': '/workspace/logs', 'JINA_RANDOM_PORTS': 'True'}
 
     @classmethod
     def remove(cls, id: DaemonID):
+        """
+        Determines type of jinad object & removes that from dockerd
+
+        :param id: `DaemonID` describing local docker object
+        """
         if id.jtype == IDLiterals.JNETWORK:
             cls.rm_network(id)
         elif id.jtype == IDLiterals.JWORKSPACE:
@@ -231,6 +302,13 @@ class Dockerizer:
 
     @classmethod
     def rm_network(cls, id: str):
+        """
+        Remove network from local
+
+        :param id: network id
+        :raises KeyError: if network is not found on local
+        :raises DockerNetworkException: error during network removal
+        """
         try:
             network: 'Network' = cls.client.networks.get(id)
             network.remove()
@@ -247,6 +325,13 @@ class Dockerizer:
 
     @classmethod
     def rm_image(cls, id: str):
+        """
+        Remove image from local
+
+        :param id: image id
+        :raises KeyError: if image is not found on local
+        :raises DockerImageException: error during image removal
+        """
         try:
             # TODO: decide when to force
             cls.client.images.remove(id, force=True)
@@ -261,6 +346,13 @@ class Dockerizer:
 
     @classmethod
     def rm_container(cls, id: str):
+        """
+        Remove container from local
+
+        :param id: container id
+        :raises KeyError: if container is not found on local
+        :raises DockerContainerException: error during container removal
+        """
         try:
             container: 'Container' = cls.client.containers.get(id)
             container.stop()
@@ -277,5 +369,6 @@ class Dockerizer:
             )
 
     @classmethod
-    def validate(cls):
+    def _validate(cls):
+        # TODO
         pass

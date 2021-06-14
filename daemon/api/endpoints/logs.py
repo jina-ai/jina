@@ -92,7 +92,7 @@ class ConnectionManager:
             except ConnectionClosedError:
                 await self.disconnect(connection)
 
-    def has_active_connections(self):
+    def _has_active_connections(self):
         return any(
             connection.application_state != WebSocketState.DISCONNECTED
             for connection in self.active_connections
@@ -133,7 +133,7 @@ async def _logstream(websocket: WebSocket, log_id: DaemonID, timeout: int = 30):
             fp.seek(0, 2)
             delay = 0.1
             n = 0
-            while manager.has_active_connections():
+            while manager._has_active_connections():
                 line = fp.readline()  # also possible to read an empty line
                 if line:
                     daemon_logger.debug('sending line %s', line)

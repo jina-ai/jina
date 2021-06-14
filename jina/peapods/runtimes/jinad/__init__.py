@@ -71,7 +71,7 @@ class JinadRuntime(AsyncZMQRuntime):
         self._logging_task = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs
-            else self.pea_api.logstream(self.args.workspace_id, self._remote_id)
+            else self.pea_api.logstream(self._remote_id)
         )
 
     async def async_cancel(self):
