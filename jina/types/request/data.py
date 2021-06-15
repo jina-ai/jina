@@ -1,5 +1,5 @@
 from . import Request
-from .mixin import *
+from .mixin import DocsPropertyMixin, GroundtruthPropertyMixin
 
 
 class DataRequest(Request, DocsPropertyMixin, GroundtruthPropertyMixin):
