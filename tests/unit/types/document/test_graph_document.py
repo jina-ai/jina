@@ -282,3 +282,35 @@ def test_graph_count_invariance(graph, expected_output):
     graph.add_edge(doc0, doc1)
 
     assert graph.num_edges == expected_output
+
+
+@pytest.mark.parametrize(
+    "graph, expected_output",
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
+)
+def test_added_edges_in_edge_features(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(d0, d1)
+
+    assert edge_key in graph.edge_features
+
+
+@pytest.mark.parametrize(
+    "graph, expected_output",
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
+)
+def test_manual_update_edges_features(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(d0, d1)
+
+    g._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
+
+    assert g._pb_body.graph.edge_features[k]['number_value'] == 1234
