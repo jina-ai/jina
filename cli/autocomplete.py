@@ -268,7 +268,7 @@ ac_table = {
             '--noblock-on-start',
             '--restful',
         ],
-        'hub push': ['--help', '--private', '--public', '--force', '--secret'],
+        'hub push': ['--help', '--public', '--force', '--secret'],
         'hub': ['--help', 'push'],
         'pea': [
             '--help',

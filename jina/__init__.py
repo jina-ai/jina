@@ -50,8 +50,8 @@ __jina_env__ = (
     'JINA_CONTROL_PORT',
     'JINA_DEFAULT_HOST',
     'JINA_DISABLE_UVLOOP',
-    'JINA_EXECUTOR_WORKDIR',
     'JINA_FULL_CLI',
+    'JINA_HUBBLE_REGISTRY',
     'JINA_IPC_SOCK_TMP',
     'JINA_LOG_CONFIG',
     'JINA_LOG_ID',
@@ -63,9 +63,7 @@ __jina_env__ = (
     'JINA_RANDOM_PORTS',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
-    'JINA_SOCKET_HWM',
     'JINA_VCS_VERSION',
-    'JINA_WARN_UNNAMED',
 )
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
