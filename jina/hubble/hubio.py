@@ -39,20 +39,16 @@ class HubIO:
 
         import requests
 
-        is_public = self.args.public
-
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
             self.logger.critical(
                 f'The folder "{self.args.path}" does not exist, can not push'
             )
-            raise FileNotFoundError(
-                f'The folder "{self.args.path}" does not exist, can not push'
-            )
+            exit(1)
 
         try:
             # archive the executor package
-            with TimeContext(f'archiving executor at {self.args.path}', self.logger):
+            with TimeContext(f'archiving {self.args.path}', self.logger):
                 md5_hash = hashlib.md5()
                 bytesio = archive_package(pkg_path)
                 content = bytesio.getvalue()
@@ -65,7 +61,7 @@ class HubIO:
             form_data = {
                 'meta': json.dumps(meta),
                 'env': json.dumps(env),
-                'is_public': is_public,
+                'is_public': self.args.public,
                 'md5sum': md5_digest,
                 'force': self.args.force,
                 'secret': self.args.secret,
@@ -100,7 +96,7 @@ class HubIO:
                     )
                     self.logger.info('\n' + '\n'.join(info_table))
                     self.logger.info(
-                        'You can directly use this executor in Jina Flow via '
+                        'You can use this Executor in the Flow via '
                         + colored(f'jinahub://{uuid8}', 'cyan', attrs='underline')
                     )
 
@@ -111,4 +107,3 @@ class HubIO:
             self.logger.error(
                 f'Error when trying to push the executor at {self.args.path}: {e!r}'
             )
-            raise e
