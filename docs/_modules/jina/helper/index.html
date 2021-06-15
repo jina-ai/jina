@@ -1100,12 +1100,19 @@
 
 <span class="sd">    :return: Version information and environment variables</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__proto_version__</span><span class="p">,</span> <span class="n">__jina_env__</span><span class="p">,</span> <span class="n">__resources_path__</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">__version__</span><span class="p">,</span>
+        <span class="n">__proto_version__</span><span class="p">,</span>
+        <span class="n">__jina_env__</span><span class="p">,</span>
+        <span class="n">__resources_path__</span><span class="p">,</span>
+        <span class="n">__uptime__</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.internal</span> <span class="kn">import</span> <span class="n">api_implementation</span>
     <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">grpc</span><span class="o">,</span> <span class="nn">zmq</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">google.protobuf</span><span class="o">,</span> <span class="nn">yaml</span>
     <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">_grpcio_metadata</span>
     <span class="kn">import</span> <span class="nn">platform</span>
     <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+    <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">getnode</span>
 
     <span class="k">try</span><span class="p">:</span>
 
@@ -1125,6 +1132,8 @@
             <span class="s1">'platform-version'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">version</span><span class="p">(),</span>
             <span class="s1">'architecture'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">(),</span>
             <span class="s1">'processor'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">processor</span><span class="p">(),</span>
+            <span class="s1">'uuid'</span><span class="p">:</span> <span class="n">getnode</span><span class="p">(),</span>
+            <span class="s1">'uptime'</span><span class="p">:</span> <span class="n">__uptime__</span><span class="p">,</span>
             <span class="s1">'jina-resources'</span><span class="p">:</span> <span class="n">__resources_path__</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">env_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s1">'(unset)'</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">__jina_env__</span><span class="p">}</span>

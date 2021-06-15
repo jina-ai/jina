@@ -451,9 +451,6 @@
 
         <span class="n">default_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'successfully built </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> from a yaml config'</span><span class="p">)</span>
 
-        <span class="c1"># if node.tag in {'!CompoundExecutor'}:</span>
-        <span class="c1">#     os.environ['JINA_WARN_UNNAMED'] = 'YES'</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_meta_config</span><span class="p">:</span>
             <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s1">'"metas" config is not found in this yaml file, '</span>

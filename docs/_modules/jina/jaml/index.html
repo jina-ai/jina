@@ -799,7 +799,8 @@
         <span class="n">f</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'config_abspath'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span>
-                <span class="s1">'w'</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_EXECUTOR_WORKDIR'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="s1">'w'</span><span class="p">,</span>
+                <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">name</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'no "filename" is given, </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="se">\'</span><span class="s1">s config will be saved to: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s1">'</span>

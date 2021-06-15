@@ -365,11 +365,13 @@
         <h1>Source code for jina.hubble.helper</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module for helper functions for Hub API."""</span>
 
+<span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
+<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 
 <div class="viewcode-block" id="archive_package"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.archive_package">[docs]</a><span class="k">def</span> <span class="nf">archive_package</span><span class="p">(</span><span class="n">package_folder</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'io.BytesIO'</span><span class="p">:</span>
@@ -379,7 +381,8 @@
 <span class="sd">    :return: the data stream of zip content</span>
 <span class="sd">    """</span>
 
-    <span class="kn">import</span> <span class="nn">pathspec</span>
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">pathspec</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'Python.gitignore'</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
         <span class="n">ignored_spec</span> <span class="o">=</span> <span class="n">pathspec</span><span class="o">.</span><span class="n">PathSpec</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="s1">'gitwildmatch'</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
