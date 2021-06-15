@@ -56,7 +56,7 @@ class GraphDocument(Document):
             node.id: offset for offset, node in enumerate(self.nodes)
         }  # dangerous because document is stateless, try to work only with proto
         if force_undirected:
-            self.undirected = force_undirected
+            self._pb_body.graph.undirected = force_undirected
 
     @staticmethod
     def _check_installed_array_packages():
@@ -162,35 +162,42 @@ class GraphDocument(Document):
         """
         from scipy.sparse import coo_matrix
 
-        self.add_node(doc1)
-        self.add_node(doc2)
+        edge_key = self._get_edge_key(doc1, doc2)
 
-        current_adjacency = self.adjacency
-        doc1_node_offset = self._node_id_to_offset[doc1.id]
-        doc2_node_offset = self._node_id_to_offset[doc2.id]
-        row = (
-            np.append(current_adjacency.row, doc1_node_offset)
-            if current_adjacency is not None
-            else np.array([doc1_node_offset])
-        )
-        col = (
-            np.append(current_adjacency.col, doc2_node_offset)
-            if current_adjacency is not None
-            else np.array([doc2_node_offset])
-        )
-        data = (
-            np.append(current_adjacency.data, 1)
-            if current_adjacency is not None
-            else np.array([1])
-        )
+        if edge_key not in self.edge_features:
+            self.edge_features[edge_key] = features
+            self.add_node(doc1)
+            self.add_node(doc2)
 
-        SparseNdArray(
-            self._pb_body.graph.adjacency, sp_format='coo'
-        ).value = coo_matrix((data, (row, col)))
+            current_adjacency = self.adjacency
 
-        if features is not None:
-            k = self._get_edge_key(doc1, doc2)
-            self.edge_features[k] = features
+            source_id = doc1.id
+            target_id = doc2.id
+            if self.undirected and doc1.id > doc2.id:
+                source_id = doc2.id
+                target_id = doc1.id
+
+            source_node_offset = self._node_id_to_offset[source_id]
+            target_node_offset = self._node_id_to_offset[target_id]
+            row = (
+                np.append(current_adjacency.row, source_node_offset)
+                if current_adjacency is not None
+                else np.array([source_node_offset])
+            )
+            col = (
+                np.append(current_adjacency.col, target_node_offset)
+                if current_adjacency is not None
+                else np.array([target_node_offset])
+            )
+            data = (
+                np.append(current_adjacency.data, 1)
+                if current_adjacency is not None
+                else np.array([1])
+            )
+
+            SparseNdArray(
+                self._pb_body.graph.adjacency, sp_format='coo'
+            ).value = coo_matrix((data, (row, col)))
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -257,15 +264,6 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         """
         return self._pb_body.graph.undirected
-
-    @undirected.setter
-    def undirected(self, value: bool):
-        """
-        Set the undirected flag of this graph.
-
-        :param value: teh flag indicating wether this graph is undirected
-        """
-        self._pb_body.graph.undirected = value
 
     @property
     def num_nodes(self) -> int:

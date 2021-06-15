@@ -193,6 +193,13 @@ def test_validate_iteration_graph_without_edges():
     assert len([x for x in graph]) == 0
 
 
+def test_edge_features_getter(graph):
+    node_id_0 = graph.nodes[0].id
+    node_id_1 = graph.nodes[1].id
+    edge_id = node_id_0 + '-' + node_id_1
+    assert graph.edge_features[edge_id] == {'text': 'I connect Doc0 and Doc1'}
+
+
 def test_undirected_graph():
     graph = GraphDocument()
     assert graph.undirected is False
@@ -232,8 +239,19 @@ def test_undirected_graph_to_dgl(graph):
     ).all()
 
 
-def test_edge_features_getter(graph):
-    node_id_0 = graph.nodes[0].id
-    node_id_1 = graph.nodes[1].id
-    edge_id = node_id_0 + '-' + node_id_1
-    assert graph.edge_features[edge_id] == {'text': 'I connect Doc0 and Doc1'}
+@pytest.mark.parametrize(
+    "graph, expected_output",
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
+)
+def test_graph_edge_behaviour_creation(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    graph.add_edge(doc1, doc0)
+
+    assert graph.num_edges == expected_output
+
+
+### check that adding tice a->b and b->a only one edge is added (the one with lexicogrpahic).
