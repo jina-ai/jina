@@ -1,10 +1,12 @@
 """Module for helper functions for Hub API."""
 
+import io
 import os
 import zipfile
-import io
 from pathlib import Path
+
 from jina import __resources_path__
+from jina.importer import ImportExtensions
 
 
 def archive_package(package_folder: 'Path') -> 'io.BytesIO':
@@ -14,7 +16,8 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
     :return: the data stream of zip content
     """
 
-    import pathspec
+    with ImportExtensions(required=True):
+        import pathspec
 
     with open(os.path.join(__resources_path__, 'Python.gitignore')) as fp:
         ignored_spec = pathspec.PathSpec.from_lines('gitwildmatch', fp)
