@@ -230,3 +230,10 @@ def test_undirected_graph_to_dgl(graph):
         np.concatenate((undirected_graph.adjacency.col, undirected_graph.adjacency.row))
         == dgl_undirected_adj_coo.col
     ).all()
+
+
+def test_edge_features_getter(graph):
+    node_id_0 = graph.nodes[0].id
+    node_id_1 = graph.nodes[1].id
+    edge_id = node_id_0 + '-' + node_id_1
+    assert graph.edge_features[edge_id] == {'text': 'I connect Doc0 and Doc1'}

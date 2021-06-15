@@ -391,7 +391,10 @@ class Document(ProtoTypeMixin):
                 destination._pb_body.tags.update(source.tags)
             else:
                 destination._pb_body.ClearField(field)
-                setattr(destination, field, getattr(source, field))
+                try:
+                    setattr(destination, field, getattr(source, field))
+                except AttributeError:  # some fields such as `content_hash` do not have a setter method.
+                    setattr(destination._pb_body, field, getattr(source, field))
 
     def update(
         self,

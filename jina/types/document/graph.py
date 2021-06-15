@@ -125,7 +125,9 @@ class GraphDocument(Document):
                         row[i] = row[i] - 1
                     if self.adjacency.col[i] > offset:
                         col[i] = col[i] - 1
-                self.adjacency = coo_matrix((data, (row, col)))
+                SparseNdArray(
+                    self._pb_body.graph.adjacency, sp_format='coo'
+                ).value = coo_matrix((data, (row, col)))
 
         del self.nodes[offset]
         self._node_id_to_offset = {
@@ -181,7 +183,10 @@ class GraphDocument(Document):
             if current_adjacency is not None
             else np.array([1])
         )
-        self.adjacency = coo_matrix((data, (row, col)))
+
+        SparseNdArray(
+            self._pb_body.graph.adjacency, sp_format='coo'
+        ).value = coo_matrix((data, (row, col)))
 
         if features is not None:
             k = self._get_edge_key(doc1, doc2)
@@ -199,9 +204,13 @@ class GraphDocument(Document):
             col = np.delete(self.adjacency.col, edge_id)
             data = np.delete(self.adjacency.data, edge_id)
             if row.shape[0] > 0:
-                self.adjacency = coo_matrix((data, (row, col)))
+                SparseNdArray(
+                    self._pb_body.graph.adjacency, sp_format='coo'
+                ).value = coo_matrix((data, (row, col)))
             else:
-                self.adjacency = coo_matrix((0, 0))
+                SparseNdArray(
+                    self._pb_body.graph.adjacency, sp_format='coo'
+                ).value = coo_matrix((0, 0))
 
             if edge_feature_key in self.edge_features:
                 del self.edge_features[edge_feature_key]
@@ -231,15 +240,6 @@ class GraphDocument(Document):
         """
         return StructView(self._pb_body.graph.edge_features)
 
-    @edge_features.setter
-    def edge_features(self, value: Dict):
-        """Set the `edge_features` field of this Graph to a Python dict
-
-        :param value: a Python dict
-        """
-        self._pb_body.graph.edge_features.Clear()
-        self._pb_body.graph.edge_features.update(value)
-
     @property
     def adjacency(self):
         """
@@ -248,15 +248,6 @@ class GraphDocument(Document):
         .. # noqa: DAR201
         """
         return SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value
-
-    @adjacency.setter
-    def adjacency(self, value: 'coo_matrix'):
-        """
-        Set the adjacency list of this graph.
-
-        :param value: the float weight of the document.
-        """
-        SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value = value
 
     @property
     def undirected(self):
@@ -331,15 +322,6 @@ class GraphDocument(Document):
         :param value: the array of nodes of this document
         """
         self.chunks = value
-
-    @adjacency.setter
-    def adjacency(self, value: "coo_matrix"):
-        """
-        Set the adjacency list of this graph.
-
-        :param value: the float weight of the document.
-        """
-        SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value = value
 
     def get_outgoing_nodes(self, doc: 'Document') -> Optional[ChunkArray]:
         """

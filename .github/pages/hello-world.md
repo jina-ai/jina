@@ -5,7 +5,7 @@ Just starting out? Try Jina's "Hello, World" - `jina hello --help`
 ## 👗 Fashion Image Search
 
 
-<a href="https://docs2.jina.ai/">
+<a href="https://docs.jina.ai/">
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/hello-world.gif?raw=true" />
 </a>
 
@@ -38,7 +38,7 @@ The whole process takes about 1 minute.
 
 ## 🤖 Covid-19 Chatbot
 
-<a href="https://docs2.jina.ai/">
+<a href="https://docs.jina.ai/">
 <img align="right" width="25%" src="https://github.com/jina-ai/jina/blob/master/.github/images/helloworld-chatbot.gif?raw=true" />
 </a>
 

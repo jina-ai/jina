@@ -1,49 +1,39 @@
+# JINA PACKAGE DEPENDENCIES
+#
+# Essential: only 6, they are labeled with `core`: numpy, pyzmq, tornado, grpcio, protobuf, pyyaml. They will be installed
+#           when you do `pip install jina`. They are essential to run 90% features & functionalities of Jina.
+# Extensions: they are labeled with different tags. They will NOT be installed by default. One can install a group of
+#           of dependencies labeled `tag` by `pip install "jina[tag]"`
+#
+# FILE FORMAT
 # https://hanxiao.io/2019/11/07/A-Better-Practice-for-Managing-extras-require-Dependencies-in-Python/
-# FORMAT
 # Put your extra requirements here in the following format
 #
 # package[version]: tag1, tag2, ...
 #
-# AVAILABLE TAGS
-#
-# nlp, cv, audio, numeric, index, http, sse, framework, perf, network
 #
 # REMARKS ON TAGS
 # 1. Try to reuse the existing tags if possible.
 #    If you intend to create a new tag, keep it alphabetical, short and general
 # 2. Package name itself is a tag already, so you don't need to tag it again.
-#    For example, 'flair>=0.4.1: flair' is redundant
+#    For example, 'numpy>=0.4.1: numpy' is redundant
 # 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
 # 4. Tag `all` is reserved for representing all packages
 
-scipy>=1.6.1:               index, numeric, cicd
+scipy>=1.6.1:               sparse, cicd, graph
 fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal
 uvicorn>=0.12.1:            devel, cicd, http, test, daemon, chatbot, multimodal
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
-nmslib>=1.6.3:              index
 docker:                     devel, cicd, network, hub, daemon
+pathspec:                   devel, cicd, hub
 torch>=1.1.0:               framework, cicd, chatbot, multimodal
 transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
-flair:                      nlp
-paddlepaddle:               framework, py37
-paddlehub:                  framework, py37
 tensorflow>=2.0:            framework, cicd
-tensorflow-hub:             framework, py37
 torchvision>=0.3.0:         framework, cv, multimodal, cicd
-onnx:                       framework, py37
-onnxruntime:                framework, py37
 Pillow:                     cv, cicd, multimodal
-annoy>=1.9.5:               index
-sklearn:                    numeric
-plyvel:                     index
-jieba:                      nlp
 lz4<3.1.2:                  devel, cicd, perf, network
 gevent:                     http, devel, cicd
 python-magic:               http, devel, cicd
-pymilvus:                   index
-deepsegment:                nlp
-ngt:                        index, py37
-librosa>=0.7.2:             audio
 uvloop:                     devel, cicd, perf
 numpy:                      core
 pyzmq>=17.1.0:              core
@@ -51,7 +41,6 @@ protobuf>=3.13.0:           core
 grpcio>=1.33.1:             core
 pyyaml>=5.3.1:              core
 tornado>=5.1.0:             core
-cookiecutter:               hub, devel, cicd
 pytest:                     test
 pytest-xdist==1.34.0:       test
 pytest-timeout:             test
@@ -72,8 +61,7 @@ pydantic:                   http, devel, cicd, daemon, chatbot, multimodal
 python-multipart:           http, devel, cicd, daemon
 aiofiles:                   devel, cicd, http, daemon
 pytest-custom_exit_code:    test
-bs4:                        test
+bs4:                        cicd
 aiostream:                  devel, cicd
-click:                      cicd
 jsonschema:                 cicd
-dgl==0.6.1:                 cicd
+dgl==0.6.1:                 cicd, graph

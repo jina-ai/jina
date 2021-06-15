@@ -44,15 +44,15 @@ pygments_style = 'rainbow_dash'
 html_theme = 'furo'
 
 base_url = '/'
-html_baseurl = 'https://docs2.jina.ai'
+html_baseurl = 'https://docs.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
 
 html_theme_options = {
-    'analytics_id': 'UA-164627626-3',  # Provided by Google in your dashboard
     'light_logo': 'logo-light.svg',
     'dark_logo': 'logo-dark.svg',
+    "sidebar_hide_name": True,
 }
 
 html_static_path = ['_static']
@@ -78,14 +78,13 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
-    'sphinx_rtd_theme',
     'recommonmark',
     'sphinx_markdown_tables',
     'sphinx_copybutton',
-    'notfound.extension',
     'sphinx_sitemap',
     'sphinx.ext.intersphinx',
     'sphinxext.opengraph',
+    'notfound.extension',
 ]
 
 # -- Custom 404 page
@@ -96,10 +95,10 @@ notfound_context = {
     'title': 'Page Not Found',
     'body': '''
 <h1>Page Not Found</h1>
-<p>Sorry, we couldn't find that page. Error code 404. </p>
-<p>You can try using the search box above or check our menu on the left hand side of this page.</p>
+<p>Oops, we couldn't find that page. </p>
+<p>You can try using the search box or check our menu on the left hand side of this page.</p>
 
-<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond.  Please use the tag Documentation. </p>
+<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond.</p>
 
 ''',
 }
@@ -135,6 +134,31 @@ linkcheck_timeout = 20
 linkcheck_retries = 2
 linkcheck_anchors = False
 
+ogp_site_url = 'https://docs.jina.ai/'
+ogp_image = 'https://docs.jina.ai/_static/banner.png'
+ogp_use_first_image = True
+ogp_description_length = 300
+ogp_type = 'website'
+ogp_site_name = 'Jina Documentation'
+
+ogp_custom_meta_tags = [
+    '<meta name="twitter:card" content="summary_large_image">',
+    '<meta name="twitter:site" content="@JinaAI_">',
+    '<meta name="twitter:creator" content="@JinaAI_">',
+    '<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+    '<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+    '''
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-48ZDWC8GT6');
+</script>
+    '''
+]
 
 def setup(app):
     from sphinx.domains.python import PyField

@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 
 from jina import Executor
-from jina.flow.asyncio import AsyncFlow
 from jina.excepts import BadFlowYAMLVersion
 from jina import Flow
 from jina.jaml import JAML
@@ -26,7 +25,6 @@ def test_load_flow_from_empty_yaml():
 
 def test_support_versions():
     assert get_supported_versions(Flow) == ['1', 'legacy']
-    assert get_supported_versions(AsyncFlow) == ['1', 'legacy']
 
 
 def test_load_legacy_and_v1():

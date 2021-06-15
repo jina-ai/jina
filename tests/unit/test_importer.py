@@ -15,20 +15,24 @@ def test_bad_import():
         with ImportExtensions(required=True, logger=default_logger):
             import ngt  # list but no install
 
+    fake_tags = ['ngt', 'index', 'py37']
     with ImportExtensions(required=False, logger=default_logger) as ie:
+        ie._tags = fake_tags
         import ngt
 
-    assert ie._tags == ['ngt', 'index', 'py37']
+    assert ie._tags == fake_tags
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
+        ie._tags = fake_tags
         import ngt.abc.edf
 
-    assert ie._tags == ['ngt', 'index', 'py37']
+    assert ie._tags == fake_tags
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
+        ie._tags = fake_tags
         from ngt.abc import edf
 
-    assert ie._tags == ['ngt', 'index', 'py37']
+    assert ie._tags == fake_tags
 
     with ImportExtensions(required=False, logger=default_logger) as ie:
         import abcdefg
