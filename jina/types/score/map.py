@@ -9,34 +9,34 @@ from ...excepts import BadNamedScoreType
 from ...helper import typename
 from ...proto import jina_pb2
 
-__all__ = ['MappedNamedScore']
+__all__ = ['NamedScoreMapping']
 
 
-class MappedNamedScore(ProtoTypeMixin, MutableMapping):
+class NamedScoreMapping(ProtoTypeMixin, MutableMapping):
 
     """
-    :class:`MappedNamedScore` is one of the **primitive data type** in Jina.
+    :class:`NamedScoreMapping` is one of the **primitive data type** in Jina.
 
     It offers a Pythonic interface to allow users access and manipulate
-    :class:`jina.jina_pb2.MappedNamedScoreProto` object without working with Protobuf itself.
+    :class:`jina.jina_pb2.NamedScoreMappingProto` object without working with Protobuf itself.
 
     It offers an interface to access and update scores as `NamedScore` as values of a `dict` with a string key.
 
-    To create a :class:`MappedNamedScoreProto` object, simply:
+    To create a :class:`NamedScoreMappingProto` object, simply:
 
         .. highlight:: python
         .. code-block:: python
 
-            from jina.types.score.map import MappedNamedScore
-            scores = MappedNamedScore()
+            from jina.types.score.map import NamedScoreMapping
+            scores = NamedScoreMapping()
             scores['score'] = 50
 
-    :class:`MappedNamedScore` can be built from ``jina_pb2.MappedNamedScoreProto`` (as a weak reference or a deep copy)
+    :class:`NamedScoreMapping` can be built from ``jina_pb2.NamedScoreMappingProto`` (as a weak reference or a deep copy)
 
     :param scores: The scores to construct from, depending on the ``copy``,
         it builds a view or a copy from it.
-    :type score: Optional[jina_pb2.MappedNamedScoreProto]
-    :param copy: When ``scores`` is given as a :class:`MappedNamedScoreProto` object, build a
+    :type score: Optional[jina_pb2.NamedScoreMappingProto]
+    :param copy: When ``scores`` is given as a :class:`NamedScoreMappingProto` object, build a
         view (i.e. weak reference) from it or a deep copy from it.
     :type copy: bool
     :param kwargs: Other parameters to be set
@@ -45,13 +45,13 @@ class MappedNamedScore(ProtoTypeMixin, MutableMapping):
 
     def __init__(
         self,
-        scores: Optional[jina_pb2.MappedNamedScoreProto] = None,
+        scores: Optional[jina_pb2.NamedScoreMappingProto] = None,
         copy: bool = False,
         **kwargs,
     ):
-        self._pb_body = jina_pb2.MappedNamedScoreProto()
+        self._pb_body = jina_pb2.NamedScoreMappingProto()
         try:
-            if isinstance(scores, jina_pb2.MappedNamedScoreProto):
+            if isinstance(scores, jina_pb2.NamedScoreMappingProto):
                 if copy:
                     self._pb_body.CopyFrom(scores)
                 else:
@@ -61,7 +61,7 @@ class MappedNamedScore(ProtoTypeMixin, MutableMapping):
                 raise ValueError(f'{typename(scores)} is not recognizable')
         except Exception as ex:
             raise BadNamedScoreType(
-                f'fail to construct a MappedNamedScore from {scores}'
+                f'fail to construct a NamedScoreMapping from {scores}'
             ) from ex
 
     def __setitem__(

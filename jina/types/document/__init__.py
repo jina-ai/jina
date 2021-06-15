@@ -23,7 +23,7 @@ import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 from ..struct import StructView
-from ..score.map import MappedNamedScore
+from ..score.map import NamedScoreMapping
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..arrays.chunk import ChunkArray
 from ..arrays.match import MatchArray
@@ -941,9 +941,9 @@ class Document(ProtoTypeMixin):
     def scores(self):
         """Return the scores of the document.
 
-        :return: the scores attached to this document as `:class:MappedNamedScore`
+        :return: the scores attached to this document as `:class:NamedScoreMapping`
         """
-        return MappedNamedScore(self._pb_body.scores)
+        return NamedScoreMapping(self._pb_body.scores)
 
     @scores.setter
     def scores(
@@ -963,7 +963,7 @@ class Document(ProtoTypeMixin):
 
         :param value: the dictionary to set the scores
         """
-        scores = MappedNamedScore(self._pb_body.scores)
+        scores = NamedScoreMapping(self._pb_body.scores)
         for k, v in value.items():
             scores[k] = v
 
@@ -971,9 +971,9 @@ class Document(ProtoTypeMixin):
     def evaluations(self):
         """Return the evaluations of the document.
 
-        :return: the evaluations attached to this document as `:class:MappedNamedScore`
+        :return: the evaluations attached to this document as `:class:NamedScoreMapping`
         """
-        return MappedNamedScore(self._pb_body.evaluations)
+        return NamedScoreMapping(self._pb_body.evaluations)
 
     @evaluations.setter
     def evaluations(
@@ -993,7 +993,7 @@ class Document(ProtoTypeMixin):
 
         :param value: the dictionary to set the evaluations
         """
-        scores = MappedNamedScore(self._pb_body.evaluations)
+        scores = NamedScoreMapping(self._pb_body.evaluations)
         for k, v in value.items():
             scores[k] = v
 

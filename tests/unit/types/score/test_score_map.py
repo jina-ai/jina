@@ -2,12 +2,12 @@ import pytest
 
 import numpy as np
 
-from jina.types.score.map import MappedNamedScore
+from jina.types.score.map import NamedScoreMapping
 from jina.types.score import NamedScore
 
 
 def test_mapped_named_score():
-    scores = MappedNamedScore()
+    scores = NamedScoreMapping()
 
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
@@ -38,7 +38,7 @@ def test_mapped_named_score():
 
 
 def test_mapped_named_score_from_proto():
-    scores = MappedNamedScore()
+    scores = NamedScoreMapping()
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
     scores['operation'].ref_id = '10' * 16
@@ -54,7 +54,7 @@ def test_mapped_named_score_from_proto():
     assert 'operation' in scores
     assert 'operation2' in scores
 
-    scores2 = MappedNamedScore(scores.proto)
+    scores2 = NamedScoreMapping(scores.proto)
 
     assert 'operation' in scores2._pb_body.values
     assert 'operation2' in scores2._pb_body.values
@@ -76,7 +76,7 @@ def test_mapped_named_score_from_proto():
     [5, 5.0, np.int(5), np.float(5.0), NamedScore(value=5), NamedScore(value=5).proto],
 )
 def test_mapped_set_item(value):
-    scores = MappedNamedScore()
+    scores = NamedScoreMapping()
     scores['operation'] = value
     assert scores['operation'].value == 5
 
@@ -89,7 +89,7 @@ def test_mapped_set_item(value):
     ],
 )
 def test_mapped_set_item_from_named_score(value):
-    scores = MappedNamedScore()
+    scores = NamedScoreMapping()
     scores['operation'] = value
     assert scores['operation'].value == 5
     assert scores['operation'].op_name == 'op'
@@ -97,7 +97,7 @@ def test_mapped_set_item_from_named_score(value):
 
 
 def test_mapped_named_score_delete():
-    scores = MappedNamedScore()
+    scores = NamedScoreMapping()
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
     scores['operation'].ref_id = '10' * 16
@@ -128,7 +128,7 @@ def test_mapped_named_score_delete():
 
 
 def test_mapped_named_score_iterate():
-    scores = MappedNamedScore()
+    scores = NamedScoreMapping()
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
     scores['operation'].ref_id = '10' * 16

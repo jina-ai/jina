@@ -70,7 +70,7 @@ message NamedScoreProto {
 /**
  * Represents the mapping of score by keys
  */
-message MappedNamedScoreProto {
+message NamedScoreMappingProto {
     map<string, NamedScoreProto> values = 1;
 }
 
@@ -143,13 +143,13 @@ message DocumentProto {
     NdArrayProto embedding = 19;
 
     // Scores performed on the document, each element corresponds to a metric
-    MappedNamedScoreProto scores = 28;
+    NamedScoreMappingProto scores = 28;
 
     // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
     string modality = 21;
 
     // Evaluations performed on the document, each element corresponds to a metric
-    MappedNamedScoreProto evaluations = 29;
+    NamedScoreMappingProto evaluations = 29;
 }
 
 /**

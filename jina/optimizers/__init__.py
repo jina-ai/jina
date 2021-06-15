@@ -18,7 +18,7 @@ from ..importer import ImportExtensions
 from ..jaml import JAMLCompatible, JAML
 from ..logging.predefined import default_logger as logger
 from ..types.request import Response
-from ..types.score.map import MappedNamedScore
+from ..types.score.map import NamedScoreMapping
 
 if False:
     from .flow_runner import FlowRunner
@@ -122,7 +122,7 @@ class EvaluationCallback(OptimizerCallback):
         self._n_docs += len(response.data.docs)
         logger.info(f'Num of docs evaluated: {self._n_docs}')
         for doc in response.data.docs:
-            for key, evaluation in MappedNamedScore(doc.evaluations).items():
+            for key, evaluation in NamedScoreMapping(doc.evaluations).items():
                 self._evaluation_values[key].append(evaluation.value)
 
 
