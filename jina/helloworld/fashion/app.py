@@ -82,16 +82,6 @@ def hello_world(args):
             request_size=args.request_size,
         )
 
-        # f.search(
-        #     query_generator(
-        #         num_docs=args.num_query, target=targets, with_groundtruth=True
-        #     ),
-        #     shuffle=True,
-        #     on_done=print_result,
-        #     request_size=args.request_size,
-        #     parameters={'top_k': args.top_k},
-        # )
-
         f.post(
             '/eval',
             query_generator(
