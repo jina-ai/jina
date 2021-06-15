@@ -1,5 +1,7 @@
 """Module for helper functions for Hub API."""
 
+import os
+import zipfile
 import io
 from pathlib import Path
 
@@ -10,8 +12,6 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
     :param package_folder: the folder path of the package
     :return: the data stream of zip content
     """
-    import os
-    import zipfile
 
     # import pathspec
 

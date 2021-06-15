@@ -4,7 +4,7 @@ import os
 import argparse
 import json
 from pathlib import Path
-
+import hashlib
 from ..helper import (
     colored,
     get_full_version,
@@ -36,7 +36,6 @@ class HubIO:
         """Push the executor pacakge to Jina Hub."""
 
         import requests
-        import hashlib
 
         is_public = True
         if self.args.private:
