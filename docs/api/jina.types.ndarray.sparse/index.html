@@ -407,10 +407,26 @@
 <p>The base class for <code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNdArray</span></code>.</p>
 <p>Do not use this class directly. Subclass should be used.</p>
 <p>Set constructor method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – args passed to super().</p></li>
+<li><p><strong>kwargs</strong> – kwargs passed to super().</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="jina.types.ndarray.sparse.BaseSparseNdArray.null_proto">
 <code class="sig-name descname"><span class="pre">null_proto</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/ndarray/sparse/#BaseSparseNdArray.null_proto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.ndarray.sparse.BaseSparseNdArray.null_proto" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the new protobuf representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNdArrayProto</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An empty <cite>SparseNdArrayProto</cite></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.ndarray.sparse.BaseSparseNdArray.sparse_constructor">
@@ -455,6 +471,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>~AnySparseNdArray</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNdArray</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -341,7 +341,7 @@ Represents a sparse ndarray
 | ----- | ---- | ----- | ----------- |
 | indices | [DenseNdArrayProto](#jina.DenseNdArrayProto) |  | A 2-D int64 tensor of shape [N, ndims], which specifies the indices of the elements in the sparse tensor that contain nonzero values (elements are zero-indexed) |
 | values | [DenseNdArrayProto](#jina.DenseNdArrayProto) |  | A 1-D tensor of any type and shape [N], which supplies the values for each element in indices. |
-| dense_shape | [int64](#int64) | repeated | A 1-D int64 tensor of shape [ndims], which specifies the dense_shape of the sparse tensor. |
+| shape | [uint32](#uint32) | repeated | A 1-D int64 tensor of shape [ndims], which specifies the shape of the sparse tensor. |
 
 
 

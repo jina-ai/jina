@@ -386,12 +386,19 @@
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Set constructor method."""</span>
+        <span class="sd">"""Set constructor method.</span>
+
+<span class="sd">        :param args: args passed to super().</span>
+<span class="sd">        :param kwargs: kwargs passed to super().</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_sparse</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="BaseSparseNdArray.null_proto"><a class="viewcode-back" href="../../../../../api/jina.types.ndarray.sparse/#jina.types.ndarray.sparse.BaseSparseNdArray.null_proto">[docs]</a>    <span class="k">def</span> <span class="nf">null_proto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Get the new protobuf representation."""</span>
+<div class="viewcode-block" id="BaseSparseNdArray.null_proto"><a class="viewcode-back" href="../../../../../api/jina.types.ndarray.sparse/#jina.types.ndarray.sparse.BaseSparseNdArray.null_proto">[docs]</a>    <span class="k">def</span> <span class="nf">null_proto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'jina_pb2.SparseNdArrayProto'</span><span class="p">:</span>
+        <span class="sd">"""Get the new protobuf representation.</span>
+
+<span class="sd">        :return: An empty `SparseNdArrayProto`</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">SparseNdArrayProto</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BaseSparseNdArray.sparse_constructor"><a class="viewcode-back" href="../../../../../api/jina.types.ndarray.sparse/#jina.types.ndarray.sparse.BaseSparseNdArray.sparse_constructor">[docs]</a>    <span class="k">def</span> <span class="nf">sparse_constructor</span><span class="p">(</span>
@@ -404,6 +411,8 @@
 <span class="sd">        :param values: the values of the sparse array</span>
 <span class="sd">        :param shape: the shape of the sparse array</span>
 <span class="sd">        :return: Sparse NdArray</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
 <span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -415,26 +424,34 @@
 
 <span class="sd">        :param value: the sparse ndarray</span>
 <span class="sd">        :return: a Dict with three entries {'indices': ..., 'values':..., 'shape':...}</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
 <span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnySparseNdArray</span><span class="p">:</span>
-        <span class="sd">"""Get the value of protobuf message in :class:`SparseNdArray`."""</span>
+        <span class="sd">"""Get the value of protobuf message in :class:`SparseNdArray`.</span>
+
+<span class="sd">        :return: A :class:`SparseNdArray`.</span>
+<span class="sd">        """</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">DenseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">DenseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">dense_shape</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="n">idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">shape</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse_constructor</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
 
     <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">AnySparseNdArray</span><span class="p">):</span>
-        <span class="sd">"""Set the value of protobuf message with :param:`value` in :class:`SparseNdArray`."""</span>
+        <span class="sd">"""Set the value of protobuf message with :param:`value` in :class:`SparseNdArray`.</span>
+
+<span class="sd">        :param value: The :class:`SparseNdArray` to be set as the value of the cls.</span>
+<span class="sd">        """</span>
         <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse_parser</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="n">DenseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">'indices'</span><span class="p">]</span>
         <span class="n">DenseNdArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">'values'</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="s1">'dense_shape'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">dense_shape</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'shape'</span><span class="p">])</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="s1">'shape'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'shape'</span><span class="p">])</span></div>
 </pre></div>
       </article>
       <footer>
