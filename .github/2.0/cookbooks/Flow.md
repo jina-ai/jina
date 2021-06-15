@@ -55,8 +55,8 @@ from jina import Flow, Document, Executor, requests
 
 class MyExecutor(Executor):
 
-    @requests('/bar')
-    def foo(self, docs):
+    @requests(on='/bar')
+    def foo(self, docs, **kwargs):
         print(docs)
 
 
@@ -75,8 +75,8 @@ from jina import Flow, Executor, requests
 
 class MyExecutor(Executor):
 
-    @requests('/bar')
-    def foo(self, docs):
+    @requests(on='/bar')
+    def foo(self, docs, **kwargs):
         print(docs)
 
 
