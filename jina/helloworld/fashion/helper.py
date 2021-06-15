@@ -100,7 +100,7 @@ def print_result(resp):
 
         # update evaluation values
         # as evaluator set to return running avg, here we can simply replace the value
-        for k, evaluation in d.evaluations:
+        for k, evaluation in d.evaluations.items():
             evaluation_value[k] = evaluation.value
 
 

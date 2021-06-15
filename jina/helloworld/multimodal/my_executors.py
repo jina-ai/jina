@@ -273,16 +273,18 @@ class WeightedRanker(Executor):
             final_matches = {}  # type: Dict[str, Document]
 
             for m in d_mod1.matches:
-                m.scores['relevance'] = m.scores['cosine'] * d_mod1.weight
+                m.scores['relevance'] = m.scores['cosine'].value * d_mod1.weight
                 final_matches[m.parent_id] = Document(m, copy=True)
 
             for m in d_mod2.matches:
                 if m.parent_id in final_matches:
-                    final_matches[m.parent_id].scores['relevance'] += (
+                    final_matches[m.parent_id].scores['relevance'] = final_matches[
+                        m.parent_id
+                    ].scores['relevance'].value + (
                         m.scores['cosine'].value * d_mod2.weight
                     )
                 else:
-                    m.scores['relevance'] = m.scores['cosine'] * d_mod2.weight
+                    m.scores['relevance'] = m.scores['cosine'].value * d_mod2.weight
                     final_matches[m.parent_id] = Document(m, copy=True)
 
             da = DocumentArray(list(final_matches.values()))
