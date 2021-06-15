@@ -4,6 +4,7 @@ from google.protobuf import json_format
 from jina.types.struct import StructView
 
 from ..mixin import ProtoTypeMixin
+from .mixin import DocsPropertyMixin, GroundtruthPropertyMixin
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
@@ -253,7 +254,7 @@ class Request(ProtoTypeMixin):
         self._pb_body.parameters.update(value)
 
 
-class Response(Request):
+class Response(Request, DocsPropertyMixin, GroundtruthPropertyMixin):
     """
     Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
     :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
