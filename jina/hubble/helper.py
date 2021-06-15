@@ -4,6 +4,7 @@ import os
 import zipfile
 import io
 from pathlib import Path
+from jina import __resources_path__
 
 
 def archive_package(package_folder: 'Path') -> 'io.BytesIO':
@@ -13,24 +14,10 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
     :return: the data stream of zip content
     """
 
-    # import pathspec
+    import pathspec
 
-    # TODO: get ignored file pattern from `resources/ignored_files`
-    ignored_file_specs = ['**/*.pyc']
-    ignored_dir_specs = [
-        '__MACOSX',
-        '.DS_Store',
-        '__pycache__',
-        '.eggs',
-        '*.egg-info',
-        '.git',
-        '.vscode',
-    ]
-    # ignored_specs = ignored_file_specs + ignored_dir_specs
-
-    # ignored_spec = pathspec.PathSpec.from_lines(
-    #     pathspec.patterns.GitWildMatchPattern, ignored_specs
-    # )
+    with open(os.path.join(__resources_path__, 'Python.gitignore')) as fp:
+        ignored_spec = pathspec.PathSpec.from_lines('gitwildmatch', fp)
 
     zip_stream = io.BytesIO()
     try:
@@ -41,8 +28,8 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
     def _zip(base_path, path, archive):
         paths = os.listdir(path)
         for p in paths:
-            # if ignored_spec.match_file(p):
-            #     continue
+            if ignored_spec.match_file(p):
+                continue
             p = os.path.join(path, p)
             if os.path.isdir(p):
                 _zip(base_path, p, archive)
