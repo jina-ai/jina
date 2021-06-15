@@ -141,14 +141,14 @@ def test_mapped_named_score_iterate():
 
     ks = []
     vs = []
-    for i, (k, v) in enumerate(scores):
+    for i, (k, v) in enumerate(scores.items()):
         ks.append(k)
         vs.append(v.value)
 
     assert set(ks) == {'operation', 'operation2'}
     assert set(vs) == {10.0, 20.0}
 
-    lscores = list(scores)
+    lscores = list(scores.items())
     assert len(lscores) == 2
     assert set(map(lambda s: s[0], lscores)) == {'operation', 'operation2'}
     assert set(map(lambda s: s[1].op_name, lscores)) == {'operation', 'operation2'}

@@ -122,7 +122,7 @@ class EvaluationCallback(OptimizerCallback):
         self._n_docs += len(response.data.docs)
         logger.info(f'Num of docs evaluated: {self._n_docs}')
         for doc in response.data.docs:
-            for key, evaluation in MappedNamedScore(doc.evaluations):
+            for key, evaluation in MappedNamedScore(doc.evaluations).items():
                 self._evaluation_values[key].append(evaluation.value)
 
 

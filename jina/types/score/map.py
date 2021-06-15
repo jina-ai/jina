@@ -1,4 +1,5 @@
 from typing import Optional, Union
+from collections.abc import MutableMapping
 
 import numpy as np
 
@@ -11,7 +12,7 @@ from ...proto import jina_pb2
 __all__ = ['MappedNamedScore']
 
 
-class MappedNamedScore(ProtoTypeMixin):
+class MappedNamedScore(ProtoTypeMixin, MutableMapping):
 
     """
     :class:`MappedNamedScore` is one of the **primitive data type** in Jina.
@@ -95,8 +96,8 @@ class MappedNamedScore(ProtoTypeMixin):
         return key in list(self._pb_body.values.keys())
 
     def __iter__(self):
-        for key, value in self._pb_body.values.items():
-            yield key, value
+        for key in self._pb_body.values.keys():
+            yield key
 
     def __len__(self):
         return len(list(self._pb_body.values.values()))
