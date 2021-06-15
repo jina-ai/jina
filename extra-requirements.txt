@@ -25,6 +25,7 @@ fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal
 uvicorn>=0.12.1:            devel, cicd, http, test, daemon, chatbot, multimodal
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
 docker:                     devel, cicd, network, hub, daemon
+pathspec:                   devel, cicd, hub
 torch>=1.1.0:               framework, cicd, chatbot, multimodal
 transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 tensorflow>=2.0:            framework, cicd
