@@ -13,7 +13,34 @@ __all__ = ['MappedNamedScore']
 
 class MappedNamedScore(ProtoTypeMixin):
 
-    """"""
+    """
+    :class:`MappedNamedScore` is one of the **primitive data type** in Jina.
+
+    It offers a Pythonic interface to allow users access and manipulate
+    :class:`jina.jina_pb2.MappedNamedScoreProto` object without working with Protobuf itself.
+
+    It offers an interface to access and update scores as `NamedScore` as values of a `dict` with a string key.
+
+    To create a :class:`MappedNamedScoreProto` object, simply:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            from jina.types.score.map import MappedNamedScore
+            scores = MappedNamedScore()
+            scores['score'] = 50
+
+    :class:`MappedNamedScore` can be built from ``jina_pb2.MappedNamedScoreProto`` (as a weak reference or a deep copy)
+
+    :param scores: The scores to construct from, depending on the ``copy``,
+        it builds a view or a copy from it.
+    :type score: Optional[jina_pb2.MappedNamedScoreProto]
+    :param copy: When ``scores`` is given as a :class:`MappedNamedScoreProto` object, build a
+        view (i.e. weak reference) from it or a deep copy from it.
+    :type copy: bool
+    :param kwargs: Other parameters to be set
+
+    """
 
     def __init__(
         self,
