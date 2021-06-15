@@ -55,7 +55,7 @@ def torch_sparse_matrix(row, column, data):
     return torch.sparse_coo_tensor(indices, data, shape)
 
 
-@pytest.mark.parametrize('field', ['blob', 'embedding'])
+@pytest.mark.parametrize('field', ['blob', 'embedding', 'content'])
 def test_ndarray_get_set(field):
     a = Document()
     b = np.random.random([10, 10])
