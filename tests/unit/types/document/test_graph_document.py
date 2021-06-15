@@ -252,6 +252,3 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     graph.add_edge(doc1, doc0)
 
     assert graph.num_edges == expected_output
-
-
-### check that adding tice a->b and b->a only one edge is added (the one with lexicogrpahic).
