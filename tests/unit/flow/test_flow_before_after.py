@@ -5,12 +5,6 @@ from jina import Flow
 from tests import random_docs
 
 
-class MyExec(Executor):
-    @requests
-    def foo(self, **kwargs):
-        pass
-
-
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow(restful):
     docs = random_docs(10)
@@ -25,6 +19,11 @@ def test_flow(restful):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_before(restful):
+    class MyExec(Executor):
+        @requests
+        def foo(self, **kwargs):
+            pass
+
     docs = random_docs(10)
     f = Flow(restful=restful).add(uses_before=MyExec, name='p1')
 
@@ -37,6 +36,11 @@ def test_flow_before(restful):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_after(restful):
+    class MyExec(Executor):
+        @requests
+        def foo(self, **kwargs):
+            pass
+
     docs = random_docs(10)
     f = Flow(restful=restful).add(uses_after=MyExec, name='p1')
 
@@ -63,6 +67,11 @@ def test_flow_default_before_after_is_ignored(restful):
 
 @pytest.mark.parametrize('restful', [False, True])
 def test_flow_before_after(restful):
+    class MyExec(Executor):
+        @requests
+        def foo(self, **kwargs):
+            pass
+
     docs = random_docs(10)
     f = Flow(restful=restful).add(uses_before=MyExec, uses_after=MyExec, name='p1')
 
