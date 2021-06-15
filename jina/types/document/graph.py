@@ -132,6 +132,22 @@ class GraphDocument(Document):
             node.id: offset for offset, node in enumerate(self.nodes)
         }
 
+    def _get_edge_key(self, doc1: 'Document', doc2: 'Document') -> str:
+        """
+        Create a key that is lexicographically sorted in the case of undirected graphs
+
+        :param doc1: the starting node for this edge
+        :param doc2: the ending node for this edge
+        :return: lexicographically sorted key where doc1 < doc2 if undirected
+        """
+
+        if self.undirected:
+            return (
+                f'{doc1.id}-{doc2.id}' if doc1.id < doc2.id else f'{doc2.id}-{doc1.id}'
+            )
+        else:
+            return f'{doc1.id}-{doc2.id}'
+
     def add_edge(
         self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
     ):
@@ -168,12 +184,8 @@ class GraphDocument(Document):
         self.adjacency = coo_matrix((data, (row, col)))
 
         if features is not None:
-
-            if self.undirected:
-                self.edge_features[f'{doc1.id}-{doc2.id}'] = features
-                self.edge_features[f'{doc2.id}-{doc1.id}'] = features
-            else:
-                self.edge_features[f'{doc1.id}-{doc2.id}'] = features
+            k = self._get_edge_key(doc1, doc2)
+            self.edge_features[k] = features
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -207,10 +219,8 @@ class GraphDocument(Document):
             zip(self.adjacency.row, self.adjacency.col)
         ):
             if row.item() == offset1 and col.item() == offset2:
-                self._remove_edge_id(edge_id, f'{doc1.id}-{doc2.id}')
-
-            if self.undirected:
-                self._remove_edge_id(edge_id, f'{doc2.id}-{doc1.id}')
+                edge_key = self._get_edge_key(doc1, doc2)
+                self._remove_edge_id(edge_id, edge_key)
 
     @property
     def edge_features(self):
