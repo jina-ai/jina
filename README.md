@@ -117,32 +117,32 @@ class Indexer(Executor):
 
     @requests(on="/search")
     def bar(self, docs: DocumentArray, **kwargs):
-        q = np.stack(
-            docs.get_attributes("embedding")
-        )  # get all embeddings from query docs
-        d = np.stack(
-            self._docs.get_attributes("embedding")
-        )  # get all embeddings from stored docs
-        euclidean_dist = np.linalg.norm(
-            q[:, None, :] - d[None, :, :], axis=-1
-        )  # pairwise euclidean distance
-        for dist, query in zip(euclidean_dist, docs):  # add & sort match
+        # get all embeddings from query docs
+        q = np.stack(docs.get_attributes("embedding"))
+
+        # get all embeddings from stored docs
+        d = np.stack(self._docs.get_attributes("embedding"))
+
+        # pairwise euclidean distance
+        euclidean_dist = np.linalg.norm(q[:, None, :] - d[None, :, :], axis=-1)
+
+        # add & sort match
+        for dist, query in zip(euclidean_dist, docs):
             query.matches = [
                 Document(self._docs[int(idx)], copy=True, score=d)
                 for idx, d in enumerate(dist)
             ]
-            query.matches.sort(
-                key=lambda m: m.score.value
-            )  # sort matches by their values
+
+            # sort matches by their values
+            query.matches.sort(key=lambda m: m.score.value)
 
 
-f = (
-    Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)
-)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
+# build a Flow, with 2 parallel CharEmbed, tho unnecessary
+f = Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)
+
+# index all lines of this file
 with f:
-    f.post(
-        "/index", (Document(text=t.strip()) for t in open(__file__) if t.strip())
-    )  # index all lines of this file
+    f.post("/index", (Document(text=t.strip()) for t in open(__file__) if t.strip()))
     f.block()  # block for listening request
 ```
 
