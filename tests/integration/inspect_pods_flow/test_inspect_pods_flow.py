@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from jina.types.score import NamedScore
+from jina.types.score.map import MappedNamedScore
 from jina import Flow, Executor, DocumentArray, requests
 from tests import random_docs, validate_callback
 
@@ -127,8 +127,7 @@ class AddEvaluationExecutor(Executor):
 
         time.sleep(0.5)
         for doc in docs:
-            eval = doc.evaluations.add()
-            eval.value = 10.0
+            doc.evaluations['evaluate'] = 10.0
 
 
 @pytest.mark.repeat(5)
@@ -139,7 +138,8 @@ def test_flow_returned_collect(restful, mocker):
 
     def validate_func(resp):
         for doc in resp.data.docs:
-            assert len(doc.evaluations) == 1
+            assert len(MappedNamedScore(doc.evaluations)) == 1
+            assert MappedNamedScore(doc.evaluations)['evaluate'].value == 10.0
 
     f = (
         Flow(restful=restful, inspect='COLLECT')
@@ -162,7 +162,7 @@ def test_flow_returned_collect(restful, mocker):
 def test_flow_not_returned(inspect, restful, mocker):
     def validate_func(resp):
         for doc in resp.data.docs:
-            assert len(doc.evaluations) == 0
+            assert len(MappedNamedScore(doc.evaluations)) == 0
 
     f = (
         Flow(restful=restful, inspect=inspect)
