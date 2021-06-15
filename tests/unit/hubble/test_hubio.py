@@ -13,16 +13,25 @@ class MockResponse:
     def __init__(self, response_code: int = 201):
         self.response_code = response_code
 
+    def json(self):
+        return {
+            'code': 0,
+            'success': True,
+            'data': {
+                'images': [
+                    {
+                        'id': 'w7qckiqy',
+                        'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
+                        'pullPath': 'jinahub/w7qckiqy:v3',
+                    }
+                ]
+            },
+            'message': 'uploaded successfully',
+        }
+
     @property
     def text(self):
-        return json.dumps(
-            {
-                'code': 0,
-                'success': True,
-                'data': {},
-                'message': 'uploaded successfully',
-            }
-        )
+        return json.dumps(self.json())
 
     @property
     def status_code(self):
@@ -36,7 +45,7 @@ def test_push(mocker, monkeypatch, path, mode):
 
     def _mock_post(url, files, data):
         mock(url=url, files=files, data=data)
-        return MockResponse(response_code=requests.codes.ok)
+        return MockResponse(response_code=requests.codes.created)
 
     monkeypatch.setattr(requests, 'post', _mock_post)
 

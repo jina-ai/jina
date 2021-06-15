@@ -15,8 +15,8 @@ from ..logging.profile import TimeContext
 from .helper import archive_package
 
 
-JINA_HUBBLE_REGISTRY = os.environ.get('HUBBLE_REGISTRY', 'https://hubble.jina.ai')
-JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
+JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', 'https://hubble.jina.ai')
+JINA_HUBBLE_PUSH_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors/push')
 
 
 class HubIO:
@@ -72,24 +72,43 @@ class HubIO:
             }
 
             # upload the archived executor to Jina Hub
-
-            with TimeContext(f'uploading to {JINA_HUBBLE_PUSHPULL_URL}', self.logger):
+            with TimeContext(f'uploading to {JINA_HUBBLE_PUSH_URL}', self.logger):
                 resp = requests.post(
-                    JINA_HUBBLE_PUSHPULL_URL, files={'file': content}, data=form_data
+                    JINA_HUBBLE_PUSH_URL, files={'file': content}, data=form_data
                 )
 
-            if resp.status_code == 201 and resp.json()['success']:
-                # TODO: better logging info
-                print(resp.json())
+            if resp.status_code == 201:
+                if resp.json()['success']:
+                    # TODO: only support single executor now
+                    image = resp.json()['data']['images'][0]
+
+                    uuid8 = image['id']
+                    secret = image['secret']
+                    docker_image = image['pullPath']
+
+                    info_table = [
+                        f'\t🔑 ID:\t' + colored(f'{uuid8}', 'cyan'),
+                        f'\t🔒 Secret:\t'
+                        + colored(
+                            f'{secret}',
+                            'cyan',
+                        ),
+                        f'\t🐳 Image:\t' + colored(f'{docker_image}', 'cyan'),
+                    ]
+                    self.logger.success(
+                        f'🎉 The executor at {pkg_path} is now published successfully!'
+                    )
+                    self.logger.info('\n' + '\n'.join(info_table))
+                    self.logger.info(
+                        'You can directly use this executor in Jina Flow via '
+                        + colored(f'jinahub://{uuid8}', 'cyan', attrs='underline')
+                    )
+
             else:
-                self.logger.critical(
-                    f'There is some errors while pushing executor "{self.args.path}"'
-                )
+                raise Exception(resp.text)
 
         except Exception as e:  # IO related errors
             self.logger.error(
                 f'Error when trying to push the executor at {self.args.path}: {e!r}'
             )
             raise e
-
-        self.logger.success(f'🎉 The executor located at {pkg_path} is now published!')
