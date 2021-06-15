@@ -76,13 +76,7 @@ DIGEST_SIZE = 8
 
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
 DocumentSourceType = TypeVar(
-    'DocumentSourceType',
-    jina_pb2.DocumentProto,
-    bytes,
-    str,
-    Dict,
-    'Document',
-    'GraphDocument',
+    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict, 'Document'
 )
 
 _all_mime_types = set(mimetypes.types_map.values())
