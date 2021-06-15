@@ -252,3 +252,33 @@ def test_graph_edge_behaviour_creation(graph, expected_output):
     graph.add_edge(doc1, doc0)
 
     assert graph.num_edges == expected_output
+
+
+@pytest.mark.parametrize(
+    "graph, expected_output",
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
+)
+def test_graph_edge_behaviour_creation(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    graph.add_edge(doc1, doc0)
+
+    assert graph.num_edges == expected_output
+
+
+@pytest.mark.parametrize(
+    "graph, expected_output",
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
+)
+def test_graph_count_invariance(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    graph.add_edge(doc0, doc1)
+
+    assert graph.num_edges == expected_output
