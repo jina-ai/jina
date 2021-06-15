@@ -369,6 +369,7 @@
 <span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 
 <span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
+<span class="kn">from</span> <span class="nn">.mixin</span> <span class="kn">import</span> <span class="n">DocsPropertyMixin</span><span class="p">,</span> <span class="n">GroundtruthPropertyMixin</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span><span class="p">,</span> <span class="n">RequestType</span>
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadRequestType</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span><span class="p">,</span> <span class="n">typename</span>
@@ -618,7 +619,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">Request</span><span class="p">,</span> <span class="n">DocsPropertyMixin</span><span class="p">,</span> <span class="n">GroundtruthPropertyMixin</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as</span>
 <span class="sd">    :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on</span>
