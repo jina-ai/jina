@@ -86,9 +86,6 @@ class LegacyParser(VersionedYAMLParser):
 
         default_logger.success(f'successfully built {cls.__name__} from a yaml config')
 
-        # if node.tag in {'!CompoundExecutor'}:
-        #     os.environ['JINA_WARN_UNNAMED'] = 'YES'
-
         if not _meta_config:
             default_logger.warning(
                 '"metas" config is not found in this yaml file, '

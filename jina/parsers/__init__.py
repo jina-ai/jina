@@ -132,7 +132,8 @@ def get_main_parser():
     from .flow import set_flow_parser
     from .ping import set_ping_parser
 
-    # from .hub import set_hub_parser
+    from .hubble import set_hub_parser
+
     # from .optimizer import set_optimizer_parser
 
     # create the top-level parser
@@ -194,14 +195,14 @@ def get_main_parser():
         )
     )
 
-    # set_hub_parser(
-    #     sp.add_parser(
-    #         'hub',
-    #         help='Build, push, pull Jina Hub images',
-    #         description='Build, push, pull Jina Hub images',
-    #         formatter_class=_chf,
-    #     )
-    # )
+    set_hub_parser(
+        sp.add_parser(
+            'hub',
+            help='Push/pull an Executor to/from Jina Hub',
+            description='Push/Pull an Executor to/from Jina Hub',
+            formatter_class=_chf,
+        )
+    )
 
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 

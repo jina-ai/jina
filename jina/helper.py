@@ -736,12 +736,19 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
-    from . import __version__, __proto_version__, __jina_env__, __resources_path__
+    from . import (
+        __version__,
+        __proto_version__,
+        __jina_env__,
+        __resources_path__,
+        __uptime__,
+    )
     from google.protobuf.internal import api_implementation
     import os, grpc, zmq, numpy, google.protobuf, yaml
     from grpc import _grpcio_metadata
     import platform
     from jina.logging.predefined import default_logger
+    from uuid import getnode
 
     try:
 
@@ -761,6 +768,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'platform-version': platform.version(),
             'architecture': platform.machine(),
             'processor': platform.processor(),
+            'uuid': getnode(),
+            'uptime': __uptime__,
             'jina-resources': __resources_path__,
         }
         env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}

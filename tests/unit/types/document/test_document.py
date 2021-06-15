@@ -941,3 +941,36 @@ def test_document_init_with_scores_and_evaluations():
     assert d.evaluations['recall'].value == 1.0
     assert d.evaluations['eval1'].value == 2.0
     assert d.evaluations['eval2'].value == 5
+
+
+def test_document_scores_delete():
+    d = Document(
+        scores={
+            'euclidean': 50,
+            'cosine': NamedScore(value=1.0),
+            'score1': NamedScore(value=2.0).proto,
+            'score2': np.int(5),
+        },
+        evaluations={
+            'precision': 50,
+            'recall': NamedScore(value=1.0),
+            'eval1': NamedScore(value=2.0).proto,
+            'eval2': np.int(5),
+        },
+    )
+    assert d.scores['euclidean'].value == 50
+    assert d.scores['cosine'].value == 1.0
+    assert d.scores['score1'].value == 2.0
+    assert d.scores['score2'].value == 5
+
+    assert d.evaluations['precision'].value == 50
+    assert d.evaluations['recall'].value == 1.0
+    assert d.evaluations['eval1'].value == 2.0
+    assert d.evaluations['eval2'].value == 5
+
+    assert 'precision' in d.evaluations
+    del d.evaluations['precision']
+    assert 'precision' not in d.evaluations
+    assert 'cosine' in d.scores
+    del d.scores['cosine']
+    assert 'cosine' not in d.scores

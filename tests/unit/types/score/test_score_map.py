@@ -21,6 +21,8 @@ def test_mapped_named_score():
 
     assert 'operation' in scores._pb_body.values
     assert 'operation2' in scores._pb_body.values
+    assert 'operation' in scores
+    assert 'operation2' in scores
 
     assert scores['operation'].op_name == 'operation'
     assert scores['operation'].value == 10.0
@@ -47,11 +49,15 @@ def test_mapped_named_score_from_proto():
 
     assert 'operation' in scores._pb_body.values
     assert 'operation2' in scores._pb_body.values
+    assert 'operation' in scores
+    assert 'operation2' in scores
 
     scores2 = MappedNamedScore(scores.proto)
 
     assert 'operation' in scores2._pb_body.values
     assert 'operation2' in scores2._pb_body.values
+    assert 'operation' in scores2
+    assert 'operation2' in scores2
     assert scores2['operation'].op_name == 'operation'
     assert scores2['operation'].value == 10.0
     assert scores2['operation'].ref_id == '10' * 16
@@ -102,10 +108,15 @@ def test_mapped_named_score_delete():
 
     assert 'operation' in scores._pb_body.values
     assert 'operation2' in scores._pb_body.values
+    assert 'operation' in scores
+    assert 'operation2' in scores
     del scores['operation']
     assert 'operation' not in scores._pb_body.values
     assert 'operation2' in scores._pb_body.values
+    assert 'operation' not in scores
+    assert 'operation2' in scores
     del scores['operation2']
     assert 'operation2' not in scores._pb_body.values
+    assert 'operation2' not in scores
     with pytest.raises(KeyError):
         del scores['operation']

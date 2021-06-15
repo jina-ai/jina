@@ -39,6 +39,7 @@ ac_table = {
         'flow',
         'ping',
         'gateway',
+        'hub',
         'pea',
         'client',
         'export-api',
@@ -267,6 +268,8 @@ ac_table = {
             '--noblock-on-start',
             '--restful',
         ],
+        'hub push': ['--help', '--public', '--force', '--secret'],
+        'hub': ['--help', 'push'],
         'pea': [
             '--help',
             '--name',

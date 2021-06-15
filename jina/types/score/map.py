@@ -1,8 +1,4 @@
 from typing import Optional, Union
-<<<<<<< HEAD
-=======
-from collections.abc import MutableMapping
->>>>>>> 2e28aab7b8a0e5ce40aff10612146e68f050c4a3
 
 import numpy as np
 
@@ -67,3 +63,6 @@ class MappedNamedScore(ProtoTypeMixin):
         key: str,
     ):
         del self._pb_body.values[key]
+
+    def __contains__(self, key: str):
+        return key in list(self._pb_body.values.keys())
