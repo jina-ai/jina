@@ -93,3 +93,10 @@ class MappedNamedScore(ProtoTypeMixin):
 
     def __contains__(self, key: str):
         return key in list(self._pb_body.values.keys())
+
+    def __iter__(self):
+        for key, value in self._pb_body.values.items():
+            yield key, value
+
+    def __len__(self):
+        return len(list(self._pb_body.values.values()))
