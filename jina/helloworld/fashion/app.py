@@ -69,7 +69,6 @@ def hello_world(args):
 
     # reduce the network load by using `fp16`, or even `uint8`
     os.environ['JINA_ARRAY_QUANT'] = 'fp16'
-    os.environ['HW_WORKDIR'] = args.workdir
 
     # now comes the real work
     # load index flow from a YAML file
@@ -81,16 +80,6 @@ def hello_world(args):
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
             request_size=args.request_size,
         )
-
-        # f.search(
-        #     query_generator(
-        #         num_docs=args.num_query, target=targets, with_groundtruth=True
-        #     ),
-        #     shuffle=True,
-        #     on_done=print_result,
-        #     request_size=args.request_size,
-        #     parameters={'top_k': args.top_k},
-        # )
 
         f.post(
             '/eval',

@@ -21,7 +21,7 @@ def create_chatbot_flow(args):
     return (
         Flow()
         .add(uses=MyTransformer, parallel=args.parallel)
-        .add(uses=MyIndexer, workspace=args.workdir)
+        .add(uses=MyIndexer)
     )
 
 
