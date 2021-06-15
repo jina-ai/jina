@@ -1,11 +1,11 @@
 name: CI
 
-#on:
-#  pull_request_target:
 on:
-  push:
-    branches-ignore:
-      - '**'  # temporally ignore all
+ pull_request_target:
+# on:
+#   push:
+#     branches-ignore:
+#       - '**'  # temporally ignore all
 
 jobs:
   latency-tracking:
@@ -34,7 +34,7 @@ jobs:
           docker run -v $(pwd)/output:/workspace/output -v $(pwd)/original:/workspace/original latency-tracking
           bash batch.sh ${{ env.NUM_LAST_RELEASE }}
           pip install prettytable
-          python ppstat.py ${{ env.NUM_LAST_RELEASE }}>  comment.txt
+          python ppstat.py ${{ env.NUM_LAST_RELEASE }} > comment.txt
       - id: get-comment-body
         run: |
           body=$(cat latency/comment.txt)
