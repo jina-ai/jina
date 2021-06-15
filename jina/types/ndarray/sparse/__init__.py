@@ -21,12 +21,19 @@ class BaseSparseNdArray(BaseNdArray):
     """
 
     def __init__(self, *args, **kwargs):
-        """Set constructor method."""
+        """Set constructor method.
+
+        :param args: args passed to super().
+        :param kwargs: kwargs passed to super().
+        """
         super().__init__(*args, **kwargs)
         self.is_sparse = True
 
-    def null_proto(self):
-        """Get the new protobuf representation."""
+    def null_proto(self) -> 'jina_pb2.SparseNdArrayProto':
+        """Get the new protobuf representation.
+
+        :return: An empty `SparseNdArrayProto`
+        """
         return jina_pb2.SparseNdArrayProto()
 
     def sparse_constructor(
@@ -39,6 +46,8 @@ class BaseSparseNdArray(BaseNdArray):
         :param values: the values of the sparse array
         :param shape: the shape of the sparse array
         :return: Sparse NdArray
+
+        .. # noqa: DAR202
         """
         raise NotImplementedError
 
@@ -50,23 +59,31 @@ class BaseSparseNdArray(BaseNdArray):
 
         :param value: the sparse ndarray
         :return: a Dict with three entries {'indices': ..., 'values':..., 'shape':...}
+
+        .. # noqa: DAR202
         """
         raise NotImplementedError
 
     @property
     def value(self) -> AnySparseNdArray:
-        """Get the value of protobuf message in :class:`SparseNdArray`."""
+        """Get the value of protobuf message in :class:`SparseNdArray`.
+
+        :return: A :class:`SparseNdArray`.
+        """
         idx = DenseNdArray(self._pb_body.indices).value
         val = DenseNdArray(self._pb_body.values).value
-        shape = self._pb_body.dense_shape
+        shape = self._pb_body.shape
         if idx is not None and val is not None and shape:
             return self.sparse_constructor(idx, val, shape)
 
     @value.setter
     def value(self, value: AnySparseNdArray):
-        """Set the value of protobuf message with :param:`value` in :class:`SparseNdArray`."""
+        """Set the value of protobuf message with :param:`value` in :class:`SparseNdArray`.
+
+        :param value: The :class:`SparseNdArray` to be set as the value of the cls.
+        """
         r = self.sparse_parser(value)
         DenseNdArray(self._pb_body.indices).value = r['indices']
         DenseNdArray(self._pb_body.values).value = r['values']
-        self._pb_body.ClearField('dense_shape')
-        self._pb_body.dense_shape.extend(r['shape'])
+        self._pb_body.ClearField('shape')
+        self._pb_body.shape.extend(r['shape'])
