@@ -18,11 +18,7 @@ else:
 
 def create_chatbot_flow(args):
     """Ensure the same flow is used in hello world example and system test."""
-    return (
-        Flow()
-        .add(uses=MyTransformer, parallel=args.parallel)
-        .add(uses=MyIndexer)
-    )
+    return Flow().add(uses=MyTransformer, parallel=args.parallel).add(uses=MyIndexer)
 
 
 def hello_world(args):
