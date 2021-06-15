@@ -1,11 +1,15 @@
+from collections.abc import MutableMapping
+
 from google.protobuf.internal.well_known_types import Struct
-from google.protobuf.json_format import MessageToDict
 
 
-class StructView(dict):
+class StructView(MutableMapping):
     """Create a Python dict view of Protobuf Struct.
 
     This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags
+
+    .. warning::
+
 
     """
 
@@ -14,7 +18,6 @@ class StructView(dict):
 
         :param struct: the protobuf Struct object
         """
-        super().__init__(MessageToDict(struct))
         self._pb_body = struct
 
     def __setitem__(self, key, value):
@@ -22,6 +25,16 @@ class StructView(dict):
 
     def __delitem__(self, key):
         del self._pb_body[key]
+
+    def __getitem__(self, key):
+        return self._pb_body[key]
+
+    def __len__(self) -> int:
+        return len(self._pb_body.keys())
+
+    def __iter__(self):
+        for key in self._pb_body.keys():
+            yield key
 
     def update(self, dictionary):  # pylint: disable=invalid-name
         """
