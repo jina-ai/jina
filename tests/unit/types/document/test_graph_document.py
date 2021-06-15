@@ -294,9 +294,10 @@ def test_added_edges_in_edge_features(graph, expected_output):
     doc1 = Document(text='Document1')
 
     graph.add_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(d0, d1)
+    edge_key = graph._get_edge_key(doc0, doc1)
 
     assert edge_key in graph.edge_features
+    assert graph.edge_features[edge_key] is None
 
 
 @pytest.mark.parametrize(
@@ -309,8 +310,8 @@ def test_manual_update_edges_features(graph, expected_output):
     doc1 = Document(text='Document1')
 
     graph.add_edge(doc0, doc1)
-    edge_key = graph._get_edge_key(d0, d1)
+    edge_key = graph._get_edge_key(doc0, doc1)
 
-    g._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
+    graph._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
 
-    assert g._pb_body.graph.edge_features[k]['number_value'] == 1234
+    assert graph._pb_body.graph.edge_features[edge_key]['number_value'] == 1234
