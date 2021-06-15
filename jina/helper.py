@@ -11,8 +11,6 @@ import time
 import uuid
 import warnings
 
-from google.protobuf.pyext._message import MessageMapContainer
-
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from itertools import islice
@@ -1157,6 +1155,7 @@ def dunder_get(_dict: Any, key: str) -> Any:
         pass
 
     from google.protobuf.struct_pb2 import Struct
+    from google.protobuf.pyext._message import MessageMapContainer
 
     if isinstance(part1, int):
         result = _dict[part1]

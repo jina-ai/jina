@@ -815,7 +815,6 @@ $ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type:
         "location": [],
         "offset": 0,
         "modality": "",
-        "evaluations": []
       }
     ],
     "groundtruths": []
