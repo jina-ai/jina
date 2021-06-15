@@ -313,6 +313,7 @@ message RequestProto {
             SCALE = 4; // scale up/down a Pod
             ACTIVATE = 5; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
             DEACTIVATE = 6; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
+            DUMP = 7; // tells an executor to dump its state ro disk. Usually this would be its index so it can be used for rolling update
         }
         Command command = 1; // the control command
     }
