@@ -15,7 +15,7 @@ def test_schema_invocation():
 
 
 def test_existing_definitions():
-    """ This tests: all internal schema definitions are part of parent """
+    """This tests: all internal schema definitions are part of parent"""
     for i in [
         'QuantizationMode',
         'DenseNdArrayProto',
@@ -30,7 +30,7 @@ def test_existing_definitions():
 
 
 def test_enum_definitions():
-    """ This tests: all enums are defined properly as different levels """
+    """This tests: all enums are defined properly as different levels"""
     quantization_enum_definition = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['QuantizationMode']
@@ -48,7 +48,7 @@ def test_enum_definitions():
 
 
 def test_all_fields_in_document_proto():
-    """ This tests: all fields are picked from the proto definition """
+    """This tests: all fields are picked from the proto definition"""
     document_proto_properties = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema(
         by_alias=False
     )['definitions']['DocumentProto']['properties']
@@ -81,7 +81,7 @@ def test_all_fields_in_document_proto():
 
 
 def test_oneof_text():
-    """ This tests: oneof field is correctly represented as `anyOf` """
+    """This tests: oneof field is correctly represented as `anyOf`"""
 
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc')
     assert doc.text == 'abc'
@@ -90,7 +90,7 @@ def test_oneof_text():
 
 
 def test_oneof_buffer():
-    """ This tests: oneof field is correctly represented as `anyOf` """
+    """This tests: oneof field is correctly represented as `anyOf`"""
 
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(buffer=b'abc')
     assert doc.buffer == b'abc'
@@ -99,7 +99,7 @@ def test_oneof_buffer():
 
 
 def test_oneof_blob():
-    """ This tests: oneof field is correctly represented as `anyOf` """
+    """This tests: oneof field is correctly represented as `anyOf`"""
 
     doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
         blob=PROTO_TO_PYDANTIC_MODELS.NdArrayProto()
@@ -110,7 +110,7 @@ def test_oneof_blob():
 
 
 def test_oneof_validation_error():
-    """ This tests validation error for invalid fields """
+    """This tests validation error for invalid fields"""
 
     with pytest.raises(pydantic.error_wrappers.ValidationError) as error:
         doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(text='abc', buffer=b'abc')
@@ -141,7 +141,7 @@ def test_tags_document():
 
 
 def test_repeated():
-    """ This tests: repeated fields are represented as `array` """
+    """This tests: repeated fields are represented as `array`"""
     assert (
         PROTO_TO_PYDANTIC_MODELS.DenseNdArrayProto().schema()['properties']['shape'][
             'type'
@@ -163,14 +163,14 @@ def test_repeated():
 
 
 def test_recursive_schema():
-    """ This tests: recursive schmea definions are represented properly """
+    """This tests: recursive schmea definions are represented properly"""
     assert PROTO_TO_PYDANTIC_MODELS.NamedScoreProto().schema()['definitions'][
         'NamedScoreProto'
     ]['properties']['operands']['items'] == {'$ref': '#/definitions/NamedScoreProto'}
 
 
 def test_struct():
-    """ This tests: google.protobuf.Struct are represented as `object` """
+    """This tests: google.protobuf.Struct are represented as `object`"""
     assert (
         PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()['definitions'][
             'DocumentProto'
@@ -180,7 +180,7 @@ def test_struct():
 
 
 def test_timestamp():
-    """ This tests: google.protobuf.Timestamp are represented as date-time """
+    """This tests: google.protobuf.Timestamp are represented as date-time"""
     assert (
         PROTO_TO_PYDANTIC_MODELS.RouteProto().schema(by_alias=False)['properties'][
             'start_time'
