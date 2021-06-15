@@ -4,6 +4,7 @@ import os
 import argparse
 import json
 from pathlib import Path
+from urllib.parse import urljoin
 import hashlib
 from ..helper import (
     colored,
@@ -14,7 +15,8 @@ from ..logging.profile import TimeContext
 from .helper import archive_package
 
 
-HUBBLE_REGISTRY = os.environ.get('HUBBLE_REGISTRY', 'https://hubble.jina.ai')
+JINA_HUBBLE_REGISTRY = os.environ.get('HUBBLE_REGISTRY', 'https://hubble.jina.ai')
+JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
 
 class HubIO:
@@ -37,10 +39,7 @@ class HubIO:
 
         import requests
 
-        is_public = True
-        if self.args.private:
-            is_public = False
-            self.args.public = False
+        is_public = self.args.public
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
@@ -73,10 +72,10 @@ class HubIO:
             }
 
             # upload the archived executor to Jina Hub
-            upload_url = HUBBLE_REGISTRY + '/v1/executors/push'
-            with TimeContext(f'uploading to {upload_url}', self.logger):
+
+            with TimeContext(f'uploading to {JINA_HUBBLE_PUSHPULL_URL}', self.logger):
                 resp = requests.post(
-                    upload_url, files={'file': content}, data=form_data
+                    JINA_HUBBLE_PUSHPULL_URL, files={'file': content}, data=form_data
                 )
 
             if resp.status_code == 201 and resp.json()['success']:

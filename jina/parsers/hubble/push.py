@@ -16,26 +16,18 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
 ''',
     )
     gp.add_argument(
-        '--private',
-        action='store_true',
-        default=False,
-        help='If set, the published executor is invisible to public',
-    )
-    gp.add_argument(
         '--public',
         action='store_true',
-        default=True,
+        default=False,
         help='If set, the published executor is visible to public',
     )
     gp.add_argument(
         '--force',
         type=str,
-        default='',
         help='To overwrite the executor identified as UUID8',
     )
     gp.add_argument(
         '--secret',
         type=str,
-        default='',
         help='The secret key of the identified Jina Hub executor',
     )
