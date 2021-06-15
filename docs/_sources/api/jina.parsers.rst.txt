@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   jina.parsers.hub
+   jina.parsers.hubble
    jina.parsers.peapods
 
 Submodules

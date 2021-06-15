@@ -11,6 +11,7 @@ Subpackages
    jina.executors
    jina.flow
    jina.helloworld
+   jina.hubble
    jina.jaml
    jina.logging
    jina.optimizers
