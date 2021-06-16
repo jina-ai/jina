@@ -28,7 +28,7 @@ def test_upload_then_add_success(api, workspace, fastapi_client):
         '/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps]
     )
     assert response.status_code == 201
-    workspace_id = response.json()
+    workspace_id = list(response.json().keys())[0]
     assert os.path.exists(get_workspace_path(workspace_id))
     for d in deps:
         assert os.path.exists(get_workspace_path(workspace_id, d))
@@ -82,7 +82,7 @@ def test_upload_then_add_flow_success(workspace, fastapi_client):
         '/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps]
     )
     assert response.status_code == 201
-    workspace_id = response.json()
+    workspace_id = list(response.json().keys())[0]
 
     # Create a Flow
     response = fastapi_client.post(
@@ -134,7 +134,7 @@ def test_post_and_delete_workspace(fastapi_client):
         '/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps]
     )
     assert response.status_code == 201
-    workspace_id = response.json()
+    workspace_id = list(response.json().keys())[0]
     assert os.path.exists(get_workspace_path(workspace_id))
     for d in deps:
         assert os.path.exists(get_workspace_path(workspace_id, d))

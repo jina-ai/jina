@@ -1,4 +1,5 @@
 import os
+import pathlib
 import random
 import string
 import time
@@ -27,6 +28,9 @@ def test_metas(tmpdir, random_workspace_name):
 
 @pytest.fixture(scope='function', autouse=False)
 def fastapi_client():
+    from daemon import __root_workspace__
+
+    pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     from daemon import _get_app
 
     app = _get_app()
