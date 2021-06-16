@@ -15,7 +15,9 @@ from ..logging.profile import TimeContext
 from .helper import archive_package
 
 
-JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai')
+JINA_HUBBLE_REGISTRY = os.environ.get(
+    'JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai'
+)
 JINA_HUBBLE_PUSH_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
 
@@ -70,11 +72,13 @@ class HubIO:
 
             method = 'put' if self.args.force else 'post'
             # upload the archived executor to Jina Hub
-            with TimeContext(f'uploading to {method.upper()} {JINA_HUBBLE_PUSH_URL}', self.logger):
+            with TimeContext(
+                f'uploading to {method.upper()} {JINA_HUBBLE_PUSH_URL}', self.logger
+            ):
                 request = getattr(requests, method)
                 resp = request(
                     JINA_HUBBLE_PUSH_URL, files={'file': content}, data=form_data
-            )
+                )
 
             if 200 <= resp.status_code < 300:
                 # TODO: only support single executor now
@@ -84,7 +88,11 @@ class HubIO:
                 secret = image['secret']
                 docker_image = image['pullPath']
                 visibility = image['visibility']
-                usage = f'jinahub://{uuid8}' if visibility == 'public' else f'jinahub://{uuid8}:{secret}'
+                usage = (
+                    f'jinahub://{uuid8}'
+                    if visibility == 'public'
+                    else f'jinahub://{uuid8}:{secret}'
+                )
 
                 info_table = [
                     f'\t🔑 ID:\t\t' + colored(f'{uuid8}', 'cyan'),
