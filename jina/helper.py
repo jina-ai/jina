@@ -933,21 +933,24 @@ def get_public_ip():
     """
     import urllib.request
 
-    timeout = 0.2
+    timeout = 0.5
 
     results = []
 
     def _get_ip(url):
         try:
-            with urllib.request.urlopen(url, timeout=timeout) as fp:
-                results.append(fp.read().decode('utf8'))
+            metas, envs = get_full_version()
+            req = urllib.request.Request(
+                url, headers={'User-Agent': 'Mozilla/5.0', **metas, **envs}
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as fp:
+                # TODO: (deepankar) fix extra quote on the server side
+                results.append(fp.read().decode().replace('"', ''))
         except:
             pass
 
     ip_server_list = [
-        'https://api.ipify.org',
-        'https://ident.me',
-        'https://ipinfo.io/ip',
+        'https://getip.jina.ai/ip',
     ]
 
     threads = []
