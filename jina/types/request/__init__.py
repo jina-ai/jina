@@ -31,7 +31,7 @@ RequestSourceType = TypeVar(
 )
 
 
-class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
+class Request(ProtoTypeMixin):
     """
     :class:`Request` is one of the **primitive data type** in Jina.
 
