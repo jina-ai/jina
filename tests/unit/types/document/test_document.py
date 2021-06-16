@@ -442,7 +442,6 @@ def test_doc_field_resolver(from_str):
     assert d.id == '123'
     assert d.tags['hello'] == 'world'
     assert d.tags['good'] == 'bye'
-    print(f' d.tags {d.tags.dict()}')
     assert 'music_id' not in d.tags
 
 
