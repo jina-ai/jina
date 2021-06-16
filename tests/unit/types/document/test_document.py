@@ -97,7 +97,7 @@ def test_doc_update_fields():
     np.testing.assert_equal(a.embedding, b)
     assert list(a.location) == d
     assert a.modality == e
-    assert a.tags.dict() == c
+    assert a.tags == c
     assert a.weight == w
 
 
@@ -977,3 +977,16 @@ def test_tags_update_nested():
     assert d.tags['hey']['bye'] == 4
     d.tags['hey']['bye'] = 5
     assert d.tags['hey']['bye'] == 5
+
+
+def test_tag_compare_dict():
+    d = Document()
+    d.tags = {'hey': {'bye': 4}}
+    print(f' d.tags {d.tags}')
+    assert d.tags == {'hey': {'bye': 4}}
+    assert d.tags.dict() == {'hey': {'bye': 4}}
+
+    d.tags = {'hey': [1, 2]}
+    # TODO: Issue about having proper ListValueView
+    assert d.tags != {'hey': [1, 2]}
+    assert d.tags.dict() == {'hey': [1, 2]}
