@@ -132,3 +132,17 @@ def test_struct_view_update(struct_proto):
     assert len(view) == 6
     assert len(view['key_nested'].keys()) == 1
     assert view['key_nested']['new_key_nested'] == 'very_new'
+
+
+def test_struct_view_dict():
+    struct = Struct()
+    d = {'a': 1, 'b': 2}
+    struct.update(d)
+    view = StructView(struct)
+    assert view.dict() == d
+
+
+def test_struct_contains(struct_proto):
+    view = StructView(struct_proto)
+    assert 'key_nested' in view
+    assert not 'a' in view

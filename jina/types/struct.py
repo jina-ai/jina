@@ -1,15 +1,17 @@
 from collections.abc import MutableMapping
 
-from google.protobuf.struct_pb2 import Struct
+from google.protobuf import struct_pb2
+
+from .mixin import ProtoTypeMixin
 
 
-class StructView(MutableMapping):
+class StructView(ProtoTypeMixin, MutableMapping):
     """Create a Python mutable mapping view of Protobuf Struct.
 
     This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags
     """
 
-    def __init__(self, struct: Struct):
+    def __init__(self, struct: struct_pb2.Struct):
         """Create a Python dict view of Protobuf Struct.
 
         :param struct: the protobuf Struct object
@@ -23,7 +25,10 @@ class StructView(MutableMapping):
         del self._pb_body[key]
 
     def __getitem__(self, key):
-        return self._pb_body[key]
+        if key in self._pb_body.keys():
+            return self._pb_body[key]
+        else:
+            raise KeyError()
 
     def __len__(self) -> int:
         return len(self._pb_body.keys())
