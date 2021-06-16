@@ -11,7 +11,6 @@ class DocsPropertyMixin:
 
         .. # noqa: DAR201"""
         self.is_used = True
-        print(f' request body docs memory {id(self.body.docs)}')
         return DocumentArray(self.body.docs)
 
 
