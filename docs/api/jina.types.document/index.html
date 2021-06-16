@@ -348,10 +348,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../jina.types.score.map/">jina.types.score.map module</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.types.struct/">jina.types.struct module</a></li>
 </ul>
@@ -364,7 +361,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -893,22 +890,12 @@ assert d.tags[‘id’] == ‘external_id’ # true</p>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.types.document.Document.scores">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">scores</span></code><a class="headerlink" href="#jina.types.document.Document.scores" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the scores of the document.</p>
+<dt id="jina.types.document.Document.score">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">score</span></code><a class="headerlink" href="#jina.types.document.Document.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the score of the document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the scores attached to this document as <cite>:class:NamedScoreMapping</cite></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.document.Document.evaluations">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">evaluations</span></code><a class="headerlink" href="#jina.types.document.Document.evaluations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the evaluations of the document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the evaluations attached to this document as <cite>:class:NamedScoreMapping</cite></p>
+<dd class="field-odd"><p>the score attached to this document as <cite>:class:NamedScore</cite></p>
 </dd>
 </dl>
 </dd></dl>

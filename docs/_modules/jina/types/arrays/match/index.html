@@ -325,10 +325,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.struct/">jina.types.struct module</a></li>
 </ul>
@@ -341,7 +338,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -401,8 +398,7 @@
         <span class="n">match</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span>
             <span class="n">granularity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">granularity</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
-        <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">score</span><span class="o">.</span><span class="n">ref_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">match</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">ref_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span><span class="o">.</span><span class="n">id</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">match</span></div>

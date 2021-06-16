@@ -325,10 +325,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.types.struct/">jina.types.struct module</a></li>
 </ul>
@@ -341,7 +338,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -390,8 +387,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.field_mask_pb2</span> <span class="kn">import</span> <span class="n">FieldMask</span>
-<span class="kn">from</span> <span class="nn">..struct</span> <span class="kn">import</span> <span class="n">StructView</span>
-<span class="kn">from</span> <span class="nn">..score.map</span> <span class="kn">import</span> <span class="n">NamedScoreMapping</span>
+<span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="kn">import</span> <span class="n">StructView</span>
+
 <span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">png_to_buffer</span><span class="p">,</span> <span class="n">to_datauri</span><span class="p">,</span> <span class="n">guess_mime</span><span class="p">,</span> <span class="n">to_image_blob</span>
 <span class="kn">from</span> <span class="nn">..arrays.chunk</span> <span class="kn">import</span> <span class="n">ChunkArray</span>
 <span class="kn">from</span> <span class="nn">..arrays.match</span> <span class="kn">import</span> <span class="n">MatchArray</span>
@@ -453,7 +450,6 @@
 
 <span class="n">_all_doc_content_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'content'</span><span class="p">,</span> <span class="s1">'uri'</span><span class="p">,</span> <span class="s1">'blob'</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">,</span> <span class="s1">'buffer'</span><span class="p">)</span>
 <span class="n">_all_doc_array_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'blob'</span><span class="p">,</span> <span class="s1">'embedding'</span><span class="p">)</span>
-<span class="n">_special_mapped_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'scores'</span><span class="p">,</span> <span class="s1">'evaluations'</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">):</span>
@@ -1069,7 +1065,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                     <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_special_mapped_keys</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1312,64 +1308,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">adjacency</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Return the scores of the document.</span>
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Return the score of the document.</span>
 
-<span class="sd">        :return: the scores attached to this document as `:class:NamedScoreMapping`</span>
+<span class="sd">        :return: the score attached to this document as `:class:NamedScore`</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">NamedScoreMapping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">scores</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">NamedScore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
 
-    <span class="nd">@scores</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">scores</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
-            <span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">NamedScore</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">]</span>
-        <span class="p">],</span>
+    <span class="nd">@score</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">,</span> <span class="n">NamedScore</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">]</span>
     <span class="p">):</span>
-        <span class="sd">"""Sets the scores of the `Document`. Specially important to provide the ability to start `scores` as:</span>
+        <span class="sd">"""Set the score of the document.</span>
 
-<span class="sd">            .. highlight:: python</span>
-<span class="sd">            .. code-block:: python</span>
+<span class="sd">        You can assign a scala variable directly.</span>
 
-<span class="sd">                from jina import Document</span>
-<span class="sd">                from jina.types.score import NamedScore</span>
-<span class="sd">                d = Document(scores={'euclidean': 5, 'cosine': NamedScore(value=0.5)})</span>
-
-<span class="sd">        :param value: the dictionary to set the scores</span>
+<span class="sd">        :param value: the value to set the score of the Document from</span>
 <span class="sd">        """</span>
-        <span class="n">scores</span> <span class="o">=</span> <span class="n">NamedScoreMapping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">scores</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">scores</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">evaluations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Return the evaluations of the document.</span>
-
-<span class="sd">        :return: the evaluations attached to this document as `:class:NamedScoreMapping`</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">NamedScoreMapping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">evaluations</span><span class="p">)</span>
-
-    <span class="nd">@evaluations</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">evaluations</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
-            <span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">NamedScore</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">]</span>
-        <span class="p">],</span>
-    <span class="p">):</span>
-        <span class="sd">"""Sets the evaluations of the `Document`. Specially important to provide the ability to start `evaluations` as:</span>
-
-<span class="sd">            .. highlight:: python</span>
-<span class="sd">            .. code-block:: python</span>
-
-<span class="sd">                from jina import Document</span>
-<span class="sd">                from jina.types.score import NamedScore</span>
-<span class="sd">                d = Document(evaluations={'precision': 0.9, 'recall': NamedScore(value=0.5)})</span>
-
-<span class="sd">        :param value: the dictionary to set the evaluations</span>
-<span class="sd">        """</span>
-        <span class="n">scores</span> <span class="o">=</span> <span class="n">NamedScoreMapping</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">evaluations</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">scores</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">NamedScore</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'score is in unsupported type </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Document.convert_image_buffer_to_blob"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.convert_image_buffer_to_blob">[docs]</a>    <span class="k">def</span> <span class="nf">convert_image_buffer_to_blob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">"""Convert an image buffer to blob</span>
