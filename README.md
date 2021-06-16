@@ -12,7 +12,7 @@
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://pepy.tech/project/jina"><img src="https://pepy.tech/badge/jina/month"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
-<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-600%2B-blueviolet"></a>
+<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-600%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
 <!-- start elevator-pitch -->
@@ -42,7 +42,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-2.0 is in pre-release, **add `--pre`** to install it. [Why 2.0?](.github/2.0/1vs2.md)
+2.0 is in pre-release, **add `--pre`** to install it.
 
 ```console
 $ pip install --pre jina
@@ -129,9 +129,10 @@ Keep the above running and start a simple client:
 
 ```python
 from jina import Client, Document
+from jina.types.request import Response
 
-def print_matches(req):  # the callback function invoked when task is done
-    for idx, d in enumerate(req.docs[0].matches[:3]):  # print top-3 matches
+def print_matches(resp: Response):  # the callback function invoked when task is done
+    for idx, d in enumerate(resp.docs[0].matches[:3]):  # print top-3 matches
         print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
         
 c = Client(host='localhost', port_expose=12345)  # connect to localhost:12345
