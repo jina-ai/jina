@@ -250,15 +250,6 @@ def test_documentarray_filter():
         assert d.score.value > 2
 
 
-def test_da_with_graphs():
-    da = DocumentArray([GraphDocument() for _ in range(6)])
-
-    for d in da:
-        assert isinstance(d, GraphDocument) is True
-
-    assert isinstance(da[0], GraphDocument) is True
-
-
 def test_da_with_different_inputs():
     docs = [Document() for _ in range(10)]
     da = DocumentArray(

@@ -241,7 +241,7 @@ class DocumentArray(
 
     def clear(self):
         """Clear the data of :class:`DocumentArray`"""
-        while self._pb_body > 0:
+        while len(self._pb_body) > 0:
             self._pb_body.pop()
 
     def reverse(self):
@@ -269,7 +269,10 @@ class DocumentArray(
         :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
-        self._pb_body.sort(*args, **kwargs)
+        # TODO: Hacky way
+        tmp = [Document(proto) for proto in self._pb_body]
+        tmp.sort(*args, **kwargs)
+        self._pb_body = [d.proto for d in tmp]
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```
