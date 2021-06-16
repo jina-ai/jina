@@ -139,6 +139,22 @@ def test_tags_document():
         'key': 'value',
     }
 
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(
+        hello='world', tags={'key': {'nested': 'value'}}
+    )
+    assert doc.tags == {'hello': 'world', 'key': {'nested': 'value'}}
+    assert Document(doc.dict()).tags == {
+        'hello': 'world',
+        'key': {'nested': 'value'},
+    }
+
+    doc = PROTO_TO_PYDANTIC_MODELS.DocumentProto(hello='world', tags={'key': [1, 2, 3]})
+
+    # TODO: Issue about having proper ListValueView, not really expected
+    assert doc.tags != {'key': [1, 2, 3]}
+    with pytest.raises(TypeError):
+        assert Document(doc.dict()).tags != {{'key': [1, 2, 3]}}
+
 
 def test_repeated():
     """This tests: repeated fields are represented as `array`"""

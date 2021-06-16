@@ -71,10 +71,12 @@ if False:
         tf.SparseTensor,
     )
 
+
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
 
-DocumentContentType = TypeVar('DocumentContentType', bytes, str, np.ndarray)
+# This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`
+DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
 DocumentSourceType = TypeVar(
     'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
 )
@@ -902,8 +904,12 @@ class Document(ProtoTypeMixin):
         elif isinstance(value, np.ndarray):
             self.blob = value
         else:
-            # ``None`` is also considered as bad type
-            raise TypeError(f'{typename(value)} is not recognizable')
+            try:
+                # try to set blob to `sparse` without needing to import all the `scipy` sparse requirements
+                self.blob = value
+            except:
+                # ``None`` is also considered as bad type
+                raise TypeError(f'{typename(value)} is not recognizable')
 
     @property
     def granularity(self):

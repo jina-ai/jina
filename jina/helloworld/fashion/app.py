@@ -69,11 +69,14 @@ def hello_world(args):
 
     # reduce the network load by using `fp16`, or even `uint8`
     os.environ['JINA_ARRAY_QUANT'] = 'fp16'
-    os.environ['HW_WORKDIR'] = args.workdir
-
     # now comes the real work
     # load index flow from a YAML file
-    f = Flow().add(uses=MyEncoder, parallel=2).add(uses=MyIndexer).add(uses=MyEvaluator)
+    f = (
+        Flow()
+        .add(uses=MyEncoder, parallel=2)
+        .add(uses=MyIndexer, workspace=args.workdir)
+        .add(uses=MyEvaluator)
+    )
 
     # run it!
     with f:
