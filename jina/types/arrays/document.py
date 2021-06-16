@@ -262,20 +262,24 @@ class DocumentArray(
         .. # noqa: DAR201"""
         return {d.id: i for i, d in enumerate(self._pb_body)}
 
-    def sort(self, *args, **kwargs):
+    def sort(self, key=None, *args, **kwargs):
         """
         Sort the items of the :class:`DocumentArray` in place.
 
+        :param key: key callable to sort based upon
         :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
-        # TODO: Hacky way
-        tmp = [Document(proto) for i, proto in enumerate(self._pb_body)]
-        tmp.sort(*args, **kwargs)
 
-        for i in range(len(tmp)):
-            # Not sure why it breaks
-            self._pb_body[i] = tmp[i].proto
+        def overriden_key(proto):
+            # Function to override the `proto` and wrap it around a `Document` to enable sorting via `Document-like` interface
+            d = Document(proto)
+            return key(d)
+
+        if key:
+            self._pb_body.sort(key=overriden_key, *args, **kwargs)
+        else:
+            self._pb_body.sort(*args, **kwargs)
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```

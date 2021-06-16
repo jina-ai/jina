@@ -41,8 +41,7 @@ def matches(document_factory):
 
 @pytest.fixture
 def matcharray(matches, reference_doc):
-    ma = MatchArray(doc_views=matches, reference_doc=reference_doc)
-    return ma
+    return MatchArray(doc_views=matches, reference_doc=reference_doc)
 
 
 def test_append_from_documents(matcharray, document_factory, reference_doc):

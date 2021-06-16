@@ -667,7 +667,6 @@ class Document(ProtoTypeMixin):
 
         :param value: value to set
         """
-        print(f' setter {value}')
         self.pop('matches')
         self.matches.extend(value)
 
