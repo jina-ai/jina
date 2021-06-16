@@ -125,3 +125,11 @@ def create_flow(
     print(f'Checking if the flow creation is succeeded: {r.json()}')
     assert r.status_code == 201
     return r.json()
+
+
+def container_ip(container_name: str) -> str:
+    import docker
+
+    client = docker.from_env()
+    container = client.containers.get(container_name)
+    return container.attrs['NetworkSettings']['Networks']['jina_default']['IPAddress']

@@ -1,5 +1,5 @@
 from ipaddress import IPv4Address
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from pydantic import BaseModel, Field
 
 from .id import DaemonID
@@ -19,6 +19,7 @@ class WorkspaceMetadata(BaseModel):
     network: str
     workdir: str
     container_id: Optional[str]
+    managed_objects: Set[DaemonID] = Field(default_factory=set)
 
 
 class WorkspaceItem(StoreItem):

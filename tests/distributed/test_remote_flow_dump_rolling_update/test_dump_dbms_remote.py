@@ -1,5 +1,4 @@
 import os
-from ..helpers import create_flow
 
 import numpy as np
 import pytest
@@ -7,18 +6,26 @@ import requests
 
 from jina import Document
 from jina.logging.logger import JinaLogger
+from ..helpers import (
+    create_flow,
+    create_workspace,
+    wait_for_workspace,
+    container_ip,
+    delete_workspace,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 dbms_flow_yml = os.path.join(cur_dir, 'flow_dbms.yml')
 query_flow_yml = os.path.join(cur_dir, 'flow_query.yml')
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
+JINAD_PORT = '8000'
 JINAD_PORT_DBMS = '8001'
 JINAD_PORT_QUERY = '8001'
 REST_PORT_DBMS = '9000'
 REST_PORT_QUERY = '9001'
 
-DUMP_PATH_DOCKER = '/tmp/dump'
+DUMP_PATH_DOCKER = '/workspace/dump'
 
 logger = JinaLogger('test-dump')
 
@@ -26,30 +33,32 @@ SHARDS = 3
 EMB_SIZE = 10
 
 
-def _path_size_remote(this_dump_path):
+def _path_size_remote(this_dump_path, container_id):
     os.system(
-        f'docker exec jina_jinad_1 /bin/bash -c "du -sh {this_dump_path}" > dump_size.txt'
+        f'docker exec {container_id} /bin/bash -c "du -sh {this_dump_path}" > dump_size.txt'
     )
     contents = open('dump_size.txt').readline()
     dir_size = float(contents.split('K')[0].split('M')[0])
     return dir_size
 
 
-def _create_flows():
+def _create_flows(ip):
+    workspace_id = create_workspace(
+        filepaths=[dbms_flow_yml, query_flow_yml],
+        host=ip,
+        dirpath=os.path.join(cur_dir, 'pods'),
+    )
+    assert wait_for_workspace(workspace_id, host=ip)
     # create dbms flow
     dbms_flow_id = create_flow(
-        flow_yaml=dbms_flow_yml,
-        pod_dir=os.path.join(cur_dir, 'pods'),
-        url=f'http://localhost:{JINAD_PORT_DBMS}',
+        workspace_id=workspace_id, filename='flow_dbms.yml', host=ip
     )
 
     # create query flow
     query_flow_id = create_flow(
-        flow_yaml=query_flow_yml,
-        pod_dir=os.path.join(cur_dir, 'pods'),
-        url=f'http://localhost:{JINAD_PORT_QUERY}',
+        workspace_id=workspace_id, filename='flow_query.yml', host=ip
     )
-    return dbms_flow_id, query_flow_id
+    return dbms_flow_id, query_flow_id, workspace_id
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
@@ -57,8 +66,9 @@ def test_dump_dbms_remote(docker_compose):
     nr_docs = 100
     nr_search = 1
     docs = list(_get_documents(nr=nr_docs, index_start=0, emb_size=EMB_SIZE))
+    jinad_ip = container_ip('test_remote_flow_dump_reload')
 
-    dbms_flow_id, query_flow_id = _create_flows()
+    dbms_flow_id, query_flow_id, workspace_id = _create_flows(jinad_ip)
 
     r = _send_rest_request(
         REST_PORT_QUERY,
@@ -79,10 +89,11 @@ def test_dump_dbms_remote(docker_compose):
         'indexer_dbms',
         DUMP_PATH_DOCKER,  # the internal path in the docker container
         SHARDS,
-        f'http://localhost:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
+        f'http://{jinad_ip}:{JINAD_PORT}/flows/{dbms_flow_id}',
     )
 
-    dir_size = _path_size_remote(DUMP_PATH_DOCKER)
+    container_id = get_container_id(dbms_flow_id, jinad_ip)
+    dir_size = _path_size_remote(DUMP_PATH_DOCKER, container_id=container_id)
     assert dir_size > 0
     logger.info(f'dump path size size: {dir_size}')
 
@@ -90,7 +101,7 @@ def test_dump_dbms_remote(docker_compose):
     _jinad_rolling_update(
         'indexer_query',
         DUMP_PATH_DOCKER,  # the internal path in the docker container
-        f'http://localhost:{JINAD_PORT_QUERY}/flows/{query_flow_id}',
+        f'http://{jinad_ip}:{JINAD_PORT}/flows/{query_flow_id}',
     )
 
     # data request goes to client
@@ -104,6 +115,14 @@ def test_dump_dbms_remote(docker_compose):
     for doc in r['data']['docs']:
         assert len(doc.get('matches')) == nr_docs
 
+    delete_workspace(workspace_id=workspace_id, host=jinad_ip)
+
+
+def get_container_id(flow_id, jinad_ip):
+    response = requests.get(f'http://{jinad_ip}:{JINAD_PORT}/flows/{flow_id}')
+    container_id = response.json()['metadata']['container_id']
+    return container_id
+
 
 def _send_rest_request(
     port_expose,
@@ -114,13 +133,14 @@ def _send_rest_request(
     params=None,
     target_peapod=None,
     timeout=13,
+    ip='0.0.0.0',
 ):
     json = {'data': data}
     if params:
         json['parameters'] = params
     if target_peapod:
         json['target_peapod'] = target_peapod
-    url = f'http://0.0.0.0:{port_expose}/{endpoint}'
+    url = f'http://{ip}:{port_expose}/{endpoint}'
     if endpoint == 'post':
         url += f'{exec_endpoint}'
     logger.info(f'sending {method} request to {url}')
