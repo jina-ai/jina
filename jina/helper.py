@@ -11,10 +11,8 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
-from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
-from pathlib import Path
 from types import SimpleNamespace
 from typing import (
     Tuple,
@@ -739,8 +737,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         __version__,
         __proto_version__,
         __jina_env__,
-        __resources_path__,
         __uptime__,
+        __unset_msg__,
     )
     from google.protobuf.internal import api_implementation
     import os, grpc, zmq, numpy, google.protobuf, yaml
@@ -754,7 +752,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         info = {
             'jina': __version__,
             'jina-proto': __proto_version__,
-            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', '(unset)'),
+            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
             'libzmq': zmq.zmq_version(),
             'pyzmq': numpy.__version__,
             'protobuf': google.protobuf.__version__,
@@ -769,9 +767,10 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'processor': platform.processor(),
             'uuid': getnode(),
             'uptime': __uptime__,
-            'jina-resources': __resources_path__,
+            'ci-vendor': get_ci_vendor() or __unset_msg__,
         }
-        env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
+
+        env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
         full_version = info, env_info
     except Exception as e:
         default_logger.error(str(e))
@@ -1192,3 +1191,21 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
             return app
     """
     return app
+
+
+def get_ci_vendor() -> Optional[str]:
+    from jina import __resources_path__
+
+    with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
+        all_cis = json.load(fp)
+        for c in all_cis:
+            if isinstance(c['env'], str) and c['env'] in os.environ:
+                return c['constant']
+            elif isinstance(c['env'], dict):
+                for k, v in c['env'].items():
+                    if os.environ.get(k, None) == v:
+                        return c['constant']
+            elif isinstance(c['env'], list):
+                for k in c['env']:
+                    if k in os.environ:
+                        return c['constant']

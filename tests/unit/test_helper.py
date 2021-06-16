@@ -18,6 +18,7 @@ from jina.helper import (
     random_port,
     find_request_binding,
     dunder_get,
+    get_ci_vendor,
 )
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
@@ -310,3 +311,10 @@ def test_find_request_binding():
     assert r['index'] == 'bar'
     assert r['search'] == 'bar2'
     assert 'foo2' not in r.values()
+
+
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' not in os.environ, reason='this test is only validate on CI'
+)
+def test_ci_vendor():
+    assert get_ci_vendor() == 'GITHUB_ACTIONS'
