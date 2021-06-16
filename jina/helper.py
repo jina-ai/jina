@@ -733,6 +733,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
+    import os, grpc, zmq, numpy, google.protobuf, yaml, platform
     from . import (
         __version__,
         __proto_version__,
@@ -741,9 +742,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         __unset_msg__,
     )
     from google.protobuf.internal import api_implementation
-    import os, grpc, zmq, numpy, google.protobuf, yaml
     from grpc import _grpcio_metadata
-    import platform
     from jina.logging.predefined import default_logger
     from uuid import getnode
 
@@ -765,7 +764,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'platform-version': platform.version(),
             'architecture': platform.machine(),
             'processor': platform.processor(),
-            'uuid': getnode(),
+            'uid': getnode(),
+            'session-id': random_uuid(use_uuid1=True),
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
         }
