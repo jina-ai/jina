@@ -380,8 +380,10 @@
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">archive_package</span>
 
 
-<span class="n">JINA_HUBBLE_REGISTRY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_HUBBLE_REGISTRY'</span><span class="p">,</span> <span class="s1">'https://hubble.jina.ai'</span><span class="p">)</span>
-<span class="n">JINA_HUBBLE_PUSH_URL</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">JINA_HUBBLE_REGISTRY</span><span class="p">,</span> <span class="s1">'/v1/executors/push'</span><span class="p">)</span>
+<span class="n">JINA_HUBBLE_REGISTRY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="s1">'JINA_HUBBLE_REGISTRY'</span><span class="p">,</span> <span class="s1">'https://api.hubble.jina.ai'</span>
+<span class="p">)</span>
+<span class="n">JINA_HUBBLE_PUSH_URL</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">JINA_HUBBLE_REGISTRY</span><span class="p">,</span> <span class="s1">'/v1/executors'</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="HubIO"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO">[docs]</a><span class="k">class</span> <span class="nc">HubIO</span><span class="p">:</span>
@@ -426,44 +428,55 @@
             <span class="n">form_data</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s1">'meta'</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span>
                 <span class="s1">'env'</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">env</span><span class="p">),</span>
-                <span class="s1">'is_public'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">public</span><span class="p">,</span>
+                <span class="s1">'public'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">public</span><span class="p">,</span>
+                <span class="s1">'private'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">private</span><span class="p">,</span>
                 <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
                 <span class="s1">'force'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">,</span>
                 <span class="s1">'secret'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">,</span>
             <span class="p">}</span>
 
+            <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="k">else</span> <span class="s1">'post'</span>
             <span class="c1"># upload the archived executor to Jina Hub</span>
-            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'uploading to </span><span class="si">{</span><span class="n">JINA_HUBBLE_PUSH_URL</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
-                <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'uploading to </span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">JINA_HUBBLE_PUSH_URL</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+            <span class="p">):</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+                <span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span>
                     <span class="n">JINA_HUBBLE_PUSH_URL</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span> <span class="n">data</span><span class="o">=</span><span class="n">form_data</span>
                 <span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'success'</span><span class="p">]:</span>
-                    <span class="c1"># TODO: only support single executor now</span>
-                    <span class="n">image</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'data'</span><span class="p">][</span><span class="s1">'images'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+                <span class="c1"># TODO: only support single executor now</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'executors'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-                    <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>
-                    <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span>
-                    <span class="n">docker_image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'pullPath'</span><span class="p">]</span>
+                <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>
+                <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span>
+                <span class="n">docker_image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'pullPath'</span><span class="p">]</span>
+                <span class="n">visibility</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">]</span>
+                <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
 
-                    <span class="n">info_table</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔑 ID:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔒 Secret:</span><span class="se">\t</span><span class="s1">'</span>
-                        <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                            <span class="s1">'cyan'</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🐳 Image:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">docker_image</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
-                    <span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'🎉 The executor at </span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1"> is now published successfully!'</span>
-                    <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_table</span><span class="p">))</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="s1">'You can use this Executor in the Flow via '</span>
-                        <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">)</span>
-                    <span class="p">)</span>
+                <span class="n">info_table</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔑 ID:</span><span class="se">\t\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔒 Secret:</span><span class="se">\t</span><span class="s1">'</span>
+                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                        <span class="s1">'cyan'</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🐳 Image:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">docker_image</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">👀 Visibility:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">visibility</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
+                <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'🎉 The executor at </span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1"> is now published successfully!'</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_table</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">'You can use this Executor in the Flow via '</span>
+                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">usage</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">)</span>
+                <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>

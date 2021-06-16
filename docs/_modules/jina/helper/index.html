@@ -376,10 +376,8 @@
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span><span class="p">,</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Tuple</span><span class="p">,</span>
@@ -1100,17 +1098,16 @@
 
 <span class="sd">    :return: Version information and environment variables</span>
 <span class="sd">    """</span>
+    <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">grpc</span><span class="o">,</span> <span class="nn">zmq</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">google.protobuf</span><span class="o">,</span> <span class="nn">yaml</span><span class="o">,</span> <span class="nn">platform</span>
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">__version__</span><span class="p">,</span>
         <span class="n">__proto_version__</span><span class="p">,</span>
         <span class="n">__jina_env__</span><span class="p">,</span>
-        <span class="n">__resources_path__</span><span class="p">,</span>
         <span class="n">__uptime__</span><span class="p">,</span>
+        <span class="n">__unset_msg__</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.internal</span> <span class="kn">import</span> <span class="n">api_implementation</span>
-    <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">grpc</span><span class="o">,</span> <span class="nn">zmq</span><span class="o">,</span> <span class="nn">numpy</span><span class="o">,</span> <span class="nn">google.protobuf</span><span class="o">,</span> <span class="nn">yaml</span>
     <span class="kn">from</span> <span class="nn">grpc</span> <span class="kn">import</span> <span class="n">_grpcio_metadata</span>
-    <span class="kn">import</span> <span class="nn">platform</span>
     <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
     <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">getnode</span>
 
@@ -1119,7 +1116,7 @@
         <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">'jina'</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
             <span class="s1">'jina-proto'</span><span class="p">:</span> <span class="n">__proto_version__</span><span class="p">,</span>
-            <span class="s1">'jina-vcs-tag'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_VCS_VERSION'</span><span class="p">,</span> <span class="s1">'(unset)'</span><span class="p">),</span>
+            <span class="s1">'jina-vcs-tag'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_VCS_VERSION'</span><span class="p">,</span> <span class="n">__unset_msg__</span><span class="p">),</span>
             <span class="s1">'libzmq'</span><span class="p">:</span> <span class="n">zmq</span><span class="o">.</span><span class="n">zmq_version</span><span class="p">(),</span>
             <span class="s1">'pyzmq'</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
             <span class="s1">'protobuf'</span><span class="p">:</span> <span class="n">google</span><span class="o">.</span><span class="n">protobuf</span><span class="o">.</span><span class="n">__version__</span><span class="p">,</span>
@@ -1132,11 +1129,13 @@
             <span class="s1">'platform-version'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">version</span><span class="p">(),</span>
             <span class="s1">'architecture'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">(),</span>
             <span class="s1">'processor'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">processor</span><span class="p">(),</span>
-            <span class="s1">'uuid'</span><span class="p">:</span> <span class="n">getnode</span><span class="p">(),</span>
+            <span class="s1">'uid'</span><span class="p">:</span> <span class="n">getnode</span><span class="p">(),</span>
+            <span class="s1">'session-id'</span><span class="p">:</span> <span class="n">random_uuid</span><span class="p">(</span><span class="n">use_uuid1</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="s1">'uptime'</span><span class="p">:</span> <span class="n">__uptime__</span><span class="p">,</span>
-            <span class="s1">'jina-resources'</span><span class="p">:</span> <span class="n">__resources_path__</span><span class="p">,</span>
+            <span class="s1">'ci-vendor'</span><span class="p">:</span> <span class="n">get_ci_vendor</span><span class="p">()</span> <span class="ow">or</span> <span class="n">__unset_msg__</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="n">env_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s1">'(unset)'</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">__jina_env__</span><span class="p">}</span>
+
+        <span class="n">env_info</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">__unset_msg__</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">__jina_env__</span><span class="p">}</span>
         <span class="n">full_version</span> <span class="o">=</span> <span class="n">info</span><span class="p">,</span> <span class="n">env_info</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -1557,6 +1556,24 @@
 <span class="sd">            return app</span>
 <span class="sd">    """</span>
     <span class="k">return</span> <span class="n">app</span>
+
+
+<span class="k">def</span> <span class="nf">get_ci_vendor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'ci-vendors.json'</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="n">all_cis</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_cis</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">'env'</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span><span class="p">[</span><span class="s1">'env'</span><span class="p">]</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">c</span><span class="p">[</span><span class="s1">'constant'</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">'env'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">c</span><span class="p">[</span><span class="s1">'env'</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">c</span><span class="p">[</span><span class="s1">'constant'</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">'env'</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">c</span><span class="p">[</span><span class="s1">'env'</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">c</span><span class="p">[</span><span class="s1">'constant'</span><span class="p">]</span>
 </pre></div>
       </article>
       <footer>
