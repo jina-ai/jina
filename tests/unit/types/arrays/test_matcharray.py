@@ -44,6 +44,7 @@ def matcharray(matches, reference_doc):
 
 def test_append_from_documents(matcharray, document_factory, reference_doc):
     match = document_factory.create(4, 'test 4')
+    match.scores['score'] = 10
     rv = matcharray.append(match)
     assert len(matcharray) == 4
     assert matcharray[-1].text == 'test 4'
@@ -51,7 +52,7 @@ def test_append_from_documents(matcharray, document_factory, reference_doc):
     assert rv.granularity == reference_doc.granularity
     assert rv.adjacency == reference_doc.adjacency + 1
     assert rv.mime_type == 'text/plain'
-    assert rv.score.ref_id == reference_doc.id
+    assert rv.scores['score'].ref_id == reference_doc.id
 
 
 def test_mime_type_not_reassigned():

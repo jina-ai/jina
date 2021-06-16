@@ -33,7 +33,8 @@ class MatchArray(DocumentArray):
         match.set_attributes(
             granularity=self.granularity, adjacency=self.adjacency, **kwargs
         )
-        match.score.ref_id = self._ref_doc.id
+        for score in match.scores.values():
+            score.ref_id = self._ref_doc.id
 
         super().append(match)
         return match
