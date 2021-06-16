@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 import tensorflow as tf
 import torch
-from google.protobuf.json_format import MessageToDict
 from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
 
 from jina.proto.jina_pb2 import DocumentProto
@@ -55,7 +54,7 @@ def torch_sparse_matrix(row, column, data):
     return torch.sparse_coo_tensor(indices, data, shape)
 
 
-@pytest.mark.parametrize('field', ['blob', 'embedding'])
+@pytest.mark.parametrize('field', ['blob', 'embedding', 'content'])
 def test_ndarray_get_set(field):
     a = Document()
     b = np.random.random([10, 10])
@@ -73,6 +72,18 @@ def test_ndarray_get_set(field):
     c.value = b
     setattr(a, field, c._pb_body)
     np.testing.assert_equal(getattr(a, field), b)
+
+
+def test_sparse_get_set():
+    d = Document()
+    assert d.content is None
+    mat1 = coo_matrix(np.array([1, 2, 3]))
+    d.content = mat1
+    assert (d.content != mat1).nnz == 0
+    mat2 = coo_matrix(np.array([3, 2, 1]))
+    assert (d.content != mat2).nnz != 0
+    d.blob = mat2
+    assert (d.content != mat2).nnz == 0
 
 
 def test_doc_update_fields():
@@ -917,3 +928,64 @@ def test_document_pretty_json():
     assert d_reconstructed.matches[0].tags == {'hello': 'world'}
     assert d_reconstructed.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert d_reconstructed.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
+
+
+def test_manipulated_tags():
+    t = {
+        'key_int': 0,
+        'key_float': 1.5,
+        'key_string': 'string_value',
+        'key_array': [0, 1],
+        'key_nested': {
+            'key_nested_int': 2,
+            'key_nested_string': 'string_nested_value',
+            'key_nested_nested': {'empty': []},
+        },
+    }
+    doc = Document(tags=t)
+    assert len(doc.tags) == 5
+    assert len(doc.tags.keys()) == 5
+    assert len(doc.tags.values()) == 5
+    assert len(doc.tags.items()) == 5
+    assert 'key_int' in doc.tags
+    assert 'key_float' in doc.tags
+    assert 'key_string' in doc.tags
+    assert 'key_array' in doc.tags
+    assert 'key_nested' in doc.tags
+
+    assert 0 in doc.tags.values()
+    assert 1.5 in doc.tags.values()
+    assert 'string_value' in doc.tags.values()
+
+    assert doc.tags['key_int'] == 0
+    assert doc.tags['key_float'] == 1.5
+    assert doc.tags['key_string'] == 'string_value'
+    assert len(doc.tags['key_array']) == 2
+    assert doc.tags['key_array'][0] == 0
+    assert doc.tags['key_array'][1] == 1
+    assert len(doc.tags['key_nested'].keys()) == 3
+    assert doc.tags['key_nested']['key_nested_int'] == 2
+    assert doc.tags['key_nested']['key_nested_string'] == 'string_nested_value'
+    assert len(doc.tags['key_nested']['key_nested_nested'].keys()) == 1
+    assert len(doc.tags['key_nested']['key_nested_nested']['empty']) == 0
+
+
+def test_tags_update_nested():
+    d = Document()
+    d.tags = {'hey': {'bye': 4}}
+    assert d.tags['hey']['bye'] == 4
+    d.tags['hey']['bye'] = 5
+    assert d.tags['hey']['bye'] == 5
+
+
+def test_tag_compare_dict():
+    d = Document()
+    d.tags = {'hey': {'bye': 4}}
+    print(f' d.tags {d.tags}')
+    assert d.tags == {'hey': {'bye': 4}}
+    assert d.tags.dict() == {'hey': {'bye': 4}}
+
+    d.tags = {'hey': [1, 2]}
+    # TODO: Issue about having proper ListValueView
+    assert d.tags != {'hey': [1, 2]}
+    assert d.tags.dict() == {'hey': [1, 2]}
