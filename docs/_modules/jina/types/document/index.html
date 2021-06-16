@@ -436,10 +436,12 @@
         <span class="n">tf</span><span class="o">.</span><span class="n">SparseTensor</span><span class="p">,</span>
     <span class="p">)</span>
 
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Document'</span><span class="p">,</span> <span class="s1">'DocumentContentType'</span><span class="p">,</span> <span class="s1">'DocumentSourceType'</span><span class="p">]</span>
 <span class="n">DIGEST_SIZE</span> <span class="o">=</span> <span class="mi">8</span>
 
-<span class="n">DocumentContentType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'DocumentContentType'</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+<span class="c1"># This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`</span>
+<span class="n">DocumentContentType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'DocumentContentType'</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">'ArrayType'</span><span class="p">)</span>
 <span class="n">DocumentSourceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
     <span class="s1">'DocumentSourceType'</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="p">)</span>
@@ -1266,8 +1268,12 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># ``None`` is also considered as bad type</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># try to set blob to `sparse` without needing to import all the `scipy` sparse requirements</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">blob</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># ``None`` is also considered as bad type</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">granularity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1699,7 +1705,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 15, 2021.
+            Last updated on Jun 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

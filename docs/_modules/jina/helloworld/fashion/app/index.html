@@ -434,11 +434,14 @@
 
     <span class="c1"># reduce the network load by using `fp16`, or even `uint8`</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'JINA_ARRAY_QUANT'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'fp16'</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'HW_WORKDIR'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">workdir</span>
-
     <span class="c1"># now comes the real work</span>
     <span class="c1"># load index flow from a YAML file</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyEncoder</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyIndexer</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyEvaluator</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Flow</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyEncoder</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyIndexer</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">workdir</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyEvaluator</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="c1"># run it!</span>
     <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
@@ -446,16 +449,6 @@
             <span class="n">index_generator</span><span class="p">(</span><span class="n">num_docs</span><span class="o">=</span><span class="n">targets</span><span class="p">[</span><span class="s1">'index'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="n">targets</span><span class="p">),</span>
             <span class="n">request_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="c1"># f.search(</span>
-        <span class="c1">#     query_generator(</span>
-        <span class="c1">#         num_docs=args.num_query, target=targets, with_groundtruth=True</span>
-        <span class="c1">#     ),</span>
-        <span class="c1">#     shuffle=True,</span>
-        <span class="c1">#     on_done=print_result,</span>
-        <span class="c1">#     request_size=args.request_size,</span>
-        <span class="c1">#     parameters={'top_k': args.top_k},</span>
-        <span class="c1"># )</span>
 
         <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="s1">'/eval'</span><span class="p">,</span>
@@ -487,7 +480,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 15, 2021.
+            Last updated on Jun 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

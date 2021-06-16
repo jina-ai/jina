@@ -1427,6 +1427,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_show_success_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restful</span><span class="p">:</span>
             <span class="n">header</span> <span class="o">=</span> <span class="s1">'http://'</span>
             <span class="n">protocol</span> <span class="o">=</span> <span class="s1">'REST'</span>
@@ -1434,8 +1435,12 @@
             <span class="n">header</span> <span class="o">=</span> <span class="s1">'tcp://'</span>
             <span class="n">protocol</span> <span class="o">=</span> <span class="s1">'gRPC'</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'🎉 Flow is ready to use, accepting </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">protocol</span> <span class="o">+</span> <span class="s2">" request"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+        <span class="p">)</span>
+
         <span class="n">address_table</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🖥️ Local access:</span><span class="se">\t</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🏠 Local access:</span><span class="se">\t</span><span class="s1">'</span>
             <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">header</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span>
             <span class="p">),</span>
@@ -1455,9 +1460,24 @@
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'🎉 Flow is ready to use, accepting </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">protocol</span> <span class="o">+</span> <span class="s2">" request"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restful</span><span class="p">:</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">💬 Swagger UI:</span><span class="se">\t\t</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs'</span><span class="p">,</span>
+                    <span class="s1">'cyan'</span><span class="p">,</span>
+                    <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📚 Redoc:</span><span class="se">\t\t</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc'</span><span class="p">,</span>
+                    <span class="s1">'cyan'</span><span class="p">,</span>
+                    <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">address_table</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1619,7 +1639,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 15, 2021.
+            Last updated on Jun 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

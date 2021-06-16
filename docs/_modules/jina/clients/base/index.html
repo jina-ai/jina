@@ -370,7 +370,7 @@
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">AsyncIterator</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
 
@@ -383,11 +383,10 @@
 <span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span><span class="p">,</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span>
 <span class="kn">from</span> <span class="nn">..proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
-<span class="kn">from</span> <span class="nn">..types.request</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">..types.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
 
 <span class="n">InputType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">GeneratorSourceType</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">GeneratorSourceType</span><span class="p">]]</span>
-<span class="n">InputDeleteType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span>
-<span class="n">CallbackFnType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span>
+<span class="n">CallbackFnType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Response</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span>
 
 
 <div class="viewcode-block" id="BaseClient"><a class="viewcode-back" href="../../../../api/jina.clients.base/#jina.clients.base.BaseClient">[docs]</a><span class="k">class</span> <span class="nc">BaseClient</span><span class="p">:</span>
@@ -578,7 +577,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 15, 2021.
+            Last updated on Jun 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -396,7 +396,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Request"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Request">[docs]</a><span class="k">class</span> <span class="nc">Request</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="Request"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Request">[docs]</a><span class="k">class</span> <span class="nc">Request</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">,</span> <span class="n">DocsPropertyMixin</span><span class="p">,</span> <span class="n">GroundtruthPropertyMixin</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    :class:`Request` is one of the **primitive data type** in Jina.</span>
 
@@ -619,7 +619,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">Request</span><span class="p">,</span> <span class="n">DocsPropertyMixin</span><span class="p">,</span> <span class="n">GroundtruthPropertyMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as</span>
 <span class="sd">    :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on</span>
@@ -637,7 +637,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 15, 2021.
+            Last updated on Jun 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

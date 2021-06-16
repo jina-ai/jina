@@ -439,13 +439,6 @@
     <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'startup'</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">startup</span><span class="p">():</span>
         <span class="sd">"""Log the host information when start the server."""</span>
-        <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'''</span>
-<span class="s1">    Jina REST interface</span>
-<span class="s1">    💬 Swagger UI:</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/docs</span>
-<span class="s1">    📚 Redoc     :</span><span class="se">\t</span><span class="s1">http://localhost:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/redoc</span>
-<span class="s1">        '''</span>
-        <span class="p">)</span>
         <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__ready_msg__</span>
 
         <span class="n">default_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
@@ -716,7 +709,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 15, 2021.
+            Last updated on Jun 16, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
