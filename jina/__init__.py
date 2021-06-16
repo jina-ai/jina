@@ -71,6 +71,7 @@ __default_executor__ = 'BaseExecutor'
 __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
+__unset_msg__ = '(unset)'
 __num_args_executor_func__ = 5
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
@@ -90,6 +91,7 @@ _names_with_underscore = [
     '__default_endpoint__',
     '__default_executor__',
     '__num_args_executor_func__',
+    '__unset_msg__',
 ]
 
 
