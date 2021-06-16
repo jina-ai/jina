@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/proto/docs.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Table of Contents: jina.proto- DenseNdArrayProto, DocumentArrayProto, DocumentProto, EnvelopeProto, EnvelopeProto.CompressConfigProto, EnvelopeProto.VersionProto, GraphProto, HeaderProto, MessageProto, NamedScoreProto, NdArrayProto, RequestProto, RequestProto.ControlRequestProto, RequestProto.Dat..." />
+  <meta property="og:description" content="Table of Contents: jina.proto- DenseNdArrayProto, DocumentArrayProto, DocumentProto, EnvelopeProto, EnvelopeProto.CompressConfigProto, EnvelopeProto.VersionProto, GraphProto, HeaderProto, MessageProto, NamedScoreMappingProto, NamedScoreMappingProto.ValuesEntry, NamedScoreProto, NdArrayProto, Requ..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -348,7 +348,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../api/jina.types.score/">jina.types.score package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.score.map/">jina.types.score.map module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/jina.types.mixin/">jina.types.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/jina.types.struct/">jina.types.struct module</a></li>
 </ul>
@@ -361,7 +364,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Jina Protobuf Specification</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Jina Protobuf Specification</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -402,6 +405,8 @@
 <li><p><a class="reference external" href="#jina.GraphProto">GraphProto</a></p></li>
 <li><p><a class="reference external" href="#jina.HeaderProto">HeaderProto</a></p></li>
 <li><p><a class="reference external" href="#jina.MessageProto">MessageProto</a></p></li>
+<li><p><a class="reference external" href="#jina.NamedScoreMappingProto">NamedScoreMappingProto</a></p></li>
+<li><p><a class="reference external" href="#jina.NamedScoreMappingProto.ValuesEntry">NamedScoreMappingProto.ValuesEntry</a></p></li>
 <li><p><a class="reference external" href="#jina.NamedScoreProto">NamedScoreProto</a></p></li>
 <li><p><a class="reference external" href="#jina.NdArrayProto">NdArrayProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RequestProto">RequestProto</a></p></li>
@@ -631,10 +636,10 @@
 <td>the embedding <code>ndarray</code> of this document</td>
 </tr>
 <tr>
-<td>score</td>
-<td><a href="#jina.NamedScoreProto">NamedScoreProto</a></td>
+<td>scores</td>
+<td><a href="#jina.NamedScoreMappingProto">NamedScoreMappingProto</a></td>
 <td></td>
-<td>TODO: List of matching scores performed on the document, each element corresponds to a metric</td>
+<td>Scores performed on the document, each element corresponds to a metric</td>
 </tr>
 <tr>
 <td>modality</td>
@@ -644,9 +649,9 @@
 </tr>
 <tr>
 <td>evaluations</td>
-<td><a href="#jina.NamedScoreProto">NamedScoreProto</a></td>
-<td>repeated</td>
-<td>List of evaluations performed on the document, each element corresponds to a metric</td>
+<td><a href="#jina.NamedScoreMappingProto">NamedScoreMappingProto</a></td>
+<td></td>
+<td>Evaluations performed on the document, each element corresponds to a metric</td>
 </tr>
 </tbody>
 </table></div><p><a name="jina.EnvelopeProto"></a></p>
@@ -899,6 +904,55 @@
 <td><a href="#jina.RequestProto">RequestProto</a></td>
 <td></td>
 <td>the request body</td>
+</tr>
+</tbody>
+</table></div><p><a name="jina.NamedScoreMappingProto"></a></p>
+</div>
+<div class="section" id="namedscoremappingproto">
+<h3>NamedScoreMappingProto<a class="headerlink" href="#namedscoremappingproto" title="Permalink to this headline">¶</a></h3>
+<p>Represents the mapping of score by keys</p>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>values</td>
+<td><a href="#jina.NamedScoreMappingProto.ValuesEntry">NamedScoreMappingProto.ValuesEntry</a></td>
+<td>repeated</td>
+<td></td>
+</tr>
+</tbody>
+</table></div><p><a name="jina.NamedScoreMappingProto.ValuesEntry"></a></p>
+</div>
+<div class="section" id="namedscoremappingproto-valuesentry">
+<h3>NamedScoreMappingProto.ValuesEntry<a class="headerlink" href="#namedscoremappingproto-valuesentry" title="Permalink to this headline">¶</a></h3>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#jina.NamedScoreProto">NamedScoreProto</a></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table></div><p><a name="jina.NamedScoreProto"></a></p>
@@ -1628,6 +1682,8 @@
 <li><a class="reference internal" href="#graphproto">GraphProto</a></li>
 <li><a class="reference internal" href="#headerproto">HeaderProto</a></li>
 <li><a class="reference internal" href="#messageproto">MessageProto</a></li>
+<li><a class="reference internal" href="#namedscoremappingproto">NamedScoreMappingProto</a></li>
+<li><a class="reference internal" href="#namedscoremappingproto-valuesentry">NamedScoreMappingProto.ValuesEntry</a></li>
 <li><a class="reference internal" href="#namedscoreproto">NamedScoreProto</a></li>
 <li><a class="reference internal" href="#ndarrayproto">NdArrayProto</a></li>
 <li><a class="reference internal" href="#requestproto">RequestProto</a></li>

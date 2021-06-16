@@ -325,7 +325,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.struct/">jina.types.struct module</a></li>
 </ul>
@@ -338,7 +341,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -391,7 +394,7 @@
         <span class="k">for</span> <span class="n">_q</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">_dist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span><span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_id</span><span class="p">)],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">_dist</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'cosine'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">_dist</span>
                 <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
@@ -502,16 +505,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">num_docs</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">actual</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">]</span>
             <span class="n">desired</span> <span class="o">=</span> <span class="n">groundtruth</span><span class="o">.</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>  <span class="c1"># pseudo_match</span>
-            <span class="n">precision_score</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">total_precision</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_precision</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">desired</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">total_recall</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recall</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">desired</span><span class="p">)</span>
-            <span class="n">precision_score</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_precision</span>
-            <span class="n">precision_score</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Precision'</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">precision_score</span><span class="p">)</span>
-            <span class="n">recall_score</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
-            <span class="n">recall_score</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_recall</span>
-            <span class="n">recall_score</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Recall'</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">recall_score</span><span class="p">)</span></div></div>
+            <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'Precision'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_precision</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'Precision'</span><span class="p">]</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="s1">'Precision'</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'Recall'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_recall</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">evaluations</span><span class="p">[</span><span class="s1">'Recall'</span><span class="p">]</span><span class="o">.</span><span class="n">op_name</span> <span class="o">=</span> <span class="s1">'Recall'</span></div></div>
 </pre></div>
       </article>
       <footer>
