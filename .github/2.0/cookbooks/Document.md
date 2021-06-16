@@ -204,32 +204,51 @@ doc.convert_image_datauri_to_blob()
 
 ##### Set Embedding
 
-An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` or Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`) as a `Document`'s embedding.
+An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray`as a `Document`'s embedding.
 
 ```python
 import numpy as np
-import scipy.sparse as sp
 from jina import Document
 
 d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
-d3 = Document(embedding=sp.coo_matrix([0,0,0,1,0]))
-d4 = Document(embedding=sp.csr_matrix([0,0,0,1,0]))
-d5 = Document(embedding=sp.bsr_matrix([0,0,0,1,0]))
-d6 = Document(embedding=sp.csc_matrix([0,0,0,1,0]))
+
 ```
 
-Embeddings also suport Tensorflow and Pytorch sparse arrays.
+
+
+#### Support for Sparse arrays
+
+ Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
+
+```python
+import scipy.sparse as sp 
+
+d1 = Document(embedding=sp.coo_matrix([0,0,0,1,0]))
+d2 = Document(embedding=sp.csr_matrix([0,0,0,1,0]))
+d3 = Document(embedding=sp.bsr_matrix([0,0,0,1,0]))
+d4 = Document(embedding=sp.csc_matrix([0,0,0,1,0]))
+
+d5 = Document(blob=sp.coo_matrix([0,0,0,1,0]))
+d6 = Document(blob=sp.csr_matrix([0,0,0,1,0]))
+d7 = Document(blob=sp.bsr_matrix([0,0,0,1,0]))
+d8 = Document(blob=sp.csc_matrix([0,0,0,1,0]))
+```
+
+Tensorflow and Pytorch sparse arrays are also supported
 
 ```python
 import torch
 import tensorflow as tf
 
-indices = [[0, 1, 1], [2, 0, 2]]
-values =  [3, 4, 5]
-dense_shape = (2,3)
-d7 = Document(embedding=torch.sparse_coo_tensor(indices, values, dense_shape))
-d8 =  Document(embedding=tf.SparseTensor(indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4]))
+indices = [[0, 0], [1, 2]]
+values = [1, 2]
+dense_shape = [3, 4]
+
+d1 = Document(embedding=torch.sparse_coo_tensor(indices, values, dense_shape))
+d2 = Document(embedding=tf.SparseTensor(indices, values, dense_shape))
+d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
+d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 ```
 
 
