@@ -21,7 +21,7 @@ from ..proto import jina_pb2_grpc
 from ..types.request import Request, Response
 
 InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
-CallbackFnType = Optional[Callable[[Response, ...], None]]
+CallbackFnType = Optional[Callable[[Response], None]]
 
 
 class BaseClient:
