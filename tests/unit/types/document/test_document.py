@@ -928,3 +928,51 @@ def test_document_pretty_json():
     assert d_reconstructed.matches[0].tags == {'hello': 'world'}
     assert d_reconstructed.matches[0].blob.tolist() == [[0, 1, 2], [2, 1, 0]]
     assert d_reconstructed.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
+
+
+def test_manipulated_tags():
+    t = {
+        'key_int': 0,
+        'key_float': 1.5,
+        'key_string': 'string_value',
+        'key_array': [0, 1],
+        'key_nested': {
+            'key_nested_int': 2,
+            'key_nested_string': 'string_nested_value',
+            'key_nested_nested': {'empty': []},
+        },
+    }
+    doc = Document(tags=t)
+    assert len(doc.tags) == 5
+    assert len(doc.tags.keys()) == 5
+    assert len(doc.tags.values()) == 5
+    assert len(doc.tags.items()) == 5
+    assert 'key_int' in doc.tags
+    assert 'key_float' in doc.tags
+    assert 'key_string' in doc.tags
+    assert 'key_array' in doc.tags
+    assert 'key_nested' in doc.tags
+
+    assert 0 in doc.tags.values()
+    assert 1.5 in doc.tags.values()
+    assert 'string_value' in doc.tags.values()
+
+    assert doc.tags['key_int'] == 0
+    assert doc.tags['key_float'] == 1.5
+    assert doc.tags['key_string'] == 'string_value'
+    assert len(doc.tags['key_array']) == 2
+    assert doc.tags['key_array'][0] == 0
+    assert doc.tags['key_array'][1] == 1
+    assert len(doc.tags['key_nested'].keys()) == 3
+    assert doc.tags['key_nested']['key_nested_int'] == 2
+    assert doc.tags['key_nested']['key_nested_string'] == 'string_nested_value'
+    assert len(doc.tags['key_nested']['key_nested_nested'].keys()) == 1
+    assert len(doc.tags['key_nested']['key_nested_nested']['empty']) == 0
+
+
+def test_tags_update_nested():
+    d = Document()
+    d.tags = {'hey': {'bye': 4}}
+    assert d.tags['hey']['bye'] == 4
+    d.tags['hey']['bye'] = 5
+    assert d.tags['hey']['bye'] == 5
