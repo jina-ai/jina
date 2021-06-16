@@ -1062,6 +1062,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return self._pod_nodes.items().__iter__()
 
     def _show_success_message(self):
+
         if self._pod_nodes['gateway'].args.restful:
             header = 'http://'
             protocol = 'REST'
@@ -1069,8 +1070,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             header = 'tcp://'
             protocol = 'gRPC'
 
+        self.logger.success(
+            f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}'
+        )
+
         address_table = [
-            f'\t🖥️ Local access:\t'
+            f'\t🏠 Local access:\t'
             + colored(
                 f'{header}{self.host}:{self.port_expose}', 'cyan', attrs='underline'
             ),
@@ -1090,9 +1095,24 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     attrs='underline',
                 )
             )
-        self.logger.success(
-            f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}'
-        )
+        if self.args.restful:
+            address_table.append(
+                f'\t💬 Swagger UI:\t\t'
+                + colored(
+                    f'http://localhost:{self.port_expose}/docs',
+                    'cyan',
+                    attrs='underline',
+                )
+            )
+            address_table.append(
+                f'\t📚 Redoc:\t\t'
+                + colored(
+                    f'http://localhost:{self.port_expose}/redoc',
+                    'cyan',
+                    attrs='underline',
+                )
+            )
+
         self.logger.info('\n' + '\n'.join(address_table))
 
     def block(self):
