@@ -476,6 +476,11 @@ class GraphDocument(Document):
                 printed_ids.add(out_node_mermaid_id)
                 results.append(out_node.__mermaid_str__())
 
-            results.append(f'{in_node_mermaid_id[:3]} --> {out_node_mermaid_id[:3]}')
+            if self.undirected:
+                results.append(f'{in_node_mermaid_id[:3]} -- {out_node_mermaid_id[:3]}')
+            else:
+                results.append(
+                    f'{in_node_mermaid_id[:3]} --> {out_node_mermaid_id[:3]}'
+                )
 
         return '\n'.join(results)
