@@ -239,7 +239,7 @@ class GraphDocument(Document):
                 self._remove_edge_id(edge_id, edge_key)
 
     @property
-    def edge_features(self):
+    def edge_features(self) -> StructView:
         """
         The dictionary of edge features, indexed by `edge_id` in the `edge list`
 
@@ -248,7 +248,7 @@ class GraphDocument(Document):
         return StructView(self._pb_body.graph.edge_features)
 
     @property
-    def adjacency(self):
+    def adjacency(self) -> SparseNdArray:
         """
         The adjacency list for this graph.
 
@@ -257,7 +257,7 @@ class GraphDocument(Document):
         return SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value
 
     @property
-    def undirected(self):
+    def undirected(self) -> bool:
         """
         The undirected flag of this graph.
 
@@ -285,7 +285,7 @@ class GraphDocument(Document):
         return adjacency.data.shape[0] if adjacency is not None else 0
 
     @property
-    def nodes(self):
+    def nodes(self) -> ChunkArray:
         """
         The nodes list for this graph
 
@@ -450,7 +450,7 @@ class GraphDocument(Document):
         else:
             default_logger.debug(f'Trying to iterate over a graph without edges')
 
-    def __mermaid_str__(self):
+    def __mermaid_str__(self) -> str:
 
         if len(self.nodes) == 0:
             return super().__mermaid_str__()
