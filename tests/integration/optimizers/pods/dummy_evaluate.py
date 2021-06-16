@@ -10,5 +10,9 @@ class DummyTextEvaluator(Executor):
     @requests
     def evaluate(self, docs: 'DocumentArray', groundtruths: 'DocumentArray', **kwargs):
         for doc, groundtruth in zip(docs, groundtruths):
-            doc.evaluations['DummyScore'] = 1.0 if doc.text == groundtruth.text else 0.0
-            doc.evaluations['DummyScore'].op_name = f'DummyScore'
+            evalulation = doc.evaluations.add()
+            evalulation.op_name = f'DummyScore'
+            if doc.text == groundtruth.text:
+                evalulation.value = 1.0
+            else:
+                evalulation.value = 0.0

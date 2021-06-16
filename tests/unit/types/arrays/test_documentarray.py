@@ -240,13 +240,13 @@ def test_documentarray_filter():
     da = DocumentArray([Document() for _ in range(6)])
 
     for j in range(6):
-        da[j].scores['score'].value = j
+        da[j].score.value = j
 
-    da = [d for d in da if d.scores['score'].value > 2]
+    da = [d for d in da if d.score.value > 2]
     assert len(DocumentArray(da)) == 3
 
     for d in da:
-        assert d.scores['score'].value > 2
+        assert d.score.value > 2
 
 
 def test_da_with_graphs():

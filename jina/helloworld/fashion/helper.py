@@ -93,15 +93,13 @@ def print_result(resp):
         top_k = len(d.matches)
         for kk in d.matches:
             kmi = kk.uri
-            result_html.append(
-                f'<img src="{kmi}" style="opacity:{kk.scores["cosine"].value}"/>'
-            )
+            result_html.append(f'<img src="{kmi}" style="opacity:{kk.score.value}"/>')
         result_html.append('</td></tr>\n')
 
         # update evaluation values
         # as evaluator set to return running avg, here we can simply replace the value
-        for k, evaluation in d.evaluations.items():
-            evaluation_value[k] = evaluation.value
+        for evaluation in d.evaluations:
+            evaluation_value[evaluation.op_name] = evaluation.value
 
 
 def write_html(html_path):

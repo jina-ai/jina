@@ -1,5 +1,4 @@
 import pytest
-
 from jina.excepts import BadNamedScoreType
 from jina.proto import jina_pb2
 from jina.types.score import NamedScore

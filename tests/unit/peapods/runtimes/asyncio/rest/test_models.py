@@ -67,7 +67,7 @@ def test_all_fields_in_document_proto():
         'location',
         'offset',
         'embedding',
-        'scores',
+        'score',
         'modality',
         'evaluations',
     ]:

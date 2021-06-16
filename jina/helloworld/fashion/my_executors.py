@@ -26,7 +26,7 @@ class MyIndexer(Executor):
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
-                d.scores['cosine'] = 1 - _dist
+                d.score.value = 1 - _dist
                 _q.matches.append(d)
 
     @staticmethod
@@ -137,9 +137,13 @@ class MyEvaluator(Executor):
             self.num_docs += 1
             actual = [match.tags['id'] for match in doc.matches]
             desired = groundtruth.matches[0].tags['id']  # pseudo_match
+            precision_score = doc.evaluations.add()
             self.total_precision += self._precision(actual, desired)
             self.total_recall += self._recall(actual, desired)
-            doc.evaluations['Precision'] = self.avg_precision
-            doc.evaluations['Precision'].op_name = 'Precision'
-            doc.evaluations['Recall'] = self.avg_recall
-            doc.evaluations['Recall'].op_name = 'Recall'
+            precision_score.value = self.avg_precision
+            precision_score.op_name = f'Precision'
+            doc.evaluations.append(precision_score)
+            recall_score = doc.evaluations.add()
+            recall_score.value = self.avg_recall
+            recall_score.op_name = f'Recall'
+            doc.evaluations.append(recall_score)

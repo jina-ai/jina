@@ -23,17 +23,21 @@ def callback(operator):
 def responses():
     def create_documents(multiplier):
         d1 = Document()
-        d1.evaluations['evaluation'] = multiplier * 1.0
-        d1.evaluations['evaluation'].op_name = 'evaluation'
+        score1 = d1.evaluations.add()
+        score1.op_name = 'evaluation'
+        score1.value = multiplier * 1.0
         d2 = Document()
-        d2.evaluations['evaluation'] = multiplier * 1.0
-        d2.evaluations['evaluation'].op_name = 'evaluation'
+        score2 = d2.evaluations.add()
+        score2.op_name = 'evaluation'
+        score2.value = multiplier * 1.0
         d3 = Document()
-        d3.evaluations['evaluation'] = multiplier * 2.0
-        d3.evaluations['evaluation'].op_name = 'evaluation'
+        score3 = d3.evaluations.add()
+        score3.op_name = 'evaluation'
+        score3.value = multiplier * 2.0
         d4 = Document()
-        d4.evaluations['evaluation'] = multiplier * 2.0
-        d4.evaluations['evaluation'].op_name = 'evaluation'
+        score4 = d4.evaluations.add()
+        score4.op_name = 'evaluation'
+        score4.value = multiplier * 2.0
         return [d1, d2, d3, d4]
 
     def create_request(multiplier):
