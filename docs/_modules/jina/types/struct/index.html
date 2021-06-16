@@ -363,23 +363,24 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.struct</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">google.protobuf.internal.well_known_types</span> <span class="kn">import</span> <span class="n">Struct</span>
-<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
+<span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableMapping</span>
+
+<span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">struct_pb2</span>
+
+<span class="kn">from</span> <span class="nn">.mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
 
 
-<div class="viewcode-block" id="StructView"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView">[docs]</a><span class="k">class</span> <span class="nc">StructView</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">"""Create a Python dict view of Protobuf Struct.</span>
+<div class="viewcode-block" id="StructView"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView">[docs]</a><span class="k">class</span> <span class="nc">StructView</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
+    <span class="sd">"""Create a Python mutable mapping view of Protobuf Struct.</span>
 
 <span class="sd">    This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags</span>
-
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct</span><span class="p">:</span> <span class="n">Struct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">struct</span><span class="p">:</span> <span class="n">struct_pb2</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
         <span class="sd">"""Create a Python dict view of Protobuf Struct.</span>
 
 <span class="sd">        :param struct: the protobuf Struct object</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">MessageToDict</span><span class="p">(</span><span class="n">struct</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">struct</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -388,13 +389,31 @@
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-<div class="viewcode-block" id="StructView.update"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="c1"># TODO: Maybe do the same with ListValue and build a ListValueView</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">struct_pb2</span><span class="o">.</span><span class="n">Struct</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">key</span>
+
+<div class="viewcode-block" id="StructView.update"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># pylint: disable=invalid-name</span>
         <span class="sd">"""</span>
 <span class="sd">        # noqa: DAR101</span>
 <span class="sd">        # noqa: DAR102</span>
 <span class="sd">        # noqa: DAR103</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dictionary</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StructView.clear"><a class="viewcode-back" href="../../../../api/jina.types.struct/#jina.types.struct.StructView.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>

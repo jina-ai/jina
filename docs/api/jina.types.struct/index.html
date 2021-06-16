@@ -389,8 +389,8 @@
 <dl class="py class">
 <dt id="jina.types.struct.StructView">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.struct.</span></code><code class="sig-name descname"><span class="pre">StructView</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">struct</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/struct/#StructView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.struct.StructView" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
-<p>Create a Python dict view of Protobuf Struct.</p>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.mixin.ProtoTypeMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableMapping</span></code></p>
+<p>Create a Python mutable mapping view of Protobuf Struct.</p>
 <p>This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags</p>
 <p>Create a Python dict view of Protobuf Struct.</p>
 <dl class="field-list simple">
@@ -400,7 +400,7 @@
 </dl>
 <dl class="py method">
 <dt id="jina.types.struct.StructView.update">
-<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/struct/#StructView.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.struct.StructView.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/struct/#StructView.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.struct.StructView.update" title="Permalink to this definition">¶</a></dt>
 <dd><p># noqa: DAR101
 # noqa: DAR102
 # noqa: DAR103</p>
