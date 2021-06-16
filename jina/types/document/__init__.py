@@ -25,8 +25,6 @@ from google.protobuf.field_mask_pb2 import FieldMask
 from jina.types.struct import StructView
 
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
-from ..arrays.chunk import ChunkArray
-from ..arrays.match import MatchArray
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
@@ -42,6 +40,9 @@ from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
 if False:
+    from ..arrays.chunk import ChunkArray
+    from ..arrays.match import MatchArray
+
     from scipy.sparse import coo_matrix
 
     # fix type-hint complain for sphinx and flake
@@ -655,6 +656,9 @@ class Document(ProtoTypeMixin):
 
         :return: the array of matches attached to this document
         """
+        # Problem with cyclic dependency
+        from ..arrays.match import MatchArray
+
         return MatchArray(self._pb_body.matches, reference_doc=self)
 
     @matches.setter
@@ -663,6 +667,7 @@ class Document(ProtoTypeMixin):
 
         :param value: value to set
         """
+        print(f' setter {value}')
         self.pop('matches')
         self.matches.extend(value)
 
@@ -672,6 +677,9 @@ class Document(ProtoTypeMixin):
 
         :return: the array of chunks of this document
         """
+        # Problem with cyclic dependency
+        from ..arrays.chunk import ChunkArray
+
         return ChunkArray(self._pb_body.chunks, reference_doc=self)
 
     @chunks.setter
