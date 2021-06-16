@@ -314,7 +314,7 @@ def test_find_request_binding():
 
 
 @pytest.mark.skipif(
-    'GITHUB_WORKFLOW' not in os.environ,
+    'GITHUB_WORKFLOW' not in os.environ, reason='this test is only validate on CI'
 )
 def test_ci_vendor():
     assert get_ci_vendor() == 'GITHUB_ACTIONS'
