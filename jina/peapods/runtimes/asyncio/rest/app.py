@@ -74,13 +74,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     @app.on_event('startup')
     async def startup():
         """Log the host information when start the server."""
-        default_logger.info(
-            f'''
-    Jina REST interface
-    💬 Swagger UI:\thttp://localhost:{args.port_expose}/docs
-    📚 Redoc     :\thttp://localhost:{args.port_expose}/redoc
-        '''
-        )
         from jina import __ready_msg__
 
         default_logger.success(__ready_msg__)

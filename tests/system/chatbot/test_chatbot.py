@@ -1,7 +1,7 @@
 import pytest
 
 from jina import Document
-from jina.helloworld.chatbot.app import hello_world, create_chatbot_flow
+from jina.helloworld.chatbot.app import hello_world, _get_flow
 from jina.parsers.helloworld import set_hw_chatbot_parser
 from tests import validate_callback
 
@@ -39,7 +39,7 @@ def test_chatbot(tmpdir, mocker, helloworld_args):
     mock_on_done = mocker.Mock()
     mock_on_fail = mocker.Mock()
 
-    flow = create_chatbot_flow(helloworld_args)
+    flow = _get_flow(helloworld_args)
     with flow as f:
         f.index(
             inputs=Document(
