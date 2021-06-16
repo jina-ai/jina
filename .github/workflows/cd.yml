@@ -46,11 +46,6 @@ jobs:
           pip install .[daemon] --no-cache-dir
           JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
-          pip install css-html-js-minify
-          css-html-js-minify ./jina/resources/hub-builder-success
-          cp ./jina/resources/hub-builder-success/index.html ./schema/hub
-          cp ./jina/resources/hub-builder-success/script.min.js ./schema/hub
-          cp ./jina/resources/hub-builder-success/style.min.css ./schema/hub
           cd schema
           mkdir -p schemas
           jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/master.json schemas/master --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
