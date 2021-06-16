@@ -26,7 +26,7 @@ sdist/
 var/
 wheels/
 share/python-wheels/
-*.egg-info/
+*.egg-info
 .installed.cfg
 *.egg
 MANIFEST
@@ -139,11 +139,14 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+# pytest cache
+.pytest_cache
+
 # Cython debug symbols
 cython_debug/
 
 # Git files
-.git/
+.git
 
 # Vscode
 .vscode

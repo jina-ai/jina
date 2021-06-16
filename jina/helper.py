@@ -765,7 +765,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'architecture': platform.machine(),
             'processor': platform.processor(),
             'uid': getnode(),
-            'session-id': random_uuid(use_uuid1=True),
+            'session-id': str(random_uuid(use_uuid1=True)),
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
         }
