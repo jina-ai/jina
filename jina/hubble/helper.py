@@ -31,14 +31,14 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
     def _zip(base_path, path, archive):
         paths = os.listdir(path)
         for p in paths:
-            if ignored_spec.match_file(os.path.relpath(p, base_path)):
-                print(f'ignroe: {p}')
+            rel_path = os.path.relpath(p, base_path)
+            if ignored_spec.match_file(rel_path):
                 continue
             p = os.path.join(path, p)
             if os.path.isdir(p):
                 _zip(base_path, p, archive)
             else:
-                archive.write(p, os.path.relpath(p, base_path))
+                archive.write(p, rel_path)
 
     root_path = str(package_folder.resolve())
     _zip(root_path, root_path, zfile)
