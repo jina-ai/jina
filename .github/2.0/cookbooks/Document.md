@@ -212,7 +212,6 @@ from jina import Document
 
 d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
-
 ```
 
 
