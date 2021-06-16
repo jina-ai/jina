@@ -11,10 +11,8 @@ import time
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
-from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
-from pathlib import Path
 from types import SimpleNamespace
 from typing import (
     Tuple,
@@ -769,8 +767,9 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'processor': platform.processor(),
             'uuid': getnode(),
             'uptime': __uptime__,
-            'jina-resources': __resources_path__,
+            'ci-vendor': get_ci_vendor(),
         }
+
         env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
         full_version = info, env_info
     except Exception as e:
@@ -1192,3 +1191,21 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
             return app
     """
     return app
+
+
+def get_ci_vendor() -> Optional[str]:
+    from jina import __resources_path__
+
+    with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
+        all_cis = json.load(fp)
+        for c in all_cis:
+            if isinstance(c['env'], str) and c['env'] in os.environ:
+                return c['constant']
+            elif isinstance(c['env'], dict):
+                for k, v in c['env'].items():
+                    if os.environ.get(k, None) == v:
+                        return c['constant']
+            elif isinstance(c['env'], list):
+                for k in c['env']:
+                    if k in os.environ:
+                        return c['constant']
