@@ -1,16 +1,12 @@
 from collections.abc import MutableMapping
 
-from google.protobuf.internal.well_known_types import Struct
+from google.protobuf.struct_pb2 import Struct
 
 
 class StructView(MutableMapping):
-    """Create a Python dict view of Protobuf Struct.
+    """Create a Python mutable mapping view of Protobuf Struct.
 
     This can be used in all Jina types where a protobuf.Struct is returned, e.g. Document.tags
-
-    .. warning::
-
-
     """
 
     def __init__(self, struct: Struct):
@@ -36,13 +32,13 @@ class StructView(MutableMapping):
         for key in self._pb_body.keys():
             yield key
 
-    def update(self, dictionary):  # pylint: disable=invalid-name
+    def update(self, d, **kwargs):  # pylint: disable=invalid-name
         """
         # noqa: DAR101
         # noqa: DAR102
         # noqa: DAR103
         """
-        self._pb_body.update(dictionary)
+        self._pb_body.update(d)
 
     def clear(self) -> None:
         """
