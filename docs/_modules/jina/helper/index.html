@@ -1130,7 +1130,7 @@
             <span class="s1">'architecture'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">(),</span>
             <span class="s1">'processor'</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">processor</span><span class="p">(),</span>
             <span class="s1">'uid'</span><span class="p">:</span> <span class="n">getnode</span><span class="p">(),</span>
-            <span class="s1">'session-id'</span><span class="p">:</span> <span class="n">random_uuid</span><span class="p">(</span><span class="n">use_uuid1</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="s1">'session-id'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">random_uuid</span><span class="p">(</span><span class="n">use_uuid1</span><span class="o">=</span><span class="kc">True</span><span class="p">)),</span>
             <span class="s1">'uptime'</span><span class="p">:</span> <span class="n">__uptime__</span><span class="p">,</span>
             <span class="s1">'ci-vendor'</span><span class="p">:</span> <span class="n">get_ci_vendor</span><span class="p">()</span> <span class="ow">or</span> <span class="n">__unset_msg__</span><span class="p">,</span>
         <span class="p">}</span>

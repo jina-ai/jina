@@ -396,17 +396,17 @@
     <span class="k">def</span> <span class="nf">_zip</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">archive</span><span class="p">):</span>
         <span class="n">paths</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">ignored_spec</span><span class="o">.</span><span class="n">match_file</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">base_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ignored_spec</span><span class="o">.</span><span class="n">match_file</span><span class="p">(</span><span class="n">rel_path</span><span class="p">):</span>
                 <span class="k">continue</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
                 <span class="n">_zip</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">archive</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">archive</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">base_path</span><span class="p">))</span>
+                <span class="n">archive</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
 
     <span class="n">root_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">package_folder</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
-
-    <span class="n">_zip</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">zfile</span><span class="p">)</span>
+    <span class="n">_zip</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">zfile</span><span class="p">)</span>
 
     <span class="n">zfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="n">zip_stream</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
