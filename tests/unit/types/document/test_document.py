@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 import tensorflow as tf
 import torch
-from google.protobuf.json_format import MessageToDict
 from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
 
 from jina.proto.jina_pb2 import DocumentProto
@@ -55,7 +54,7 @@ def torch_sparse_matrix(row, column, data):
     return torch.sparse_coo_tensor(indices, data, shape)
 
 
-@pytest.mark.parametrize('field', ['blob', 'embedding'])
+@pytest.mark.parametrize('field', ['blob', 'embedding', 'content'])
 def test_ndarray_get_set(field):
     a = Document()
     b = np.random.random([10, 10])
@@ -73,6 +72,18 @@ def test_ndarray_get_set(field):
     c.value = b
     setattr(a, field, c._pb_body)
     np.testing.assert_equal(getattr(a, field), b)
+
+
+def test_sparse_get_set():
+    d = Document()
+    assert d.content is None
+    mat1 = coo_matrix(np.array([1, 2, 3]))
+    d.content = mat1
+    assert (d.content != mat1).nnz == 0
+    mat2 = coo_matrix(np.array([3, 2, 1]))
+    assert (d.content != mat2).nnz != 0
+    d.blob = mat2
+    assert (d.content != mat2).nnz == 0
 
 
 def test_doc_update_fields():
