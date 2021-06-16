@@ -61,44 +61,49 @@ class HubIO:
             form_data = {
                 'meta': json.dumps(meta),
                 'env': json.dumps(env),
-                'is_public': self.args.public,
+                'public': self.args.public,
+                'private': self.args.private,
                 'md5sum': md5_digest,
                 'force': self.args.force,
                 'secret': self.args.secret,
             }
 
+            method = 'put' if self.args.force else 'post'
             # upload the archived executor to Jina Hub
-            with TimeContext(f'uploading to {JINA_HUBBLE_PUSH_URL}', self.logger):
-                resp = requests.post(
+            with TimeContext(f'uploading to {method.upper()} {JINA_HUBBLE_PUSH_URL}', self.logger):
+                request = getattr(requests, method)
+                resp = request(
                     JINA_HUBBLE_PUSH_URL, files={'file': content}, data=form_data
+            )
+
+            if 200 <= resp.status_code < 300:
+                # TODO: only support single executor now
+                image = resp.json()['executors'][0]
+
+                uuid8 = image['id']
+                secret = image['secret']
+                docker_image = image['pullPath']
+                visibility = image['visibility']
+                usage = f'jinahub://{uuid8}' if visibility == 'public' else f'jinahub://{uuid8}:{secret}'
+
+                info_table = [
+                    f'\t🔑 ID:\t\t' + colored(f'{uuid8}', 'cyan'),
+                    f'\t🔒 Secret:\t'
+                    + colored(
+                        f'{secret}',
+                        'cyan',
+                    ),
+                    f'\t🐳 Image:\t' + colored(f'{docker_image}', 'cyan'),
+                    f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
+                ]
+                self.logger.success(
+                    f'🎉 The executor at {pkg_path} is now published successfully!'
                 )
-
-            if resp.status_code == 201:
-                if resp.json()['success']:
-                    # TODO: only support single executor now
-                    image = resp.json()['data']['images'][0]
-
-                    uuid8 = image['id']
-                    secret = image['secret']
-                    docker_image = image['pullPath']
-
-                    info_table = [
-                        f'\t🔑 ID:\t' + colored(f'{uuid8}', 'cyan'),
-                        f'\t🔒 Secret:\t'
-                        + colored(
-                            f'{secret}',
-                            'cyan',
-                        ),
-                        f'\t🐳 Image:\t' + colored(f'{docker_image}', 'cyan'),
-                    ]
-                    self.logger.success(
-                        f'🎉 The executor at {pkg_path} is now published successfully!'
-                    )
-                    self.logger.info('\n' + '\n'.join(info_table))
-                    self.logger.info(
-                        'You can use this Executor in the Flow via '
-                        + colored(f'jinahub://{uuid8}', 'cyan', attrs='underline')
-                    )
+                self.logger.info('\n' + '\n'.join(info_table))
+                self.logger.info(
+                    'You can use this Executor in the Flow via '
+                    + colored(usage, 'cyan', attrs='underline')
+                )
 
             else:
                 raise Exception(resp.text)
