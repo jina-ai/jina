@@ -22,8 +22,8 @@ from typing import (
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
-from ..struct import StructView
-from ..score.map import NamedScoreMapping
+from jina.types.struct import StructView
+
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
 from ..arrays.chunk import ChunkArray
 from ..arrays.match import MatchArray
@@ -85,7 +85,6 @@ _all_mime_types = set(mimetypes.types_map.values())
 
 _all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
 _all_doc_array_keys = ('blob', 'embedding')
-_special_mapped_keys = ('scores', 'evaluations')
 
 
 class Document(ProtoTypeMixin):
@@ -701,7 +700,7 @@ class Document(ProtoTypeMixin):
                 else:
                     self._pb_body.ClearField(k)
                     getattr(self._pb_body, k).extend(v)
-            elif isinstance(v, dict) and k not in _special_mapped_keys:
+            elif isinstance(v, dict):
                 self._pb_body.ClearField(k)
                 getattr(self._pb_body, k).update(v)
             else:
@@ -944,64 +943,33 @@ class Document(ProtoTypeMixin):
         self._pb_body.adjacency = value
 
     @property
-    def scores(self):
-        """Return the scores of the document.
+    def score(self):
+        """Return the score of the document.
 
-        :return: the scores attached to this document as `:class:NamedScoreMapping`
+        :return: the score attached to this document as `:class:NamedScore`
         """
-        return NamedScoreMapping(self._pb_body.scores)
+        return NamedScore(self._pb_body.score)
 
-    @scores.setter
-    def scores(
-        self,
-        value: Dict[
-            str, Union[NamedScore, jina_pb2.NamedScoreProto, float, np.generic]
-        ],
+    @score.setter
+    def score(
+        self, value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic]
     ):
-        """Sets the scores of the `Document`. Specially important to provide the ability to start `scores` as:
+        """Set the score of the document.
 
-            .. highlight:: python
-            .. code-block:: python
+        You can assign a scala variable directly.
 
-                from jina import Document
-                from jina.types.score import NamedScore
-                d = Document(scores={'euclidean': 5, 'cosine': NamedScore(value=0.5)})
-
-        :param value: the dictionary to set the scores
+        :param value: the value to set the score of the Document from
         """
-        scores = NamedScoreMapping(self._pb_body.scores)
-        for k, v in value.items():
-            scores[k] = v
-
-    @property
-    def evaluations(self):
-        """Return the evaluations of the document.
-
-        :return: the evaluations attached to this document as `:class:NamedScoreMapping`
-        """
-        return NamedScoreMapping(self._pb_body.evaluations)
-
-    @evaluations.setter
-    def evaluations(
-        self,
-        value: Dict[
-            str, Union[NamedScore, jina_pb2.NamedScoreProto, float, np.generic]
-        ],
-    ):
-        """Sets the evaluations of the `Document`. Specially important to provide the ability to start `evaluations` as:
-
-            .. highlight:: python
-            .. code-block:: python
-
-                from jina import Document
-                from jina.types.score import NamedScore
-                d = Document(evaluations={'precision': 0.9, 'recall': NamedScore(value=0.5)})
-
-        :param value: the dictionary to set the evaluations
-        """
-        scores = NamedScoreMapping(self._pb_body.evaluations)
-        for k, v in value.items():
-            scores[k] = v
+        if isinstance(value, jina_pb2.NamedScoreProto):
+            self._pb_body.score.CopyFrom(value)
+        elif isinstance(value, NamedScore):
+            self._pb_body.score.CopyFrom(value._pb_body)
+        elif isinstance(value, (float, int)):
+            self._pb_body.score.value = value
+        elif isinstance(value, np.generic):
+            self._pb_body.score.value = value.item()
+        else:
+            raise TypeError(f'score is in unsupported type {typename(value)}')
 
     def convert_image_buffer_to_blob(self, color_axis: int = -1):
         """Convert an image buffer to blob

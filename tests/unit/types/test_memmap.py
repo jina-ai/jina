@@ -103,12 +103,7 @@ def test_error(tmpdir):
 
 def test_persist(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
-    docs = list(random_docs(100))
-    for doc in docs:
-        doc.scores['score'] = 50
-        doc.evaluations['eval'] = 100
-
-    dam.extend(docs)
+    dam.extend(random_docs(100))
 
     dam2 = DocumentArrayMemmap(tmpdir)
     assert len(dam2) == 100
@@ -124,9 +119,6 @@ def test_persist(tmpdir):
     assert len(dam2) == 100
     dam2.reload()
     assert len(dam2) == 99
-    for doc2 in dam2:
-        assert doc2.scores['score'].value == 50
-        assert doc2.evaluations['eval'].value == 100
 
     dam.clear()
     assert len(dam2) == 99
