@@ -737,8 +737,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         __version__,
         __proto_version__,
         __jina_env__,
-        __resources_path__,
         __uptime__,
+        __unset_msg__,
     )
     from google.protobuf.internal import api_implementation
     import os, grpc, zmq, numpy, google.protobuf, yaml
@@ -752,7 +752,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         info = {
             'jina': __version__,
             'jina-proto': __proto_version__,
-            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', '(unset)'),
+            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
             'libzmq': zmq.zmq_version(),
             'pyzmq': numpy.__version__,
             'protobuf': google.protobuf.__version__,
@@ -767,10 +767,10 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'processor': platform.processor(),
             'uuid': getnode(),
             'uptime': __uptime__,
-            'ci-vendor': get_ci_vendor(),
+            'ci-vendor': get_ci_vendor() or __unset_msg__,
         }
 
-        env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
+        env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
         full_version = info, env_info
     except Exception as e:
         default_logger.error(str(e))
