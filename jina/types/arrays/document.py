@@ -270,9 +270,12 @@ class DocumentArray(
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
         # TODO: Hacky way
-        tmp = [Document(proto) for proto in self._pb_body]
+        tmp = [Document(proto) for i, proto in enumerate(self._pb_body)]
         tmp.sort(*args, **kwargs)
-        self._pb_body = [d.proto for d in tmp]
+
+        for i in range(len(tmp)):
+            # Not sure why it breaks
+            self._pb_body[i] = tmp[i].proto
 
     def __bool__(self):
         """To simulate ```l = []; if l: ...```

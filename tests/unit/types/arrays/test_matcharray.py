@@ -29,7 +29,6 @@ def reference_doc(document_factory):
 def matches(document_factory):
     req = Request()
     req.request_type = 'data'
-    print(f' len-req.docs {len(req.docs)}')
     req.docs.extend(
         [
             document_factory.create(1, 'test 1'),
@@ -37,15 +36,12 @@ def matches(document_factory):
             document_factory.create(3, 'test 3'),
         ]
     )
-    print(f' len-req.docs after {len(req.docs)}')
     return req.docs
 
 
 @pytest.fixture
 def matcharray(matches, reference_doc):
-    print(f' len-matches {len(matches)}')
     ma = MatchArray(doc_views=matches, reference_doc=reference_doc)
-    print(f' len-ma {len(ma)}')
     return ma
 
 
@@ -68,6 +64,17 @@ def test_mime_type_not_reassigned():
     d.mime_type = 'text/plain'
     r = d.matches.append(m)
     assert r.mime_type == ''
+
+
+def test_matches_sort_by_document_interface_in_proto():
+    docs = [Document(weight=(10 - i)) for i in range(10)]
+    query = Document()
+    query.matches = docs
+    assert len(query.matches) == 10
+    assert query.matches[0].weight == 10
+
+    query.matches.sort(key=lambda m: m.weight)
+    assert query.matches[0].weight == 1
 
 
 def test_matches_sort_by_document_interface_not_in_proto():
