@@ -160,7 +160,7 @@ class DocumentArray(
 
         for d in self._doc_views:
             if not isinstance(d, Document):
-                yield Document(d)
+                yield Document(d, hash_content=False)
             else:
                 yield d
 

@@ -154,6 +154,7 @@ class Document(ProtoTypeMixin):
         document: Optional[DocumentSourceType] = None,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
+        hash_content: bool = True,
         **kwargs,
     ):
         """
@@ -169,6 +170,7 @@ class Document(ProtoTypeMixin):
                 names defined in Protobuf. This is only used when the given ``document`` is
                 a JSON string or a Python dict.
         :param kwargs: other parameters to be set _after_ the document is constructed
+        :param hash_content: whether to hash the content of the Document
 
         .. note::
 
@@ -287,6 +289,8 @@ class Document(ProtoTypeMixin):
             )
         self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
+        if hash_content:
+            self.update_content_hash()
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
