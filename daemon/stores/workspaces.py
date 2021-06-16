@@ -131,6 +131,14 @@ class WorkspaceStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
 
+        # Peas/Pods/Flows need to be deleted before networks, files etc can be deleted
+        if everything:
+            from . import get_store_from_id
+
+            ids_to_delete = list(self[id].metadata.managed_objects)
+            for managed_object in ids_to_delete:
+                get_store_from_id(managed_object).delete(id=managed_object)
+
         if container:
             self.rm_container(id)
         if network:

@@ -116,6 +116,8 @@ class ContainerStore(BaseStore):
             self._logger.success(
                 f'{colored(id, "green")} is added to workspace {colored(workspace_id, "green")}'
             )
+
+            workspace_store[workspace_id].metadata.managed_objects.add(id)
             return id
 
     @BaseStore.dump
@@ -123,5 +125,9 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
         Dockerizer.rm_container(id=self[id].metadata.container_id)
+        workspace_id = self[id].workspace_id
         del self[id]
+        from . import workspace_store
+
+        workspace_store[workspace_id].metadata.managed_objects.remove(id)
         self._logger.success(f'{colored(id, "green")} is released from the store.')
