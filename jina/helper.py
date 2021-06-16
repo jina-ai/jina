@@ -765,7 +765,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'architecture': platform.machine(),
             'processor': platform.processor(),
             'uid': getnode(),
-            'session-id': random_uuid(use_uuid1=True),
+            'session-id': str(random_uuid(use_uuid1=True)),
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
         }
@@ -933,21 +933,24 @@ def get_public_ip():
     """
     import urllib.request
 
-    timeout = 0.2
+    timeout = 0.5
 
     results = []
 
     def _get_ip(url):
         try:
-            with urllib.request.urlopen(url, timeout=timeout) as fp:
-                results.append(fp.read().decode('utf8'))
+            metas, envs = get_full_version()
+            req = urllib.request.Request(
+                url, headers={'User-Agent': 'Mozilla/5.0', **metas, **envs}
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as fp:
+                # TODO: (deepankar) fix extra quote on the server side
+                results.append(fp.read().decode().replace('"', ''))
         except:
-            pass
+            pass  # intentionally ignored, public ip is not showed
 
     ip_server_list = [
-        'https://api.ipify.org',
-        'https://ident.me',
-        'https://ipinfo.io/ip',
+        'https://getip.jina.ai/ip',
     ]
 
     threads = []
