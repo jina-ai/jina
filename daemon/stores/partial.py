@@ -107,14 +107,26 @@ class PartialFlowStore(PartialStore):
             self._logger.success(f'{colored(id, "cyan")} is created')
             return self.item
 
-    def update(self, kind, dump_path, pod_name, shards, **kwargs) -> PartialFlowItem:
+    def update(
+        self,
+        kind: UpdateOperation,
+        dump_path: str,
+        pod_name: str,
+        shards: int,
+        **kwargs,
+    ) -> PartialFlowItem:
+        """Runs an update operation on the Flow.
+        :param kind: type of update command to execute (dump/rolling_update)
+        :param dump_path: the path to which to dump on disk
+        :param pod_name: pod to target with the dump request
+        :param shards: nr of shards to dump for
+        :return: Item describing the Flow object
+        """
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
             elif kind == UpdateOperation.DUMP:
-                raise NotImplementedError(
-                    f' sending post request does not work because asyncio loop is occupied'
-                )
+                self.object.dump(pod_name=pod_name, dump_path=dump_path, shards=shards)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
