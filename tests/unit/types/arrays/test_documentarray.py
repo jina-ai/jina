@@ -256,3 +256,11 @@ def test_da_with_graphs():
         assert isinstance(d, GraphDocument) is True
 
     assert isinstance(da[0], GraphDocument) is True
+
+
+def test_da_with_different_inputs():
+    docs = [Document() for i in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da)

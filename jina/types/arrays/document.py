@@ -104,16 +104,20 @@ class DocumentArray(
 
     def __init__(
         self,
-        doc_views: Optional[Union['RepeatedContainer', Iterable['Document']]] = None,
+        doc_views: Optional[
+            Union['RepeatedContainer', Iterable['Document'], Iterable['DocumentProto']]
+        ] = None,
     ):
         super().__init__()
         if doc_views is not None:
             from .memmap import DocumentArrayMemmap
 
             if isinstance(doc_views, (Generator, DocumentArrayMemmap)):
-                self._doc_views = list(doc_views)
-            else:
-                self._doc_views = doc_views
+                doc_views = list(doc_views)
+
+            self._doc_views = [
+                Document(v) if isinstance(v, DocumentProto) else v for v in doc_views
+            ]
         else:
             self._doc_views = []
 
