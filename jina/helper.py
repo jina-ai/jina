@@ -947,7 +947,7 @@ def get_public_ip():
                 # TODO: (deepankar) fix extra quote on the server side
                 results.append(fp.read().decode().replace('"', ''))
         except:
-            pass
+            pass  # intentionally ignored, public ip is not showed
 
     ip_server_list = [
         'https://getip.jina.ai/ip',
