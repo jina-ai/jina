@@ -62,3 +62,17 @@ def test_mime_type_not_reassigned():
     d.mime_type = 'text/plain'
     r = d.matches.append(m)
     assert r.mime_type == ''
+
+
+def test_query_match_array_sort_scores():
+    query = Document()
+    query.matches = [
+        Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)
+    ]
+    assert query.matches[0].id == '0'
+    assert query.matches[0].scores['euclid'].value == 10
+    query.matches.sort(
+        key=lambda m: m.scores['euclid'].value
+    )  # sort matches by their values
+    assert query.matches[0].id == '9'
+    assert query.matches[0].scores['euclid'].value == 1

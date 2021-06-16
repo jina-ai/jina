@@ -256,3 +256,25 @@ def test_da_with_graphs():
         assert isinstance(d, GraphDocument) is True
 
     assert isinstance(da[0], GraphDocument) is True
+
+
+def test_da_sort_by_score():
+    da = DocumentArray(
+        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)]
+    )
+    assert da[0].id == '0'
+    assert da[0].scores['euclid'].value == 10
+    da.sort(key=lambda d: d.scores['euclid'].value)  # sort matches by their values
+    assert da[0].id == '9'
+    assert da[0].scores['euclid'].value == 1
+
+
+def test_da_sort_by_score():
+    da = DocumentArray(
+        [Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)]
+    )
+    assert da[0].id == '0'
+    assert da[0].scores['euclid'].value == 10
+    da.sort(key=lambda d: d.scores['euclid'].value)  # sort matches by their values
+    assert da[0].id == '9'
+    assert da[0].scores['euclid'].value == 1

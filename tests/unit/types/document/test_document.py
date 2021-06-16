@@ -1039,7 +1039,6 @@ def test_tags_update_nested():
 def test_tag_compare_dict():
     d = Document()
     d.tags = {'hey': {'bye': 4}}
-    print(f' d.tags {d.tags}')
     assert d.tags == {'hey': {'bye': 4}}
     assert d.tags.dict() == {'hey': {'bye': 4}}
 
