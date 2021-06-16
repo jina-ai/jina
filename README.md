@@ -129,9 +129,10 @@ Keep the above running and start a simple client:
 
 ```python
 from jina import Client, Document
+from jina.types.request import Response
 
-def print_matches(req):  # the callback function invoked when task is done
-    for idx, d in enumerate(req.docs[0].matches[:3]):  # print top-3 matches
+def print_matches(resp: Response):  # the callback function invoked when task is done
+    for idx, d in enumerate(resp.docs[0].matches[:3]):  # print top-3 matches
         print(f'[{idx}]{d.score.value:2f}: "{d.text}"')
         
 c = Client(host='localhost', port_expose=12345)  # connect to localhost:12345
