@@ -15,7 +15,7 @@ build/
 develop-eggs/
 dist/
 eggs/
-.eggs/
+.eggs
 
 # downloads/
 # lib/
@@ -153,3 +153,6 @@ cython_debug/
 
 # Pycharm
 .idea
+
+# Github
+.github
