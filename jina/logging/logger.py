@@ -98,7 +98,7 @@ class JinaLogger:
         setattr(
             self.logger,
             'success',
-            lambda message: self.logger.log(success_level, message),
+            self.success
         )
 
         self.info = self.logger.info
@@ -106,7 +106,9 @@ class JinaLogger:
         self.debug = self.logger.debug
         self.error = self.logger.error
         self.warning = self.logger.warning
-        self.success = self.logger.success
+
+    def success(self, message):
+        self.logger.log(LogVerbosity.SUCCESS.value, message)
 
     @property
     def handlers(self):
