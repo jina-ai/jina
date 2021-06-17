@@ -1,5 +1,6 @@
 import multiprocessing
 import threading
+from functools import partial
 from multiprocessing.synchronize import Event
 
 from ...enums import RuntimeBackendType
@@ -16,35 +17,36 @@ def _get_event(obj) -> Event:
         )
 
 
-def _make_or_event(obj, *events) -> Event:
-    or_event = _get_event(obj)
+class ConditionalEvent(Event):
+    def __init__(self, events_list):
+        Event.__init__(self, ctx=multiprocessing.get_context())
+        self.event_list = events_list
+        for e in events_list:
+            self._setup(e, self._state_changed)
 
-    def or_set(self):
-        self._set()
-        self.changed()
+        self._state_changed()
 
-    def or_clear(self):
-        self._clear()
-        self.changed()
+    def _state_changed(self):
+        bools = [e.is_set() for e in self.event_list]
+        if any(bools):
+            self.set()
+        else:
+            self.clear()
 
-    def orify(e, changed_callback):
+    def _custom_set(self, e):
+        e._set()
+        e._state_changed()
+
+    def _custom_clear(self, e):
+        e._clear()
+        e._state_changed()
+
+    def _setup(self, e, changed_callback):
         e._set = e.set
         e._clear = e.clear
-        e.changed = changed_callback
-        e.set = lambda: or_set(e)
-        e.clear = lambda: or_clear(e)
-
-    def changed():
-        bools = [e.is_set() for e in events]
-        if any(bools):
-            or_event.set()
-        else:
-            or_event.clear()
-
-    for e in events:
-        orify(e, changed)
-    changed()
-    return or_event
+        e._state_changed = changed_callback
+        e.set = partial(self._custom_set, e)
+        e.clear = partial(self._custom_clear, e)
 
 
 class PeaType(type):

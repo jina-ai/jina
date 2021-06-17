@@ -5,7 +5,7 @@ import time
 import multiprocessing
 import threading
 
-from .helper import _get_event, _make_or_event, PeaType
+from .helper import _get_event, ConditionalEvent, PeaType
 from ... import __stop_msg__, __ready_msg__, __default_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
@@ -42,8 +42,9 @@ class BasePea:
         self.name = self.args.name or self.__class__.__name__
         self.is_ready = _get_event(self.worker)
         self.is_shutdown = _get_event(self.worker)
-        self.ready_or_shutdown = _make_or_event(
-            self.worker, self.is_ready, self.is_shutdown
+        # ConditionalEvent doesn't support threading for now
+        self.ready_or_shutdown = ConditionalEvent(
+            events_list=[self.is_ready, self.is_shutdown]
         )
         self.logger = JinaLogger(self.name, **vars(self.args))
 
