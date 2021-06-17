@@ -636,14 +636,29 @@
 <span class="sd">        :param args: variable set of arguments to pass to the sorting underlying function</span>
 <span class="sd">        :param kwargs: keyword arguments to pass to the sorting underlying function</span>
 <span class="sd">        """</span>
-
-        <span class="k">def</span> <span class="nf">overriden_key</span><span class="p">(</span><span class="n">proto</span><span class="p">):</span>
-            <span class="c1"># Function to override the `proto` and wrap it around a `Document` to enable sorting via `Document-like` interface</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">key</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">overriden_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">overriden_key</span><span class="p">(</span><span class="n">proto</span><span class="p">):</span>
+                <span class="c1"># Function to override the `proto` and wrap it around a `Document` to enable sorting via</span>
+                <span class="c1"># `Document-like` interface</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">key</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+            <span class="c1"># Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,</span>
+            <span class="c1"># maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make</span>
+            <span class="c1"># sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and</span>
+            <span class="c1"># see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.</span>
+            <span class="c1"># (Very often the 2 interfaces are both the same and valid, so proto will have less overhead</span>
+            <span class="n">overriden</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">overriden</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overriden</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">overriden_key</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
