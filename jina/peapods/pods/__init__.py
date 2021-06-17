@@ -644,6 +644,43 @@ class Pod(BasePod):
         return result
 
     def _parse_base_pod_args(self, args):
+
+        if getattr(args, 'uses', None):
+            # use the executor existed in Jina Hub.
+            if args.uses.startswith('jinahub'):
+                from urllib.parse import urlparse
+                from ...hubble.hubio import HubIO
+                from ...parsers.hubble import set_hub_pull_parser
+
+                uses_parser = urlparse(self.args.uses)
+                scheme = uses_parser.scheme
+                items = list(uses_parser.netloc.split(':'))
+                id = items[0]
+                tag = items[1] if len(items) > 1 else None
+
+                # TODO: locate the local executor
+                if tag:
+                    pass
+
+                _args_list = [id]
+                pull_args = set_hub_pull_parser().parse_args(_args_list)
+                hubio = HubIO(pull_args)
+
+                executor = hubio.get(id, tag)
+
+                if scheme == 'jinahub+docker':
+                    # use docker image
+                    args.uses = f'docker://{executor["pullPath"]}'
+                elif scheme == 'jinahub':
+                    # TODO: use source code directly
+                    raise NotImplementedError(
+                        f'The schema {scheme} has not been supported!'
+                    )
+                else:
+                    raise NotImplementedError(
+                        f'The schema {scheme} has not been supported!'
+                    )
+
         parsed_args = {'head': None, 'tail': None, 'peas': []}
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
