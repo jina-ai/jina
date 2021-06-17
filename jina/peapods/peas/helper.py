@@ -1,3 +1,4 @@
+from typing import Union
 import multiprocessing
 import threading
 from functools import partial
@@ -5,7 +6,7 @@ from functools import partial
 from ...enums import RuntimeBackendType
 
 
-def _get_event(obj):
+def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):
@@ -17,6 +18,14 @@ def _get_event(obj):
 
 
 class ConditionalEvent:
+    """
+    :class:`ConditionalEvent` provides a common interface to an event (multiprocessing or threading event)
+    that gets triggered when any of the events provided in input is triggered (OR logic)
+
+    :param backend_runtime: The runtime type to decide which type of Event to instantiate
+    :param events_list: The list of events that compose this composable event
+    """
+
     def __init__(self, backend_runtime: RuntimeBackendType, events_list):
         super().__init__()
         self.event = None

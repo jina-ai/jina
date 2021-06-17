@@ -95,11 +95,7 @@ class JinaLogger:
         # note logger.success isn't default there
         success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
         logging.addLevelName(success_level, 'SUCCESS')
-        setattr(
-            self.logger,
-            'success',
-            self.success
-        )
+        setattr(self.logger, 'success', self.success)
 
         self.info = self.logger.info
         self.critical = self.logger.critical
@@ -108,6 +104,11 @@ class JinaLogger:
         self.warning = self.logger.warning
 
     def success(self, message):
+        """
+        Prints messages as success
+
+        :param message: Message to log
+        """
         self.logger.log(LogVerbosity.SUCCESS.value, message)
 
     @property

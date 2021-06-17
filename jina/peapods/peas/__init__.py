@@ -75,12 +75,22 @@ class BasePea:
             raise RuntimeFailToStart from ex
 
     def start(self):
+        """Start the Pea.
+        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        .. #noqa: DAR201
+        """
         self.worker.start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
 
     def join(self, *args, **kwargs):
-        return self.worker.join(*args, **kwargs)
+        """Joins the Pea.
+        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+
+        :param args: extra positional arguments to pass to join
+        :param kwargs: extra keyword arguments to pass to join
+        """
+        self.worker.join(*args, **kwargs)
 
     def run(self):
         """Method representing the :class:`BaseRuntime` activity.
