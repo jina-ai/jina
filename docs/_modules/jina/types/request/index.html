@@ -610,16 +610,17 @@
 
 <span class="sd">        :return: a Python dict view of the tags.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="c1"># if u get this u need to have it decompressed</span>
+        <span class="k">return</span> <span class="n">StructView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 
     <span class="nd">@parameters</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
-        <span class="sd">"""Set the `tags` field of this Document to a Python dict</span>
+        <span class="sd">"""Set the `parameters` field of this Request to a Python dict</span>
 
 <span class="sd">        :param value: a Python dict</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">Clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
