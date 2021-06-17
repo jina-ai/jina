@@ -171,7 +171,7 @@ from jina.flow.asyncio import AsyncFlow
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)
 
-
 if __name__ == '__main__':
     from multiprocessing import set_start_method as _set_start_method
+
     _set_start_method('spawn')
