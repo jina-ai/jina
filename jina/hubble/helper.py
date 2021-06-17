@@ -3,27 +3,11 @@
 import io
 import os
 import hashlib
-from typing import Tuple
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 from jina import __resources_path__
 from jina.importer import ImportExtensions
-
-
-def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
-    """Parse the uri of the Jina Hub executor.
-
-    :param uri_path: the uri of Jina Hub executor
-    :return: a tuple of schema, id, tag, and secret
-    """
-    parser = urlparse(uri_path)
-    scheme = parser.scheme
-    items = list(parser.netloc.split(':'))
-    id = items[0]
-    secret = items[1] if len(items) > 1 else None
-    tag = parser.path.strip('/') if parser.path else None
-    return (scheme, id, tag, secret)
 
 
 def md5file(file_path: 'Path') -> str:
@@ -33,32 +17,11 @@ def md5file(file_path: 'Path') -> str:
     :return: the MD5 checksum
     """
     hash_md5 = hashlib.md5()
-    with file_path.open(mode='rb') as fp:
-        while True:
-            chunk = fp.read(4096)
-            if not chunk:
-                break
+    with file_path.open(mode='rb') as f:
+        for chunk in f.iter_content(chunk_size=4096):
             hash_md5.update(chunk)
 
     return hash_md5.hexdigest()
-
-
-def unpack_package(filepath: 'Path', target_dir: 'Path'):
-    """Unpack the file to the target_dir.
-
-    :param filepath: the path of given file
-    :param target_dir: the path of target folder
-    """
-    if filepath.suffix == '.zip':
-        zip = zipfile.ZipFile(filepath, 'r')
-        zip.extractall(target_dir)
-        zip.close()
-    elif filepath.suffix in ['.tar', '.gz']:
-        tar = zipfile.open(filepath)
-        tar.extractall(target_dir)
-        tar.close()
-    else:
-        raise ValueError("File format is not supported for unpacking.")
 
 
 def archive_package(package_folder: 'Path') -> 'io.BytesIO':
@@ -101,10 +64,7 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
 
 
 def download_with_resume(
-    url: str,
-    target_dir: 'Path',
-    filename: 'Path' = None,
-    md5sum: str = None,
+    url: str, md5sum: str, target_dir: 'Path', filename: 'Path' = None
 ) -> 'Path':
     """
     Download file from url to target_dir, and check md5sum.
@@ -154,7 +114,22 @@ def download_with_resume(
         else:
             _download(url, filepath)
 
-    if md5sum and not md5file(filepath) == md5sum:
+    if not md5file(filepath) == md5sum:
         raise RuntimeError("MD5 checksum failed.")
 
     return filepath
+
+
+# def unpack(filepath, target_dir):
+#     """Unpack the file to the target_dir."""
+#     print("Unpacking %s ..." % filepath)
+#     if filepath.endswith('.zip'):
+#         zip = zipfile.ZipFile(filepath, 'r')
+#         zip.extractall(target_dir)
+#         zip.close()
+#     elif filepath.endswith('.tar') or filepath.endswith('.tar.gz'):
+#         tar = zipfile.open(filepath)
+#         tar.extractall(target_dir)
+#         tar.close()
+#     else:
+#         raise ValueError("File format is not supported for unpacking.")

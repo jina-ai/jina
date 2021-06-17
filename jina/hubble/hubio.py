@@ -16,13 +16,15 @@ from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
 from .helper import archive_package, download_with_resume
-from .hubapi import install_locall
 
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
     'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
 )
 JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
+JINA_HUB_CACHE_DIR = (
+    Path.home().joinpath('.jina', '.cache').mkdir(parents=True, exist_ok=True)
+)
 
 
 class HubIO:
@@ -156,10 +158,22 @@ class HubIO:
 
             if resp.status_code == 200:
                 msg = resp.json()
+                id = msg['id']
 
                 if not self.args.docker:
                     # download the package
-                    pass
+
+                    archive_url = msg['archivePath']
+                    md5sum = msg['md5sum']
+
+                    with TimeContext(f'downloading {archive_url}', self.logger):
+                        download_with_resume(
+                            archive_url,
+                            md5sum,
+                            JINA_HUB_CACHE_DIR,
+                            Path(f'{id}.{md5sum}.zip'),
+                        )
+
                 else:
                     # pull the Docker image
                     image_name = msg['pullPath']
