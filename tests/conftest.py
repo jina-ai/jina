@@ -6,6 +6,7 @@ import time
 
 import pytest
 from fastapi.testclient import TestClient
+
 from jina.excepts import NoAvailablePortError
 from jina.executors.metas import get_default_metas
 
@@ -62,8 +63,12 @@ def get_partial_client(mode, monkeypatch):
     from daemon import _get_app
     from daemon.models.enums import PartialDaemonModes
     from daemon import jinad_args
+    from daemon import stores
+    from importlib import reload
 
     jinad_args.mode = PartialDaemonModes.get_mode(mode)
+
+    reload(stores)
     app = _get_app(mode=mode)
     tc = TestClient(app)
     yield tc
