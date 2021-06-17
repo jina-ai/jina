@@ -47,6 +47,7 @@ def client_instance(request):
     return request.getfixturevalue(request.param)
 
 
+@pytest.mark.skip('jinad with docker-compose not supported for now')
 @pytest.mark.timeout(360)
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_flow(docker_compose, doc_to_index, client_instance, mocker):
