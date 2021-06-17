@@ -16,12 +16,6 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
 ''',
     )
     gp.add_argument(
-        '--public',
-        action='store_true',
-        default=False,
-        help='If set, the published executor is visible to public',
-    )
-    gp.add_argument(
         '--force',
         type=str,
         help='To overwrite the executor identified as UUID8',
@@ -30,4 +24,20 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
         '--secret',
         type=str,
         help='The secret key of the identified Jina Hub executor',
+    )
+
+    mutually_exclusive_group = parser.add_mutually_exclusive_group()
+
+    mutually_exclusive_group.add_argument(
+        '--public',
+        action='store_true',
+        default=False,
+        help='If set, the published executor is visible to public',
+    )
+
+    mutually_exclusive_group.add_argument(
+        '--private',
+        action='store_true',
+        default=False,
+        help='If set, the published executor is invisible to public',
     )

@@ -107,7 +107,7 @@ class MyIndexer(Executor):
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
-                d.score.value = 1 - _dist
+                d.scores['cosine'] = 1 - _dist
                 _q.matches.append(d)
 
     @staticmethod

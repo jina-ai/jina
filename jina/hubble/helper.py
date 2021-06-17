@@ -40,8 +40,7 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
                 archive.write(p, os.path.relpath(p, base_path))
 
     root_path = str(package_folder.resolve())
-
-    _zip('', root_path, zfile)
+    _zip(root_path, root_path, zfile)
 
     zfile.close()
     zip_stream.seek(0)

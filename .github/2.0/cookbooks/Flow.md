@@ -542,8 +542,21 @@ with f, open('my.csv') as fp:
 
 #### Callback Functions
 
-Once a request is made, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
-callback functions `on_done`, `on_error`, `on_always` to hook different events. In the example below, our Flow passes
+Once a request is returned, callback functions are fired. Jina Flow implements a Promise-like interface. You can add
+callback functions `on_done`, `on_error`, `on_always` to hook different events. 
+
+In Jina, callback function's first argument is a `jina.types.request.Response` object. Hence, you can annotate the callback function via:
+
+```python
+from jina.types.request import Response
+
+def my_callback(rep: Response):
+    ...
+```
+
+`Response` object has many attributes, probably the most popular one is `Response.docs`, where you can access all `Document` as an `DocumentArray`.
+
+In the example below, our Flow passes
 the message then prints the result when successful. If something goes wrong, it beeps. Finally, the result is written
 to `output.txt`.
 
@@ -553,8 +566,8 @@ from jina import Document, Flow
 
 def beep(*args):
     # make a beep sound
-    import os
-    os.system('echo -n "\a";')
+    import sys
+    sys.stdout.write('\a')
 
 
 with Flow().add() as f, open('output.txt', 'w') as fp:
@@ -562,7 +575,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
            Document(),
            on_done=print,
            on_error=beep,
-           on_always=lambda x: fp.write(x.json()))
+           on_always=lambda x: x.docs.save(fp))
 ```
 
 #### Send Parameters
@@ -815,7 +828,6 @@ $ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type:
         "location": [],
         "offset": 0,
         "modality": "",
-        "evaluations": []
       }
     ],
     "groundtruths": []
