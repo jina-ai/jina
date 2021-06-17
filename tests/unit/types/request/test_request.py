@@ -32,7 +32,7 @@ def test_init_fail():
 def test_docs(req):
     request = Request(request=req, copy=False).as_typed_request('data')
     docs = request.docs
-    assert request.is_used
+    assert request.is_decompressed
     assert isinstance(docs, DocumentArray)
     assert len(docs) == 1
 
@@ -40,7 +40,7 @@ def test_docs(req):
 def test_groundtruth(req):
     request = Request(request=req, copy=False).as_typed_request('data')
     groundtruths = request.groundtruths
-    assert request.is_used
+    assert request.is_decompressed
     assert isinstance(groundtruths, DocumentArray)
     assert len(groundtruths) == 0
 
@@ -58,7 +58,7 @@ def test_request_type_set_get_fail(req):
 def test_command(req):
     request = Request(request=req, copy=False).as_typed_request('control')
     cmd = request.command
-    assert request.is_used
+    assert request.is_decompressed
     assert cmd
     assert isinstance(cmd, str)
 
@@ -66,10 +66,10 @@ def test_command(req):
 def test_as_pb_object(req):
     request = Request(request=req)
     request.proto
-    assert request.is_used
+    assert request.is_decompressed
     request = Request(request=None)
     assert request.proto
-    assert request.is_used
+    assert request.is_decompressed
 
 
 def test_as_json_str(req):
@@ -81,9 +81,9 @@ def test_as_json_str(req):
 
 def test_access_header(req):
     request = Request(request=req)
-    assert not request.is_used
+    assert not request.is_decompressed
     request.header
-    assert request.is_used
+    assert request.is_decompressed
 
 
 def test_as_response(req):

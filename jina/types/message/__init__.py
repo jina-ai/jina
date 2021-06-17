@@ -98,7 +98,6 @@ class Message:
         :param val: serialized Request
         """
         if isinstance(val, bytes):
-
             self._request = Request(
                 val,
                 CompressAlgo.from_string(self.envelope.compression.algorithm)
@@ -233,7 +232,7 @@ class Message:
 
     def _compress(self, data: bytes) -> bytes:
         # no further compression or post processing is required
-        if isinstance(self.request, Request) and not self.request.is_used:
+        if isinstance(self.request, Request) and not self.request.is_decompressed:
             return data
 
         # otherwise there are two cases

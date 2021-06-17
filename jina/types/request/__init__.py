@@ -95,7 +95,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
 
         :return: a boolean indicating if the proto is decompressed
         """
-        return self._pb_body is not None and self._buffer is None
+        return self._buffer is None
 
     @classmethod
     def _from_request(cls, req: 'Request'):
@@ -180,8 +180,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
     @property
     def proto(self) -> 'jina_pb2.RequestProto':
         """
-        Cast ``self`` to a :class:`jina_pb2.RequestProto`. This will trigger
-        :attr:`is_used`. Laziness will be broken and serialization will be recomputed when calling
+        Cast ``self`` to a :class:`jina_pb2.RequestProto`. Laziness will be broken and serialization will be recomputed when calling
         :meth:`SerializeToString`.
 
         :return: protobuf instance

@@ -25,13 +25,13 @@ def test_lazy_access(field, algo):
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
 
         # access r.train
         print(getattr(r, field))
 
         # now it is read
-        assert r.is_used
+        assert r.is_decompressed
 
 
 @pytest.mark.parametrize(
@@ -44,14 +44,14 @@ def test_multiple_access(algo):
         for r in request_generator('/', random_docs(10))
     ]
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
         assert r
-        assert not r.is_used
+        assert not r.is_decompressed
 
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
         assert r.data
-        assert r.is_used
+        assert r.is_decompressed
 
 
 @pytest.mark.parametrize(
@@ -64,11 +64,11 @@ def test_lazy_nest_access(algo):
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
         # write access r.train
         r.docs[0].id = '1' * 16
         # now it is read
-        assert r.is_used
+        assert r.is_decompressed
         assert r.data.docs[0].id == '1' * 16
 
 
@@ -82,11 +82,11 @@ def test_lazy_change_message_type(algo):
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
         # write access r.train
         r.control.command = jina_pb2.RequestProto.ControlRequestProto.IDLE
         # now it is read
-        assert r.is_used
+        assert r.is_decompressed
         assert len(r.data.docs) == 0
 
 
@@ -100,12 +100,12 @@ def test_lazy_append_access(algo):
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
         r = Request().as_typed_request('data')
         # write access r.train
         r.docs.append(Document())
         # now it is read
-        assert r.is_used
+        assert r.is_decompressed
 
 
 @pytest.mark.parametrize(
@@ -118,11 +118,11 @@ def test_lazy_clear_access(algo):
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
         # write access r.train
         r.ClearField('data')
         # now it is read
-        assert r.is_used
+        assert r.is_decompressed
 
 
 @pytest.mark.parametrize(
@@ -135,11 +135,11 @@ def test_lazy_nested_clear_access(algo):
         for r in request_generator('/', random_docs(10))
     )
     for r in reqs:
-        assert not r.is_used
+        assert not r.is_decompressed
         # write access r.train
         r.data.ClearField('docs')
         # now it is read
-        assert r.is_used
+        assert r.is_decompressed
 
 
 def test_lazy_msg_access():
@@ -155,22 +155,22 @@ def test_lazy_msg_access():
         for r in request_generator('/', random_docs(10))
     ]
     for m in messages:
-        m.request.is_used = False
+        assert not m.request.is_decompressed
         assert m.envelope
         assert len(m.dump()) == 3
-        assert not m.request.is_used
+        assert m.request.is_decompressed
 
     for m in messages:
-        assert not m.request.is_used
+        assert not m.request.is_decompressed
         assert m.request
         assert len(m.dump()) == 3
-        assert not m.request.is_used
+        assert not m.request.is_decompressed
 
     for m in messages:
-        assert not m.request.is_used
+        assert not m.request.is_decompressed
         assert m.request.data.docs
         assert len(m.dump()) == 3
-        assert m.request.is_used
+        assert m.request.is_decompressed
 
 
 def test_message_size():
