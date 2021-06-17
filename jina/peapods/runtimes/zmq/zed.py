@@ -393,7 +393,7 @@ class ZEDRuntime(ZMQRuntime):
         # otherwise the executor has to handle None values
 
         if result is None:
-            result = []
+            result = DocumentArray([])
         return result
 
     def _get_docs_matrix(self, field) -> List['DocumentArray']:
