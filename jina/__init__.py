@@ -25,8 +25,6 @@ if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 
     _set_start_method('fork')
 
-from multiprocessing import set_start_method as _set_start_method
-_set_start_method('spawn')
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
@@ -172,3 +170,8 @@ from jina.flow.asyncio import AsyncFlow
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)
+
+
+if __name__ == '__main__':
+    from multiprocessing import set_start_method as _set_start_method
+    _set_start_method('spawn')
