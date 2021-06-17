@@ -41,7 +41,10 @@ def update(
     pod_name: str,
     shards: int = None,
 ):
-    return store.update(kind, dump_path, pod_name, shards)
+    try:
+        return store.update(kind, dump_path, pod_name, shards)
+    except ValueError as ex:
+        raise Runtime400Exception from ex
 
 
 @router.delete(

@@ -39,6 +39,37 @@ def fastapi_client():
     del tc
 
 
+@pytest.fixture(scope='function', autouse=False)
+def partial_flow_client(monkeypatch):
+    yield from get_partial_client(mode='flow', monkeypatch=monkeypatch)
+
+
+@pytest.fixture(scope='function', autouse=False)
+def partial_pod_client(monkeypatch):
+    yield from get_partial_client(mode='pod', monkeypatch=monkeypatch)
+
+
+@pytest.fixture(scope='function', autouse=False)
+def partial_pea_client(monkeypatch):
+    yield from get_partial_client(mode='pea', monkeypatch=monkeypatch)
+
+
+def get_partial_client(mode, monkeypatch):
+    monkeypatch.setattr(os, "kill", lambda *args, **kwargs: None)
+    from daemon import __root_workspace__
+
+    pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
+    from daemon import _get_app
+    from daemon.models.enums import PartialDaemonModes
+    from daemon import jinad_args
+
+    jinad_args.mode = PartialDaemonModes.get_mode(mode)
+    app = _get_app(mode=mode)
+    tc = TestClient(app)
+    yield tc
+    del tc
+
+
 @pytest.fixture()
 def docker_compose(request):
     os.system(
