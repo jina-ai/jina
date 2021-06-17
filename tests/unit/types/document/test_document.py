@@ -1043,6 +1043,33 @@ def test_tag_compare_dict():
     assert d.tags.dict() == {'hey': {'bye': 4}}
 
     d.tags = {'hey': [1, 2]}
-    # TODO: Issue about having proper ListValueView
     assert d.tags != {'hey': [1, 2]}
     assert d.tags.dict() == {'hey': [1, 2]}
+
+
+def test_tags_update_nested_lists():
+    from jina import Document
+    from jina.types.list import ListView
+    from jina.types.struct import StructView
+
+    d = Document()
+    d.tags = {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    assert d.tags.dict() == {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    assert isinstance(d.tags['hoy'], ListView)
+    assert isinstance(d.tags['hey']['list'], ListView)
+    assert isinstance(d.tags['hey']['list'][2], StructView)
+    d.tags['hey']['nested'] = False
+    d.tags['hey']['list'][1] = True
+    d.tags['hey']['list'][2]['inlist'] = 'not here'
+    d.tags['hoy'][0] = 1
+
+    assert d.tags['hey']['nested'] is False
+    assert d.tags['hey']['list'][1] is True
+    assert d.tags['hey']['list'][2]['inlist'] == 'not here'
+    assert d.tags['hoy'][0] == 1

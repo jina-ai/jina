@@ -22,6 +22,7 @@ def list_proto():
 def test_list_view(list_proto):
     view = ListView(list_proto)
     assert len(view) == 5
+    assert view[-4] == 1
     assert view[0] == 0
     assert view[1] == 1
     assert view[2] == 'hey'
@@ -116,3 +117,14 @@ def test_list_contains(list_proto):
     assert {'key': 'value-aaa'} not in view
     # not hashable
     assert [0, 1, 2] not in view
+
+
+def test_list_reverse():
+    list = ListValue()
+    l = [0, 2, 1]
+    list.extend(l)
+    view = ListView(list)
+    view.reverse()
+    assert view[0] == 1
+    assert view[1] == 2
+    assert view[2] == 0

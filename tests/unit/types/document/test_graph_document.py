@@ -315,3 +315,25 @@ def test_manual_update_edges_features(graph, expected_output):
     graph._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
 
     assert graph._pb_body.graph.edge_features[edge_key]['number_value'] == 1234
+
+
+def test_edge_update_nested_lists():
+    graph = GraphDocument(force_undirected=True)
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0, doc1)
+    graph.edge_features[edge_key] = {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    graph.edge_features[edge_key]['hey']['nested'] = False
+    graph.edge_features[edge_key]['hey']['list'][1] = True
+    graph.edge_features[edge_key]['hey']['list'][2]['inlist'] = 'not here'
+    graph.edge_features[edge_key]['hoy'][0] = 1
+
+    assert graph.edge_features[edge_key]['hey']['nested'] is False
+    assert graph.edge_features[edge_key]['hey']['list'][1] is True
+    assert graph.edge_features[edge_key]['hey']['list'][2]['inlist'] == 'not here'
+    assert graph.edge_features[edge_key]['hoy'][0] == 1
