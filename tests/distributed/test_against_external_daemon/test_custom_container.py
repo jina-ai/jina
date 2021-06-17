@@ -7,6 +7,14 @@ from ..helpers import create_workspace, wait_for_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
+"""
+Run below commands for local tests
+docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
+docker run --add-host host.docker.internal:host-gateway \
+    --name jinad -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad \
+    -p 8000:8000 -d jinaai/jina:test-daemon
+"""
+
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 
 

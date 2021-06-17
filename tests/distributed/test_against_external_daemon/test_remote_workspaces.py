@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pytest
 
-from jina import Flow, Client, Document
+from jina import Flow, Client, Document, __default_host__
 from ..helpers import create_workspace, wait_for_workspace, delete_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -17,7 +17,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
+CLOUD_HOST = '54.205.181.16:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
@@ -45,7 +45,7 @@ def test_upload_simple(silent_log, parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('parallels', [1])
+@pytest.mark.parametrize('parallels', [2])
 def test_upload_multiple_workspaces(parallels, mocker):
     response_mock = mocker.Mock()
     encoder_workspace = 'tf_encoder_ws'
@@ -89,8 +89,11 @@ def test_upload_multiple_workspaces(parallels, mocker):
 
 def test_custom_project():
 
-    workspace_id = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
-    assert wait_for_workspace(workspace_id)
+    HOST = '54.205.181.16'
+    workspace_id = create_workspace(
+        dirpath=os.path.join(cur_dir, 'flow_app_ws'), host=HOST
+    )
+    assert wait_for_workspace(workspace_id, host=HOST)
     # we need to wait for the flow to start in the custom project
     time.sleep(5)
 
@@ -104,14 +107,14 @@ def test_custom_project():
             except StopIteration:
                 return
 
-    Client(host='0.0.0.0', port_expose=42860, show_progress=True).post(
+    Client(host=HOST, port_expose=42860, show_progress=True).post(
         on='/index', inputs=gen_docs
     )
-    res = Client(host='0.0.0.0', port_expose=42860, show_progress=True).post(
+    res = Client(host=HOST, port_expose=42860, show_progress=True).post(
         on='/search',
         inputs=Document(tags={'key': 'first', 'value': 's'}),
         return_results=True,
     )
     assert res[0].data.docs[0].matches[0].tags.fields['first'].string_value == 's'
     assert res[0].data.docs[0].matches[0].tags.fields['second'].string_value == 't'
-    delete_workspace(workspace_id)
+    delete_workspace(workspace_id, host=HOST)
