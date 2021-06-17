@@ -268,14 +268,29 @@ class DocumentArray(
         :param args: variable set of arguments to pass to the sorting underlying function
         :param kwargs: keyword arguments to pass to the sorting underlying function
         """
-
-        def overriden_key(proto):
-            # Function to override the `proto` and wrap it around a `Document` to enable sorting via `Document-like` interface
-            d = Document(proto)
-            return key(d)
-
         if key:
-            self._pb_body.sort(key=overriden_key, *args, **kwargs)
+
+            def overriden_key(proto):
+                # Function to override the `proto` and wrap it around a `Document` to enable sorting via
+                # `Document-like` interface
+                d = Document(proto)
+                return key(d)
+
+            # Logic here: `overriden_key` is offered to allow the user sort via pythonic `Document` syntax. However,
+            # maybe there may be cases where this won't work and the user may enter `proto-like` interface. To make
+            # sure (quite fragile) the `sort` will work seamlessly, it tries to apply `key` to the first element and
+            # see if it works. If it works it can sort with `proto` interface, otherwise use `Document` interface one.
+            # (Very often the 2 interfaces are both the same and valid, so proto will have less overhead
+            overriden = False
+            try:
+                key(self._pb_body[0])
+            except:
+                overriden = True
+
+            if not overriden:
+                self._pb_body.sort(key=key, *args, **kwargs)
+            else:
+                self._pb_body.sort(key=overriden_key, *args, **kwargs)
         else:
             self._pb_body.sort(*args, **kwargs)
 

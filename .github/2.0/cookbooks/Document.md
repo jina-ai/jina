@@ -29,6 +29,7 @@ Table of Contents
   - [Construct `Document`](#construct-document)
     - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
     - [Conversion between `doc.content`](#conversion-between-doccontent)
+    - [Support for sparse arrays](#support-for-sparse-arrays)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
@@ -75,7 +76,7 @@ d = Document()
 
 A `Document` object has the following attributes, which can be put into the following categories:
 
-| | | 
+| | |
 |---|---|
 | Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
 | Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality`, `siblings` |
@@ -212,6 +213,40 @@ from jina import Document
 
 d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
+```
+
+#### Support for Sparse arrays
+
+ Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
+
+```python
+import scipy.sparse as sp 
+
+d1 = Document(embedding=sp.coo_matrix([0,0,0,1,0]))
+d2 = Document(embedding=sp.csr_matrix([0,0,0,1,0]))
+d3 = Document(embedding=sp.bsr_matrix([0,0,0,1,0]))
+d4 = Document(embedding=sp.csc_matrix([0,0,0,1,0]))
+
+d5 = Document(blob=sp.coo_matrix([0,0,0,1,0]))
+d6 = Document(blob=sp.csr_matrix([0,0,0,1,0]))
+d7 = Document(blob=sp.bsr_matrix([0,0,0,1,0]))
+d8 = Document(blob=sp.csc_matrix([0,0,0,1,0]))
+```
+
+Tensorflow and Pytorch sparse arrays are also supported
+
+```python
+import torch
+import tensorflow as tf
+
+indices = [[0, 0], [1, 2]]
+values = [1, 2]
+dense_shape = [3, 4]
+
+d1 = Document(embedding=torch.sparse_coo_tensor(indices, values, dense_shape))
+d2 = Document(embedding=tf.SparseTensor(indices, values, dense_shape))
+d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
+d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 ```
 
 #### Construct with Multiple Attributes
