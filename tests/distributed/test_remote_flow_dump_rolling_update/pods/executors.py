@@ -22,7 +22,6 @@ class KeyValueDBMSIndexer(Executor):
     @requests(on='dump')
     def dump(self, parameters, *args, **kwargs):
         dump_path = parameters['dump_path']
-        shards = int(parameters['shards'])
         # TODO: maybe put some logic for shards here
         self._docs.save(dump_path)
 
@@ -63,7 +62,7 @@ class CompoundQueryExecutor(Executor):
             for _q, _ids, _dists in zip(docs, idx, dist):
                 for _id, _dist in zip(_ids, _dists):
                     d = Document(self._docs[int(_id)], copy=True)
-                    d.score.value = 1 - _dist
+                    d.scores['cosine'] = 1 - _dist
                     _q.matches.append(d)
 
 

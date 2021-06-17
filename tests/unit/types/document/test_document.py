@@ -525,8 +525,8 @@ def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
 
 
 def test_non_empty_fields():
-    d_score = Document(score=NamedScore(value=42))
-    assert d_score.non_empty_fields == ('id', 'score')
+    d_score = Document(scores={'score': NamedScore(value=42)})
+    assert d_score.non_empty_fields == ('id', 'scores')
 
     d = Document()
     assert d.non_empty_fields == ('id',)
@@ -545,21 +545,20 @@ def test_get_attr_values():
             'tags': {'id': 'identity', 'a': 'b', 'c': 'd'},
         }
     )
-    d.score = NamedScore(value=42)
+    d.scores['metric'] = NamedScore(value=42)
 
     required_keys = [
         'id',
         'text',
         'tags__name',
         'tags__feature1',
-        'score__value',
+        'scores__values__metric__value',
         'tags__c',
         'tags__id',
         'tags__inexistant',
         'inexistant',
     ]
     res = d.get_attributes(*required_keys)
-
     assert len(res) == len(required_keys)
     assert res[required_keys.index('id')] == '123'
     assert res[required_keys.index('tags__feature1')] == 121
@@ -567,7 +566,7 @@ def test_get_attr_values():
     assert res[required_keys.index('text')] == 'document'
     assert res[required_keys.index('tags__c')] == 'd'
     assert res[required_keys.index('tags__id')] == 'identity'
-    assert res[required_keys.index('score__value')] == 42
+    assert res[required_keys.index('scores__values__metric__value')] == 42
     assert res[required_keys.index('tags__inexistant')] is None
     assert res[required_keys.index('inexistant')] is None
 
@@ -687,11 +686,10 @@ def test_document_sparse_embedding(
 
 def test_evaluations():
     document = Document()
-    score = document.evaluations.add()
-    score.op_name = 'operation'
-    score.value = 10.0
-    assert document.evaluations[0].value == 10.0
-    assert document.evaluations[0].op_name == 'operation'
+    document.evaluations['operation'] = 10.0
+    document.evaluations['operation'].op_name = 'operation'
+    assert document.evaluations['operation'].value == 10.0
+    assert document.evaluations['operation'].op_name == 'operation'
 
 
 @contextmanager
@@ -719,15 +717,16 @@ def test_conflicting_doccontent(doccontent, expectation):
 @pytest.mark.parametrize('val', [1, 1.0, np.float64(1.0)])
 def test_doc_different_score_value_type(val):
     d = Document()
-    d.score = val
-    assert int(d.score.value) == 1
+    d.scores['score'] = val
+    assert int(d.scores['score'].value) == 1
 
 
 def test_doc_match_score_assign():
     d = Document(id='hello')
-    d1 = Document(d, copy=True, score=123)
+    d1 = Document(d, copy=True, scores={'score': 123})
     d.matches = [d1]
-    assert d.matches[0].score.value == 123
+    assert d.matches[0].scores['score'].value == 123
+    assert d.matches[0].scores['score'].ref_id == d.id
 
 
 def test_doc_update_given_empty_fields_and_attributes_identical(test_docs):
@@ -930,6 +929,65 @@ def test_document_pretty_json():
     assert d_reconstructed.matches[0].embedding.tolist() == [1.0, 2.0, 3.0]
 
 
+def test_document_init_with_scores_and_evaluations():
+    d = Document(
+        scores={
+            'euclidean': 50,
+            'cosine': NamedScore(value=1.0),
+            'score1': NamedScore(value=2.0).proto,
+            'score2': np.int(5),
+        },
+        evaluations={
+            'precision': 50,
+            'recall': NamedScore(value=1.0),
+            'eval1': NamedScore(value=2.0).proto,
+            'eval2': np.int(5),
+        },
+    )
+    assert d.scores['euclidean'].value == 50
+    assert d.scores['cosine'].value == 1.0
+    assert d.scores['score1'].value == 2.0
+    assert d.scores['score2'].value == 5
+
+    assert d.evaluations['precision'].value == 50
+    assert d.evaluations['recall'].value == 1.0
+    assert d.evaluations['eval1'].value == 2.0
+    assert d.evaluations['eval2'].value == 5
+
+
+def test_document_scores_delete():
+    d = Document(
+        scores={
+            'euclidean': 50,
+            'cosine': NamedScore(value=1.0),
+            'score1': NamedScore(value=2.0).proto,
+            'score2': np.int(5),
+        },
+        evaluations={
+            'precision': 50,
+            'recall': NamedScore(value=1.0),
+            'eval1': NamedScore(value=2.0).proto,
+            'eval2': np.int(5),
+        },
+    )
+    assert d.scores['euclidean'].value == 50
+    assert d.scores['cosine'].value == 1.0
+    assert d.scores['score1'].value == 2.0
+    assert d.scores['score2'].value == 5
+
+    assert d.evaluations['precision'].value == 50
+    assert d.evaluations['recall'].value == 1.0
+    assert d.evaluations['eval1'].value == 2.0
+    assert d.evaluations['eval2'].value == 5
+
+    assert 'precision' in d.evaluations
+    del d.evaluations['precision']
+    assert 'precision' not in d.evaluations
+    assert 'cosine' in d.scores
+    del d.scores['cosine']
+    assert 'cosine' not in d.scores
+
+
 def test_manipulated_tags():
     t = {
         'key_int': 0,
@@ -981,7 +1039,6 @@ def test_tags_update_nested():
 def test_tag_compare_dict():
     d = Document()
     d.tags = {'hey': {'bye': 4}}
-    print(f' d.tags {d.tags}')
     assert d.tags == {'hey': {'bye': 4}}
     assert d.tags.dict() == {'hey': {'bye': 4}}
 
