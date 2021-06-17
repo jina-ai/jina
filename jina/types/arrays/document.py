@@ -112,8 +112,6 @@ class DocumentArray(
 
     :param docs: the document array to construct from. One can also give `DocumentArrayProto` directly, then depending on the ``copy``,
                 it builds a view or a copy from it. It also can accept a List
-    :param copy: when ``docs`` is given as a :class:`DocumentArrayProto` object, build a
-                view (i.e. weak reference) from it or a deep copy from it.
     """
 
     def __init__(self, docs: Optional[DocumentArraySourceType] = None):
