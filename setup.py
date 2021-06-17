@@ -179,7 +179,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     project_urls={
-        'Documentation': 'https://docs2.jina.ai',
+        'Documentation': 'https://docs.jina.ai',
         'Source': 'https://github.com/jina-ai/jina/',
         'Tracker': 'https://github.com/jina-ai/jina/issues',
     },

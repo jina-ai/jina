@@ -71,9 +71,7 @@ class TextEncoder(Executor):
     def encode(self, docs: 'DocumentArray', *args, **kwargs):
 
         chunks = DocumentArray(
-            list(
-                filter(lambda d: d.mime_type == 'text/plain', docs.traverse_flat(['c']))
-            )
+            d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
         )
 
         texts = chunks.get_attributes('text')
@@ -130,9 +128,7 @@ class ImageCrafter(Executor):
 
     def craft(self, docs: DocumentArray, fn):
         chunks = DocumentArray(
-            list(
-                filter(lambda d: d.mime_type == 'image/jpeg', docs.traverse_flat(['c']))
-            )
+            d for d in docs.traverse_flat(['c']) if d.mime_type == 'image/jpeg'
         )
         for doc in chunks:
             getattr(doc, fn)()
@@ -221,7 +217,7 @@ class DocVectorIndexer(Executor):
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self._docs[int(_id)], copy=True)
-                d.score.value = 1 - _dist
+                d.scores['cosine'] = 1 - _dist
                 _q.matches.append(d)
 
     @staticmethod
@@ -277,20 +273,22 @@ class WeightedRanker(Executor):
             final_matches = {}  # type: Dict[str, Document]
 
             for m in d_mod1.matches:
-                m.score.value *= d_mod1.weight
+                m.scores['relevance'] = m.scores['cosine'].value * d_mod1.weight
                 final_matches[m.parent_id] = Document(m, copy=True)
 
             for m in d_mod2.matches:
                 if m.parent_id in final_matches:
-                    final_matches[m.parent_id].score.value += (
-                        m.score.value * d_mod2.weight
+                    final_matches[m.parent_id].scores['relevance'] = final_matches[
+                        m.parent_id
+                    ].scores['relevance'].value + (
+                        m.scores['cosine'].value * d_mod2.weight
                     )
                 else:
-                    m.score.value *= d_mod2.weight
+                    m.scores['relevance'] = m.scores['cosine'].value * d_mod2.weight
                     final_matches[m.parent_id] = Document(m, copy=True)
 
             da = DocumentArray(list(final_matches.values()))
-            da.sort(key=lambda ma: ma.score.value, reverse=True)
+            da.sort(key=lambda ma: ma.scores['relevance'].value, reverse=True)
             d = Document(matches=da[: int(parameters['top_k'])])
             result_da.append(d)
         return result_da

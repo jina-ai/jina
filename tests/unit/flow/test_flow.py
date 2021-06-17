@@ -12,6 +12,7 @@ from jina.helper import random_identity
 from jina.peapods.pods import BasePod
 from jina.types.document.generators import from_ndarray
 from jina.types.request import Response
+from jina.proto import jina_pb2
 from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -506,6 +507,14 @@ def test_return_results_sync_flow(return_results, restful):
         if return_results:
             assert isinstance(r, list)
             assert isinstance(r[0], Response)
+            assert len(r[0].docs) == 10
+            for doc in r[0].docs:
+                assert isinstance(doc, Document)
+
+            assert len(r[0].data.docs) == 10
+            for doc in r[0].data.docs:
+                assert isinstance(doc, jina_pb2.DocumentProto)
+
         else:
             assert r is None
 

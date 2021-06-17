@@ -4,7 +4,7 @@ from google.protobuf import json_format
 from jina.types.struct import StructView
 
 from ..mixin import ProtoTypeMixin
-from .mixin import DocsPropertyMixin, GroundtruthPropertyMixin, CommandMixin
+from .mixin import DocsPropertyMixin, GroundtruthPropertyMixin
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
@@ -31,7 +31,7 @@ RequestSourceType = TypeVar(
 )
 
 
-class Request(ProtoTypeMixin):
+class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
     """
     :class:`Request` is one of the **primitive data type** in Jina.
 

@@ -16,7 +16,7 @@ else:
     from .my_executors import MyTransformer, MyIndexer
 
 
-def create_chatbot_flow(args):
+def _get_flow(args):
     """Ensure the same flow is used in hello world example and system test."""
     return (
         Flow()
@@ -55,7 +55,7 @@ def hello_world(args):
     # now comes the real work
     # load index flow from a YAML file
 
-    f = create_chatbot_flow(args)
+    f = _get_flow(args)
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:

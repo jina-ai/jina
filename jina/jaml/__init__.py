@@ -434,7 +434,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         f = filename or getattr(self, 'config_abspath', None)
         if not f:
             f = tempfile.NamedTemporaryFile(
-                'w', delete=False, dir=os.environ.get('JINA_EXECUTOR_WORKDIR', None)
+                'w',
+                delete=False,
             ).name
             warnings.warn(
                 f'no "filename" is given, {self!r}\'s config will be saved to: {f}'

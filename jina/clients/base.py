@@ -5,7 +5,7 @@ import asyncio
 import inspect
 import os
 from contextlib import nullcontext
-from typing import Callable, Union, Optional, Iterator, Iterable, AsyncIterator
+from typing import Callable, Union, Optional, Iterator, AsyncIterator
 
 import grpc
 
@@ -18,11 +18,10 @@ from ..logging.predefined import default_logger
 from ..logging.profile import TimeContext, ProgressBar
 from ..parsers import set_client_cli_parser
 from ..proto import jina_pb2_grpc
-from ..types.request import Request
+from ..types.request import Request, Response
 
 InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
-InputDeleteType = Union[str, Iterable[str], Callable[..., Iterable[str]]]
-CallbackFnType = Optional[Callable[..., None]]
+CallbackFnType = Optional[Callable[[Response], None]]
 
 
 class BaseClient:

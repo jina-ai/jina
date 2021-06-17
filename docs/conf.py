@@ -44,7 +44,7 @@ pygments_style = 'rainbow_dash'
 html_theme = 'furo'
 
 base_url = '/'
-html_baseurl = 'https://docs2.jina.ai'
+html_baseurl = 'https://docs.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
@@ -81,10 +81,10 @@ extensions = [
     'recommonmark',
     'sphinx_markdown_tables',
     'sphinx_copybutton',
-    'notfound.extension',
     'sphinx_sitemap',
     'sphinx.ext.intersphinx',
     'sphinxext.opengraph',
+    'notfound.extension',
 ]
 
 # -- Custom 404 page
@@ -95,10 +95,10 @@ notfound_context = {
     'title': 'Page Not Found',
     'body': '''
 <h1>Page Not Found</h1>
-<p>Sorry, we couldn't find that page. Error code 404. </p>
-<p>You can try using the search box above or check our menu on the left hand side of this page.</p>
+<p>Oops, we couldn't find that page. </p>
+<p>You can try using the search box or check our menu on the left hand side of this page.</p>
 
-<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond.  Please use the tag Documentation. </p>
+<p>If neither of those options work, please create a Github issue ticket <a href="https://github.com/jina-ai/jina/">here</a>, and one of our team will respond.</p>
 
 ''',
 }
@@ -134,8 +134,8 @@ linkcheck_timeout = 20
 linkcheck_retries = 2
 linkcheck_anchors = False
 
-ogp_site_url = 'https://docs2.jina.ai/'
-ogp_image = 'https://docs2.jina.ai/_static/banner.png'
+ogp_site_url = 'https://docs.jina.ai/'
+ogp_image = 'https://docs.jina.ai/_static/banner.png'
 ogp_use_first_image = True
 ogp_description_length = 300
 ogp_type = 'website'

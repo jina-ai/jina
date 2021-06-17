@@ -36,20 +36,18 @@ def test_tags_property():
 
     # set item
     d.tags['hello'] = 'world'
-    assert isinstance(d.tags, dict)
     assert d.tags == {'hello': 'world'}
     assert d.proto.tags['hello'] == 'world'
 
     # set composite item
     d.tags = {'world': ['hello', 'world']}
-    assert isinstance(d.tags, dict)
-    assert d.tags == {'world': ['hello', 'world']}
+    # TODO: Issue about having proper ListValueView, not really expected
+    assert d.tags.dict() == {'world': ['hello', 'world']}
     assert d.proto.tags['world'][0] == 'hello'
     assert d.proto.tags['world'][1] == 'world'
 
     # set scalar item
     d.tags['world'] = 123
-    assert isinstance(d.tags, dict)
     assert d.tags['world'] == 123
     assert d.proto.tags['world'] == 123
 
