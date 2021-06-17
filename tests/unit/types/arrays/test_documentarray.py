@@ -1,8 +1,9 @@
 import os
 from copy import deepcopy
 
-import numpy as np
 import pytest
+
+import numpy as np
 from scipy.sparse import coo_matrix
 
 from jina import Document, DocumentArray
@@ -249,10 +250,35 @@ def test_documentarray_filter():
         assert d.score.value > 2
 
 
-def test_da_with_graphs():
-    da = DocumentArray([GraphDocument() for _ in range(6)])
-
+def test_da_with_different_inputs():
+    docs = [Document() for _ in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da) == 10
     for d in da:
-        assert isinstance(d, GraphDocument) is True
+        assert isinstance(d, Document)
 
-    assert isinstance(da[0], GraphDocument) is True
+
+def test_da_sort_by_document_interface_not_in_proto():
+    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da) == 10
+    assert da[0].embedding.shape == (10,)
+
+    da.sort(key=lambda d: d.embedding.shape[0])
+    assert da[0].embedding.shape == (1,)
+
+
+def test_da_reverse():
+    docs = [Document(embedding=np.array([1] * (10 - i))) for i in range(10)]
+    da = DocumentArray(
+        [docs[i] if (i % 2 == 0) else docs[i].proto for i in range(len(docs))]
+    )
+    assert len(da) == 10
+    assert da[0].embedding.shape == (10,)
+
+    da.reverse()
+    assert da[0].embedding.shape == (1,)
