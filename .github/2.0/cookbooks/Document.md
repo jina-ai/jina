@@ -29,7 +29,7 @@ Table of Contents
   - [Construct `Document`](#construct-document)
     - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
     - [Conversion between `doc.content`](#conversion-between-doccontent)
-    - [Support for sparse arrays](#support-for-sparse-arrays)
+    - [Support for Sparse arrays](#support-for-sparse-arrays)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
