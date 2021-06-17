@@ -1,12 +1,11 @@
 import multiprocessing
 import threading
 from functools import partial
-from multiprocessing.synchronize import Event
 
 from ...enums import RuntimeBackendType
 
 
-def _get_event(obj) -> Event:
+def _get_event(obj):
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):
@@ -17,9 +16,16 @@ def _get_event(obj) -> Event:
         )
 
 
-class ConditionalEvent(Event):
-    def __init__(self, events_list):
-        Event.__init__(self, ctx=multiprocessing.get_context())
+class ConditionalEvent:
+    def __init__(self, backend_runtime: RuntimeBackendType, events_list):
+        super().__init__()
+        self.event = None
+        if backend_runtime == RuntimeBackendType.THREAD:
+            self.event = threading.Event()
+        else:
+            self.event = multiprocessing.synchronize.Event(
+                ctx=multiprocessing.get_context()
+            )
         self.event_list = events_list
         for e in events_list:
             self._setup(e, self._state_changed)
@@ -29,9 +35,9 @@ class ConditionalEvent(Event):
     def _state_changed(self):
         bools = [e.is_set() for e in self.event_list]
         if any(bools):
-            self.set()
+            self.event.set()
         else:
-            self.clear()
+            self.event.clear()
 
     def _custom_set(self, e):
         e._set()

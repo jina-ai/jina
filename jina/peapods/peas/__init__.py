@@ -30,12 +30,12 @@ class BasePea:
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()  #: required here to call process/thread __init__
-        self._backend_cls = {
+        self.worker = {
             RuntimeBackendType.THREAD: threading.Thread,
             RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))
-
-        self.worker = self._backend_cls(target=self.run)
+        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
+            target=self.run
+        )
         self.args = args
         self.daemon = args.daemon  #: required here to set process/thread daemon
 
@@ -44,7 +44,8 @@ class BasePea:
         self.is_shutdown = _get_event(self.worker)
         # ConditionalEvent doesn't support threading for now
         self.ready_or_shutdown = ConditionalEvent(
-            events_list=[self.is_ready, self.is_shutdown]
+            getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
+            events_list=[self.is_ready, self.is_shutdown],
         )
         self.logger = JinaLogger(self.name, **vars(self.args))
 
@@ -73,8 +74,8 @@ class BasePea:
             )
             raise RuntimeFailToStart from ex
 
-    def start(self, *args, **kwargs):
-        self.worker.start(*args, **kwargs)
+    def start(self):
+        self.worker.start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
 
@@ -135,21 +136,6 @@ class BasePea:
             self.is_ready.clear()
             self._unset_envs()
 
-    # def start(self):
-    #     """Start the Pea.
-    #
-    #     This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-    #
-    #
-    #     .. #noqa: DAR201
-    #     """
-    #
-    #     super().start()  #: required here to call process/thread method
-    #     if not self.args.noblock_on_start:
-    #         self.wait_start_success()
-    #
-    #     return self
-
     def wait_start_success(self):
         """Block until all peas starts successfully.
 
@@ -160,7 +146,7 @@ class BasePea:
             _timeout = None
         else:
             _timeout /= 1e3
-        if self.ready_or_shutdown.wait(_timeout):
+        if self.ready_or_shutdown.event.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
                 if self.args.quiet_error:
