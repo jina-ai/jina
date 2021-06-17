@@ -35,6 +35,11 @@ class GraphDocument(Document):
             it builds a view or a copy from it.
     :param copy: when ``document`` is given as a :class:`DocumentProto` object, build a
             view (i.e. weak reference) from it or a deep copy from it.
+    :param force_undirected: indicates if the actual `proto` object represented by this `GraphDocument` must be updated to set its
+            `undirected` property to `True`. Otherwise, the value providing by the `document` source or the default value is mantained.
+            This parameter is called `force_undirected` and not `undirected` to make sure that if a `valid` `DocumentSourceType` is provided
+            with an `undirected` flag set, it can be respected and not silently overriden by a missleading default. This is specially needed
+            when a `GraphDocument` is distributed to `Executors`.
     :param kwargs: further key value arguments
     """
 
@@ -42,6 +47,7 @@ class GraphDocument(Document):
         self,
         document: Optional[DocumentSourceType] = None,
         copy: bool = False,
+        force_undirected: bool = False,
         **kwargs,
     ):
         self._check_installed_array_packages()
@@ -49,6 +55,8 @@ class GraphDocument(Document):
         self._node_id_to_offset = {
             node.id: offset for offset, node in enumerate(self.nodes)
         }  # dangerous because document is stateless, try to work only with proto
+        if force_undirected:
+            self._pb_body.graph.undirected = force_undirected
 
     @staticmethod
     def _check_installed_array_packages():
@@ -126,6 +134,22 @@ class GraphDocument(Document):
             node.id: offset for offset, node in enumerate(self.nodes)
         }
 
+    def _get_edge_key(self, doc1: 'Document', doc2: 'Document') -> str:
+        """
+        Create a key that is lexicographically sorted in the case of undirected graphs
+
+        :param doc1: the starting node for this edge
+        :param doc2: the ending node for this edge
+        :return: lexicographically sorted key where doc1 < doc2 if undirected
+        """
+
+        if self.undirected:
+            return (
+                f'{doc1.id}-{doc2.id}' if doc1.id < doc2.id else f'{doc2.id}-{doc1.id}'
+            )
+        else:
+            return f'{doc1.id}-{doc2.id}'
+
     def add_edge(
         self, doc1: 'Document', doc2: 'Document', features: Optional[Dict] = None
     ):
@@ -138,32 +162,42 @@ class GraphDocument(Document):
         """
         from scipy.sparse import coo_matrix
 
-        self.add_node(doc1)
-        self.add_node(doc2)
+        edge_key = self._get_edge_key(doc1, doc2)
 
-        current_adjacency = self.adjacency
-        doc1_node_offset = self._node_id_to_offset[doc1.id]
-        doc2_node_offset = self._node_id_to_offset[doc2.id]
-        row = (
-            np.append(current_adjacency.row, doc1_node_offset)
-            if current_adjacency is not None
-            else np.array([doc1_node_offset])
-        )
-        col = (
-            np.append(current_adjacency.col, doc2_node_offset)
-            if current_adjacency is not None
-            else np.array([doc2_node_offset])
-        )
-        data = (
-            np.append(current_adjacency.data, 1)
-            if current_adjacency is not None
-            else np.array([1])
-        )
-        SparseNdArray(
-            self._pb_body.graph.adjacency, sp_format='coo'
-        ).value = coo_matrix((data, (row, col)))
-        if features is not None:
-            self.edge_features[f'{doc1.id}-{doc2.id}'] = features
+        if edge_key not in self.edge_features:
+            self.edge_features[edge_key] = features
+            self.add_node(doc1)
+            self.add_node(doc2)
+
+            current_adjacency = self.adjacency
+
+            source_id = doc1.id
+            target_id = doc2.id
+            if self.undirected and doc1.id > doc2.id:
+                source_id = doc2.id
+                target_id = doc1.id
+
+            source_node_offset = self._node_id_to_offset[source_id]
+            target_node_offset = self._node_id_to_offset[target_id]
+            row = (
+                np.append(current_adjacency.row, source_node_offset)
+                if current_adjacency is not None
+                else np.array([source_node_offset])
+            )
+            col = (
+                np.append(current_adjacency.col, target_node_offset)
+                if current_adjacency is not None
+                else np.array([target_node_offset])
+            )
+            data = (
+                np.append(current_adjacency.data, 1)
+                if current_adjacency is not None
+                else np.array([1])
+            )
+
+            SparseNdArray(
+                self._pb_body.graph.adjacency, sp_format='coo'
+            ).value = coo_matrix((data, (row, col)))
 
     def _remove_edge_id(self, edge_id: int, edge_feature_key: str):
         from scipy.sparse import coo_matrix
@@ -201,10 +235,11 @@ class GraphDocument(Document):
             zip(self.adjacency.row, self.adjacency.col)
         ):
             if row.item() == offset1 and col.item() == offset2:
-                self._remove_edge_id(edge_id, f'{doc1.id}-{doc2.id}')
+                edge_key = self._get_edge_key(doc1, doc2)
+                self._remove_edge_id(edge_id, edge_key)
 
     @property
-    def edge_features(self):
+    def edge_features(self) -> StructView:
         """
         The dictionary of edge features, indexed by `edge_id` in the `edge list`
 
@@ -213,13 +248,22 @@ class GraphDocument(Document):
         return StructView(self._pb_body.graph.edge_features)
 
     @property
-    def adjacency(self):
+    def adjacency(self) -> SparseNdArray:
         """
-        The adjacency list for this graph,
+        The adjacency list for this graph.
 
         .. # noqa: DAR201
         """
         return SparseNdArray(self._pb_body.graph.adjacency, sp_format='coo').value
+
+    @property
+    def undirected(self) -> bool:
+        """
+        The undirected flag of this graph.
+
+        .. # noqa: DAR201
+        """
+        return self._pb_body.graph.undirected
 
     @property
     def num_nodes(self) -> int:
@@ -241,7 +285,7 @@ class GraphDocument(Document):
         return adjacency.data.shape[0] if adjacency is not None else 0
 
     @property
-    def nodes(self):
+    def nodes(self) -> ChunkArray:
         """
         The nodes list for this graph
 
@@ -322,8 +366,10 @@ class GraphDocument(Document):
         :param dgl_graph: the graph from which to construct a `GraphDocument`.
 
         .. warning::
-        - This method only deals with the graph structure (nodes and conectivity) graph
-          features that are task specific  are ignored.
+            - This method only deals with the graph structure (nodes and conectivity) graph
+                features that are task specific  are ignored.
+            - This method has no way to know id the origin `dgl_graph` is an undirected graph, and therefore
+              the property `undirected` will by `False` by default. If you want you can set the property manually.
         """
         jina_graph = GraphDocument()
         nodeid_to_doc = {}
@@ -385,8 +431,15 @@ class GraphDocument(Document):
             dgl_graph.add_nodes(self.num_nodes)
             return dgl_graph
         else:
-            source_nodes = torch.tensor(self.adjacency.row.copy())
-            destination_nodes = torch.tensor(self.adjacency.col.copy())
+            rows = self.adjacency.row.copy()
+            cols = self.adjacency.col.copy()
+
+            if self.undirected:
+                source_nodes = torch.tensor(np.concatenate((rows, cols)))
+                destination_nodes = torch.tensor(np.concatenate((cols, rows)))
+            else:
+                source_nodes = torch.tensor(rows)
+                destination_nodes = torch.tensor(cols)
 
             return dgl.graph((source_nodes, destination_nodes))
 
@@ -397,7 +450,7 @@ class GraphDocument(Document):
         else:
             default_logger.debug(f'Trying to iterate over a graph without edges')
 
-    def __mermaid_str__(self):
+    def __mermaid_str__(self) -> str:
 
         if len(self.nodes) == 0:
             return super().__mermaid_str__()
@@ -423,6 +476,11 @@ class GraphDocument(Document):
                 printed_ids.add(out_node_mermaid_id)
                 results.append(out_node.__mermaid_str__())
 
-            results.append(f'{in_node_mermaid_id[:3]} --> {out_node_mermaid_id[:3]}')
+            if self.undirected:
+                results.append(f'{in_node_mermaid_id[:3]} -- {out_node_mermaid_id[:3]}')
+            else:
+                results.append(
+                    f'{in_node_mermaid_id[:3]} --> {out_node_mermaid_id[:3]}'
+                )
 
         return '\n'.join(results)

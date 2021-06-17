@@ -78,7 +78,7 @@ DIGEST_SIZE = 8
 # This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
 DocumentSourceType = TypeVar(
-    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
+    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict, 'Document'
 )
 
 _all_mime_types = set(mimetypes.types_map.values())
