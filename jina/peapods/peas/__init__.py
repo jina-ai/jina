@@ -5,7 +5,7 @@ import time
 import multiprocessing
 import threading
 
-from .helper import _get_event, ConditionalEvent, PeaType
+from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
