@@ -81,9 +81,7 @@ def test_as_json_str(req):
 
 def test_access_header(req):
     request = Request(request=req)
-    assert not request.is_decompressed
-    request.header
-    assert request.is_decompressed
+    assert request.header == req.header
 
 
 def test_as_response(req):
