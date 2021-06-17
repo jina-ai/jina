@@ -143,6 +143,7 @@ def test_lazy_nested_clear_access(algo):
 
 
 def test_lazy_msg_access():
+    # this test does not make much sense, when `message` is instantiated without `envelope`, the `request` header is accessed and therefore decompressed
     messages = [
         Message(
             None,
@@ -155,22 +156,46 @@ def test_lazy_msg_access():
         for r in request_generator('/', random_docs(10))
     ]
     for m in messages:
-        assert not m.request.is_decompressed
+        assert m.request.is_decompressed
         assert m.envelope
         assert len(m.dump()) == 3
         assert m.request.is_decompressed
 
     for m in messages:
-        assert not m.request.is_decompressed
+        assert m.request.is_decompressed
         assert m.request
         assert len(m.dump()) == 3
-        assert not m.request.is_decompressed
+        assert m.request.is_decompressed
 
     for m in messages:
-        assert not m.request.is_decompressed
+        assert m.request.is_decompressed
         assert m.request.data.docs
         assert len(m.dump()) == 3
         assert m.request.is_decompressed
+
+
+def test_lazy_msg_access_with_envelope():
+    envelope_proto = jina_pb2.EnvelopeProto()
+    envelope_proto.compression.algorithm = 'lz4'
+    envelope_proto.request_type = 'DataRequest'
+    messages = [
+        Message(
+            envelope_proto,
+            r.SerializeToString(),
+        )
+        for r in request_generator('/', random_docs(10))
+    ]
+    for m in messages:
+        assert not m.request.is_decompressed
+        assert m.envelope
+        assert len(m.dump()) == 3
+        assert not m.request.is_decompressed
+        assert m.request._pb_body is None
+        assert m.request._buffer is not None
+        assert m.proto
+        assert m.request.is_decompressed
+        assert m.request._pb_body is not None
+        assert m.request._buffer is None
 
 
 def test_message_size():
