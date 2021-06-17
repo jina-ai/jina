@@ -648,40 +648,37 @@ class Pod(BasePod):
         if getattr(args, 'uses', None):
             # use the executor existed in Jina Hub.
             if args.uses.startswith('jinahub'):
-
+                from urllib.parse import urlparse
                 from ...hubble.hubio import HubIO
-                from ...hubble.helper import parse_hub_uri
-                from ...hubble.hubapi import resolve_local
                 from ...parsers.hubble import set_hub_pull_parser
 
-                scheme, id, tag, secret = parse_hub_uri(self.args.uses)
+                uses_parser = urlparse(self.args.uses)
+                scheme = uses_parser.scheme
+                items = list(uses_parser.netloc.split(':'))
+                id = items[0]
+                tag = items[1] if len(items) > 1 else None
+
+                # TODO: locate the local executor
+                if tag:
+                    pass
 
                 _args_list = [id]
-                if secret:
-                    _args_list.extend(['--secret', secret])
                 pull_args = set_hub_pull_parser().parse_args(_args_list)
                 hubio = HubIO(pull_args)
 
-                # # TODO: locate the local executor
-                # if not tag:
-                #     executor = hubio.fetch(id, tag)
-
-                executor = hubio.fetch(id, tag)
+                executor = hubio.get(id, tag)
 
                 if scheme == 'jinahub+docker':
                     # use docker image
                     args.uses = f'docker://{executor["pullPath"]}'
                 elif scheme == 'jinahub':
-                    pkg_path = resolve_local(id, tag)
-                    if not pkg_path:
-                        # TODO: download and install package
-                        raise NotImplementedError("Not Installed Error")
-
-                    args.uses = f'{pkg_path / "config.yml"}'
-
+                    # TODO: use source code directly
+                    raise NotImplementedError(
+                        f'The schema {scheme} has not been supported!'
+                    )
                 else:
                     raise NotImplementedError(
-                        f'The jina hub resource schema {scheme} has not been supported!'
+                        f'The schema {scheme} has not been supported!'
                     )
 
         parsed_args = {'head': None, 'tail': None, 'peas': []}

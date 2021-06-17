@@ -144,53 +144,62 @@ class HubIO:
                 f'Error when trying to push the executor at {self.args.path}: {e!r}'
             )
 
-    def pull(self) -> None:
-        """Pull the executor pacakge from Jina Hub."""
-
+    def get(self, id: str, tag: str = None):
+        """Fetch the executor meta info from Jina Hub.
+        :param id: the ID of the executor
+        :param tag: the version tag of the executor
+        :return: meta of executor
+        """
         import requests
 
-        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{self.args.id}'
+        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{id}'
+        path_params = []
         if self.args.secret:
-            pull_url += f'?secret={self.args.secret}'
+            path_params.append(f'secret={self.args.secret}')
+        if tag:
+            path_params.append(f'tag={tag}')
 
+        if len(path_params) > 0:
+            pull_url += '?' + ','.join(path_params)
+
+        resp = requests.get(pull_url)
+        if resp.status_code != 200:
+            resp.raise_for_status()
+        return resp.json()
+
+    def pull(self) -> None:
+        """Pull the executor pacakge from Jina Hub."""
         try:
-            resp = requests.get(pull_url)
+            executor = self.get(self.args.id)
+            id = executor['id']
+            archive_url = executor['archivePath']
+            image_name = executor['pullPath']
+            md5sum = executor['md5sum']
 
-            if resp.status_code == 200:
-                msg = resp.json()
-                id = msg['id']
-
-                if not self.args.docker:
-                    # download the package
-
-                    archive_url = msg['archivePath']
-                    md5sum = msg['md5sum']
-
-                    with TimeContext(f'downloading {archive_url}', self.logger):
-                        download_with_resume(
-                            archive_url,
-                            md5sum,
-                            JINA_HUB_CACHE_DIR,
-                            Path(f'{id}.{md5sum}.zip'),
-                        )
-
-                else:
-                    # pull the Docker image
-                    image_name = msg['pullPath']
-
-                    # # TODO: only for test
-                    # image_name = 'jinahub/pod.dummy_mwu_encoder:0.0.6'
-
-                    with TimeContext(f'pulling {image_name}', self.logger):
-                        image = self._client.images.pull(image_name)
-                    if isinstance(image, list):
-                        image = image[0]
-                    image_tag = image.tags[0] if image.tags else ''
-                    self.logger.success(
-                        f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
+            if not self.args.docker:
+                # download the package
+                with TimeContext(f'downloading {archive_url}', self.logger):
+                    download_with_resume(
+                        archive_url,
+                        md5sum,
+                        JINA_HUB_CACHE_DIR,
+                        Path(f'{id}.{md5sum}.zip'),
                     )
+
             else:
-                resp.raise_for_status()
+                # pull the Docker image
+
+                # # TODO: only for test
+                # image_name = 'jinahub/pod.dummy_mwu_encoder:0.0.6'
+
+                with TimeContext(f'pulling {image_name}', self.logger):
+                    image = self._client.images.pull(image_name)
+                if isinstance(image, list):
+                    image = image[0]
+                image_tag = image.tags[0] if image.tags else ''
+                self.logger.success(
+                    f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
+                )
 
         except Exception as e:
             self.logger.error(
