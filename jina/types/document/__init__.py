@@ -25,8 +25,6 @@ from google.protobuf.field_mask_pb2 import FieldMask
 from ..struct import StructView
 from ..score.map import NamedScoreMapping
 from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
-from ..arrays.chunk import ChunkArray
-from ..arrays.match import MatchArray
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
@@ -42,6 +40,9 @@ from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 
 if False:
+    from ..arrays.chunk import ChunkArray
+    from ..arrays.match import MatchArray
+
     from scipy.sparse import coo_matrix
 
     # fix type-hint complain for sphinx and flake
@@ -78,7 +79,7 @@ DIGEST_SIZE = 8
 # This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`
 DocumentContentType = TypeVar('DocumentContentType', bytes, str, 'ArrayType')
 DocumentSourceType = TypeVar(
-    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict
+    'DocumentSourceType', jina_pb2.DocumentProto, bytes, str, Dict, 'Document'
 )
 
 _all_mime_types = set(mimetypes.types_map.values())
@@ -656,6 +657,9 @@ class Document(ProtoTypeMixin):
 
         :return: the array of matches attached to this document
         """
+        # Problem with cyclic dependency
+        from ..arrays.match import MatchArray
+
         return MatchArray(self._pb_body.matches, reference_doc=self)
 
     @matches.setter
@@ -673,6 +677,9 @@ class Document(ProtoTypeMixin):
 
         :return: the array of chunks of this document
         """
+        # Problem with cyclic dependency
+        from ..arrays.chunk import ChunkArray
+
         return ChunkArray(self._pb_body.chunks, reference_doc=self)
 
     @chunks.setter

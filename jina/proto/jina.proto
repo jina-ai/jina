@@ -80,6 +80,7 @@ message NamedScoreMappingProto {
 message GraphProto {
     SparseNdArrayProto adjacency = 1; // adjacency list
     google.protobuf.Struct edge_features = 2; // Container structure to store edge features
+    bool undirected = 3; //Flag indicating if the graph is to be interpreted as an undirected graph
 }
 
 /**
