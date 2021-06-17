@@ -325,7 +325,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.types.struct/">jina.types.struct module</a></li>
 </ul>
@@ -338,7 +341,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -458,13 +461,15 @@
         <span class="n">top_k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">matches</span><span class="p">:</span>
             <span class="n">kmi</span> <span class="o">=</span> <span class="n">kk</span><span class="o">.</span><span class="n">uri</span>
-            <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'&lt;img src="</span><span class="si">{</span><span class="n">kmi</span><span class="si">}</span><span class="s1">" style="opacity:</span><span class="si">{</span><span class="n">kk</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">"/&gt;'</span><span class="p">)</span>
+            <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'&lt;img src="</span><span class="si">{</span><span class="n">kmi</span><span class="si">}</span><span class="s1">" style="opacity:</span><span class="si">{</span><span class="n">kk</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s2">"cosine"</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">"/&gt;'</span>
+            <span class="p">)</span>
         <span class="n">result_html</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'&lt;/td&gt;&lt;/tr&gt;</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="c1"># update evaluation values</span>
         <span class="c1"># as evaluator set to return running avg, here we can simply replace the value</span>
-        <span class="k">for</span> <span class="n">evaluation</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="p">:</span>
-            <span class="n">evaluation_value</span><span class="p">[</span><span class="n">evaluation</span><span class="o">.</span><span class="n">op_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">value</span></div>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">evaluation</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">evaluations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">evaluation_value</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">evaluation</span><span class="o">.</span><span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="write_html"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.helper/#jina.helloworld.fashion.helper.write_html">[docs]</a><span class="k">def</span> <span class="nf">write_html</span><span class="p">(</span><span class="n">html_path</span><span class="p">):</span>
