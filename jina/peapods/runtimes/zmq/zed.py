@@ -389,10 +389,12 @@ class ZEDRuntime(ZMQRuntime):
         else:
             result = getattr(self.request, field)
 
-        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-        # otherwise the executor has to handle DocArray(0)
-        if len(result):
-            return result
+        # to unify all length=0 DocumentArray (or any other results) will simply considered as []
+        # otherwise the executor has to handle None values
+
+        if result is None:
+            result = []
+        return result
 
     def _get_docs_matrix(self, field) -> List['DocumentArray']:
         """DocumentArray from (multiple) requests
