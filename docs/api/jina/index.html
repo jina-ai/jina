@@ -1013,7 +1013,7 @@ If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`g
 <dd><p>Get all matches of the current document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.types.arrays.match/#jina.types.arrays.match.MatchArray" title="jina.types.arrays.match.MatchArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatchArray</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../jina.types.arrays.match/#jina.types.arrays.match.MatchArray" title="jina.types.arrays.match.MatchArray">MatchArray</a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the array of matches attached to this document</p>
@@ -1026,7 +1026,7 @@ If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`g
 <dd><p>Get all chunks of the current document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray" title="jina.types.arrays.chunk.ChunkArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChunkArray</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray" title="jina.types.arrays.chunk.ChunkArray">ChunkArray</a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the array of chunks of this document</p>
@@ -1432,14 +1432,17 @@ the suffix svg/jpg determines the file type of the output image</p></li>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.DocumentArray">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.</span></code><code class="sig-name descname"><span class="pre">DocumentArray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc_views</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.</span></code><code class="sig-name descname"><span class="pre">DocumentArray</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">docs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence" title="jina.types.arrays.traversable.TraversableSequence"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.traversable.TraversableSequence</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableSequence</span></code>, <a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin" title="jina.types.arrays.document.DocumentArrayGetAttrMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.arrays.document.DocumentArrayGetAttrMixin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.Iterable</span></code></p>
 <p><a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> is a mutable sequence of <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>.
 It gives an efficient view of a list of Document. One can iterate over it like
 a generator but ALSO modify it, count it, get item, or union two ‘DocumentArray’s using the ‘+’ and ‘+=’ operators.</p>
+<p>It is supposed to act as a view containing a pointer to a <cite>RepeatedContainer</cite> of <cite>DocumentProto</cite> while offering <cite>Document</cite> Jina native types
+when getting items or iterating over it</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>doc_views</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>'RepeatedContainer'</em><em>, </em><em>Iterable</em><em>[</em><em>'Document'</em><em>]</em><em>]</em><em>]</em>) – A list of <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a></p>
+<dd class="field-odd"><p><strong>docs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[~DocumentArraySourceType]) – the document array to construct from. One can also give <cite>DocumentArrayProto</cite> directly, then depending on the <code class="docutils literal notranslate"><span class="pre">copy</span></code>,
+it builds a view or a copy from it. It also can accept a List</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -1450,7 +1453,7 @@ a generator but ALSO modify it, count it, get item, or union two ‘DocumentArra
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>index</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Position of the insertion.</p></li>
-<li><p><strong>doc</strong> (<a class="reference internal" href="#jina.Document" title="jina.Document"><em>Document</em></a>) – The doc needs to be inserted.</p></li>
+<li><p><strong>doc</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be inserted.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -1464,7 +1467,7 @@ a generator but ALSO modify it, count it, get item, or union two ‘DocumentArra
 <dd><p>Append <a href="#id9"><span class="problematic" id="id10">:param:`doc`</span></a> in <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="#jina.Document" title="jina.Document"><em>Document</em></a>) – The doc needs to be appended.</p>
+<dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be appended.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1474,7 +1477,7 @@ a generator but ALSO modify it, count it, get item, or union two ‘DocumentArra
 <dd><p>Extend the <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> by appending all the items from the iterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>iterable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – the iterable of Documents to extend this array with</p>
+<dd class="field-odd"><p><strong>iterable</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>]) – the iterable of Documents to extend this array with</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -1493,11 +1496,12 @@ a generator but ALSO modify it, count it, get item, or union two ‘DocumentArra
 </dd></dl>
 <dl class="py method">
 <dt id="jina.DocumentArray.sort">
-<code class="sig-name descname"><span class="pre">sort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.sort" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">sort</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort the items of the <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a> in place.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – key callable to sort based upon</p></li>
 <li><p><strong>args</strong> – variable set of arguments to pass to the sorting underlying function</p></li>
 <li><p><strong>kwargs</strong> – keyword arguments to pass to the sorting underlying function</p></li>
 </ul>

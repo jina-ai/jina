@@ -390,8 +390,6 @@
 <span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 
 <span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">png_to_buffer</span><span class="p">,</span> <span class="n">to_datauri</span><span class="p">,</span> <span class="n">guess_mime</span><span class="p">,</span> <span class="n">to_image_blob</span>
-<span class="kn">from</span> <span class="nn">..arrays.chunk</span> <span class="kn">import</span> <span class="n">ChunkArray</span>
-<span class="kn">from</span> <span class="nn">..arrays.match</span> <span class="kn">import</span> <span class="n">MatchArray</span>
 <span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
 <span class="kn">from</span> <span class="nn">..ndarray.generic</span> <span class="kn">import</span> <span class="n">NdArray</span><span class="p">,</span> <span class="n">BaseSparseNdArray</span>
 <span class="kn">from</span> <span class="nn">..score</span> <span class="kn">import</span> <span class="n">NamedScore</span>
@@ -407,6 +405,9 @@
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..arrays.chunk</span> <span class="kn">import</span> <span class="n">ChunkArray</span>
+    <span class="kn">from</span> <span class="nn">..arrays.match</span> <span class="kn">import</span> <span class="n">MatchArray</span>
+
     <span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
 
     <span class="c1"># fix type-hint complain for sphinx and flake</span>
@@ -1020,6 +1021,9 @@
 
 <span class="sd">        :return: the array of matches attached to this document</span>
 <span class="sd">        """</span>
+        <span class="c1"># Problem with cyclic dependency</span>
+        <span class="kn">from</span> <span class="nn">..arrays.match</span> <span class="kn">import</span> <span class="n">MatchArray</span>
+
         <span class="k">return</span> <span class="n">MatchArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">matches</span><span class="p">,</span> <span class="n">reference_doc</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@matches</span><span class="o">.</span><span class="n">setter</span>
@@ -1037,6 +1041,9 @@
 
 <span class="sd">        :return: the array of chunks of this document</span>
 <span class="sd">        """</span>
+        <span class="c1"># Problem with cyclic dependency</span>
+        <span class="kn">from</span> <span class="nn">..arrays.chunk</span> <span class="kn">import</span> <span class="n">ChunkArray</span>
+
         <span class="k">return</span> <span class="n">ChunkArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">chunks</span><span class="p">,</span> <span class="n">reference_doc</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@chunks</span><span class="o">.</span><span class="n">setter</span>

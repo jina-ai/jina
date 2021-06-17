@@ -363,12 +363,22 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.request.mixin</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">..arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+
+<span class="kn">from</span> <span class="nn">..arrays</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 
 <div class="viewcode-block" id="DocsPropertyMixin"><a class="viewcode-back" href="../../../../../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin">[docs]</a><span class="k">class</span> <span class="nc">DocsPropertyMixin</span><span class="p">:</span>
     <span class="sd">"""Mixin class of docs property."""</span>
+
+<div class="viewcode-block" id="DocsPropertyMixin.body"><a class="viewcode-back" href="../../../../../api/jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin.body">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Requred body property</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">docs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
@@ -382,6 +392,14 @@
 <div class="viewcode-block" id="GroundtruthPropertyMixin"><a class="viewcode-back" href="../../../../../api/jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin">[docs]</a><span class="k">class</span> <span class="nc">GroundtruthPropertyMixin</span><span class="p">:</span>
     <span class="sd">"""Mixin class of groundtruths property."""</span>
 
+<div class="viewcode-block" id="GroundtruthPropertyMixin.body"><a class="viewcode-back" href="../../../../../api/jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin.body">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Requred body property</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">groundtruths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
         <span class="sd">"""Get the groundtruths in :class: `DocumentArray` type.</span>
@@ -393,6 +411,14 @@
 
 <div class="viewcode-block" id="CommandMixin"><a class="viewcode-back" href="../../../../../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin">[docs]</a><span class="k">class</span> <span class="nc">CommandMixin</span><span class="p">:</span>
     <span class="sd">"""Mixin class of command property."""</span>
+
+<div class="viewcode-block" id="CommandMixin.proto"><a class="viewcode-back" href="../../../../../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin.proto">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">proto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Requred proto property</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="o">...</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
