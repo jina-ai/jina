@@ -28,6 +28,7 @@ def _update_autocomplete():
 if __name__ == '__main__':
     _update_autocomplete()
 
+
 ac_table = {
     'commands': [
         '--help',
@@ -260,8 +261,9 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
         ],
-        'hub push': ['--help', '--force', '--secret', '--public', '--private'],
-        'hub': ['--help', 'push'],
+        'hub push': ['--help', '--public', '--force', '--secret'],
+        'hub pull': ['--help', '--docker', '--secret'],
+        'hub': ['--help', 'push', 'pull'],
         'pea': [
             '--help',
             '--name',

@@ -9,7 +9,9 @@ import hashlib
 from ..helper import (
     colored,
     get_full_version,
+    get_readable_size,
 )
+from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
 from .helper import archive_package
@@ -18,7 +20,7 @@ from .helper import archive_package
 JINA_HUBBLE_REGISTRY = os.environ.get(
     'JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai'
 )
-JINA_HUBBLE_PUSH_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
+JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
 
 class HubIO:
@@ -35,6 +37,21 @@ class HubIO:
         """
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.args = args
+        self._load_docker_client()
+
+    def _load_docker_client(self):
+        with ImportExtensions(
+            required=False,
+            help_text='missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
+            'to enable full CLI, please do pip install "jina[docker]"',
+        ):
+            import docker
+            from docker import APIClient, DockerClient
+
+            self._client: DockerClient = docker.from_env()
+
+            # low-level client
+            self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
@@ -73,11 +90,13 @@ class HubIO:
             method = 'put' if self.args.force else 'post'
             # upload the archived executor to Jina Hub
             with TimeContext(
-                f'uploading to {method.upper()} {JINA_HUBBLE_PUSH_URL}', self.logger
+                f'uploading to {method.upper()} {JINA_HUBBLE_PUSHPULL_URL}', self.logger
             ):
                 request = getattr(requests, method)
                 resp = request(
-                    JINA_HUBBLE_PUSH_URL, files={'file': content}, data=form_data
+                    JINA_HUBBLE_PUSHPULL_URL,
+                    files={'file': content},
+                    data=form_data,
                 )
 
             if 200 <= resp.status_code < 300:
@@ -114,9 +133,50 @@ class HubIO:
                 )
 
             else:
-                raise Exception(resp.text)
+                resp.raise_for_status()
 
         except Exception as e:  # IO related errors
             self.logger.error(
                 f'Error when trying to push the executor at {self.args.path}: {e!r}'
+            )
+
+    def pull(self) -> None:
+        """Pull the executor pacakge from Jina Hub."""
+
+        import requests
+
+        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{self.args.id}'
+        if self.args.secret:
+            pull_url += f'?secret={self.args.secret}'
+
+        try:
+            resp = requests.get(pull_url)
+
+            if resp.status_code == 200:
+                msg = resp.json()
+
+                if not self.args.docker:
+                    # download the package
+                    pass
+                else:
+                    # pull the Docker image
+                    image_name = msg['pullPath']
+
+                    # # TODO: only for test
+                    # image_name = 'jinahub/pod.dummy_mwu_encoder:0.0.6'
+
+                    with TimeContext(f'pulling {image_name}', self.logger):
+                        image = self._client.images.pull(image_name)
+                    if isinstance(image, list):
+                        image = image[0]
+                    image_tag = image.tags[0] if image.tags else ''
+                    self.logger.success(
+                        f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
+                    )
+            else:
+                resp.raise_for_status()
+
+        except Exception as e:
+            self.logger.error(
+                f'Error when trying to pull the executor: {self.args.id}: {e!r}'
             )
