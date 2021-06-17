@@ -81,7 +81,6 @@ def _validate_response(response, payload, id, workspace_id):
     item = ContainerItem(**get_response)
     assert item.workspace_id == workspace_id
     assert item.metadata.container_name == id
-    assert __dockerhost__ in item.metadata.host
 
     if 'json' in payload:
         assert item.arguments.object['arguments']['name'] == payload['json']['name']

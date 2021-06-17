@@ -1,3 +1,5 @@
+import os
+import sys
 import time
 from typing import Dict, TYPE_CHECKING
 
@@ -75,7 +77,12 @@ class ContainerStore(BaseStore):
             # NOTE: jinad when running inside a container needs to access other containers via dockerhost
             # mac/wsl: this would work as is, as dockerhost is accessible.
             # linux: this would only work if we start jinad passing extra_hosts.
-            self.host = f'http://{__dockerhost__}:{self.minid_port}'
+            # check if we actually are in docker, needed for unit tests
+            # if not docker, use localhost
+            if sys.platform == 'linux' and not os.path.exists('/.dockerenv'):
+                self.host = f'http://localhost:{self.minid_port}'
+            else:
+                self.host = f'http://{__dockerhost__}:{self.minid_port}'
 
             self.params = params.dict(exclude={'log_config'})
             # NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`

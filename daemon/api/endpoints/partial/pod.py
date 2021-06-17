@@ -16,7 +16,7 @@ router = APIRouter(prefix='/pod', tags=['pod'])
     response_model=PartialStoreItem,
 )
 async def _status():
-    return store.status
+    return store.item
 
 
 @router.post(
