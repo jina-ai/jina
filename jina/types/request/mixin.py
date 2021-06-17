@@ -1,9 +1,19 @@
+from abc import abstractmethod
+
 from ..arrays import DocumentArray
 from ...proto import jina_pb2
 
 
 class DocsPropertyMixin:
     """Mixin class of docs property."""
+
+    @abstractmethod
+    def body(self):
+        """Requred body property
+
+        .. # noqa: DAR201
+        """
+        ...
 
     @property
     def docs(self) -> 'DocumentArray':
@@ -17,6 +27,14 @@ class DocsPropertyMixin:
 class GroundtruthPropertyMixin:
     """Mixin class of groundtruths property."""
 
+    @abstractmethod
+    def body(self):
+        """Requred body property
+
+        .. # noqa: DAR201
+        """
+        ...
+
     @property
     def groundtruths(self) -> 'DocumentArray':
         """Get the groundtruths in :class: `DocumentArray` type.
@@ -28,6 +46,14 @@ class GroundtruthPropertyMixin:
 
 class CommandMixin:
     """Mixin class of command property."""
+
+    @abstractmethod
+    def proto(self):
+        """Requred proto property
+
+        .. # noqa: DAR201
+        """
+        ...
 
     @property
     def command(self) -> str:
