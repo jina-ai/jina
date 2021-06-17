@@ -542,7 +542,7 @@ def test_get_attr_values():
             'text': 'document',
             'feature1': 121,
             'name': 'name',
-            'tags': {'id': 'identity', 'a': 'b', 'c': 'd'},
+            'tags': {'id': 'identity', 'a': 'b', 'c': 'd', 'e': [0, 1, {'f': 'g'}]},
         }
     )
     d.scores['metric'] = NamedScore(value=42)
@@ -556,6 +556,7 @@ def test_get_attr_values():
         'tags__c',
         'tags__id',
         'tags__inexistant',
+        'tags__e__2__f',
         'inexistant',
     ]
     res = d.get_attributes(*required_keys)
@@ -569,12 +570,13 @@ def test_get_attr_values():
     assert res[required_keys.index('scores__values__metric__value')] == 42
     assert res[required_keys.index('tags__inexistant')] is None
     assert res[required_keys.index('inexistant')] is None
+    assert res[required_keys.index('tags__e__2__f')] == 'g'
 
     required_keys_2 = ['tags', 'text']
     res2 = d.get_attributes(*required_keys_2)
     assert len(res2) == 2
     assert res2[required_keys_2.index('text')] == 'document'
-    assert res2[required_keys_2.index('tags')] == d.tags
+    assert res2[required_keys_2.index('tags')].dict() == d.tags.dict()
 
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
     required_keys_3 = ['tags__outterkey__innerkey']
