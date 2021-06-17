@@ -59,7 +59,6 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
     ):
         self._buffer = None
         self._pb_body = jina_pb2.RequestProto()  # type: 'jina_pb2.RequestProto'
-        self.is_used = False
         self._compression_algorithm = compression_algorithm
         try:
             if isinstance(request, jina_pb2.RequestProto):
@@ -90,12 +89,19 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         else:
             return getattr(self.proto, name)
 
+    @property
+    def is_decompressed(self):
+        """Return a boolean indicating if the proto is decompressed
+
+        :return: a boolean indicating if the proto is decompressed
+        """
+        return self._pb_body is not None and self._buffer is None
+
     @classmethod
     def _from_request(cls, req: 'Request'):
         instance = cls()
         instance._pb_body = req._pb_body
         instance._buffer = req._buffer
-        instance.is_used = req.is_used
         return instance
 
     @property
@@ -180,9 +186,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
 
         :return: protobuf instance
         """
-        if self._pb_body:
-            # if request is already given while init
-            self.is_used = True
+        if self.is_decompressed:
             return self._pb_body
         else:
             # if not then build one from buffer
@@ -193,8 +197,8 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
                 self._compression_algorithm,
             )
             r.ParseFromString(_buffer)
-            self.is_used = True
             self._pb_body = r
+            self._buffer = None
             # # Though I can modify back the envelope, not sure if it is a good design:
             # # My intuition is: if the content is changed dramatically, e.g. from index to control request,
             # # then whatever writes on the envelope should be dropped
@@ -210,7 +214,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
 
         :return: serialized request
         """
-        if self.is_used:
+        if self.is_decompressed:
             return self.proto.SerializeToString()
         else:
             # no touch, skip serialization, return original
