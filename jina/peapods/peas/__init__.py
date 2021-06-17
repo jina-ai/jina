@@ -2,6 +2,8 @@ import argparse
 import os
 from typing import Type
 import time
+import multiprocessing
+import threading
 
 from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__, __default_host__
@@ -16,7 +18,7 @@ if False:
     from ..runtimes.base import BaseRuntime
 
 
-class BasePea(metaclass=PeaType):
+class BasePea:
     """
     :class:`BasePea` is a thread/process- container of :class:`BaseRuntime`. It leverages :class:`threading.Thread`
     or :class:`multiprocessing.Process` to manage the lifecycle of a :class:`BaseRuntime` object in a robust way.
@@ -28,13 +30,21 @@ class BasePea(metaclass=PeaType):
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()  #: required here to call process/thread __init__
+        self._backend_cls = {
+            RuntimeBackendType.THREAD: threading.Thread,
+            RuntimeBackendType.PROCESS: multiprocessing.Process,
+        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))
+
+        self.worker = self._backend_cls(target=self.run)
         self.args = args
         self.daemon = args.daemon  #: required here to set process/thread daemon
 
         self.name = self.args.name or self.__class__.__name__
-        self.is_ready = _get_event(self)
-        self.is_shutdown = _get_event(self)
-        self.ready_or_shutdown = _make_or_event(self, self.is_ready, self.is_shutdown)
+        self.is_ready = _get_event(self.worker)
+        self.is_shutdown = _get_event(self.worker)
+        self.ready_or_shutdown = _make_or_event(
+            self.worker, self.is_ready, self.is_shutdown
+        )
         self.logger = JinaLogger(self.name, **vars(self.args))
 
         if self.args.runtime_backend == RuntimeBackendType.THREAD:
@@ -61,6 +71,14 @@ class BasePea(metaclass=PeaType):
                 exc_info=not self.args.quiet_error,
             )
             raise RuntimeFailToStart from ex
+
+    def start(self, *args, **kwargs):
+        self.worker.start(*args, **kwargs)
+        if not self.args.noblock_on_start:
+            self.wait_start_success()
+
+    def join(self, *args, **kwargs):
+        return self.worker.join(*args, **kwargs)
 
     def run(self):
         """Method representing the :class:`BaseRuntime` activity.
@@ -116,20 +134,20 @@ class BasePea(metaclass=PeaType):
             self.is_ready.clear()
             self._unset_envs()
 
-    def start(self):
-        """Start the Pea.
-
-        This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-
-
-        .. #noqa: DAR201
-        """
-
-        super().start()  #: required here to call process/thread method
-        if not self.args.noblock_on_start:
-            self.wait_start_success()
-
-        return self
+    # def start(self):
+    #     """Start the Pea.
+    #
+    #     This method overrides :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+    #
+    #
+    #     .. #noqa: DAR201
+    #     """
+    #
+    #     super().start()  #: required here to call process/thread method
+    #     if not self.args.noblock_on_start:
+    #         self.wait_start_success()
+    #
+    #     return self
 
     def wait_start_success(self):
         """Block until all peas starts successfully.
