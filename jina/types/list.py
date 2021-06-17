@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union
+from typing import Union, List
 
 from google.protobuf import struct_pb2
 
@@ -31,16 +31,17 @@ class ListView(ProtoTypeMixin, MutableSequence):
         self._pb_body.insert(index, object)
 
     def __getitem__(self, i: Union[int, slice]):
-        if i < len(self):
-            value = self._pb_body[i]
-            if isinstance(value, struct_pb2.Struct):
-                from .struct import StructView
+        if i >= len(self):
+            raise IndexError('list index out of range')
+        value = self._pb_body[i]
+        if isinstance(value, struct_pb2.Struct):
+            from .struct import StructView
 
-                return StructView(value)
-            elif isinstance(value, struct_pb2.ListValue):
-                return ListView(value)
-            else:
-                return value
+            return StructView(value)
+        elif isinstance(value, struct_pb2.ListValue):
+            return ListView(value)
+        else:
+            return value
 
     def __setitem__(self, i, value):
         self._pb_body[i] = value
@@ -54,6 +55,21 @@ class ListView(ProtoTypeMixin, MutableSequence):
     def __iter__(self):
         for i in range(len(self)):
             yield self[i]
+
+    def __eq__(self, other: Union['ListView', List]):
+        if isinstance(other, ListView):
+            return list(self) == list(other)
+        elif isinstance(other, List):
+            return list(self) == other
+        else:
+            return False
+
+    def __contains__(self, item):
+        for element in self:
+            if element == item:
+                return True
+
+        return False
 
     def clear(self):
         """

@@ -1,4 +1,5 @@
 from collections.abc import MutableMapping
+from typing import Union, Dict
 
 from google.protobuf import struct_pb2
 
@@ -44,6 +45,14 @@ class StructView(ProtoTypeMixin, MutableMapping):
     def __iter__(self):
         for key in self._pb_body.keys():
             yield key
+
+    def __eq__(self, other: Union['StructView', Dict]):
+        if isinstance(other, StructView):
+            return self.dict() == other.dict()
+        elif isinstance(other, Dict):
+            return self.dict() == other
+        else:
+            return False
 
     def update(self, d, **kwargs):  # pylint: disable=invalid-name
         """

@@ -6,17 +6,17 @@ from jina.types.list import ListView
 
 
 def test_empty_struct_view():
-    list = ListValue()
-    view = ListView(list)
+    l = ListValue()
+    view = ListView(l)
     assert len(view) == 0
 
 
 @pytest.fixture()
 def list_proto():
-    list = ListValue()
+    lv = ListValue()
     l = [0, 1, 'hey', {'key': 'value'}, [0, 1, 2]]
-    list.extend(l)
-    return list
+    lv.extend(l)
+    return lv
 
 
 def test_list_view(list_proto):
@@ -115,8 +115,7 @@ def test_list_contains(list_proto):
     assert 'heya' not in view
     assert {'key': 'value'} in view
     assert {'key': 'value-aaa'} not in view
-    # not hashable
-    assert [0, 1, 2] not in view
+    assert [0, 1, 2] in view
 
 
 def test_list_reverse():
@@ -128,3 +127,29 @@ def test_list_reverse():
     assert view[0] == 1
     assert view[1] == 2
     assert view[2] == 0
+
+
+def test_list_view_equals(list_proto):
+    view_1 = ListView(list_proto)
+    view_2 = ListView(list_proto)
+    assert view_2 == view_1
+    lv = ListValue()
+    l = [0, 1, 'hey', {'key': 'value'}, [0, 1, 2]]
+    lv.extend(l)
+    view_3 = ListView(lv)
+    assert view_2 == view_3
+
+
+def test_list_view_not_equals(list_proto):
+    view_1 = ListView(list_proto)
+    lv = ListValue()
+    l = [0, 1, 'heya', {'key': 'value'}, [0, 1, 2]]
+    lv.extend(l)
+    view_2 = ListView(lv)
+    assert view_2 != view_1
+
+
+def test_list_view_access_out_of_bounds(list_proto):
+    view = ListView(list_proto)
+    with pytest.raises(IndexError):
+        _ = view[100]

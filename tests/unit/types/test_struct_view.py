@@ -140,12 +140,15 @@ def test_struct_view_update(struct_proto):
     assert view['key_nested']['new_key_nested'] == 'very_new'
 
 
-def test_struct_view_dict():
+def test_struct_view_dict_eq():
     struct = Struct()
-    d = {'a': 1, 'b': 2, 'c': {'e': None, 'l': [40, 30]}, 'f': [5, 1]}
+    d = {'a': 1, 'ma': [1, 2, 3], 'b': 2, 'c': {'e': None, 'l': [40, 30]}, 'f': [5, 1]}
     struct.update(d)
     view = StructView(struct)
     assert view.dict() == d
+    assert view == d
+    d['a'] = 3
+    assert view != d
 
 
 def test_struct_contains(struct_proto):
