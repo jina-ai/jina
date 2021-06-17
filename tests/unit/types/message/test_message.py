@@ -176,7 +176,7 @@ def test_lazy_msg_access():
 
 def test_lazy_msg_access_with_envelope():
     envelope_proto = jina_pb2.EnvelopeProto()
-    envelope_proto.compression.algorithm = 'lz4'
+    envelope_proto.compression.algorithm = 'NONE'
     envelope_proto.request_type = 'DataRequest'
     messages = [
         Message(

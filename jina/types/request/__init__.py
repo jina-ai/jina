@@ -1,8 +1,8 @@
 from typing import Union, Optional, TypeVar, Dict
 
 from google.protobuf import json_format
-from jina.types.struct import StructView
 
+from ...types.struct import StructView
 from ..mixin import ProtoTypeMixin
 from .mixin import DocsPropertyMixin, GroundtruthPropertyMixin
 from ...enums import CompressAlgo, RequestType
@@ -99,7 +99,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
 
     @classmethod
     def _from_request(cls, req: 'Request'):
-        instance = cls()
+        instance = cls(compression_algorithm=req._compression_algorithm)
         instance._pb_body = req._pb_body
         instance._buffer = req._buffer
         return instance
