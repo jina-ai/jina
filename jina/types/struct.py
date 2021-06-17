@@ -27,9 +27,12 @@ class StructView(ProtoTypeMixin, MutableMapping):
     def __getitem__(self, key):
         if key in self._pb_body.keys():
             value = self._pb_body[key]
-            # TODO: Maybe do the same with ListValue and build a ListValueView
             if isinstance(value, struct_pb2.Struct):
                 return StructView(value)
+            elif isinstance(value, struct_pb2.ListValue):
+                from .list import ListView
+
+                return ListView(value)
             else:
                 return value
         else:

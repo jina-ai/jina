@@ -60,6 +60,12 @@ def test_struct_view(struct_proto):
 
 def test_struct_view_set_items(struct_proto):
     view = StructView(struct_proto)
+    view['key_array'][0] = 2
+    assert view['key_array'][0] == 2
+
+
+def test_struct_view_set_listitems(struct_proto):
+    view = StructView(struct_proto)
     view['key_int'] = 20
     view['key_new'] = 30
     view['key_nested']['key_nested_nested']['empty'] = [1, 2, 3]
@@ -136,7 +142,7 @@ def test_struct_view_update(struct_proto):
 
 def test_struct_view_dict():
     struct = Struct()
-    d = {'a': 1, 'b': 2}
+    d = {'a': 1, 'b': 2, 'c': {'e': None, 'l': [40, 30]}, 'f': [5, 1]}
     struct.update(d)
     view = StructView(struct)
     assert view.dict() == d
@@ -145,4 +151,4 @@ def test_struct_view_dict():
 def test_struct_contains(struct_proto):
     view = StructView(struct_proto)
     assert 'key_nested' in view
-    assert not 'a' in view
+    assert 'a' not in view
