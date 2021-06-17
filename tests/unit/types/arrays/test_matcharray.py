@@ -46,6 +46,7 @@ def matcharray(matches, reference_doc):
 
 def test_append_from_documents(matcharray, document_factory, reference_doc):
     match = document_factory.create(4, 'test 4')
+    match.scores['score'] = 10
     rv = matcharray.append(match)
     assert len(matcharray) == 4
     assert matcharray[-1].text == 'test 4'
@@ -53,7 +54,7 @@ def test_append_from_documents(matcharray, document_factory, reference_doc):
     assert rv.granularity == reference_doc.granularity
     assert rv.adjacency == reference_doc.adjacency + 1
     assert rv.mime_type == 'text/plain'
-    assert rv.score.ref_id == reference_doc.id
+    assert rv.scores['score'].ref_id == reference_doc.id
 
 
 def test_mime_type_not_reassigned():
@@ -85,3 +86,17 @@ def test_matches_sort_by_document_interface_not_in_proto():
 
     query.matches.sort(key=lambda m: m.embedding.shape[0])
     assert query.matches[0].embedding.shape == (1,)
+
+
+def test_query_match_array_sort_scores():
+    query = Document()
+    query.matches = [
+        Document(id=i, copy=True, scores={'euclid': 10 - i}) for i in range(10)
+    ]
+    assert query.matches[0].id == '0'
+    assert query.matches[0].scores['euclid'].value == 10
+    query.matches.sort(
+        key=lambda m: m.scores['euclid'].value
+    )  # sort matches by their values
+    assert query.matches[0].id == '9'
+    assert query.matches[0].scores['euclid'].value == 1

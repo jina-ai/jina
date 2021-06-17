@@ -10,6 +10,7 @@ import threading
 import time
 import uuid
 import warnings
+
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from itertools import islice
@@ -1158,10 +1159,11 @@ def dunder_get(_dict: Any, key: str) -> Any:
         pass
 
     from google.protobuf.struct_pb2 import Struct
+    from google.protobuf.pyext._message import MessageMapContainer
 
     if isinstance(part1, int):
         result = _dict[part1]
-    elif isinstance(_dict, (dict, Struct)):
+    elif isinstance(_dict, (dict, Struct, MessageMapContainer)):
         if part1 in _dict:
             result = _dict[part1]
         else:

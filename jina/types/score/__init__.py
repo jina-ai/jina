@@ -67,7 +67,6 @@ class NamedScore(ProtoTypeMixin):
             raise BadNamedScoreType(
                 f'fail to construct a NamedScore from {score}'
             ) from ex
-
         self.set_attrs(**kwargs)
 
     @property
