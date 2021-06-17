@@ -66,7 +66,7 @@ def get_partial_client(mode, monkeypatch):
     from daemon import stores
     from importlib import reload
 
-    jinad_args.mode = PartialDaemonModes.get_mode(mode)
+    jinad_args.mode = PartialDaemonModes(mode)
 
     reload(stores)
     app = _get_app(mode=mode)

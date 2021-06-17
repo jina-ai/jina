@@ -52,16 +52,6 @@ class PartialDaemonModes(DaemonEnum):
     POD = 'pod'
     FLOW = 'flow'
 
-    @classmethod
-    def get_mode(cls, mode: str) -> 'PartialDaemonModes':
-        if mode == 'pea':
-            return PartialDaemonModes.PEA
-        elif mode == 'pod':
-            return PartialDaemonModes.POD
-        elif mode == 'flow':
-            return PartialDaemonModes.FLOW
-        return None
-
 
 class UpdateOperation(DaemonEnum):
     """
