@@ -388,7 +388,7 @@
 <span id="jina-types-document-graph-module"></span><h1>jina.types.document.graph module<a class="headerlink" href="#module-jina.types.document.graph" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="jina.types.document.graph.GraphDocument">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.document.graph.</span></code><code class="sig-name descname"><span class="pre">GraphDocument</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.document.graph.</span></code><code class="sig-name descname"><span class="pre">GraphDocument</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_undirected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/graph/#GraphDocument"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.graph.GraphDocument" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.document.Document</span></code></a></p>
 <p><a class="reference internal" href="#jina.types.document.graph.GraphDocument" title="jina.types.document.graph.GraphDocument"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphDocument</span></code></a> is a data type created based on Jina primitive data type <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code>.</p>
 <p>It adds functionality that lets you work with a <cite>Document</cite> as a <cite>directed graph</cite> where all its chunks are the nodes in the <cite>graph</cite>.</p>
@@ -410,6 +410,11 @@ one can also give <cite>DocumentProto</cite> directly, then depending on the <co
 it builds a view or a copy from it.</p></li>
 <li><p><strong>copy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – when <code class="docutils literal notranslate"><span class="pre">document</span></code> is given as a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code> object, build a
 view (i.e. weak reference) from it or a deep copy from it.</p></li>
+<li><p><strong>force_undirected</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – indicates if the actual <cite>proto</cite> object represented by this <cite>GraphDocument</cite> must be updated to set its
+<cite>undirected</cite> property to <cite>True</cite>. Otherwise, the value providing by the <cite>document</cite> source or the default value is mantained.
+This parameter is called <cite>force_undirected</cite> and not <cite>undirected</cite> to make sure that if a <cite>valid</cite> <cite>DocumentSourceType</cite> is provided
+with an <cite>undirected</cite> flag set, it can be respected and not silently overriden by a missleading default. This is specially needed
+when a <cite>GraphDocument</cite> is distributed to <cite>Executors</cite>.</p></li>
 <li><p><strong>kwargs</strong> – further key value arguments</p></li>
 <li><p><strong>document</strong> – the document to construct from. If <code class="docutils literal notranslate"><span class="pre">bytes</span></code> is given
 then deserialize a <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentProto</span></code>; <code class="docutils literal notranslate"><span class="pre">dict</span></code> is given then
@@ -489,11 +494,31 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 <dt id="jina.types.document.graph.GraphDocument.edge_features">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">edge_features</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.edge_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>The dictionary of edge features, indexed by <cite>edge_id</cite> in the <cite>edge list</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina.types.struct/#jina.types.struct.StructView" title="jina.types.struct.StructView"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructView</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.document.graph.GraphDocument.adjacency">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">adjacency</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.adjacency" title="Permalink to this definition">¶</a></dt>
-<dd><p>The adjacency list for this graph,</p>
+<dd><p>The adjacency list for this graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina.types.ndarray.sparse.scipy/#jina.types.ndarray.sparse.scipy.SparseNdArray" title="jina.types.ndarray.sparse.scipy.SparseNdArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">SparseNdArray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.types.document.graph.GraphDocument.undirected">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">undirected</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.undirected" title="Permalink to this definition">¶</a></dt>
+<dd><p>The undirected flag of this graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.document.graph.GraphDocument.num_nodes">
@@ -545,6 +570,11 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 <dt id="jina.types.document.graph.GraphDocument.nodes">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">nodes</span></code><a class="headerlink" href="#jina.types.document.graph.GraphDocument.nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>The nodes list for this graph</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray" title="jina.types.arrays.chunk.ChunkArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChunkArray</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.document.graph.GraphDocument.get_outgoing_nodes">
@@ -581,10 +611,18 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 <dd class="field-odd"><p><strong>dgl_graph</strong> (<em>DGLGraph</em>) – the graph from which to construct a <cite>GraphDocument</cite>.</p>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <ul class="simple">
-<li><p>This method only deals with the graph structure (nodes and conectivity) graph
-features that are task specific  are ignored.</p></li>
+<li><dl class="simple">
+<dt>This method only deals with the graph structure (nodes and conectivity) graph</dt><dd><p>features that are task specific  are ignored.</p>
+</dd>
+</dl>
+</li>
+<li><p>This method has no way to know id the origin <cite>dgl_graph</cite> is an undirected graph, and therefore
+the property <cite>undirected</cite> will by <cite>False</cite> by default. If you want you can set the property manually.</p></li>
 </ul>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#jina.types.document.graph.GraphDocument" title="jina.types.document.graph.GraphDocument">GraphDocument</a></p>
@@ -637,7 +675,7 @@ features that are task specific are ignored.</p></li>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 16, 2021.
+            Last updated on Jun 17, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

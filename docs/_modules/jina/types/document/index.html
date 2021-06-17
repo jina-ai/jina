@@ -443,7 +443,7 @@
 <span class="c1"># This list is not exhaustive because we cannot add the `sparse` types without adding the `dependencies`</span>
 <span class="n">DocumentContentType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'DocumentContentType'</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">'ArrayType'</span><span class="p">)</span>
 <span class="n">DocumentSourceType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
-    <span class="s1">'DocumentSourceType'</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span>
+    <span class="s1">'DocumentSourceType'</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="s1">'Document'</span>
 <span class="p">)</span>
 
 <span class="n">_all_mime_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mimetypes</span><span class="o">.</span><span class="n">types_map</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
@@ -1705,7 +1705,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 16, 2021.
+            Last updated on Jun 17, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

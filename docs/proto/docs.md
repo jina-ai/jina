@@ -182,6 +182,7 @@ Represents a Graph
 | ----- | ---- | ----- | ----------- |
 | adjacency | [SparseNdArrayProto](#jina.SparseNdArrayProto) |  | adjacency list |
 | edge_features | [google.protobuf.Struct](#google.protobuf.Struct) |  | Container structure to store edge features |
+| undirected | [bool](#bool) |  | Flag indicating if the graph is to be interpreted as an undirected graph |
 
 
 
