@@ -52,6 +52,12 @@ def workspace():
     Dockerizer.rm_image(image_id)
     Dockerizer.rm_network(network_id)
     workspace_store.delete(workspace_id, files=False)
+    del workspace_store[workspace_id]
+    workspace_store.dump(lambda *args, **kwargs: None)
+    from daemon import stores
+    from importlib import reload
+
+    reload(stores)
 
 
 @pytest.mark.parametrize('api', ['/peas', '/pods', '/flows'])

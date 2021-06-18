@@ -5,7 +5,7 @@ import time
 from daemon.helper import get_workspace_path
 from daemon.models import DaemonID
 from daemon.models.containers import ContainerArguments
-from daemon.stores import flow_store
+
 from daemon.models import ContainerItem
 from daemon.models.containers import ContainerMetadata
 from jina import Flow
@@ -39,6 +39,8 @@ def _write_to_workspace_logfile(content, append=False):
 
 
 def _create_flow():
+    from daemon.stores import flow_store
+
     flow_store[flow_id] = ContainerItem(
         metadata=ContainerMetadata(
             container_id='container_id',
