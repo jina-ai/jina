@@ -242,16 +242,17 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
 
         :return: a Python dict view of the tags.
         """
-        return StructView(self._pb_body.parameters)
+        # if u get this u need to have it decompressed
+        return StructView(self.proto.parameters).dict()
 
     @parameters.setter
     def parameters(self, value: Dict):
-        """Set the `tags` field of this Document to a Python dict
+        """Set the `parameters` field of this Request to a Python dict
 
         :param value: a Python dict
         """
-        self._pb_body.parameters.Clear()
-        self._pb_body.parameters.update(value)
+        self.proto.parameters.Clear()
+        self.proto.parameters.update(value)
 
 
 class Response(Request):
