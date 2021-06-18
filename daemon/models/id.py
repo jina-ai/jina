@@ -6,9 +6,7 @@ from .enums import IDLiterals
 
 
 class DaemonID(str):
-    """
-    Custom datatype defining an ID in Daemon
-    """
+    """Custom datatype defining an ID in Daemon"""
 
     pattern = f'^({"|".join(IDLiterals.values)})-[0-9a-f]{{8}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{12}}$'
 
@@ -17,18 +15,22 @@ class DaemonID(str):
 
     @property
     def jtype(self):
+        """get jtype of DaemonID"""
         return self.split('-', 1)[0]
 
     @property
     def jid(self):
+        """get jid of DaemonID"""
         return self.split('-', 1)[1]
 
     @property
     def type(self):
+        """get type of DaemonID"""
         return self.jtype[1:]
 
     @property
     def tag(self):
+        """get jtype from DaemonID"""
         return f'{self.jtype}:{self.jid}'
 
     @classmethod
@@ -37,6 +39,7 @@ class DaemonID(str):
 
     @classmethod
     def validate(cls, value: str):
+        """validate DaemonID"""
         if not isinstance(value, str):
             raise TypeError('Malformed DaemonID: must be a string')
 
@@ -58,6 +61,7 @@ class DaemonID(str):
 
     @classmethod
     def pydantic_validate(cls, value: str):
+        """validate method for pydantic"""
         return cls(cls.validate(value))
 
     @classmethod

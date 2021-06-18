@@ -14,6 +14,8 @@ PeaModel = build_pydantic_model(model_name='PeaModel', module='pea')
 
 
 class DaemonStatus(BaseModel):
+    """Pydantic model for DaemonStatus"""
+
     jina: Dict
     envs: Dict
     workspaces: WorkspaceStoreStatus

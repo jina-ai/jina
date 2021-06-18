@@ -7,10 +7,14 @@ from .id import DaemonID
 
 
 class StoreItem(BaseModel):
+    """Pydantic model for StoreItem"""
+
     time_created: datetime = Field(default_factory=datetime.now)
 
 
 class StoreStatus(BaseModel):
+    """Pydantic model for StoreStatus"""
+
     time_created: datetime = Field(default_factory=datetime.now)
     time_updated: datetime = Field(default_factory=datetime.now)
     num_add: int = 0

@@ -8,12 +8,16 @@ from .base import StoreItem, StoreStatus
 
 
 class WorkspaceArguments(BaseModel):
+    """Pydantic model for WorkspaceArguments"""
+
     files: List[str]
     jinad: Dict[str, str]
     requirements: str
 
 
 class WorkspaceMetadata(BaseModel):
+    """Pydantic model for WorkspaceMetadata"""
+
     image_id: str
     image_name: str
     network: str
@@ -23,12 +27,17 @@ class WorkspaceMetadata(BaseModel):
 
 
 class WorkspaceItem(StoreItem):
+    """Pydantic model for WorkspaceItem"""
+
     state: WorkspaceState
     metadata: Optional[WorkspaceMetadata]
     arguments: Optional[WorkspaceArguments]
 
 
 class WorkspaceStoreStatus(StoreStatus):
+    """Pydantic model for WorkspaceStoreStatus"""
+
+    # TODO: remove ip args from top level status
     ip_range_start: IPv4Address = IPv4Address('10.0.0.0')
     subnet_size: int = 22
     ip_range_current_offset: int = 0
