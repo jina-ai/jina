@@ -62,12 +62,12 @@ class BasePea:
             self._envs.update(self.args.env)
 
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
-        # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows control
-        # address of runtime
+        # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
+        # control address of runtime
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
 
-        # This logic must be improved specially when it comes to naming. It is about relative local/remote position between the
-        # runtime and the `ZEDRuntime` it may control
+        # This logic must be improved specially when it comes to naming. It is about relative local/remote position
+        # between the runtime and the `ZEDRuntime` it may control
         self._zed_runtime_ctrl_addres = Zmqlet.get_ctrl_address(
             self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
@@ -104,6 +104,22 @@ class BasePea:
         if hasattr(self.worker, 'terminate'):
             self.worker.terminate()
 
+    def _build_runtime(self):
+        """
+        Instantiates the runtime object
+
+        :return: the runtime object
+        """
+        # This is due to the fact that JinadRuntime instantiates a Zmq server at local_ctrl_addr that will itself
+        # send ctrl command
+        # (TODO: Joan) Fix that in _wait_for_cancel from async runtime
+        ctrl_addr = (
+            self._local_runtime_ctrl_address
+            if self.runtime_cls == JinadRuntime
+            else self._zed_runtime_ctrl_addres
+        )
+        return self.runtime_cls(self.args, ctrl_addr=ctrl_addr)
+
     def run(self):
         """Method representing the :class:`BaseRuntime` activity.
 
@@ -115,9 +131,7 @@ class BasePea:
         """
         try:
             self._set_envs()
-            runtime = self.runtime_cls(
-                self.args, ctrl_addr=self._zed_runtime_ctrl_addres
-            )  # type: 'BaseRuntime'
+            runtime = self._build_runtime()
         except Exception as ex:
             self.logger.error(
                 f'{ex!r} during {self.runtime_cls!r} initialization'

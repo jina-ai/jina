@@ -52,14 +52,6 @@ def test_init(request):
     assert runtime.port_expose == 45678
 
 
-def test_cancel(runtime, ctrl_messages, mocker):
-    mocker.patch(
-        'jina.peapods.runtimes.zmq.base.send_ctrl_message',
-        return_value=ctrl_messages[0],
-    )
-    assert runtime.cancel('', 5) is None
-
-
 def test_status(runtime, ctrl_messages, mocker):
     mocker.patch('jina.peapods.runtimes.zmq.base.send_ctrl_message', return_value=123)
     assert runtime.status == 123
