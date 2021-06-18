@@ -26,6 +26,12 @@ class WorkspaceStore(BaseStore):
 
     @BaseStore.dump
     def add(self, id: DaemonID, value: WorkspaceState, **kwargs):
+        """Add a workspace to the store
+
+        :param id: workspace id
+        :param value: state of the workspace
+        :return: workspace id
+        """
         if isinstance(value, WorkspaceState):
             self[id] = WorkspaceItem(state=value)
         return id
@@ -39,6 +45,13 @@ class WorkspaceStore(BaseStore):
         ],
         **kwargs,
     ) -> DaemonID:
+        """Update the workspace
+
+        :param id: workspace id
+        :param value: workspace value to be added
+        :raises KeyError: if id doesn't exist in the store
+        :return: workspace id
+        """
         if id not in self:
             raise KeyError(f'workspace {id} not found in store')
 
@@ -54,7 +67,12 @@ class WorkspaceStore(BaseStore):
             self._logger.error(f'invalid arguments for workspace: {value}')
         return id
 
-    def rm_files(self, id: DaemonID, logs: bool = False):
+    def rm_files(self, id: DaemonID, logs: bool = False) -> None:
+        """Remove files from workspace
+
+        :param id: workspace id
+        :param logs: True if log files should be removed, defaults to False
+        """
         if self[id].metadata:
             workdir = self[id].metadata.workdir
             if not workdir or not Path(workdir).is_dir():
@@ -70,7 +88,11 @@ class WorkspaceStore(BaseStore):
                         self._logger.debug(f'file to be deleted: {path}')
                         path.unlink()
 
-    def rm_network(self, id: DaemonID):
+    def rm_network(self, id: DaemonID) -> None:
+        """Remove docker network
+
+        :param id: workspace id
+        """
         try:
             network = self[id].metadata.network
             # TODO: check what containers are using this network
@@ -90,7 +112,11 @@ class WorkspaceStore(BaseStore):
             self._logger.error(f'something went wrong while removing the container')
             raise
 
-    def rm_container(self, id: DaemonID):
+    def rm_container(self, id: DaemonID) -> None:
+        """Remove docker container
+
+        :param id: workspace id
+        """
         try:
             container_id = self[id].metadata.container_id
             if id in Dockerizer.containers:
@@ -124,6 +150,15 @@ class WorkspaceStore(BaseStore):
         everything: bool = False,
         **kwargs,
     ) -> None:
+        """Delete a workspace from the store
+
+        :param id: workspace id
+        :param container: True if workspace container needs to be removed, defaults to True
+        :param network: True if network needs to be removed, defaults to True
+        :param files: True if files in the workspace needs to be removed, defaults to True
+        :param everything: True if everything needs to be removed, defaults to False
+        :raises KeyError: if id doesn't exist in the store
+        """
         if everything:
             container = True
             network = True

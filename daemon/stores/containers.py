@@ -45,6 +45,7 @@ class ContainerStore(BaseStore):
 
     @property
     def ready(self) -> bool:
+        """Check if the container with mini-jinad is alive"""
         for _ in range(20):
             try:
                 r = requests.get(f'{self.host}/')
@@ -67,6 +68,16 @@ class ContainerStore(BaseStore):
         params: 'BaseModel',
         ports: Dict,
     ):
+        """Add a container to the store
+
+        :param id: id of the container
+        :param workspace_id: workspace id where the container lives
+        :param params: pydantic model representing the args for the container
+        :param ports: ports to be mapped to local
+        :raises KeyError: if workspace_id doesn't exist in the store
+        :raises Runtime400Exception: if container creation fails
+        :return: id of the container
+        """
         try:
             from . import workspace_store
 
@@ -129,6 +140,11 @@ class ContainerStore(BaseStore):
 
     @BaseStore.dump
     def delete(self, id: DaemonID, **kwargs):
+        """Delete a container from the store
+
+        :param id: id of the container
+        :raises KeyError: if id doesn't exist in the store
+        """
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
         Dockerizer.rm_container(id=self[id].metadata.container_id)

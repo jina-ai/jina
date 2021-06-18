@@ -58,14 +58,20 @@ class BaseStore(MutableMapping):
         return str(self.status.dict())
 
     def keys(self) -> Sequence['DaemonID']:
+        """get keys from the store"""
+
         return self.status.items.keys()
 
     def values(self) -> Sequence[Union['WorkspaceItem', 'ContainerItem']]:
+        """get values from the store"""
+
         return self.status.items.values()
 
     def items(
         self,
     ) -> Sequence[Tuple['DaemonID', Union['WorkspaceItem', 'ContainerItem']]]:
+        """get items from the store"""
+
         return self.status.items.items()
 
     def __getitem__(self, key: DaemonID) -> Union['WorkspaceItem', 'ContainerItem']:
@@ -108,6 +114,8 @@ class BaseStore(MutableMapping):
 
     @classmethod
     def dump(cls, func) -> Callable:
+        """dump store as a pickle to local workspace"""
+
         def wrapper(self, *args, **kwargs):
             r = func(self, *args, **kwargs)
             filepath = os.path.join(__root_workspace__, f'{self._kind}.store')
@@ -121,6 +129,8 @@ class BaseStore(MutableMapping):
 
     @classmethod
     def load(cls) -> Union[Dict, 'BaseStore']:
+        """load store from a pickle in local workspace"""
+
         filepath = os.path.join(__root_workspace__, f'{cls._kind}.store')
         if Path(filepath).is_file() and os.path.getsize(filepath) > 0:
             with open(filepath, 'rb') as f:
@@ -137,6 +147,7 @@ class BaseStore(MutableMapping):
 
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """
+
         self.clear()
         self.status = self._status_model()
 
