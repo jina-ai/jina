@@ -90,8 +90,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                         # https://websockets.readthedocs.io/en/stable/faq.html#why-does-the-server-close-the-connection-after-processing-one-message
 
                         resp = Request(response_bytes)
-                        resp.as_typed_request(resp.request_type)
-                        resp.as_response()
+                        resp = resp.as_typed_request(resp.request_type).as_response()
                         callback_exec(
                             response=resp,
                             on_error=on_error,

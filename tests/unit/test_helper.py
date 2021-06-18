@@ -73,8 +73,11 @@ def test_time_context():
 
 def test_dunder_get():
     a = SimpleNamespace()
-    a.b = {'c': 1}
+    a.b = {'c': 1, 'd': {'e': 'f', 'g': [0, 1, {'h': 'i'}]}}
     assert dunder_get(a, 'b__c') == 1
+    assert dunder_get(a, 'b__d__e') == 'f'
+    assert dunder_get(a, 'b__d__g__0') == 0
+    assert dunder_get(a, 'b__d__g__2__h') == 'i'
 
 
 def test_check_update():
