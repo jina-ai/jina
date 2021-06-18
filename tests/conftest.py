@@ -1,6 +1,7 @@
 import os
 import pathlib
 import random
+import shutil
 import string
 import time
 
@@ -103,3 +104,58 @@ def patched_random_port(mocker):
         raise NoAvailablePortError
 
     mocker.patch('jina.helper.random_port', new_callable=lambda: _random_port)
+
+
+def _clean_up_workspace(image_id, network_id, workspace_id, workspace_store):
+    from daemon.dockerize import Dockerizer
+
+    Dockerizer.rm_image(image_id)
+    Dockerizer.rm_network(network_id)
+    workspace_store.delete(workspace_id, files=False)
+    del workspace_store[workspace_id]
+    workspace_store.dump(lambda *args, **kwargs: None)
+    from daemon import stores
+    from importlib import reload
+
+    reload(stores)
+
+
+def _create_workspace_directly(cur_dir):
+    from daemon.models import DaemonID
+    from daemon.helper import get_workspace_path
+    from daemon.files import DaemonFile
+    from daemon import daemon_logger
+    from daemon.dockerize import Dockerizer
+    from daemon.stores import workspace_store
+    from daemon.models import WorkspaceItem
+    from daemon.models.enums import WorkspaceState
+    from daemon.models.workspaces import WorkspaceMetadata
+    from daemon.models.workspaces import WorkspaceArguments
+
+    workspace_id = DaemonID('jworkspace')
+
+    workdir = get_workspace_path(workspace_id)
+    shutil.copytree(cur_dir, workdir)
+
+    daemon_file = DaemonFile(
+        workdir=get_workspace_path(workspace_id), logger=daemon_logger
+    )
+
+    image_id = Dockerizer.build(
+        workspace_id=workspace_id, daemon_file=daemon_file, logger=daemon_logger
+    )
+    network_id = Dockerizer.network(workspace_id=workspace_id)
+
+    workspace_store[workspace_id] = WorkspaceItem(
+        state=WorkspaceState.ACTIVE,
+        metadata=WorkspaceMetadata(
+            image_id=image_id,
+            image_name=workspace_id.tag,
+            network=network_id,
+            workdir=workdir,
+        ),
+        arguments=WorkspaceArguments(
+            files=os.listdir(cur_dir), jinad={'a': 'b'}, requirements=''
+        ),
+    )
+    return image_id, network_id, workspace_id, workspace_store

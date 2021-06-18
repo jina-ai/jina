@@ -1,8 +1,9 @@
 import os
 
 import pytest
-from fastapi import UploadFile
 
+from daemon.models import DaemonID
+from daemon.models.enums import WorkspaceState
 from daemon.stores import WorkspaceStore
 
 
@@ -16,13 +17,14 @@ def filepath(tmpdir):
 
 def test_workspace_store(filepath):
     store = WorkspaceStore()
-    workspace_id = store.add(files=[UploadFile(filepath)])
+    id = DaemonID('jworkspace')
+    store.add(id=id, value=WorkspaceState('CREATING'))
 
     assert len(store) == 1
     assert store.status.num_add == 1
-    assert len(list(store.values())[0].arguments.files) == 1
+    assert store[id].state == 'CREATING'
 
-    store.delete(workspace_id)
+    store.delete(id, everything=True)
 
     assert store.status.num_add == 1
     assert store.status.num_del == 1

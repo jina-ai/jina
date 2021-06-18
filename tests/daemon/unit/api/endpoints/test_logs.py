@@ -5,9 +5,10 @@ import time
 from daemon.helper import get_workspace_path
 from daemon.models import DaemonID
 from daemon.models.containers import ContainerArguments
-from daemon.stores import flow_store
+
 from daemon.models import ContainerItem
 from daemon.models.containers import ContainerMetadata
+from jina import Flow
 
 log_content = """
 {"host":"ubuntu","process":"32539","type":"INFO","name":"encode1","uptime":"20210124215151","context":"encode1","workspace_path":"/tmp/jinad/32aa7734-fbb8-4e7a-9f76-46221b512648","log_id":"16ef0bd7-e534-42e7-9076-87a3f585933c","message":"starting jina.peapods.runtimes.zmq.zed.ZEDRuntime..."}
@@ -38,6 +39,8 @@ def _write_to_workspace_logfile(content, append=False):
 
 
 def _create_flow():
+    from daemon.stores import flow_store
+
     flow_store[flow_id] = ContainerItem(
         metadata=ContainerMetadata(
             container_id='container_id',
@@ -48,7 +51,7 @@ def _create_flow():
             rest_api_uri='',
             host="",
         ),
-        arguments=ContainerArguments(command='command'),
+        arguments=ContainerArguments(command='command', object=Flow()),
         workspace_id=workspace_id,
     )
 

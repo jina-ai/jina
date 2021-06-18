@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from daemon.models import DaemonID
+from daemon.models import DaemonID, FlowModel
 from daemon.models.enums import UpdateOperation
 from jina import Client, Document
 
@@ -9,24 +9,22 @@ api = '/flow'
 
 
 def test_flow_api(monkeypatch, partial_flow_client):
+    flow_model = FlowModel()
+    flow_model.uses = f'{cur_dir}/good_flow_dummy.yml'
     response = partial_flow_client.post(
         api,
-        params={
-            'filename': f'{cur_dir}/good_flow_dummy.yml',
-            'id': DaemonID('jflow'),
-            'port_expose': 1234,
-        },
+        json=flow_model.dict(exclude={'log_config'}),
     )
     assert response
 
     response = partial_flow_client.get(api)
     assert response
-    assert response.json()['arguments']['port_expose'] == 1234
+    assert response.json()['arguments']['port_expose'] == flow_model.port_expose
 
     def response_checker(response):
         assert response.docs[0].content == 'https://jina.ai'
 
-    Client(port_expose=1234).post(
+    Client(port_expose=flow_model.port_expose).post(
         on='/any_endpoint', inputs=Document(), on_done=response_checker
     )
 
