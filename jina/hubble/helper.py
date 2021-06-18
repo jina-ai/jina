@@ -3,11 +3,27 @@
 import io
 import os
 import hashlib
+from typing import Tuple
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 from jina import __resources_path__
 from jina.importer import ImportExtensions
+
+
+def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
+    """Parse the uri of the Jina Hub executor.
+
+    :param uri_path: the uri of Jina Hub executor
+    :return: a tuple of schema, id, tag, and secret
+    """
+    parser = urlparse(uri_path)
+    scheme = parser.scheme
+    items = list(parser.netloc.split(':'))
+    id = items[0]
+    secret = items[1] if len(items) > 1 else None
+    tag = parser.path.strip('/') if parser.path else None
+    return (scheme, id, tag, secret)
 
 
 def md5file(file_path: 'Path') -> str:
