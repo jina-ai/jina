@@ -1,6 +1,7 @@
 import argparse
 import base64
 import copy
+import json
 import os
 import re
 import threading
@@ -125,6 +126,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._pod_nodes = OrderedDict()  # type: Dict[str, BasePod]
         self._inspect_pods = {}  # type: Dict[str, str]
+        self._endpoints_mapping = {}  # type: Dict[str, Dict]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = [
             'gateway'
@@ -225,6 +227,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                 runtime_cls='RESTRuntime' if self.args.restful else 'GRPCRuntime',
                 pod_role=PodRoleType.GATEWAY,
+                endpoints_mapping=json.dumps(self._endpoints_mapping),
+                title=self.args.title,
+                description=self.args.description,
             )
         )
 
@@ -1235,6 +1240,73 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         for _, p in self:
             p.args.identity = value
+
+    def expose_crud_endpoints(self):
+        """Expose index, search, update, delete endpoints to HTTP frontend. """
+        crud = {
+            '/index': {'methods': ['POST']},
+            '/search': {'methods': ['POST']},
+            '/delete': {'methods': ['DELETE']},
+            '/update': {'methods': ['PUT']},
+        }
+        for k, v in crud.items():
+            self.expose_endpoint(k, **v)
+
+    @overload
+    def expose_endpoint(self, exec_endpoint: str, path: Optional[str] = None):
+        """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.
+
+        After expose, you can send data request directly to `http://hostname:port/endpoint`.
+
+        :param exec_endpoint: the endpoint string, by convention starts with `/`
+        :param path: the HTTP endpoint string, when not given, it is `exec_endpoint`
+        """
+        ...
+
+    @overload
+    def expose_endpoint(
+        self,
+        exec_endpoint: str,
+        *,
+        path: Optional[str] = None,
+        status_code: int = 200,
+        tags: Optional[List[str]] = None,
+        summary: Optional[str] = None,
+        description: Optional[str] = None,
+        response_description: str = 'Successful Response',
+        deprecated: Optional[bool] = None,
+        methods: Optional[List[str]] = None,
+        operation_id: Optional[str] = None,
+        response_model_by_alias: bool = True,
+        response_model_exclude_unset: bool = False,
+        response_model_exclude_defaults: bool = False,
+        response_model_exclude_none: bool = False,
+        include_in_schema: bool = True,
+        name: Optional[str] = None,
+    ):
+        """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.
+
+        After expose, you can send data request directly to `http://hostname:port/endpoint`.
+
+        Use this method to specify your HTTP endpoint with richer semantic and schema.
+
+        :param exec_endpoint: the endpoint string, by convention starts with `/`
+
+        # noqa: DAR101
+        """
+        ...
+
+    def expose_endpoint(self, exec_endpoint: str, **kwargs):
+        """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.
+
+        After expose, you can send data request directly to `http://hostname:port/endpoint`.
+
+        :param exec_endpoint: the endpoint string, by convention starts with `/`
+
+        # noqa: DAR101
+        # noqa: DAR102
+        """
+        self._endpoints_mapping[exec_endpoint] = kwargs
 
     # for backward support
     join = needs

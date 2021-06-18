@@ -1,6 +1,7 @@
 import argparse
 import asyncio
-from typing import Any, Optional
+import json
+from typing import Any, Optional, Dict
 
 from google.protobuf.json_format import MessageToJson
 
@@ -11,7 +12,6 @@ from .....clients.request import request_generator
 from .....helper import get_full_version, random_identity
 from .....importer import ImportExtensions
 from .....logging.logger import JinaLogger
-from .....logging.predefined import default_logger
 from .....logging.profile import used_memory_readable
 from .....types.message import Message
 from .....types.request import Request
@@ -27,7 +27,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     """
     with ImportExtensions(required=True):
         from fastapi import FastAPI, WebSocket
-        from fastapi.responses import JSONResponse
         from fastapi.middleware.cors import CORSMiddleware
         from starlette.endpoints import WebSocketEndpoint
         from starlette import status
@@ -35,56 +34,50 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from starlette.responses import StreamingResponse
         from .models import (
             JinaStatusModel,
-            JinaIndexRequestModel,
-            JinaDeleteRequestModel,
-            JinaUpdateRequestModel,
-            JinaSearchRequestModel,
             JinaRequestModel,
         )
 
     app = FastAPI(
-        title='Jina',
-        description='REST interface for Jina',
+        title=args.title or 'My Jina Service',
+        description=args.description
+        or 'This is my awesome service. '
+        'You can set `title` and `description` in your `Flow` to customize this text.',
         version=__version__,
     )
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=['*'],
-        allow_credentials=True,
-        allow_methods=['*'],
-        allow_headers=['*'],
-    )
-    zmqlet = AsyncZmqlet(args, default_logger)
+
+    if args.cors:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=['*'],
+            allow_credentials=True,
+            allow_methods=['*'],
+            allow_headers=['*'],
+        )
+        logger.warning(
+            'CORS is enabled. This service is now accessible from any website!'
+        )
+
+    zmqlet = AsyncZmqlet(args, logger)
     servicer = AsyncPrefetchCall(args, zmqlet)
-
-    def error(reason, status_code):
-        """
-        Get the error code.
-
-        :param reason: content of error
-        :param status_code: status code
-        :return: error in JSON response
-        """
-        return JSONResponse(content={'reason': reason}, status_code=status_code)
 
     @app.on_event('shutdown')
     def _shutdown():
         zmqlet.close()
 
-    @app.on_event('startup')
-    async def startup():
-        """Log the host information when start the server."""
-        from jina import __ready_msg__
-
-        default_logger.success(__ready_msg__)
-
     @app.get(
         path='/status',
-        summary='Get the status of Jina',
+        summary='Get the status of Jina service',
         response_model=JinaStatusModel,
-        tags=['Management'],
+        tags=['Built-in'],
     )
     async def _status():
+        """
+        Get the status of this Jina service.
+
+        This is equivalent to running `jina -vf` from command line.
+
+        # noqa: DAR201
+        """
         _info = get_full_version()
         return {
             'jina': _info[0],
@@ -95,99 +88,59 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     @app.post(
         path='/post/{endpoint:path}',
         summary='Post a data request to some endpoint',
-        tags=['Data Request'],
         response_model=JinaRequestModel,
+        tags=['Built-in'],
     )
     async def post(endpoint: str, body: Optional[JinaRequestModel] = None):
         """
-        Request mode service and return results in JSON, a deprecated interface.
+        Post a data request to some endpoint.
 
-        :param endpoint: the executor endpoint
-        :param body: the Request body.
-        :return: Results in JSONresponse.
+        - `endpoint`: a string that represents the executor endpoint that declared by `@requests(on=...)`
+
+        This is equivalent to the following:
+
+            from jina import Flow
+
+            f = Flow().add(...)
+
+            with f:
+                f.post(endpoint, ...)
+
+        # noqa: DAR201
+        # noqa: DAR101
         """
+        # The above comment is written in Markdown for better rendering in FastAPI
 
-        bd = body.dict() if body else {'data': None}
+        bd = body.dict() if body else {'data': None}  # type: Dict
         bd['exec_endpoint'] = endpoint
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
 
-    @app.post(
-        path='/index',
-        summary='Post a data request to `/index` endpoint',
-        tags=['Sugary CRUD'],
-        response_model=JinaIndexRequestModel,
-    )
-    async def index_api(body: JinaIndexRequestModel):
-        """
-        Index API to index documents.
-
-        :param body: index request.
-        :return: Response of the results.
+    def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
+        """Exposing an executor endpoint to http endpoint
+        :param exec_endpoint: the executor endpoint
+        :param http_path: the http endpoint
+        :param kwargs: kwargs accepted by FastAPI
         """
 
-        bd = body.dict()
-        return StreamingResponse(
-            result_in_stream(request_generator(**bd)), media_type='application/json'
+        # group flow exposed endpoints into `customized` group
+        kwargs['tags'] = kwargs.get('tags', ['Customized'])
+
+        @app.api_route(
+            path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
         )
+        async def foo(body: JinaRequestModel):
+            bd = body.dict() if body else {'data': None}
+            bd['exec_endpoint'] = exec_endpoint
+            return StreamingResponse(
+                result_in_stream(request_generator(**bd)), media_type='application/json'
+            )
 
-    @app.post(
-        path='/search',
-        summary='Post a data request to `/search` endpoint',
-        tags=['Sugary CRUD'],
-        response_model=JinaSearchRequestModel,
-    )
-    async def search_api(body: JinaSearchRequestModel):
-        """
-        Search API to search documents.
-
-        :param body: search request.
-        :return: Response of the results.
-        """
-
-        bd = body.dict()
-        return StreamingResponse(
-            result_in_stream(request_generator(**bd)), media_type='application/json'
-        )
-
-    @app.put(
-        path='/update',
-        summary='Post a data request to `/update` endpoint',
-        tags=['Sugary CRUD'],
-        response_model=JinaUpdateRequestModel,
-    )
-    async def update_api(body: JinaUpdateRequestModel):
-        """
-        Update API to update documents.
-
-        :param body: update request.
-        :return: Response of the results.
-        """
-
-        bd = body.dict()
-        return StreamingResponse(
-            result_in_stream(request_generator(**bd)), media_type='application/json'
-        )
-
-    @app.delete(
-        path='/delete',
-        summary='Post a data request to `/delete` endpoint',
-        tags=['Sugary CRUD'],
-        response_model=JinaDeleteRequestModel,
-    )
-    async def delete_api(body: JinaDeleteRequestModel):
-        """
-        Delete API to delete documents.
-
-        :param body: delete request.
-        :return: Response of the results.
-        """
-
-        bd = body.dict()
-        return StreamingResponse(
-            result_in_stream(request_generator(**bd)), media_type='application/json'
-        )
+    if args.endpoints_mapping:
+        endpoints = json.loads(args.endpoints_mapping)  # type: Dict[str, Dict]
+        for k, v in endpoints.items():
+            expose_executor_endpoint(exec_endpoint=k, **v)
 
     async def result_in_stream(req_iter):
         """

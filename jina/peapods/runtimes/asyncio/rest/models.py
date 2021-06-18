@@ -241,14 +241,6 @@ class JinaStatusModel(BaseModel):
     used_memory: str
 
 
-class JinaReloadRequestModel(BaseModel):
-    """
-    Jina control request model.
-    """
-
-    targets: Union[str, List[str]]
-
-
 class JinaRequestModel(BaseModel):
     """
     Jina request model.
@@ -279,31 +271,3 @@ class JinaRequestModel(BaseModel):
     data_type: DataInputType = DataInputType.AUTO
     target_peapod: Optional[str] = None
     parameters: Optional[Dict] = None
-
-
-class JinaIndexRequestModel(JinaRequestModel):
-    """Index request model."""
-
-    exec_endpoint: str = '/index'
-
-
-class JinaSearchRequestModel(JinaRequestModel):
-    """Search request model."""
-
-    exec_endpoint: str = '/search'
-
-
-class JinaUpdateRequestModel(JinaRequestModel):
-    """Update request model."""
-
-    exec_endpoint: str = '/update'
-
-
-class JinaDeleteRequestModel(JinaRequestModel):
-    """Delete request model."""
-
-    exec_endpoint: str = '/delete'
-
-
-class JinaControlRequestModel(JinaRequestModel):
-    """Control request model."""

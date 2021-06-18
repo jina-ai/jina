@@ -40,14 +40,33 @@ def mixin_rest_server_parser(parser=None):
 
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='REST JSON')
+    gp = add_arg_group(parser, title='REST Middleware')
+    gp.add_argument(
+        '--cors',
+        action='store_true',
+        default=False,
+        help='''
+        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access. 
+        ''',
+    )
+
+    gp = add_arg_group(parser, title='REST Endpoint')
+    gp.add_argument(
+        '--endpoints-mapping',
+        type=str,
+        help='''
+        A JSON string that represents a mapping from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+        ''',
+    )
+
+    gp = add_arg_group(parser, title='REST Return')
 
     gp.add_argument(
         '--including-default-value-fields',
         action='store_true',
         default=False,
         help='''
-        If True, singular primitive fields,
+        If set, singular primitive fields,
         repeated fields, and map fields will always be serialized.  If
         False, only serialize non-empty fields.  Singular message fields
         and oneof fields are not affected by this option.
