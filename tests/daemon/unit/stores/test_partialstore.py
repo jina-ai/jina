@@ -3,12 +3,13 @@ from pathlib import Path
 
 import pytest
 
-from daemon.models import PeaModel, DaemonID
+from daemon.models import PeaModel, DaemonID, FlowModel
 from daemon.models.enums import UpdateOperation
 from daemon.stores.partial import PartialStore, PartialPeaStore, PartialFlowStore
 from jina import helper, Flow
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
+from jina.parsers.flow import set_flow_parser
 
 cur_dir = Path(__file__).parent
 
@@ -61,25 +62,26 @@ def test_peastore_add(partial_pea_store):
 
 
 def test_flowstore_add(monkeypatch, partial_flow_store):
-    flow_id = DaemonID('jflow')
     port_expose = helper.random_port()
-    partial_store_item = partial_flow_store.add(
-        filename=f'{cur_dir}/flow.yml', id=flow_id, port_expose=port_expose
-    )
+    flow_model = FlowModel()
+    flow_model.uses = f'{cur_dir}/flow.yml'
+    flow_model.port_expose = port_expose
+    args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
+    partial_store_item = partial_flow_store.add(args)
 
     assert partial_store_item
     assert isinstance(partial_flow_store.object, Flow)
     assert 'pod1' in partial_store_item.yaml_source
-    assert partial_flow_store.object.identity['pod1'] == flow_id.jid
     assert partial_flow_store.object.args.port_expose == port_expose
 
 
 def test_flowstore_update(partial_flow_store, mocker):
-    partial_flow_store.add(
-        filename=f'{cur_dir}/flow.yml',
-        id=DaemonID('jflow'),
-        port_expose=helper.random_port(),
-    )
+    flow_model = FlowModel()
+    flow_model.uses = f'{cur_dir}/flow.yml'
+    flow_model.port_expose = helper.random_port()
+    args = ArgNamespace.kwargs2namespace(flow_model.dict(), set_flow_parser())
+
+    partial_flow_store.add(args)
 
     update_mock = mocker.Mock()
     dump_mock = mocker.Mock()

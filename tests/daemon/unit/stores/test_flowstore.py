@@ -62,7 +62,7 @@ def test_flow_store(workspace):
     store = FlowStore()
     flow_id = DaemonID('jflow')
     flow_model = FlowModel()
-    flow_model.uses = f'{cur_dir}/flow.yml'
+    flow_model.uses = f'flow.yml'
 
     store.add(id=flow_id, workspace_id=workspace, params=flow_model, ports={})
     assert len(store) == 1
