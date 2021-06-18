@@ -208,25 +208,3 @@ def test_pea_runtime_env_setting_in_thread():
     assert 'key_parent' in os.environ
 
     os.unsetenv('key_parent')
-
-
-def test_pea_instantiate_start_same_context():
-    arg = set_pea_parser().parse_args([])
-    peas_args = [arg, arg]
-
-    for args in peas_args:
-        pea = Pea(args)
-        with pea:
-            pass
-
-
-def test_pea_instantiate_start_different_context():
-    arg = set_pea_parser().parse_args([])
-    peas_args = [arg, arg]
-    peas = []
-    for args in peas_args:
-        peas.append(Pea(args))
-
-    for pea in peas:
-        with pea:
-            pass
