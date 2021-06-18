@@ -1,6 +1,6 @@
 import argparse
 import asyncio
-from typing import Any
+from typing import Any, List
 
 from ....zmq import AsyncZmqlet
 from ..... import __version__
@@ -25,19 +25,45 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         from starlette import status
         from starlette.types import Receive, Scope, Send
 
-    app = FastAPI(
-        title=args.title or 'My Jina Service',
-        description=args.description
-        or 'This is my awesome service. '
-        'You can set `title` and `description` in your `Flow` to customize this text.',
-        version=__version__,
-    )
+    class ConnectionManager:
+        def __init__(self):
+            self.active_connections: List[WebSocket] = []
+
+        async def connect(self, websocket: WebSocket):
+            await websocket.accept()
+            self.active_connections.append(websocket)
+
+        def disconnect(self, websocket: WebSocket):
+            self.active_connections.remove(websocket)
+
+        async def send_personal_message(self, message: str, websocket: WebSocket):
+            await websocket.send_text(message)
+
+        async def broadcast(self, message: str):
+            for connection in self.active_connections:
+                await connection.send_text(message)
+
+    manager = ConnectionManager()
+
+    app = FastAPI()
 
     zmqlet = AsyncZmqlet(args, logger)
 
     @app.on_event('shutdown')
     def _shutdown():
         zmqlet.close()
+
+    @app.websocket('/')
+    async def websocket_endpoint(websocket: WebSocket, client_id: int):
+        await manager.connect(websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await manager.send_personal_message(f"You wrote: {data}", websocket)
+                await manager.broadcast(f"Client #{client_id} says: {data}")
+        except WebSocketDisconnect:
+            manager.disconnect(websocket)
+            await manager.broadcast(f"Client #{client_id} left the chat")
 
     @app.websocket(path='/')
     class StreamingEndpoint(WebSocketEndpoint):
