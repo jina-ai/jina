@@ -540,7 +540,7 @@ def test_get_attr_values():
             'text': 'document',
             'feature1': 121,
             'name': 'name',
-            'tags': {'id': 'identity', 'a': 'b', 'c': 'd'},
+            'tags': {'id': 'identity', 'a': 'b', 'c': 'd', 'e': [0, 1, {'f': 'g'}]},
         }
     )
     d.scores['metric'] = NamedScore(value=42)
@@ -554,6 +554,7 @@ def test_get_attr_values():
         'tags__c',
         'tags__id',
         'tags__inexistant',
+        'tags__e__2__f',
         'inexistant',
     ]
     res = d.get_attributes(*required_keys)
@@ -567,12 +568,14 @@ def test_get_attr_values():
     assert res[required_keys.index('scores__values__metric__value')] == 42
     assert res[required_keys.index('tags__inexistant')] is None
     assert res[required_keys.index('inexistant')] is None
+    assert res[required_keys.index('tags__e__2__f')] == 'g'
 
     required_keys_2 = ['tags', 'text']
     res2 = d.get_attributes(*required_keys_2)
     assert len(res2) == 2
     assert res2[required_keys_2.index('text')] == 'document'
     assert res2[required_keys_2.index('tags')] == d.tags
+    assert res2[required_keys_2.index('tags')].dict() == d.tags.dict()
 
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
     required_keys_3 = ['tags__outterkey__innerkey']
@@ -1041,6 +1044,37 @@ def test_tag_compare_dict():
     assert d.tags.dict() == {'hey': {'bye': 4}}
 
     d.tags = {'hey': [1, 2]}
-    # TODO: Issue about having proper ListValueView
-    assert d.tags != {'hey': [1, 2]}
+    assert d.tags == {'hey': [1, 2]}
     assert d.tags.dict() == {'hey': [1, 2]}
+
+
+def test_tags_update_nested_lists():
+    from jina import Document
+    from jina.types.list import ListView
+    from jina.types.struct import StructView
+
+    d = Document()
+    d.tags = {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    assert d.tags.dict() == {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    assert d.tags == {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    assert isinstance(d.tags['hoy'], ListView)
+    assert isinstance(d.tags['hey']['list'], ListView)
+    assert isinstance(d.tags['hey']['list'][2], StructView)
+    d.tags['hey']['nested'] = False
+    d.tags['hey']['list'][1] = True
+    d.tags['hey']['list'][2]['inlist'] = 'not here'
+    d.tags['hoy'][0] = 1
+
+    assert d.tags['hey']['nested'] is False
+    assert d.tags['hey']['list'][1] is True
+    assert d.tags['hey']['list'][2]['inlist'] == 'not here'
+    assert d.tags['hoy'][0] == 1
