@@ -50,8 +50,16 @@ class BaseRuntime:
      .. seealso::
 
         :class:`BasePea` for managing a :class:`Runtime` object's lifecycle.
-
     """
+
+    def __init__(self, args: 'argparse.Namespace', **kwargs):
+        super().__init__()
+        self.args = args
+        if args.name:
+            self.name = f'{args.name}/{self.__class__.__name__}'
+        else:
+            self.name = self.__class__.__name__
+        self.logger = JinaLogger(self.name, **vars(self.args))
 
     def run_forever(self):
         """Running the blocking procedure inside ``S``. Note, once this method is called,
@@ -67,53 +75,8 @@ class BaseRuntime:
         """
         raise NotImplementedError
 
-    @staticmethod
-    def cancel(ctrl_addr, timeout_ctrl):
-        """Cancelling :meth:`run_forever` from ``M``. :meth:`cancel` usually requires some special communication
-        between ``M`` and ``S``, e.g.
-
-        - Use :class:`threading.Event` or `multiprocessing.Event`, while :meth:`run_forever` polls for this event
-        - Use ZMQ to send a message, while :meth:`run_forever` polls for this message
-        - Use HTTP/REST to send a request, while :meth:`run_forever` listens to this request
-
-        .. seealso::
-
-            :meth:`run_forever` for blocking the process/thread.
-
-        :param ctrl_addr: The control address to send control message to
-        :param timeout_ctrl: The timeout for the communication
-        """
-        raise NotImplementedError
-
-    @staticmethod
-    def activate(ctrl_addr, timeout_ctrl):
-        """Send activate control message.
-
-        :param ctrl_addr: The control address to send control message to
-        :param timeout_ctrl: The timeout for the communication
-        """
-        raise NotImplementedError
-
-    @staticmethod
-    def deactivate(ctrl_addr, timeout_ctrl):
-        """Send deactivate control message.
-
-        :param ctrl_addr: The control address to send control message to
-        :param timeout_ctrl: The timeout for the communication
-        """
-        raise NotImplementedError
-
     def teardown(self):
         """Method called immediately after :meth:`run_forever` is unblocked.
         You can tidy up things here.  Optional in subclasses. The default implementation does nothing.
         """
         self.logger.close()
-
-    def __init__(self, args: 'argparse.Namespace', **kwargs):
-        super().__init__()
-        self.args = args
-        if args.name:
-            self.name = f'{args.name}/{self.__class__.__name__}'
-        else:
-            self.name = self.__class__.__name__
-        self.logger = JinaLogger(self.name, **vars(self.args))

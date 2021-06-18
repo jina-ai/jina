@@ -12,7 +12,7 @@ from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
 from ..runtimes.jinad import JinadRuntime
-from ..zmq import Zmqlet
+from ..zmq import Zmqlet, send_ctrl_message
 
 __all__ = ['BasePea']
 
@@ -167,14 +167,24 @@ class BasePea:
             self._unset_envs()
 
     def activate_runtime(self):
-        """
-        Calls activate `staticmethod` of `runtime_cls`.
-        """
+        """ Send activate control message. """
         if self._dealer:
-            self.runtime_cls.activate(
-                ctrl_addr=self._zed_runtime_ctrl_addres,
-                timeout_ctrl=self._timeout_ctrl,
+            send_ctrl_message(
+                self._zed_runtime_ctrl_addres, 'ACTIVATE', timeout=self._timeout_ctrl
             )
+
+    def _deactivate_runtime(self):
+        """Send deactivate control message. """
+        if self._dealer:
+            send_ctrl_message(
+                self._zed_runtime_ctrl_addres, 'DEACTIVATE', timeout=self._timeout_ctrl
+            )
+
+    def _cancel_rumtime(self):
+        """Send terminate control message."""
+        send_ctrl_message(
+            self._local_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
+        )
 
     def wait_start_success(self):
         """Block until all peas starts successfully.
@@ -198,6 +208,7 @@ class BasePea:
             else:
                 self.logger.success(__ready_msg__)
         else:
+            _timeout = _timeout or -1
             self.logger.warning(
                 f'{self.runtime_cls!r} timeout after waiting for {self.args.timeout_ready}ms, '
                 f'if your executor takes time to load, you may increase --timeout-ready'
@@ -228,22 +239,13 @@ class BasePea:
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                if self._dealer:
-                    self.runtime_cls.deactivate(
-                        ctrl_addr=self._zed_runtime_ctrl_addres,
-                        timeout_ctrl=self._timeout_ctrl,
-                    )
-                    # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
-                    # it does not block. Needs to be refactored
-                    time.sleep(0.1)
-                self.runtime_cls.cancel(
-                    ctrl_addr=self._local_runtime_ctrl_address,
-                    timeout_ctrl=self._timeout_ctrl,
-                )
+                self._deactivate_runtime()
+                time.sleep(0.1)
+                self._cancel_rumtime()
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(
-                    f'{ex!r} during {self.runtime_cls.cancel!r}'
+                    f'{ex!r} during {self._deactivate_runtime!r}'
                     + f'\n add "--quiet-error" to suppress the exception details'
                     if not self.args.quiet_error
                     else '',
