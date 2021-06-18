@@ -69,7 +69,8 @@ class BaseRuntime:
         """
         raise NotImplementedError
 
-    def cancel(self):
+    @staticmethod
+    def cancel(ctrl_addr, timeout_ctrl):
         """Cancelling :meth:`run_forever` from ``M``. :meth:`cancel` usually requires some special communication
         between ``M`` and ``S``, e.g.
 
@@ -83,11 +84,13 @@ class BaseRuntime:
         """
         raise NotImplementedError
 
-    def activate(self):
+    @staticmethod
+    def activate(ctrl_addr, timeout_ctrl):
         """Send activate control message."""
         raise NotImplementedError
 
-    def deactivate(self):
+    @staticmethod
+    def deactivate(ctrl_addr, timeout_ctrl):
         """Send deactivate control message."""
         raise NotImplementedError
 

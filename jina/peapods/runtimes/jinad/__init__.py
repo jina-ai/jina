@@ -27,23 +27,22 @@ class JinadRuntime(AsyncZMQRuntime):
             timeout=self.args.timeout_ready,
         )
 
-    def cancel(self):
+    @staticmethod
+    def cancel(ctrl_addr, timeout_ctrl):
         """Send terminate control message."""
         # (Joan) I put it here, to show how hacky it is. it recycles the logic to send terminate signal to
         # a remote Pea Runtime by capturing it locally in `_wait_async`. That's why we need to recycle the control addr
-        send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
+        send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=timeout_ctrl)
 
-    def activate(self):
+    @staticmethod
+    def activate(remote_ctrl_addr, timeout_ctrl):
         """Send activate control message."""
-        send_ctrl_message(
-            self.remote_ctrl_addr, 'ACTIVATE', timeout=self.args.timeout_ctrl
-        )
+        send_ctrl_message(remote_ctrl_addr, 'ACTIVATE', timeout=timeout_ctrl)
 
-    def deactivate(self):
+    @staticmethod
+    def deactivate(remote_ctrl_addr, timeout_ctrl):
         """Send deactivate control message."""
-        send_ctrl_message(
-            self.remote_ctrl_addr, 'DEACTIVATE', timeout=self.args.timeout_ctrl
-        )
+        send_ctrl_message(remote_ctrl_addr, 'DEACTIVATE', timeout=timeout_ctrl)
 
     def setup(self):
         """

@@ -61,18 +61,6 @@ class BasePea:
         if self.args.env:
             self._envs.update(self.args.env)
 
-        try:
-            self.runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
-        except Exception as ex:
-            self.logger.error(
-                f'{ex!r} during {self.runtime_cls.__init__!r}'
-                + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
-            raise RuntimeFailToStart from ex
-
     def start(self):
         """Start the Pea.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
@@ -101,14 +89,25 @@ class BasePea:
             :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
             Hence, please do not raise any exception here.
         """
-        self._set_envs()
-
-        self.logger.info(f'starting {typename(self.runtime)}...')
         try:
-            self.runtime.setup()
+            runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(
-                f'{ex!r} during {self.runtime.setup!r}'
+                f'{ex!r} during {self.runtime_cls.__init__!r}'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
+            raise RuntimeFailToStart from ex
+        self._set_envs()
+
+        self.logger.info(f'starting {typename(runtime)}...')
+        try:
+            runtime.setup()
+        except Exception as ex:
+            self.logger.error(
+                f'{ex!r} during {runtime.setup!r}'
                 + f'\n add "--quiet-error" to suppress the exception details'
                 if not self.args.quiet_error
                 else '',
@@ -117,14 +116,14 @@ class BasePea:
         else:
             self.is_ready.set()
             try:
-                self.runtime.run_forever()
+                runtime.run_forever()
             except RuntimeTerminated:
-                self.logger.info(f'{self.runtime!r} is end')
+                self.logger.info(f'{runtime!r} is end')
             except KeyboardInterrupt:
-                self.logger.info(f'{self.runtime!r} is interrupted by user')
+                self.logger.info(f'{runtime!r} is interrupted by user')
             except (Exception, SystemError) as ex:
                 self.logger.error(
-                    f'{ex!r} during {self.runtime.run_forever!r}'
+                    f'{ex!r} during {runtime.run_forever!r}'
                     + f'\n add "--quiet-error" to suppress the exception details'
                     if not self.args.quiet_error
                     else '',
@@ -132,10 +131,10 @@ class BasePea:
                 )
 
             try:
-                self.runtime.teardown()
+                runtime.teardown()
             except Exception as ex:
                 self.logger.error(
-                    f'{ex!r} during {self.runtime.teardown!r}'
+                    f'{ex!r} during {runtime.teardown!r}'
                     + f'\n add "--quiet-error" to suppress the exception details'
                     if not self.args.quiet_error
                     else '',
@@ -161,7 +160,7 @@ class BasePea:
                 # return too early and the shutdown is set, means something fails!!
                 if self.args.quiet_error:
                     self.logger.critical(
-                        f'fail to start {self!r} because {self.runtime!r} throws some exception, '
+                        f'fail to start {self!r} because {self.runtime_cls!r} throws some exception, '
                         f'remove "--quiet-error" to see the exception stack in details'
                     )
                 raise RuntimeFailToStart
@@ -169,7 +168,7 @@ class BasePea:
                 self.logger.success(__ready_msg__)
         else:
             self.logger.warning(
-                f'{self.runtime!r} timeout after waiting for {self.args.timeout_ready}ms, '
+                f'{self.runtime_cls!r} timeout after waiting for {self.args.timeout_ready}ms, '
                 f'if your executor takes time to load, you may increase --timeout-ready'
             )
             self.close()
@@ -199,15 +198,20 @@ class BasePea:
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
                 if self._dealer:
-                    self.runtime.deactivate()
+                    self.runtime_cls.deactivate(
+                        ctrl_addr=self.args.ctrl_addr,
+                        timeout_ctrl=self.args.timeout_ctrl,
+                    )
                     # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
                     # it does not block. Needs to be refactored
                     time.sleep(0.1)
-                self.runtime.cancel()
+                self.runtime_cls.cancel(
+                    ctrl_addr=self.args.ctrl_addr, timeout_ctrl=self.args.timeout_ctrl
+                )
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(
-                    f'{ex!r} during {self.runtime.cancel!r}'
+                    f'{ex!r} during {self.runtime_cls.cancel!r}'
                     + f'\n add "--quiet-error" to suppress the exception details'
                     if not self.args.quiet_error
                     else '',

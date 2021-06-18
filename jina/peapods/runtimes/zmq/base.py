@@ -15,20 +15,23 @@ class ZMQRuntime(BaseRuntime, ABC):
             self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
 
-    def cancel(self):
+    @staticmethod
+    def cancel(ctrl_addr, timeout_ctrl):
         """Send terminate control message."""
         # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
-        send_ctrl_message(self.ctrl_addr, 'TERMINATE', timeout=self.args.timeout_ctrl)
+        send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=timeout_ctrl)
 
-    def activate(self):
+    @staticmethod
+    def activate(ctrl_addr, timeout_ctrl):
         """Send activate control message."""
         # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
-        send_ctrl_message(self.ctrl_addr, 'ACTIVATE', timeout=self.args.timeout_ctrl)
+        send_ctrl_message(ctrl_addr, 'ACTIVATE', timeout=timeout_ctrl)
 
-    def deactivate(self):
+    @staticmethod
+    def deactivate(ctrl_addr, timeout_ctrl):
         """Send deactivate control message."""
         # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
-        send_ctrl_message(self.ctrl_addr, 'DEACTIVATE', timeout=self.args.timeout_ctrl)
+        send_ctrl_message(ctrl_addr, 'DEACTIVATE', timeout=timeout_ctrl)
 
     @property
     def status(self):
@@ -78,21 +81,24 @@ class ZMQManyRuntime(BaseRuntime, ABC):
             self.host = args.host
             self.port_expose = args.port_expose
 
-    def cancel(self):
+    @staticmethod
+    def cancel(many_ctrl_addr, timeout_ctrl):
         """Send terminate control messages to all control address."""
         # TODO: can use send_message_async to avoid sequential waiting
-        for ctrl_addr in self.many_ctrl_addr:
-            send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=self.timeout_ctrl)
+        for ctrl_addr in many_ctrl_addr:
+            send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=timeout_ctrl)
 
-    def activate(self):
+    @staticmethod
+    def activate(many_ctrl_addr, timeout_ctrl):
         """Send activate control messages to all control address."""
-        for ctrl_addr in self.many_ctrl_addr:
-            send_ctrl_message(ctrl_addr, 'ACTIVATE', timeout=self.timeout_ctrl)
+        for ctrl_addr in many_ctrl_addr:
+            send_ctrl_message(ctrl_addr, 'ACTIVATE', timeout=timeout_ctrl)
 
-    def deactivate(self):
+    @staticmethod
+    def deactivate(many_ctrl_addr, timeout_ctrl):
         """Send deactivate control messages to all control address."""
-        for ctrl_addr in self.many_ctrl_addr:
-            send_ctrl_message(ctrl_addr, 'DEACTIVATE', timeout=self.timeout_ctrl)
+        for ctrl_addr in many_ctrl_addr:
+            send_ctrl_message(ctrl_addr, 'DEACTIVATE', timeout=timeout_ctrl)
 
     @property
     def status(self):
