@@ -83,19 +83,21 @@ class PartialPodStore(PartialPeaStore):
 
 
 class PartialFlowStore(PartialStore):
-    def add(self, filename: str, id: DaemonID, port_expose: int) -> PartialStoreItem:
+    def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
         """Starts a Flow in `mini-jinad`.
 
         :return: Item describing the Flow object
         """
         try:
-            with open(filename) as f:
-                y_spec = f.read()
-            self.object: Flow = Flow.load_config(y_spec)
-            self.object.identity = id.jid
-            self.object.workspace_id = jinad_args.workspace_id
-            # Main jinad sets Flow's port_expose so that it is exposed before starting the container.
-            self.object.args.port_expose = port_expose
+            if not args.uses:
+                raise ValueError('Uses yaml file was not specified in flow definition')
+
+            with open(args.uses) as yaml_file:
+                y_spec = yaml_file.read()
+            flow = Flow.load_config(y_spec)
+            flow.workspace_id = jinad_args.workspace_id
+            flow.args.port_expose = args.port_expose
+            self.object = flow
             self.object.start()
         except Exception as e:
             self._logger.error(f'{e!r}')
@@ -104,7 +106,7 @@ class PartialFlowStore(PartialStore):
             self.item = PartialFlowItem(
                 arguments=vars(self.object.args), yaml_source=y_spec
             )
-            self._logger.success(f'{colored(id, "cyan")} is created')
+            self._logger.success(f'Flow is created')
             return self.item
 
     def update(

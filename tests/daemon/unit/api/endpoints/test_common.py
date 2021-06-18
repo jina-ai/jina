@@ -1,19 +1,8 @@
 import os
-import shutil
 
 import pytest
 
-from daemon import daemon_logger, __dockerhost__
-from daemon.files import DaemonFile
-from daemon.models.id import DaemonID
 from daemon.dockerize import Dockerizer
-from daemon.helper import get_workspace_path
-from daemon.models.enums import WorkspaceState
-from daemon.models.workspaces import (
-    WorkspaceArguments,
-    WorkspaceItem,
-    WorkspaceMetadata,
-)
 from daemon.models.containers import ContainerItem
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,35 +12,13 @@ deps = ['mwu_encoder.py', 'mwu_encoder.yml']
 
 @pytest.fixture(scope='module', autouse=True)
 def workspace():
-    workspace_id = DaemonID('jworkspace')
-    print(workspace_id)
-    workdir = get_workspace_path(workspace_id)
-    shutil.copytree(cur_dir, workdir)
-    daemon_file = DaemonFile(
-        workdir=get_workspace_path(workspace_id), logger=daemon_logger
-    )
-    image_id = Dockerizer.build(
-        workspace_id=workspace_id, daemon_file=daemon_file, logger=daemon_logger
-    )
-    network_id = Dockerizer.network(workspace_id=workspace_id)
-    from daemon.stores import workspace_store
+    from tests.conftest import _create_workspace_directly, _clean_up_workspace
 
-    workspace_store[workspace_id] = WorkspaceItem(
-        state=WorkspaceState.ACTIVE,
-        metadata=WorkspaceMetadata(
-            image_id=image_id,
-            image_name=workspace_id.tag,
-            network=network_id,
-            workdir=workdir,
-        ),
-        arguments=WorkspaceArguments(
-            files=os.listdir(cur_dir), jinad={'a': 'b'}, requirements=''
-        ),
+    image_id, network_id, workspace_id, workspace_store = _create_workspace_directly(
+        cur_dir
     )
     yield workspace_id
-    Dockerizer.rm_image(image_id)
-    Dockerizer.rm_network(network_id)
-    workspace_store.delete(workspace_id, files=False)
+    _clean_up_workspace(image_id, network_id, workspace_id, workspace_store)
 
 
 @pytest.mark.parametrize('api', ['/peas', '/pods', '/flows'])

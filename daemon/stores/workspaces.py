@@ -55,19 +55,20 @@ class WorkspaceStore(BaseStore):
         return id
 
     def rm_files(self, id: DaemonID, logs: bool = False):
-        workdir = self[id].metadata.workdir
-        if not workdir or not Path(workdir).is_dir():
-            self._logger.info(f'there\'s nothing to remove in workdir {workdir}')
-            return
-        if logs:
-            self._logger.info(f'asked to remove complete directory: {workdir}')
-            rmtree(workdir)
-            self[id].metadata.workdir = ''
-        else:
-            for path in Path(workdir).rglob('[!logging.log]*'):
-                if path.is_file():
-                    self._logger.debug(f'file to be deleted: {path}')
-                    path.unlink()
+        if self[id].metadata:
+            workdir = self[id].metadata.workdir
+            if not workdir or not Path(workdir).is_dir():
+                self._logger.info(f'there\'s nothing to remove in workdir {workdir}')
+                return
+            if logs:
+                self._logger.info(f'asked to remove complete directory: {workdir}')
+                rmtree(workdir)
+                self[id].metadata.workdir = ''
+            else:
+                for path in Path(workdir).rglob('[!logging.log]*'):
+                    if path.is_file():
+                        self._logger.debug(f'file to be deleted: {path}')
+                        path.unlink()
 
     def rm_network(self, id: DaemonID):
         try:
@@ -132,7 +133,7 @@ class WorkspaceStore(BaseStore):
             raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
 
         # Peas/Pods/Flows need to be deleted before networks, files etc can be deleted
-        if everything:
+        if everything and self[id].metadata:
             from . import get_store_from_id
 
             ids_to_delete = list(self[id].metadata.managed_objects)

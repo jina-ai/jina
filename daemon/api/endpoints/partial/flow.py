@@ -1,10 +1,12 @@
 from fastapi import APIRouter
 
-from ....models import DaemonID
+from jina.helper import ArgNamespace
+from jina.parsers.flow import set_flow_parser
+from ....excepts import Runtime400Exception
 from ....models.enums import UpdateOperation
 from ....models.partial import PartialFlowItem
-from ....excepts import Runtime400Exception
 from ....stores import partial_store as store
+from ....models import FlowModel
 
 router = APIRouter(prefix='/flow', tags=['flow'])
 
@@ -18,13 +20,14 @@ async def _status():
 
 @router.post(
     path='',
-    summary='Create a Flow from a YAML config',
+    summary='Create a Flow',
     status_code=201,
     response_model=PartialFlowItem,
 )
-async def _create(filename: str, id: DaemonID, port_expose: int):
+async def _create(flow: 'FlowModel'):
     try:
-        return store.add(filename, id, port_expose)
+        args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
+        return store.add(args)
     except Exception as ex:
         raise Runtime400Exception from ex
 
