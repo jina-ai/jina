@@ -574,6 +574,7 @@ def test_get_attr_values():
     res2 = d.get_attributes(*required_keys_2)
     assert len(res2) == 2
     assert res2[required_keys_2.index('text')] == 'document'
+    assert res2[required_keys_2.index('tags')] == d.tags
     assert res2[required_keys_2.index('tags')].dict() == d.tags.dict()
 
     d = Document({'id': '123', 'tags': {'outterkey': {'innerkey': 'real_value'}}})
@@ -1058,6 +1059,10 @@ def test_tags_update_nested_lists():
         'hoy': [0, 1],
     }
     assert d.tags.dict() == {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    assert d.tags == {
         'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
         'hoy': [0, 1],
     }
