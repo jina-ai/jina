@@ -458,8 +458,7 @@
                         <span class="c1"># https://websockets.readthedocs.io/en/stable/faq.html#why-does-the-server-close-the-connection-after-processing-one-message</span>
 
                         <span class="n">resp</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">response_bytes</span><span class="p">)</span>
-                        <span class="n">resp</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">request_type</span><span class="p">)</span>
-                        <span class="n">resp</span><span class="o">.</span><span class="n">as_response</span><span class="p">()</span>
+                        <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">request_type</span><span class="p">)</span><span class="o">.</span><span class="n">as_response</span><span class="p">()</span>
                         <span class="n">callback_exec</span><span class="p">(</span>
                             <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
                             <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
@@ -534,7 +533,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 17, 2021.
+            Last updated on Jun 18, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

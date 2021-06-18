@@ -369,8 +369,8 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
-<span class="kn">from</span> <span class="nn">jina.types.struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 
+<span class="kn">from</span> <span class="nn">...types.struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 <span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
 <span class="kn">from</span> <span class="nn">.mixin</span> <span class="kn">import</span> <span class="n">DocsPropertyMixin</span><span class="p">,</span> <span class="n">GroundtruthPropertyMixin</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">CompressAlgo</span><span class="p">,</span> <span class="n">RequestType</span>
@@ -413,25 +413,21 @@
 <span class="sd">    :class:`jina_pb2.RequestProto` object.</span>
 
 <span class="sd">    :param request: The request.</span>
-<span class="sd">    :param envelope: EnvelopeProto object.</span>
+<span class="sd">    :param compression_algorithm: The compression algorithm to use.</span>
 <span class="sd">    :param copy: Copy the request if ``copy`` is True.</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">request</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">'jina_pb2.RequestProto'</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">envelope</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'jina_pb2.EnvelopeProto'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">'jina_pb2.RequestProto'</span><span class="p">,</span> <span class="s1">'Request'</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">compression_algorithm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CompressAlgo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Set constructor method.</span>
-
-<span class="sd">        :param request: request object as bytes, dictionary, string or protobuf instance</span>
-<span class="sd">        :param envelope: envelope of the request</span>
-<span class="sd">        :param copy: if true, request is copied</span>
-<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="p">()</span>  <span class="c1"># type: 'jina_pb2.RequestProto'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compression_algorithm</span> <span class="o">=</span> <span class="n">compression_algorithm</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
@@ -454,15 +450,27 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">BadRequestType</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fail to construct a request from </span><span class="si">{</span><span class="n">request</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_envelope</span> <span class="o">=</span> <span class="n">envelope</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_used</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: Return True when request has been r/w at least once</span>
-
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># https://docs.python.org/3/reference/datamodel.html#object.__getattr__</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_trigger_body_fields</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_decompressed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Return a boolean indicating if the proto is decompressed</span>
+
+<span class="sd">        :return: a boolean indicating if the proto is decompressed</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_from_request</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">):</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">compression_algorithm</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">_compression_algorithm</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">_pb_body</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">_buffer</span>
+        <span class="k">return</span> <span class="n">instance</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -500,52 +508,38 @@
         <span class="kn">from</span> <span class="nn">.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
         <span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
+        <span class="k">if</span> <span class="n">request_type</span> <span class="ow">in</span> <span class="n">_body_type</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">request_type</span><span class="p">)</span><span class="o">.</span><span class="n">SetInParent</span><span class="p">()</span>
         <span class="n">rt</span> <span class="o">=</span> <span class="n">request_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">RequestType</span><span class="o">.</span><span class="n">DATA</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">DataRequest</span>
+            <span class="k">return</span> <span class="n">DataRequest</span><span class="o">.</span><span class="n">_from_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">rt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">RequestType</span><span class="o">.</span><span class="n">CONTROL</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">ControlRequest</span>
+            <span class="k">return</span> <span class="n">ControlRequest</span><span class="o">.</span><span class="n">_from_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">request_type</span><span class="si">}</span><span class="s1"> is not recognized'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-    <span class="nd">@request_type</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">request_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Set the type of this request, but keep the body empty.</span>
-
-<span class="sd">        :param value: string representation of request type</span>
-<span class="sd">        """</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_body_type</span><span class="p">:</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">SetInParent</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> is not valid, must be one of </span><span class="si">{</span><span class="n">_body_type</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_request_type</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">request_type</span><span class="si">}</span><span class="s1"> is not recognized'</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_decompress</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_decompress</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CompressAlgo</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">algorithm</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">data</span>
 
-        <span class="n">ctag</span> <span class="o">=</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">ctag</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">LZ4</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">LZ4</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">lz4.frame</span>
 
             <span class="n">data</span> <span class="o">=</span> <span class="n">lz4</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ctag</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">BZ2</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">BZ2</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">bz2</span>
 
             <span class="n">data</span> <span class="o">=</span> <span class="n">bz2</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ctag</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">LZMA</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">LZMA</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">lzma</span>
 
             <span class="n">data</span> <span class="o">=</span> <span class="n">lzma</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ctag</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">ZLIB</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">ZLIB</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">zlib</span>
 
             <span class="n">data</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">ctag</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">GZIP</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="o">==</span> <span class="n">CompressAlgo</span><span class="o">.</span><span class="n">GZIP</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">gzip</span>
 
             <span class="n">data</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -554,26 +548,24 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">proto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'jina_pb2.RequestProto'</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Cast ``self`` to a :class:`jina_pb2.RequestProto`. This will trigger</span>
-<span class="sd">        :attr:`is_used`. Laziness will be broken and serialization will be recomputed when calling</span>
+<span class="sd">        Cast ``self`` to a :class:`jina_pb2.RequestProto`. Laziness will be broken and serialization will be recomputed when calling</span>
 <span class="sd">        :meth:`SerializeToString`.</span>
 
 <span class="sd">        :return: protobuf instance</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">:</span>
-            <span class="c1"># if request is already given while init</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_used</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_decompressed</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># if not then build one from buffer</span>
+
             <span class="n">r</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RequestProto</span><span class="p">()</span>
             <span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decompress</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">algorithm</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envelope</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_compression_algorithm</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">r</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">_buffer</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_used</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">r</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="c1"># # Though I can modify back the envelope, not sure if it is a good design:</span>
             <span class="c1"># # My intuition is: if the content is changed dramatically, e.g. from index to control request,</span>
             <span class="c1"># # then whatever writes on the envelope should be dropped</span>
@@ -589,7 +581,7 @@
 
 <span class="sd">        :return: serialized request</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_used</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_decompressed</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># no touch, skip serialization, return original</span>
@@ -599,10 +591,10 @@
         <span class="sd">"""</span>
 <span class="sd">        Return a weak reference of this object but as :class:`Response` object. It gives a more</span>
 <span class="sd">        consistent semantics on the client.</span>
+
+<span class="sd">        :return: `self` as an instance of `Response`</span>
 <span class="sd">        """</span>
-        <span class="n">base_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
-        <span class="n">base_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_cls_name</span><span class="p">,</span> <span class="p">(</span><span class="n">base_cls</span><span class="p">,</span> <span class="n">Response</span><span class="p">),</span> <span class="p">{})</span></div>
+        <span class="k">return</span> <span class="n">Response</span><span class="o">.</span><span class="n">_from_request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -623,11 +615,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">Request</span><span class="p">):</span>
+<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">Request</span><span class="p">,</span> <span class="n">DocsPropertyMixin</span><span class="p">,</span> <span class="n">GroundtruthPropertyMixin</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as</span>
 <span class="sd">    :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on</span>
 <span class="sd">    the client API: send a :class:`Request` and receive a :class:`Response`.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        For now it only exposes `Docs` and `GroundTruth`. Users should very rarely access `Control` commands, so preferably</span>
+<span class="sd">        not confuse the user by adding `CommandMixin`.</span>
 <span class="sd">    """</span></div>
 </pre></div>
       </article>
@@ -641,7 +637,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 17, 2021.
+            Last updated on Jun 18, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

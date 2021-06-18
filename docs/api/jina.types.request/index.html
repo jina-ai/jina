@@ -404,7 +404,7 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.types.request" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="jina.types.request.Request">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.request.</span></code><code class="sig-name descname"><span class="pre">Request</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envelope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.request.</span></code><code class="sig-name descname"><span class="pre">Request</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.mixin.ProtoTypeMixin</span></code></a>, <a class="reference internal" href="../jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin" title="jina.types.request.mixin.DocsPropertyMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.mixin.DocsPropertyMixin</span></code></a>, <a class="reference internal" href="../jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin" title="jina.types.request.mixin.GroundtruthPropertyMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.mixin.GroundtruthPropertyMixin</span></code></a></p>
 <p><a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> is one of the <strong>primitive data type</strong> in Jina.</p>
 <p>It offers a Pythonic interface to allow users access and manipulate
@@ -416,26 +416,21 @@ and decompression when receives the first read access to its member.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RequestProto</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The request.</p></li>
-<li><p><strong>envelope</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">EnvelopeProto</span></code>]) – EnvelopeProto object.</p></li>
+<li><p><strong>request</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RequestProto</span></code>, <a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The request.</p></li>
+<li><p><strong>compression_algorithm</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.enums/#jina.enums.CompressAlgo" title="jina.enums.CompressAlgo"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressAlgo</span></code></a>]) – The compression algorithm to use.</p></li>
 <li><p><strong>copy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Copy the request if <code class="docutils literal notranslate"><span class="pre">copy</span></code> is True.</p></li>
 </ul>
 </dd>
 </dl>
-<p>Set constructor method.</p>
+<dl class="py method">
+<dt id="jina.types.request.Request.is_decompressed">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_decompressed</span></code><a class="headerlink" href="#jina.types.request.Request.is_decompressed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a boolean indicating if the proto is decompressed</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RequestProto</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – request object as bytes, dictionary, string or protobuf instance</p></li>
-<li><p><strong>envelope</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">EnvelopeProto</span></code>]) – envelope of the request</p></li>
-<li><p><strong>copy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if true, request is copied</p></li>
-</ul>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a boolean indicating if the proto is decompressed</p>
 </dd>
 </dl>
-<dl class="py attribute">
-<dt id="jina.types.request.Request.is_used">
-<code class="sig-name descname"><span class="pre">is_used</span></code><a class="headerlink" href="#jina.types.request.Request.is_used" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True when request has been r/w at least once</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.request.Request.body">
@@ -444,19 +439,6 @@ and decompression when receives the first read access to its member.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>body property</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.request.Request.as_typed_request">
-<code class="sig-name descname"><span class="pre">as_typed_request</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Request.as_typed_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request.as_typed_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>Change the request class according to the one_of value in <code class="docutils literal notranslate"><span class="pre">body</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>request_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – string representation of the request type</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>self</p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,10 +456,22 @@ and decompression when receives the first read access to its member.</p>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt id="jina.types.request.Request.as_typed_request">
+<code class="sig-name descname"><span class="pre">as_typed_request</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Request.as_typed_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request.as_typed_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the request class according to the one_of value in <code class="docutils literal notranslate"><span class="pre">body</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>request_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – string representation of the request type</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>self</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt id="jina.types.request.Request.proto">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">proto</span></code><a class="headerlink" href="#jina.types.request.Request.proto" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.RequestProto</span></code>. This will trigger
-<a class="reference internal" href="#jina.types.request.Request.is_used" title="jina.types.request.Request.is_used"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_used</span></code></a>. Laziness will be broken and serialization will be recomputed when calling
+<dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.RequestProto</span></code>. Laziness will be broken and serialization will be recomputed when calling
 <a class="reference internal" href="#jina.types.request.Request.SerializeToString" title="jina.types.request.Request.SerializeToString"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -506,6 +500,11 @@ and decompression when receives the first read access to its member.</p>
 <code class="sig-name descname"><span class="pre">as_response</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Request.as_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Request.as_response" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a weak reference of this object but as <a class="reference internal" href="#jina.types.request.Response" title="jina.types.request.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> object. It gives a more
 consistent semantics on the client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><cite>self</cite> as an instance of <cite>Response</cite></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.request.Request.parameters">
@@ -523,21 +522,16 @@ consistent semantics on the client.</p>
 </dd></dl>
 <dl class="py class">
 <dt id="jina.types.request.Response">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.request.</span></code><code class="sig-name descname"><span class="pre">Response</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">envelope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.Request</span></code></a></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.request.</span></code><code class="sig-name descname"><span class="pre">Response</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/#Response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.Response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.Request</span></code></a>, <a class="reference internal" href="../jina.types.request.mixin/#jina.types.request.mixin.DocsPropertyMixin" title="jina.types.request.mixin.DocsPropertyMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.mixin.DocsPropertyMixin</span></code></a>, <a class="reference internal" href="../jina.types.request.mixin/#jina.types.request.mixin.GroundtruthPropertyMixin" title="jina.types.request.mixin.GroundtruthPropertyMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.mixin.GroundtruthPropertyMixin</span></code></a></p>
 <p>Response is the <a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> object returns from the flow. Right now it shares the same representation as
 <a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>. At 0.8.12, <a class="reference internal" href="#jina.types.request.Response" title="jina.types.request.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> is a simple alias. But it does give a more consistent semantic on
 the client API: send a <a class="reference internal" href="#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> and receive a <a class="reference internal" href="#jina.types.request.Response" title="jina.types.request.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>.</p>
-<p>Set constructor method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">RequestProto</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – request object as bytes, dictionary, string or protobuf instance</p></li>
-<li><p><strong>envelope</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">EnvelopeProto</span></code>]) – envelope of the request</p></li>
-<li><p><strong>copy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if true, request is copied</p></li>
-</ul>
-</dd>
-</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For now it only exposes <cite>Docs</cite> and <cite>GroundTruth</cite>. Users should very rarely access <cite>Control</cite> commands, so preferably
+not confuse the user by adding <cite>CommandMixin</cite>.</p>
+</div>
 </dd></dl>
 </div>
 </div>
@@ -571,7 +565,7 @@ the client API: send a <a class="reference internal" href="#jina.types.request.R
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 17, 2021.
+            Last updated on Jun 18, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

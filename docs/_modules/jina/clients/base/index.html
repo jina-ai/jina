@@ -528,7 +528,7 @@
                 <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">,</span> <span class="n">cm2</span><span class="p">:</span>
                     <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">req_iter</span><span class="p">):</span>
                         <span class="n">resp</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">request_type</span><span class="p">)</span>
-                        <span class="n">resp</span><span class="o">.</span><span class="n">as_response</span><span class="p">()</span>
+                        <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">as_response</span><span class="p">()</span>
                         <span class="n">callback_exec</span><span class="p">(</span>
                             <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
                             <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
@@ -580,7 +580,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 17, 2021.
+            Last updated on Jun 18, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
