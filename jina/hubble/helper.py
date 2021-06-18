@@ -101,7 +101,10 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
 
 
 def download_with_resume(
-    url: str, md5sum: str, target_dir: 'Path', filename: 'Path' = None
+    url: str,
+    target_dir: 'Path',
+    filename: 'Path' = None,
+    md5sum: str = None,
 ) -> 'Path':
     """
     Download file from url to target_dir, and check md5sum.
@@ -151,7 +154,7 @@ def download_with_resume(
         else:
             _download(url, filepath)
 
-    if not md5file(filepath) == md5sum:
+    if md5sum and not md5file(filepath) == md5sum:
         raise RuntimeError("MD5 checksum failed.")
 
     return filepath

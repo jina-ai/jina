@@ -189,9 +189,9 @@ class HubIO:
                     cached_zip_file = Path(f'{id}-{md5sum}.zip')
                     download_with_resume(
                         archive_url,
-                        md5sum,
                         JINA_HUB_CACHE_DIR,
                         cached_zip_file,
+                        md5sum=md5sum,
                     )
                 with TimeContext(f'installing {archive_url}', self.logger):
                     # TODO: get latest tag
