@@ -42,7 +42,6 @@ class BasePea:
         self.name = self.args.name or self.__class__.__name__
         self.is_ready = _get_event(self.worker)
         self.is_shutdown = _get_event(self.worker)
-        # ConditionalEvent doesn't support threading for now
         self.ready_or_shutdown = ConditionalEvent(
             getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
             events_list=[self.is_ready, self.is_shutdown],
@@ -82,6 +81,7 @@ class BasePea:
         self.worker.start()
         if not self.args.noblock_on_start:
             self.wait_start_success()
+        return self
 
     def join(self, *args, **kwargs):
         """Joins the Pea.

@@ -25,9 +25,9 @@ def test_zed_runtime(runtime, ctrl_ipc):
     )
     with Pea1(arg) as p:
         if runtime == 'thread':
-            assert isinstance(p, threading.Thread)
+            assert isinstance(p.worker, threading.Thread)
         elif runtime == 'process':
-            assert isinstance(p, multiprocessing.Process)
+            assert isinstance(p.worker, multiprocessing.Process)
 
 
 @pytest.mark.skipif(
