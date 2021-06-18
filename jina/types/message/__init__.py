@@ -4,6 +4,8 @@ import traceback
 from typing import Union, List, Optional
 
 from ..request import Request
+from ..request.data import DataRequest
+from ..request.control import ControlRequest
 from ... import __version__, __proto_version__
 from ...enums import CompressAlgo
 from ...excepts import MismatchedVersion
@@ -79,11 +81,14 @@ class Message:
 
         :return: request
         """
-        if self.envelope and isinstance(self._request, Request):
-            return self._request.as_typed_request(self.envelope.request_type)
-        else:
-            # when there is no envelope, just return a generic request
-            return self._request
+        if (
+            self.envelope
+            and isinstance(self._request, Request)
+            and not isinstance(self._request, DataRequest)
+            and not isinstance(self._request, ControlRequest)
+        ):
+            self._request = self._request.as_typed_request(self.envelope.request_type)
+        return self._request
 
     @request.setter
     def request(self, val: Union[bytes, 'jina_pb2.RequestProto']):
@@ -93,7 +98,12 @@ class Message:
         :param val: serialized Request
         """
         if isinstance(val, bytes):
-            self._request = Request(val, self.envelope)
+            self._request = Request(
+                val,
+                CompressAlgo.from_string(self.envelope.compression.algorithm)
+                if self.envelope
+                else None,
+            )
             self._size += sys.getsizeof(val)
         elif isinstance(val, (Request, jina_pb2.RequestProto)):
             self._request = val  # type: Union['Request', 'jina_pb2.RequestProto']
@@ -222,7 +232,7 @@ class Message:
 
     def _compress(self, data: bytes) -> bytes:
         # no further compression or post processing is required
-        if isinstance(self.request, Request) and not self.request.is_used:
+        if isinstance(self.request, Request) and not self.request.is_decompressed:
             return data
 
         # otherwise there are two cases
