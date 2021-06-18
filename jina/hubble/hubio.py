@@ -1,5 +1,6 @@
 """Module for wrapping Jina Hub API calls."""
 
+from jina.hubble.hubapi import JINA_HUB_ROOT
 import os
 import argparse
 import json
@@ -15,15 +16,15 @@ from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
 from .helper import archive_package, download_with_resume
+from .hubapi import install_locall
 
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
     'JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai'
 )
 JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
-JINA_HUB_CACHE_DIR = (
-    Path.home().joinpath('.jina', '.cache').mkdir(parents=True, exist_ok=True)
-)
+JINA_HUB_CACHE_DIR = Path.home().joinpath('.jina', '.cache')
+JINA_HUB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class HubIO:
@@ -143,7 +144,7 @@ class HubIO:
                 f'Error when trying to push the executor at {self.args.path}: {e!r}'
             )
 
-    def get(self, id: str, tag: str = None):
+    def fetch(self, id: str, tag: str = None):
         """Fetch the executor meta info from Jina Hub.
         :param id: the ID of the executor
         :param tag: the version tag of the executor
@@ -169,28 +170,34 @@ class HubIO:
     def pull(self) -> None:
         """Pull the executor pacakge from Jina Hub."""
         try:
-            executor = self.get(self.args.id)
-            id = executor['id']
-            archive_url = executor['archivePath']
+            id = self.args.id
+            tag = None
+
+            executor = self.fetch(id, tag)
+
+            # TODO: get latest version tag
+            latest_tag = 'v0'
+            tag = latest_tag
+
             image_name = executor['pullPath']
-            md5sum = executor['md5sum']
 
             if not self.args.docker:
+                archive_url = executor['archivePath']
+                md5sum = executor['md5sum']
                 # download the package
                 with TimeContext(f'downloading {archive_url}', self.logger):
+                    cached_zip_file = Path(f'{id}-{md5sum}.zip')
                     download_with_resume(
                         archive_url,
                         md5sum,
                         JINA_HUB_CACHE_DIR,
-                        Path(f'{id}.{md5sum}.zip'),
+                        cached_zip_file,
                     )
-
+                with TimeContext(f'installing {archive_url}', self.logger):
+                    # TODO: get latest tag
+                    install_locall(JINA_HUB_CACHE_DIR / cached_zip_file, id, latest_tag)
             else:
                 # pull the Docker image
-
-                # # TODO: only for test
-                # image_name = 'jinahub/pod.dummy_mwu_encoder:0.0.6'
-
                 with TimeContext(f'pulling {image_name}', self.logger):
                     image = self._client.images.pull(image_name)
                 if isinstance(image, list):
