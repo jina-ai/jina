@@ -129,7 +129,7 @@ class BaseRuntime:
         """
         self.logger.close()
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', **kwargs):
         super().__init__()
         self.args = args
         if args.name:

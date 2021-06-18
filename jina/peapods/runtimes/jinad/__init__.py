@@ -3,7 +3,7 @@ import asyncio
 from typing import Optional
 
 from .client import PeaDaemonClient
-from ...zmq import Zmqlet, send_ctrl_message
+from ...zmq import send_ctrl_message
 from ..asyncio.base import AsyncZMQRuntime
 from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored, is_yaml_filepath
@@ -12,12 +12,10 @@ from ....helper import cached_property, colored, is_yaml_filepath
 class JinadRuntime(AsyncZMQRuntime):
     """Runtime procedure for Jinad."""
 
-    def __init__(self, args: 'argparse.Namespace'):
-        super().__init__(args)
-        # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main` process.
-        self.remote_ctrl_addr = self.ctrl_addr
-        self.ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
-        self.timeout_ctrl = args.timeout_ctrl
+    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
+        super().__init__(args, ctrl_addr)
+        # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
+        # process.
         self.host = args.host
         self.port_expose = args.port_expose
         self.api = PeaDaemonClient(

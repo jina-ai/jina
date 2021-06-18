@@ -2,17 +2,15 @@ import argparse
 from abc import ABC
 
 from ..base import BaseRuntime
-from ...zmq import Zmqlet, send_ctrl_message
+from ...zmq import send_ctrl_message
 
 
 class ZMQRuntime(BaseRuntime, ABC):
     """Runtime procedure leveraging ZMQ."""
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
         super().__init__(args)
-        self.ctrl_addr = Zmqlet.get_ctrl_address(
-            self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
-        )[0]
+        self.ctrl_addr = ctrl_addr
 
     @staticmethod
     def cancel(ctrl_addr, timeout_ctrl):

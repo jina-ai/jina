@@ -27,8 +27,6 @@ class BasePea:
     A :class:`BasePea` must be equipped with a proper :class:`Runtime` class to work.
     """
 
-    runtime_cls = None  # type: Type['BaseRuntime']
-
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()  #: required here to call process/thread __init__
         self.worker = {
@@ -61,7 +59,16 @@ class BasePea:
             self._envs['JINA_LOG_CONFIG'] = 'QUIET'
         if self.args.env:
             self._envs.update(self.args.env)
-        self.runtime_cls, self.is_remote_controlled = self._get_runtime_cls()
+
+        # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
+        # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows control
+        # address of runtime
+        self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
+        self._runtime_ctrl_addr = Zmqlet.get_ctrl_address(
+            self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
+        )[0]
+        self._remote_ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
+        self._timeout_ctrl = self.args.timeout_ctrl
 
     def start(self):
         """Start the Pea.
@@ -100,7 +107,9 @@ class BasePea:
         """
         try:
             try:
-                runtime = self.runtime_cls(self.args)  # type: 'BaseRuntime'
+                runtime = self.runtime_cls(
+                    self.args, ctrl_addr=self._runtime_ctrl_addr
+                )  # type: 'BaseRuntime'
             except Exception as ex:
                 raise RuntimeFailToStart from ex
             self._set_envs()
@@ -203,29 +212,22 @@ class BasePea:
         # started yet.
         self.join(0.1)
 
-        cancel_ctrl_addr = Zmqlet.get_ctrl_address(
-            self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
-        )[0]
-        remote_cancel_ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
-        timeout_ctrl = self.args.timeout_ctrl
-        deactivate_ctrl_addr = cancel_ctrl_addr
-
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
                 if self._dealer:
                     self.runtime_cls.deactivate(
-                        ctrl_addr=deactivate_ctrl_addr,
-                        timeout_ctrl=timeout_ctrl,
+                        ctrl_addr=self._runtime_ctrl_addr,
+                        timeout_ctrl=self._timeout_ctrl,
                     )
                     # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
                     # it does not block. Needs to be refactored
                     time.sleep(0.1)
                 self.runtime_cls.cancel(
-                    ctrl_addr=cancel_ctrl_addr
-                    if not self.is_remote_controlled
-                    else remote_cancel_ctrl_addr,
-                    timeout_ctrl=timeout_ctrl,
+                    ctrl_addr=self._runtime_ctrl_addr
+                    if not self._is_remote_controlled
+                    else self._remote_ctrl_addr,
+                    timeout_ctrl=self._timeout_ctrl,
                 )
                 self.is_shutdown.wait()
             except Exception as ex:
