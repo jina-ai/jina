@@ -89,10 +89,6 @@ class PartialFlowStore(PartialStore):
         :return: Item describing the Flow object
         """
         try:
-            # This is set so that ContainerRuntime sets host_ctrl to __dockerhost__
-            # and on linux machines, we can access dockerhost inside containers
-            args.docker_kwargs = {'extra_hosts': {__dockerhost__: 'host-gateway'}}
-
             if not args.uses:
                 raise ValueError('Uses yaml file was not specified in flow definition')
 
