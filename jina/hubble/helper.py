@@ -17,11 +17,32 @@ def md5file(file_path: 'Path') -> str:
     :return: the MD5 checksum
     """
     hash_md5 = hashlib.md5()
-    with file_path.open(mode='rb') as f:
-        for chunk in f.iter_content(chunk_size=4096):
+    with file_path.open(mode='rb') as fp:
+        while True:
+            chunk = fp.read(4096)
+            if not chunk:
+                break
             hash_md5.update(chunk)
 
     return hash_md5.hexdigest()
+
+
+def unpack_package(filepath: 'Path', target_dir: 'Path'):
+    """Unpack the file to the target_dir.
+
+    :param filepath: the path of given file
+    :param target_dir: the path of target folder
+    """
+    if filepath.suffix == '.zip':
+        zip = zipfile.ZipFile(filepath, 'r')
+        zip.extractall(target_dir)
+        zip.close()
+    elif filepath.suffix in ['.tar', '.gz']:
+        tar = zipfile.open(filepath)
+        tar.extractall(target_dir)
+        tar.close()
+    else:
+        raise ValueError("File format is not supported for unpacking.")
 
 
 def archive_package(package_folder: 'Path') -> 'io.BytesIO':
@@ -118,18 +139,3 @@ def download_with_resume(
         raise RuntimeError("MD5 checksum failed.")
 
     return filepath
-
-
-# def unpack(filepath, target_dir):
-#     """Unpack the file to the target_dir."""
-#     print("Unpacking %s ..." % filepath)
-#     if filepath.endswith('.zip'):
-#         zip = zipfile.ZipFile(filepath, 'r')
-#         zip.extractall(target_dir)
-#         zip.close()
-#     elif filepath.endswith('.tar') or filepath.endswith('.tar.gz'):
-#         tar = zipfile.open(filepath)
-#         tar.extractall(target_dir)
-#         tar.close()
-#     else:
-#         raise ValueError("File format is not supported for unpacking.")
