@@ -27,8 +27,7 @@ def reference_doc(document_factory):
 
 @pytest.fixture
 def matches(document_factory):
-    req = Request()
-    req.request_type = 'data'
+    req = Request().as_typed_request('data')
     req.docs.extend(
         [
             document_factory.create(1, 'test 1'),

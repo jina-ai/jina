@@ -37,8 +37,7 @@ def responses():
         return [d1, d2, d3, d4]
 
     def create_request(multiplier):
-        req = Request()
-        req.request_type = 'data'
+        req = Request().as_typed_request('data')
         for doc in create_documents(multiplier):
             req.docs.append(doc)
         return req
