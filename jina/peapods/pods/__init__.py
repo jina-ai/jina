@@ -500,8 +500,7 @@ class Pod(BasePod):
     def _activate(self):
         # order is good. Activate from tail to head
         for pea in reversed(self.peas):
-            if pea.args.socket_in == SocketType.DEALER_CONNECT:
-                pea.runtime.activate()
+            pea.activate_runtime()
 
         self._activated = True
 

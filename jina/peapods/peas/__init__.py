@@ -163,6 +163,16 @@ class BasePea:
             self.is_ready.clear()
             self._unset_envs()
 
+    def activate_runtime(self):
+        """
+        Calls activate `staticmethod` of `runtime_cls`.
+        """
+        if self._dealer:
+            self.runtime_cls.activate(
+                ctrl_addr=self._runtime_ctrl_addr,
+                timeout_ctrl=self._timeout_ctrl,
+            )
+
     def wait_start_success(self):
         """Block until all peas starts successfully.
 
