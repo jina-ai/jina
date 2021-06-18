@@ -24,9 +24,7 @@ class JinadRuntime(AsyncZMQRuntime):
             logger=self.logger,
             timeout=self.args.timeout_ready,
         )
-        """
-        Uploads Pod/Pea context to remote & Creates remote Pod/Pea using :class:`JinadAPI`
-        """
+        # Uploads PPea context to remote & Creates remote Pea using :class:`JinadAPI`
         if self._remote_id:
             self.logger.success(
                 f'created a remote {self.api.kind}: {colored(self._remote_id, "cyan")}'

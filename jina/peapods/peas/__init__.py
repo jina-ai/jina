@@ -11,6 +11,7 @@ from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
+from ..runtimes.jinad import JinadRuntime
 from ..zmq import Zmqlet
 
 __all__ = ['BasePea']
@@ -64,10 +65,17 @@ class BasePea:
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows control
         # address of runtime
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
-        self._runtime_ctrl_addr = Zmqlet.get_ctrl_address(
+
+        # This logic must be improved specially when it comes to naming. It is about relative local/remote position between the
+        # runtime and the `ZEDRuntime` it may control
+        self._zed_runtime_ctrl_addres = Zmqlet.get_ctrl_address(
             self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
-        self._remote_ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
+        self._local_runtime_ctrl_address = (
+            Zmqlet.get_ctrl_address(None, None, True)[0]
+            if self.runtime_cls == JinadRuntime
+            else self._zed_runtime_ctrl_addres
+        )
         self._timeout_ctrl = self.args.timeout_ctrl
 
     def start(self):
@@ -108,7 +116,7 @@ class BasePea:
         try:
             self._set_envs()
             runtime = self.runtime_cls(
-                self.args, ctrl_addr=self._runtime_ctrl_addr
+                self.args, ctrl_addr=self._zed_runtime_ctrl_addres
             )  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(
@@ -164,7 +172,7 @@ class BasePea:
         """
         if self._dealer:
             self.runtime_cls.activate(
-                ctrl_addr=self._runtime_ctrl_addr,
+                ctrl_addr=self._zed_runtime_ctrl_addres,
                 timeout_ctrl=self._timeout_ctrl,
             )
 
@@ -222,16 +230,14 @@ class BasePea:
             try:
                 if self._dealer:
                     self.runtime_cls.deactivate(
-                        ctrl_addr=self._runtime_ctrl_addr,
+                        ctrl_addr=self._zed_runtime_ctrl_addres,
                         timeout_ctrl=self._timeout_ctrl,
                     )
                     # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
                     # it does not block. Needs to be refactored
                     time.sleep(0.1)
                 self.runtime_cls.cancel(
-                    ctrl_addr=self._runtime_ctrl_addr
-                    if not self._is_remote_controlled
-                    else self._remote_ctrl_addr,
+                    ctrl_addr=self._local_runtime_ctrl_address,
                     timeout_ctrl=self._timeout_ctrl,
                 )
                 self.is_shutdown.wait()
