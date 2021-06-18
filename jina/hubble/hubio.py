@@ -20,7 +20,7 @@ from .hubapi import install_locall
 
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
-    'JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai'
+    'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
 )
 JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 JINA_HUB_CACHE_DIR = Path.home().joinpath('.jina', '.cache')
