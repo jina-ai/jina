@@ -25,7 +25,7 @@ def _new_data_request_from_batch(
 
 def _new_data_request(endpoint, target, parameters):
     req = Request()
-    req.request_type = 'data'
+    req = req.as_typed_request('data')
 
     # set up header
     if endpoint:

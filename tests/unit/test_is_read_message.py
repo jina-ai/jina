@@ -14,13 +14,13 @@ from tests import validate_callback
 class MockBasePeaNotRead(BasePea):
     def _post_hook(self, msg: 'Message') -> 'BasePea':
         super()._post_hook(msg)
-        assert not msg.request.is_used
+        assert not msg.request.is_decompressed
 
 
 class MockBasePeaRead(BasePea):
     def _post_hook(self, msg: 'Message') -> 'BasePea':
         super()._post_hook(msg)
-        assert msg.request.is_used
+        assert msg.request.is_decompressed
 
 
 args1 = set_pea_parser().parse_args(
