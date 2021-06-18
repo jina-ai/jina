@@ -16,7 +16,9 @@ def bad_func(*args, **kwargs):
 
 def test_base_pea_with_runtime_bad_init(mocker):
     class Pea1(Pea):
-        runtime_cls = BaseRuntime
+        def __init__(self, args):
+            super().__init__(args)
+            self.runtime_cls = BaseRuntime
 
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, '__init__', bad_func)
@@ -39,7 +41,9 @@ def test_base_pea_with_runtime_bad_init(mocker):
 
 def test_base_pea_with_runtime_bad_run_forever(mocker):
     class Pea1(Pea):
-        runtime_cls = BaseRuntime
+        def __init__(self, args):
+            super().__init__(args)
+            self.runtime_cls = BaseRuntime
 
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, 'run_forever', bad_func)
@@ -61,7 +65,9 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
 
 def test_base_pea_with_runtime_bad_setup(mocker):
     class Pea1(Pea):
-        runtime_cls = BaseRuntime
+        def __init__(self, args):
+            super().__init__(args)
+            self.runtime_cls = BaseRuntime
 
     mocker.patch.object(BaseRuntime, 'setup', bad_func)
     setup_spy = mocker.spy(BaseRuntime, 'setup')
@@ -83,7 +89,9 @@ def test_base_pea_with_runtime_bad_setup(mocker):
 
 def test_base_pea_with_runtime_bad_teardown(mocker):
     class Pea1(Pea):
-        runtime_cls = BaseRuntime
+        def __init__(self, args):
+            super().__init__(args)
+            self.runtime_cls = BaseRuntime
 
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
     mocker.patch.object(BaseRuntime, 'teardown', lambda x: bad_func)
@@ -106,7 +114,9 @@ def test_base_pea_with_runtime_bad_teardown(mocker):
 
 def test_base_pea_with_runtime_bad_cancel(mocker):
     class Pea1(Pea):
-        runtime_cls = BaseRuntime
+        def __init__(self, args):
+            super().__init__(args)
+            self.runtime_cls = BaseRuntime
 
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
     mocker.patch.object(BaseRuntime, 'cancel', bad_func)

@@ -86,7 +86,8 @@ class BasePea:
         """Terminate the Pea.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
-        self.worker.terminate()
+        if hasattr(self.worker, 'terminate'):
+            self.worker.terminate()
 
     def run(self):
         """Method representing the :class:`BaseRuntime` activity.
@@ -241,8 +242,7 @@ class BasePea:
                 self.join()
         else:
             # if it fails to start, the process will hang at `join`
-            if hasattr(self, 'terminate'):
-                self.terminate()
+            self.terminate()
 
         self.logger.success(__stop_msg__)
         self.logger.close()
