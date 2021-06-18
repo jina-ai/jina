@@ -1045,7 +1045,7 @@ def test_tag_compare_dict():
     assert d.tags.dict() == {'hey': {'bye': 4}}
 
     d.tags = {'hey': [1, 2]}
-    assert d.tags != {'hey': [1, 2]}
+    assert d.tags == {'hey': [1, 2]}
     assert d.tags.dict() == {'hey': [1, 2]}
 
 
