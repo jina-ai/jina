@@ -17,7 +17,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-CLOUD_HOST = '54.205.181.16:8000'  # consider it as the staged version
+CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
@@ -89,7 +89,8 @@ def test_upload_multiple_workspaces(parallels, mocker):
 
 def test_custom_project():
 
-    HOST = '54.205.181.16'
+    HOST = __default_host__
+
     workspace_id = create_workspace(
         dirpath=os.path.join(cur_dir, 'flow_app_ws'), host=HOST
     )
