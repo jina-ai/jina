@@ -1,6 +1,7 @@
 import argparse
 import pytest
 from jina.parsers.hubble.push import mixin_hub_push_parser
+from jina.parsers.hubble.pull import mixin_hub_pull_parser
 
 
 def test_push_parser():
@@ -35,3 +36,26 @@ def test_push_parser():
     assert args.secret == '8iag38yu'
     assert args.public is False
     assert args.private is False
+
+
+def test_pull_parser():
+    parser = argparse.ArgumentParser(
+        epilog=f'Test', description='Test Hub Command Line Interface'
+    )
+
+    mixin_hub_pull_parser(parser)
+
+    args = parser.parse_args(['12345'])
+    assert args.id == '12345'
+    assert args.secret is None
+    assert args.docker is False
+
+    args = parser.parse_args(['12345', '--secret', '8iag38yu'])
+    assert args.id == '12345'
+    assert args.secret == '8iag38yu'
+    assert args.docker is False
+
+    args = parser.parse_args(['12345', '--docker'])
+    assert args.id == '12345'
+    assert args.secret is None
+    assert args.docker is True
