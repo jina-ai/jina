@@ -272,7 +272,7 @@ class Zmqlet:
         self._send_control_to_router('CANCEL', raise_exception)
 
     def recv_message(
-        self, callback: Callable[['Message'], 'Message'] = None
+        self, callback: Optional[Callable[['Message'], 'Message']] = None
     ) -> 'Message':
         """Receive a protobuf message from the input socket
 
@@ -286,6 +286,8 @@ class Zmqlet:
             self.msg_recv += 1
             if callback:
                 return callback(msg)
+            else:
+                return msg
 
 
 class AsyncZmqlet(Zmqlet):
@@ -315,7 +317,8 @@ class AsyncZmqlet(Zmqlet):
             self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
 
     async def recv_message(
-        self, callback: Callable[['Message'], Union['Message', 'Request']] = None
+        self,
+        callback: Optional[Callable[['Message'], Union['Message', 'Request']]] = None,
     ) -> Optional['Message']:
         """
         Receive a protobuf message in async manner.
@@ -330,6 +333,8 @@ class AsyncZmqlet(Zmqlet):
                 self.bytes_recv += msg.size
                 if callback:
                     return callback(msg)
+                else:
+                    return msg
             else:
                 self.logger.error('Received message is empty.')
         except (asyncio.CancelledError, TypeError) as ex:

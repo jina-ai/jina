@@ -1,14 +1,10 @@
 import argparse
-import asyncio
-from typing import Any, List
+from typing import List
 
 from ....zmq import AsyncZmqlet
-from ..... import __version__
-from .....helper import random_identity
 from .....importer import ImportExtensions
 from .....logging.logger import JinaLogger
 from .....types.message import Message
-from .....types.request import Request
 
 
 def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
@@ -19,11 +15,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     :param logger: Jina logger.
     :return: fastapi app
     """
+
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, WebSocket
-        from starlette.endpoints import WebSocketEndpoint
-        from starlette import status
-        from starlette.types import Receive, Scope, Send
+        from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
     class ConnectionManager:
         def __init__(self):
@@ -36,13 +30,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         def disconnect(self, websocket: WebSocket):
             self.active_connections.remove(websocket)
 
-        async def send_personal_message(self, message: str, websocket: WebSocket):
-            await websocket.send_text(message)
-
-        async def broadcast(self, message: str):
-            for connection in self.active_connections:
-                await connection.send_text(message)
-
     manager = ConnectionManager()
 
     app = FastAPI()
@@ -54,136 +41,18 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         zmqlet.close()
 
     @app.websocket('/')
-    async def websocket_endpoint(websocket: WebSocket, client_id: int):
+    async def websocket_endpoint(websocket: WebSocket):
+
         await manager.connect(websocket)
         try:
             while True:
-                data = await websocket.receive_text()
-                await manager.send_personal_message(f"You wrote: {data}", websocket)
-                await manager.broadcast(f"Client #{client_id} says: {data}")
+                data = await websocket.receive_bytes()
+                if data == bytes(True):
+                    continue
+                await zmqlet.send_message(Message(None, data, 'gateway', **vars(args)))
+                msg = await zmqlet.recv_message()
+                await websocket.send_bytes(msg.response.binary_str())
         except WebSocketDisconnect:
             manager.disconnect(websocket)
-            await manager.broadcast(f"Client #{client_id} left the chat")
-
-    @app.websocket(path='/')
-    class StreamingEndpoint(WebSocketEndpoint):
-        """
-        :meth:`handle_receive()`
-            Await a message on :meth:`websocket.receive()`
-            Send the message to zmqlet via :meth:`zmqlet.send_message()` and await
-        :meth:`handle_send()`
-            Await a message on :meth:`zmqlet.recv_message()`
-            Send the message back to client via :meth:`websocket.send()` and await
-        :meth:`dispatch()`
-            Awaits on concurrent tasks :meth:`handle_receive()` & :meth:`handle_send()`
-            This makes sure gateway is nonblocking
-        Await exit strategy:
-            :meth:`handle_receive()` keeps track of num_requests received
-            :meth:`handle_send()` keeps track of num_responses sent
-            Client sends a final message: `bytes(True)` to indicate request iterator is empty
-            Server exits out of await when `(num_requests == num_responses != 0 and is_req_empty)`
-        """
-
-        def __init__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
-            super().__init__(scope, receive, send)
-            self._id = random_identity()
-            self._client_encoding = None
-
-        async def dispatch(self) -> None:
-            """Awaits on concurrent tasks :meth:`handle_receive()` & :meth:`handle_send()`"""
-            websocket = WebSocket(self.scope, receive=self.receive, send=self.send)
-            await self.on_connect(websocket)
-            close_code = status.WS_1000_NORMAL_CLOSURE
-
-            await asyncio.gather(
-                self.handle_receive(websocket=websocket, close_code=close_code),
-            )
-
-        async def on_connect(self, websocket: WebSocket) -> None:
-            """
-            Await the websocket to accept and log the information.
-
-            :param websocket: connected websocket
-            """
-            # TODO(Deepankar): To enable multiple concurrent clients,
-            # Register each client - https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients
-            # And move class variables to instance variable
-            await websocket.accept()
-            self.client_info = f'{websocket.client.host}:{websocket.client.port}'
-            logger.success(
-                f'Client {self.client_info} connected to stream requests via websockets'
-            )
-
-        async def handle_receive(self, websocket: WebSocket, close_code: int) -> None:
-            """
-            Await a message on :meth:`websocket.receive()`
-            Send the message to zmqlet via :meth:`zmqlet.send_message()` and await
-
-            :param websocket: WebSocket connection between clinet sand server.
-            :param close_code: close code
-            """
-
-            def handle_route(msg: 'Message') -> 'Request':
-                """
-                Add route information to `message`.
-
-                :param msg: receive message
-                :return: message response with route information
-                """
-                msg.add_route(args.name, self._id)
-                return msg.response
-
-            try:
-                while True:
-                    message = await websocket.receive()
-                    if message['type'] == 'websocket.receive':
-                        data = await self.decode(websocket, message)
-                        if data == bytes(True):
-                            await asyncio.sleep(0.1)
-                            continue
-                        await zmqlet.send_message(
-                            Message(None, Request(data), 'gateway', **vars(args))
-                        )
-                        response = await zmqlet.recv_message(callback=handle_route)
-                        if self._client_encoding == 'bytes':
-                            await websocket.send_bytes(response.SerializeToString())
-                        else:
-                            await websocket.send_json(response.json())
-                    elif message['type'] == 'websocket.disconnect':
-                        close_code = int(
-                            message.get('code', status.WS_1000_NORMAL_CLOSURE)
-                        )
-                        break
-            except Exception as exc:
-                close_code = status.WS_1011_INTERNAL_ERROR
-                logger.error(f'Got an exception in handle_receive: {exc!r}')
-                raise
-            finally:
-                await self.on_disconnect(websocket, close_code)
-
-        async def decode(self, websocket: WebSocket, message: Message) -> Any:
-            """
-            Decode the text or bytes format `message`
-
-            :param websocket: WebSocket connection.
-            :param message: Jina `Message`.
-            :return: decoded message.
-            """
-            if 'text' in message or 'json' in message:
-                self._client_encoding = 'text'
-
-            if 'bytes' in message:
-                self._client_encoding = 'bytes'
-
-            return await super().decode(websocket, message)
-
-        async def on_disconnect(self, websocket: WebSocket, close_code: int) -> None:
-            """
-            Log the information when client is disconnected.
-
-            :param websocket: disconnected websocket
-            :param close_code: close code
-            """
-            logger.info(f'Client {self.client_info} got disconnected!')
 
     return app
