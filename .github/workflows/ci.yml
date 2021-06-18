@@ -207,7 +207,7 @@ jobs:
             echo "flag it as jina for codeoverage"
             echo "::set-output name=codecov_flag::jina"
           fi
-        timeout-minutes: 30
+        timeout-minutes: 20
         env:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
