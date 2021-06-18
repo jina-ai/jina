@@ -1,5 +1,5 @@
 from collections.abc import MutableSequence
-from typing import Union, List
+from typing import Union, List, Any
 
 from google.protobuf import struct_pb2
 
@@ -21,9 +21,9 @@ class ListView(ProtoTypeMixin, MutableSequence):
         """
         self._pb_body = list
 
-    def insert(self, index: int, object) -> None:
+    def insert(self, index: int, object: Any) -> None:
         """
-        Insert any proto object into the list
+        Insert any value that can be converted into a struct_pb2.Value into the list
 
         :param index: Position of the insertion.
         :param object: The object that needs to be inserted.
@@ -64,9 +64,9 @@ class ListView(ProtoTypeMixin, MutableSequence):
         else:
             return False
 
-    def __contains__(self, item):
+    def __contains__(self, object: Any):
         for element in self:
-            if element == item:
+            if element == object:
                 return True
 
         return False
