@@ -10,7 +10,14 @@ from typing import List, Optional
 from ..peas import BasePea
 from ... import __default_host__, __default_executor__
 from ... import helper
-from ...enums import SchedulerType, PodRoleType, SocketType, PeaRoleType, PollingType
+from ...enums import (
+    SchedulerType,
+    PodRoleType,
+    SocketType,
+    PeaRoleType,
+    PollingType,
+    GatewayProtocol,
+)
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
@@ -115,10 +122,11 @@ class BasePod(ExitFIFO):
     @staticmethod
     def _set_conditional_args(args):
         if args.pod_role == PodRoleType.GATEWAY:
-            if args.restful:
-                args.runtime_cls = 'RESTRuntime'
-            else:
-                args.runtime_cls = 'GRPCRuntime'
+            args.runtime_cls = {
+                GatewayProtocol.GRPC: 'GRPCRuntime',
+                GatewayProtocol.WEBSOCKET: 'WebSocketRuntime',
+                GatewayProtocol.HTTP: 'HTTPRuntime',
+            }[args.protocol]
 
     @property
     def role(self) -> 'PodRoleType':

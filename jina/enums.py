@@ -220,6 +220,16 @@ class FlowBuildLevel(BetterEnum):
     RUNNING = 2  #: the graph is started and all pods are running
 
 
+class GatewayProtocol(BetterEnum):
+    """
+    Gateway communication protocol
+    """
+
+    GRPC = 0
+    HTTP = 1
+    WEBSOCKET = 2
+
+
 class PeaRoleType(BetterEnum):
     """The enum of a Pea role."""
 

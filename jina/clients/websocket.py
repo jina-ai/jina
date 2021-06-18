@@ -55,7 +55,7 @@ class WebSocketClientMixin(BaseClient, ABC):
             # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
 
             async with websockets.connect(
-                f'ws://{client_info}/stream', max_size=None, ping_interval=None
+                f'ws://{client_info}/', max_size=None, ping_interval=None
             ) as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging

@@ -42,7 +42,11 @@ def set_flow_parser(parser=None):
     """
     from .peapods.base import mixin_base_ppr_parser
     from .peapods.runtimes.remote import mixin_remote_parser
-    from .client import mixin_client_type_parser, mixin_client_features_parser
+    from .client import (
+        mixin_client_type_parser,
+        mixin_client_features_parser,
+        mixin_comm_protocol_parser,
+    )
 
     if not parser:
         parser = set_base_parser()
@@ -58,5 +62,7 @@ def set_flow_parser(parser=None):
     mixin_client_features_parser(parser)
 
     mixin_flow_features_parser(parser)
+
+    mixin_comm_protocol_parser(parser)
 
     return parser

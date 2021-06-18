@@ -1,3 +1,6 @@
+from jina.parsers.client import mixin_comm_protocol_parser
+
+
 def set_pea_parser(parser=None):
     """Set the parser for the Pea
 
@@ -75,6 +78,7 @@ def set_gateway_parser(parser=None):
     mixin_zed_runtime_parser(parser)
     mixin_grpc_server_parser(parser)
     mixin_rest_server_parser(parser)
+    mixin_comm_protocol_parser(parser)
     mixin_remote_parser(parser)
     mixin_pea_parser(parser)
 
@@ -89,12 +93,6 @@ def set_gateway_parser(parser=None):
         pod_role=PodRoleType.GATEWAY,
     )
 
-    parser.add_argument(
-        '--restful',
-        action='store_true',
-        default=False,
-        help='If set, use RESTful interface instead of gRPC as the main interface',
-    )
     return parser
 
 

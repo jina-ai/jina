@@ -1,5 +1,6 @@
 from .asyncio.grpc import GRPCRuntime
-from .asyncio.rest import RESTRuntime
+from .asyncio.http import HTTPRuntime
+from .asyncio.websocket import WebSocketRuntime
 from .container import ContainerRuntime
 from .jinad import JinadRuntime
 from .ssh import SSHRuntime

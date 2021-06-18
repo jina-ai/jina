@@ -2,22 +2,29 @@
 from .helper import add_arg_group
 
 
+def mixin_comm_protocol_parser(parser):
+    """Add the arguments for the protocol to the parser
+
+    :param parser: the parser configure
+    """
+
+    from ..enums import GatewayProtocol
+
+    parser.add_argument(
+        '--protocol',
+        type=GatewayProtocol.from_string,
+        choices=list(GatewayProtocol),
+        default=GatewayProtocol.GRPC,
+        help='Communication protocol between server and client.',
+    )
+
+
 def mixin_client_type_parser(parser):
     """Add the arguments for the client to the parser
 
     :param parser: the parser configure
     """
-    gp = add_arg_group(parser, title='Client Interface')
-
-    gp.add_argument(
-        '--restful',
-        action='store_true',
-        default=False,
-        help='If set, use RESTful interface instead of gRPC as the main interface. '
-        'This expects the corresponding Flow to be set with --restful as well.',
-    )
-
-    gp.add_argument(
+    parser.add_argument(
         '--asyncio',
         action='store_true',
         default=False,

@@ -15,7 +15,7 @@ from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocol
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
     colored,
@@ -225,7 +225,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                runtime_cls='RESTRuntime' if self.args.restful else 'GRPCRuntime',
+                protocol=self.args.protocol,
                 pod_role=PodRoleType.GATEWAY,
                 endpoints_mapping=json.dumps(self._endpoints_mapping),
                 title=self.args.title,
@@ -1068,25 +1068,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _show_success_message(self):
 
-        if self._pod_nodes['gateway'].args.restful:
-            header = 'http://'
-            protocol = 'REST'
-        else:
-            header = 'tcp://'
-            protocol = 'gRPC'
-
         self.logger.success(
-            f'🎉 Flow is ready to use, accepting {colored(protocol + " request", attrs="bold")}'
+            f'🎉 Flow is ready to use! Protocol: {colored(self.args.protocol, attrs="bold")}'
         )
 
         address_table = [
             f'\t🏠 Local access:\t'
-            + colored(
-                f'{header}{self.host}:{self.port_expose}', 'cyan', attrs='underline'
-            ),
+            + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
             f'\t🔒 Private network:\t'
             + colored(
-                f'{header}{self.address_private}:{self.port_expose}',
+                f'{self.address_private}:{self.port_expose}',
                 'cyan',
                 attrs='underline',
             ),
@@ -1095,12 +1086,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             address_table.append(
                 f'\t🌐 Public address:\t'
                 + colored(
-                    f'{header}{self.address_public}:{self.port_expose}',
+                    f'{self.address_public}:{self.port_expose}',
                     'cyan',
                     attrs='underline',
                 )
             )
-        if self.args.restful:
+        if self.args.protocol == GatewayProtocol.HTTP:
             address_table.append(
                 f'\t💬 Swagger UI:\t\t'
                 + colored(
