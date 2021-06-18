@@ -81,17 +81,28 @@ class BaseRuntime:
         .. seealso::
 
             :meth:`run_forever` for blocking the process/thread.
+
+        :param ctrl_addr: The control address to send control message to
+        :param timeout_ctrl: The timeout for the communication
         """
         raise NotImplementedError
 
     @staticmethod
     def activate(ctrl_addr, timeout_ctrl):
-        """Send activate control message."""
+        """Send activate control message.
+
+        :param ctrl_addr: The control address to send control message to
+        :param timeout_ctrl: The timeout for the communication
+        """
         raise NotImplementedError
 
     @staticmethod
     def deactivate(ctrl_addr, timeout_ctrl):
-        """Send deactivate control message."""
+        """Send deactivate control message.
+
+        :param ctrl_addr: The control address to send control message to
+        :param timeout_ctrl: The timeout for the communication
+        """
         raise NotImplementedError
 
     def setup(self):

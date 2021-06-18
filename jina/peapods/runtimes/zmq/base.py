@@ -16,19 +16,28 @@ class ZMQRuntime(BaseRuntime, ABC):
 
     @staticmethod
     def cancel(ctrl_addr, timeout_ctrl):
-        """Send terminate control message."""
+        """Send terminate control message.
+        :param ctrl_addr: The control address to send control message to
+        :param timeout_ctrl: The timeout for the communication
+        """
         # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
         send_ctrl_message(ctrl_addr, 'TERMINATE', timeout=timeout_ctrl)
 
     @staticmethod
     def activate(ctrl_addr, timeout_ctrl):
-        """Send activate control message."""
+        """Send activate control message.
+        :param ctrl_addr: The control address to send control message to
+        :param timeout_ctrl: The timeout for the communication
+        """
         # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
         send_ctrl_message(ctrl_addr, 'ACTIVATE', timeout=timeout_ctrl)
 
     @staticmethod
     def deactivate(ctrl_addr, timeout_ctrl):
-        """Send deactivate control message."""
+        """Send deactivate control message.
+        :param ctrl_addr: The control address to send control message to
+        :param timeout_ctrl: The timeout for the communication
+        """
         # TODO (Joan): Should these control messages be translated in `JinadRuntime` by `api` calls?
         send_ctrl_message(ctrl_addr, 'DEACTIVATE', timeout=timeout_ctrl)
 
