@@ -329,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.types.list/">jina.types.list module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.types.struct/">jina.types.struct module</a></li>
 </ul>
@@ -1526,10 +1527,13 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">pass</span>
 
+    <span class="kn">from</span> <span class="nn">google.protobuf.struct_pb2</span> <span class="kn">import</span> <span class="n">ListValue</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.struct_pb2</span> <span class="kn">import</span> <span class="n">Struct</span>
     <span class="kn">from</span> <span class="nn">google.protobuf.pyext._message</span> <span class="kn">import</span> <span class="n">MessageMapContainer</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part1</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_dict</span><span class="p">[</span><span class="n">part1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_dict</span><span class="p">,</span> <span class="p">(</span><span class="n">Iterable</span><span class="p">,</span> <span class="n">ListValue</span><span class="p">)):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">_dict</span><span class="p">[</span><span class="n">part1</span><span class="p">]</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_dict</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Struct</span><span class="p">,</span> <span class="n">MessageMapContainer</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">part1</span> <span class="ow">in</span> <span class="n">_dict</span><span class="p">:</span>

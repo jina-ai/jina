@@ -20,6 +20,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.types.list
    jina.types.mixin
    jina.types.struct
 
