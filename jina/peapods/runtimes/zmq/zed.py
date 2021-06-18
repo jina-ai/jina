@@ -30,11 +30,8 @@ from ....types.request import Request
 class ZEDRuntime(ZMQRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
-    def run_forever(self):
-        """Start the `ZmqStreamlet`."""
-        self._zmqlet.start(self._msg_callback)
-
-    def setup(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         """Initialize private parameters and execute private loading functions."""
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
@@ -53,6 +50,10 @@ class ZEDRuntime(ZMQRuntime):
         self._load_zmqlet()
         self._load_plugins()
         self._load_executor()
+
+    def run_forever(self):
+        """Start the `ZmqStreamlet`."""
+        self._zmqlet.start(self._msg_callback)
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""

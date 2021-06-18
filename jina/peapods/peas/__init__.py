@@ -106,18 +106,13 @@ class BasePea:
             Hence, please do not raise any exception here.
         """
         try:
-            try:
-                runtime = self.runtime_cls(
-                    self.args, ctrl_addr=self._runtime_ctrl_addr
-                )  # type: 'BaseRuntime'
-            except Exception as ex:
-                raise RuntimeFailToStart from ex
             self._set_envs()
-            self.logger.info(f'starting {typename(runtime)}...')
-            runtime.setup()
+            runtime = self.runtime_cls(
+                self.args, ctrl_addr=self._runtime_ctrl_addr
+            )  # type: 'BaseRuntime'
         except Exception as ex:
             self.logger.error(
-                f'{ex!r} during {runtime.setup!r}'
+                f'{ex!r} during {self.runtime_cls!r} initialization'
                 + f'\n add "--quiet-error" to suppress the exception details'
                 if not self.args.quiet_error
                 else '',

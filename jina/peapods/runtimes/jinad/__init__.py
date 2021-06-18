@@ -24,6 +24,22 @@ class JinadRuntime(AsyncZMQRuntime):
             logger=self.logger,
             timeout=self.args.timeout_ready,
         )
+        """
+        Uploads Pod/Pea context to remote & Creates remote Pod/Pea using :class:`JinadAPI`
+        """
+        if self._remote_id:
+            self.logger.success(
+                f'created a remote {self.api.kind}: {colored(self._remote_id, "cyan")}'
+            )
+        else:
+            self.logger.error(
+                f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
+                f'- is there a typo in {self.host}?\n'
+                f'- on {self.host}, are you running `docker run --network host jinaai/jina:latest-daemon`?\n'
+                f'- on {self.host}, have you set the security policy to public for all required ports?\n'
+                f'- on local, are you behind VPN or proxy?'
+            )
+            raise DaemonConnectivityError
 
     @staticmethod
     def cancel(ctrl_addr, timeout_ctrl):
@@ -50,24 +66,6 @@ class JinadRuntime(AsyncZMQRuntime):
         :param timeout_ctrl: The timeout for the communication
         """
         send_ctrl_message(remote_ctrl_addr, 'DEACTIVATE', timeout=timeout_ctrl)
-
-    def setup(self):
-        """
-        Uploads Pod/Pea context to remote & Creates remote Pod/Pea using :class:`JinadAPI`
-        """
-        if self._remote_id:
-            self.logger.success(
-                f'created a remote {self.api.kind}: {colored(self._remote_id, "cyan")}'
-            )
-        else:
-            self.logger.error(
-                f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
-                f'- is there a typo in {self.host}?\n'
-                f'- on {self.host}, are you running `docker run --network host jinaai/jina:latest-daemon`?\n'
-                f'- on {self.host}, have you set the security policy to public for all required ports?\n'
-                f'- on local, are you behind VPN or proxy?'
-            )
-            raise DaemonConnectivityError
 
     async def async_run_forever(self):
         """

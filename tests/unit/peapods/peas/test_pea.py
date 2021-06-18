@@ -22,7 +22,6 @@ def test_base_pea_with_runtime_bad_init(mocker):
 
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, '__init__', bad_func)
-    setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
@@ -31,9 +30,8 @@ def test_base_pea_with_runtime_bad_init(mocker):
         with Pea1(arg):
             pass
 
-    # teardown, setup should be called, cancel should not be called
+    # teardown should be called, cancel should not be called
 
-    setup_spy.assert_not_called()
     teardown_spy.assert_not_called()
     run_spy.assert_not_called()
     cancel_spy.assert_not_called()
@@ -47,7 +45,6 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
 
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, 'run_forever', bad_func)
-    setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
@@ -55,36 +52,11 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
     with Pea1(arg):
         pass
 
-    # teardown, setup should be called, cancel should not be called
+    # teardown should be called, cancel should not be called
 
-    setup_spy.assert_called()
     teardown_spy.assert_called()
     run_spy.assert_called()
     cancel_spy.assert_not_called()
-
-
-def test_base_pea_with_runtime_bad_setup(mocker):
-    class Pea1(Pea):
-        def __init__(self, args):
-            super().__init__(args)
-            self.runtime_cls = BaseRuntime
-
-    mocker.patch.object(BaseRuntime, 'setup', bad_func)
-    setup_spy = mocker.spy(BaseRuntime, 'setup')
-    teardown_spy = mocker.spy(BaseRuntime, 'teardown')
-    cancel_spy = mocker.spy(BaseRuntime, 'cancel')
-    run_spy = mocker.spy(BaseRuntime, 'run_forever')
-
-    arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
-    with pytest.raises(RuntimeFailToStart):
-        with Pea1(arg):
-            pass
-
-    setup_spy.assert_called()
-    teardown_spy.assert_not_called()
-    run_spy.assert_not_called()
-    cancel_spy.assert_not_called()  # 3s > .join(1), need to cancel
-    # run_forever, teardown, cancel should not be called
 
 
 def test_base_pea_with_runtime_bad_teardown(mocker):
@@ -95,7 +67,6 @@ def test_base_pea_with_runtime_bad_teardown(mocker):
 
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
     mocker.patch.object(BaseRuntime, 'teardown', lambda x: bad_func)
-    setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
@@ -104,12 +75,11 @@ def test_base_pea_with_runtime_bad_teardown(mocker):
     with Pea1(arg):
         pass
 
-    setup_spy.assert_called()
     teardown_spy.assert_called()
     run_spy.assert_called()
     cancel_spy.assert_called_once()  # 3s > .join(1), need to cancel
 
-    # setup, run_forever cancel should all be called
+    # run_forever cancel should all be called
 
 
 def test_base_pea_with_runtime_bad_cancel(mocker):
@@ -121,7 +91,6 @@ def test_base_pea_with_runtime_bad_cancel(mocker):
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
     mocker.patch.object(BaseRuntime, 'cancel', bad_func)
 
-    setup_spy = mocker.spy(BaseRuntime, 'setup')
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
     cancel_spy = mocker.spy(BaseRuntime, 'cancel')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
@@ -130,15 +99,21 @@ def test_base_pea_with_runtime_bad_cancel(mocker):
     with Pea1(arg):
         pass
 
-    setup_spy.assert_called()
     teardown_spy.assert_called()
     run_spy.assert_called()
     cancel_spy.assert_called_once()
 
-    # setup, run_forever cancel should all be called
+    # run_forever cancel should all be called
 
 
-def test_pea_runtime_env_setting_in_process():
+@pytest.fixture()
+def fake_env():
+    os.environ['key_parent'] = 'value3'
+    yield
+    os.unsetenv('key_parent')
+
+
+def test_pea_runtime_env_setting_in_process(fake_env):
     class EnvChecker(BaseExecutor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -147,8 +122,6 @@ def test_pea_runtime_env_setting_in_process():
             assert os.environ['key2'] == 'value2'
             # inherit from parent process
             assert os.environ['key_parent'] == 'value3'
-
-    os.environ['key_parent'] = 'value3'
 
     with Pea(
         set_pea_parser().parse_args(
@@ -171,10 +144,8 @@ def test_pea_runtime_env_setting_in_process():
     assert 'key2' not in os.environ
     assert 'key_parent' in os.environ
 
-    os.unsetenv('key_parent')
 
-
-def test_pea_runtime_env_setting_in_thread():
+def test_pea_runtime_env_setting_in_thread(fake_env):
     class EnvChecker(BaseExecutor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

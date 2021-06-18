@@ -18,9 +18,6 @@ class ContainerRuntime(ZMQRuntime):
     def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
         super().__init__(args, ctrl_addr)
         self._set_network_for_dind_linux()
-
-    def setup(self):
-        """Run the container."""
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
             time.sleep(1)
