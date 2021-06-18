@@ -1,8 +1,9 @@
 import time
 import asyncio
 import argparse
-from typing import List, Optional
+from typing import Optional
 
+from ....enums import RemoteWorkspaceState
 from ...zmq import Zmqlet, send_ctrl_message
 from ..asyncio.base import AsyncZMQRuntime
 from ....helper import cached_property, colored
@@ -121,16 +122,16 @@ class JinadRuntime(AsyncZMQRuntime):
                     workspace_id=self.args.workspace_id,
                 )
             elif state in [
-                'PENDING',
-                'CREATING',
-                'UPDATING',
-            ]:  # TODO: move enum from daemon to core
+                RemoteWorkspaceState.PENDING,
+                RemoteWorkspaceState.CREATING,
+                RemoteWorkspaceState.UPDATING,
+            ]:
                 if retry % 10 == 0:
                     self.logger.info(
                         f'workspace {self.args.workspace_id} is getting created on remote. waiting..'
                     )
                 time.sleep(sleep)
-            elif state == 'ACTIVE':
+            elif state == RemoteWorkspaceState.ACTIVE:
                 self.logger.success(
                     f'successfully created a remote workspace: {colored(self.args.workspace_id, "cyan")}'
                 )
@@ -140,6 +141,10 @@ class JinadRuntime(AsyncZMQRuntime):
 
     @cached_property
     def _remote_id(self) -> Optional[str]:
+        """Creates a workspace & a pea on remote
+
+        :return: id of rempte pea
+        """
         self.create_workspace()
         pea_id = self.pea_api.post(self.args)
         if not pea_id:

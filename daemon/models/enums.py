@@ -1,14 +1,21 @@
 from enum import Enum
+
+from jina.enums import RemoteWorkspaceState as WorkspaceState
 from ..helper import classproperty
 
 
 class DaemonEnum(str, Enum):
+    """Base class of Enum in JinaD"""
+
     @classproperty
     def values(cls):
+        """Get all values in Enum"""
         return list(map(lambda c: c.value, cls))
 
 
 class IDLiterals(DaemonEnum):
+    """Enum representing all values allowed in DaemonID"""
+
     JPOD = 'jpod'
     JPEA = 'jpea'
     JFLOW = 'jflow'
@@ -16,16 +23,9 @@ class IDLiterals(DaemonEnum):
     JWORKSPACE = 'jworkspace'
 
 
-class WorkspaceState(DaemonEnum):
-    PENDING = 'PENDING'
-    CREATING = 'CREATING'
-    UPDATING = 'UPDATING'
-    ACTIVE = 'ACTIVE'
-    FAILED = 'FAILED'
-    DELETING = 'DELETING'
-
-
 class DaemonBuild(DaemonEnum):
+    """Enum representing build value passed in .jinad file"""
+
     DEVEL = 'devel'
     DEFAULT = 'default'
     CPU = 'default'
@@ -38,6 +38,8 @@ class DaemonBuild(DaemonEnum):
 
 
 class PythonVersion(DaemonEnum):
+    """Enum representing python versions allowed in .jinad file"""
+
     PY37 = '3.7'
     PY38 = '3.8'
     PY39 = '3.9'
@@ -48,6 +50,8 @@ class PythonVersion(DaemonEnum):
 
 
 class PartialDaemonModes(DaemonEnum):
+    """Enum representing partial daemon modes"""
+
     PEA = 'pea'
     POD = 'pod'
     FLOW = 'flow'

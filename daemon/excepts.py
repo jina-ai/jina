@@ -27,6 +27,12 @@ class Runtime400Exception(Exception):
 
 
 async def daemon_runtime_exception_handler(request: Request, ex: 'Runtime400Exception'):
+    """Exception handler for all Runtime400Exceptions
+
+    :param request: starlette request
+    :param ex: actual Runtime400Exception
+    :return: json response representing the error
+    """
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content=jsonable_encoder(
@@ -41,6 +47,12 @@ async def daemon_runtime_exception_handler(request: Request, ex: 'Runtime400Exce
 
 
 async def validation_exception_handler(request: Request, ex: 'RequestValidationError'):
+    """Exception handler for all RequestValidationError raised by pydantic
+
+    :param request: starlette request
+    :param ex: actual Validation exception
+    :return: json response representing the error
+    """
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=jsonable_encoder({"detail": ex.errors(), "body": str(ex)}),

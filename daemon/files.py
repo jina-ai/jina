@@ -17,7 +17,13 @@ from . import __rootdir__, __dockerfiles__, jinad_args
 
 def workspace_files(
     workspace_id: DaemonID, files: List[UploadFile], logger: 'JinaLogger'
-):
+) -> None:
+    """Store the uploaded files in local disk
+
+    :param workspace_id: workspace id representing the local directory
+    :param files: files uploaded to the workspace endpoint
+    :param logger: JinaLogger to use
+    """
     workdir = get_workspace_path(workspace_id)
     Path(workdir).mkdir(parents=True, exist_ok=True)
     if not files:
@@ -38,7 +44,12 @@ def workspace_files(
         logger.info(f'saved uploads to {dest}')
 
 
-def _merge_requirement_file(dest, f: UploadFile):
+def _merge_requirement_file(dest: str, f: UploadFile) -> None:
+    """Merge requirement files
+
+    :param dest: existing requirements file location
+    :param f: file obj for the new requirements file
+    """
     # Open existing requirements in binary mode
     # UploadFile is also in binary mode
     with open(dest, "rb") as existing_requirements_file:
@@ -49,7 +60,12 @@ def _merge_requirement_file(dest, f: UploadFile):
         req_file.write("\n".join(list(old_requirements.values())))
 
 
-def _read_requirements_file(f):
+def _read_requirements_file(f) -> Dict:
+    """Read requirement.txt file
+
+    :param f: req file object
+    :return: dict representing pip requirements
+    """
     requirements = {}
     for line in f.readlines():
         line = line.decode()
@@ -58,6 +74,8 @@ def _read_requirements_file(f):
 
 
 class DaemonFile:
+    """Object representing .jinad file"""
+
     extension = '.jinad'
 
     def __init__(self, workdir: str, logger: 'JinaLogger' = None) -> None:
@@ -77,11 +95,16 @@ class DaemonFile:
         self.process_file()
 
     @property
-    def build(self):
+    def build(self) -> str:
+        """Property representing build value"""
         return self._build
 
     @build.setter
     def build(self, build: DaemonBuild):
+        """Property setter for build
+
+        :param build: allowed values in DaemonBuild
+        """
         try:
             self._build = DaemonBuild(build)
         except ValueError:
@@ -92,10 +115,15 @@ class DaemonFile:
 
     @property
     def python(self):
+        """Property representing python version"""
         return self._python
 
     @python.setter
     def python(self, python: PythonVersion):
+        """Property setter for python version
+
+        :param python: allowed values in PythonVersion
+        """
         try:
             self._python = PythonVersion(python)
         except ValueError:
@@ -106,22 +134,37 @@ class DaemonFile:
 
     @property
     def run(self) -> str:
+        """Property representing run command"""
         return self._run
 
     @run.setter
     def run(self, run: str):
+        """Property setter for run command
+
+        :param run: command passed in .jinad file
+        """
         self._run = run
 
     @property
     def ports(self) -> List[int]:
+        """Property representing ports"""
         return self._ports
 
     @ports.setter
     def ports(self, ports: List[int]):
+        """Property setter for ports command
+
+        :param ports: ports passed in .jinad file
+        """
         self._ports = ports
 
     @cached_property
     def requirements(self) -> str:
+        """pip packages mentioned in requirements.txt
+
+        :return: space separated values
+        """
+        # TODO: merge this with _read_requirements_file()
         _req = f'{self._workdir}/requirements.txt'
         if not Path(_req).is_file():
             self._logger.warning(
@@ -133,14 +176,17 @@ class DaemonFile:
 
     @cached_property
     def dockercontext(self) -> str:
+        """directory for docker context during docker build"""
         return __rootdir__ if self.build == DaemonBuild.DEVEL else self._workdir
 
     @cached_property
     def dockerfile(self) -> str:
+        """dockerfile location"""
         return f'{__dockerfiles__}/{self.build.value}.Dockerfile'
 
     @cached_property
     def dockerargs(self) -> Dict:
+        """dict of args to be passed during docker build"""
         return (
             {'PY_VERSION': self.python.value, 'PIP_REQUIREMENTS': self.requirements}
             if self.build == DaemonBuild.DEVEL
@@ -148,6 +194,7 @@ class DaemonFile:
         )
 
     def process_file(self) -> None:
+        """Process .jinad file and set args"""
         # Checks if a file .jinad exists in the workspace
         jinad_file_path = Path(self._workdir) / self.extension
         if jinad_file_path.is_file():
@@ -169,7 +216,11 @@ class DaemonFile:
                 f'{", ".join([os.path.basename(f) for f in _other_jinad_files])}'
             )
 
-    def set_args(self, file):
+    def set_args(self, file: Path) -> None:
+        """read .jinad file & set properties
+
+        :param file: .jinad filepath
+        """
         from configparser import ConfigParser, DEFAULTSECT
 
         config = ConfigParser()

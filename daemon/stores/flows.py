@@ -21,7 +21,7 @@ class FlowStore(ContainerStore):
             r = requests.post(url=f'{self.host}/{self._kind}', params=params)
             if r.status_code != requests.codes.created:
                 raise Runtime400Exception(
-                    f'{self._kind.title()} creation failed \n{r.json()}'
+                    f'{self._kind.title()} creation failed \n{"".join(r.json()["body"])}'
                 )
             return r.json()
         except requests.exceptions.RequestException as ex:
@@ -50,15 +50,13 @@ class FlowStore(ContainerStore):
 
             if r.status_code != requests.codes.ok:
                 raise Runtime400Exception(
-                    f'{self._kind.title()} update operation {kind} failed \n{r.json()}'
+                    f'{self._kind.title()} update failed \n{"".join(r.json()["body"])}'
                 )
             return r.json()
 
         except requests.exceptions.RequestException as ex:
             self._logger.error(f'{ex!r}')
-            raise Runtime400Exception(
-                f'{self._kind.title()} creation failed: {r.json()}'
-            )
+            raise Runtime400Exception(f'{self._kind.title()} update failed: {r.json()}')
 
     def _delete(self):
         """Sends `delete` request to `mini-jinad` to terminate a Flow."""
@@ -66,7 +64,7 @@ class FlowStore(ContainerStore):
             r = requests.delete(url=f'{self.host}/{self._kind}')
             if r.status_code != requests.codes.ok:
                 raise Runtime400Exception(
-                    f'{self._kind.title()} deletion failed: {r.json()}'
+                    f'{self._kind.title()} deletion failed \n{"".join(r.json()["body"])}'
                 )
         except requests.exceptions.RequestException as ex:
             raise Runtime400Exception(

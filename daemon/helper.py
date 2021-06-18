@@ -1,6 +1,6 @@
 import os
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
     from .models import DaemonID
@@ -9,6 +9,8 @@ EXCEPTS_REGEX = r'\b(error|failed|FAILURES)\b'
 
 
 class classproperty:
+    """Helper class to read property inside a classmethod"""
+
     def __init__(self, fget):
         self.fget = fget
 
@@ -17,6 +19,7 @@ class classproperty:
 
 
 def id_cleaner(docker_id: str, prefix: str = 'sha256:') -> str:
+    """get 1st 10 characters in id created by docker"""
     return docker_id[docker_id.startswith(prefix) and len(prefix) :][:10]
 
 
@@ -41,7 +44,12 @@ def is_error_message(s) -> bool:
     return re.search(EXCEPTS_REGEX, s, re.IGNORECASE | re.UNICODE) is not None
 
 
-def get_log_file_path(log_id):
+def get_log_file_path(log_id: DaemonID) -> Tuple[str, DaemonID]:
+    """Get logfile path from id
+
+    :param log_id: DaemonID in the store
+    :return: logfile path, workspace_id for log_id
+    """
     from .models.enums import IDLiterals
     from .stores import get_store_from_id
 

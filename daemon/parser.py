@@ -70,6 +70,11 @@ def get_main_parser():
 
 
 def _get_run_args(print_args: bool = True):
+    """Fetch run args for jinad
+
+    :param print_args: True if we want to print args to console
+    :return: jinad args
+    """
     from jina.helper import colored
     from . import daemon_logger
 
