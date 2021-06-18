@@ -58,7 +58,6 @@ def _read_requirements_file(f):
 
 
 class DaemonFile:
-    # __slots__ = ['_build', '_python', '_run', '_workdir', '_file', '_logger']
     extension = '.jinad'
 
     def __init__(self, workdir: str, logger: 'JinaLogger' = None) -> None:
@@ -155,6 +154,7 @@ class DaemonFile:
             self.set_args(jinad_file_path)
             return
 
+        # TODO (deepankar): this logic isn't needed, only support .jinad
         # Checks alls the .jinad files in the workspace
         _other_jinad_files = glob.glob(f'{Path(self._workdir)}/*{self.extension}')
         if not _other_jinad_files:

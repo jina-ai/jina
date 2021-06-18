@@ -2,7 +2,7 @@ jtype: Flow
 version: '1'
 with:
   read_only: true
-  rest_api: true
+  restful: true
   port_expose: 45630
 pods:
   - name: pod1
