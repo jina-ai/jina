@@ -1,6 +1,6 @@
 import argparse
 import os
-from typing import Type
+from typing import Type, Tuple
 import time
 import multiprocessing
 import threading
@@ -11,6 +11,7 @@ from ...enums import PeaRoleType, RuntimeBackendType, SocketType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
+from ..zmq import Zmqlet
 
 __all__ = ['BasePea']
 
@@ -60,6 +61,7 @@ class BasePea:
             self._envs['JINA_LOG_CONFIG'] = 'QUIET'
         if self.args.env:
             self._envs.update(self.args.env)
+        self.runtime_cls, self.is_remote_controlled = self._get_runtime_cls()
 
     def start(self):
         """Start the Pea.
@@ -80,6 +82,12 @@ class BasePea:
         """
         self.worker.join(*args, **kwargs)
 
+    def terminate(self):
+        """Terminate the Pea.
+        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
+        """
+        self.worker.terminate()
+
     def run(self):
         """Method representing the :class:`BaseRuntime` activity.
 
@@ -90,20 +98,12 @@ class BasePea:
             Hence, please do not raise any exception here.
         """
         try:
-            runtime = self._get_runtime_cls()(self.args)  # type: 'BaseRuntime'
-        except Exception as ex:
-            self.logger.error(
-                f'{ex!r} during {self.runtime_cls.__init__!r}'
-                + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
-            raise RuntimeFailToStart from ex
-        self._set_envs()
-
-        self.logger.info(f'starting {typename(runtime)}...')
-        try:
+            try:
+                runtime = self.runtime_cls(self.args)  # type: 'BaseRuntime'
+            except Exception as ex:
+                raise RuntimeFailToStart from ex
+            self._set_envs()
+            self.logger.info(f'starting {typename(runtime)}...')
             runtime.setup()
         except Exception as ex:
             self.logger.error(
@@ -117,6 +117,14 @@ class BasePea:
             self.is_ready.set()
             try:
                 runtime.run_forever()
+            except RuntimeFailToStart as ex:
+                self.logger.error(
+                    f'{ex!r} during {self.runtime_cls.__init__!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
             except RuntimeTerminated:
                 self.logger.info(f'{runtime!r} is end')
             except KeyboardInterrupt:
@@ -194,19 +202,29 @@ class BasePea:
         # started yet.
         self.join(0.1)
 
+        cancel_ctrl_addr = Zmqlet.get_ctrl_address(
+            self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
+        )[0]
+        remote_cancel_ctrl_addr = Zmqlet.get_ctrl_address(None, None, True)[0]
+        timeout_ctrl = self.args.timeout_ctrl
+        deactivate_ctrl_addr = cancel_ctrl_addr
+
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
                 if self._dealer:
                     self.runtime_cls.deactivate(
-                        ctrl_addr=self.args.ctrl_addr,
-                        timeout_ctrl=self.args.timeout_ctrl,
+                        ctrl_addr=deactivate_ctrl_addr,
+                        timeout_ctrl=timeout_ctrl,
                     )
                     # this sleep is to make sure all the outgoing messages from the `router` reach the `pea` so that
                     # it does not block. Needs to be refactored
                     time.sleep(0.1)
                 self.runtime_cls.cancel(
-                    ctrl_addr=self.args.ctrl_addr, timeout_ctrl=self.args.timeout_ctrl
+                    ctrl_addr=cancel_ctrl_addr
+                    if not self.is_remote_controlled
+                    else remote_cancel_ctrl_addr,
+                    timeout_ctrl=timeout_ctrl,
                 )
                 self.is_shutdown.wait()
             except Exception as ex:
@@ -259,20 +277,20 @@ class BasePea:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    def _get_runtime_cls(self) -> Type['BaseRuntime']:
-        v = self.runtime_cls
-        if not self.runtime_cls:
-            if self.args.host != __default_host__:
-                self.args.runtime_cls = 'JinadRuntime'
-            if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
-                'docker://'
-            ):
-                self.args.runtime_cls = 'ContainerRuntime'
+    def _get_runtime_cls(self) -> Tuple[Type['BaseRuntime'], bool]:
+        is_remote_controlled = False
+        if self.args.host != __default_host__:
+            self.args.runtime_cls = 'JinadRuntime'
+            is_remote_controlled = True
+        if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
+            'docker://'
+        ):
+            self.args.runtime_cls = 'ContainerRuntime'
 
-            from ..runtimes import get_runtime
+        from ..runtimes import get_runtime
 
-            v = get_runtime(self.args.runtime_cls)
-        return v
+        v = get_runtime(self.args.runtime_cls)
+        return v, is_remote_controlled
 
     @property
     def role(self) -> 'PeaRoleType':
