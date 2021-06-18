@@ -257,7 +257,6 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.ssh/">jina.peapods.runtimes.ssh package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
@@ -369,7 +368,6 @@
         <h1>Source code for jina.peapods.runtimes.zmq.base</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
 <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span><span class="p">,</span> <span class="n">send_ctrl_message</span>
@@ -419,74 +417,6 @@
 <span class="sd">        """</span>
         <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
         <span class="k">return</span> <span class="n">status</span> <span class="ow">and</span> <span class="n">status</span><span class="o">.</span><span class="n">is_ready</span></div>
-
-
-<div class="viewcode-block" id="ZMQManyRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQManyRuntime">[docs]</a><span class="k">class</span> <span class="nc">ZMQManyRuntime</span><span class="p">(</span><span class="n">BaseRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">"""Multiple Runtime leveraging ZMQ."""</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">many_ctrl_addr</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
-            <span class="n">first_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span> <span class="o">=</span> <span class="n">first_args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">first_args</span><span class="o">.</span><span class="n">host</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">first_args</span><span class="o">.</span><span class="n">port_expose</span>
-            <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="s1">'peas'</span><span class="p">]:</span>
-                <span class="n">ctrl_addr</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ctrl_with_ipc</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">many_ctrl_addr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ctrl_addr</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">many_ctrl_addr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">ctrl_with_ipc</span>
-                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_expose</span>
-
-<div class="viewcode-block" id="ZMQManyRuntime.cancel"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Send terminate control messages to all control address."""</span>
-        <span class="c1"># TODO: can use send_message_async to avoid sequential waiting</span>
-        <span class="k">for</span> <span class="n">ctrl_addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">many_ctrl_addr</span><span class="p">:</span>
-            <span class="n">send_ctrl_message</span><span class="p">(</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ZMQManyRuntime.activate"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Send activate control messages to all control address."""</span>
-        <span class="k">for</span> <span class="n">ctrl_addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">many_ctrl_addr</span><span class="p">:</span>
-            <span class="n">send_ctrl_message</span><span class="p">(</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'ACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ZMQManyRuntime.deactivate"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Send deactivate control messages to all control address."""</span>
-        <span class="k">for</span> <span class="n">ctrl_addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">many_ctrl_addr</span><span class="p">:</span>
-            <span class="n">send_ctrl_message</span><span class="p">(</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'DEACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Send get status control messages to all control address.</span>
-
-<span class="sd">        :return: received messages</span>
-<span class="sd">        """</span>
-        <span class="c1"># TODO: can use send_ctrl_message to avoid sequential waiting</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">ctrl_addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">many_ctrl_addr</span><span class="p">:</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">send_ctrl_message</span><span class="p">(</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'STATUS'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Check if all the status are ready.</span>
-
-<span class="sd">        :return: True if all status are ready else False</span>
-<span class="sd">        """</span>
-        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
-        <span class="k">return</span> <span class="n">status</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">is_ready</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">status</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

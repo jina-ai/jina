@@ -257,7 +257,6 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.ssh/">jina.peapods.runtimes.ssh package</a></li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
@@ -371,12 +370,15 @@
 <span class="kn">from</span> <span class="nn">.asyncio.rest</span> <span class="kn">import</span> <span class="n">RESTRuntime</span>
 <span class="kn">from</span> <span class="nn">.container</span> <span class="kn">import</span> <span class="n">ContainerRuntime</span>
 <span class="kn">from</span> <span class="nn">.jinad</span> <span class="kn">import</span> <span class="n">JinadRuntime</span>
-<span class="kn">from</span> <span class="nn">.ssh</span> <span class="kn">import</span> <span class="n">SSHRuntime</span>
 <span class="kn">from</span> <span class="nn">.zmq.zed</span> <span class="kn">import</span> <span class="n">ZEDRuntime</span>
 
 
 <div class="viewcode-block" id="list_all_runtimes"><a class="viewcode-back" href="../../../../api/jina.peapods.runtimes/#jina.peapods.runtimes.list_all_runtimes">[docs]</a><span class="k">def</span> <span class="nf">list_all_runtimes</span><span class="p">():</span>
-    <span class="sd">"""List all public runtimes that can be used directly with :class:`jina.peapods.peas.BasePea`"""</span>
+    <span class="sd">"""List all public runtimes that can be used directly with :class:`jina.peapods.peas.BasePea`</span>
+
+<span class="sd">    # noqa: DAR101</span>
+<span class="sd">    # noqa: DAR201</span>
+<span class="sd">    """</span>
     <span class="kn">from</span> <span class="nn">...peapods.runtimes.base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
 
     <span class="k">return</span> <span class="p">[</span>
@@ -387,7 +389,11 @@
 
 
 <div class="viewcode-block" id="get_runtime"><a class="viewcode-back" href="../../../../api/jina.peapods.runtimes/#jina.peapods.runtimes.get_runtime">[docs]</a><span class="k">def</span> <span class="nf">get_runtime</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">"""Get a public runtime by its name"""</span>
+    <span class="sd">"""Get a public runtime by its name</span>
+
+<span class="sd">    # noqa: DAR101</span>
+<span class="sd">    # noqa: DAR201</span>
+<span class="sd">    """</span>
     <span class="kn">from</span> <span class="nn">...peapods.runtimes.base</span> <span class="kn">import</span> <span class="n">BaseRuntime</span>
 
     <span class="n">s</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span>

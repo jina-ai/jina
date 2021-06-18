@@ -279,7 +279,6 @@
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.ssh/">jina.peapods.runtimes.ssh package</a></li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
@@ -430,50 +429,6 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>True if status is ready else False.</p>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQManyRuntime">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.zmq.base.</span></code><code class="sig-name descname"><span class="pre">ZMQManyRuntime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/base/#ZMQManyRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQManyRuntime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime" title="jina.peapods.runtimes.base.BaseRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.base.BaseRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>Multiple Runtime leveraging ZMQ.</p>
-<dl class="py method">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQManyRuntime.cancel">
-<code class="sig-name descname"><span class="pre">cancel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/base/#ZMQManyRuntime.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.cancel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send terminate control messages to all control address.</p>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQManyRuntime.activate">
-<code class="sig-name descname"><span class="pre">activate</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/base/#ZMQManyRuntime.activate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.activate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send activate control messages to all control address.</p>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQManyRuntime.deactivate">
-<code class="sig-name descname"><span class="pre">deactivate</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/base/#ZMQManyRuntime.deactivate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.deactivate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send deactivate control messages to all control address.</p>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQManyRuntime.status">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">status</span></code><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send get status control messages to all control address.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>received messages</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQManyRuntime.is_ready">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_ready</span></code><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQManyRuntime.is_ready" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if all the status are ready.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if all status are ready else False</p>
 </dd>
 </dl>
 </dd></dl>

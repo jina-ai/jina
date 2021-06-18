@@ -10,7 +10,6 @@ Subpackages
    jina.peapods.runtimes.asyncio
    jina.peapods.runtimes.container
    jina.peapods.runtimes.jinad
-   jina.peapods.runtimes.ssh
    jina.peapods.runtimes.zmq
 
 Submodules
