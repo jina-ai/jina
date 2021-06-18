@@ -5,7 +5,7 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina.types.arrays.document import DocumentArray
-from jina.types.request import Request
+from jina.types.request import Request, Response
 
 
 @pytest.fixture(scope='function')
@@ -30,40 +30,35 @@ def test_init_fail():
 
 
 def test_docs(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'data'
+    request = Request(request=req, copy=False).as_typed_request('data')
     docs = request.docs
-    assert request.is_used
+    assert request.is_decompressed
     assert isinstance(docs, DocumentArray)
     assert len(docs) == 1
 
 
 def test_groundtruth(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'data'
+    request = Request(request=req, copy=False).as_typed_request('data')
     groundtruths = request.groundtruths
-    assert request.is_used
+    assert request.is_decompressed
     assert isinstance(groundtruths, DocumentArray)
     assert len(groundtruths) == 0
 
 
 def test_request_type_set_get(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'data'
+    request = Request(request=req, copy=False).as_typed_request('data')
     assert request.request_type == 'DataRequestProto'
 
 
 def test_request_type_set_get_fail(req):
-    request = Request(request=req, copy=False)
-    with pytest.raises(ValueError):
-        request.request_type = 'random'
+    with pytest.raises(TypeError):
+        Request(request=req, copy=False).as_typed_request('random')
 
 
 def test_command(req):
-    request = Request(request=req, copy=False)
-    request.request_type = 'control'
+    request = Request(request=req, copy=False).as_typed_request('control')
     cmd = request.command
-    assert request.is_used
+    assert request.is_decompressed
     assert cmd
     assert isinstance(cmd, str)
 
@@ -71,10 +66,10 @@ def test_command(req):
 def test_as_pb_object(req):
     request = Request(request=req)
     request.proto
-    assert request.is_used
+    assert request.is_decompressed
     request = Request(request=None)
     assert request.proto
-    assert request.is_used
+    assert request.is_decompressed
 
 
 def test_as_json_str(req):
@@ -86,6 +81,12 @@ def test_as_json_str(req):
 
 def test_access_header(req):
     request = Request(request=req)
-    assert not request.is_used
-    request.header
-    assert request.is_used
+    assert request.header == req.header
+
+
+def test_as_response(req):
+    request = Request(request=req)
+    response = request.as_response()
+    assert isinstance(response, Response)
+    assert isinstance(response, Request)
+    assert response._pb_body == request._pb_body
