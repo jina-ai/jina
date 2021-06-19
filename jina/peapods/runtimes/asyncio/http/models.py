@@ -243,12 +243,13 @@ class JinaStatusModel(BaseModel):
 
 class JinaRequestModel(BaseModel):
     """
-    Jina request model.
+    Jina request model on some endpoint
 
-    The base model for Jina REST request.
+    The base model for Jina HTTP request.
     """
 
     # To avoid an error while loading the request model schema on swagger, we've added an example.
+    exec_endpoint: Optional[str] = None
     data: Optional[
         Union[
             List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
@@ -267,7 +268,6 @@ class JinaRequestModel(BaseModel):
         ],
     )
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
-    mime_type: Optional[str] = None
     data_type: DataInputType = DataInputType.AUTO
     target_peapod: Optional[str] = None
     parameters: Optional[Dict] = None

@@ -69,17 +69,3 @@ When not given, then the default naming strategy will apply.
             if _SHOW_ALL_ARGS
             else argparse.SUPPRESS,
         )
-
-    gp = add_arg_group(parser, title='Documentation')
-
-    gp.add_argument(
-        '--title',
-        type=str,
-        help='The title of this object. It will be used in automatics docs UI.',
-    )
-
-    gp.add_argument(
-        '--description',
-        type=str,
-        help='The description of this object. It will be used in automatics docs UI.',
-    )

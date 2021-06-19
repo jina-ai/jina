@@ -35,12 +35,25 @@ def mixin_remote_parser(parser):
     )
 
 
-def mixin_rest_server_parser(parser=None):
+def mixin_http_gateway_parser(parser=None):
     """Add the options to rest server
 
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='REST Middleware')
+    gp = add_arg_group(parser, title='HTTP Gateway')
+
+    gp.add_argument(
+        '--title',
+        type=str,
+        help='The title of this HTTP server. It will be used in automatics docs such as Swagger UI.',
+    )
+
+    gp.add_argument(
+        '--description',
+        type=str,
+        help='The description of this HTTP server. It will be used in automatics docs such as Swagger UI.',
+    )
+
     gp.add_argument(
         '--cors',
         action='store_true',
@@ -50,16 +63,24 @@ def mixin_rest_server_parser(parser=None):
         ''',
     )
 
-    gp = add_arg_group(parser, title='REST Endpoint')
     gp.add_argument(
-        '--endpoints-mapping',
-        type=str,
+        '--expose-crud-endpoints',
+        action='store_true',
+        default=False,
         help='''
-        A JSON string that represents a mapping from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
-        ''',
+        If set, /index, /search, /update, /delete endpoints are exposed to HTTP.
+        
+        Any executor that has `@requests(on=...)` bind with those values will receive data requests. 
+            ''',
     )
 
-    gp = add_arg_group(parser, title='REST Return')
+    gp.add_argument(
+        '--expose-endpoints',
+        type=str,
+        help='''
+        A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+        ''',
+    )
 
     gp.add_argument(
         '--including-default-value-fields',
@@ -94,11 +115,11 @@ def mixin_rest_server_parser(parser=None):
     )
 
 
-def mixin_grpc_server_parser(parser=None):
+def mixin_grpc_gateway_parser(parser=None):
     """Add the options for gRPC
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='GRPC')
+    gp = add_arg_group(parser, title='GRPC Gateway')
 
     gp.add_argument(
         '--max-message-size',
@@ -119,15 +140,21 @@ def mixin_grpc_server_parser(parser=None):
         default=1,
         help='The number of additional requests to fetch on every receive',
     )
+
+
+def mixin_compressor_parser(parser=None):
+    gp = add_arg_group(parser, title='Compression')
+
     gp.add_argument(
         '--compress',
         type=CompressAlgo.from_string,
         choices=list(CompressAlgo),
         default=CompressAlgo.LZ4,
         help='''
-The compress algorithm used over the entire Flow.
+    The compress algorithm used over the entire Flow.
 
-Note that this is not necessarily effective, it depends on the settings of `--compress-lwm` and `compress-hwm`''',
+    Note that this is not necessarily effective, 
+    it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`''',
     )
     gp.add_argument(
         '--compress-min-bytes',

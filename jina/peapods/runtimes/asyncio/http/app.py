@@ -79,12 +79,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         }
 
     @app.post(
-        path='/post/{endpoint:path}',
+        path='/post',
         summary='Post a data request to some endpoint',
         response_model=JinaRequestModel,
         tags=['Debug'],
     )
-    async def post(endpoint: str, body: Optional[JinaRequestModel] = None):
+    async def post(body: JinaRequestModel):
         """
         Post a data request to some endpoint.
 
@@ -104,8 +104,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         """
         # The above comment is written in Markdown for better rendering in FastAPI
 
-        bd = body.dict() if body else {'data': None}  # type: Dict
-        bd['exec_endpoint'] = endpoint
+        bd = body.dict()  # type: Dict
         return StreamingResponse(
             result_in_stream(request_generator(**bd)), media_type='application/json'
         )
@@ -117,8 +116,11 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param kwargs: kwargs accepted by FastAPI
         """
 
+        # set some default kwargs for richer semantics
         # group flow exposed endpoints into `customized` group
         kwargs['tags'] = kwargs.get('tags', ['Customized'])
+        # add fullrequest as response model
+        kwargs['response_model'] = kwargs.get('response_model', JinaRequestModel)
 
         @app.api_route(
             path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
@@ -140,8 +142,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         for k, v in crud.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 
-    if args.endpoints_mapping:
-        endpoints = json.loads(args.endpoints_mapping)  # type: Dict[str, Dict]
+    if args.expose_endpoints:
+        endpoints = json.loads(args.expose_endpoints)  # type: Dict[str, Dict]
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 

@@ -228,8 +228,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 protocol=self.args.protocol,
                 pod_role=PodRoleType.GATEWAY,
                 endpoints_mapping=json.dumps(self._endpoints_mapping),
-                title=self.args.title,
-                description=self.args.description,
             )
         )
 
@@ -1068,9 +1066,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _show_success_message(self):
 
-        self.logger.success(
-            f'🎉 Flow is ready to use!'
-        )
+        self.logger.success(f'🎉 Flow is ready to use!')
 
         address_table = [
             f'\t🔗 Protocol: \t\t{colored(self.args.protocol, attrs="bold")}',

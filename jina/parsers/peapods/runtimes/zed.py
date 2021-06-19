@@ -20,16 +20,16 @@ def mixin_zed_runtime_parser(parser):
         type=str,
         default=__default_executor__,
         help='''
-            The config of the executor, it could be one of the followings:
-            * an Executor-level YAML file path (.yml, .yaml, .jaml)
-            * a docker image (must start with `docker://`)
-            * the string literal of a YAML config (must start with `!` or `jtype: `)
-            * the string literal of a JSON config
-            
-            When use it under Python, one can use the following values additionally:
-            - a Python dict that represents the config
-            - a text file stream has `.read()` interface
-            ''',
+        The config of the executor, it could be one of the followings:
+        * an Executor-level YAML file path (.yml, .yaml, .jaml)
+        * a docker image (must start with `docker://`)
+        * the string literal of a YAML config (must start with `!` or `jtype: `)
+        * the string literal of a JSON config
+        
+        When use it under Python, one can use the following values additionally:
+        - a Python dict that represents the config
+        - a text file stream has `.read()` interface
+        ''',
     )
     gp.add_argument(
         '--py-modules',

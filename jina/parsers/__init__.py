@@ -68,16 +68,18 @@ def set_gateway_parser(parser=None):
     from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import (
         mixin_remote_parser,
-        mixin_grpc_server_parser,
-        mixin_rest_server_parser,
+        mixin_grpc_gateway_parser,
+        mixin_http_gateway_parser,
+        mixin_compressor_parser,
     )
     from .peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_zed_runtime_parser(parser)
-    mixin_grpc_server_parser(parser)
-    mixin_rest_server_parser(parser)
+    mixin_grpc_gateway_parser(parser)
+    mixin_http_gateway_parser(parser)
+    mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_remote_parser(parser)
     mixin_pea_parser(parser)
