@@ -53,31 +53,35 @@ class HTTPClientMixin(BaseClient, ABC):
                 cm1, cm2 = ProgressBar(), TimeContext('')
             else:
                 cm1, cm2 = nullcontext(), nullcontext()
+            try:
+                with cm1 as p_bar, cm2:
+                    for req in req_iter:
+                        # fix the mismatch between pydantic model and Protobuf model
+                        req_dict = req.dict()
+                        req_dict['data'] = req_dict['data'].get('docs', None)
 
-            with cm1 as p_bar, cm2:
-                for req in req_iter:
-                    # fix the mismatch between pydantic model and Protobuf model
-                    req_dict = req.dict()
-                    req_dict['data'] = req_dict['data'].get('docs', None)
-
-                    async with session.post(
-                        f'http://{self.args.host}:{self.args.port_expose}/post',
-                        json=req_dict,
-                    ) as response:
-                        resp_str = await response.json()
-                        resp = Request(resp_str)
-                        resp = resp.as_typed_request(resp.request_type).as_response()
-                        callback_exec(
-                            response=resp,
-                            on_error=on_error,
-                            on_done=on_done,
-                            on_always=on_always,
-                            continue_on_error=self.args.continue_on_error,
-                            logger=self.logger,
-                        )
-                        if self.args.show_progress:
-                            p_bar.update(self.args.request_size)
-                        yield resp
+                        async with session.post(
+                            f'http://{self.args.host}:{self.args.port_expose}/post',
+                            json=req_dict,
+                        ) as response:
+                            resp_str = await response.json()
+                            resp = Request(resp_str)
+                            resp = resp.as_typed_request(
+                                resp.request_type
+                            ).as_response()
+                            callback_exec(
+                                response=resp,
+                                on_error=on_error,
+                                on_done=on_done,
+                                on_always=on_always,
+                                continue_on_error=self.args.continue_on_error,
+                                logger=self.logger,
+                            )
+                            if self.args.show_progress:
+                                p_bar.update(self.args.request_size)
+                            yield resp
+            except aiohttp.client_exceptions.ClientConnectorError:
+                self.logger.warning(f'Client got disconnected from the HTTP server')
 
 
 class HTTPClient(GRPCClient, HTTPClientMixin):

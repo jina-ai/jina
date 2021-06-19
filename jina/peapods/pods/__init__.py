@@ -16,7 +16,7 @@ from ...enums import (
     SocketType,
     PeaRoleType,
     PollingType,
-    GatewayProtocol,
+    GatewayProtocolType,
 )
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
@@ -123,9 +123,9 @@ class BasePod(ExitFIFO):
     def _set_conditional_args(args):
         if args.pod_role == PodRoleType.GATEWAY:
             args.runtime_cls = {
-                GatewayProtocol.GRPC: 'GRPCRuntime',
-                GatewayProtocol.WEBSOCKET: 'WebSocketRuntime',
-                GatewayProtocol.HTTP: 'HTTPRuntime',
+                GatewayProtocolType.GRPC: 'GRPCRuntime',
+                GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
+                GatewayProtocolType.HTTP: 'HTTPRuntime',
             }[args.protocol]
 
     @property

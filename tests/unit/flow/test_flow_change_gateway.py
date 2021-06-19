@@ -4,10 +4,10 @@ from jina import Flow
 from tests import random_docs
 
 
-@pytest.mark.parametrize('restful', [True, False])
-@pytest.mark.parametrize('changeto_gateway', ['GRPCGateway', 'RESTGateway'])
-def test_change_gateway(restful, changeto_gateway, mocker):
-    f = Flow(restful=restful).add().add().add(needs='pod1').needs_all()
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
+@pytest.mark.parametrize('changeto_protocol', ['grpc', 'http', 'websocket'])
+def test_change_gateway(protocol, changeto_protocol, mocker):
+    f = Flow(protocol=protocol).add().add().add(needs='pod1').needs_all()
 
     with f:
         mock = mocker.Mock()
@@ -15,10 +15,7 @@ def test_change_gateway(restful, changeto_gateway, mocker):
         mock.assert_called()
 
         mock = mocker.Mock()
-        if changeto_gateway == 'RESTGateway':
-            f.use_rest_gateway()
-        if changeto_gateway == 'GRPCGateway':
-            f.use_grpc_gateway()
+        f.protocol = changeto_protocol
 
         f.post('', random_docs(10), on_done=mock)
         mock.assert_called()

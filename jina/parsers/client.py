@@ -8,13 +8,13 @@ def mixin_comm_protocol_parser(parser):
     :param parser: the parser configure
     """
 
-    from ..enums import GatewayProtocol
+    from ..enums import GatewayProtocolType
 
     parser.add_argument(
         '--protocol',
-        type=GatewayProtocol.from_string,
-        choices=list(GatewayProtocol),
-        default=GatewayProtocol.GRPC,
+        type=GatewayProtocolType.from_string,
+        choices=list(GatewayProtocolType),
+        default=GatewayProtocolType.GRPC,
         help='Communication protocol between server and client.',
     )
 

@@ -220,7 +220,7 @@ class FlowBuildLevel(BetterEnum):
     RUNNING = 2  #: the graph is started and all pods are running
 
 
-class GatewayProtocol(BetterEnum):
+class GatewayProtocolType(BetterEnum):
     """
     Gateway communication protocol
     """

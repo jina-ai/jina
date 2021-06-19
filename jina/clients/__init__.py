@@ -4,7 +4,7 @@ from typing import overload, Optional, Union
 
 __all__ = ['Client']
 
-from ..enums import GatewayProtocol
+from ..enums import GatewayProtocolType
 
 if False:
     from .base import BaseClient
@@ -60,11 +60,13 @@ def Client(
     :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.
     """
 
-    protocol = args.protocol if args else kwargs.get('protocol', GatewayProtocol.GRPC)
+    protocol = (
+        args.protocol if args else kwargs.get('protocol', GatewayProtocolType.GRPC)
+    )
 
     is_async = (args and args.asyncio) or kwargs.get('asyncio', False)
 
-    if protocol == GatewayProtocol.GRPC:
+    if protocol == GatewayProtocolType.GRPC:
         if is_async:
             from .asyncio import AsyncClient
 
@@ -73,7 +75,7 @@ def Client(
             from .grpc import GRPCClient
 
             return GRPCClient(args, **kwargs)
-    elif protocol == GatewayProtocol.WEBSOCKET:
+    elif protocol == GatewayProtocolType.WEBSOCKET:
         if is_async:
             from .asyncio import AsyncWebSocketClient
 
@@ -82,7 +84,7 @@ def Client(
             from .websocket import WebSocketClient
 
             return WebSocketClient(args, **kwargs)
-    elif protocol == GatewayProtocol.HTTP:
+    elif protocol == GatewayProtocolType.HTTP:
         if is_async:
             from .asyncio import AsyncWebSocketClient
 

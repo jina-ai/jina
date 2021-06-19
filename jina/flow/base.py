@@ -15,7 +15,7 @@ from .builder import build_required, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
-from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocol
+from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
 from ..excepts import FlowTopologyError, FlowMissingPodError
 from ..helper import (
     colored,
@@ -1088,7 +1088,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     attrs='underline',
                 )
             )
-        if self.args.protocol == GatewayProtocol.HTTP:
+        if self.args.protocol == GatewayProtocolType.HTTP:
             address_table.append(
                 f'\t💬 Swagger UI:\t\t'
                 + colored(
@@ -1115,46 +1115,36 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         except KeyboardInterrupt:
             pass
 
-    def use_grpc_gateway(self, port: Optional[int] = None):
-        """Change to use gRPC gateway for Flow IO.
+    @property
+    def protocol(self) -> GatewayProtocolType:
+        """Return the protocol of this Flow
 
-        You can change the gateway even in the runtime.
-
-        :param port: the new port number to expose
-
+        :return: the protocol of this Flow
         """
-        self._switch_gateway('GRPCRuntime', port)
+        return self.args.protocol
 
-    def _switch_gateway(self, gateway: str, port: int):
-        restful = gateway == 'RESTRuntime'
+    @protocol.setter
+    def protocol(self, value: Union[str, GatewayProtocolType]):
+        """Set the protocol of this Flow
 
-        # globally register this at Flow level
-        self.args.restful = restful
-        if port:
-            self.args.port_expose = port
+        :param value: the protocol to set
+        """
+        if isinstance(value, str):
+            self.args.protocol = GatewayProtocolType.from_string(value)
+        elif isinstance(value, GatewayProtocolType):
+            self.args.protocol = value
+        else:
+            raise TypeError(f'{value} must be either `str` or `GatewayProtocolType`')
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self['gateway'].args.restful = restful
-            self['gateway'].args.runtime_cls = gateway
-            if port:
-                self['gateway'].args.port_expose = port
+            self['gateway'].args.protocol = value
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
             self['gateway'].close()
             self.enter_context(self['gateway'])
             self['gateway'].wait_start_success()
-
-    def use_rest_gateway(self, port: Optional[int] = None):
-        """Change to use REST gateway for IO.
-
-        You can change the gateway even in the runtime.
-
-        :param port: the new port number to expose
-
-        """
-        self._switch_gateway('RESTRuntime', port)
 
     def __getitem__(self, item):
         if isinstance(item, str):

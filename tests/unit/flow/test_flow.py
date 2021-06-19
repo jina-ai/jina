@@ -726,7 +726,7 @@ def test_flow_empty_data_request(mocker):
 def test_flow_common_kwargs():
 
     with Flow(
-        restful=True, continue_on_error=False, something_random=True, asyncio=False
+        protocol='http', continue_on_error=False, something_random=True, asyncio=False
     ).add() as f:
         assert f._common_kwargs == {'something_random': True}
 
