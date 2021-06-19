@@ -5,14 +5,15 @@ import pytest
 import requests
 
 from jina import Executor, DocumentArray, requests as req
+from jina import Flow
 from jina import helper, Document
 from jina.clients import Client
 from jina.excepts import BadClientInput
-from jina import Flow
-from jina.parsers import set_gateway_parser, set_client_cli_parser
+from jina.parsers import set_gateway_parser
 from jina.peapods import Pea
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document.generators import from_csv, from_ndjson, from_files
+from tests import random_docs
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -168,3 +169,30 @@ def test_independent_client():
     with Flow(restful=True) as f:
         c = Client(host='localhost', port_expose=f.port_expose, restful=True)
         c.post('/')
+
+
+@pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
+def test_all_sync_clients(protocol, mocker):
+    from jina import requests
+
+    class MyExec(Executor):
+        @requests
+        def foo(self, docs, **kwargs):
+            pass
+
+    f = Flow(protocol=protocol).add(uses=MyExec)
+    docs = list(random_docs(1000))
+    m1 = mocker.Mock()
+    m2 = mocker.Mock()
+    m3 = mocker.Mock()
+    m4 = mocker.Mock()
+    with f:
+        f.post('', on_done=m1)
+        f.post('/foo', docs, on_done=m2)
+        f.post('/foo', on_done=m3)
+        f.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)
+
+    m1.assert_called_once()
+    m2.assert_called()
+    m3.assert_called_once()
+    m4.assert_called()
