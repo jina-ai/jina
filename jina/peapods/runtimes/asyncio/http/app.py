@@ -61,7 +61,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         path='/status',
         summary='Get the status of Jina service',
         response_model=JinaStatusModel,
-        tags=['Built-in'],
+        tags=['Debug'],
     )
     async def _status():
         """
@@ -82,7 +82,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         path='/post/{endpoint:path}',
         summary='Post a data request to some endpoint',
         response_model=JinaRequestModel,
-        tags=['Built-in'],
+        tags=['Debug'],
     )
     async def post(endpoint: str, body: Optional[JinaRequestModel] = None):
         """
@@ -129,6 +129,16 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             return StreamingResponse(
                 result_in_stream(request_generator(**bd)), media_type='application/json'
             )
+
+    if args.expose_crud_endpoints:
+        crud = {
+            '/index': {'methods': ['POST']},
+            '/search': {'methods': ['POST']},
+            '/delete': {'methods': ['DELETE']},
+            '/update': {'methods': ['PUT']},
+        }
+        for k, v in crud.items():
+            expose_executor_endpoint(exec_endpoint=k, **v)
 
     if args.endpoints_mapping:
         endpoints = json.loads(args.endpoints_mapping)  # type: Dict[str, Dict]

@@ -1069,10 +1069,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def _show_success_message(self):
 
         self.logger.success(
-            f'🎉 Flow is ready to use! Protocol: {colored(self.args.protocol, attrs="bold")}'
+            f'🎉 Flow is ready to use!'
         )
 
         address_table = [
+            f'\t🔗 Protocol: \t\t{colored(self.args.protocol, attrs="bold")}',
             f'\t🏠 Local access:\t'
             + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
             f'\t🔒 Private network:\t'
@@ -1231,17 +1232,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.logger = JinaLogger(self.__class__.__name__, **vars(self.args))
         for _, p in self:
             p.args.identity = value
-
-    def expose_crud_endpoints(self):
-        """Expose index, search, update, delete endpoints to HTTP frontend. """
-        crud = {
-            '/index': {'methods': ['POST']},
-            '/search': {'methods': ['POST']},
-            '/delete': {'methods': ['DELETE']},
-            '/update': {'methods': ['PUT']},
-        }
-        for k, v in crud.items():
-            self.expose_endpoint(k, **v)
 
     @overload
     def expose_endpoint(self, exec_endpoint: str, path: Optional[str] = None):

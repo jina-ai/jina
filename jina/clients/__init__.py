@@ -64,16 +64,7 @@ def Client(
 
     is_async = (args and args.asyncio) or kwargs.get('asyncio', False)
 
-    if protocol == GatewayProtocol.WEBSOCKET:
-        if is_async:
-            from .asyncio import AsyncWebSocketClient
-
-            return AsyncWebSocketClient(args, **kwargs)
-        else:
-            from .websocket import WebSocketClient
-
-            return WebSocketClient(args, **kwargs)
-    elif protocol == GatewayProtocol.GRPC:
+    if protocol == GatewayProtocol.GRPC:
         if is_async:
             from .asyncio import AsyncClient
 
@@ -82,3 +73,12 @@ def Client(
             from .grpc import GRPCClient
 
             return GRPCClient(args, **kwargs)
+    elif protocol == GatewayProtocol.WEBSOCKET:
+        if is_async:
+            from .asyncio import AsyncWebSocketClient
+
+            return AsyncWebSocketClient(args, **kwargs)
+        else:
+            from .websocket import WebSocketClient
+
+            return WebSocketClient(args, **kwargs)

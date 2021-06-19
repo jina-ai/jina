@@ -1,6 +1,7 @@
 """A module for the websockets-based Client for Jina."""
 import asyncio
 from abc import ABC
+from contextlib import nullcontext
 from typing import Callable, Optional
 
 from .base import BaseClient, InputType
@@ -50,16 +51,17 @@ class WebSocketClientMixin(BaseClient, ABC):
 
         req_iter = self._get_requests(**kwargs)
         try:
-            client_info = f'{self.args.host}:{self.args.port_expose}'
             # setting `max_size` as None to avoid connection closure due to size of message
             # https://websockets.readthedocs.io/en/stable/api.html?highlight=1009#module-websockets.protocol
 
             async with websockets.connect(
-                f'ws://{client_info}/', max_size=None, ping_interval=None
+                f'ws://{self.args.host}:{self.args.port_expose}/', max_size=None, ping_interval=None
             ) as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
-                self.logger.success(f'Connected to the gateway at {client_info}')
+                self.logger.success(
+                    f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
+                )
                 self.num_requests = 0
                 self.num_responses = 0
 
@@ -78,7 +80,12 @@ class WebSocketClientMixin(BaseClient, ABC):
                         # There is nothing to send, disconnect gracefully
                         await websocket.close(reason='No data to send')
 
-                with ProgressBar() as p_bar, TimeContext(''):
+                if self.args.show_progress:
+                    cm1, cm2 = ProgressBar(), TimeContext('')
+                else:
+                    cm1, cm2 = nullcontext(), nullcontext()
+
+                with cm1 as p_bar, cm2:
                     # Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.
                     # Simply iterating through the `req_iter` makes the request-response sequential.
                     # To make client unblocking, :func:`send_requests` and `recv_responses` are separate tasks
@@ -99,7 +106,8 @@ class WebSocketClientMixin(BaseClient, ABC):
                             continue_on_error=self.args.continue_on_error,
                             logger=self.logger,
                         )
-                        p_bar.update(self.args.request_size)
+                        if self.args.show_progress:
+                            p_bar.update(self.args.request_size)
                         yield resp
                         self.num_responses += 1
                         if self.num_requests == self.num_responses:
