@@ -1,6 +1,6 @@
 import argparse
 import json
-from typing import Optional, Dict
+from typing import Dict
 
 from google.protobuf.json_format import MessageToJson
 
@@ -34,7 +34,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     app = FastAPI(
         title=args.title or 'My Jina Service',
         description=args.description
-        or 'This is my awesome service. You can set `title` and `description` in your `Flow` to customize this text.',
+        or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
+        'to customize this text.',
         version=__version__,
     )
 
@@ -69,7 +70,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
         This is equivalent to running `jina -vf` from command line.
 
-        # noqa: DAR201
         """
         _info = get_full_version()
         return {
@@ -99,8 +99,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             with f:
                 f.post(endpoint, ...)
 
-        # noqa: DAR201
-        # noqa: DAR101
         """
         # The above comment is written in Markdown for better rendering in FastAPI
 

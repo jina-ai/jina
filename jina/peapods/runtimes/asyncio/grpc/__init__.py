@@ -24,8 +24,8 @@ class GRPCRuntime(AsyncNewLoopRuntime):
             os.unsetenv('https_proxy')
         self.server = grpc.aio.server(
             options=[
-                ('grpc.max_send_message_length', self.args.max_message_size),
-                ('grpc.max_receive_message_length', self.args.max_message_size),
+                ('grpc.max_send_message_length', -1),
+                ('grpc.max_receive_message_length', -1),
             ]
         )
         self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)

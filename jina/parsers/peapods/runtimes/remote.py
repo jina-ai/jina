@@ -115,18 +115,11 @@ def mixin_http_gateway_parser(parser=None):
     )
 
 
-def mixin_grpc_gateway_parser(parser=None):
-    """Add the options for gRPC
+def mixin_prefetch_gateway_parser(parser=None):
+    """Add the options for prefetching
     :param parser: the parser
     """
-    gp = add_arg_group(parser, title='GRPC Gateway')
-
-    gp.add_argument(
-        '--max-message-size',
-        type=int,
-        default=-1,
-        help='The maximum send and receive size for gRPC server in bytes, -1 means unlimited',
-    )
+    gp = add_arg_group(parser, title='Prefetch')
 
     gp.add_argument(
         '--prefetch',
@@ -143,6 +136,9 @@ def mixin_grpc_gateway_parser(parser=None):
 
 
 def mixin_compressor_parser(parser=None):
+    """Add the options for compressors
+    :param parser: the parser
+    """
     gp = add_arg_group(parser, title='Compression')
 
     gp.add_argument(
@@ -156,6 +152,7 @@ def mixin_compressor_parser(parser=None):
     Note that this is not necessarily effective, 
     it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`''',
     )
+
     gp.add_argument(
         '--compress-min-bytes',
         type=int,
@@ -163,6 +160,7 @@ def mixin_compressor_parser(parser=None):
         help='The original message size must be larger than this number to trigger the compress algorithm, '
         '-1 means disable compression.',
     )
+
     gp.add_argument(
         '--compress-min-ratio',
         type=float,
