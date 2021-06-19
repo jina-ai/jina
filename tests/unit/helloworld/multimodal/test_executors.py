@@ -122,7 +122,6 @@ def test_image_crafter_search(encoder_doc_array_for_search, tmpdir):
         assert chunk.uri == ''
 
     with Flow().add(uses=ImageCrafter) as f:
-
         f.search(inputs=encoder_doc_array_for_search, on_done=validate)
 
 
