@@ -21,7 +21,6 @@ class DummySegment(Executor):
 
 
 class Merger(Executor):
-
     @requests
     def merge(self, docs, **kwargs):
         return docs
@@ -36,17 +35,17 @@ def validate(req):
 @pytest.mark.skip(
     'this should fail as explained in https://github.com/jina-ai/jina/pull/730'
 )
-@pytest.mark.parametrize('restful', [False])
-def test_this_will_fail(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_this_will_fail(mocker, protocol):
     f = (
-        Flow(restful=restful)
-            .add(name='a11', uses='DummySegment')
-            .add(name='a12', uses='DummySegment', needs='gateway')
-            .add(name='r1', needs=['a11', 'a12'])
-            .add(name='a21', uses='DummySegment', needs='gateway')
-            .add(name='a22', uses='DummySegment', needs='gateway')
-            .add(name='r2', needs=['a21', 'a22'])
-            .add(needs=['r1', 'r2'])
+        Flow(protocol=protocol)
+        .add(name='a11', uses='DummySegment')
+        .add(name='a12', uses='DummySegment', needs='gateway')
+        .add(name='r1', needs=['a11', 'a12'])
+        .add(name='a21', uses='DummySegment', needs='gateway')
+        .add(name='a22', uses='DummySegment', needs='gateway')
+        .add(name='r2', needs=['a21', 'a22'])
+        .add(needs=['r1', 'r2'])
     )
 
     response_mock = mocker.Mock()
@@ -59,19 +58,19 @@ def test_this_will_fail(mocker, restful):
 
 # TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.timeout(180)
-@pytest.mark.parametrize('restful', [False])
-def test_this_should_work(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_this_should_work(mocker, protocol):
     f = (
-        Flow(restful=restful)
-            .add(name='a1')
-            .add(name='a11', uses='DummySegment', needs='a1')
-            .add(name='a12', uses='DummySegment', needs='a1')
-            .add(name='r1', uses=Merger, needs=['a11', 'a12'])
-            .add(name='a2', needs='gateway')
-            .add(name='a21', uses='DummySegment', needs='a2')
-            .add(name='a22', uses='DummySegment', needs='a2')
-            .add(name='r2', uses=Merger, needs=['a21', 'a22'])
-            .add(uses=Merger, needs=['r1', 'r2'])
+        Flow(protocol=protocol)
+        .add(name='a1')
+        .add(name='a11', uses='DummySegment', needs='a1')
+        .add(name='a12', uses='DummySegment', needs='a1')
+        .add(name='r1', uses=Merger, needs=['a11', 'a12'])
+        .add(name='a2', needs='gateway')
+        .add(name='a21', uses='DummySegment', needs='a2')
+        .add(name='a22', uses='DummySegment', needs='a2')
+        .add(name='r2', uses=Merger, needs=['a21', 'a22'])
+        .add(uses=Merger, needs=['r1', 'r2'])
     )
 
     response_mock = mocker.Mock()

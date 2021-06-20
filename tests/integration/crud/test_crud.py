@@ -21,7 +21,7 @@ def rest_post(f, endpoint, documents):
     else:
         method = 'post'
     response = getattr(requests, method)(
-        f'http://0.0.0.0:{f.port_expose}/{endpoint}',
+        f'http://localhost:{f.port_expose}/{endpoint}',
         json={'data': data, 'parameters': PARAMS},
     )
     if response.status_code != 200:
@@ -32,7 +32,7 @@ def rest_post(f, endpoint, documents):
 
 @pytest.mark.parametrize('rest', [False, True])
 def test_crud(tmpdir, rest):
-    os.environ['RESTFUL'] = 'true' if rest else 'false'
+    os.environ['RESTFUL'] = 'http' if rest else 'grpc'
     os.environ['WORKSPACE'] = str(tmpdir)
 
     with Flow.load_config('flow.yml') as f:

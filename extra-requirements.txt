@@ -55,13 +55,13 @@ mock:                       test
 requests:                   http, devel, cicd, daemon
 prettytable:                devel, cicd
 optuna:                     cicd, optimizer
-websockets:                 http, devel, cicd, ws, daemon
-wsproto:                    http, devel, cicd, ws, daemon, chatbot, multimodal
+websockets:                 http, devel, cicd, daemon, client
 pydantic:                   http, devel, cicd, daemon, chatbot, multimodal
 python-multipart:           http, devel, cicd, daemon
 aiofiles:                   devel, cicd, http, daemon
+aiohttp:                    devel, cicd, http, async, client
 pytest-custom_exit_code:    test
 bs4:                        cicd
-aiostream:                  devel, cicd
+aiostream:                  devel, cicd, async, client
 jsonschema:                 cicd
 dgl==0.6.1:                 cicd, graph
