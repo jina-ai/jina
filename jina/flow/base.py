@@ -479,9 +479,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
-        uses_internal: Optional[
-            Union[str, Type['BaseExecutor'], dict]
-        ] = 'BaseExecutor',
+        override_with_params: Optional[Dict] = None,
+        override_metas_params: Optional[Dict] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         workspace_id: Optional[str] = None,
@@ -549,9 +548,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param scheduling: The strategy of scheduling workload among Peas
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
-        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
-        :param ssh_password: The ssh password to the ssh server.
-        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
@@ -574,10 +570,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   - a text file stream has `.read()` interface
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`
-        :param uses_internal: The config runs inside the Docker container.
-
-          Syntax and function are the same as `--uses`. This is designed when `--uses="docker://..."` this config is passed to
-          the Docker container.
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,

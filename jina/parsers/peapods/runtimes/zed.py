@@ -32,12 +32,21 @@ def mixin_zed_runtime_parser(parser):
         ''',
     )
     gp.add_argument(
-        '--override-config',
+        '--override-with-params',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
         help='''
-    Dictionary of keyword arguments that will override the default `configuration` provided to the executor in `uses`
+    Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
+    ''',
+    )
+    gp.add_argument(
+        '--override-metas-params',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+    Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
     ''',
     )
     gp.add_argument(
