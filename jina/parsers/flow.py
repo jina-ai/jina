@@ -54,13 +54,11 @@ def set_flow_parser(parser=None):
 
     parser.set_defaults(workspace='./')
 
-    mixin_remote_parser(parser)
-
     # add client parser
+    mixin_remote_parser(parser)
     mixin_client_features_parser(parser)
+    mixin_comm_protocol_parser(parser)
 
     mixin_flow_features_parser(parser)
-
-    mixin_comm_protocol_parser(parser)
 
     return parser

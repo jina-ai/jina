@@ -81,9 +81,9 @@ def Client(
             return WebSocketClient(args, **kwargs)
     elif protocol == GatewayProtocolType.HTTP:
         if is_async:
-            from .asyncio import AsyncWebSocketClient
+            from .asyncio import AsyncHTTPClient
 
-            return AsyncWebSocketClient(args, **kwargs)
+            return AsyncHTTPClient(args, **kwargs)
         else:
             from .http import HTTPClient
 

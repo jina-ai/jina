@@ -110,10 +110,11 @@ def set_client_cli_parser(parser=None):
         parser = set_base_parser()
 
     from .peapods.runtimes.remote import mixin_remote_parser
-    from .client import mixin_client_features_parser
+    from .client import mixin_client_features_parser, mixin_comm_protocol_parser
 
     mixin_remote_parser(parser)
     mixin_client_features_parser(parser)
+    mixin_comm_protocol_parser(parser)
 
     return parser
 
