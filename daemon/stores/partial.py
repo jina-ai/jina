@@ -14,10 +14,7 @@ from ..models.partial import PartialFlowItem, PartialStoreItem
 
 
 class PartialStore:
-    """
-    `mini-jinad` should always be managed by jinad & not by the user.
-    PartialStore creates Flows/Pods/Peas inside `mini-jinad`.
-    """
+    """A store spawned inside mini-jinad container"""
 
     def __init__(self):
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
@@ -52,6 +49,8 @@ class PartialStore:
 
 
 class PartialPeaStore(PartialStore):
+    """A Pea store spawned inside mini-jinad container"""
+
     peapod_cls = Pea
 
     def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
@@ -75,16 +74,16 @@ class PartialPeaStore(PartialStore):
             self._logger.success(f'{colored(_id, "cyan")} is created')
             return self.item
 
-    def update(self) -> PartialStoreItem:
-        # TODO
-        pass
-
 
 class PartialPodStore(PartialPeaStore):
+    """A Pod store spawned inside mini-jinad container"""
+
     peapod_cls = Pod
 
 
 class PartialFlowStore(PartialStore):
+    """A Flow store spawned inside mini-jinad container"""
+
     def add(self, args: Namespace, port_expose: int, **kwargs) -> PartialStoreItem:
         """Starts a Flow in `mini-jinad`.
 

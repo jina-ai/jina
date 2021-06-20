@@ -14,6 +14,11 @@ if TYPE_CHECKING:
 
 
 def _get_store(kind: str):
+    """Get store object
+
+    :param kind:  store kind
+    :return: store object
+    """
     if kind == 'pea':
         cls = PeaStore
     elif kind == 'pod':
@@ -33,6 +38,10 @@ def _get_store(kind: str):
 
 
 def _get_partial_store() -> Optional['PartialStore']:
+    """Get partial store object
+
+    :return: partial store object
+    """
     from ..models.enums import PartialDaemonModes
     from .partial import PartialPeaStore, PartialPodStore, PartialFlowStore
 
@@ -47,6 +56,11 @@ def _get_partial_store() -> Optional['PartialStore']:
 
 
 def get_store_from_id(entity_id: DaemonID) -> BaseStore:
+    """Get store from id
+
+    :param entity_id: DaemonID
+    :return: store object
+    """
     if entity_id.jtype == IDLiterals.JPOD:
         return pod_store
     elif entity_id.jtype == IDLiterals.JPEA:

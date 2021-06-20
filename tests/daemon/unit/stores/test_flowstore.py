@@ -33,7 +33,13 @@ def test_flow_store(workspace):
     flow_model = FlowModel()
     flow_model.uses = f'flow.yml'
 
-    store.add(id=flow_id, workspace_id=workspace, params=flow_model, ports={})
+    store.add(
+        id=flow_id,
+        workspace_id=workspace,
+        params=flow_model,
+        ports={},
+        port_expose=56789,
+    )
     assert len(store) == 1
     assert flow_id in store
     store.delete(flow_id)

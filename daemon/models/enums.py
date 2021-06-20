@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 from jina.enums import RemoteWorkspaceState as WorkspaceState
 from ..helper import classproperty
@@ -8,7 +9,7 @@ class DaemonEnum(str, Enum):
     """Base class of Enum in JinaD"""
 
     @classproperty
-    def values(cls):
+    def values(cls) -> List:
         """Get all values in Enum
 
         :return: Get all values in Enum
@@ -36,7 +37,10 @@ class DaemonBuild(DaemonEnum):
 
     # TODO (Deepankar): remove this once default becomes default
     @classproperty
-    def default(cls):
+    def default(cls) -> str:
+        """Get default value for DaemonBuild
+
+        :return: default value for DaemonBuild"""
         return cls.DEVEL
 
 
@@ -48,7 +52,10 @@ class PythonVersion(DaemonEnum):
     PY39 = '3.9'
 
     @classproperty
-    def default(cls):
+    def default(cls) -> str:
+        """Get default value for PythonVersion
+
+        :return: default value for PythonVersion"""
         return cls.PY38
 
 

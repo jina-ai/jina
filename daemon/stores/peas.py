@@ -5,6 +5,8 @@ from ..excepts import Runtime400Exception
 
 
 class PeaStore(ContainerStore):
+    """A Store of Peas spawned by as Containers by Daemon"""
+
     _kind = 'pea'
 
     def _add(self):

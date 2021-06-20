@@ -20,6 +20,7 @@ from .. import __rootdir__, __dockerfiles__
 
 
 class WorkspaceStore(BaseStore):
+    """A store of workspaces built by Daemon as docker objects"""
 
     _kind = 'workspace'
     _status_model = WorkspaceStoreStatus

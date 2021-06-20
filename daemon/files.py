@@ -188,7 +188,9 @@ class DaemonFile:
 
     @cached_property
     def dockercontext(self) -> str:
-        """directory for docker context during docker build"""
+        """directory for docker context during docker build
+
+        :return: docker context directory"""
         return __rootdir__ if self.build == DaemonBuild.DEVEL else self._workdir
 
     @cached_property

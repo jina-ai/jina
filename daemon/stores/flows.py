@@ -8,6 +8,8 @@ from ..models.enums import UpdateOperation
 
 
 class FlowStore(ContainerStore):
+    """A Store of Flows spawned by as Containers by Daemon"""
+
     _kind = 'flow'
 
     def _add(self, port_expose: int, **kwargs) -> Dict:

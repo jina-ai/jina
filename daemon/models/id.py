@@ -13,6 +13,9 @@ class DaemonID(str):
     def __new__(cls, value: Union[str, IDLiterals], *args, **kwargs) -> 'DaemonID':
         """Validate str and create `DaemonID` object
 
+        :param value: input value
+        :param args: args
+        :param kwargs: keyword args
         :return: `DaemonID` object
         """
         return str.__new__(cls, cls.validate(value), *args, **kwargs)
