@@ -481,7 +481,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         override_with_params: Optional[Dict] = None,
         override_metas_params: Optional[Dict] = None,
-        volumes: Optional[List[str]] = None,
+        volumes: Optional[Union[List[str], str]] = None,
         workspace: Optional[str] = None,
         workspace_id: Optional[str] = None,
         **kwargs,
@@ -548,6 +548,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param scheduling: The strategy of scheduling workload among Peas
         :param socket_in: The socket type for input port
         :param socket_out: The socket type for output port
+        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
+        :param ssh_password: The ssh password to the ssh server.
+        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param upload_files: The files on the host to be uploaded to the remote
