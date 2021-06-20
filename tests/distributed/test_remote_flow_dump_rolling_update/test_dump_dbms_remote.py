@@ -40,14 +40,14 @@ def _create_flows():
     dbms_flow_id = create_flow(
         flow_yaml=dbms_flow_yml,
         pod_dir=os.path.join(cur_dir, 'pods'),
-        url=f'http://localhost:{JINAD_PORT_DBMS}',
+        url=f'http://0.0.0.0:{JINAD_PORT_DBMS}',
     )
 
     # create query flow
     query_flow_id = create_flow(
         flow_yaml=query_flow_yml,
         pod_dir=os.path.join(cur_dir, 'pods'),
-        url=f'http://localhost:{JINAD_PORT_QUERY}',
+        url=f'http://0.0.0.0:{JINAD_PORT_QUERY}',
     )
     return dbms_flow_id, query_flow_id
 
@@ -79,7 +79,7 @@ def test_dump_dbms_remote(docker_compose):
         'indexer_dbms',
         DUMP_PATH_DOCKER,  # the internal path in the docker container
         SHARDS,
-        f'http://localhost:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
+        f'http://0.0.0.0:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
     )
 
     dir_size = _path_size_remote(DUMP_PATH_DOCKER)
@@ -90,7 +90,7 @@ def test_dump_dbms_remote(docker_compose):
     _jinad_rolling_update(
         'indexer_query',
         DUMP_PATH_DOCKER,  # the internal path in the docker container
-        f'http://localhost:{JINAD_PORT_QUERY}/flows/{query_flow_id}',
+        f'http://0.0.0.0:{JINAD_PORT_QUERY}/flows/{query_flow_id}',
     )
 
     # data request goes to client
@@ -120,7 +120,7 @@ def _send_rest_request(
         json['parameters'] = params
     if target_peapod:
         json['target_peapod'] = target_peapod
-    url = f'http://localhost:{port_expose}/{endpoint}'
+    url = f'http://0.0.0.0:{port_expose}/{endpoint}'
     if endpoint == 'post':
         url += f'{exec_endpoint}'
     logger.info(f'sending {method} request to {url}')

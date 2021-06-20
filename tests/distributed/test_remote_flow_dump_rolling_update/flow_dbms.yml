@@ -3,8 +3,8 @@ version: '1'
 with:
   read_only: false
   protocol: http
-  expose_crud_endpoints: true
   port_expose: 9000
+  cors: true
 pods:
   - name: indexer_dbms
     uses: indexer_dbms.yml
