@@ -962,12 +962,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            a = self.build()
+            op_flow = copy.deepcopy(self)
+            a = op_flow.build()
         else:
             a = self
 
         if other._build_level.value < FlowBuildLevel.GRAPH.value:
-            b = other.build()
+            op_flow_b = copy.deepcopy(other)
+            b = op_flow_b.build()
         else:
             b = other
 
