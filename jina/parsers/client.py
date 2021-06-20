@@ -2,26 +2,20 @@
 from .helper import add_arg_group
 
 
-def mixin_client_type_parser(parser):
-    """Add the arguments for the client to the parser
+def mixin_comm_protocol_parser(parser):
+    """Add the arguments for the protocol to the parser
 
     :param parser: the parser configure
     """
-    gp = add_arg_group(parser, title='Client Interface')
 
-    gp.add_argument(
-        '--restful',
-        action='store_true',
-        default=False,
-        help='If set, use RESTful interface instead of gRPC as the main interface. '
-        'This expects the corresponding Flow to be set with --restful as well.',
-    )
+    from ..enums import GatewayProtocolType
 
-    gp.add_argument(
-        '--asyncio',
-        action='store_true',
-        default=False,
-        help='If set, then the input and output of this Client work in an asynchronous manner. ',
+    parser.add_argument(
+        '--protocol',
+        type=GatewayProtocolType.from_string,
+        choices=list(GatewayProtocolType),
+        default=GatewayProtocolType.GRPC,
+        help='Communication protocol between server and client.',
     )
 
 
@@ -31,6 +25,13 @@ def mixin_client_features_parser(parser):
     :param parser: the parser configure
     """
     gp = add_arg_group(parser, title='Client Features')
+
+    parser.add_argument(
+        '--asyncio',
+        action='store_true',
+        default=False,
+        help='If set, then the input and output of this Client work in an asynchronous manner. ',
+    )
 
     gp.add_argument(
         '--request-size',
@@ -58,10 +59,6 @@ def mixin_client_features_parser(parser):
         '--return-results',
         action='store_true',
         default=False,
-        help='''
-This feature is only used for AsyncClient.
-
-If set, the results of all Requests will be returned as a list. This is useful when one wants 
-process Responses in bulk instead of using callback. 
-                    ''',
+        help='If set, the results of all Requests will be returned as a list. '
+        'This is useful when one wants process Responses in bulk instead of using callback.',
     )

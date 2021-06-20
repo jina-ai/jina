@@ -19,7 +19,7 @@ class KeyValueDBMSIndexer(Executor):
 
     # TODO endpoint in tests.distributed.test_remote_flow_dump_rolling_update.test_dump_dbms_remote.test_dump_dbms_remote
     # ends up being http://0.0.0.0:9000/post/dump
-    @requests(on='dump')
+    @requests(on='/dump')
     def dump(self, parameters, *args, **kwargs):
         dump_path = parameters['dump_path']
         # TODO: maybe put some logic for shards here

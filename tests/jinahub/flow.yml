@@ -2,7 +2,8 @@
 version: '1'
 with:
   read_only: true
-  restful: true
+  protocol: http
+  expose_crud_endpoints: true
   port_expose: 45678
 pods:
   - name: pod1

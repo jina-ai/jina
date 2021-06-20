@@ -62,7 +62,8 @@ def hello_world(args):
         f.index(from_csv(fp, field_resolver={'question': 'text'}))
 
         # switch to REST gateway at runtime
-        f.use_rest_gateway(args.port_expose)
+        f.protocol = 'http'
+        f.port_expose = args.port_expose
 
         url_html_path = 'file://' + os.path.abspath(
             os.path.join(
