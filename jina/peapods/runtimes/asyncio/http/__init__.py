@@ -1,12 +1,14 @@
+import os
+
 from .app import get_fastapi_app
 from ..base import AsyncNewLoopRuntime
 from .....importer import ImportExtensions
 
-__all__ = ['RESTRuntime']
+__all__ = ['HTTPRuntime']
 
 
-class RESTRuntime(AsyncNewLoopRuntime):
-    """Runtime for REST."""
+class HTTPRuntime(AsyncNewLoopRuntime):
+    """Runtime for HTTP interface."""
 
     async def async_setup(self):
         """
@@ -44,21 +46,13 @@ class RESTRuntime(AsyncNewLoopRuntime):
                 await self.main_loop()
                 await self.shutdown(sockets=sockets)
 
-        # change log_level for REST server debugging
-        # TODO(Deepankar): The default `websockets` implementation needs the max_size to be set.
-        # But uvicorn doesn't expose a config for max_size of a ws message, hence falling back to `ws='wsproto'`
-        # Change to 'auto' once https://github.com/encode/uvicorn/pull/538 gets merged,
-        # as 'wsproto' is less performant and adds another dependency.
-
         from .....helper import extend_rest_interface
-        import os
 
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
                 host=self.args.host,
                 port=self.args.port_expose,
-                ws='wsproto',
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
             )
         )
