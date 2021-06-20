@@ -4,7 +4,7 @@ from daemon import _get_app
 from daemon.parser import get_main_parser
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
-from jina.peapods.runtimes.asyncio.rest.app import get_fastapi_app
+from jina.peapods.runtimes.asyncio.http.app import get_fastapi_app
 
 
 JINA_LOGO_URL = 'https://api.jina.ai/logo/logo-product/jina-core/horizontal-layout/colored/Product%20logo_Core_vertical_colorful%402x-margin.png'

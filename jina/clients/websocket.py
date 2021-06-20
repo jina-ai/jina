@@ -135,7 +135,7 @@ class WebSocketClient(GRPCClient, WebSocketClientMixin):
     .. code-block:: python
 
         from jina.flow import Flow
-        f = Flow(restful=True).add().add()
+        f = Flow(protocol='websocket').add().add()
 
         with f:
             f.index(['abc'])
@@ -148,7 +148,7 @@ class WebSocketClient(GRPCClient, WebSocketClientMixin):
 
         # A Flow running on remote
         from jina.flow import Flow
-        f = Flow(restful=True, port_expose=34567).add().add()
+        f = Flow(protocol='websocket', port_expose=34567).add().add()
 
         with f:
             f.block()
