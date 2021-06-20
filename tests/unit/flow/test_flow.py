@@ -726,9 +726,7 @@ def test_flow_empty_data_request(mocker):
 
 def test_flow_common_kwargs():
 
-    with Flow(
-        name='hello', something_random=True
-    ).add() as f:
+    with Flow(name='hello', something_random=True).add() as f:
         assert f._common_kwargs == {'something_random': True}
 
 
