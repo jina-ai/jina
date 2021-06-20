@@ -93,7 +93,6 @@ class BasePod(ExitFIFO):
     ):
         super().__init__()
         self.args = args
-        self._set_conditional_args(self.args)
         self.needs = (
             needs if needs else set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -118,15 +117,6 @@ class BasePod(ExitFIFO):
         .. # noqa: DAR201
         """
         self.__exit__(None, None, None)
-
-    @staticmethod
-    def _set_conditional_args(args):
-        if args.pod_role == PodRoleType.GATEWAY:
-            args.runtime_cls = {
-                GatewayProtocolType.GRPC: 'GRPCRuntime',
-                GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-                GatewayProtocolType.HTTP: 'HTTPRuntime',
-            }[args.protocol]
 
     @property
     def role(self) -> 'PodRoleType':

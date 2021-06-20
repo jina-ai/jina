@@ -47,6 +47,7 @@ if False:
     from ..peapods import BasePod
     from ..executors import BaseExecutor
     from ..clients.base import BaseClient
+    from .asyncio import AsyncFlow
 
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -462,7 +463,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         workspace: Optional[str] = None,
         workspace_id: Optional[str] = None,
         **kwargs,
-    ) -> 'Flow':
+    ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
@@ -1270,7 +1271,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self['gateway'].args.protocol = value
+            self['gateway'].args.protocol = self.args.protocol
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:

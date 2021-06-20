@@ -24,7 +24,12 @@ def flow():
 
 
 @pytest.fixture(scope='function')
-def flow_with_rest_api_enabled():
+def flow_with_websocket():
+    return Flow(protocol='websocket').add()
+
+
+@pytest.fixture(scope='function')
+def flow_with_http():
     return Flow(protocol='http', expose_crud_endpoints=True).add()
 
 
@@ -69,11 +74,11 @@ def test_gateway_ready(port_expose, route, status_code):
         assert a.status_code == status_code
 
 
-def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
-    with flow_with_rest_api_enabled:
+def test_gateway_index(flow_with_http, test_img_1, test_img_2):
+    with flow_with_http:
         time.sleep(0.5)
         r = requests.post(
-            f'http://localhost:{flow_with_rest_api_enabled.port_expose}/index',
+            f'http://localhost:{flow_with_http.port_expose}/index',
             json={'data': [test_img_1, test_img_2]},
         )
         assert r.status_code == 200
@@ -125,20 +130,21 @@ def test_client_csv(protocol, mocker, func_name):
 
 # Timeout is necessary to fail in case of hanging client requests
 @pytest.mark.timeout(5)
-def test_client_websocket(mocker, flow_with_rest_api_enabled):
-    with flow_with_rest_api_enabled:
+def test_client_websocket(mocker, flow_with_websocket):
+    with flow_with_websocket:
         time.sleep(0.5)
         client = Client(
             host='localhost',
-            port_expose=str(flow_with_rest_api_enabled.port_expose),
+            port_expose=str(flow_with_websocket.port_expose),
             protocol='websocket',
         )
         # Test that a regular index request triggers the correct callbacks
         on_always_mock = mocker.Mock()
         on_error_mock = mocker.Mock()
         on_done_mock = mocker.Mock()
-        client.index(
-            iter([Document()]),
+        client.post(
+            '',
+            random_docs(1),
             request_size=1,
             on_always=on_always_mock,
             on_error=on_error_mock,
@@ -148,13 +154,6 @@ def test_client_websocket(mocker, flow_with_rest_api_enabled):
         on_done_mock.assert_called_once()
         on_error_mock.assert_not_called()
 
-        # Test that an empty index request does not trigger any callback and does not time out
-        mock = mocker.Mock()
-        client.index(
-            iter([()]), request_size=1, on_always=mock, on_error=mock, on_done=mock
-        )
-        mock.assert_not_called()
-
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_from_kwargs(protocol):
@@ -163,8 +162,9 @@ def test_client_from_kwargs(protocol):
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_independent_client(protocol):
-    with Flow(protocol) as f:
+    with Flow(protocol=protocol) as f:
         c = Client(host='localhost', port_expose=f.port_expose, protocol=protocol)
+        assert type(c) == type(f.client)
         c.post('/')
 
 

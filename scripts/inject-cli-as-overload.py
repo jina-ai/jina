@@ -70,7 +70,7 @@ def fill_overload(
         args_str = ', \n'.join(cli_args + [f'{indent}{indent}**kwargs'])
         signature_str = f'def {overload_fn}(\n{indent}{indent}self,\n{args_str})'
         if return_type:
-            signature_str += f' -> \'{return_type}\':'
+            signature_str += f' -> {return_type}:'
             return_str = f'\n{indent}{indent}:return: {doc_str_return}'
         else:
             signature_str += ':'
@@ -83,7 +83,7 @@ def fill_overload(
         args_str = ', \n'.join(cli_args + [f'{indent}**kwargs'])
         signature_str = f'def {overload_fn}(\n{args_str})'
         if return_type:
-            signature_str += f' -> \'{return_type}\':'
+            signature_str += f' -> {return_type}:'
             return_str = f'\n{indent}:return: {doc_str_return}'
         else:
             signature_str += ':'
@@ -129,7 +129,7 @@ entries = [
         cli_entrypoint='pod',
         doc_str_title='Add an Executor to the current Flow object.',
         doc_str_return='a (new) Flow object with modification',
-        return_type='Flow',
+        return_type="Union['Flow', 'AsyncFlow']",
         filepath='../jina/flow/base.py',
         overload_fn='add',
         class_method=True,  # if it is a method inside class.
@@ -157,7 +157,7 @@ entries = [
         cli_entrypoint='client',
         doc_str_title='Create a Client. Client is how user interact with Flow',
         doc_str_return='the new Client object',
-        return_type='BaseClient',
+        return_type="Union['AsyncWebSocketClient', 'WebSocketClient', 'AsyncClient', 'GRPCClient', 'HTTPClient', 'AsyncHTTPClient']",
         filepath='../jina/clients/__init__.py',
         overload_fn='Client',
         class_method=False,
