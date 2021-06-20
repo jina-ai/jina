@@ -20,7 +20,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture(scope='function')
 def flow():
-    return Flow(restful=False).add()
+    return Flow(protocol='grpc').add()
 
 
 @pytest.fixture(scope='function')
@@ -83,15 +83,15 @@ def test_gateway_index(flow_with_rest_api_enabled, test_img_1, test_img_2):
         assert resp['data']['docs'][0]['uri'] == test_img_1
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_mime_type(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_mime_type(protocol):
     class MyExec(Executor):
         @req
         def foo(self, docs: 'DocumentArray', **kwargs):
             for d in docs:
                 d.convert_uri_to_buffer()
 
-    f = Flow(restful=restful).add(uses=MyExec)
+    f = Flow(protocol=protocol).add(uses=MyExec)
 
     def validate_mime_type(req):
         for d in req.data.docs:
@@ -102,9 +102,9 @@ def test_mime_type(restful):
 
 
 @pytest.mark.parametrize('func_name', ['index', 'search'])
-@pytest.mark.parametrize('restful', [False, True])
-def test_client_ndjson(restful, mocker, func_name):
-    with Flow(restful=restful).add() as f, open(
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_ndjson(protocol, mocker, func_name):
+    with Flow(protocol=protocol).add() as f, open(
         os.path.join(cur_dir, 'docs.jsonlines')
     ) as fp:
         mock = mocker.Mock()
@@ -113,9 +113,9 @@ def test_client_ndjson(restful, mocker, func_name):
 
 
 @pytest.mark.parametrize('func_name', ['index', 'search'])
-@pytest.mark.parametrize('restful', [False, True])
-def test_client_csv(restful, mocker, func_name):
-    with Flow(restful=restful).add() as f, open(
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_csv(protocol, mocker, func_name):
+    with Flow(protocol=protocol).add() as f, open(
         os.path.join(cur_dir, 'docs.csv')
     ) as fp:
         mock = mocker.Mock()
@@ -131,7 +131,7 @@ def test_client_websocket(mocker, flow_with_rest_api_enabled):
         client = Client(
             host='localhost',
             port_expose=str(flow_with_rest_api_enabled.port_expose),
-            restful=True,
+            protocol='websocket',
         )
         # Test that a regular index request triggers the correct callbacks
         on_always_mock = mocker.Mock()
@@ -156,18 +156,15 @@ def test_client_websocket(mocker, flow_with_rest_api_enabled):
         mock.assert_not_called()
 
 
-def test_client_from_kwargs():
-    Client(port_expose=12345, host='0.0.0.1')
-    Client(port_expose=12345, host='0.0.0.1', restful=True)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_from_kwargs(protocol):
+    Client(port_expose=12345, host='0.0.0.1', protocol=protocol)
 
 
-def test_independent_client():
-    with Flow() as f:
-        c = Client(host='localhost', port_expose=f.port_expose)
-        c.post('/')
-
-    with Flow(restful=True) as f:
-        c = Client(host='localhost', port_expose=f.port_expose, restful=True)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_independent_client(protocol):
+    with Flow(protocol) as f:
+        c = Client(host='localhost', port_expose=f.port_expose, protocol=protocol)
         c.post('/')
 
 

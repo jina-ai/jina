@@ -49,9 +49,9 @@ def temp_folder(tmpdir):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow1(inspect, restful, temp_folder):
-    f = Flow(restful=restful, inspect=inspect).add(
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow1(inspect, protocol, temp_folder):
+    f = Flow(protocol=protocol, inspect=inspect).add(
         uses=DummyEvaluator1,
         env={'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')},
     )
@@ -61,10 +61,10 @@ def test_flow1(inspect, restful, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow2(inspect, restful, temp_folder):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow2(inspect, protocol, temp_folder):
     f = (
-        Flow(restful=restful, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect)
         .add()
         .inspect(
             uses=DummyEvaluator1,
@@ -79,12 +79,12 @@ def test_flow2(inspect, restful, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('restful', [False])
-def test_flow3(inspect, restful, temp_folder):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow3(inspect, protocol, temp_folder):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
     f = (
-        Flow(restful=restful, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect)
         .add(name='p1')
         .inspect(uses='DummyEvaluator1', env=env)
         .add(name='p2', needs='gateway')
@@ -99,12 +99,12 @@ def test_flow3(inspect, restful, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow4(inspect, restful, temp_folder):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow4(inspect, protocol, temp_folder):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
     f = (
-        Flow(restful=restful, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect)
         .add()
         .inspect(uses='DummyEvaluator1', env=env)
         .add()
@@ -131,8 +131,8 @@ class AddEvaluationExecutor(Executor):
 
 
 @pytest.mark.repeat(5)
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow_returned_collect(restful, mocker):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_returned_collect(protocol, mocker):
     # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` pod
     # use an specific executor.
 
@@ -142,7 +142,7 @@ def test_flow_returned_collect(restful, mocker):
             assert NamedScoreMapping(doc.evaluations)['evaluate'].value == 10.0
 
     f = (
-        Flow(restful=restful, inspect='COLLECT')
+        Flow(protocol=protocol, inspect='COLLECT')
         .add()
         .inspect(
             uses=AddEvaluationExecutor,
@@ -158,14 +158,14 @@ def test_flow_returned_collect(restful, mocker):
 
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('inspect', ['HANG', 'REMOVE'])
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow_not_returned(inspect, restful, mocker):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_not_returned(inspect, protocol, mocker):
     def validate_func(resp):
         for doc in resp.data.docs:
             assert len(NamedScoreMapping(doc.evaluations)) == 0
 
     f = (
-        Flow(restful=restful, inspect=inspect)
+        Flow(protocol=protocol, inspect=inspect)
         .add()
         .inspect(
             uses=AddEvaluationExecutor,

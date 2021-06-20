@@ -77,15 +77,15 @@ def test_flow_with_jump(tmpdir):
         _validate(f)
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_simple_flow(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_simple_flow(protocol):
     bytes_gen = (Document() for _ in range(10))
 
     def bytes_fn():
         for _ in range(100):
             yield Document()
 
-    f = Flow(restful=restful).add()
+    f = Flow(protocol=protocol).add()
 
     with f:
         f.index(inputs=bytes_gen)
@@ -164,9 +164,9 @@ def test_flow_identical(tmpdir):
         assert node.tail_args.socket_out == SocketType.PUSH_CONNECT
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow_no_container(restful):
-    f = Flow(restful=restful).add(
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_no_container(protocol):
+    f = Flow(protocol=protocol).add(
         name='dummyEncoder',
         uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml'),
     )
@@ -351,10 +351,10 @@ def test_refactor_num_part_proxy():
             assert node.peas_args['peas'][0] == node.tail_args
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_refactor_num_part_proxy_2(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_refactor_num_part_proxy_2(protocol):
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='r1')
         .add(name='r2', needs='r1', parallel=2)
         .add(name='r3', needs='r1', parallel=3, polling='ALL')
@@ -365,14 +365,16 @@ def test_refactor_num_part_proxy_2(restful):
         f.index([Document(text='abbcs'), Document(text='efgh')])
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_refactor_num_part_2(restful):
-    f = Flow(restful=restful).add(name='r1', needs='gateway', parallel=3, polling='ALL')
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_refactor_num_part_2(protocol):
+    f = Flow(protocol=protocol).add(
+        name='r1', needs='gateway', parallel=3, polling='ALL'
+    )
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
 
-    f = Flow(restful=restful).add(name='r1', needs='gateway', parallel=3)
+    f = Flow(protocol=protocol).add(name='r1', needs='gateway', parallel=3)
 
     with f:
         f.index([Document(text='abbcs'), Document(text='efgh')])
@@ -385,9 +387,8 @@ def datauri_workspace(tmpdir):
     del os.environ['TEST_DATAURIINDEX_WORKSPACE']
 
 
-# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
-@pytest.mark.parametrize('restful', [False])
-def test_flow_with_publish_driver(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_with_publish_driver(mocker, protocol):
     from jina import Executor, requests
 
     class DummyOneHotTextEncoder(Executor):
@@ -403,7 +404,7 @@ def test_flow_with_publish_driver(mocker, restful):
     response_mock = mocker.Mock()
 
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='r2', uses=DummyOneHotTextEncoder)
         .add(name='r3', uses=DummyOneHotTextEncoder, needs='gateway')
         .join(needs=['r2', 'r3'])
@@ -417,10 +418,10 @@ def test_flow_with_publish_driver(mocker, restful):
     validate_callback(response_mock, validate)
 
 
-@pytest.mark.parametrize('restful', [False])
-def test_flow_arbitrary_needs(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_arbitrary_needs(protocol):
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='p1')
         .add(name='p2', needs='gateway')
         .add(name='p3', needs='gateway')
@@ -436,13 +437,13 @@ def test_flow_arbitrary_needs(restful):
         f.index([Document(text='abbcs'), Document(text='efgh')])
 
 
-@pytest.mark.parametrize('restful', [False])
-def test_flow_needs_all(restful):
-    f = Flow(restful=restful).add(name='p1', needs='gateway').needs_all(name='r1')
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_needs_all(protocol):
+    f = Flow(protocol=protocol).add(name='p1', needs='gateway').needs_all(name='r1')
     assert f._pod_nodes['r1'].needs == {'p1'}
 
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='p1', needs='gateway')
         .add(name='p2', needs='gateway')
         .add(name='p3', needs='gateway')
@@ -455,7 +456,7 @@ def test_flow_needs_all(restful):
         f.index(from_ndarray(np.random.random([10, 10])))
 
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='p1', needs='gateway')
         .add(name='p2', needs='gateway')
         .add(name='p3', needs='gateway')
@@ -500,9 +501,9 @@ def test_flow_with_pod_envs():
 
 
 @pytest.mark.parametrize('return_results', [False, True])
-@pytest.mark.parametrize('restful', [False, True])
-def test_return_results_sync_flow(return_results, restful):
-    with Flow(restful=restful, return_results=return_results).add() as f:
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_return_results_sync_flow(return_results, protocol):
+    with Flow(protocol=protocol, return_results=return_results).add() as f:
         r = f.index(from_ndarray(np.random.random([10, 2])))
         if return_results:
             assert isinstance(r, list)

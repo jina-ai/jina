@@ -13,8 +13,8 @@ def validate(x):
 @pytest.mark.skip(
     reason='something wrong with parametrize in the following, setting either False or True work, but combining them does not. see discussion in https://jinaai.slack.com/archives/C018F60RBL5/p1613984424012700?thread_ts=1613954151.005100&cid=C018F60RBL5'
 )
-@pytest.mark.parametrize('restful', [False, True])
-def test_client_on_error(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_client_on_error(protocol):
     # In this particular test, when you write two tests in a row, you are testing the following case:
     #
     # You are testing exception in client's callback, not error in client's request generator
@@ -25,7 +25,7 @@ def test_client_on_error(restful):
     def validate(x):
         raise NotImplementedError
 
-    with Flow(restful=restful).add() as f:
+    with Flow(protocol=protocol).add() as f:
         t = 0
         try:
             f.index(

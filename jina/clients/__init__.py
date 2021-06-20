@@ -22,7 +22,6 @@ def Client(
     port_expose: Optional[int] = None,
     proxy: Optional[bool] = False,
     request_size: Optional[int] = 100,
-    restful: Optional[bool] = False,
     return_results: Optional[bool] = False,
     show_progress: Optional[bool] = False,
     **kwargs
@@ -35,11 +34,7 @@ def Client(
     :param port_expose: The port of the host exposed to the public
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
     :param request_size: The number of Documents in each Request.
-    :param restful: If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with --restful as well.
-    :param return_results: This feature is only used for AsyncClient.
-
-          If set, the results of all Requests will be returned as a list. This is useful when one wants
-          process Responses in bulk instead of using callback.
+    :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
     :param show_progress: If set, client will show a progress bar on receiving every request.
     :return: the new Client object
 

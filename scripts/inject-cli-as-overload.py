@@ -40,7 +40,7 @@ def _cli_to_schema(
         # special cases
         if p['name'] == 'log_config':
             pv['default_literal'] = None
-        if p['name'].startswith('uses'):
+        if p['name'].startswith('uses') and target != 'flow':
             pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
@@ -59,6 +59,7 @@ def fill_overload(
     overload_fn,
     class_method,
     indent=' ' * 4,
+    regex_tag=None,
 ):
     a = _cli_to_schema(api_to_dict(), cli_entrypoint)
     if class_method:
@@ -102,7 +103,7 @@ def fill_overload(
     if class_method:
         final_str = f'@overload\n{indent}{signature_str}\n{indent}{indent}"""{doc_str_title}\n\n{doc_str}{return_str}\n\n{noqa_str}\n{indent}{indent}"""'
         final_code = re.sub(
-            rf'(# overload_inject_start_{cli_entrypoint}).*(# overload_inject_end_{cli_entrypoint})',
+            rf'(# overload_inject_start_{regex_tag or cli_entrypoint}).*(# overload_inject_end_{regex_tag or cli_entrypoint})',
             f'\\1\n{indent}{final_str}\n{indent}\\2',
             open(filepath).read(),
             0,
@@ -111,7 +112,7 @@ def fill_overload(
     else:
         final_str = f'@overload\n{signature_str}\n{indent}"""{doc_str_title}\n\n{doc_str}{return_str}\n\n{noqa_str}\n{indent}"""'
         final_code = re.sub(
-            rf'(# overload_inject_start_{cli_entrypoint}).*(# overload_inject_end_{cli_entrypoint})',
+            rf'(# overload_inject_start_{regex_tag or cli_entrypoint}).*(# overload_inject_end_{regex_tag or cli_entrypoint})',
             f'\\1\n{final_str}\n{indent}\\2',
             open(filepath).read(),
             0,
@@ -141,6 +142,16 @@ entries = [
         filepath='../jina/flow/base.py',
         overload_fn='__init__',
         class_method=True,
+    ),
+    dict(
+        cli_entrypoint='gateway',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors',
+        doc_str_return='the new Flow object',
+        return_type=None,
+        filepath='../jina/flow/base.py',
+        overload_fn='__init__',
+        class_method=True,
+        regex_tag='gateway_flow',
     ),
     dict(
         cli_entrypoint='client',

@@ -52,27 +52,167 @@ if False:
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     """Flow is how Jina streamlines and distributes Executors. """
 
+    # overload_inject_start_gateway_flow
+    @overload
+    def __init__(
+        self,
+        compress: Optional[str] = 'LZ4',
+        compress_min_bytes: Optional[int] = 1024,
+        compress_min_ratio: Optional[float] = 1.1,
+        cors: Optional[bool] = False,
+        ctrl_with_ipc: Optional[bool] = True,
+        daemon: Optional[bool] = False,
+        description: Optional[str] = None,
+        env: Optional[dict] = None,
+        expose_crud_endpoints: Optional[bool] = False,
+        expose_endpoints: Optional[str] = None,
+        expose_public: Optional[bool] = False,
+        float_precision: Optional[int] = None,
+        host: Optional[str] = '0.0.0.0',
+        host_in: Optional[str] = '0.0.0.0',
+        host_out: Optional[str] = '0.0.0.0',
+        including_default_value_fields: Optional[bool] = False,
+        log_config: Optional[str] = None,
+        memory_hwm: Optional[int] = -1,
+        name: Optional[str] = 'gateway',
+        on_error_strategy: Optional[str] = 'IGNORE',
+        port_ctrl: Optional[int] = None,
+        port_expose: Optional[int] = None,
+        port_in: Optional[int] = None,
+        port_out: Optional[int] = None,
+        prefetch: Optional[int] = 50,
+        prefetch_on_recv: Optional[int] = 1,
+        protocol: Optional[str] = 'GRPC',
+        proxy: Optional[bool] = False,
+        py_modules: Optional[List[str]] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
+        runtime_backend: Optional[str] = 'PROCESS',
+        runtime_cls: Optional[str] = 'GRPCRuntime',
+        socket_in: Optional[str] = 'PULL_CONNECT',
+        socket_out: Optional[str] = 'PUSH_CONNECT',
+        sort_keys: Optional[bool] = False,
+        ssh_keyfile: Optional[str] = None,
+        ssh_password: Optional[str] = None,
+        ssh_server: Optional[str] = None,
+        timeout_ctrl: Optional[int] = 5000,
+        timeout_ready: Optional[int] = 600000,
+        title: Optional[str] = None,
+        use_integers_for_enums: Optional[bool] = False,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        workspace: Optional[str] = None,
+        **kwargs,
+    ):
+        """Create a Flow. Flow is how Jina streamlines and scales Executors
+
+        :param compress: The compress algorithm used over the entire Flow.
+
+              Note that this is not necessarily effective,
+              it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
+        :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
+        :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
+        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param ctrl_with_ipc: If set, use ipc protocol for control socket
+        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
+        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param env: The map of environment variables that are available inside runtime
+        :param expose_crud_endpoints: If set, /index, /search, /update, /delete endpoints are exposed to HTTP.
+
+                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
+        :param float_precision: If set, use this to specify float field valid digits.
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host_in: The host address for input, by default it is 0.0.0.0
+        :param host_out: The host address for output, by default it is 0.0.0.0
+        :param including_default_value_fields: If set, singular primitive fields,
+                  repeated fields, and map fields will always be serialized.  If
+                  False, only serialize non-empty fields.  Singular message fields
+                  and oneof fields are not affected by this option.
+        :param log_config: The YAML config of the logger used in this object.
+        :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
+        :param name: The name of this object.
+
+          This will be used in the following places:
+          - how you refer to this object in Python/YAML/CLI
+          - visualization
+          - log message header
+          - ...
+
+          When not given, then the default naming strategy will apply.
+        :param on_error_strategy: The skip strategy on exceptions.
+
+          - IGNORE: Ignore it, keep running all Executors in the sequel flow
+          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
+          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all
+
+          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
+          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
+        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
+        :param port_expose: The port of the host exposed to the public
+        :param port_in: The port for input data, default a random port between [49152, 65535]
+        :param port_out: The port for output data, default a random port between [49152, 65535]
+        :param prefetch: The number of pre-fetched requests from the client
+        :param prefetch_on_recv: The number of additional requests to fetch on every receive
+        :param protocol: Communication protocol between server and client.
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param py_modules: The customized python modules need to be imported before loading the executor
+
+          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in
+          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:
+
+          --py-modules __init__.py --py-modules B.py --py-modules A.py
+        :param quiet: If set, then no log will be emitted from this object.
+        :param quiet_error: If set, then exception stack information will not be added to the log
+        :param runtime_backend: The parallel backend of the runtime inside the Pea
+        :param runtime_cls: The runtime class to run inside the Pea
+        :param socket_in: The socket type for input port
+        :param socket_out: The socket type for output port
+        :param sort_keys: If True, then the output will be sorted by field names.
+        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.
+        :param ssh_password: The ssh password to the ssh server.
+        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.
+        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
+        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
+        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param use_integers_for_enums: If true, print integers instead of enum names.
+        :param uses: The config of the executor, it could be one of the followings:
+                  * an Executor-level YAML file path (.yml, .yaml, .jaml)
+                  * a docker image (must start with `docker://`)
+                  * the string literal of a YAML config (must start with `!` or `jtype: `)
+                  * the string literal of a JSON config
+
+                  When use it under Python, one can use the following values additionally:
+                  - a Python dict that represents the config
+                  - a text file stream has `.read()` interface
+        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+
+    # overload_inject_end_gateway_flow
     # overload_inject_start_flow
     @overload
     def __init__(
         self,
         asyncio: Optional[bool] = False,
         continue_on_error: Optional[bool] = False,
-        description: Optional[str] = None,
         env: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
         port_expose: Optional[int] = None,
+        protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         request_size: Optional[int] = 100,
-        restful: Optional[bool] = False,
         return_results: Optional[bool] = False,
         show_progress: Optional[bool] = False,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
     ):
@@ -80,7 +220,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.
-        :param description: The description of this object. It will be used in automatics docs UI.
         :param env: The map of environment variables that are available inside runtime
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param inspect: The strategy on those inspect pods in the flow.
@@ -93,20 +232,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - how you refer to this object in Python/YAML/CLI
           - visualization
           - log message header
-          - automatics docs UI
           - ...
 
           When not given, then the default naming strategy will apply.
         :param port_expose: The port of the host exposed to the public
+        :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param request_size: The number of Documents in each Request.
-        :param restful: If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with --restful as well.
-        :param return_results: This feature is only used for AsyncClient.
-
-          If set, the results of all Requests will be returned as a list. This is useful when one wants
-          process Responses in bulk instead of using callback.
+        :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
         :param show_progress: If set, client will show a progress bar on receiving every request.
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
@@ -280,7 +415,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         ctrl_with_ipc: Optional[bool] = False,
         daemon: Optional[bool] = False,
-        description: Optional[str] = None,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
@@ -333,7 +467,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
-        :param description: The description of this object. It will be used in automatics docs UI.
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
 
@@ -353,7 +486,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - how you refer to this object in Python/YAML/CLI
           - visualization
           - log message header
-          - automatics docs UI
           - ...
 
           When not given, then the default naming strategy will apply.
@@ -408,14 +540,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - by default, `--uses` YAML file is always uploaded.
           - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
-                      * an Executor-level YAML file path (.yml, .yaml, .jaml)
-                      * a docker image (must start with `docker://`)
-                      * the string literal of a YAML config (must start with `!` or `jtype: `)
-                      * the string literal of a JSON config
+                  * an Executor-level YAML file path (.yml, .yaml, .jaml)
+                  * a docker image (must start with `docker://`)
+                  * the string literal of a YAML config (must start with `!` or `jtype: `)
+                  * the string literal of a JSON config
 
-                      When use it under Python, one can use the following values additionally:
-                      - a Python dict that represents the config
-                      - a text file stream has `.read()` interface
+                  When use it under Python, one can use the following values additionally:
+                  - a Python dict that represents the config
+                  - a text file stream has `.read()` interface
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`
         :param uses_internal: The config runs inside the Docker container.
