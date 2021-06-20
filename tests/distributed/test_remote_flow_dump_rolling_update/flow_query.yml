@@ -2,7 +2,8 @@ jtype: Flow
 version: '1'
 with:
   read_only: false
-  restful: true
+  protocol: http
+  expose_crud_endpoints: true
   port_expose: 9001
 pods:
   - name: indexer_query

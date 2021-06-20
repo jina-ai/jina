@@ -30,7 +30,7 @@ def flow_with_websocket():
 
 @pytest.fixture(scope='function')
 def flow_with_http():
-    return Flow(protocol='http', expose_crud_endpoints=True).add()
+    return Flow(protocol='http').add()
 
 
 @pytest.fixture(scope='function')

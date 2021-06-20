@@ -51,13 +51,15 @@ class MockExecutor(Executor):
 def test_no_matches_rest(query_dict):
     port = helper.random_port()
     with Flow(
-        protocol='http', port_expose=port, including_default_value_fields=True
+        protocol='http',
+        port_expose=port,
+        including_default_value_fields=True,
     ).add(uses=MockExecutor):
         # temporarily adding sleep
         time.sleep(0.5)
         query = json.dumps(query_dict).encode('utf-8')
         req = request.Request(
-            f'http://0.0.0.0:{port}/search',
+            f'http://localhost:{port}/search',
             data=query,
             headers={'content-type': 'application/json'},
         )

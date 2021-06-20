@@ -64,14 +64,21 @@ def mixin_http_gateway_parser(parser=None):
     )
 
     gp.add_argument(
-        '--expose-crud-endpoints',
+        '--no-debug-endpoints',
+        action='store_true',
+        default=False,
+        help='If set, /status /post endpoints are removed from HTTP interface. ',
+    )
+
+    gp.add_argument(
+        '--no-crud-endpoints',
         action='store_true',
         default=False,
         help='''
-        If set, /index, /search, /update, /delete endpoints are exposed to HTTP.
+        If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
         
         Any executor that has `@requests(on=...)` bind with those values will receive data requests. 
-            ''',
+        ''',
     )
 
     gp.add_argument(

@@ -99,7 +99,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         daemon: Optional[bool] = False,
         description: Optional[str] = None,
         env: Optional[dict] = None,
-        expose_crud_endpoints: Optional[bool] = False,
         expose_endpoints: Optional[str] = None,
         expose_public: Optional[bool] = False,
         float_precision: Optional[int] = None,
@@ -110,6 +109,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
+        no_crud_endpoints: Optional[bool] = False,
+        no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
         port_ctrl: Optional[int] = None,
         port_expose: Optional[int] = None,
@@ -151,9 +152,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param env: The map of environment variables that are available inside runtime
-        :param expose_crud_endpoints: If set, /index, /search, /update, /delete endpoints are exposed to HTTP.
-
-                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param float_precision: If set, use this to specify float field valid digits.
@@ -175,6 +173,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
+        :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
+
+                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+        :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
         :param on_error_strategy: The skip strategy on exceptions.
 
           - IGNORE: Ignore it, keep running all Executors in the sequel flow

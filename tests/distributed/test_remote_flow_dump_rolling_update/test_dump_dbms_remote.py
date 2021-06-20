@@ -120,7 +120,7 @@ def _send_rest_request(
         json['parameters'] = params
     if target_peapod:
         json['target_peapod'] = target_peapod
-    url = f'http://0.0.0.0:{port_expose}/{endpoint}'
+    url = f'http://localhost:{port_expose}/{endpoint}'
     if endpoint == 'post':
         url += f'{exec_endpoint}'
     logger.info(f'sending {method} request to {url}')

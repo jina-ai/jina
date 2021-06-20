@@ -19,7 +19,7 @@ else:
 def _get_flow(args):
     """Ensure the same flow is used in hello world example and system test."""
     return (
-        Flow(expose_crud_endpoints=True)
+        Flow()
         .add(uses=MyTransformer, parallel=args.parallel)
         .add(uses=MyIndexer, workspace=args.workdir)
     )

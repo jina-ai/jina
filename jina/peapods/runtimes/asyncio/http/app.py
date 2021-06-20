@@ -58,54 +58,56 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     def _shutdown():
         zmqlet.close()
 
-    @app.get(
-        path='/status',
-        summary='Get the status of Jina service',
-        response_model=JinaStatusModel,
-        tags=['Debug'],
-    )
-    async def _status():
-        """
-        Get the status of this Jina service.
+    if not args.no_debug_endpoints:
 
-        This is equivalent to running `jina -vf` from command line.
-
-        """
-        _info = get_full_version()
-        return {
-            'jina': _info[0],
-            'envs': _info[1],
-            'used_memory': used_memory_readable(),
-        }
-
-    @app.post(
-        path='/post',
-        summary='Post a data request to some endpoint',
-        response_model=JinaRequestModel,
-        tags=['Debug'],
-    )
-    async def post(body: JinaRequestModel):
-        """
-        Post a data request to some endpoint.
-
-        - `endpoint`: a string that represents the executor endpoint that declared by `@requests(on=...)`
-
-        This is equivalent to the following:
-
-            from jina import Flow
-
-            f = Flow().add(...)
-
-            with f:
-                f.post(endpoint, ...)
-
-        """
-        # The above comment is written in Markdown for better rendering in FastAPI
-
-        bd = body.dict()  # type: Dict
-        return StreamingResponse(
-            result_in_stream(request_generator(**bd)), media_type='application/json'
+        @app.get(
+            path='/status',
+            summary='Get the status of Jina service',
+            response_model=JinaStatusModel,
+            tags=['Debug'],
         )
+        async def _status():
+            """
+            Get the status of this Jina service.
+
+            This is equivalent to running `jina -vf` from command line.
+
+            """
+            _info = get_full_version()
+            return {
+                'jina': _info[0],
+                'envs': _info[1],
+                'used_memory': used_memory_readable(),
+            }
+
+        @app.post(
+            path='/post',
+            summary='Post a data request to some endpoint',
+            response_model=JinaRequestModel,
+            tags=['Debug'],
+        )
+        async def post(body: JinaRequestModel):
+            """
+            Post a data request to some endpoint.
+
+            - `endpoint`: a string that represents the executor endpoint that declared by `@requests(on=...)`
+
+            This is equivalent to the following:
+
+                from jina import Flow
+
+                f = Flow().add(...)
+
+                with f:
+                    f.post(endpoint, ...)
+
+            """
+            # The above comment is written in Markdown for better rendering in FastAPI
+
+            bd = body.dict()  # type: Dict
+            return StreamingResponse(
+                result_in_stream(request_generator(**bd)), media_type='application/json'
+            )
 
     def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
         """Exposing an executor endpoint to http endpoint
@@ -130,12 +132,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                 result_in_stream(request_generator(**bd)), media_type='application/json'
             )
 
-    if args.expose_crud_endpoints:
+    if not args.no_crud_endpoints:
         crud = {
-            '/index': {'methods': ['POST']},
-            '/search': {'methods': ['POST']},
-            '/delete': {'methods': ['DELETE']},
-            '/update': {'methods': ['PUT']},
+            '/index': {'methods': ['POST'], 'tags': ['CRUD']},
+            '/search': {'methods': ['POST'], 'tags': ['CRUD']},
+            '/delete': {'methods': ['DELETE'], 'tags': ['CRUD']},
+            '/update': {'methods': ['PUT'], 'tags': ['CRUD']},
         }
         for k, v in crud.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
