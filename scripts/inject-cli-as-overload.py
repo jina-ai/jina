@@ -136,7 +136,7 @@ entries = [
     ),
     dict(
         cli_entrypoint='flow',
-        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.',
         doc_str_return='the new Flow object',
         return_type=None,
         filepath='../jina/flow/base.py',
@@ -145,13 +145,23 @@ entries = [
     ),
     dict(
         cli_entrypoint='gateway',
-        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.',
         doc_str_return='the new Flow object',
         return_type=None,
         filepath='../jina/flow/base.py',
         overload_fn='__init__',
         class_method=True,
         regex_tag='gateway_flow',
+    ),
+    dict(
+        cli_entrypoint='client',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.',
+        doc_str_return='the new Flow object',
+        return_type=None,
+        filepath='../jina/flow/base.py',
+        overload_fn='__init__',
+        class_method=True,
+        regex_tag='client_flow',
     ),
     dict(
         cli_entrypoint='client',

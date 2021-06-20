@@ -41,11 +41,6 @@ def set_flow_parser(parser=None):
     :return: the parser
     """
     from .peapods.base import mixin_base_ppr_parser
-    from .peapods.runtimes.remote import mixin_remote_parser
-    from .client import (
-        mixin_client_features_parser,
-        mixin_comm_protocol_parser,
-    )
 
     if not parser:
         parser = set_base_parser()
@@ -53,11 +48,6 @@ def set_flow_parser(parser=None):
     mixin_base_ppr_parser(parser, with_identity=False)
 
     parser.set_defaults(workspace='./')
-
-    # add client parser
-    mixin_remote_parser(parser)
-    mixin_client_features_parser(parser)
-    mixin_comm_protocol_parser(parser)
 
     mixin_flow_features_parser(parser)
 

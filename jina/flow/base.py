@@ -53,6 +53,40 @@ if False:
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     """Flow is how Jina streamlines and distributes Executors. """
 
+    # overload_inject_start_client_flow
+    @overload
+    def __init__(
+        self,
+        asyncio: Optional[bool] = False,
+        continue_on_error: Optional[bool] = False,
+        host: Optional[str] = '0.0.0.0',
+        port_expose: Optional[int] = None,
+        protocol: Optional[str] = 'GRPC',
+        proxy: Optional[bool] = False,
+        request_size: Optional[int] = 100,
+        return_results: Optional[bool] = False,
+        show_progress: Optional[bool] = False,
+        **kwargs,
+    ):
+        """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
+
+        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+        :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.
+        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param port_expose: The port of the host exposed to the public
+        :param protocol: Communication protocol between server and client.
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param request_size: The number of Documents in each Request.
+        :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
+        :param show_progress: If set, client will show a progress bar on receiving every request.
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        """
+
+    # overload_inject_end_client_flow
+
     # overload_inject_start_gateway_flow
     @overload
     def __init__(
@@ -104,7 +138,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         workspace: Optional[str] = None,
         **kwargs,
     ):
-        """Create a Flow. Flow is how Jina streamlines and scales Executors
+        """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
         :param compress: The compress algorithm used over the entire Flow.
 
@@ -198,31 +232,19 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def __init__(
         self,
-        asyncio: Optional[bool] = False,
-        continue_on_error: Optional[bool] = False,
         env: Optional[dict] = None,
-        host: Optional[str] = '0.0.0.0',
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
-        port_expose: Optional[int] = None,
-        protocol: Optional[str] = 'GRPC',
-        proxy: Optional[bool] = False,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
-        request_size: Optional[int] = 100,
-        return_results: Optional[bool] = False,
-        show_progress: Optional[bool] = False,
         uses: Optional[str] = None,
         workspace: Optional[str] = './',
         **kwargs,
     ):
-        """Create a Flow. Flow is how Jina streamlines and scales Executors
+        """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
-        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-        :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.
         :param env: The map of environment variables that are available inside runtime
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param inspect: The strategy on those inspect pods in the flow.
 
               If `REMOVE` is given then all inspect pods are removed when building the flow.
@@ -236,14 +258,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - ...
 
           When not given, then the default naming strategy will apply.
-        :param port_expose: The port of the host exposed to the public
-        :param protocol: Communication protocol between server and client.
-        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param request_size: The number of Documents in each Request.
-        :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
-        :param show_progress: If set, client will show a progress bar on receiving every request.
         :param uses: The YAML file represents a flow
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
@@ -294,7 +310,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         base_cls = self.__class__
         base_cls_name = self.__class__.__name__
-        if self.args.asyncio and not isinstance(self, AsyncPostMixin):
+        if self._common_kwargs.get('asyncio', False) and not isinstance(
+            self, AsyncPostMixin
+        ):
             self.__class__ = type(base_cls_name, (AsyncPostMixin, base_cls), {})
 
     @staticmethod
@@ -361,7 +379,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
-                protocol=self.args.protocol,
+                protocol=self.protocol,
                 pod_role=PodRoleType.GATEWAY,
                 endpoints_mapping=json.dumps(self._endpoints_mapping),
             )
@@ -953,10 +971,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         .. # noqa: DAR201"""
 
-        self.args.port_expose = self.port_expose
-        self.args.host = self.host
-        self.args.show_progress = True
-        return Client(self.args)
+        return Client(
+            host=self.host, port_expose=self.port_expose, **self._common_kwargs
+        )
 
     @property
     def _mermaid_str(self):
@@ -1202,7 +1219,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.logger.success(f'🎉 Flow is ready to use!')
 
         address_table = [
-            f'\t🔗 Protocol: \t\t{colored(self.args.protocol, attrs="bold")}',
+            f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
             f'\t🏠 Local access:\t'
             + colored(f'{self.host}:{self.port_expose}', 'cyan', attrs='underline'),
             f'\t🔒 Private network:\t'
@@ -1221,7 +1238,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     attrs='underline',
                 )
             )
-        if self.args.protocol == GatewayProtocolType.HTTP:
+        if self.protocol == GatewayProtocolType.HTTP:
             address_table.append(
                 f'\t💬 Swagger UI:\t\t'
                 + colored(
@@ -1254,7 +1271,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: the protocol of this Flow
         """
-        return self.args.protocol
+        v = self._common_kwargs.get('protocol', GatewayProtocolType.GRPC)
+        if isinstance(v, str):
+            v = GatewayProtocolType.from_string(v)
+        return v
 
     @protocol.setter
     def protocol(self, value: Union[str, GatewayProtocolType]):
@@ -1263,15 +1283,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param value: the protocol to set
         """
         if isinstance(value, str):
-            self.args.protocol = GatewayProtocolType.from_string(value)
+            self._common_kwargs['protocol'] = GatewayProtocolType.from_string(value)
         elif isinstance(value, GatewayProtocolType):
-            self.args.protocol = value
+            self._common_kwargs['protocol'] = value
         else:
             raise TypeError(f'{value} must be either `str` or `GatewayProtocolType`')
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self['gateway'].args.protocol = self.args.protocol
+            self['gateway'].args.protocol = self._common_kwargs['protocol']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
