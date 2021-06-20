@@ -10,11 +10,10 @@ import threading
 import time
 import uuid
 import warnings
+
 from argparse import ArgumentParser, Namespace
-from contextlib import contextmanager
 from datetime import datetime
 from itertools import islice
-from pathlib import Path
 from types import SimpleNamespace
 from typing import (
     Tuple,
@@ -735,19 +734,25 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     :return: Version information and environment variables
     """
-    from . import __version__, __proto_version__, __jina_env__, __resources_path__
+    import os, grpc, zmq, numpy, google.protobuf, yaml, platform
+    from . import (
+        __version__,
+        __proto_version__,
+        __jina_env__,
+        __uptime__,
+        __unset_msg__,
+    )
     from google.protobuf.internal import api_implementation
-    import os, grpc, zmq, numpy, google.protobuf, yaml
     from grpc import _grpcio_metadata
-    import platform
     from jina.logging.predefined import default_logger
+    from uuid import getnode
 
     try:
 
         info = {
             'jina': __version__,
             'jina-proto': __proto_version__,
-            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', '(unset)'),
+            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
             'libzmq': zmq.zmq_version(),
             'pyzmq': numpy.__version__,
             'protobuf': google.protobuf.__version__,
@@ -760,9 +765,13 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'platform-version': platform.version(),
             'architecture': platform.machine(),
             'processor': platform.processor(),
-            'jina-resources': __resources_path__,
+            'uid': getnode(),
+            'session-id': str(random_uuid(use_uuid1=True)),
+            'uptime': __uptime__,
+            'ci-vendor': get_ci_vendor() or __unset_msg__,
         }
-        env_info = {k: os.getenv(k, '(unset)') for k in __jina_env__}
+
+        env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
         full_version = info, env_info
     except Exception as e:
         default_logger.error(str(e))
@@ -925,21 +934,24 @@ def get_public_ip():
     """
     import urllib.request
 
-    timeout = 0.2
+    timeout = 0.5
 
     results = []
 
     def _get_ip(url):
         try:
-            with urllib.request.urlopen(url, timeout=timeout) as fp:
-                results.append(fp.read().decode('utf8'))
+            metas, envs = get_full_version()
+            req = urllib.request.Request(
+                url, headers={'User-Agent': 'Mozilla/5.0', **metas, **envs}
+            )
+            with urllib.request.urlopen(req, timeout=timeout) as fp:
+                # TODO: (deepankar) fix extra quote on the server side
+                results.append(fp.read().decode().replace('"', ''))
         except:
-            pass
+            pass  # intentionally ignored, public ip is not showed
 
     ip_server_list = [
-        'https://api.ipify.org',
-        'https://ident.me',
-        'https://ipinfo.io/ip',
+        'https://getip.jina.ai/ip',
     ]
 
     threads = []
@@ -1146,11 +1158,15 @@ def dunder_get(_dict: Any, key: str) -> Any:
     except ValueError:
         pass
 
+    from google.protobuf.struct_pb2 import ListValue
     from google.protobuf.struct_pb2 import Struct
+    from google.protobuf.pyext._message import MessageMapContainer
 
     if isinstance(part1, int):
         result = _dict[part1]
-    elif isinstance(_dict, (dict, Struct)):
+    elif isinstance(_dict, (Iterable, ListValue)):
+        result = _dict[part1]
+    elif isinstance(_dict, (dict, Struct, MessageMapContainer)):
         if part1 in _dict:
             result = _dict[part1]
         else:
@@ -1183,3 +1199,21 @@ def extend_rest_interface(app: 'FastAPI') -> 'FastAPI':
             return app
     """
     return app
+
+
+def get_ci_vendor() -> Optional[str]:
+    from jina import __resources_path__
+
+    with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
+        all_cis = json.load(fp)
+        for c in all_cis:
+            if isinstance(c['env'], str) and c['env'] in os.environ:
+                return c['constant']
+            elif isinstance(c['env'], dict):
+                for k, v in c['env'].items():
+                    if os.environ.get(k, None) == v:
+                        return c['constant']
+            elif isinstance(c['env'], list):
+                for k in c['env']:
+                    if k in os.environ:
+                        return c['constant']

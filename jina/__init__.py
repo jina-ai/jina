@@ -37,7 +37,7 @@ __version__ = '2.0.0rc7'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.81'
+__proto_version__ = '0.0.84'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 
@@ -50,8 +50,8 @@ __jina_env__ = (
     'JINA_CONTROL_PORT',
     'JINA_DEFAULT_HOST',
     'JINA_DISABLE_UVLOOP',
-    'JINA_EXECUTOR_WORKDIR',
     'JINA_FULL_CLI',
+    'JINA_HUBBLE_REGISTRY',
     'JINA_IPC_SOCK_TMP',
     'JINA_LOG_CONFIG',
     'JINA_LOG_ID',
@@ -63,9 +63,7 @@ __jina_env__ = (
     'JINA_RANDOM_PORTS',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
-    'JINA_SOCKET_HWM',
     'JINA_VCS_VERSION',
-    'JINA_WARN_UNNAMED',
 )
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
@@ -73,6 +71,7 @@ __default_executor__ = 'BaseExecutor'
 __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
+__unset_msg__ = '(unset)'
 __num_args_executor_func__ = 5
 __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
@@ -92,6 +91,7 @@ _names_with_underscore = [
     '__default_endpoint__',
     '__default_executor__',
     '__num_args_executor_func__',
+    '__unset_msg__',
 ]
 
 

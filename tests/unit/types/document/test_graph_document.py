@@ -1,5 +1,7 @@
 import pytest
 
+import numpy as np
+
 from jina.types.document.graph import GraphDocument
 from jina.types.document import Document
 
@@ -159,7 +161,6 @@ def test_remove_edges(graph):
 
 
 def test_to_dgl_graph(graph):
-
     dgl_graph = graph.to_dgl_graph()
     dgl_adj_coo = dgl_graph.adjacency_matrix(scipy_fmt='coo')
 
@@ -170,7 +171,6 @@ def test_to_dgl_graph(graph):
 
 
 def test_from_dgl_graph(graph):
-
     dgl_graph = graph.to_dgl_graph()
     jina_graph = GraphDocument.load_from_dgl_graph(dgl_graph)
     assert graph.num_nodes == jina_graph.num_nodes
@@ -198,3 +198,142 @@ def test_edge_features_getter(graph):
     node_id_1 = graph.nodes[1].id
     edge_id = node_id_0 + '-' + node_id_1
     assert graph.edge_features[edge_id] == {'text': 'I connect Doc0 and Doc1'}
+
+
+def test_undirected_graph():
+    graph = GraphDocument()
+    assert graph.undirected is False
+
+    undirected_graph = GraphDocument(force_undirected=True)
+    assert undirected_graph.undirected is True
+
+    graph_from_undirected_no_force = GraphDocument(undirected_graph)
+    assert graph_from_undirected_no_force.undirected is True
+
+    graph_from_undirected_proto_no_force = GraphDocument(undirected_graph.proto)
+    assert graph_from_undirected_proto_no_force.undirected is True
+
+
+def test_undirected_graph_to_dgl(graph):
+    dgl_graph = graph.to_dgl_graph()
+    dgl_adj_coo = dgl_graph.adjacency_matrix(scipy_fmt='coo')
+
+    assert dgl_graph.num_nodes() == graph.num_nodes
+    assert dgl_graph.num_edges() == graph.num_edges
+    assert (graph.adjacency.row == dgl_adj_coo.row).all()
+    assert (graph.adjacency.col == dgl_adj_coo.col).all()
+
+    undirected_graph = GraphDocument(graph, force_undirected=True)
+    dgl_undirected_graph = undirected_graph.to_dgl_graph()
+    dgl_undirected_adj_coo = dgl_undirected_graph.adjacency_matrix(scipy_fmt='coo')
+
+    assert dgl_undirected_graph.num_nodes() == graph.num_nodes
+    assert dgl_undirected_graph.num_edges() == graph.num_edges * 2
+    assert (
+        np.concatenate((undirected_graph.adjacency.row, undirected_graph.adjacency.col))
+        == dgl_undirected_adj_coo.row
+    ).all()
+    assert (
+        np.concatenate((undirected_graph.adjacency.col, undirected_graph.adjacency.row))
+        == dgl_undirected_adj_coo.col
+    ).all()
+
+
+@pytest.mark.parametrize(
+    'graph, expected_output',
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
+)
+def test_graph_edge_behaviour_creation(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    graph.add_edge(doc1, doc0)
+
+    assert graph.num_edges == expected_output
+
+
+@pytest.mark.parametrize(
+    'graph, expected_output',
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 2)],
+)
+def test_graph_edge_behaviour_creation(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    graph.add_edge(doc1, doc0)
+
+    assert graph.num_edges == expected_output
+
+
+@pytest.mark.parametrize(
+    'graph, expected_output',
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
+)
+def test_graph_count_invariance(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    graph.add_edge(doc0, doc1)
+
+    assert graph.num_edges == expected_output
+
+
+@pytest.mark.parametrize(
+    'graph, expected_output',
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
+)
+def test_added_edges_in_edge_features(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0, doc1)
+
+    assert edge_key in graph.edge_features
+    assert graph.edge_features[edge_key] is None
+
+
+@pytest.mark.parametrize(
+    'graph, expected_output',
+    [(GraphDocument(force_undirected=True), 1), (GraphDocument(), 1)],
+)
+def test_manual_update_edges_features(graph, expected_output):
+
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0, doc1)
+
+    graph._pb_body.graph.edge_features[edge_key] = {'number_value': 1234}
+
+    assert graph._pb_body.graph.edge_features[edge_key]['number_value'] == 1234
+
+
+def test_edge_update_nested_lists():
+    graph = GraphDocument(force_undirected=True)
+    doc0 = Document(text='Document0')
+    doc1 = Document(text='Document1')
+
+    graph.add_edge(doc0, doc1)
+    edge_key = graph._get_edge_key(doc0, doc1)
+    graph.edge_features[edge_key] = {
+        'hey': {'nested': True, 'list': ['elem1', 'elem2', {'inlist': 'here'}]},
+        'hoy': [0, 1],
+    }
+    graph.edge_features[edge_key]['hey']['nested'] = False
+    graph.edge_features[edge_key]['hey']['list'][1] = True
+    graph.edge_features[edge_key]['hey']['list'][2]['inlist'] = 'not here'
+    graph.edge_features[edge_key]['hoy'][0] = 1
+
+    assert graph.edge_features[edge_key]['hey']['nested'] is False
+    assert graph.edge_features[edge_key]['hey']['list'][1] is True
+    assert graph.edge_features[edge_key]['hey']['list'][2]['inlist'] == 'not here'
+    assert graph.edge_features[edge_key]['hoy'][0] == 1

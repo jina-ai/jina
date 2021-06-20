@@ -1,3 +1,6 @@
+from jina.parsers.client import mixin_comm_protocol_parser
+
+
 def set_pea_parser(parser=None):
     """Set the parser for the Pea
 
@@ -65,16 +68,19 @@ def set_gateway_parser(parser=None):
     from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import (
         mixin_remote_parser,
-        mixin_grpc_server_parser,
-        mixin_rest_server_parser,
+        mixin_prefetch_gateway_parser,
+        mixin_http_gateway_parser,
+        mixin_compressor_parser,
     )
     from .peapods.pea import mixin_pea_parser
 
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_zed_runtime_parser(parser)
-    mixin_grpc_server_parser(parser)
-    mixin_rest_server_parser(parser)
+    mixin_prefetch_gateway_parser(parser)
+    mixin_http_gateway_parser(parser)
+    mixin_compressor_parser(parser)
+    mixin_comm_protocol_parser(parser)
     mixin_remote_parser(parser)
     mixin_pea_parser(parser)
 
@@ -89,12 +95,6 @@ def set_gateway_parser(parser=None):
         pod_role=PodRoleType.GATEWAY,
     )
 
-    parser.add_argument(
-        '--restful',
-        action='store_true',
-        default=False,
-        help='If set, use RESTful interface instead of gRPC as the main interface',
-    )
     return parser
 
 
@@ -110,11 +110,11 @@ def set_client_cli_parser(parser=None):
         parser = set_base_parser()
 
     from .peapods.runtimes.remote import mixin_remote_parser
-    from .client import mixin_client_features_parser, mixin_client_type_parser
+    from .client import mixin_client_features_parser, mixin_comm_protocol_parser
 
     mixin_remote_parser(parser)
-    mixin_client_type_parser(parser)
     mixin_client_features_parser(parser)
+    mixin_comm_protocol_parser(parser)
 
     return parser
 
@@ -132,7 +132,8 @@ def get_main_parser():
     from .flow import set_flow_parser
     from .ping import set_ping_parser
 
-    # from .hub import set_hub_parser
+    from .hubble import set_hub_parser
+
     # from .optimizer import set_optimizer_parser
 
     # create the top-level parser
@@ -194,14 +195,14 @@ def get_main_parser():
         )
     )
 
-    # set_hub_parser(
-    #     sp.add_parser(
-    #         'hub',
-    #         help='Build, push, pull Jina Hub images',
-    #         description='Build, push, pull Jina Hub images',
-    #         formatter_class=_chf,
-    #     )
-    # )
+    set_hub_parser(
+        sp.add_parser(
+            'hub',
+            help='Push/pull an Executor to/from Jina Hub',
+            description='Push/Pull an Executor to/from Jina Hub',
+            formatter_class=_chf,
+        )
+    )
 
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 

@@ -11,7 +11,14 @@ from ..peas import BasePea
 from ...jaml.helper import complete_path
 from ... import __default_host__, __default_executor__
 from ... import helper
-from ...enums import SchedulerType, PodRoleType, SocketType, PeaRoleType, PollingType
+from ...enums import (
+    SchedulerType,
+    PodRoleType,
+    SocketType,
+    PeaRoleType,
+    PollingType,
+    GatewayProtocolType,
+)
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
@@ -86,8 +93,8 @@ class BasePod(ExitFIFO):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
+        args.upload_files = BasePod._set_upload_files(args)
         self.args = args
-        self._set_conditional_args(self.args)
         self.needs = (
             needs if needs else set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -112,16 +119,6 @@ class BasePod(ExitFIFO):
         .. # noqa: DAR201
         """
         self.__exit__(None, None, None)
-
-    @staticmethod
-    def _set_conditional_args(args):
-        if args.pod_role == PodRoleType.GATEWAY:
-            if args.restful:
-                args.runtime_cls = 'RESTRuntime'
-            else:
-                args.runtime_cls = 'GRPCRuntime'
-
-        args.upload_files = BasePod._set_upload_files(args)
 
     @staticmethod
     def _set_upload_files(args):

@@ -20,16 +20,16 @@ def mixin_zed_runtime_parser(parser):
         type=str,
         default=__default_executor__,
         help='''
-            The config of the executor, it could be one of the followings:
-            * an Executor-level YAML file path (.yml, .yaml, .jaml)
-            * a docker image (must start with `docker://`)
-            * the string literal of a YAML config (must start with `!` or `jtype: `)
-            * the string literal of a JSON config
+        The config of the executor, it could be one of the followings:
+        * an Executor-level YAML file path (.yml, .yaml, .jaml)
+        * a docker image (must start with `docker://`)
+        * the string literal of a YAML config (must start with `!` or `jtype: `)
+        * the string literal of a JSON config
 
-            When use it under Python, one can use the following values additionally:
-            - a Python dict that represents the config
-            - a text file stream has `.read()` interface
-            ''',
+        When use it under Python, one can use the following values additionally:
+        - a Python dict that represents the config
+        - a text file stream has `.read()` interface
+        ''',
     )
     gp.add_argument(
         '--py-modules',
@@ -124,7 +124,7 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         '--freeze-network-settings',
         action='store_true',
         default=False,
-        help='''If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related 
+        help='''If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related
         parameters are frozen. They can not be changed by the Flow during the build time. '''
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,

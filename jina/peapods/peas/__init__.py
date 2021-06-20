@@ -5,7 +5,7 @@ import time
 
 from .helper import _get_event, _make_or_event, PeaType
 from ... import __stop_msg__, __ready_msg__, __default_host__
-from ...enums import PeaRoleType, RuntimeBackendType, SocketType
+from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
 from ...helper import typename
 from ...logging.logger import JinaLogger
@@ -252,6 +252,12 @@ class BasePea(metaclass=PeaType):
                 'docker://'
             ):
                 self.args.runtime_cls = 'ContainerRuntime'
+            if hasattr(self.args, 'protocol'):
+                self.args.runtime_cls = {
+                    GatewayProtocolType.GRPC: 'GRPCRuntime',
+                    GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
+                    GatewayProtocolType.HTTP: 'HTTPRuntime',
+                }[self.args.protocol]
 
             from ..runtimes import get_runtime
 
@@ -267,7 +273,7 @@ class BasePea(metaclass=PeaType):
         return self.args.pea_role
 
     @property
-    def inner(self) -> bool:
+    def _is_inner_pea(self) -> bool:
         """Determine whether this is a inner pea or a head/tail
 
 

@@ -57,11 +57,13 @@ jobs:
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/index.html
           cp jinad.html schema/daemon/${{env.JINA_VERSION}}.html
+          cp schema/daemon.json schema/daemon/${{env.JINA_VERSION}}.json
           rm schema/daemon.json schema/daemon-with-code.json
           rm -rf schema/jinad
           mkdir -p schema/rest/
           cp rest.html schema/rest/index.html
           cp rest.html schema/rest/${{env.JINA_VERSION}}.html
+          cp schema/gateway.json schema/rest/${{env.JINA_VERSION}}.json
           rm schema/gateway.json schema/gateway-with-code.json
           cd schema
           git config --local user.email "dev-bot@jina.ai"
@@ -124,7 +126,8 @@ jobs:
           rm -rf ./_build/dirhtml/
           ls -la
           touch .nojekyll
-          echo docs2.jina.ai > CNAME
+          cp 404/index.html 404.html
+          echo docs.jina.ai > CNAME
           git add api cli proto
           git add . && git commit -m "chore(docs): update docs due to ${{github.event_name}} on ${{github.repository}}"
           git status

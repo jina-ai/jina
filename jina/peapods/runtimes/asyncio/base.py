@@ -52,7 +52,6 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
     """
     The runtime to start a new event loop.
 
-    Base class for :class:`GRPCRuntime` and :class:`RESTRuntime`.
     """
 
     def run_forever(self):

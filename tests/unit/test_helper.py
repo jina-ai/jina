@@ -18,6 +18,7 @@ from jina.helper import (
     random_port,
     find_request_binding,
     dunder_get,
+    get_ci_vendor,
 )
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
@@ -72,8 +73,11 @@ def test_time_context():
 
 def test_dunder_get():
     a = SimpleNamespace()
-    a.b = {'c': 1}
+    a.b = {'c': 1, 'd': {'e': 'f', 'g': [0, 1, {'h': 'i'}]}}
     assert dunder_get(a, 'b__c') == 1
+    assert dunder_get(a, 'b__d__e') == 'f'
+    assert dunder_get(a, 'b__d__g__0') == 0
+    assert dunder_get(a, 'b__d__g__2__h') == 'i'
 
 
 def test_check_update():
@@ -310,3 +314,10 @@ def test_find_request_binding():
     assert r['index'] == 'bar'
     assert r['search'] == 'bar2'
     assert 'foo2' not in r.values()
+
+
+@pytest.mark.skipif(
+    'GITHUB_WORKFLOW' not in os.environ, reason='this test is only validate on CI'
+)
+def test_ci_vendor():
+    assert get_ci_vendor() == 'GITHUB_ACTIONS'

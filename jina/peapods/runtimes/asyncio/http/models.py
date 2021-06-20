@@ -241,22 +241,15 @@ class JinaStatusModel(BaseModel):
     used_memory: str
 
 
-class JinaReloadRequestModel(BaseModel):
-    """
-    Jina control request model.
-    """
-
-    targets: Union[str, List[str]]
-
-
 class JinaRequestModel(BaseModel):
     """
-    Jina request model.
+    Jina request model on some endpoint
 
-    The base model for Jina REST request.
+    The base model for Jina HTTP request.
     """
 
     # To avoid an error while loading the request model schema on swagger, we've added an example.
+    exec_endpoint: Optional[str] = None
     data: Optional[
         Union[
             List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
@@ -275,35 +268,6 @@ class JinaRequestModel(BaseModel):
         ],
     )
     request_size: Optional[int] = DEFAULT_REQUEST_SIZE
-    mime_type: Optional[str] = None
     data_type: DataInputType = DataInputType.AUTO
     target_peapod: Optional[str] = None
     parameters: Optional[Dict] = None
-
-
-class JinaIndexRequestModel(JinaRequestModel):
-    """Index request model."""
-
-    exec_endpoint: str = '/index'
-
-
-class JinaSearchRequestModel(JinaRequestModel):
-    """Search request model."""
-
-    exec_endpoint: str = '/search'
-
-
-class JinaUpdateRequestModel(JinaRequestModel):
-    """Update request model."""
-
-    exec_endpoint: str = '/update'
-
-
-class JinaDeleteRequestModel(JinaRequestModel):
-    """Delete request model."""
-
-    exec_endpoint: str = '/delete'
-
-
-class JinaControlRequestModel(JinaRequestModel):
-    """Control request model."""

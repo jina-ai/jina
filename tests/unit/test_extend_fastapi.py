@@ -13,7 +13,7 @@ def test_extend_fastapi():
         return app
 
     jina.helper.extend_rest_interface = extend_rest_function
-    f = Flow(restful=True)
+    f = Flow(protocol='http')
 
     with f:
         response = requests.get(f'http://localhost:{f.port_expose}/hello')
