@@ -451,6 +451,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         allow_py_modules: bool = True,
         substitute: bool = True,
         context: Optional[Dict[str, Any]] = None,
+        override_config_params: Optional[Dict] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -505,8 +506,11 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
+                update_args = kwargs
+                if override_config_params:
+                    update_args.update({'with': override_config_params})
                 # extra arguments are parsed to inject_config
-                no_tag_yml.update(**kwargs)
+                no_tag_yml.update(update_args)
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
@@ -531,6 +535,6 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             else:
                 # revert yaml's tag and load again, this time with substitution
                 tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
-
+            print(f' tag_yml {tag_yml} {type(tag_yml)}')
             # load into object, no more substitute
             return JAML.load(tag_yml, substitute=False)

@@ -75,6 +75,7 @@ class ZEDRuntime(ZMQRuntime):
         try:
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
+                self.args.override_config,
                 runtime_args=vars(self.args),
             )
         except BadConfigSource as ex:
