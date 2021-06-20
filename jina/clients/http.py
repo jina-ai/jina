@@ -98,7 +98,7 @@ class HTTPClient(GRPCClient, HTTPClientMixin):
     .. code-block:: python
 
         from jina.flow import Flow
-        f = Flow(restful=True).add().add()
+        f = Flow(protocol='http').add().add()
 
         with f:
             f.index(['abc'])
@@ -111,7 +111,7 @@ class HTTPClient(GRPCClient, HTTPClientMixin):
 
         # A Flow running on remote
         from jina.flow import Flow
-        f = Flow(restful=True, port_expose=34567).add().add()
+        f = Flow(protocol='http', port_expose=34567).add().add()
 
         with f:
             f.block()
