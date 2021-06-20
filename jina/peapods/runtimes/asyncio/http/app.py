@@ -37,6 +37,18 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
         'to customize this text.',
         version=__version__,
+        openapi_tags=[
+            {
+                'name': 'Debug',
+                'description': 'Debugging interface. In production, you should hide them by setting '
+                '`--no-debug-endpoints` in `Flow`/`Gateway`.',
+            },
+            {
+                'name': 'CRUD',
+                'description': 'CRUD interface. If your service does not implement those interfaces, you can should '
+                'hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.',
+            },
+        ],
     )
 
     if args.cors:
@@ -72,6 +84,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
             This is equivalent to running `jina -vf` from command line.
 
+            .. # noqa: DAR201
             """
             _info = get_full_version()
             return {
@@ -101,6 +114,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                 with f:
                     f.post(endpoint, ...)
 
+            .. # noqa: DAR201
+            .. # noqa: DAR101
             """
             # The above comment is written in Markdown for better rendering in FastAPI
 
@@ -134,12 +149,16 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     if not args.no_crud_endpoints:
         crud = {
-            '/index': {'methods': ['POST'], 'tags': ['CRUD']},
-            '/search': {'methods': ['POST'], 'tags': ['CRUD']},
-            '/delete': {'methods': ['DELETE'], 'tags': ['CRUD']},
-            '/update': {'methods': ['PUT'], 'tags': ['CRUD']},
+            '/index': {'methods': ['POST']},
+            '/search': {'methods': ['POST']},
+            '/delete': {'methods': ['DELETE']},
+            '/update': {'methods': ['PUT']},
         }
         for k, v in crud.items():
+            v['tags'] = ['CRUD']
+            v[
+                'description'
+            ] = f'Post data requests to the Flow. Executors with `@requests(on="{k}")` will respond.'
             expose_executor_endpoint(exec_endpoint=k, **v)
 
     if args.expose_endpoints:
