@@ -44,7 +44,7 @@ def is_error_message(s) -> bool:
     return re.search(EXCEPTS_REGEX, s, re.IGNORECASE | re.UNICODE) is not None
 
 
-def get_log_file_path(log_id: DaemonID) -> Tuple[str, DaemonID]:
+def get_log_file_path(log_id: 'DaemonID') -> Tuple[str, 'DaemonID']:
     """Get logfile path from id
 
     :param log_id: DaemonID in the store
