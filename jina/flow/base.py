@@ -11,7 +11,7 @@ from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
 
-from .builder import build_required, _build_flow, _hanging_pods
+from .builder import allowed_levels, _build_flow, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
@@ -27,7 +27,7 @@ from ..helper import (
 )
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
-from ..parsers import set_gateway_parser, set_pod_parser
+from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import Pod
 from ..peapods.pods.compound import CompoundPod
 from ..peapods.pods.factory import PodFactory
@@ -372,6 +372,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # reset the build level to the lowest
         self._build_level = FlowBuildLevel.EMPTY
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def _add_gateway(self, needs, **kwargs):
         pod_name = 'gateway'
 
@@ -379,18 +380,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             dict(
                 name=pod_name,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
+                host=self.host,
                 protocol=self.protocol,
+                port_expose=self.port_expose,
                 pod_role=PodRoleType.GATEWAY,
                 endpoints_mapping=json.dumps(self._endpoints_mapping),
             )
         )
 
-        kwargs.update(vars(self.args))
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         self._pod_nodes[pod_name] = Pod(args, needs)
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
         self, needs: Union[Tuple[str], List[str]], name: str = 'joiner', *args, **kwargs
     ) -> 'Flow':
@@ -589,6 +592,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
 
     # overload_inject_end_pod
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
         needs: Optional[Union[str, Tuple[str], List[str]]] = None,
@@ -668,6 +672,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return op_flow
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def inspect(self, name: str = 'inspect', *args, **kwargs) -> 'Flow':
         """Add an inspection on the last changed Pod in the Flow
 
@@ -717,6 +722,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         return op_flow
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def gather_inspect(
         self,
         name: str = 'gather_inspect',
@@ -759,6 +765,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             # no inspect node is in the graph, return the current graph
             return self
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
         Build the current Flow and make it ready to use
@@ -965,15 +972,18 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return a._pod_nodes == b._pod_nodes
 
     @property
-    @build_required(FlowBuildLevel.GRAPH)
     def client(self) -> 'BaseClient':
         """Return a :class:`BaseClient` object attach to this Flow.
 
         .. # noqa: DAR201"""
 
-        return Client(
-            host=self.host, port_expose=self.port_expose, **self._common_kwargs
+        kwargs = dict(
+            host=self.host,
+            port_expose=self.port_expose,
+            protocol=self.protocol,
         )
+        kwargs.update(self._common_kwargs)
+        return Client(**kwargs)
 
     @property
     def _mermaid_str(self):
@@ -1176,25 +1186,62 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
 
     @property
-    @build_required(FlowBuildLevel.GRAPH)
     def port_expose(self) -> int:
         """Return the exposed port of the gateway
+        .. # noqa: DAR201
+        """
+        if 'gateway' in self._pod_nodes:
+            return self._pod_nodes['gateway'].port_expose
+        else:
+            return self._common_kwargs.get('port_expose', None)
 
+    @port_expose.setter
+    def port_expose(self, value: int):
+        """Set the new exposed port of the Flow (affects Gateway and Client)
 
-        .. # noqa: DAR201"""
-        return self._pod_nodes['gateway'].port_expose
+        :param value: the new port to expose
+        """
+        self._common_kwargs['port_expose'] = value
+
+        # Flow is build to graph already
+        if self._build_level >= FlowBuildLevel.GRAPH:
+            self['gateway'].args.port_expose = self._common_kwargs['port_expose']
+
+        # Flow is running already, then close the existing gateway
+        if self._build_level >= FlowBuildLevel.RUNNING:
+            self['gateway'].close()
+            self.enter_context(self['gateway'])
+            self['gateway'].wait_start_success()
 
     @property
-    @build_required(FlowBuildLevel.GRAPH)
     def host(self) -> str:
         """Return the local address of the gateway
+        .. # noqa: DAR201
+        """
+        if 'gateway' in self._pod_nodes:
+            return self._pod_nodes['gateway'].host
+        else:
+            return self._common_kwargs.get('host', __default_host__)
 
+    @host.setter
+    def host(self, value: str):
+        """Set the new host of the Flow (affects Gateway and Client)
 
-        .. # noqa: DAR201"""
-        return self._pod_nodes['gateway'].host
+        :param value: the new port to expose
+        """
+        self._common_kwargs['host'] = value
+
+        # Flow is build to graph already
+        if self._build_level >= FlowBuildLevel.GRAPH:
+            self['gateway'].args.host = self._common_kwargs['host']
+
+        # Flow is running already, then close the existing gateway
+        if self._build_level >= FlowBuildLevel.RUNNING:
+            self['gateway'].close()
+            self.enter_context(self['gateway'])
+            self['gateway'].wait_start_success()
 
     @property
-    @build_required(FlowBuildLevel.GRAPH)
     def address_private(self) -> str:
         """Return the private IP address of the gateway for connecting from other machine in the same network
 
@@ -1203,7 +1250,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return get_internal_ip()
 
     @property
-    @build_required(FlowBuildLevel.GRAPH)
     def address_public(self) -> str:
         """Return the public IP address of the gateway for connecting from other machine in the public network
 
@@ -1454,3 +1500,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             raise ValueError(
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
             )
+
+    @property
+    def client_args(self) -> argparse.Namespace:
+        """Get Client settings.
+
+        # noqa: DAR201
+        """
+        return ArgNamespace.kwargs2namespace(
+            self._common_kwargs, set_client_cli_parser()
+        )
+
+    @property
+    def gateway_args(self) -> argparse.Namespace:
+        """Get Gateway settings.
+
+        # noqa: DAR201
+        """
+        return ArgNamespace.kwargs2namespace(self._common_kwargs, set_gateway_parser())
+
+    def update_network_interface(self, **kwargs):
+        """Update the network interface of this Flow (affects Gateway & Client)
+
+        :param kwargs: new network settings
+        """
+        self._common_kwargs.update(kwargs)

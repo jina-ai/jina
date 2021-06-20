@@ -61,8 +61,9 @@ def hello_world(args):
 
     # search it!
     f = Flow.load_config('flow-search.yml')
-    # switch to REST gateway
-    f.use_rest_gateway(args.port_expose)
+    # switch to HTTP gateway
+    f.protocol = 'http'
+    f.port_expose = args.port_expose
 
     url_html_path = 'file://' + os.path.abspath(
         os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static/index.html')
