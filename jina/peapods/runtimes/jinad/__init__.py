@@ -93,9 +93,6 @@ class JinadRuntime(AsyncZMQRuntime):
             if is_yaml_filepath(self.args.uses):
                 upload_files.append(self.args.uses)
 
-            if is_yaml_filepath(self.args.uses_internal):
-                upload_files.append(self.args.uses_internal)
-
             if self.args.upload_files:
                 upload_files.extend(self.args.upload_files)
             else:

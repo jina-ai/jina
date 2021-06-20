@@ -1,11 +1,7 @@
 import os
-from pathlib import Path
 
 import pytest
-from jina.logging.logger import JinaLogger
-
-from jina import __version__ as jina_version
-from jina.excepts import RuntimeFailToStart, HubBuilderError, ImageAlreadyExists
+from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina import Flow
 from jina.parsers import set_pod_parser
