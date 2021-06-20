@@ -100,7 +100,7 @@ class PartialFlowStore(PartialStore):
                 y_spec = yaml_file.read()
             flow = Flow.load_config(y_spec)
             flow.workspace_id = jinad_args.workspace_id
-            flow.args.port_expose = args.port_expose
+            flow.port_expose = args.port_expose
             self.object = flow
             self.object.start()
         except Exception as e:
