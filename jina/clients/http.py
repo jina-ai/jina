@@ -65,6 +65,8 @@ class HTTPClientMixin(BaseClient, ABC):
                             json=req_dict,
                         ) as response:
                             resp_str = await response.json()
+                            if response.status == 404:
+                                raise ConnectionError('no such endpoint on server')
                             resp = Request(resp_str)
                             resp = resp.as_typed_request(
                                 resp.request_type

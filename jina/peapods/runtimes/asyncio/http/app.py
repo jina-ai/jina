@@ -37,18 +37,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
         'to customize this text.',
         version=__version__,
-        openapi_tags=[
-            {
-                'name': 'Debug',
-                'description': 'Debugging interface. In production, you should hide them by setting '
-                '`--no-debug-endpoints` in `Flow`/`Gateway`.',
-            },
-            {
-                'name': 'CRUD',
-                'description': 'CRUD interface. If your service does not implement those interfaces, you can should '
-                'hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.',
-            },
-        ],
     )
 
     if args.cors:
@@ -70,7 +58,16 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     def _shutdown():
         zmqlet.close()
 
+    openapi_tags = []
     if not args.no_debug_endpoints:
+
+        openapi_tags.append(
+            {
+                'name': 'Debug',
+                'description': 'Debugging interface. In production, you should hide them by setting '
+                '`--no-debug-endpoints` in `Flow`/`Gateway`.',
+            }
+        )
 
         @app.get(
             path='/status',
@@ -146,6 +143,13 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             )
 
     if not args.no_crud_endpoints:
+        openapi_tags.append(
+            {
+                'name': 'CRUD',
+                'description': 'CRUD interface. If your service does not implement those interfaces, you can should '
+                'hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.',
+            }
+        )
         crud = {
             '/index': {'methods': ['POST']},
             '/search': {'methods': ['POST']},
