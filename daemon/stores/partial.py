@@ -85,10 +85,11 @@ class PartialPodStore(PartialPeaStore):
 
 
 class PartialFlowStore(PartialStore):
-    def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
+    def add(self, args: Namespace, port_expose: int, **kwargs) -> PartialStoreItem:
         """Starts a Flow in `mini-jinad`.
 
         :param args: namespace args for the flow
+        :param port_expose: port expose for the Flow
         :param kwargs: keyword args
         :return: Item describing the Flow object
         """
@@ -100,7 +101,7 @@ class PartialFlowStore(PartialStore):
                 y_spec = yaml_file.read()
             flow = Flow.load_config(y_spec)
             flow.workspace_id = jinad_args.workspace_id
-            flow.port_expose = args.port_expose
+            flow.port_expose = port_expose
             self.object = flow
             self.object.start()
         except Exception as e:

@@ -10,13 +10,18 @@ from ..models.enums import UpdateOperation
 class FlowStore(ContainerStore):
     _kind = 'flow'
 
-    def _add(self, **kwargs) -> Dict:
+    def _add(self, port_expose: int, **kwargs) -> Dict:
         """Sends `post` request to `mini-jinad` to create a Flow.
 
+        :param port_expose: port expose for container flow
         :param kwargs: keyword args
         :return: response from mini-jinad"""
         try:
-            r = requests.post(url=f'{self.host}/{self._kind}', json=self.params)
+            r = requests.post(
+                url=f'{self.host}/{self._kind}',
+                params={'port_expose': port_expose},
+                json=self.params,
+            )
             if r.status_code != requests.codes.created:
                 raise Runtime400Exception(
                     f'{self._kind.title()} creation failed \n{"".join(r.json()["body"])}'

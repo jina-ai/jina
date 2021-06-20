@@ -36,7 +36,7 @@ def test_jinad_good_ws(workdir, expected_response):
 @pytest.mark.parametrize('workdir', ['bad_ws_multiple_files'])
 def test_jinad_bad_ws(workdir):
     with pytest.raises(Runtime400Exception):
-        DaemonFile(workdir=f'{cur_dir}/{workdir}')
+        DaemonFile(workdir=f'{cur_dir}/models/{workdir}')
 
 
 def _test_workspace_files():

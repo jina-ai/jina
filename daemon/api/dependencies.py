@@ -6,7 +6,7 @@ from fastapi import HTTPException, UploadFile, File
 
 from jina import __default_host__, Flow
 from jina.enums import PeaRoleType, SocketType
-from jina.helper import cached_property
+from jina.helper import cached_property, random_port
 
 from .. import __dockerhost__
 from ..helper import get_workspace_path
@@ -53,11 +53,10 @@ class FlowDepends:
         :return: port_expose
         """
         f = Flow.load_config(str(self.localpath()))
-        return f.args.port_expose
+        return f.port_expose or random_port()
 
     def validate(self) -> None:
         """Validates and sets arguments to be used in store"""
-        self.params.port_expose = self.port_expose
         self.ports = {f'{self.port_expose}/tcp': self.port_expose}
 
 

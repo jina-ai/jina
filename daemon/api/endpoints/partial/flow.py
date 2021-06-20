@@ -27,13 +27,13 @@ async def _status():
     status_code=201,
     response_model=PartialFlowItem,
 )
-async def _create(flow: 'FlowModel'):
+async def _create(flow: 'FlowModel', port_expose: int):
     """
 
     .. #noqa: DAR101"""
     try:
         args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
-        return store.add(args)
+        return store.add(args, port_expose)
     except Exception as ex:
         raise Runtime400Exception from ex
 

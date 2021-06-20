@@ -75,6 +75,7 @@ class ContainerStore(BaseStore):
         workspace_id: DaemonID,
         params: 'BaseModel',
         ports: Dict,
+        **kwargs,
     ):
         """Add a container to the store
 
@@ -82,6 +83,7 @@ class ContainerStore(BaseStore):
         :param workspace_id: workspace id where the container lives
         :param params: pydantic model representing the args for the container
         :param ports: ports to be mapped to local
+        :param kwargs: keyword args
         :raises KeyError: if workspace_id doesn't exist in the store
         :raises Runtime400Exception: if container creation fails
         :return: id of the container
@@ -116,7 +118,7 @@ class ContainerStore(BaseStore):
                 raise Runtime400Exception(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {self.host} after 10secs'
                 )
-            object = self._add()
+            object = self._add(**kwargs)
         except Exception as e:
             self._logger.error(f'got an error while creating the {self._kind}: \n{e}')
             if id in Dockerizer.containers:
