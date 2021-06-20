@@ -24,13 +24,12 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.peapods.runtimes.asyncio.base module" href="../jina.peapods.runtimes.asyncio.base/" /><link rel="prev" title="jina.peapods.runtimes.asyncio.rest.app module" href="../jina.peapods.runtimes.asyncio.rest.app/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
-    <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.peapods.runtimes.asyncio.rest.models module - Jina 2.0.0rc7 documentation</title>
-      <link rel="stylesheet" href="../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+      <link rel="stylesheet" href="../../_static/styles/furo.css?digest=9b17055c4366e8b2949c66d6a9d8b0efe4dbaa60">
     <link rel="stylesheet" href="../../_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
     
 
 
@@ -61,7 +60,8 @@
   }
 </style><link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
-    <link rel="stylesheet" href="../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../_static/pygments_dark.css">
+    <link rel="stylesheet" href="../../_static/styles/furo-extensions.css?digest=ee12cdd73c4bbac24afec78d92c4afd7c2d8ea7f"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -135,8 +135,8 @@
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Developer Reference</span></p>
-<ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
@@ -147,6 +147,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.base/">jina.clients.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/">jina.clients.http module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
@@ -250,7 +251,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.parsers.ping/">jina.parsers.ping module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.peapods/">jina.peapods package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.peapods/">jina.peapods package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label for="toctree-checkbox-22"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.peas/">jina.peapods.peas package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label for="toctree-checkbox-23"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.peas.helper/">jina.peapods.peas.helper module</a></li>
 </ul>
@@ -260,26 +261,30 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.pods.factory/">jina.peapods.pods.factory module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../jina.peapods.runtimes/">jina.peapods.runtimes package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 current has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio/">jina.peapods.runtimes.asyncio package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.peapods.runtimes/">jina.peapods.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label for="toctree-checkbox-25"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio/">jina.peapods.runtimes.asyncio package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label for="toctree-checkbox-26"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.grpc/">jina.peapods.runtimes.asyncio.grpc package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label for="toctree-checkbox-27"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.grpc.async_call/">jina.peapods.runtimes.asyncio.grpc.async_call module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 current has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.rest/">jina.peapods.runtimes.asyncio.rest package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.rest.app/">jina.peapods.runtimes.asyncio.rest.app module</a></li>
-<li class="toctree-l6 current current-page"><a class="current reference internal" href="#">jina.peapods.runtimes.asyncio.rest.models module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.http/">jina.peapods.runtimes.asyncio.http package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.http.app/">jina.peapods.runtimes.asyncio.http.app module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.http.models/">jina.peapods.runtimes.asyncio.http.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.websocket/">jina.peapods.runtimes.asyncio.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.websocket.app/">jina.peapods.runtimes.asyncio.websocket.app module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.asyncio.base/">jina.peapods.runtimes.asyncio.base module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
@@ -290,13 +295,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.peapods.zmq/">jina.peapods.zmq package</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.schemas.executor/">jina.schemas.executor module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.schemas.flow/">jina.schemas.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.schemas.helper/">jina.schemas.helper module</a></li>
@@ -304,8 +309,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.match/">jina.types.arrays.match module</a></li>
@@ -313,7 +318,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.graph/">jina.types.document.graph module</a></li>
@@ -321,16 +326,16 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
@@ -340,13 +345,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -363,7 +368,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -387,220 +392,22 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="module-jina.peapods.runtimes.asyncio.rest.models">
-<span id="jina-peapods-runtimes-asyncio-rest-models-module"></span><h1>jina.peapods.runtimes.asyncio.rest.models module<a class="headerlink" href="#module-jina.peapods.runtimes.asyncio.rest.models" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.CustomConfig">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">CustomConfig</span></code><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#CustomConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.CustomConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseConfig</span></code></p>
-<p>Pydantic config for Camel case and enum handling</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.CustomConfig.use_enum_values">
-<code class="sig-name descname"><span class="pre">use_enum_values</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.CustomConfig.use_enum_values" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.CustomConfig.allow_population_by_field_name">
-<code class="sig-name descname"><span class="pre">allow_population_by_field_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">True</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.CustomConfig.allow_population_by_field_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.CustomConfig.fields">
-<code class="sig-name descname"><span class="pre">fields</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{'envelope':</span> <span class="pre">{'alias':</span> <span class="pre">'envelope',</span> <span class="pre">'alias_priority':</span> <span class="pre">2},</span> <span class="pre">'request':</span> <span class="pre">{'alias':</span> <span class="pre">'request',</span> <span class="pre">'alias_priority':</span> <span class="pre">2}}</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.CustomConfig.fields" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py function">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.protobuf_to_pydantic_model">
-<code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">protobuf_to_pydantic_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protobuf_model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#protobuf_to_pydantic_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.protobuf_to_pydantic_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts Protobuf messages to Pydantic model for jsonschema creation/validattion</p>
-<p>..note:: Model gets assigned in the global Namespace :<a class="reference external" href="data:PROTO_TO_PYDANTIC_MODELS">data:PROTO_TO_PYDANTIC_MODELS</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>protobuf_model</strong> (<em>Union</em><em>[</em><em>Descriptor</em><em>, </em><em>GeneratedProtocolMessageType</em><em>]</em>) – message from jina.proto file</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Pydantic model</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaStatusModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaStatusModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
-<p>Pydantic BaseModel for Jina status, used as the response model in REST app.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel.jina">
-<code class="sig-name descname"><span class="pre">jina</span></code><em class="property"><span class="pre">:</span> <span class="pre">Dict</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel.jina" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel.envs">
-<code class="sig-name descname"><span class="pre">envs</span></code><em class="property"><span class="pre">:</span> <span class="pre">Dict</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel.envs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel.used_memory">
-<code class="sig-name descname"><span class="pre">used_memory</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaStatusModel.used_memory" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaReloadRequestModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaReloadRequestModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaReloadRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaReloadRequestModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
-<p>Jina control request model.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaReloadRequestModel.targets">
-<code class="sig-name descname"><span class="pre">targets</span></code><em class="property"><span class="pre">:</span> <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaReloadRequestModel.targets" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaRequestModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
-<p>Jina request model.</p>
-<p>The base model for Jina REST request.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.data">
-<code class="sig-name descname"><span class="pre">data</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pydantic.main.DocumentProto</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.request_size">
-<code class="sig-name descname"><span class="pre">request_size</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.request_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.mime_type">
-<code class="sig-name descname"><span class="pre">mime_type</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.mime_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.data_type">
-<code class="sig-name descname"><span class="pre">data_type</span></code><em class="property"><span class="pre">:</span> <a class="reference internal" href="../jina.enums/#jina.enums.DataInputType" title="jina.enums.DataInputType"><span class="pre">jina.enums.DataInputType</span></a></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.data_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.target_peapod">
-<code class="sig-name descname"><span class="pre">target_peapod</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.target_peapod" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.parameters">
-<code class="sig-name descname"><span class="pre">parameters</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel.parameters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaIndexRequestModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaIndexRequestModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaIndexRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaIndexRequestModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel" title="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel</span></code></a></p>
-<p>Index request model.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaIndexRequestModel.exec_endpoint">
-<code class="sig-name descname"><span class="pre">exec_endpoint</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaIndexRequestModel.exec_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaSearchRequestModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaSearchRequestModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaSearchRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaSearchRequestModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel" title="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel</span></code></a></p>
-<p>Search request model.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaSearchRequestModel.exec_endpoint">
-<code class="sig-name descname"><span class="pre">exec_endpoint</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaSearchRequestModel.exec_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaUpdateRequestModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaUpdateRequestModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaUpdateRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaUpdateRequestModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel" title="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel</span></code></a></p>
-<p>Update request model.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaUpdateRequestModel.exec_endpoint">
-<code class="sig-name descname"><span class="pre">exec_endpoint</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaUpdateRequestModel.exec_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaDeleteRequestModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaDeleteRequestModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaDeleteRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaDeleteRequestModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel" title="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel</span></code></a></p>
-<p>Delete request model.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaDeleteRequestModel.exec_endpoint">
-<code class="sig-name descname"><span class="pre">exec_endpoint</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaDeleteRequestModel.exec_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.</span></code><code class="sig-name descname"><span class="pre">JinaControlRequestModel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/asyncio/rest/models/#JinaControlRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel" title="jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.asyncio.rest.models.JinaRequestModel</span></code></a></p>
-<p>Control request model.</p>
-<p>Create a new model by parsing and validating input data from keyword arguments.</p>
-<p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.data">
-<code class="sig-name descname"><span class="pre">data</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pydantic.main.DocumentProto</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.request_size">
-<code class="sig-name descname"><span class="pre">request_size</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.request_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.mime_type">
-<code class="sig-name descname"><span class="pre">mime_type</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.mime_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.data_type">
-<code class="sig-name descname"><span class="pre">data_type</span></code><em class="property"><span class="pre">:</span> <a class="reference internal" href="../jina.enums/#jina.enums.DataInputType" title="jina.enums.DataInputType"><span class="pre">jina.enums.DataInputType</span></a></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.data_type" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.target_peapod">
-<code class="sig-name descname"><span class="pre">target_peapod</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.target_peapod" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.parameters">
-<code class="sig-name descname"><span class="pre">parameters</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.peapods.runtimes.asyncio.rest.models.JinaControlRequestModel.parameters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
+        <div class="section" id="jina-peapods-runtimes-asyncio-rest-models-module">
+<h1>jina.peapods.runtimes.asyncio.rest.models module<a class="headerlink" href="#jina-peapods-runtimes-asyncio-rest-models-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../jina.peapods.runtimes.asyncio.base/">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">jina.peapods.runtimes.asyncio.base module</div>
-              </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="../jina.peapods.runtimes.asyncio.rest.app/">
-              <svg><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">jina.peapods.runtimes.asyncio.rest.app module</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
 
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 18, 2021.
+            Last updated on Jun 20, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -27,11 +27,10 @@
 </script>
     <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Jina Protobuf Specification" href="../proto/" /><link rel="prev" title="jina.importer module" href="../api/jina.importer/" />
 
-    <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>Jina Command-Line Interface - Jina 2.0.0rc7 documentation</title>
-      <link rel="stylesheet" href="../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+      <link rel="stylesheet" href="../_static/styles/furo.css?digest=9b17055c4366e8b2949c66d6a9d8b0efe4dbaa60">
     <link rel="stylesheet" href="../_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
     
 
 
@@ -62,7 +61,8 @@
   }
 </style><link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/main.css" />
-    <link rel="stylesheet" href="../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../_static/pygments_dark.css">
+    <link rel="stylesheet" href="../_static/styles/furo-extensions.css?digest=ee12cdd73c4bbac24afec78d92c4afd7c2d8ea7f"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -148,6 +148,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.http/">jina.clients.http module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
@@ -267,20 +268,24 @@
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.grpc.async_call/">jina.peapods.runtimes.asyncio.grpc.async_call module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.rest/">jina.peapods.runtimes.asyncio.rest package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.rest.app/">jina.peapods.runtimes.asyncio.rest.app module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.rest.models/">jina.peapods.runtimes.asyncio.rest.models module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.http/">jina.peapods.runtimes.asyncio.http package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.http.app/">jina.peapods.runtimes.asyncio.http.app module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.http.models/">jina.peapods.runtimes.asyncio.http.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.websocket/">jina.peapods.runtimes.asyncio.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.websocket.app/">jina.peapods.runtimes.asyncio.websocket.app module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.asyncio.base/">jina.peapods.runtimes.asyncio.base module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
@@ -291,13 +296,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
@@ -305,8 +310,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
@@ -314,7 +319,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
@@ -322,16 +327,16 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
@@ -341,13 +346,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -364,7 +369,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -450,7 +455,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “c9d0b118-e700-4bd1-b29f-d3336035af9f”</p>
+<p>Default: “43cc7a7a-f483-4bf7-a3ef-46b8f2aeb4aa”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -525,7 +530,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “541a2c3e-f631-4e13-82f6-3b8443d5f5a1”</p>
+<p>Default: “7f8b6073-d968-4cf1-83e1-f1ec5fad8537”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -558,7 +563,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “a98348b9-379f-4984-89ef-ebb4978c2c75”</p>
+<p>Default: “94f7b9fe-fc1a-40a8-81cb-f0ced4c8c9f2”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -590,10 +595,10 @@
 <div class="section" id="executor (pod)">
 <h3>executor (pod)<a class="headerlink" href="#executor (pod)" title="Permalink to this headline">¶</a></h3>
 <p>Start an Executor. Executor is how Jina processes Document.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
@@ -628,12 +633,8 @@
 - how you refer to this object in Python/YAML/CLI
 - visualization
 - log message header
-- automatics docs UI
 - …</p>
 <p>When not given, then the default naming strategy will apply.</p>
-</dd>
-<dt><kbd>--description</kbd></dt>
-<dd><p>The description of this object. It will be used in automatics docs UI.</p>
 </dd>
 <dt><kbd>--workspace</kbd></dt>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
@@ -657,7 +658,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 49383</p>
+<p>Default: 36661</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -702,11 +703,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 58461</p>
+<p>Default: 48655</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 53313</p>
+<p>Default: 53991</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -794,7 +795,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 51651</p>
+<p>Default: 33173</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -821,7 +822,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “49ac5f79-a05a-47ce-a473-cec7a849ed6e”</p>
+<p>Default: “0ec65fdb-a9b5-4b6f-857d-9e23f1575810”</p>
 </dd>
 </dl>
 </div>
@@ -917,11 +918,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 <div class="section" id="flow">
 <h3>flow<a class="headerlink" href="#flow" title="Permalink to this headline">¶</a></h3>
 <p>Start a Flow. Flow is how Jina streamlines and distributes Executors.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span>
-                  <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
-                  <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span>
-                  <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
-                  <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">flow</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
+                  <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                   <span class="p">[</span><span class="o">--</span><span class="n">inspect</span> <span class="p">{</span><span class="n">HANG</span><span class="p">,</span> <span class="n">REMOVE</span><span class="p">,</span> <span class="n">COLLECT</span><span class="p">}]</span>
 </pre></div>
 </div>
@@ -934,12 +932,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 - how you refer to this object in Python/YAML/CLI
 - visualization
 - log message header
-- automatics docs UI
 - …</p>
 <p>When not given, then the default naming strategy will apply.</p>
-</dd>
-<dt><kbd>--description</kbd></dt>
-<dd><p>The description of this object. It will be used in automatics docs UI.</p>
 </dd>
 <dt><kbd>--workspace</kbd></dt>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
@@ -955,59 +949,6 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--quiet-error</kbd></dt>
 <dd><p>If set, then exception stack information will not be added to the log</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Expose arguments_repeat1">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--port-expose</kbd></dt>
-<dd><p>The port of the host exposed to the public</p>
-<p>Default: 43177</p>
-</dd>
-<dt><kbd>--proxy</kbd></dt>
-<dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Client Interface arguments">
-<h4>Client Interface arguments<a class="headerlink" href="#Client Interface arguments" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--restful</kbd></dt>
-<dd><p>If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with –restful as well.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--asyncio</kbd></dt>
-<dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Client Features arguments">
-<h4>Client Features arguments<a class="headerlink" href="#Client Features arguments" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--request-size</kbd></dt>
-<dd><p>The number of Documents in each Request.</p>
-<p>Default: 100</p>
-</dd>
-<dt><kbd>--continue-on-error</kbd></dt>
-<dd><p>If set, a Request that causes error will be logged only without blocking the further requests.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--show-progress</kbd></dt>
-<dd><p>If set, client will show a progress bar on receiving every request.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--return-results</kbd></dt>
-<dd><p>This feature is only used for AsyncClient.</p>
-<p>If set, the results of all Requests will be returned as a list. This is useful when one wants
-process Responses in bulk instead of using callback.</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1071,36 +1012,40 @@ process Responses in bulk instead of using callback.</p>
 <div class="section" id="gateway">
 <h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this headline">¶</a></h3>
 <p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">freeze</span><span class="o">-</span><span class="n">network</span><span class="o">-</span><span class="n">settings</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">message</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">recv</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">freeze</span><span class="o">-</span><span class="n">network</span><span class="o">-</span><span class="n">settings</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">recv</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">including</span><span class="o">-</span><span class="n">default</span><span class="o">-</span><span class="n">value</span><span class="o">-</span><span class="n">fields</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">sort</span><span class="o">-</span><span class="n">keys</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">integers</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">enums</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="nb">float</span><span class="o">-</span><span class="n">precision</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="p">{</span><span class="n">NONE</span><span class="p">,</span> <span class="n">LZ4</span><span class="p">,</span> <span class="n">ZLIB</span><span class="p">,</span> <span class="n">GZIP</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="nb">bytes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="n">ratio</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">including</span><span class="o">-</span><span class="n">default</span><span class="o">-</span><span class="n">value</span><span class="o">-</span><span class="n">fields</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sort</span><span class="o">-</span><span class="n">keys</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">integers</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">enums</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">float</span><span class="o">-</span><span class="n">precision</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">daemon</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">TAIL</span><span class="p">,</span> <span class="n">PARALLEL</span><span class="p">}]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="section" id="Named Arguments_repeat4">
 <h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
-<dt><kbd>--restful</kbd></dt>
-<dd><p>If set, use RESTful interface instead of gRPC as the main interface</p>
-<p>Default: False</p>
+<dt><kbd>--protocol</kbd></dt>
+<dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
+<p>Communication protocol between server and client.</p>
+<p>Default: 0</p>
 </dd>
 </dl>
 </div>
@@ -1113,13 +1058,9 @@ process Responses in bulk instead of using callback.</p>
 - how you refer to this object in Python/YAML/CLI
 - visualization
 - log message header
-- automatics docs UI
 - …</p>
 <p>When not given, then the default naming strategy will apply.</p>
 <p>Default: “gateway”</p>
-</dd>
-<dt><kbd>--description</kbd></dt>
-<dd><p>The description of this object. It will be used in automatics docs UI.</p>
 </dd>
 <dt><kbd>--workspace</kbd></dt>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
@@ -1143,7 +1084,7 @@ process Responses in bulk instead of using callback.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 58411</p>
+<p>Default: 48771</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1188,11 +1129,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 41683</p>
+<p>Default: 54479</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60479</p>
+<p>Default: 56273</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1241,13 +1182,9 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 </dd>
 </dl>
 </div>
-<div class="section" id="GRPC arguments">
-<h4>GRPC arguments<a class="headerlink" href="#GRPC arguments" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Prefetch arguments">
+<h4>Prefetch arguments<a class="headerlink" href="#Prefetch arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
-<dt><kbd>--max-message-size</kbd></dt>
-<dd><p>The maximum send and receive size for gRPC server in bytes, -1 means unlimited</p>
-<p>Default: -1</p>
-</dd>
 <dt><kbd>--prefetch</kbd></dt>
 <dd><p>The number of pre-fetched requests from the client</p>
 <p>Default: 50</p>
@@ -1256,28 +1193,42 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <dd><p>The number of additional requests to fetch on every receive</p>
 <p>Default: 1</p>
 </dd>
-<dt><kbd>--compress</kbd></dt>
-<dd><p>Possible choices: NONE, LZ4, ZLIB, GZIP, BZ2, LZMA</p>
-<p>The compress algorithm used over the entire Flow.</p>
-<p>Note that this is not necessarily effective, it depends on the settings of <cite>–compress-lwm</cite> and <cite>compress-hwm</cite></p>
-<p>Default: 1</p>
-</dd>
-<dt><kbd>--compress-min-bytes</kbd></dt>
-<dd><p>The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.</p>
-<p>Default: 1024</p>
-</dd>
-<dt><kbd>--compress-min-ratio</kbd></dt>
-<dd><p>The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.</p>
-<p>Default: 1.1</p>
-</dd>
 </dl>
 </div>
-<div class="section" id="REST JSON arguments">
-<h4>REST JSON arguments<a class="headerlink" href="#REST JSON arguments" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="HTTP Gateway arguments">
+<h4>HTTP Gateway arguments<a class="headerlink" href="#HTTP Gateway arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--title</kbd></dt>
+<dd><p>The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</p>
+</dd>
+<dt><kbd>--description</kbd></dt>
+<dd><p>The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</p>
+</dd>
+<dt><kbd>--cors</kbd></dt>
+<dd><blockquote>
+<div><p>If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</p>
+</div></blockquote>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-debug-endpoints</kbd></dt>
+<dd><p>If set, /status /post endpoints are removed from HTTP interface.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--no-crud-endpoints</kbd></dt>
+<dd><blockquote>
+<div><p>If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.</p>
+<p>Any executor that has <cite>@requests(on=…)</cite> bind with those values will receive data requests.</p>
+</div></blockquote>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--expose-endpoints</kbd></dt>
+<dd><blockquote>
+<div><p>A JSON string that represents a map from executor endpoints (<cite>@requests(on=…)</cite>) to HTTP endpoints.</p>
+</div></blockquote>
+</dd>
 <dt><kbd>--including-default-value-fields</kbd></dt>
 <dd><blockquote>
-<div><p>If True, singular primitive fields,
+<div><p>If set, singular primitive fields,
 repeated fields, and map fields will always be serialized.  If
 False, only serialize non-empty fields.  Singular message fields
 and oneof fields are not affected by this option.</p>
@@ -1297,8 +1248,30 @@ and oneof fields are not affected by this option.</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="Expose arguments_repeat2">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Compression arguments">
+<h4>Compression arguments<a class="headerlink" href="#Compression arguments" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--compress</kbd></dt>
+<dd><p>Possible choices: NONE, LZ4, ZLIB, GZIP, BZ2, LZMA</p>
+<blockquote>
+<div><p>The compress algorithm used over the entire Flow.</p>
+<p>Note that this is not necessarily effective,
+it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compress-min-ratio</cite></p>
+</div></blockquote>
+<p>Default: 1</p>
+</dd>
+<dt><kbd>--compress-min-bytes</kbd></dt>
+<dd><p>The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.</p>
+<p>Default: 1024</p>
+</dd>
+<dt><kbd>--compress-min-ratio</kbd></dt>
+<dd><p>The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.</p>
+<p>Default: 1.1</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Expose arguments_repeat1">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
@@ -1306,7 +1279,7 @@ and oneof fields are not affected by this option.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 38149</p>
+<p>Default: 37627</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1414,8 +1387,8 @@ and oneof fields are not affected by this option.</p>
 <div class="section" id="pea">
 <h3>pea<a class="headerlink" href="#pea" title="Permalink to this headline">¶</a></h3>
 <p>Start a Pea. You should rarely use this directly unless you are doing low-level orchestration</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">pea</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">pea</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
@@ -1445,12 +1418,8 @@ and oneof fields are not affected by this option.</p>
 - how you refer to this object in Python/YAML/CLI
 - visualization
 - log message header
-- automatics docs UI
 - …</p>
 <p>When not given, then the default naming strategy will apply.</p>
-</dd>
-<dt><kbd>--description</kbd></dt>
-<dd><p>The description of this object. It will be used in automatics docs UI.</p>
 </dd>
 <dt><kbd>--workspace</kbd></dt>
 <dd><p>The working directory for any IO operations in this object. If not set, then derive from its parent <cite>workspace</cite>.</p>
@@ -1474,7 +1443,7 @@ and oneof fields are not affected by this option.</p>
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 50399</p>
+<p>Default: 36169</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1519,11 +1488,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 47203</p>
+<p>Default: 44629</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 45823</p>
+<p>Default: 55525</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1602,8 +1571,8 @@ container.</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="Expose arguments_repeat3">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Expose arguments_repeat2">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
@@ -1611,7 +1580,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 51851</p>
+<p>Default: 49735</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1638,7 +1607,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “58dde5b0-8415-4032-b576-d189d0ee81e2”</p>
+<p>Default: “589551ac-50ba-444a-a353-23ebf6625a36”</p>
 </dd>
 </dl>
 </div>
@@ -1688,13 +1657,27 @@ Python files, data files.</p>
 <div class="section" id="client">
 <h3>client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
 <p>Start a Python client that connects to a remote Jina gateway</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">restful</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="p">]</span>
-                    <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">results</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="n">request</span><span class="o">-</span><span class="n">size</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="k">continue</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span>
+                    <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">results</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
-<div class="section" id="Expose arguments_repeat4">
-<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat6">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--asyncio</kbd></dt>
+<dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--protocol</kbd></dt>
+<dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
+<p>Communication protocol between server and client.</p>
+<p>Default: 0</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="Expose arguments_repeat3">
+<h4>Expose arguments<a class="headerlink" href="#Expose arguments_repeat3" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
 <dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
@@ -1702,7 +1685,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 57649</p>
+<p>Default: 56705</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1710,21 +1693,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="Client Interface arguments_repeat1">
-<h4>Client Interface arguments<a class="headerlink" href="#Client Interface arguments_repeat1" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--restful</kbd></dt>
-<dd><p>If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with –restful as well.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--asyncio</kbd></dt>
-<dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</div>
-<div class="section" id="Client Features arguments_repeat1">
-<h4>Client Features arguments<a class="headerlink" href="#Client Features arguments_repeat1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Client Features arguments">
+<h4>Client Features arguments<a class="headerlink" href="#Client Features arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--request-size</kbd></dt>
 <dd><p>The number of Documents in each Request.</p>
@@ -1739,9 +1709,7 @@ Python files, data files.</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--return-results</kbd></dt>
-<dd><p>This feature is only used for AsyncClient.</p>
-<p>If set, the results of all Requests will be returned as a list. This is useful when one wants
-process Responses in bulk instead of using callback.</p>
+<dd><p>If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.</p>
 <p>Default: False</p>
 </dd>
 </dl>
@@ -1755,8 +1723,8 @@ process Responses in bulk instead of using callback.</p>
                         <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat6">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
 <dd><p>The YAML file path for storing the exported API</p>
@@ -1802,7 +1770,7 @@ process Responses in bulk instead of using callback.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 18, 2021.
+            Last updated on Jun 20, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
@@ -1868,9 +1836,6 @@ process Responses in bulk instead of using callback.</p>
 </li>
 <li><a class="reference internal" href="#flow">flow</a><ul>
 <li><a class="reference internal" href="#Essential arguments_repeat1">Essential arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat1">Expose arguments</a></li>
-<li><a class="reference internal" href="#Client Interface arguments">Client Interface arguments</a></li>
-<li><a class="reference internal" href="#Client Features arguments">Client Features arguments</a></li>
 <li><a class="reference internal" href="#Flow Feature arguments">Flow Feature arguments</a></li>
 </ul>
 </li>
@@ -1884,9 +1849,10 @@ process Responses in bulk instead of using callback.</p>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat1">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat1">ZEDRuntime arguments</a></li>
-<li><a class="reference internal" href="#GRPC arguments">GRPC arguments</a></li>
-<li><a class="reference internal" href="#REST JSON arguments">REST JSON arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat2">Expose arguments</a></li>
+<li><a class="reference internal" href="#Prefetch arguments">Prefetch arguments</a></li>
+<li><a class="reference internal" href="#HTTP Gateway arguments">HTTP Gateway arguments</a></li>
+<li><a class="reference internal" href="#Compression arguments">Compression arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat1">Expose arguments</a></li>
 <li><a class="reference internal" href="#Pea arguments_repeat1">Pea arguments</a></li>
 </ul>
 </li>
@@ -1907,19 +1873,19 @@ process Responses in bulk instead of using callback.</p>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat2">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat2">ZEDRuntime arguments</a></li>
 <li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
-<li><a class="reference internal" href="#Expose arguments_repeat3">Expose arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat2">Expose arguments</a></li>
 <li><a class="reference internal" href="#Distributed arguments_repeat1">Distributed arguments</a></li>
 <li><a class="reference internal" href="#Pea arguments_repeat2">Pea arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Expose arguments_repeat4">Expose arguments</a></li>
-<li><a class="reference internal" href="#Client Interface arguments_repeat1">Client Interface arguments</a></li>
-<li><a class="reference internal" href="#Client Features arguments_repeat1">Client Features arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Expose arguments_repeat3">Expose arguments</a></li>
+<li><a class="reference internal" href="#Client Features arguments">Client Features arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#export-api">export-api</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 </ul>
 </li>
 </ul>

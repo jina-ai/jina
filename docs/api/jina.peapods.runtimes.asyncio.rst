@@ -8,7 +8,8 @@ Subpackages
    :maxdepth: 4
 
    jina.peapods.runtimes.asyncio.grpc
-   jina.peapods.runtimes.asyncio.rest
+   jina.peapods.runtimes.asyncio.http
+   jina.peapods.runtimes.asyncio.websocket
 
 Submodules
 ----------

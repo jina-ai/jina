@@ -19,6 +19,7 @@ Submodules
    jina.clients.base
    jina.clients.grpc
    jina.clients.helper
+   jina.clients.http
    jina.clients.mixin
    jina.clients.websocket
 

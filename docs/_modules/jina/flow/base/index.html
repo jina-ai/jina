@@ -4,11 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
-    <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.flow.base - Jina 2.0.0rc7 documentation</title>
-      <link rel="stylesheet" href="../../../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+      <link rel="stylesheet" href="../../../../_static/styles/furo.css?digest=9b17055c4366e8b2949c66d6a9d8b0efe4dbaa60">
     <link rel="stylesheet" href="../../../../_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../../_static/pygments_dark.css">
     
 
 
@@ -39,7 +38,8 @@
   }
 </style><link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
-    <link rel="stylesheet" href="../../../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../../_static/pygments_dark.css">
+    <link rel="stylesheet" href="../../../../_static/styles/furo-extensions.css?digest=ee12cdd73c4bbac24afec78d92c4afd7c2d8ea7f"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -125,6 +125,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.base/">jina.clients.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.http/">jina.clients.http module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
@@ -244,20 +245,24 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.grpc.async_call/">jina.peapods.runtimes.asyncio.grpc.async_call module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest/">jina.peapods.runtimes.asyncio.rest package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest.app/">jina.peapods.runtimes.asyncio.rest.app module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.rest.models/">jina.peapods.runtimes.asyncio.rest.models module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.http/">jina.peapods.runtimes.asyncio.http package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.http.app/">jina.peapods.runtimes.asyncio.http.app module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.http.models/">jina.peapods.runtimes.asyncio.http.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.websocket/">jina.peapods.runtimes.asyncio.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.websocket.app/">jina.peapods.runtimes.asyncio.websocket.app module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.asyncio.base/">jina.peapods.runtimes.asyncio.base module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
@@ -268,13 +273,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
@@ -282,8 +287,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
@@ -291,7 +296,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
@@ -299,16 +304,16 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
@@ -318,13 +323,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -341,7 +346,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -369,6 +374,7 @@
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">threading</span>
@@ -378,11 +384,11 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Type</span>
 
-<span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">build_required</span><span class="p">,</span> <span class="n">_build_flow</span><span class="p">,</span> <span class="n">_hanging_pods</span>
+<span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">allowed_levels</span><span class="p">,</span> <span class="n">_build_flow</span><span class="p">,</span> <span class="n">_hanging_pods</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">..clients</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">..clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">PostMixin</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">FlowInspectType</span>
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">FlowInspectType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowTopologyError</span><span class="p">,</span> <span class="n">FlowMissingPodError</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">colored</span><span class="p">,</span>
@@ -394,7 +400,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span>
+<span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_client_cli_parser</span>
 <span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">Pod</span>
 <span class="kn">from</span> <span class="nn">..peapods.pods.compound</span> <span class="kn">import</span> <span class="n">CompoundPod</span>
 <span class="kn">from</span> <span class="nn">..peapods.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
@@ -414,42 +420,206 @@
     <span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">BasePod</span>
     <span class="kn">from</span> <span class="nn">..executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
     <span class="kn">from</span> <span class="nn">..clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
+    <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
 
 
 <div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
     <span class="sd">"""Flow is how Jina streamlines and distributes Executors. """</span>
 
-    <span class="c1"># overload_inject_start_flow</span>
+    <span class="c1"># overload_inject_start_client_flow</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">continue_on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
-        <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'COLLECT'</span><span class="p">,</span>
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">request_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">restful</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">return_results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">show_progress</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'./'</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors</span>
+        <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">        :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.</span>
-<span class="sd">        :param description: The description of this object. It will be used in automatics docs UI.</span>
-<span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param port_expose: The port of the host exposed to the public</span>
+<span class="sd">        :param protocol: Communication protocol between server and client.</span>
+<span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
+<span class="sd">        :param request_size: The number of Documents in each Request.</span>
+<span class="sd">        :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.</span>
+<span class="sd">        :param show_progress: If set, client will show a progress bar on receiving every request.</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+<span class="sd">        """</span>
+
+    <span class="c1"># overload_inject_end_client_flow</span>
+
+    <span class="c1"># overload_inject_start_gateway_flow</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">compress</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'LZ4'</span><span class="p">,</span>
+        <span class="n">compress_min_bytes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span>
+        <span class="n">compress_min_ratio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1</span><span class="p">,</span>
+        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">ctrl_with_ipc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">daemon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_public</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">float_precision</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">host_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">including_default_value_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">memory_hwm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'gateway'</span><span class="p">,</span>
+        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">on_error_strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'IGNORE'</span><span class="p">,</span>
+        <span class="n">port_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="n">prefetch_on_recv</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
+        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">runtime_backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PROCESS'</span><span class="p">,</span>
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPCRuntime'</span><span class="p">,</span>
+        <span class="n">socket_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PULL_CONNECT'</span><span class="p">,</span>
+        <span class="n">socket_out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PUSH_CONNECT'</span><span class="p">,</span>
+        <span class="n">sort_keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">ssh_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssh_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssh_server</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5000</span><span class="p">,</span>
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_integers_for_enums</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.</span>
+
+<span class="sd">        :param compress: The compress algorithm used over the entire Flow.</span>
+
+<span class="sd">              Note that this is not necessarily effective,</span>
+<span class="sd">              it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`</span>
+<span class="sd">        :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.</span>
+<span class="sd">        :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.</span>
+<span class="sd">        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</span>
+<span class="sd">        :param ctrl_with_ipc: If set, use ipc protocol for control socket</span>
+<span class="sd">        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing</span>
+<span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
+<span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
+<span class="sd">        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.</span>
+<span class="sd">        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</span>
+<span class="sd">        :param float_precision: If set, use this to specify float field valid digits.</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host_in: The host address for input, by default it is 0.0.0.0</span>
+<span class="sd">        :param host_out: The host address for output, by default it is 0.0.0.0</span>
+<span class="sd">        :param including_default_value_fields: If set, singular primitive fields,</span>
+<span class="sd">                  repeated fields, and map fields will always be serialized.  If</span>
+<span class="sd">                  False, only serialize non-empty fields.  Singular message fields</span>
+<span class="sd">                  and oneof fields are not affected by this option.</span>
+<span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
+<span class="sd">        :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</span>
+<span class="sd">        :param name: The name of this object.</span>
+
+<span class="sd">          This will be used in the following places:</span>
+<span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
+<span class="sd">          - visualization</span>
+<span class="sd">          - log message header</span>
+<span class="sd">          - ...</span>
+
+<span class="sd">          When not given, then the default naming strategy will apply.</span>
+<span class="sd">        :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.</span>
+
+<span class="sd">                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
+<span class="sd">        :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.</span>
+<span class="sd">        :param on_error_strategy: The skip strategy on exceptions.</span>
+
+<span class="sd">          - IGNORE: Ignore it, keep running all Executors in the sequel flow</span>
+<span class="sd">          - SKIP_HANDLE: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called</span>
+<span class="sd">          - THROW_EARLY: Immediately throw the exception, the sequel flow will not be running at all</span>
+
+<span class="sd">          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something</span>
+<span class="sd">          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</span>
+<span class="sd">        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]</span>
+<span class="sd">        :param port_expose: The port of the host exposed to the public</span>
+<span class="sd">        :param port_in: The port for input data, default a random port between [49152, 65535]</span>
+<span class="sd">        :param port_out: The port for output data, default a random port between [49152, 65535]</span>
+<span class="sd">        :param prefetch: The number of pre-fetched requests from the client</span>
+<span class="sd">        :param prefetch_on_recv: The number of additional requests to fetch on every receive</span>
+<span class="sd">        :param protocol: Communication protocol between server and client.</span>
+<span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
+<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
+
+<span class="sd">          Note, when importing multiple files and there is a dependency between them, then one has to write the dependencies in</span>
+<span class="sd">          reverse order. That is, if `__init__.py` depends on `A.py`, which again depends on `B.py`, then you need to write:</span>
+
+<span class="sd">          --py-modules __init__.py --py-modules B.py --py-modules A.py</span>
+<span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
+<span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
+<span class="sd">        :param runtime_backend: The parallel backend of the runtime inside the Pea</span>
+<span class="sd">        :param runtime_cls: The runtime class to run inside the Pea</span>
+<span class="sd">        :param socket_in: The socket type for input port</span>
+<span class="sd">        :param socket_out: The socket type for output port</span>
+<span class="sd">        :param sort_keys: If True, then the output will be sorted by field names.</span>
+<span class="sd">        :param ssh_keyfile: This specifies a key to be used in ssh login, default None. regular default ssh keys will be used without specifying this argument.</span>
+<span class="sd">        :param ssh_password: The ssh password to the ssh server.</span>
+<span class="sd">        :param ssh_server: The SSH server through which the tunnel will be created, can actually be a fully specified `user@server:port` ssh url.</span>
+<span class="sd">        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever</span>
+<span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever</span>
+<span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
+<span class="sd">        :param use_integers_for_enums: If true, print integers instead of enum names.</span>
+<span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                  * an Executor-level YAML file path (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * a docker image (must start with `docker://`)</span>
+<span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
+<span class="sd">                  * the string literal of a JSON config</span>
+
+<span class="sd">                  When use it under Python, one can use the following values additionally:</span>
+<span class="sd">                  - a Python dict that represents the config</span>
+<span class="sd">                  - a text file stream has `.read()` interface</span>
+<span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
+<span class="sd">        """</span>
+
+    <span class="c1"># overload_inject_end_gateway_flow</span>
+    <span class="c1"># overload_inject_start_flow</span>
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'COLLECT'</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'./'</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.</span>
+
+<span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param inspect: The strategy on those inspect pods in the flow.</span>
 
 <span class="sd">              If `REMOVE` is given then all inspect pods are removed when building the flow.</span>
@@ -460,21 +630,11 @@
 <span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">          - visualization</span>
 <span class="sd">          - log message header</span>
-<span class="sd">          - automatics docs UI</span>
 <span class="sd">          - ...</span>
 
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
-<span class="sd">        :param port_expose: The port of the host exposed to the public</span>
-<span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
-<span class="sd">        :param request_size: The number of Documents in each Request.</span>
-<span class="sd">        :param restful: If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with --restful as well.</span>
-<span class="sd">        :param return_results: This feature is only used for AsyncClient.</span>
-
-<span class="sd">          If set, the results of all Requests will be returned as a list. This is useful when one wants</span>
-<span class="sd">          process Responses in bulk instead of using callback.</span>
-<span class="sd">        :param show_progress: If set, client will show a progress bar on receiving every request.</span>
 <span class="sd">        :param uses: The YAML file represents a flow</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -493,6 +653,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="s1">'1'</span>  <span class="c1">#: YAML version number, this will be later overridden if YAML config says the other way</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># type: Dict[str, BasePod]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_inspect_pods</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, str]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_mapping</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, Dict]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_changed_pod</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s1">'gateway'</span>
@@ -524,7 +685,9 @@
 
         <span class="n">base_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
         <span class="n">base_cls_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">asyncio</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">AsyncPostMixin</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'asyncio'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">AsyncPostMixin</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">base_cls_name</span><span class="p">,</span> <span class="p">(</span><span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">base_cls</span><span class="p">),</span> <span class="p">{})</span>
 
     <span class="nd">@staticmethod</span>
@@ -584,6 +747,7 @@
         <span class="c1"># reset the build level to the lowest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>
 
+    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">_add_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">pod_name</span> <span class="o">=</span> <span class="s1">'gateway'</span>
 
@@ -591,18 +755,21 @@
             <span class="nb">dict</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">pod_name</span><span class="p">,</span>
                 <span class="n">ctrl_with_ipc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># otherwise ctrl port would be conflicted</span>
-                <span class="n">runtime_cls</span><span class="o">=</span><span class="s1">'RESTRuntime'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restful</span> <span class="k">else</span> <span class="s1">'GRPCRuntime'</span><span class="p">,</span>
+                <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
+                <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
                 <span class="n">pod_role</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
+                <span class="n">expose_endpoints</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_mapping</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pod</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Flow.needs"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.needs">[docs]</a>    <span class="k">def</span> <span class="nf">needs</span><span class="p">(</span>
+<div class="viewcode-block" id="Flow.needs"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.needs">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">needs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'joiner'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
         <span class="sd">"""</span>
@@ -645,7 +812,6 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ctrl_with_ipc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">daemon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -693,12 +859,11 @@
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">workspace_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Flow'</span><span class="p">,</span> <span class="s1">'AsyncFlow'</span><span class="p">]:</span>
         <span class="sd">"""Add an Executor to the current Flow object.</span>
 
 <span class="sd">        :param ctrl_with_ipc: If set, use ipc protocol for control socket</span>
 <span class="sd">        :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing</span>
-<span class="sd">        :param description: The description of this object. It will be used in automatics docs UI.</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '</span>
 <span class="sd">          container.</span>
 
@@ -718,7 +883,6 @@
 <span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">          - visualization</span>
 <span class="sd">          - log message header</span>
-<span class="sd">          - automatics docs UI</span>
 <span class="sd">          - ...</span>
 
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
@@ -773,14 +937,14 @@
 <span class="sd">          - by default, `--uses` YAML file is always uploaded.</span>
 <span class="sd">          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.</span>
 <span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
-<span class="sd">                      * an Executor-level YAML file path (.yml, .yaml, .jaml)</span>
-<span class="sd">                      * a docker image (must start with `docker://`)</span>
-<span class="sd">                      * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
-<span class="sd">                      * the string literal of a JSON config</span>
+<span class="sd">                  * an Executor-level YAML file path (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * a docker image (must start with `docker://`)</span>
+<span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
+<span class="sd">                  * the string literal of a JSON config</span>
 
-<span class="sd">                      When use it under Python, one can use the following values additionally:</span>
-<span class="sd">                      - a Python dict that represents the config</span>
-<span class="sd">                      - a text file stream has `.read()` interface</span>
+<span class="sd">                  When use it under Python, one can use the following values additionally:</span>
+<span class="sd">                  - a Python dict that represents the config</span>
+<span class="sd">                  - a text file stream has `.read()` interface</span>
 <span class="sd">        :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`</span>
 <span class="sd">        :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`</span>
 <span class="sd">        :param uses_internal: The config runs inside the Docker container.</span>
@@ -803,7 +967,8 @@
 <span class="sd">        """</span>
 
     <span class="c1"># overload_inject_end_pod</span>
-<div class="viewcode-block" id="Flow.add"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+<div class="viewcode-block" id="Flow.add"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.add">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -882,7 +1047,8 @@
 
         <span class="k">return</span> <span class="n">op_flow</span></div>
 
-<div class="viewcode-block" id="Flow.inspect"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.inspect">[docs]</a>    <span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'inspect'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
+<div class="viewcode-block" id="Flow.inspect"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.inspect">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'inspect'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
         <span class="sd">"""Add an inspection on the last changed Pod in the Flow</span>
 
 <span class="sd">        Internally, it adds two Pods to the Flow. But don't worry, the overhead is minimized and you</span>
@@ -931,7 +1097,8 @@
 
         <span class="k">return</span> <span class="n">op_flow</span></div>
 
-<div class="viewcode-block" id="Flow.gather_inspect"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.gather_inspect">[docs]</a>    <span class="k">def</span> <span class="nf">gather_inspect</span><span class="p">(</span>
+<div class="viewcode-block" id="Flow.gather_inspect"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.gather_inspect">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">gather_inspect</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'gather_inspect'</span><span class="p">,</span>
         <span class="n">include_last_pod</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -973,7 +1140,8 @@
             <span class="c1"># no inspect node is in the graph, return the current graph</span>
             <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Flow.build"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
+<div class="viewcode-block" id="Flow.build"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.build">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Build the current Flow and make it ready to use</span>
 
@@ -1167,28 +1335,32 @@
 <span class="sd">        """</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+            <span class="n">op_flow</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">_build_level</span><span class="o">.</span><span class="n">value</span> <span class="o">&lt;</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+            <span class="n">op_flow_b</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">op_flow_b</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">b</span> <span class="o">=</span> <span class="n">other</span>
 
         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">_pod_nodes</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">_pod_nodes</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@build_required</span><span class="p">(</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">client</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseClient'</span><span class="p">:</span>
         <span class="sd">"""Return a :class:`BaseClient` object attach to this Flow.</span>
 
 <span class="sd">        .. # noqa: DAR201"""</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+            <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1309,7 +1481,7 @@
         <span class="n">vertical_layout</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">inline_display</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">build</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Visualize the Flow up to the current point</span>
@@ -1391,25 +1563,62 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'https://mermaid.ink/</span><span class="si">{</span><span class="n">img_type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">encoded_str</span><span class="si">}</span><span class="s1">'</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@build_required</span><span class="p">(</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">port_expose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">"""Return the exposed port of the gateway</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'gateway'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">port_expose</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port_expose'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
+    <span class="nd">@port_expose</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">port_expose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">"""Set the new exposed port of the Flow (affects Gateway and Client)</span>
 
-<span class="sd">        .. # noqa: DAR201"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">port_expose</span>
+<span class="sd">        :param value: the new port to expose</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port_expose'</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># Flow is build to graph already</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port_expose'</span><span class="p">]</span>
+
+        <span class="c1"># Flow is running already, then close the existing gateway</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">])</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@build_required</span><span class="p">(</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the local address of the gateway</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s1">'gateway'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">host</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">)</span>
 
+    <span class="nd">@host</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""Set the new host of the Flow (affects Gateway and Client)</span>
 
-<span class="sd">        .. # noqa: DAR201"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">host</span>
+<span class="sd">        :param value: the new port to expose</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'host'</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># Flow is build to graph already</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'host'</span><span class="p">]</span>
+
+        <span class="c1"># Flow is running already, then close the existing gateway</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">])</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@build_required</span><span class="p">(</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">address_private</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the private IP address of the gateway for connecting from other machine in the same network</span>
 
@@ -1418,7 +1627,6 @@
         <span class="k">return</span> <span class="n">get_internal_ip</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@build_required</span><span class="p">(</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">address_public</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the public IP address of the gateway for connecting from other machine in the public network</span>
 
@@ -1431,25 +1639,15 @@
 
     <span class="k">def</span> <span class="nf">_show_success_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restful</span><span class="p">:</span>
-            <span class="n">header</span> <span class="o">=</span> <span class="s1">'http://'</span>
-            <span class="n">protocol</span> <span class="o">=</span> <span class="s1">'REST'</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">header</span> <span class="o">=</span> <span class="s1">'tcp://'</span>
-            <span class="n">protocol</span> <span class="o">=</span> <span class="s1">'gRPC'</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'🎉 Flow is ready to use, accepting </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">protocol</span> <span class="o">+</span> <span class="s2">" request"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🎉 Flow is ready to use!'</span><span class="p">)</span>
 
         <span class="n">address_table</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔗 Protocol: </span><span class="se">\t\t</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🏠 Local access:</span><span class="se">\t</span><span class="s1">'</span>
-            <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">header</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span>
-            <span class="p">),</span>
+            <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">),</span>
             <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔒 Private network:</span><span class="se">\t</span><span class="s1">'</span>
             <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">header</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                 <span class="s1">'cyan'</span><span class="p">,</span>
                 <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
             <span class="p">),</span>
@@ -1458,12 +1656,12 @@
             <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🌐 Public address:</span><span class="se">\t</span><span class="s1">'</span>
                 <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">header</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="s1">'cyan'</span><span class="p">,</span>
                     <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restful</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">💬 Swagger UI:</span><span class="se">\t\t</span><span class="s1">'</span>
                 <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
@@ -1490,46 +1688,39 @@
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Flow.use_grpc_gateway"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.use_grpc_gateway">[docs]</a>    <span class="k">def</span> <span class="nf">use_grpc_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">"""Change to use gRPC gateway for Flow IO.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GatewayProtocolType</span><span class="p">:</span>
+        <span class="sd">"""Return the protocol of this Flow</span>
 
-<span class="sd">        You can change the gateway even in the runtime.</span>
-
-<span class="sd">        :param port: the new port number to expose</span>
-
+<span class="sd">        :return: the protocol of this Flow</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_switch_gateway</span><span class="p">(</span><span class="s1">'GRPCRuntime'</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span></div>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'protocol'</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v</span>
 
-    <span class="k">def</span> <span class="nf">_switch_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gateway</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">restful</span> <span class="o">=</span> <span class="n">gateway</span> <span class="o">==</span> <span class="s1">'RESTRuntime'</span>
+    <span class="nd">@protocol</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">]):</span>
+        <span class="sd">"""Set the protocol of this Flow</span>
 
-        <span class="c1"># globally register this at Flow level</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restful</span> <span class="o">=</span> <span class="n">restful</span>
-        <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">port</span>
+<span class="sd">        :param value: the protocol to set</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'protocol'</span><span class="p">]</span> <span class="o">=</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'protocol'</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> must be either `str` or `GatewayProtocolType`'</span><span class="p">)</span>
 
         <span class="c1"># Flow is build to graph already</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">restful</span> <span class="o">=</span> <span class="n">restful</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">gateway</span>
-            <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
-                <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">port</span>
+            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'protocol'</span><span class="p">]</span>
 
         <span class="c1"># Flow is running already, then close the existing gateway</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">])</span>
             <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Flow.use_rest_gateway"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.use_rest_gateway">[docs]</a>    <span class="k">def</span> <span class="nf">use_rest_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">"""Change to use REST gateway for IO.</span>
-
-<span class="sd">        You can change the gateway even in the runtime.</span>
-
-<span class="sd">        :param port: the new port number to expose</span>
-
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_switch_gateway</span><span class="p">(</span><span class="s1">'RESTRuntime'</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -1604,6 +1795,62 @@
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="n">p</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">identity</span> <span class="o">=</span> <span class="n">value</span>
 
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">expose_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">"""Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
+
+<span class="sd">        After expose, you can send data request directly to `http://hostname:port/endpoint`.</span>
+
+<span class="sd">        :param exec_endpoint: the endpoint string, by convention starts with `/`</span>
+<span class="sd">        :param path: the HTTP endpoint string, when not given, it is `exec_endpoint`</span>
+<span class="sd">        """</span>
+        <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="nf">expose_endpoint</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">summary</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">response_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'Successful Response'</span><span class="p">,</span>
+        <span class="n">deprecated</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">methods</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">operation_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">response_model_by_alias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">response_model_exclude_unset</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">response_model_exclude_defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">response_model_exclude_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_in_schema</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
+
+<span class="sd">        After expose, you can send data request directly to `http://hostname:port/endpoint`.</span>
+
+<span class="sd">        Use this method to specify your HTTP endpoint with richer semantic and schema.</span>
+
+<span class="sd">        :param exec_endpoint: the endpoint string, by convention starts with `/`</span>
+
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="o">...</span>
+
+<div class="viewcode-block" id="Flow.expose_endpoint"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.expose_endpoint">[docs]</a>    <span class="k">def</span> <span class="nf">expose_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
+
+<span class="sd">        After expose, you can send data request directly to `http://hostname:port/endpoint`.</span>
+
+<span class="sd">        :param exec_endpoint: the endpoint string, by convention starts with `/`</span>
+
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_mapping</span><span class="p">[</span><span class="n">exec_endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span></div>
+
     <span class="c1"># for backward support</span>
     <span class="n">join</span> <span class="o">=</span> <span class="n">needs</span>
 
@@ -1629,7 +1876,32 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'The BasePod </span><span class="si">{</span><span class="n">pod_name</span><span class="si">}</span><span class="s1"> is not a CompoundPod and does not support updating'</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">client_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
+        <span class="sd">"""Get Client settings.</span>
+
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">,</span> <span class="n">set_client_cli_parser</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gateway_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
+        <span class="sd">"""Get Gateway settings.</span>
+
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">())</span>
+
+<div class="viewcode-block" id="Flow.update_network_interface"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.update_network_interface">[docs]</a>    <span class="k">def</span> <span class="nf">update_network_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Update the network interface of this Flow (affects Gateway &amp; Client)</span>
+
+<span class="sd">        :param kwargs: new network settings</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>
@@ -1642,7 +1914,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 18, 2021.
+            Last updated on Jun 20, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

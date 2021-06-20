@@ -4,11 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
-    <meta name="generator" content="sphinx-3.5.3, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.clients - Jina 2.0.0rc7 documentation</title>
-      <link rel="stylesheet" href="../../../_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
+      <link rel="stylesheet" href="../../../_static/styles/furo.css?digest=9b17055c4366e8b2949c66d6a9d8b0efe4dbaa60">
     <link rel="stylesheet" href="../../../_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../_static/pygments_dark.css">
     
 
 
@@ -39,7 +38,8 @@
   }
 </style><link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
-    <link rel="stylesheet" href="../../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../_static/pygments_dark.css">
+    <link rel="stylesheet" href="../../../_static/styles/furo-extensions.css?digest=ee12cdd73c4bbac24afec78d92c4afd7c2d8ea7f"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -125,6 +125,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.base/">jina.clients.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.grpc/">jina.clients.grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.http/">jina.clients.http module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.mixin/">jina.clients.mixin module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
@@ -244,20 +245,24 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.grpc.async_call/">jina.peapods.runtimes.asyncio.grpc.async_call module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.rest/">jina.peapods.runtimes.asyncio.rest package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.rest.app/">jina.peapods.runtimes.asyncio.rest.app module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.rest.models/">jina.peapods.runtimes.asyncio.rest.models module</a></li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.http/">jina.peapods.runtimes.asyncio.http package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label for="toctree-checkbox-28"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.http.app/">jina.peapods.runtimes.asyncio.http.app module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.http.models/">jina.peapods.runtimes.asyncio.http.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.websocket/">jina.peapods.runtimes.asyncio.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.websocket.app/">jina.peapods.runtimes.asyncio.websocket.app module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.asyncio.base/">jina.peapods.runtimes.asyncio.base module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.peapods.runtimes.container/">jina.peapods.runtimes.container package</a></li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label for="toctree-checkbox-29"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.jinad/">jina.peapods.runtimes.jinad package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.jinad.client/">jina.peapods.runtimes.jinad.client module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label for="toctree-checkbox-30"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq/">jina.peapods.runtimes.zmq package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq.base/">jina.peapods.runtimes.zmq.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.peapods.runtimes.zmq.zed/">jina.peapods.runtimes.zmq.zed module</a></li>
 </ul>
@@ -268,13 +273,13 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label for="toctree-checkbox-31"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.schemas.helper/">jina.schemas.helper module</a></li>
@@ -282,8 +287,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label for="toctree-checkbox-33"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
@@ -291,7 +296,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.document/">jina.types.document package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.converters/">jina.types.document.converters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.generators/">jina.types.document.generators module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.graph/">jina.types.document.graph module</a></li>
@@ -299,16 +304,16 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.document.multimodal/">jina.types.document.multimodal module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" type="checkbox"/><label for="toctree-checkbox-36"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.message/">jina.types.message package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.message.common/">jina.types.message.common module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" type="checkbox"/><label for="toctree-checkbox-37"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.ndarray/">jina.types.ndarray package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" type="checkbox"/><label for="toctree-checkbox-38"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.ndarray.dense/">jina.types.ndarray.dense package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.ndarray.dense.numpy/">jina.types.ndarray.dense.numpy module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" type="checkbox"/><label for="toctree-checkbox-39"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.types.ndarray.sparse/">jina.types.ndarray.sparse package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.ndarray.sparse.numpy/">jina.types.ndarray.sparse.numpy module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.ndarray.sparse.pytorch/">jina.types.ndarray.sparse.pytorch module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.types.ndarray.sparse.scipy/">jina.types.ndarray.sparse.scipy module</a></li>
@@ -318,13 +323,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.ndarray.generic/">jina.types.ndarray.generic module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" type="checkbox"/><label for="toctree-checkbox-40"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" type="checkbox"/><label for="toctree-checkbox-41"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -341,7 +346,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -372,11 +377,14 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Client'</span><span class="p">]</span>
 
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
+
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
-    <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncClient</span><span class="p">,</span> <span class="n">AsyncWebSocketClient</span>
+    <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncClient</span><span class="p">,</span> <span class="n">AsyncWebSocketClient</span><span class="p">,</span> <span class="n">AsyncHTTPClient</span>
     <span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCClient</span>
     <span class="kn">from</span> <span class="nn">.websocket</span> <span class="kn">import</span> <span class="n">WebSocketClient</span>
+    <span class="kn">from</span> <span class="nn">.http</span> <span class="kn">import</span> <span class="n">HTTPClient</span>
 
 
 <span class="c1"># overload_inject_start_client</span>
@@ -386,26 +394,30 @@
     <span class="n">continue_on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
     <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">request_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-    <span class="n">restful</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">return_results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">show_progress</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseClient'</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="s1">'AsyncWebSocketClient'</span><span class="p">,</span>
+    <span class="s1">'WebSocketClient'</span><span class="p">,</span>
+    <span class="s1">'AsyncClient'</span><span class="p">,</span>
+    <span class="s1">'GRPCClient'</span><span class="p">,</span>
+    <span class="s1">'HTTPClient'</span><span class="p">,</span>
+    <span class="s1">'AsyncHTTPClient'</span><span class="p">,</span>
+<span class="p">]:</span>
     <span class="sd">"""Create a Client. Client is how user interact with Flow</span>
 
 <span class="sd">    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">    :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.</span>
 <span class="sd">    :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">    :param port_expose: The port of the host exposed to the public</span>
+<span class="sd">    :param protocol: Communication protocol between server and client.</span>
 <span class="sd">    :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">    :param request_size: The number of Documents in each Request.</span>
-<span class="sd">    :param restful: If set, use RESTful interface instead of gRPC as the main interface. This expects the corresponding Flow to be set with --restful as well.</span>
-<span class="sd">    :param return_results: This feature is only used for AsyncClient.</span>
-
-<span class="sd">          If set, the results of all Requests will be returned as a list. This is useful when one wants</span>
-<span class="sd">          process Responses in bulk instead of using callback.</span>
+<span class="sd">    :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.</span>
 <span class="sd">    :param show_progress: If set, client will show a progress bar on receiving every request.</span>
 <span class="sd">    :return: the new Client object</span>
 
@@ -418,17 +430,39 @@
 
 <div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../../api/jina.clients/#jina.Client">[docs]</a><span class="k">def</span> <span class="nf">Client</span><span class="p">(</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'argparse.Namespace'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'AsyncWebSocketClient'</span><span class="p">,</span> <span class="s1">'WebSocketClient'</span><span class="p">,</span> <span class="s1">'AsyncClient'</span><span class="p">,</span> <span class="s1">'GRPCClient'</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
+    <span class="s1">'AsyncWebSocketClient'</span><span class="p">,</span>
+    <span class="s1">'WebSocketClient'</span><span class="p">,</span>
+    <span class="s1">'AsyncClient'</span><span class="p">,</span>
+    <span class="s1">'GRPCClient'</span><span class="p">,</span>
+    <span class="s1">'HTTPClient'</span><span class="p">,</span>
+    <span class="s1">'AsyncHTTPClient'</span><span class="p">,</span>
+<span class="p">]:</span>
     <span class="sd">"""Jina Python client.</span>
 
 <span class="sd">    :param args: Namespace args.</span>
 <span class="sd">    :param kwargs: Additional arguments.</span>
 <span class="sd">    :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.</span>
 <span class="sd">    """</span>
-    <span class="n">is_restful</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">restful</span><span class="p">)</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'restful'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">protocol</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">protocol</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'protocol'</span><span class="p">,</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+
     <span class="n">is_async</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">asyncio</span><span class="p">)</span> <span class="ow">or</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'asyncio'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">is_restful</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_async</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncClient</span>
+
+            <span class="k">return</span> <span class="n">AsyncClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCClient</span>
+
+            <span class="k">return</span> <span class="n">GRPCClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">is_async</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncWebSocketClient</span>
 
@@ -437,15 +471,15 @@
             <span class="kn">from</span> <span class="nn">.websocket</span> <span class="kn">import</span> <span class="n">WebSocketClient</span>
 
             <span class="k">return</span> <span class="n">WebSocketClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">is_async</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncClient</span>
+            <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncHTTPClient</span>
 
-            <span class="k">return</span> <span class="n">AsyncClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">AsyncHTTPClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCClient</span>
+            <span class="kn">from</span> <span class="nn">.http</span> <span class="kn">import</span> <span class="n">HTTPClient</span>
 
-            <span class="k">return</span> <span class="n">GRPCClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">HTTPClient</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>
@@ -458,7 +492,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 18, 2021.
+            Last updated on Jun 20, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
