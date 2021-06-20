@@ -49,7 +49,7 @@ def temp_folder(tmpdir):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
 def test_flow1(inspect, protocol, temp_folder):
     f = Flow(protocol=protocol, inspect=inspect).add(
         uses=DummyEvaluator1,
@@ -61,7 +61,7 @@ def test_flow1(inspect, protocol, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
 def test_flow2(inspect, protocol, temp_folder):
     f = (
         Flow(protocol=protocol, inspect=inspect)
@@ -79,7 +79,7 @@ def test_flow2(inspect, protocol, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
 def test_flow3(inspect, protocol, temp_folder):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
@@ -99,7 +99,7 @@ def test_flow3(inspect, protocol, temp_folder):
 
 
 @pytest.mark.parametrize('inspect', params)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
 def test_flow4(inspect, protocol, temp_folder):
     env = {'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')}
 
@@ -131,7 +131,7 @@ class AddEvaluationExecutor(Executor):
 
 
 @pytest.mark.repeat(5)
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
 def test_flow_returned_collect(protocol, mocker):
     # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` pod
     # use an specific executor.
@@ -158,7 +158,7 @@ def test_flow_returned_collect(protocol, mocker):
 
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('inspect', ['HANG', 'REMOVE'])
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
 def test_flow_not_returned(inspect, protocol, mocker):
     def validate_func(resp):
         for doc in resp.data.docs:

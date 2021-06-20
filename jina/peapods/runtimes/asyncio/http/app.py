@@ -103,8 +103,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             """
             Post a data request to some endpoint.
 
-            - `endpoint`: a string that represents the executor endpoint that declared by `@requests(on=...)`
-
             This is equivalent to the following:
 
                 from jina import Flow
