@@ -38,6 +38,16 @@ class CompoundPod(BasePod):
         self.replicas_args = self._set_replica_args(
             cargs, self.head_args, self.tail_args
         )
+        head_args = self.head_args
+        head_args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+        self.head_pea = Pea(head_args)
+        for _args in self.replicas_args:
+            _args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+            _args.polling = PollingType.ALL
+            self.replicas.append(Pod(_args))
+        tail_args = self.tail_args
+        tail_args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+        self.tail_pea = Pea(tail_args)
 
     @property
     def port_expose(self) -> int:
@@ -88,31 +98,18 @@ class CompoundPod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            head_args = self.head_args
-            head_args.noblock_on_start = True
-            self.head_pea = Pea(head_args)
-            self._enter_pea(self.head_pea)
-            for _args in self.replicas_args:
-                _args.noblock_on_start = True
-                _args.polling = PollingType.ALL
-                self._enter_replica(Pod(_args))
-            tail_args = self.tail_args
-            tail_args.noblock_on_start = True
-            self.tail_pea = Pea(tail_args)
-            self._enter_pea(self.tail_pea)
+            self.enter_context(self.head_pea)
+            for replica in self.replicas:
+                self.enter_context(replica)
+            self.enter_context(self.tail_pea)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                head_args = self.head_args
-                self.head_pea = Pea(head_args)
-                self._enter_pea(self.head_pea)
-                for _args in self.replicas_args:
-                    _args.polling = PollingType.ALL
-                    self._enter_replica(Pod(_args))
-                tail_args = self.tail_args
-                self.tail_pea = Pea(tail_args)
-                self._enter_pea(self.tail_pea)
+                self.enter_context(self.head_pea)
+                for replica in self.replicas:
+                    self.enter_context(replica)
+                self.enter_context(self.tail_pea)
             except:
                 self.close()
                 raise
@@ -137,10 +134,6 @@ class CompoundPod(BasePod):
         except:
             self.close()
             raise
-
-    def _enter_replica(self, replica: 'Pod') -> None:
-        self.replicas.append(replica)
-        self.enter_context(replica)
 
     def join(self):
         """Wait until all pods and peas exit."""

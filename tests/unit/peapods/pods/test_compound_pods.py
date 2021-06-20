@@ -65,14 +65,10 @@ def test_equal(pod_args, pod_args_singleton):
     pod1 = CompoundPod(pod_args)
     pod2 = CompoundPod(pod_args)
     assert pod1 == pod2
-    pod1.close()
-    pod2.close()
     # test not equal
     pod1 = CompoundPod(pod_args)
     pod2 = CompoundPod(pod_args_singleton)
     assert pod1 != pod2
-    pod1.close()
-    pod2.close()
 
 
 @pytest.mark.parametrize('parallel', [1, 4])

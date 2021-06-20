@@ -352,6 +352,9 @@ class Pod(BasePod):
         else:
             self.peas_args = self._parse_args(args)
         self._activated = False
+        for _args in self._fifo_args:
+            _args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+            self.peas.append(BasePea(_args))
 
     @property
     def is_singleton(self) -> bool:
@@ -493,10 +496,6 @@ class Pod(BasePod):
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
-
     def _activate(self):
         # order is good. Activate from tail to head
         for pea in reversed(self.peas):
@@ -515,15 +514,14 @@ class Pod(BasePod):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for _args in self._fifo_args:
-                _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args))
+            for pea in self.peas:
+                self.enter_context(pea)
             # now rely on higher level to call `wait_start_success`
             return self
         else:
             try:
-                for _args in self._fifo_args:
-                    self._enter_pea(BasePea(_args))
+                for pea in self.peas:
+                    self.enter_context(pea)
 
                 self._activate()
             except:
