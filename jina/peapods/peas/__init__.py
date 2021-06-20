@@ -142,39 +142,8 @@ class BasePea:
             )
         else:
             self.is_ready.set()
-            try:
+            with runtime:
                 runtime.run_forever()
-            except RuntimeFailToStart as ex:
-                self.logger.error(
-                    f'{ex!r} during {self.runtime_cls.__init__!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-            except RuntimeTerminated:
-                self.logger.info(f'{runtime!r} is end')
-            except KeyboardInterrupt:
-                self.logger.info(f'{runtime!r} is interrupted by user')
-            except (Exception, SystemError) as ex:
-                self.logger.error(
-                    f'{ex!r} during {runtime.run_forever!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-
-            try:
-                runtime.teardown()
-            except Exception as ex:
-                self.logger.error(
-                    f'{ex!r} during {runtime.teardown!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
         finally:
             self.is_shutdown.set()
             self.is_ready.clear()
