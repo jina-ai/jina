@@ -793,7 +793,7 @@ You will see console prints logs as follows:
     📚 Redoc     :	http://localhost:53895/redoc
         
            JINA@4262[S]:ready and listening
-        gateway@4262[S]:RESTRuntime is listening at: 0.0.0.0:53895
+        gateway@4262[S]:HTTPRuntime is listening at: 0.0.0.0:53895
         gateway@4251[S]:ready and listening
 ```
 

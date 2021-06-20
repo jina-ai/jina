@@ -40,7 +40,7 @@ def _cli_to_schema(
         # special cases
         if p['name'] == 'log_config':
             pv['default_literal'] = None
-        if p['name'].startswith('uses'):
+        if p['name'].startswith('uses') and target != 'flow':
             pv['type'] = 'Union[str, Type[\'BaseExecutor\'], dict]'
 
         pv['description'] = pv['description'].replace('\n', '\n' + ' ' * 10)
@@ -59,6 +59,7 @@ def fill_overload(
     overload_fn,
     class_method,
     indent=' ' * 4,
+    regex_tag=None,
 ):
     a = _cli_to_schema(api_to_dict(), cli_entrypoint)
     if class_method:
@@ -69,7 +70,7 @@ def fill_overload(
         args_str = ', \n'.join(cli_args + [f'{indent}{indent}**kwargs'])
         signature_str = f'def {overload_fn}(\n{indent}{indent}self,\n{args_str})'
         if return_type:
-            signature_str += f' -> \'{return_type}\':'
+            signature_str += f' -> {return_type}:'
             return_str = f'\n{indent}{indent}:return: {doc_str_return}'
         else:
             signature_str += ':'
@@ -82,7 +83,7 @@ def fill_overload(
         args_str = ', \n'.join(cli_args + [f'{indent}**kwargs'])
         signature_str = f'def {overload_fn}(\n{args_str})'
         if return_type:
-            signature_str += f' -> \'{return_type}\':'
+            signature_str += f' -> {return_type}:'
             return_str = f'\n{indent}:return: {doc_str_return}'
         else:
             signature_str += ':'
@@ -102,7 +103,7 @@ def fill_overload(
     if class_method:
         final_str = f'@overload\n{indent}{signature_str}\n{indent}{indent}"""{doc_str_title}\n\n{doc_str}{return_str}\n\n{noqa_str}\n{indent}{indent}"""'
         final_code = re.sub(
-            rf'(# overload_inject_start_{cli_entrypoint}).*(# overload_inject_end_{cli_entrypoint})',
+            rf'(# overload_inject_start_{regex_tag or cli_entrypoint}).*(# overload_inject_end_{regex_tag or cli_entrypoint})',
             f'\\1\n{indent}{final_str}\n{indent}\\2',
             open(filepath).read(),
             0,
@@ -111,7 +112,7 @@ def fill_overload(
     else:
         final_str = f'@overload\n{signature_str}\n{indent}"""{doc_str_title}\n\n{doc_str}{return_str}\n\n{noqa_str}\n{indent}"""'
         final_code = re.sub(
-            rf'(# overload_inject_start_{cli_entrypoint}).*(# overload_inject_end_{cli_entrypoint})',
+            rf'(# overload_inject_start_{regex_tag or cli_entrypoint}).*(# overload_inject_end_{regex_tag or cli_entrypoint})',
             f'\\1\n{final_str}\n{indent}\\2',
             open(filepath).read(),
             0,
@@ -128,14 +129,14 @@ entries = [
         cli_entrypoint='pod',
         doc_str_title='Add an Executor to the current Flow object.',
         doc_str_return='a (new) Flow object with modification',
-        return_type='Flow',
+        return_type="Union['Flow', 'AsyncFlow']",
         filepath='../jina/flow/base.py',
         overload_fn='add',
         class_method=True,  # if it is a method inside class.
     ),
     dict(
         cli_entrypoint='flow',
-        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.',
         doc_str_return='the new Flow object',
         return_type=None,
         filepath='../jina/flow/base.py',
@@ -143,10 +144,30 @@ entries = [
         class_method=True,
     ),
     dict(
+        cli_entrypoint='gateway',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.',
+        doc_str_return='the new Flow object',
+        return_type=None,
+        filepath='../jina/flow/base.py',
+        overload_fn='__init__',
+        class_method=True,
+        regex_tag='gateway_flow',
+    ),
+    dict(
+        cli_entrypoint='client',
+        doc_str_title='Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.',
+        doc_str_return='the new Flow object',
+        return_type=None,
+        filepath='../jina/flow/base.py',
+        overload_fn='__init__',
+        class_method=True,
+        regex_tag='client_flow',
+    ),
+    dict(
         cli_entrypoint='client',
         doc_str_title='Create a Client. Client is how user interact with Flow',
         doc_str_return='the new Client object',
-        return_type='BaseClient',
+        return_type="Union['AsyncWebSocketClient', 'WebSocketClient', 'AsyncClient', 'GRPCClient', 'HTTPClient', 'AsyncHTTPClient']",
         filepath='../jina/clients/__init__.py',
         overload_fn='Client',
         class_method=False,
