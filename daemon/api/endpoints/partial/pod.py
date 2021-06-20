@@ -16,6 +16,9 @@ router = APIRouter(prefix='/pod', tags=['pod'])
     response_model=PartialStoreItem,
 )
 async def _status():
+    """
+
+    .. #noqa: DAR101"""
     return store.item
 
 
@@ -27,6 +30,9 @@ async def _status():
     response_model=PartialStoreItem,
 )
 async def _create(pod: 'PodModel'):
+    """
+
+    .. #noqa: DAR101"""
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
         return store.add(args)
@@ -40,6 +46,9 @@ async def _create(pod: 'PodModel'):
     description='Terminate a running Pod and release its resources',
 )
 async def _delete():
+    """
+
+    .. #noqa: DAR101"""
     try:
         store.delete()
     except Exception as ex:
@@ -48,4 +57,7 @@ async def _delete():
 
 @router.on_event('shutdown')
 def _shutdown():
+    """
+
+    .. #noqa: DAR101"""
     store.delete()

@@ -15,6 +15,9 @@ router = APIRouter(prefix='/flow', tags=['flow'])
     path='', summary='Get the status of a running Flow', response_model=PartialFlowItem
 )
 async def _status():
+    """
+
+    .. #noqa: DAR101"""
     return store.item
 
 
@@ -25,6 +28,9 @@ async def _status():
     response_model=PartialFlowItem,
 )
 async def _create(flow: 'FlowModel'):
+    """
+
+    .. #noqa: DAR101"""
     try:
         args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
         return store.add(args)
@@ -44,6 +50,9 @@ def update(
     pod_name: str,
     shards: int = None,
 ):
+    """
+
+    .. #noqa: DAR101"""
     try:
         return store.update(kind, dump_path, pod_name, shards)
     except ValueError as ex:
@@ -56,6 +65,9 @@ def update(
     description='Terminate a running Flow and release its resources',
 )
 async def _delete():
+    """
+
+    .. #noqa: DAR101"""
     try:
         store.delete()
     except Exception as ex:
@@ -64,4 +76,7 @@ async def _delete():
 
 @router.on_event('shutdown')
 def _shutdown():
+    """
+
+    .. #noqa: DAR101"""
     store.delete()

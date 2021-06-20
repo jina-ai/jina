@@ -9,7 +9,10 @@ class DaemonEnum(str, Enum):
 
     @classproperty
     def values(cls):
-        """Get all values in Enum"""
+        """Get all values in Enum
+
+        :return: Get all values in Enum
+        """
         return list(map(lambda c: c.value, cls))
 
 

@@ -30,6 +30,7 @@ class WorkspaceStore(BaseStore):
 
         :param id: workspace id
         :param value: state of the workspace
+        :param kwargs: keyword args
         :return: workspace id
         """
         if isinstance(value, WorkspaceState):
@@ -49,6 +50,7 @@ class WorkspaceStore(BaseStore):
 
         :param id: workspace id
         :param value: workspace value to be added
+        :param kwargs: keyword args
         :raises KeyError: if id doesn't exist in the store
         :return: workspace id
         """
@@ -157,6 +159,7 @@ class WorkspaceStore(BaseStore):
         :param network: True if network needs to be removed, defaults to True
         :param files: True if files in the workspace needs to be removed, defaults to True
         :param everything: True if everything needs to be removed, defaults to False
+        :param kwargs: keyword args
         :raises KeyError: if id doesn't exist in the store
         """
         if everything:

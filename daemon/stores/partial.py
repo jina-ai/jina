@@ -57,6 +57,8 @@ class PartialPeaStore(PartialStore):
     def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
         """Starts a Pea in `mini-jinad`
 
+        :param args: namespace args for the pea/pod
+        :param kwargs: keyword args
         :return: Item describing the Pea object
         """
         try:
@@ -86,6 +88,8 @@ class PartialFlowStore(PartialStore):
     def add(self, args: Namespace, **kwargs) -> PartialStoreItem:
         """Starts a Flow in `mini-jinad`.
 
+        :param args: namespace args for the flow
+        :param kwargs: keyword args
         :return: Item describing the Flow object
         """
         try:
@@ -121,7 +125,8 @@ class PartialFlowStore(PartialStore):
         :param kind: type of update command to execute (dump/rolling_update)
         :param dump_path: the path to which to dump on disk
         :param pod_name: pod to target with the dump request
-        :param shards: nr of shards to dump for
+        :param shards: nr of shards to dump
+        :param kwargs: keyword args
         :return: Item describing the Flow object
         """
         try:

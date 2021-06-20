@@ -180,14 +180,15 @@ class Dockerizer:
     def run_custom(
         cls, workspace_id: DaemonID, daemon_file: 'DaemonFile'
     ) -> Tuple['Container', str, Dict]:
-        """
-        Run a custom container during workspace creation.
+        """Run a custom container during workspace creation.
 
         .. note::
             This invalidates the default entrypint (mini-jinad) & uses the entrypoint provided
             mentioned in the .jinad file (`run` section)
 
-        :return: [description]
+        :param workspace_id: workspace id
+        :param daemon_file: daemon file describing content inside the workdir
+        :return: tuple of container object, network id & ports
         """
         return cls.run(
             workspace_id=workspace_id,
@@ -213,10 +214,16 @@ class Dockerizer:
         .. note::
             This uses the default entrypoint (mini-jinad) & appends `command` for execution.
 
-        :raises DockerImageException: [description]
-        :raises DockerContainerException: [description]
+        :param workspace_id: workspace id
+        :param container_id: name of the container
+        :param command: command to be appended to default entrypoint
+        :param ports: ports to be mapped with local
+        :param entrypoint: custom entrypoint
+        :raises DockerImageException: if image is not found locally
+        :raises DockerContainerException: if container creation fails
         :return: tuple of container object, network id & ports
         """
+
         from .stores import workspace_store
 
         metadata = workspace_store[workspace_id].metadata

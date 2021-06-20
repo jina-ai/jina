@@ -58,19 +58,28 @@ class BaseStore(MutableMapping):
         return str(self.status.dict())
 
     def keys(self) -> Sequence['DaemonID']:
-        """get keys from the store"""
+        """Get keys in the store
+
+        :return: Keys in the local store
+        """
 
         return self.status.items.keys()
 
     def values(self) -> Sequence[Union['WorkspaceItem', 'ContainerItem']]:
-        """get values from the store"""
+        """Get values in the store
+
+        :return: Values in the local store
+        """
 
         return self.status.items.values()
 
     def items(
         self,
     ) -> Sequence[Tuple['DaemonID', Union['WorkspaceItem', 'ContainerItem']]]:
-        """get items from the store"""
+        """Get items in the store
+
+        :return: Items in the local store
+        """
 
         return self.status.items.items()
 
@@ -114,7 +123,11 @@ class BaseStore(MutableMapping):
 
     @classmethod
     def dump(cls, func) -> Callable:
-        """dump store as a pickle to local workspace"""
+        """Dump store as a pickle to local workspace
+
+        :param func: function to be wrapped
+        :return: decorator for dump
+        """
 
         def wrapper(self, *args, **kwargs):
             r = func(self, *args, **kwargs)
@@ -129,7 +142,10 @@ class BaseStore(MutableMapping):
 
     @classmethod
     def load(cls) -> Union[Dict, 'BaseStore']:
-        """load store from a pickle in local workspace"""
+        """Load store from a pickle in local workspace
+
+        :return: Store from local or empty store
+        """
 
         filepath = os.path.join(__root_workspace__, f'{cls._kind}.store')
         if Path(filepath).is_file() and os.path.getsize(filepath) > 0:
@@ -139,7 +155,10 @@ class BaseStore(MutableMapping):
             return cls()
 
     def clear(self, **kwargs) -> None:
-        """delete all the objects in the store"""
+        """Delete all the objects in the store
+
+        :param kwargs: keyward args
+        """
 
         _status = deepcopy(self.status)
         for k in _status.items.keys():

@@ -429,7 +429,7 @@ class EmbeddingClsType(BetterEnum):
         return self.value in [1, 2]
 
 
-class RemoteWorkspaceState(Enum):
+class RemoteWorkspaceState(str, Enum):
     """Enum representing state of remote workspace created by JinaD"""
 
     PENDING = 'PENDING'

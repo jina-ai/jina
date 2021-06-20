@@ -96,7 +96,10 @@ class DaemonFile:
 
     @property
     def build(self) -> str:
-        """Property representing build value"""
+        """Property representing build value
+
+        :return: daemon build in the daemonfile
+        """
         return self._build
 
     @build.setter
@@ -115,7 +118,10 @@ class DaemonFile:
 
     @property
     def python(self):
-        """Property representing python version"""
+        """Property representing python version
+
+        :return: python version in the daemonfile
+        """
         return self._python
 
     @python.setter
@@ -134,7 +140,10 @@ class DaemonFile:
 
     @property
     def run(self) -> str:
-        """Property representing run command"""
+        """Property representing run command
+
+        :return: run command in the daemonfile
+        """
         return self._run
 
     @run.setter
@@ -147,7 +156,10 @@ class DaemonFile:
 
     @property
     def ports(self) -> List[int]:
-        """Property representing ports"""
+        """Property representing ports
+
+        :return: ports to be mapped in the daemonfile
+        """
         return self._ports
 
     @ports.setter
@@ -181,12 +193,18 @@ class DaemonFile:
 
     @cached_property
     def dockerfile(self) -> str:
-        """dockerfile location"""
+        """location of dockerfile
+
+        :return: location of dockerfile in local directory
+        """
         return f'{__dockerfiles__}/{self.build.value}.Dockerfile'
 
     @cached_property
     def dockerargs(self) -> Dict:
-        """dict of args to be passed during docker build"""
+        """dict of args to be passed during docker build
+
+        :return: dict of args to be passed during docker build
+        """
         return (
             {'PY_VERSION': self.python.value, 'PIP_REQUIREMENTS': self.requirements}
             if self.build == DaemonBuild.DEVEL

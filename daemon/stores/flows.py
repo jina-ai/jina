@@ -11,7 +11,10 @@ class FlowStore(ContainerStore):
     _kind = 'flow'
 
     def _add(self, **kwargs) -> Dict:
-        """Sends `post` request to `mini-jinad` to create a Flow."""
+        """Sends `post` request to `mini-jinad` to create a Flow.
+
+        :param kwargs: keyword args
+        :return: response from mini-jinad"""
         try:
             r = requests.post(url=f'{self.host}/{self._kind}', json=self.params)
             if r.status_code != requests.codes.created:
@@ -33,7 +36,14 @@ class FlowStore(ContainerStore):
         pod_name: str,
         shards: int = None,
     ) -> Dict:
-        """Sends `put` request to `mini-jinad` to execute a command on a Flow."""
+        """Sends `put` request to `mini-jinad` to execute a command on a Flow.
+
+        :param id: flow id
+        :param kind: type of update command to execute (dump/rolling_update)
+        :param dump_path: the path to which to dump on disk
+        :param pod_name: pod to target with the dump request
+        :param shards: nr of shards to dump
+        :return: response from mini-jinad"""
         try:
             params = {
                 'kind': kind,
@@ -53,7 +63,7 @@ class FlowStore(ContainerStore):
             self._logger.error(f'{ex!r}')
             raise Runtime400Exception(f'{self._kind.title()} update failed: {r.json()}')
 
-    def _delete(self):
+    def _delete(self) -> None:
         """Sends `delete` request to `mini-jinad` to terminate a Flow."""
         try:
             r = requests.delete(url=f'{self.host}/{self._kind}')

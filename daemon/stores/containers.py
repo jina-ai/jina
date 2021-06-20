@@ -32,20 +32,28 @@ class ContainerStore(BaseStore):
     _status_model = ContainerStoreStatus
 
     def _add(self, *args, **kwargs):
-        """Implements jina object creation in `mini-jinad`"""
+        """Implements jina object creation in `mini-jinad`
+
+        .. #noqa: DAR101"""
         raise NotImplementedError
 
     def _update(self, *args, **kwargs):
-        """Implements jina object update in `mini-jinad`"""
+        """Implements jina object update in `mini-jinad`
+
+        .. #noqa: DAR101"""
         raise NotImplementedError
 
     def _delete(self, *args, **kwargs):
-        """Implements jina object termination in `mini-jinad`"""
+        """Implements jina object termination in `mini-jinad`
+
+        .. #noqa: DAR101"""
         raise NotImplementedError
 
     @property
     def ready(self) -> bool:
-        """Check if the container with mini-jinad is alive"""
+        """Check if the container with mini-jinad is alive
+
+        :return: True if mini-jinad is ready"""
         for _ in range(20):
             try:
                 r = requests.get(f'{self.host}/')
@@ -139,10 +147,11 @@ class ContainerStore(BaseStore):
             return id
 
     @BaseStore.dump
-    def delete(self, id: DaemonID, **kwargs):
+    def delete(self, id: DaemonID, **kwargs) -> None:
         """Delete a container from the store
 
         :param id: id of the container
+        :param kwargs: keyword args
         :raises KeyError: if id doesn't exist in the store
         """
         if id not in self:

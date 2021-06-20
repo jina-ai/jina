@@ -19,7 +19,12 @@ class classproperty:
 
 
 def id_cleaner(docker_id: str, prefix: str = 'sha256:') -> str:
-    """get 1st 10 characters in id created by docker"""
+    """Get 1st 10 characters in id created by docker
+
+    :param docker_id: id of docker object
+    :param prefix: defaults to 'sha256:'
+    :return: shorter id
+    """
     return docker_id[docker_id.startswith(prefix) and len(prefix) :][:10]
 
 

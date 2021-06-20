@@ -11,26 +11,43 @@ class DaemonID(str):
     pattern = f'^({"|".join(IDLiterals.values)})-[0-9a-f]{{8}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{12}}$'
 
     def __new__(cls, value: Union[str, IDLiterals], *args, **kwargs) -> 'DaemonID':
+        """Validate str and create `DaemonID` object
+
+        :return: `DaemonID` object
+        """
         return str.__new__(cls, cls.validate(value), *args, **kwargs)
 
     @property
-    def jtype(self):
-        """get jtype of DaemonID"""
+    def jtype(self) -> str:
+        """Get IDLiterals from DaemonID
+
+        :return: get jtype
+        """
+
         return self.split('-', 1)[0]
 
     @property
     def jid(self):
-        """get jid of DaemonID"""
+        """Get uuid from DaemonID
+
+        :return: get uuid
+        """
         return self.split('-', 1)[1]
 
     @property
     def type(self):
-        """get type of DaemonID"""
+        """Get jina object type from DaemonID
+
+        :return: get type
+        """
         return self.jtype[1:]
 
     @property
     def tag(self):
-        """get jtype from DaemonID"""
+        """Get tag (: separated type & id) from DaemonID
+
+        :return: get tag
+        """
         return f'{self.jtype}:{self.jid}'
 
     @classmethod
@@ -38,8 +55,12 @@ class DaemonID(str):
         yield cls.pydantic_validate
 
     @classmethod
-    def validate(cls, value: str):
-        """validate DaemonID"""
+    def validate(cls, value: str) -> str:
+        """Validate DaemonID
+
+        :param value: str to be validated
+        :return: str of type DaemonID
+        """
         if not isinstance(value, str):
             raise TypeError('Malformed DaemonID: must be a string')
 
@@ -61,7 +82,11 @@ class DaemonID(str):
 
     @classmethod
     def pydantic_validate(cls, value: str):
-        """validate method for pydantic"""
+        """Validate method for pydantic
+
+        :param value: str to be validated
+        :return: str of type DaemonID
+        """
         return cls(cls.validate(value))
 
     @classmethod
