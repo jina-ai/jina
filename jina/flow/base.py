@@ -1108,7 +1108,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         vertical_layout: bool = False,
         inline_display: bool = False,
         build: bool = True,
-        copy_flow: bool = False,
+        copy_flow: bool = True,
     ) -> 'Flow':
         """
         Visualize the Flow up to the current point
