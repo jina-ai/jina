@@ -40,14 +40,14 @@ def _create_flows():
     dbms_flow_id = create_flow(
         flow_yaml=dbms_flow_yml,
         pod_dir=os.path.join(cur_dir, 'pods'),
-        url=f'http://0.0.0.0:{JINAD_PORT_DBMS}',
+        url=f'http://localhost:{JINAD_PORT_DBMS}',
     )
 
     # create query flow
     query_flow_id = create_flow(
         flow_yaml=query_flow_yml,
         pod_dir=os.path.join(cur_dir, 'pods'),
-        url=f'http://0.0.0.0:{JINAD_PORT_QUERY}',
+        url=f'http://localhost:{JINAD_PORT_QUERY}',
     )
     return dbms_flow_id, query_flow_id
 
@@ -79,7 +79,7 @@ def test_dump_dbms_remote(docker_compose):
         'indexer_dbms',
         DUMP_PATH_DOCKER,  # the internal path in the docker container
         SHARDS,
-        f'http://0.0.0.0:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
+        f'http://localhost:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
     )
 
     dir_size = _path_size_remote(DUMP_PATH_DOCKER)
@@ -90,7 +90,7 @@ def test_dump_dbms_remote(docker_compose):
     _jinad_rolling_update(
         'indexer_query',
         DUMP_PATH_DOCKER,  # the internal path in the docker container
-        f'http://0.0.0.0:{JINAD_PORT_QUERY}/flows/{query_flow_id}',
+        f'http://localhost:{JINAD_PORT_QUERY}/flows/{query_flow_id}',
     )
 
     # data request goes to client
