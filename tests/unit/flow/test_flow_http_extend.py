@@ -21,3 +21,22 @@ def test_flow_debug_endpoints():
     f2 = Flow(protocol='http', no_crud_endpoints=True).add(uses=MyExec)
     with f2:
         f2.post('/foo')
+
+
+def test_flow_expose_endpoints():
+    f1 = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True).add(
+        uses=MyExec
+    )
+    import requests
+
+    with f1:
+        r = requests.get(f'http://localhost:{f1.port_expose}/foo')
+        assert r.status_code == 404
+
+    f1.expose_endpoint('/foo', methods=['POST'])
+    with f1:
+        r = requests.post(
+            f'http://localhost:{f1.port_expose}/foo',
+            json={'data': ['hello', 'world']},
+        )
+        assert r.status_code == 200
