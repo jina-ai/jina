@@ -166,7 +166,8 @@ It finds the lines most similar to "`request(on=something)`" from the server cod
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
     - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
-    - [`Flow`-as-a-Service](.github/2.0/cookbooks/Flow.md#flow-as-a-service)
+- 🤹 [Serving Jina](.github/2.0/cookbooks/Serving.md)
+    - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
 - 🧼 [Write clean code in Jina](.github/2.0/cookbooks/CleanCode.md)
 - 📓 [Developer References](https://docs.jina.ai)
 - 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)

@@ -3,7 +3,6 @@ version: '1'
 with:
   port_expose: 45678
   show_exc_info: true
-  restful: false
 pods:
   - name: pod1
     host: host.docker.internal
