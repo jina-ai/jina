@@ -17,7 +17,8 @@ router = APIRouter(prefix='/flow', tags=['flow'])
 async def _status():
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     return store.item
 
 
@@ -30,7 +31,8 @@ async def _status():
 async def _create(flow: 'FlowModel', port_expose: int):
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     try:
         args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
         return store.add(args, port_expose)
@@ -52,7 +54,8 @@ def update(
 ):
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     try:
         return store.update(kind, dump_path, pod_name, shards)
     except ValueError as ex:
@@ -67,7 +70,8 @@ def update(
 async def _delete():
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     try:
         store.delete()
     except Exception as ex:
@@ -78,5 +82,6 @@ async def _delete():
 def _shutdown():
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     store.delete()

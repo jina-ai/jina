@@ -18,7 +18,8 @@ router = APIRouter(prefix='/pod', tags=['pod'])
 async def _status():
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     return store.item
 
 
@@ -32,7 +33,8 @@ async def _status():
 async def _create(pod: 'PodModel'):
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     try:
         args = ArgNamespace.kwargs2namespace(pod.dict(), set_pod_parser())
         return store.add(args)
@@ -48,7 +50,8 @@ async def _create(pod: 'PodModel'):
 async def _delete():
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     try:
         store.delete()
     except Exception as ex:
@@ -59,5 +62,6 @@ async def _delete():
 def _shutdown():
     """
 
-    .. #noqa: DAR101"""
+    .. #noqa: DAR101
+    .. #noqa: DAR201"""
     store.delete()

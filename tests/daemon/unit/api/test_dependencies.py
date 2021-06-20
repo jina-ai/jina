@@ -26,5 +26,5 @@ def test_flow_depends_localpath(monkeypatch):
 def test_flow_depends_ports():
     expected_port = 28956
     f = FlowDepends(DaemonID('jworkspace'), filename)
-    assert f.params.port_expose == expected_port
+    assert f.port_expose == expected_port
     assert f.ports == {f'{expected_port}/tcp': expected_port}

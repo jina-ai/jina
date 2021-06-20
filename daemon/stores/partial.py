@@ -109,7 +109,11 @@ class PartialFlowStore(PartialStore):
             raise
         else:
             self.item = PartialFlowItem(
-                arguments=vars(self.object.args), yaml_source=y_spec
+                arguments={
+                    'port_expose': self.object.port_expose,
+                    **vars(self.object.args),
+                },
+                yaml_source=y_spec,
             )
             self._logger.success(f'Flow is created')
             return self.item
