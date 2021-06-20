@@ -45,18 +45,18 @@ class FlowDepends:
             )
 
     @cached_property
-    def port_expose(self):
+    def port_expose(self) -> str:
         """
         Sets `port_expose` for the Flow started in `mini-jinad`.
         NOTE: this port needs to be exposed before starting `mini-jinad`, hence set here.
+
+        :return: port_expose
         """
         f = Flow.load_config(str(self.localpath()))
         return f.args.port_expose
 
-    def validate(self):
-        """
-        Validates and sets arguments to be used in store
-        """
+    def validate(self) -> None:
+        """Validates and sets arguments to be used in store"""
         self.params.port_expose = self.port_expose
         self.ports = {f'{self.port_expose}/tcp': self.port_expose}
 
@@ -72,7 +72,7 @@ class PeaDepends:
         self.validate()
 
     @property
-    def host_in(self):
+    def host_in(self) -> str:
         """
         host_in for the pea/pod
 
