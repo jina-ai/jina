@@ -34,11 +34,11 @@ def request_generator(
     """Generate a request iterator.
 
     :param exec_endpoint: the endpoint string, by convention starts with `/`
-    :param data: the data to use in the request
-    :param request_size: the request size for the client
+    :param data: data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects
+    :param request_size: the number of the `Documents` in each request
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
-    :param parameters: the kwargs that will be sent to the executor
+    :param parameters: a dictionary of parameters to be sent to the executor
     :param target_peapod: a regex string represent the certain peas/pods request targeted
     :param kwargs: additional arguments
     :yield: request

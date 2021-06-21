@@ -4,6 +4,7 @@ import pytest
 
 from jina import Document
 from jina import Flow
+from jina.helper import get_internal_ip
 from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -25,6 +26,7 @@ def test_flow(
         assert len(resp.data.docs) == 1
         assert resp.data.docs[0].text == text
 
+    os.environ['JINA_INTERNAL_HOST'] = get_internal_ip()
     os.environ['JINA_ENCODER_HOST'] = '172.28.1.1'
     os.environ['JINA_WORKSPACE'] = str(tmpdir)
     os.environ['JINA_ENCODER_NEEDS'] = encoder_needs
