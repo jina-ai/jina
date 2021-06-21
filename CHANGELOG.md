@@ -61,6 +61,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9126,4 +9127,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```94f5262d```](https://github.com/jina-ai/jina/commit/94f5262de6682b31fdf2a2ccfcebd7facf746cc2)] __-__ bring explicit AsyncFlow class back (#2633) (*Han Xiao*)
  - [[```364cb6c0```](https://github.com/jina-ai/jina/commit/364cb6c05b838bedf526b989f5c803f0c6ecbed9)] __-__ update readme (*Han Xiao*)
  - [[```28b920d3```](https://github.com/jina-ai/jina/commit/28b920d379e4fb08c33dc0d8fbe44c05ceee1503)] __-__ __version__: the next version will be 2.0.0rc7 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-0rc8></a>
+## Release Note (`2.0.0rc8`)
+
+> Release time: 2021-06-21 14:38:10
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  cristian,  Maximilian Werk,  Alan Zhisheng Niu,  Wang Bo,  Florian Hönicke,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```e24e2745```](https://github.com/jina-ai/jina/commit/e24e274595894518f275dd2eeed487143eb86e93)] __-__ draft of dynamic routing (#2551) (*Maximilian Werk*)
+
+### 🐞 Bug fixes
+
+ - [[```ed894f37```](https://github.com/jina-ai/jina/commit/ed894f370caef46216f36f82549085bb7a93129e)] __-__ __flow__: show client progress bar when using in the flow (#2722) (*Han Xiao*)
+ - [[```f13c681e```](https://github.com/jina-ai/jina/commit/f13c681e314b573700778014bd2ead3a16975352)] __-__ __http__: fix http request response model (#2712) (*Han Xiao*)
+ - [[```c459dcd9```](https://github.com/jina-ai/jina/commit/c459dcd981507fc9ddd6f640229d6773400d99bc)] __-__ document creates content hash at init (#2673) (*cristian*)
+
+### 🚧 Code Refactoring
+
+ - [[```d0c0c347```](https://github.com/jina-ai/jina/commit/d0c0c3477a7a2162540a6b785c6c84c2435fb979)] __-__ runtime as context manager (#2705) (*Joan Fontanals*)
+ - [[```f1077597```](https://github.com/jina-ai/jina/commit/f1077597bc4ef70f57adfdb34442fe415ce7868e)] __-__ remove Peatype metaclass (#2688) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```2f2a975a```](https://github.com/jina-ai/jina/commit/2f2a975a98e00cdf058aad922689a49e36cda128)] __-__ remove use gateway (#2706) (*Florian Hönicke*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```5af912de```](https://github.com/jina-ai/jina/commit/5af912decba1a787ccfa175cb51ad70dde025031)] __-__ complete craft and encode tests in hello multimodal (#2704) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```80dbd82b```](https://github.com/jina-ai/jina/commit/80dbd82b2ebe5ef7ffa200294979c785485e8fa7)] __-__ fix readme svg link (*Han Xiao*)
+ - [[```dd63abd6```](https://github.com/jina-ai/jina/commit/dd63abd60fa8ebd74e96835677a9efaf9f5c6b5e)] __-__ fix cookbook on serving (*Han Xiao*)
+ - [[```158c3f0d```](https://github.com/jina-ai/jina/commit/158c3f0df9ed7b041db4b7c70bfac01cc879728c)] __-__ Ci latency tracking zerodivisionerror (#2711) (*Alan Zhisheng Niu*)
+ - [[```52b91e1e```](https://github.com/jina-ai/jina/commit/52b91e1ed4db539805c1ef0d316d83bef60201ce)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```63e6dae0```](https://github.com/jina-ai/jina/commit/63e6dae0b47a99c3810d581ad41cc2bbf0d81856)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```33073927```](https://github.com/jina-ai/jina/commit/33073927a7ed05b33040ba99834c91516c16d21e)] __-__ __version__: the next version will be 2.0.0rc8 (*Jina Dev Bot*)
 
