@@ -8,14 +8,17 @@ guide you from basic serving for demo purpose to advanced serving in production.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
 
-* [Flow-as-a-service](#flow-as-a-service)
-    + [Supported Communication Protocols](#supported-communication-protocols)
-    + [Python Client with gRPC Request](#python-client-with-grpc-request)
-    + [Python Client with WebSocket Protocol](#python-client-with-websocket-protocol)
-    + [Enable HTTP Access](#enable-http-access)
-    + [`curl` with HTTP Request](#-curl--with-http-request)
-    + [Enable Cross-origin-resources-sharing (CORS)](#enable-cross-origin-resources-sharing--cors-)
-    + [Extend HTTP Interface](#extend-http-interface)
+- [Flow-as-a-service](#flow-as-a-service)
+  - [Supported Communication Protocols](#supported-communication-protocols)
+  - [Python Client with gRPC Request](#python-client-with-grpc-request)
+  - [Python Client with WebSocket Protocol](#python-client-with-websocket-protocol)
+  - [Enable HTTP Access](#enable-http-access)
+  - [`curl` with HTTP Request](#curl-with-http-request)
+  - [Enable Cross-origin-resources-sharing (CORS)](#enable-cross-origin-resources-sharing-cors)
+  - [Extend HTTP Interface](#extend-http-interface)
+    - [Expose Executor Endpoints to HTTP Interface](#expose-executor-endpoints-to-http-interface)
+    - [Hide CRUD and Debug Endpoints from HTTP Interface](#hide-crud-and-debug-endpoints-from-http-interface)
+    - [Add non-Jina Related Routes](#add-non-jina-related-routes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
