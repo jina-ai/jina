@@ -28,11 +28,17 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
 
     mutually_exclusive_group = parser.add_mutually_exclusive_group()
 
+    from ...helper import colored
+
     mutually_exclusive_group.add_argument(
         '--public',
         action='store_true',
         default=False,
-        help='If set, the published executor is visible to public',
+        help=f'''
+        {colored('default: enabled', attrs=['dark'])}
+
+        If set, the published executor is visible to public
+        ''',
     )
 
     mutually_exclusive_group.add_argument(

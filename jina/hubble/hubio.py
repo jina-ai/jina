@@ -221,7 +221,9 @@ class HubIO:
                 )
             else:
                 if exist_locall(id, tag):
-                    self.logger.warning(f"The executor {self.args.id} has already been downloaded in {JINA_HUB_ROOT}")
+                    self.logger.warning(
+                        f"The executor {self.args.id} has already been downloaded in {JINA_HUB_ROOT}"
+                    )
                     return
 
                 # download the package

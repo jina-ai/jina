@@ -108,7 +108,7 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
     def _get_help_string(self, action):
         help_string = ''
-        if '%(default)' not in action.help:
+        if 'default' not in action.help:
             if action.default is not argparse.SUPPRESS:
                 from ..helper import colored
 
