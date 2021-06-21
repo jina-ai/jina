@@ -19,6 +19,7 @@ from jina.helper import (
     find_request_binding,
     dunder_get,
     get_ci_vendor,
+    get_request_executor_parameter,
 )
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
@@ -321,3 +322,14 @@ def test_find_request_binding():
 )
 def test_ci_vendor():
     assert get_ci_vendor() == 'GITHUB_ACTIONS'
+
+
+def test_get_request_executor_parameter():
+    params = {}
+    assert get_request_executor_parameter(params, None, 'some_key') is None
+
+    params = {'some_key': 2}
+    assert get_request_executor_parameter(params, None, 'some_key') == 2
+
+    params = {'some_key': 2, 'some_name': {'some_key': 3}}
+    assert get_request_executor_parameter(params, 'some_name', 'some_key') == 3

@@ -1217,3 +1217,18 @@ def get_ci_vendor() -> Optional[str]:
                 for k in c['env']:
                     if k in os.environ:
                         return c['constant']
+
+
+def get_request_executor_parameter(parameters, exec_name, param_key):
+    """get request parameters, first by executor.metas.name, then by parameter key
+
+    :param parameters: the dictionary with the parameters
+    :param exec_name: the name of the executor
+    :param param_key: the key we want
+    :return: the value of the param_key
+    """
+    root = parameters
+    if exec_name:
+        root = parameters.get(exec_name, {})
+    v = root.get(param_key, parameters.get(param_key, None))
+    return v
