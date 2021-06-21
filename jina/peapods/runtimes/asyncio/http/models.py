@@ -9,7 +9,6 @@ from google.protobuf.json_format import MessageToDict
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
-from .....enums import DataInputType
 from .....parsers import set_client_cli_parser
 from .....proto.jina_pb2 import (
     DenseNdArrayProto,
@@ -243,13 +242,9 @@ class JinaStatusModel(BaseModel):
 
 class JinaRequestModel(BaseModel):
     """
-    Jina request model on some endpoint
-
-    The base model for Jina HTTP request.
+    Jina HTTP request model.
     """
 
-    # To avoid an error while loading the request model schema on swagger, we've added an example.
-    exec_endpoint: Optional[str] = None
     data: Optional[
         Union[
             List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
@@ -266,8 +261,45 @@ class JinaRequestModel(BaseModel):
                 preserving_proto_field_name=True,
             )
         ],
+        description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
     )
-    request_size: Optional[int] = DEFAULT_REQUEST_SIZE
-    data_type: DataInputType = DataInputType.AUTO
-    target_peapod: Optional[str] = None
-    parameters: Optional[Dict] = None
+    target_peapod: Optional[str] = Field(
+        None,
+        examples='pod1/*',
+        description='A regex string represent the certain peas/pods request targeted.',
+    )
+    parameters: Optional[Dict] = Field(
+        None,
+        example={'top_k': 3, 'model': 'bert'},
+        description='A dictionary of parameters to be sent to the executor.',
+    )
+
+
+class JinaResponseModel(BaseModel):
+    """
+    Jina HTTP Response model. Only `request_id` and `data` are preserved.
+    """
+
+    class DataRequestModel(BaseModel):
+        docs: Optional[List[PROTO_TO_PYDANTIC_MODELS.DocumentProto]] = None
+        groundtruths: Optional[List[PROTO_TO_PYDANTIC_MODELS.DocumentProto]] = None
+
+    request_id: str = Field(
+        ...,
+        example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
+        description='The id given by Jina service',
+    )
+    data: Optional[DataRequestModel] = Field(None, description='Returned Documents')
+
+
+class JinaEndpointRequestModel(JinaRequestModel):
+    """
+    Jina HTTP request model that allows customized endpoint.
+    """
+
+    exec_endpoint: str = Field(
+        ...,
+        example='/foo',
+        description='The endpoint string, by convention starts with `/`. '
+        'All executors bind with `@requests(on="/foo")` will receive this request.',
+    )

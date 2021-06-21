@@ -5,6 +5,7 @@ from typing import Callable, Optional
 from .base import BaseClient, InputType
 from .grpc import GRPCClient
 from .helper import callback_exec
+from ..excepts import BadClient
 from ..importer import ImportExtensions
 from ..logging.profile import TimeContext, ProgressBar
 from ..types.request import Request
@@ -58,6 +59,7 @@ class HTTPClientMixin(BaseClient, ABC):
                     for req in req_iter:
                         # fix the mismatch between pydantic model and Protobuf model
                         req_dict = req.dict()
+                        req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
                         req_dict['data'] = req_dict['data'].get('docs', None)
 
                         async with session.post(
@@ -66,7 +68,9 @@ class HTTPClientMixin(BaseClient, ABC):
                         ) as response:
                             resp_str = await response.json()
                             if response.status == 404:
-                                raise ConnectionError('no such endpoint on server')
+                                raise BadClient('no such endpoint on the server')
+                            elif not response.ok:
+                                raise ValueError(resp_str)
                             resp = Request(resp_str)
                             resp = resp.as_typed_request(
                                 resp.request_type
