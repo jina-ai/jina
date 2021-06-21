@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, Any, Optional, List, Union
+from typing import Callable, Dict, Any, Optional, List, Union, TypeVar, Tuple
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.json_format import MessageToDict
@@ -10,6 +10,7 @@ from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
 from .....parsers import set_client_cli_parser
+from .....proto import jina_pb2
 from .....proto.jina_pb2 import (
     DenseNdArrayProto,
     NdArrayProto,
@@ -240,27 +241,45 @@ class JinaStatusModel(BaseModel):
     used_memory: str
 
 
+DocumentContentType = TypeVar(
+    'DocumentContentType',
+    bytes,
+    str,
+    Dict[str, Any],
+    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
+)
+
+DataSourceType = Union[
+    List[Tuple[DocumentContentType, DocumentContentType]],
+    List[DocumentContentType],
+]
+
+
+def _get_example_data():
+    _example = jina_pb2.DocumentArrayProto()
+    d0 = Document(id='🐲', tags={'guardian': 'Azure Dragon', 'position': 'East'})
+    d1 = Document(id='🐦', tags={'guardian': 'Vermilion Bird', 'position': 'South'})
+    d2 = Document(id='🐢', tags={'guardian': 'Black Tortoise', 'position': 'North'})
+    d3 = Document(id='🐯', tags={'guardian': 'White Tiger', 'position': 'West'})
+    d0.chunks.append(d1)
+    d0.chunks[0].chunks.append(d2)
+    d0.matches.append(d3)
+    _example.docs.extend([d0.proto, d1.proto, d2.proto, d3.proto])
+    return MessageToDict(
+        _example,
+        including_default_value_fields=True,
+        preserving_proto_field_name=True,
+    )['docs']
+
+
 class JinaRequestModel(BaseModel):
     """
     Jina HTTP request model.
     """
 
-    data: Optional[
-        Union[
-            List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
-            List[Dict[str, Any]],
-            List[str],
-            List[bytes],
-        ]
-    ] = Field(
+    data: Optional[DataSourceType] = Field(
         None,
-        example=[
-            MessageToDict(
-                Document().proto,
-                including_default_value_fields=True,
-                preserving_proto_field_name=True,
-            )
-        ],
+        example=_get_example_data(),
         description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
     )
     target_peapod: Optional[str] = Field(

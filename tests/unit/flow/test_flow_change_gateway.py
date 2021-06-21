@@ -18,7 +18,7 @@ def test_change_gateway(protocol, changeto_protocol, mocker):
         mock = mocker.Mock()
         f.protocol = changeto_protocol
 
-        f.post('', random_docs(10), on_done=mock)
+        f.post('/', random_docs(10), on_done=mock)
         mock.assert_called()
 
 
