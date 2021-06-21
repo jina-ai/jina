@@ -34,12 +34,6 @@ Table of Contents
     - [Callback Functions](#callback-functions)
     - [Send Parameters](#send-parameters)
   - [Asynchronous Flow](#asynchronous-flow)
-- [Flow as a Service](#flow-as-a-service)
-  - [Python Client with gRPC Request](#python-client-with-grpc-request)
-  - [Switch REST & gRPC Request](#switch-rest--grpc-request)
-  - [`curl` with HTTP Request](#curl-with-http-request)
-  - [Python Client with REST Request](#python-client-with-rest-request)
-  - [Extend FastAPI interface](#extend-fastapi-interface)
 - [Remarks](#remarks)
   - [Joining/Merging](#joiningmerging)
 
@@ -128,7 +122,7 @@ A `Flow` object has the following common methods:
 |Run Flow| `with` context manager |
 |Visualize Flow| `.plot()` |
 |Send Request| `.post()`|
-|Control| `.block()`, `.use_grpc_gateway()`, `.use_rest_gateway()` |
+|Control| `.block()` |
 
 ### Create a Flow
 
