@@ -168,7 +168,7 @@ def test_flow_identical(tmpdir):
 def test_flow_no_container(protocol):
     f = Flow(protocol=protocol).add(
         name='dummyEncoder',
-        uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml'),
+        uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder.yml'),
     )
 
     with f:
