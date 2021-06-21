@@ -85,18 +85,7 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
         default=SocketType.PUSH_BIND,
         help='The socket type for output port',
     )
-    gp.add_argument(
-        '--dynamic-out-routing',
-        action='store_true',
-        default=False,
-        help='Tells if ZEDRuntime should respect routing graph for outgoing traffic.',
-    )
-    gp.add_argument(
-        '--dynamic-in-routing',
-        action='store_true',
-        default=False,
-        help='Tells if ZEDRuntime should handle incoming traffic as dynamic routing.',
-    )
+
     gp.add_argument(
         '--memory-hwm',
         type=int,
@@ -127,6 +116,33 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         type=int,
         default=0,
         help='the number of messages expected from upstream, 0 and 1 means single part'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--dynamic-out-routing',
+        action='store_true',
+        default=False,
+        help='Tells if ZEDRuntime should respect routing graph for outgoing traffic.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--dynamic-in-routing',
+        action='store_true',
+        default=False,
+        help='Tells if ZEDRuntime should handle incoming traffic as dynamic routing.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
