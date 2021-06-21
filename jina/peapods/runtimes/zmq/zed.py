@@ -162,7 +162,6 @@ class ZEDRuntime(ZMQRuntime):
         # all meta information should be stored and accessed via `msg.envelope`
 
         self._last_active_time = time.perf_counter()
-        self._zmqlet.print_stats()
         self._check_memory_watermark()
 
         if self.expect_parts > 1:

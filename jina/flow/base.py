@@ -501,7 +501,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
-        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow.
+        :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
@@ -1038,6 +1038,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             host=self.host,
             port_expose=self.port_expose,
             protocol=self.protocol,
+            show_progress=True,
         )
         kwargs.update(self._common_kwargs)
         return Client(**kwargs)

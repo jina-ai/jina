@@ -16,18 +16,9 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     :param unit: Unit of the memory, default in Gigabytes.
     :return: Memory usage of the current process.
     """
-    with ImportExtensions(required=False):
-        import resource
+    import resource
 
-        return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
-
-    from .predefined import default_logger
-
-    default_logger.error(
-        'module "resource" can not be found and you are likely running it on Windows, '
-        'i will return 0'
-    )
-    return 0
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / unit
 
 
 def used_memory_readable() -> str:

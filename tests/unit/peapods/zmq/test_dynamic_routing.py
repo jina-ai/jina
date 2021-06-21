@@ -1,16 +1,15 @@
-import asyncio
 import logging
-import pytest
 import threading
 import time
 
+import pytest
 from google.protobuf import json_format
 
+from jina.helper import random_identity
 from jina.parsers import set_pea_parser
 from jina.peapods.zmq import Zmqlet, AsyncZmqlet, ZmqStreamlet
 from jina.proto import jina_pb2
 from jina.types.message import Message
-from jina.helper import random_identity
 
 
 def get_args():
@@ -27,7 +26,7 @@ def get_args():
             'DEALER_CONNECT',
             '--timeout-ctrl',
             '-1',
-            '--dynamic-out-routing',
+            '--dynamic-routing-out',
         ]
     )
 
