@@ -8,10 +8,7 @@ from typing import Tuple
 
 from .helper import unpack_package
 
-DEFAULT_JINA_HUB_ROOT = Path.home().joinpath(".jina", "hub-packages")
-
-JINA_HUB_ROOT = Path(os.environ.get("JINA_HUB_ROOT", str(DEFAULT_JINA_HUB_ROOT)))
-JINA_HUB_ROOT.mkdir(parents=True, exist_ok=True)
+from . import JINA_HUB_ROOT
 
 
 def get_dist_path(id: str, tag: str) -> Tuple['Path', 'Path']:

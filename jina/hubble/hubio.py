@@ -17,14 +17,12 @@ from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
 from .helper import archive_package, download_with_resume
 from .hubapi import install_locall
-
+from . import JINA_HUB_CACHE_DIR
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
     'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
 )
 JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
-JINA_HUB_CACHE_DIR = Path.home().joinpath('.jina', '.cache')
-JINA_HUB_CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class HubIO:
@@ -137,7 +135,7 @@ class HubIO:
                 )
 
             else:
-                resp.raise_for_status()
+                raise Exception(resp.text)
 
         except Exception as e:  # IO related errors
             self.logger.error(
@@ -189,9 +187,9 @@ class HubIO:
                     cached_zip_file = Path(f'{id}-{md5sum}.zip')
                     download_with_resume(
                         archive_url,
-                        md5sum,
                         JINA_HUB_CACHE_DIR,
                         cached_zip_file,
+                        md5sum=md5sum,
                     )
                 with TimeContext(f'installing {archive_url}', self.logger):
                     # TODO: get latest tag
