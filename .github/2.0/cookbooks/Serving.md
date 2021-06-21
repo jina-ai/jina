@@ -79,14 +79,14 @@ with Flow(port_expose=12345) as f:
 	🔒 Private network:	192.168.31.159:12345
 ```
 
-Note that the host address is `192.168.1.14` and `port_expose` is `12345`.
+Note that the host address is `192.168.31.159` and `port_expose` is `12345`.
 
 While keep this server open, let's create a client on a different machine:
 
 ```python
 from jina import Client
 
-c = Client(host='192.168.1.14', port_expose=12345)
+c = Client(host='192.168.31.159', port_expose=12345)
 
 c.post('/')
 ```
@@ -124,7 +124,7 @@ This will serve the Flow with WebSocket, so any Client connects to it should fol
 ```python
 from jina import Client
 
-c = Client(protocol='websocket', port_expose=12345)
+c = Client(protocol='websocket', host='192.168.31.159', port_expose=12345)
 c.post('/')
 ```
 
@@ -139,7 +139,7 @@ To enable a Flow to receive from HTTP requests, you can add `protocol='http'` in
 ```python
 from jina import Flow
 
-f = Flow(protocol='http')
+f = Flow(protocol='http', port_expose=12345)
 
 with f:
     f.block()
@@ -219,7 +219,7 @@ $ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type:
 }
 ```
 
-#### Use Python to send HTTP request
+#### Use Python to Send HTTP Request
 
 One can also use Python Client to send HTTP request, simply:
 
@@ -227,10 +227,10 @@ One can also use Python Client to send HTTP request, simply:
 from jina import Client
 
 c = Client(protocol='http', port_expose=12345)
-c.post('/', )
+c.post('/', ...)
 ```
 
-This HTTP client is less-performant on large data, so it should be only used for debugging & testing.
+Note this HTTP client is less-performant on large data, it does not stream. Hence, it should be only used for debugging & testing.
 
 #### Enable Cross-origin-resources-sharing (CORS)
 
