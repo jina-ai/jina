@@ -8,7 +8,8 @@ from typing import Dict, Union, Set
 from typing import List, Optional
 
 from ..peas import BasePea
-from ... import __default_host__, __default_executor__
+from ... import __default_executor__
+from ...types.routing.graph import RoutingGraph
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -16,9 +17,8 @@ from ...enums import (
     SocketType,
     PeaRoleType,
     PollingType,
-    GatewayProtocolType,
 )
-from ...helper import get_public_ip, get_internal_ip, random_identity
+from ...helper import random_identity
 from ..networking import get_connect_host
 
 
@@ -640,3 +640,10 @@ class Pod(BasePod):
         if args.dynamic_routing:
             args.dynamic_out_routing = True
             args.socket_out = SocketType.DEALER_CONNECT
+
+    def set_routing_graph(self, routing_graph: RoutingGraph) -> None:
+        """Sets the routing graph for the Gateway. The Gateway will equip each message with the given graph.
+
+        :param routing_graph: The to-be-used routing graph
+        """
+        self.args.routing_graph = routing_graph

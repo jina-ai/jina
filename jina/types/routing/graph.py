@@ -1,4 +1,4 @@
-from google.protobuf import json_format
+from typing import List
 
 from collections import defaultdict
 
@@ -15,48 +15,63 @@ class TargetPod:
     :param target: the protobuff object of the TargetPod
     """
 
-    def __init__(self, target: 'jina_pb2.TargetPodProto'):
+    def __init__(self, target: 'jina_pb2.TargetPodProto') -> None:
         self.proto = target
 
     @property
-    def port(self):
+    def port(self) -> int:
         """Returns the `port` field of this TargetPod
 
-        :return: port as an int
+        :return: port
         """
         return self.proto.port
 
     @property
-    def host(self):
+    def host(self) -> str:
         """Returns the `host` field of this TargetPod
 
-        :return: host as string
+        :return: host
         """
         return self.proto.host
 
     @property
-    def full_address(self):
+    def full_address(self) -> str:
         """Return the full zmq adress of this TargetPod
 
-        :return: address as string
+        :return: address
         """
         return f'{self.host}:{self.port}'
 
     @property
-    def expected_parts(self):
+    def expected_parts(self) -> int:
         """Return the `expected_parts` field of this TargetPod
 
-        :return: expected_parts as int
+        :return: expected_parts
         """
         return self.proto.expected_parts
 
+    @expected_parts.setter
+    def expected_parts(self, value: int) -> None:
+        """Sets the number of expected incoming message for a Pod.
+
+        :param value: the new number of expected parts
+        """
+        self.proto.expected_parts = value
+
     @property
-    def out_edges(self):
+    def out_edges(self) -> List[str]:
         """Return the `out_edges` field of this TargetPod
 
-        :return: out_edges as int
+        :return: out_edges
         """
-        return self.proto.out_edges
+        return list(self.proto.out_edges)
+
+    def add_edge(self, to_pod: str) -> None:
+        """Adds an edge to the internal representation of the out_edges.
+
+        :param to_pod: the name of the pod outtraffic should go to
+        """
+        self.proto.out_edges.append(to_pod)
 
 
 class RoutingGraph:
@@ -69,21 +84,21 @@ class RoutingGraph:
     :param graph: the protobuff object of the RoutingGraph
     """
 
-    def __init__(self, graph: 'jina_pb2.RoutingGraphProto' = None):
+    def __init__(self, graph: 'jina_pb2.RoutingGraphProto' = None) -> None:
         if graph is None:
             graph = jina_pb2.RoutingGraphProto()
         self.proto = graph
 
-    def add_edge(self, from_pod, to_pod):
+    def add_edge(self, from_pod: str, to_pod: str) -> None:
         """Adds an edge to the graph.
 
         :param from_pod: Pod from which traffic is send
         :param to_pod: Pod to which traffic is send
         """
-        self._get_target_pod(from_pod).out_edges.append(to_pod)
+        self._get_target_pod(from_pod).add_edge(to_pod)
         self._get_target_pod(to_pod).expected_parts += 1
 
-    def add_pod(self, pod_name, host, port):
+    def add_pod(self, pod_name: str, host: str, port: int) -> None:
         """Adds a Pod vertex to the graph.
 
         :param pod_name: the name of the Pod. Should be unique to the graph.
@@ -98,30 +113,29 @@ class RoutingGraph:
         target.host = host
         target.port = port
 
-    def _get_target_pod(self, pod):
-        return self.pods[pod]
+    def _get_target_pod(self, pod: str) -> TargetPod:
+        return TargetPod(self.pods[pod])
 
     @property
-    def active_pod(self):
+    def active_pod(self) -> str:
         """
         :return: the active Pod name
         """
         return self.proto.active_pod
 
     @active_pod.setter
-    def active_pod(self, pod_name):
+    def active_pod(self, pod_name: str) -> None:
         """Sets the currently active Pod in the routing.
-
 
         .. # noqa: DAR101
         """
         self.proto.active_pod = pod_name
 
-    def _get_out_edges(self, pod):
+    def _get_out_edges(self, pod: str) -> List[str]:
         return self._get_target_pod(pod).out_edges
 
     @property
-    def active_target_pod(self):
+    def active_target_pod(self) -> TargetPod:
         """
         :return: a :class:`TargetPod` object of the currently active Pod
         """
@@ -134,7 +148,7 @@ class RoutingGraph:
         """
         return self.proto.pods
 
-    def get_next_targets(self):
+    def get_next_targets(self) -> List['RoutingGraph']:
         """
         Calculates next routing graph for all currently outgoing edges.
 
@@ -148,7 +162,7 @@ class RoutingGraph:
             targets.append(RoutingGraph(new_graph))
         return targets
 
-    def is_acyclic(self):
+    def is_acyclic(self) -> bool:
         """
         :return: True, if graph is acyclic, False otherwise.
         """

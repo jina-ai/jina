@@ -31,10 +31,9 @@ from ..helper import (
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
-from ..peapods import CompoundPod, GatewayPod
+from ..peapods import CompoundPod, Pod
 from ..types.routing.graph import RoutingGraph
 from ..peapods.pods.factory import PodFactory
-from ..proto import jina_pb2
 
 __all__ = ['Flow']
 
@@ -397,7 +396,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        self._pod_nodes[GATEWAY_NAME] = GatewayPod(args, needs)
+        self._pod_nodes[GATEWAY_NAME] = Pod(args, needs)
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(

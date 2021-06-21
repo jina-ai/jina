@@ -167,12 +167,12 @@ message RouteProto {
 message TargetPodProto{
     string host = 1; // the host HeadPea of the BasePod
     uint32 port = 2; // the port HeadPea of the BasePod
-    uint32 expected_parts = 3; // the number of parts, the pod should expect
-    repeated string out_edges = 4;
+    uint32 expected_parts = 3; // the number of parts the pod should expect
+    repeated string out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
 }
 
 message RoutingGraphProto {
-    // Pods that get visited during a Flow. Gateway should be both, the first and the last entry.
+    // Pods that get visited during a Flow. Gateway should be both the first and the last entry.
     map<string, TargetPodProto>  pods = 1;
 
     // The currently active Pod. Needed for ZMQ.
