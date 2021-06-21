@@ -598,7 +598,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         needs: Optional[Union[str, Tuple[str], List[str]]] = None,
-        copy_flow: bool = True,
         pod_role: 'PodRoleType' = PodRoleType.POD,
         **kwargs,
     ) -> 'Flow':
@@ -610,12 +609,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param needs: the name of the Pod(s) that this Pod receives data from.
                            One can also use 'gateway' to indicate the connection with the gateway.
         :param pod_role: the role of the Pod, used for visualization and route planning
-        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the Pod CLI supports
         :return: a (new) Flow object with modification
         """
 
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        op_flow = self
 
         # pod naming logic
         pod_name = kwargs.get('name', None)
@@ -768,7 +766,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             return self
 
     @allowed_levels([FlowBuildLevel.EMPTY])
-    def build(self, copy_flow: bool = False) -> 'Flow':
+    def build(self) -> 'Flow':
         """
         Build the current Flow and make it ready to use
 
@@ -777,12 +775,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             No need to manually call it since 0.0.8. When using Flow with the
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
-        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
         :return: the current Flow (by default)
 
         .. note::
-            ``copy_flow=True`` is recommended if you are building the same Flow multiple times in a row. e.g.
-
             .. highlight:: python
             .. code-block:: python
 
@@ -790,14 +785,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 with f:
                     f.index()
 
-                with f.build(copy_flow=True) as fl:
+                with f as fl:
                     fl.search()
 
 
         .. # noqa: DAR401
         """
 
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        op_flow = self
 
         if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
@@ -904,7 +899,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
 
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            self.build(copy_flow=False)
+            self.build()
 
         # set env only before the Pod get started
         if self.args.env:

@@ -64,14 +64,11 @@ def test_equal(pod_args, pod_args_singleton):
     pod1 = Pod(pod_args)
     pod2 = Pod(pod_args)
     assert pod1 == pod2
-    pod1.close()
-    pod2.close()
+
     # test not equal
     pod1 = Pod(pod_args)
     pod2 = Pod(pod_args_singleton)
     assert pod1 != pod2
-    pod1.close()
-    pod2.close()
 
 
 def test_head_args_get_set(pod_args, pod_args_singleton):
