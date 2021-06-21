@@ -82,3 +82,13 @@ def resolve_local(id: str, tag: str = None) -> "Path":
     if tag and (not pkg_dist_path.exists()):
         return None
     return pkg_path
+
+def exist_locall(id: str, tag: str = None) -> bool:
+    """Check whether the executor exists in local
+
+    :param id: the ID of the executor
+    :param tag: the TAG of the executor
+    :return: True if existed, else False
+    """
+
+    return resolve_local(id=id, tag=tag) is not None

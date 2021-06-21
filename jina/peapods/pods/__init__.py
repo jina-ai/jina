@@ -670,18 +670,17 @@ class Pod(BasePod):
 
                 if scheme == 'jinahub+docker':
                     # use docker image
-                    args.uses = f'docker://{executor["pullPath"]}'
+                    args.uses = f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     pkg_path = resolve_local(id, tag)
                     if not pkg_path:
-                        # TODO: download and install package
-                        raise NotImplementedError("Not Installed Error")
+                        hubio.pull()
 
                     args.uses = f'{pkg_path / "config.yml"}'
 
                 else:
                     raise NotImplementedError(
-                        f'The jina hub resource schema {scheme} has not been supported!'
+                        f'The jinahub protocal {scheme} has not been supported!'
                     )
 
         parsed_args = {'head': None, 'tail': None, 'peas': []}
