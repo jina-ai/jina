@@ -241,20 +241,6 @@ class JinaStatusModel(BaseModel):
     used_memory: str
 
 
-DocumentContentType = TypeVar(
-    'DocumentContentType',
-    bytes,
-    str,
-    Dict[str, Any],
-    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
-)
-
-DataSourceType = Union[
-    List[Tuple[DocumentContentType, DocumentContentType]],
-    List[DocumentContentType],
-]
-
-
 def _get_example_data():
     _example = jina_pb2.DocumentArrayProto()
     d0 = Document(id='🐲', tags={'guardian': 'Azure Dragon', 'position': 'East'})
@@ -277,7 +263,23 @@ class JinaRequestModel(BaseModel):
     Jina HTTP request model.
     """
 
-    data: Optional[DataSourceType] = Field(
+    data: Optional[
+        Union[
+            List[PROTO_TO_PYDANTIC_MODELS.DocumentProto],
+            List[Dict[str, Any]],
+            List[str],
+            List[bytes],
+            List[
+                Tuple[
+                    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
+                    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
+                ]
+            ],
+            List[Tuple[Dict[str, Any], Dict[str, Any]]],
+            List[Tuple[str, str]],
+            List[Tuple[bytes, bytes]],
+        ]
+    ] = Field(
         None,
         example=_get_example_data(),
         description='Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects',
@@ -300,8 +302,8 @@ class JinaResponseModel(BaseModel):
     """
 
     class DataRequestModel(BaseModel):
-        docs: Optional[List[PROTO_TO_PYDANTIC_MODELS.DocumentProto]] = None
-        groundtruths: Optional[List[PROTO_TO_PYDANTIC_MODELS.DocumentProto]] = None
+        docs: Optional[List[Dict[str, Any]]] = None
+        groundtruths: Optional[List[Dict[str, Any]]] = None
 
     request_id: str = Field(
         ...,
