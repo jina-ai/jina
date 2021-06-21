@@ -134,8 +134,11 @@ class HubIO:
                     + colored(usage, 'cyan', attrs='underline')
                 )
 
+            elif resp.text:
+                # NOTE: sometimes resp.text returns empty
+                raise Exception(resp.text)
             else:
-                raise Exception(resp.text) if resp.text else resp.raise_for_status()
+                resp.raise_for_status()
 
         except Exception as e:  # IO related errors
             self.logger.error(
@@ -162,11 +165,16 @@ class HubIO:
 
         resp = requests.get(pull_url)
         if resp.status_code != 200:
-            resp.raise_for_status()
+            if resp.text:
+                raise Exception(resp.text) 
+            else:
+                resp.raise_for_status()
+            
         return resp.json()
 
     def pull(self) -> None:
         """Pull the executor pacakge from Jina Hub."""
+        cached_zip_file = None
         try:
             id = self.args.id
             tag = None
@@ -178,9 +186,10 @@ class HubIO:
             tag = latest_tag
 
             image_name = executor['pullPath']
+            archive_url = executor['packageDownloadUrl']
 
             if not self.args.docker:
-                archive_url = executor['archivePath']
+                
                 md5sum = executor['md5sum']
                 # download the package
                 with TimeContext(f'downloading {archive_url}', self.logger):
@@ -191,9 +200,11 @@ class HubIO:
                         cached_zip_file,
                         md5sum=md5sum,
                     )
+                
                 with TimeContext(f'installing {archive_url}', self.logger):
                     # TODO: get latest tag
                     install_locall(JINA_HUB_CACHE_DIR / cached_zip_file, id, latest_tag)
+                
             else:
                 # pull the Docker image
                 with TimeContext(f'pulling {image_name}', self.logger):
@@ -209,3 +220,8 @@ class HubIO:
             self.logger.error(
                 f'Error when trying to pull the executor: {self.args.id}: {e!r}'
             )
+        finally:
+            # delete downloaded zip package if existed
+            if cached_zip_file is not None:
+                (JINA_HUB_CACHE_DIR / cached_zip_file).unlink(missing_ok=True)
+
