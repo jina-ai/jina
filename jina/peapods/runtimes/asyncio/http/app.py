@@ -159,9 +159,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         for k, v in crud.items():
             v['tags'] = ['CRUD']
             v[
-                'description'
+                'summary'
             ] = f'Post data requests to the Flow. Executors with `@requests(on="{k}")` will respond.'
             expose_executor_endpoint(exec_endpoint=k, **v)
+
+    if openapi_tags:
+        app.openapi_tags = openapi_tags
 
     if args.expose_endpoints:
         endpoints = json.loads(args.expose_endpoints)  # type: Dict[str, Dict]

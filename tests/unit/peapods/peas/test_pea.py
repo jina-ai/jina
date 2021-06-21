@@ -23,7 +23,7 @@ def test_base_pea_with_runtime_bad_init(mocker):
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, '__init__', bad_func)
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_rumtime')
+    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
     with pytest.raises(RuntimeFailToStart):
@@ -46,7 +46,7 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
     mocker.patch.object(BaseRuntime, 'run_forever', bad_func)
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_rumtime')
+    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
     with Pea1(arg):
@@ -68,7 +68,7 @@ def test_base_pea_with_runtime_bad_teardown(mocker):
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
     mocker.patch.object(BaseRuntime, 'teardown', lambda x: bad_func)
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_rumtime')
+    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
@@ -89,10 +89,10 @@ def test_base_pea_with_runtime_bad_cancel(mocker):
             self.runtime_cls = BaseRuntime
 
     mocker.patch.object(BaseRuntime, 'run_forever', lambda x: time.sleep(3))
-    mocker.patch.object(Pea, '_cancel_rumtime', bad_func)
+    mocker.patch.object(Pea, '_cancel_runtime', bad_func)
 
     teardown_spy = mocker.spy(BaseRuntime, 'teardown')
-    cancel_spy = mocker.spy(Pea, '_cancel_rumtime')
+    cancel_spy = mocker.spy(Pea, '_cancel_runtime')
     run_spy = mocker.spy(BaseRuntime, 'run_forever')
 
     arg = set_pea_parser().parse_args(['--runtime-backend', 'thread'])
