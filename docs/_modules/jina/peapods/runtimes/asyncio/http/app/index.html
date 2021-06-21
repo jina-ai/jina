@@ -380,7 +380,8 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToJson</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
+
 
 <span class="kn">from</span> <span class="nn">..grpc.async_call</span> <span class="kn">import</span> <span class="n">AsyncPrefetchCall</span>
 <span class="kn">from</span> <span class="nn">....zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
@@ -403,10 +404,11 @@
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
         <span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
-        <span class="kn">from</span> <span class="nn">starlette.responses</span> <span class="kn">import</span> <span class="n">StreamingResponse</span>
         <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="p">(</span>
             <span class="n">JinaStatusModel</span><span class="p">,</span>
             <span class="n">JinaRequestModel</span><span class="p">,</span>
+            <span class="n">JinaEndpointRequestModel</span><span class="p">,</span>
+            <span class="n">JinaResponseModel</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
@@ -438,7 +440,6 @@
 
     <span class="n">openapi_tags</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_debug_endpoints</span><span class="p">:</span>
-
         <span class="n">openapi_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Debug'</span><span class="p">,</span>
@@ -471,10 +472,10 @@
         <span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="s1">'/post'</span><span class="p">,</span>
             <span class="n">summary</span><span class="o">=</span><span class="s1">'Post a data request to some endpoint'</span><span class="p">,</span>
-            <span class="n">response_model</span><span class="o">=</span><span class="n">JinaRequestModel</span><span class="p">,</span>
-            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'Debug'</span><span class="p">],</span>
+            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'Debug'</span><span class="p">]</span>
+            <span class="c1"># do not add response_model here, this debug endpoint should not restricts the response model</span>
         <span class="p">)</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">JinaRequestModel</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">JinaEndpointRequestModel</span><span class="p">):</span>
             <span class="sd">"""</span>
 <span class="sd">            Post a data request to some endpoint.</span>
 
@@ -493,9 +494,7 @@
             <span class="c1"># The above comment is written in Markdown for better rendering in FastAPI</span>
 
             <span class="n">bd</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>  <span class="c1"># type: Dict</span>
-            <span class="k">return</span> <span class="n">StreamingResponse</span><span class="p">(</span>
-                <span class="n">result_in_stream</span><span class="p">(</span><span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">bd</span><span class="p">)),</span> <span class="n">media_type</span><span class="o">=</span><span class="s1">'application/json'</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span><span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">bd</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">expose_executor_endpoint</span><span class="p">(</span><span class="n">exec_endpoint</span><span class="p">,</span> <span class="n">http_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Exposing an executor endpoint to http endpoint</span>
@@ -507,8 +506,10 @@
         <span class="c1"># set some default kwargs for richer semantics</span>
         <span class="c1"># group flow exposed endpoints into `customized` group</span>
         <span class="n">kwargs</span><span class="p">[</span><span class="s1">'tags'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'Customized'</span><span class="p">])</span>
-        <span class="c1"># add fullrequest as response model</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">'response_model'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'response_model'</span><span class="p">,</span> <span class="n">JinaRequestModel</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">'response_model'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">'response_model'</span><span class="p">,</span>
+            <span class="n">JinaResponseModel</span><span class="p">,</span>  <span class="c1"># use standard response model by default</span>
+        <span class="p">)</span>
 
         <span class="nd">@app</span><span class="o">.</span><span class="n">api_route</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="n">http_path</span> <span class="ow">or</span> <span class="n">exec_endpoint</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">http_path</span> <span class="ow">or</span> <span class="n">exec_endpoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -516,9 +517,7 @@
         <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">JinaRequestModel</span><span class="p">):</span>
             <span class="n">bd</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">body</span> <span class="k">else</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
             <span class="n">bd</span><span class="p">[</span><span class="s1">'exec_endpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">exec_endpoint</span>
-            <span class="k">return</span> <span class="n">StreamingResponse</span><span class="p">(</span>
-                <span class="n">result_in_stream</span><span class="p">(</span><span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">bd</span><span class="p">)),</span> <span class="n">media_type</span><span class="o">=</span><span class="s1">'application/json'</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span><span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">bd</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_crud_endpoints</span><span class="p">:</span>
         <span class="n">openapi_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -537,7 +536,7 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">crud</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">v</span><span class="p">[</span><span class="s1">'tags'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'CRUD'</span><span class="p">]</span>
             <span class="n">v</span><span class="p">[</span>
-                <span class="s1">'summary'</span>
+                <span class="s1">'description'</span>
             <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Post data requests to the Flow. Executors with `@requests(on="</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">")` will respond.'</span>
             <span class="n">expose_executor_endpoint</span><span class="p">(</span><span class="n">exec_endpoint</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span>
 
@@ -549,19 +548,18 @@
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">expose_executor_endpoint</span><span class="p">(</span><span class="n">exec_endpoint</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">result_in_stream</span><span class="p">(</span><span class="n">req_iter</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_singleton_result</span><span class="p">(</span><span class="n">req_iter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        Streams results from AsyncPrefetchCall as json</span>
+<span class="sd">        Streams results from AsyncPrefetchCall as a dict</span>
 
-<span class="sd">        :param req_iter: request iterator</span>
-<span class="sd">        :yield: result</span>
+<span class="sd">        :param req_iter: request iterator, with length of 1</span>
+<span class="sd">        :return: the first result from the request iterator</span>
 <span class="sd">        """</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">servicer</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-            <span class="k">yield</span> <span class="n">MessageToJson</span><span class="p">(</span>
+            <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span>
                 <span class="n">k</span><span class="p">,</span>
                 <span class="n">including_default_value_fields</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">including_default_value_fields</span><span class="p">,</span>
                 <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">sort_keys</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">sort_keys</span><span class="p">,</span>
                 <span class="n">use_integers_for_enums</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">use_integers_for_enums</span><span class="p">,</span>
                 <span class="n">float_precision</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">float_precision</span><span class="p">,</span>
             <span class="p">)</span>

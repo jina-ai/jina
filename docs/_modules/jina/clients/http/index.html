@@ -383,6 +383,7 @@
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseClient</span><span class="p">,</span> <span class="n">InputType</span>
 <span class="kn">from</span> <span class="nn">.grpc</span> <span class="kn">import</span> <span class="n">GRPCClient</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span><span class="p">,</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">..types.request</span> <span class="kn">import</span> <span class="n">Request</span>
@@ -436,6 +437,7 @@
                     <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">req_iter</span><span class="p">:</span>
                         <span class="c1"># fix the mismatch between pydantic model and Protobuf model</span>
                         <span class="n">req_dict</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+                        <span class="n">req_dict</span><span class="p">[</span><span class="s1">'exec_endpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">][</span><span class="s1">'exec_endpoint'</span><span class="p">]</span>
                         <span class="n">req_dict</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'docs'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
                         <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
@@ -444,7 +446,9 @@
                         <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
                             <span class="n">resp_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
                             <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s1">'no such endpoint on server'</span><span class="p">)</span>
+                                <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="s1">'no such endpoint on the server'</span><span class="p">)</span>
+                            <span class="k">elif</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">resp_str</span><span class="p">)</span>
                             <span class="n">resp</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">resp_str</span><span class="p">)</span>
                             <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span>
                                 <span class="n">resp</span><span class="o">.</span><span class="n">request_type</span>

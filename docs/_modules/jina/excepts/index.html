@@ -411,20 +411,12 @@
     <span class="sd">"""The event loop of BasePea ends."""</span></div>
 
 
-<div class="viewcode-block" id="PodRunTimeError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.PodRunTimeError">[docs]</a><span class="k">class</span> <span class="nc">PodRunTimeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""The error propagated by Pods when Executor throws an exception."""</span></div>
-
-
 <div class="viewcode-block" id="UnknownControlCommand"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.UnknownControlCommand">[docs]</a><span class="k">class</span> <span class="nc">UnknownControlCommand</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
     <span class="sd">"""The control command received can not be recognized."""</span></div>
 
 
 <div class="viewcode-block" id="FlowTopologyError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowTopologyError">[docs]</a><span class="k">class</span> <span class="nc">FlowTopologyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">"""Flow exception when the topology is ambiguous."""</span></div>
-
-
-<div class="viewcode-block" id="FlowConnectivityError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowConnectivityError">[docs]</a><span class="k">class</span> <span class="nc">FlowConnectivityError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Flow exception when the flow is not connective via network."""</span></div>
 
 
 <div class="viewcode-block" id="FlowMissingPodError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.FlowMissingPodError">[docs]</a><span class="k">class</span> <span class="nc">FlowMissingPodError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -435,20 +427,12 @@
     <span class="sd">"""Flow exception when required build level is higher than the current build level."""</span></div>
 
 
-<div class="viewcode-block" id="EmptyExecutorYAML"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.EmptyExecutorYAML">[docs]</a><span class="k">class</span> <span class="nc">EmptyExecutorYAML</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""The yaml config file is empty, nothing to read from there."""</span></div>
-
-
 <div class="viewcode-block" id="BadConfigSource"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadConfigSource">[docs]</a><span class="k">class</span> <span class="nc">BadConfigSource</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
     <span class="sd">"""The yaml config file is bad, not loadable or not exist."""</span></div>
 
 
-<div class="viewcode-block" id="BadWorkspace"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadWorkspace">[docs]</a><span class="k">class</span> <span class="nc">BadWorkspace</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Can not determine the separate storage strategy for the executor."""</span></div>
-
-
 <div class="viewcode-block" id="BadClient"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClient">[docs]</a><span class="k">class</span> <span class="nc">BadClient</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""A wrongly defined grpc client, can not communicate with jina server correctly."""</span></div>
+    <span class="sd">"""A wrongly defined client, can not communicate with jina server correctly."""</span></div>
 
 
 <div class="viewcode-block" id="BadClientCallback"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClientCallback">[docs]</a><span class="k">class</span> <span class="nc">BadClientCallback</span><span class="p">(</span><span class="n">BadClient</span><span class="p">):</span>
@@ -457,30 +441,6 @@
 
 <div class="viewcode-block" id="BadClientInput"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadClientInput">[docs]</a><span class="k">class</span> <span class="nc">BadClientInput</span><span class="p">(</span><span class="n">BadClient</span><span class="p">):</span>
     <span class="sd">"""Error in the request generator function on the client side."""</span></div>
-
-
-<div class="viewcode-block" id="BadPersistantFile"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadPersistantFile">[docs]</a><span class="k">class</span> <span class="nc">BadPersistantFile</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Bad or broken dump file that can not be deserialized with ``pickle.load``."""</span></div>
-
-
-<div class="viewcode-block" id="GRPCServerError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.GRPCServerError">[docs]</a><span class="k">class</span> <span class="nc">GRPCServerError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Can not connect to the grpc gateway."""</span></div>
-
-
-<div class="viewcode-block" id="GatewayPartialMessage"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.GatewayPartialMessage">[docs]</a><span class="k">class</span> <span class="nc">GatewayPartialMessage</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Gateway receives a multi-part message but it can not handle it."""</span></div>
-
-
-<div class="viewcode-block" id="UndefinedModel"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.UndefinedModel">[docs]</a><span class="k">class</span> <span class="nc">UndefinedModel</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Any time a non-defined model is tried to be used."""</span></div>
-
-
-<div class="viewcode-block" id="MongoDBException"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MongoDBException">[docs]</a><span class="k">class</span> <span class="nc">MongoDBException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Any errors raised by MongoDb."""</span></div>
-
-
-<div class="viewcode-block" id="TimedOutException"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.TimedOutException">[docs]</a><span class="k">class</span> <span class="nc">TimedOutException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Errors raised for timeout operations."""</span></div>
 
 
 <div class="viewcode-block" id="ModelCheckpointNotExist"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ModelCheckpointNotExist">[docs]</a><span class="k">class</span> <span class="nc">ModelCheckpointNotExist</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
@@ -498,26 +458,6 @@
     <span class="sd">"""Base exception to raise when :command:`jina hub build` fails."""</span></div>
 
 
-<div class="viewcode-block" id="HubBuilderBuildError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.HubBuilderBuildError">[docs]</a><span class="k">class</span> <span class="nc">HubBuilderBuildError</span><span class="p">(</span><span class="n">HubBuilderError</span><span class="p">):</span>
-    <span class="sd">"""Exception to raise when :command:`jina hub build` fails to build image."""</span></div>
-
-
-<div class="viewcode-block" id="HubBuilderTestError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.HubBuilderTestError">[docs]</a><span class="k">class</span> <span class="nc">HubBuilderTestError</span><span class="p">(</span><span class="n">HubBuilderError</span><span class="p">):</span>
-    <span class="sd">"""Exception to raise when :command:`jina hub build` fails to test image."""</span></div>
-
-
-<div class="viewcode-block" id="CompressionRateTooLow"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.CompressionRateTooLow">[docs]</a><span class="k">class</span> <span class="nc">CompressionRateTooLow</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Compression rate is too low, no need to compression."""</span></div>
-
-
-<div class="viewcode-block" id="DryRunException"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DryRunException">[docs]</a><span class="k">class</span> <span class="nc">DryRunException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Dryrun is not successful on the given flow."""</span></div>
-
-
-<div class="viewcode-block" id="BadDocID"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadDocID">[docs]</a><span class="k">class</span> <span class="nc">BadDocID</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exception when user give a non-hex string as the doc id."""</span></div>
-
-
 <div class="viewcode-block" id="BadDocType"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadDocType">[docs]</a><span class="k">class</span> <span class="nc">BadDocType</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">):</span>
     <span class="sd">"""Exception when can not construct a document from the given data."""</span></div>
 
@@ -530,36 +470,12 @@
     <span class="sd">"""Exception when can not construct a named score from the given data."""</span></div>
 
 
-<div class="viewcode-block" id="LengthMismatchException"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.LengthMismatchException">[docs]</a><span class="k">class</span> <span class="nc">LengthMismatchException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exception when length of two items should be identical while not."""</span></div>
-
-
-<div class="viewcode-block" id="ImageAlreadyExists"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ImageAlreadyExists">[docs]</a><span class="k">class</span> <span class="nc">ImageAlreadyExists</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exception when an image with the name, module version, and Jina version already exists on the Hub."""</span></div>
-
-
 <div class="viewcode-block" id="BadImageNameError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadImageNameError">[docs]</a><span class="k">class</span> <span class="nc">BadImageNameError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">"""Exception when an image name can not be found either local &amp; remote"""</span></div>
 
 
 <div class="viewcode-block" id="BadFlowYAMLVersion"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BadFlowYAMLVersion">[docs]</a><span class="k">class</span> <span class="nc">BadFlowYAMLVersion</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">"""Exception when Flow YAML config specifies a wrong version number."""</span></div>
-
-
-<div class="viewcode-block" id="LookupyError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.LookupyError">[docs]</a><span class="k">class</span> <span class="nc">LookupyError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Base exception class for all exceptions raised by lookupy."""</span></div>
-
-
-<div class="viewcode-block" id="EventLoopError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.EventLoopError">[docs]</a><span class="k">class</span> <span class="nc">EventLoopError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exception when a running event loop is found but not under jupyter or ipython."""</span></div>
-
-
-<div class="viewcode-block" id="ZMQSocketError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ZMQSocketError">[docs]</a><span class="k">class</span> <span class="nc">ZMQSocketError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exception when ZMQlet/ZMQStreamlet can not be initialized."""</span></div>
-
-
-<div class="viewcode-block" id="HubLoginRequired"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.HubLoginRequired">[docs]</a><span class="k">class</span> <span class="nc">HubLoginRequired</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Exception to raise for jina hub login."""</span></div>
 
 
 <div class="viewcode-block" id="DaemonConnectivityError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.DaemonConnectivityError">[docs]</a><span class="k">class</span> <span class="nc">DaemonConnectivityError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -570,16 +486,8 @@
     <span class="sd">"""Exeception when user accidentally using a retired argument."""</span></div>
 
 
-<div class="viewcode-block" id="RequestTypeError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.RequestTypeError">[docs]</a><span class="k">class</span> <span class="nc">RequestTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Raised when such request type does not exist."""</span></div>
-
-
 <div class="viewcode-block" id="ValidationError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.ValidationError">[docs]</a><span class="k">class</span> <span class="nc">ValidationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">"""Raised when a certain validation cannot be completed."""</span></div>
-
-
-<div class="viewcode-block" id="MetricTypeError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.MetricTypeError">[docs]</a><span class="k">class</span> <span class="nc">MetricTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">"""Raised when such metric type does not exist."""</span></div>
 
 
 <div class="viewcode-block" id="SocketTypeError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.SocketTypeError">[docs]</a><span class="k">class</span> <span class="nc">SocketTypeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>

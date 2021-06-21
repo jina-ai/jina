@@ -380,15 +380,15 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
-<span class="kn">from</span> <span class="nn">.....enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
 <span class="kn">from</span> <span class="nn">.....parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span>
+<span class="kn">from</span> <span class="nn">.....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">.....proto.jina_pb2</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DenseNdArrayProto</span><span class="p">,</span>
     <span class="n">NdArrayProto</span><span class="p">,</span>
@@ -619,36 +619,89 @@
     <span class="n">used_memory</span><span class="p">:</span> <span class="nb">str</span></div>
 
 
+<span class="k">def</span> <span class="nf">_get_example_data</span><span class="p">():</span>
+    <span class="n">_example</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentArrayProto</span><span class="p">()</span>
+    <span class="n">d0</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐲'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'Azure Dragon'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'East'</span><span class="p">})</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐦'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'Vermilion Bird'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'South'</span><span class="p">})</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐢'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'Black Tortoise'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'North'</span><span class="p">})</span>
+    <span class="n">d3</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">'🐯'</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">'guardian'</span><span class="p">:</span> <span class="s1">'White Tiger'</span><span class="p">,</span> <span class="s1">'position'</span><span class="p">:</span> <span class="s1">'West'</span><span class="p">})</span>
+    <span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
+    <span class="n">d0</span><span class="o">.</span><span class="n">chunks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+    <span class="n">d0</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d3</span><span class="p">)</span>
+    <span class="n">_example</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">d0</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">d1</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">d2</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">d3</span><span class="o">.</span><span class="n">proto</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span>
+        <span class="n">_example</span><span class="p">,</span>
+        <span class="n">including_default_value_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)[</span><span class="s1">'docs'</span><span class="p">]</span>
+
+
 <div class="viewcode-block" id="JinaRequestModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaRequestModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">"""</span>
-<span class="sd">    Jina request model on some endpoint</span>
-
-<span class="sd">    The base model for Jina HTTP request.</span>
+<span class="sd">    Jina HTTP request model.</span>
 <span class="sd">    """</span>
 
-    <span class="c1"># To avoid an error while loading the request model schema on swagger, we've added an example.</span>
-    <span class="n">exec_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
         <span class="n">Union</span><span class="p">[</span>
             <span class="n">List</span><span class="p">[</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">],</span>
             <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
+            <span class="n">List</span><span class="p">[</span>
+                <span class="n">Tuple</span><span class="p">[</span>
+                    <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">,</span>
+                    <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">],</span>
+            <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
+            <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+            <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
         <span class="p">]</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
-        <span class="n">example</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">MessageToDict</span><span class="p">(</span>
-                <span class="n">Document</span><span class="p">()</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-                <span class="n">including_default_value_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">],</span>
+        <span class="n">example</span><span class="o">=</span><span class="n">_get_example_data</span><span class="p">(),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'Data to send, a list of dict/string/bytes that can be converted into a list of `Document` objects'</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">request_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_REQUEST_SIZE</span>
-    <span class="n">data_type</span><span class="p">:</span> <span class="n">DataInputType</span> <span class="o">=</span> <span class="n">DataInputType</span><span class="o">.</span><span class="n">AUTO</span>
-    <span class="n">target_peapod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">target_peapod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">examples</span><span class="o">=</span><span class="s1">'pod1/*'</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'A regex string represent the certain peas/pods request targeted.'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">example</span><span class="o">=</span><span class="p">{</span><span class="s1">'top_k'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'model'</span><span class="p">:</span> <span class="s1">'bert'</span><span class="p">},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'A dictionary of parameters to be sent to the executor.'</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JinaResponseModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaResponseModel">[docs]</a><span class="k">class</span> <span class="nc">JinaResponseModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Jina HTTP Response model. Only `request_id` and `data` are preserved.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="JinaResponseModel.DataRequestModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaResponseModel.DataRequestModel">[docs]</a>    <span class="k">class</span> <span class="nc">DataRequestModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+        <span class="n">docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">groundtruths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">example</span><span class="o">=</span><span class="s1">'b5110ed9-1954-4a3d-9180-0795a1e0d7d8'</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'The id given by Jina service'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataRequestModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">'Returned Documents'</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JinaEndpointRequestModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaEndpointRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaEndpointRequestModel</span><span class="p">(</span><span class="n">JinaRequestModel</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Jina HTTP request model that allows customized endpoint.</span>
+<span class="sd">    """</span>
+
+    <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">example</span><span class="o">=</span><span class="s1">'/foo'</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'The endpoint string, by convention starts with `/`. '</span>
+        <span class="s1">'All executors bind with `@requests(on="/foo")` will receive this request.'</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>
