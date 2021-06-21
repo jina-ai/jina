@@ -9,7 +9,7 @@ import zmq
 from .base import ZMQRuntime
 from ...zmq import ZmqStreamlet
 from .... import __default_endpoint__
-from ....enums import OnErrorStrategy
+from ....enums import OnErrorStrategy, SocketType
 from ....excepts import (
     NoExplicitMessage,
     ExecutorFailToLoad,
@@ -26,6 +26,7 @@ from ....proto import jina_pb2
 from ....types.arrays.document import DocumentArray
 from ....types.message import Message
 from ....types.request import Request
+from ....types.routing.graph import RoutingGraph
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -363,7 +364,14 @@ class ZEDRuntime(ZMQRuntime):
 
         :return: expected number of partial messages
         """
-        return self.args.num_part if self.message.is_data_request else 1
+        if self.message.is_data_request:
+            if self.args.socket_in == SocketType.ROUTER_BIND:
+                graph = RoutingGraph(self._message.envelope.routing_graph)
+                return graph.active_target_pod.expected_parts
+            else:
+                return self.args.num_part
+        else:
+            return 1
 
     @property
     def partial_requests(self) -> List['Request']:

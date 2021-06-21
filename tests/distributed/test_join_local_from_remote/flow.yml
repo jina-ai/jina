@@ -3,6 +3,7 @@ version: '1'
 with:
   port_expose: 45678
   show_exc_info: true
+  host: flow
 pods:
   - name: pod1
     host: $JINA_POD1_HOST
@@ -18,6 +19,7 @@ pods:
     needs: [gateway]
   - name: join_all
     method: needs
+    host: flow
     uses: merge.yml
     needs: [pod2, pod3]
     read_only: true

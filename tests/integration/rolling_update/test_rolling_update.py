@@ -207,12 +207,6 @@ def test_port_configuration(replicas_and_parallel):
             assert pod.args.replicas == len(middle_args)
             return pod.head_args.port_in, pod.tail_args.port_out
 
-    def validate_ports_pods(pods):
-        for i in range(len(pods) - 1):
-            _, port_out = get_outer_ports(*extract_pod_args(pods[i]))
-            port_in_next, _ = get_outer_ports(*extract_pod_args(pods[i + 1]))
-            assert port_out == port_in_next
-
     def validate_ports_replica(replica, replica_port_in, replica_port_out, parallel):
         assert replica_port_in == replica.args.port_in
         assert replica.args.port_out == replica_port_out
@@ -247,11 +241,7 @@ def test_port_configuration(replicas_and_parallel):
 
     with flow:
         pods = flow._pod_nodes
-        validate_ports_pods(
-            [pods['gateway']]
-            + [pods[f'pod{i}'] for i in range(len(replicas_and_parallel))]
-            + [pods['gateway']]
-        )
+
         for pod_name, pod in pods.items():
             if pod_name == 'gateway':
                 continue

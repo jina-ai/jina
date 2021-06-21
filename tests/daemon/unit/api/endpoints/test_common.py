@@ -22,7 +22,7 @@ def test_status(api, fastapi_client):
 
 
 @pytest.mark.parametrize('api', ['/peas', '/pods', '/flows', '/workspaces'])
-def test_status(api, fastapi_client):
+def test_status2(api, fastapi_client):
     response = fastapi_client.delete(f'{api}')
     print(response.json())
     assert response.status_code == 200

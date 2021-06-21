@@ -65,7 +65,6 @@ def set_gateway_parser(parser=None):
     from .peapods.base import mixin_base_ppr_parser
     from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
-    from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import (
         mixin_remote_parser,
         mixin_prefetch_gateway_parser,
@@ -94,6 +93,25 @@ def set_gateway_parser(parser=None):
         runtime_cls='GRPCRuntime',
         pod_role=PodRoleType.GATEWAY,
     )
+
+    parser.add_argument(
+        '--routing-graph',
+        default=None,
+        help='Routing graph for the gateway',
+    )
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        dest='dynamic_routing',
+        help='Tells if the gateway should incoming and outgoing traffic as dynamic routing.',
+    )
+    parser.add_argument(
+        '--no-dynamic-routing',
+        action='store_false',
+        dest='dynamic_routing',
+        help='The Gateway should not do dynamic routing.',
+    )
+    parser.set_defaults(dynamic_routing=True)
 
     return parser
 
@@ -125,7 +143,7 @@ def get_main_parser():
     :return: the parser
     """
     from .base import set_base_parser
-    from .helloworld import set_hw_parser, set_hello_parser
+    from .helloworld import set_hello_parser
     from .helper import _chf, _SHOW_ALL_ARGS
 
     from .export_api import set_export_api_parser
@@ -142,8 +160,8 @@ def get_main_parser():
     sp = parser.add_subparsers(
         dest='cli',
         description='''
-        Use `%(prog)-8s [sub-command] --help` to get detailed information about each sub-command. 
-        
+        Use `%(prog)-8s [sub-command] --help` to get detailed information about each sub-command.
+
         To show all commands, run `JINA_FULL_CLI=1 jina --help`.
         ''',
         required=True,
