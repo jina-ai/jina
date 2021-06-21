@@ -378,6 +378,7 @@
         <h1>Source code for jina.peapods.runtimes.base</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeTerminated</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 
 
@@ -457,7 +458,34 @@
         <span class="sd">"""Method called immediately after :meth:`run_forever` is unblocked.</span>
 <span class="sd">        You can tidy up things here.  Optional in subclasses. The default implementation does nothing.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exc_type</span> <span class="o">==</span> <span class="n">RuntimeTerminated</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> is ended'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">exc_type</span> <span class="o">==</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s1"> is interrupted by user'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">exc_type</span> <span class="ow">in</span> <span class="p">{</span><span class="ne">Exception</span><span class="p">,</span> <span class="ne">SystemError</span><span class="p">}:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">exc_val</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_forever</span><span class="si">!r}</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
+                <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">teardown</span><span class="si">!r}</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
+                <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
+                <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
+            <span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>
