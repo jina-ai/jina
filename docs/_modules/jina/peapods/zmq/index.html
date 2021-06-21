@@ -555,7 +555,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'input </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host_in</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_out_routing</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span><span class="p">:</span>
                 <span class="n">out_sock</span><span class="p">,</span> <span class="n">out_addr</span> <span class="o">=</span> <span class="n">_init_socket</span><span class="p">(</span>
                     <span class="n">ctx</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host_out</span><span class="p">,</span>
@@ -671,7 +671,7 @@
 <span class="sd">        """</span>
         <span class="c1"># choose output sock</span>
         <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_data_request</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_out_routing</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_dynamic</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="k">return</span>
             <span class="n">out_sock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span>
@@ -745,7 +745,7 @@
 <span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
         <span class="c1"># await asyncio.sleep(sleep)  # preventing over-speed sending</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_out_routing</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_dynamic</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>

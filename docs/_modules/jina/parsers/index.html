@@ -377,6 +377,8 @@
         </label>
         <h1>Source code for jina.parsers</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">jina.parsers.client</span> <span class="kn">import</span> <span class="n">mixin_comm_protocol_parser</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
 
 
 <div class="viewcode-block" id="set_pea_parser"><a class="viewcode-back" href="../../../api/jina.parsers/#jina.parsers.set_pea_parser">[docs]</a><span class="k">def</span> <span class="nf">set_pea_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -475,21 +477,8 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--routing-graph'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Routing graph for the gateway'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Routing graph for the gateway'</span> <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span> <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--dynamic-routing'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Tells if the gateway should incoming and outgoing traffic as dynamic routing.'</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--no-dynamic-routing'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_false'</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The Gateway should not do dynamic routing.'</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">dynamic_routing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
 

@@ -394,18 +394,9 @@
 <span class="sd">    :param unit: Unit of the memory, default in Gigabytes.</span>
 <span class="sd">    :return: Memory usage of the current process.</span>
 <span class="sd">    """</span>
-    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">resource</span>
+    <span class="kn">import</span> <span class="nn">resource</span>
 
-        <span class="k">return</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="n">unit</span>
-
-    <span class="kn">from</span> <span class="nn">.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
-
-    <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-        <span class="s1">'module "resource" can not be found and you are likely running it on Windows, '</span>
-        <span class="s1">'i will return 0'</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="mi">0</span></div>
+    <span class="k">return</span> <span class="n">resource</span><span class="o">.</span><span class="n">getrusage</span><span class="p">(</span><span class="n">resource</span><span class="o">.</span><span class="n">RUSAGE_SELF</span><span class="p">)</span><span class="o">.</span><span class="n">ru_maxrss</span> <span class="o">/</span> <span class="n">unit</span></div>
 
 
 <div class="viewcode-block" id="used_memory_readable"><a class="viewcode-back" href="../../../../api/jina.logging.profile/#jina.logging.profile.used_memory_readable">[docs]</a><span class="k">def</span> <span class="nf">used_memory_readable</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

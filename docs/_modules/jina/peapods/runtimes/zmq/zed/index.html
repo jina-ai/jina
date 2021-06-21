@@ -540,7 +540,6 @@
         <span class="c1"># all meta information should be stored and accessed via `msg.envelope`</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_active_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">print_stats</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_memory_watermark</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expect_parts</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>

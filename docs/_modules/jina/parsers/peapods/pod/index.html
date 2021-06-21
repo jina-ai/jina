@@ -431,19 +431,6 @@
 <span class="s1">'''</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--dynamic-routing'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--no-dynamic-routing'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_false'</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The Gateway should not do dynamic routing.'</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">dynamic_routing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--scheduling'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">SchedulerType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
@@ -460,6 +447,15 @@
         <span class="s1">'This Pod will not be context managed by the Flow.'</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--peas-hosts'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'+'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''The hosts of the peas when parallel greater than 1.</span>
+<span class="s1">        Peas will be evenly distributed among the hosts. By default,</span>
+<span class="s1">        peas are running on host provided by the argument ``host``'''</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="c1"># hidden CLI used for internal only</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -469,14 +465,6 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'The role of this pod in the flow'</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--peas-hosts'</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s1">'+'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''The hosts of the peas when parallel greater than 1.</span>
-<span class="s1">        Peas will be evenly distributed among the hosts. By default,</span>
-<span class="s1">        peas are running on host provided by the argument ``host``'''</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>

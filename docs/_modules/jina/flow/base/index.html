@@ -879,7 +879,7 @@
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</span>
-<span class="sd">        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow.</span>
+<span class="sd">        :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for input, by default it is 0.0.0.0</span>
 <span class="sd">        :param host_out: The host address for output, by default it is 0.0.0.0</span>
@@ -1416,6 +1416,7 @@
             <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
             <span class="n">port_expose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
             <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
+            <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
