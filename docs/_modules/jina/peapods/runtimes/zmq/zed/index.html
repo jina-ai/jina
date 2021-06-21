@@ -549,6 +549,14 @@
         <span class="n">msg</span><span class="o">.</span><span class="n">update_timestamp</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_params</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">executor_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">parsed_params</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="n">specific_parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">executor_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">specific_parameters</span><span class="p">:</span>
+            <span class="n">parsed_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">specific_parameters</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed_params</span>
+
     <span class="k">def</span> <span class="nf">_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ZEDRuntime'</span><span class="p">:</span>
         <span class="sd">"""Register the current message to this pea, so that all message-related properties are up-to-date, including</span>
 <span class="sd">        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle</span>
@@ -579,11 +587,13 @@
         <span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span>
 
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
         <span class="c1"># executor logic</span>
         <span class="n">r_docs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">(</span>
             <span class="n">req_endpoint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="p">,</span>
             <span class="n">docs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">docs</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
             <span class="n">docs_matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">docs_matrix</span><span class="p">,</span>
             <span class="n">groundtruths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">groundtruths</span><span class="p">,</span>
             <span class="n">groundtruths_matrix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">groundtruths_matrix</span><span class="p">,</span>
