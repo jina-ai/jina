@@ -291,8 +291,19 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
     import docker
 
     mock = mocker.Mock()
+    mocker.patch(
+        'jina.peapods.runtimes.zmq.base.ZMQRuntime.is_ready',
+        return_value=True,
+    )
 
     class MockContainers:
+        class MockContainer:
+            def reload(self):
+                pass
+
+            def logs(self, **kwargs):
+                return []
+
         def __init__(self):
             pass
 
@@ -305,6 +316,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             assert kwargs['environment'] == ['VAR1=BAR', 'VAR2=FOO']
             assert 'hello' in kwargs
             assert kwargs['hello'] == 0
+            return MockContainers.MockContainer()
 
     class MockClient:
         def __init__(self, *args, **kwargs):
@@ -335,8 +347,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             'environment: ["VAR1=BAR", "VAR2=FOO"]',
         ]
     )
-    runtime = ContainerRuntime(args)
-    runtime._docker_run(replay=False)
+    _ = ContainerRuntime(args, ctrl_addr='')
     expected_args = {'hello': 0, 'ports': None, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
     mock.assert_called_with(**expected_args)
 
