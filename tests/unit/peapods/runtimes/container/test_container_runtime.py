@@ -64,7 +64,7 @@ def test_flow_with_one_container_pod(docker_image_built):
     f = Flow().add(name='dummyEncoder1', uses=f'docker://{img_name}')
 
     with f:
-        f.index(inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
 
 
 def test_flow_with_replica_container_ext_yaml(docker_image_built):
@@ -72,12 +72,13 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
         name='dummyEncoder3',
         uses=f'docker://{img_name}',
         parallel=3,
+        entrypoint='jina pea',
     )
 
     with f:
-        f.index(inputs=random_docs(10))
-        f.index(inputs=random_docs(10))
-        f.index(inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
 
 
 def test_flow_topo1(docker_image_built):
@@ -86,24 +87,24 @@ def test_flow_topo1(docker_image_built):
         .add(
             name='d0',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
         )
         .add(
             name='d1',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
         )
         .add(
             name='d2',
             uses='docker://jinaai/jina:test-pip',
             needs='d0',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
         )
         .join(['d2', 'd1'])
     )
 
     with f:
-        f.index(inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
 
 
 def test_flow_topo_mixed(docker_image_built, _logforward):
@@ -112,20 +113,20 @@ def test_flow_topo_mixed(docker_image_built, _logforward):
         .add(
             name='d4',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
         )
         .add(name='d5', uses=_logforward)
         .add(
             name='d6',
             uses='docker://jinaai/jina:test-pip',
             needs='d4',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
         )
         .join(['d6', 'd5'])
     )
 
     with f:
-        f.index(inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
 
 
 def test_flow_topo_parallel():
@@ -134,21 +135,21 @@ def test_flow_topo_parallel():
         .add(
             name='d7',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
             parallel=3,
         )
         .add(name='d8', parallel=3)
         .add(
             name='d9',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
             needs='d7',
         )
         .join(['d9', 'd8'])
     )
 
     with f:
-        f.index(inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
 
 
 def test_flow_topo_ldl_parallel():
@@ -158,14 +159,14 @@ def test_flow_topo_ldl_parallel():
         .add(
             name='d11',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
             parallel=3,
         )
         .add(name='d12')
     )
 
     with f:
-        f.index(inputs=random_docs(10))
+        f.post(on='/index', inputs=random_docs(10))
 
 
 def test_container_ping(docker_image_built):
@@ -188,7 +189,7 @@ def test_tail_host_docker2local_parallel():
         .add(
             name='d10',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
             parallel=3,
         )
         .add(name='d11')
@@ -203,7 +204,7 @@ def test_tail_host_docker2local():
         .add(
             name='d12',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pod',
+            entrypoint='jina pea',
         )
         .add(name='d13')
     )

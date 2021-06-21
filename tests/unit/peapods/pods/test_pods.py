@@ -45,14 +45,7 @@ def test_name(pod_args):
 def test_host(pod_args):
     with Pod(pod_args) as pod:
         assert pod.host == '0.0.0.0'
-        assert pod.host_in == '0.0.0.0'
-        assert pod.host_out == '0.0.0.0'
-
-
-def test_address_in_out(pod_args):
-    with Pod(pod_args) as pod:
-        assert pod.host in pod.address_in
-        assert pod.host in pod.address_out
+        assert pod.head_host == '0.0.0.0'
 
 
 def test_is_ready(pod_args):

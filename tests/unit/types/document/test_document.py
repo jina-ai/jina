@@ -8,6 +8,8 @@ import tensorflow as tf
 import torch
 from scipy.sparse import coo_matrix, bsr_matrix, csr_matrix, csc_matrix
 
+from jina import DocumentArray
+from jina.logging.profile import TimeContext
 from jina.proto.jina_pb2 import DocumentProto
 from jina.types.document import Document
 from jina.types.ndarray.generic import NdArray
@@ -512,25 +514,29 @@ def test_document_to_json(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = json.loads(doc.json())
     present_keys = sorted(doc_dict.keys())
-    assert present_keys == ['id']
+    assert present_keys == ['content_hash', 'id']
 
 
 def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = doc.dict()
     present_keys = sorted(doc_dict.keys())
-    assert present_keys == ['id']
+    assert present_keys == ['content_hash', 'id']
 
 
 def test_non_empty_fields():
     d_score = Document(scores={'score': NamedScore(value=42)})
-    assert d_score.non_empty_fields == ('id', 'scores')
+    assert d_score.non_empty_fields == (
+        'id',
+        'content_hash',
+        'scores',
+    )
 
     d = Document()
-    assert d.non_empty_fields == ('id',)
+    assert d.non_empty_fields == ('id', 'content_hash')
 
     d = Document(id='')
-    assert not d.non_empty_fields
+    assert d.non_empty_fields == ('content_hash',)
 
 
 def test_get_attr_values():
@@ -1046,6 +1052,62 @@ def test_tag_compare_dict():
     d.tags = {'hey': [1, 2]}
     assert d.tags == {'hey': [1, 2]}
     assert d.tags.dict() == {'hey': [1, 2]}
+
+
+def test_content_hash():
+    d0 = Document(content='a', hash_content=False)
+    assert d0.content
+    assert not d0.content_hash
+
+    empty_doc = Document()
+    assert not empty_doc.content
+    assert empty_doc.content_hash
+
+    # warning: a Doc with empty content will have a hash -- it hashes ''
+    assert empty_doc.content_hash != d0.content_hash
+
+    d1 = Document(content='text')
+    init_content_hash = d1.content_hash
+    assert init_content_hash
+    d1.update_content_hash()
+    assert init_content_hash == d1.content_hash
+
+    d2 = Document(content='text')
+    assert init_content_hash == d2.content_hash
+
+    d3 = Document(content='text1')
+    assert init_content_hash != d3.content_hash
+
+    d4 = Document(id='a')
+    d5 = Document(id='b')
+    assert d5.content_hash == d4.content_hash
+
+    d6 = Document(d2.proto)
+    assert d6.content_hash == d2.content_hash
+
+    d7 = Document(d2)
+    assert d6.content_hash == d2.content_hash == d7.content_hash
+
+    nr = 10
+    with TimeContext(f'creating {nr} docs without hashing content at init'):
+        da = DocumentArray()
+        for _ in range(nr):
+            d = Document(content='text' * 2, hash_content=False)
+            da.append(d)
+
+        with TimeContext(f'iterating through docs without content hash'):
+            for d in da:
+                assert not d.content_hash
+
+    with TimeContext(f'creating {nr} docs with hashing content at init'):
+        da = DocumentArray()
+        for _ in range(nr):
+            d = Document(content='text' * 2)
+            da.append(d)
+
+        with TimeContext(f'iterating through docs with content hash'):
+            for d in da:
+                assert d.content_hash
 
 
 def test_tags_update_nested_lists():
