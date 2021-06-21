@@ -271,7 +271,7 @@ class BasePod(ExitFIFO):
         .. # noqa: DAR101
         """
         raise NotImplementedError(
-            'Set routing graph should only be called for `GateWayPod`'
+            'Set routing graph should only be called for `Pod`'
         )
 
 
