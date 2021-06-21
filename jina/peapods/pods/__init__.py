@@ -265,6 +265,15 @@ class BasePod(ExitFIFO):
         """
         ...
 
+    def set_routing_graph(self, *args, **kwargs):
+        """
+        .. # noqa: DAR102
+        .. # noqa: DAR101
+        """
+        raise NotImplementedError(
+            'Set routing graph should only be called for `GateWayPod`'
+        )
+
 
 class Pod(BasePod):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
