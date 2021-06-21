@@ -177,7 +177,7 @@ class Zmqlet:
             self.logger.debug(
                 f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}'
             )
-            if not self.args.dynamic_out_routing:
+            if not self.args.dynamic_routing_out:
                 out_sock, out_addr = _init_socket(
                     ctx,
                     self.args.host_out,
@@ -293,7 +293,7 @@ class Zmqlet:
         """
         # choose output sock
         if msg.is_data_request:
-            if self.args.dynamic_out_routing:
+            if self.args.dynamic_routing_out:
                 self._send_message_dynamic(msg)
                 return
             out_sock = self.out_sock
@@ -367,7 +367,7 @@ class AsyncZmqlet(Zmqlet):
         :param kwargs: keyword arguments
         """
         # await asyncio.sleep(sleep)  # preventing over-speed sending
-        if self.args.dynamic_out_routing:
+        if self.args.dynamic_routing_out:
             await self._send_message_dynamic(msg)
         else:
             self._send_message_via(self.out_sock, msg)
