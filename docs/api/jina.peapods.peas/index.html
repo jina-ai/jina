@@ -413,13 +413,36 @@
 or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code> to manage the lifecycle of a <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRuntime</span></code> object in a robust way.</p>
 <p>A <a class="reference internal" href="#jina.peapods.peas.BasePea" title="jina.peapods.peas.BasePea"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasePea</span></code></a> must be equipped with a proper <code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime</span></code> class to work.</p>
 <dl class="py attribute">
-<dt id="jina.peapods.peas.BasePea.runtime_cls">
-<code class="sig-name descname"><span class="pre">runtime_cls</span></code><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.peapods.peas.BasePea.runtime_cls" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
 <dt id="jina.peapods.peas.BasePea.daemon">
 <code class="sig-name descname"><span class="pre">daemon</span></code><a class="headerlink" href="#jina.peapods.peas.BasePea.daemon" title="Permalink to this definition">¶</a></dt>
 <dd><p>required here to set process/thread daemon</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.peas.BasePea.start">
+<code class="sig-name descname"><span class="pre">start</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/peas/#BasePea.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.peas.BasePea.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the Pea.
+This method calls <a class="reference internal" href="#jina.peapods.peas.BasePea.start" title="jina.peapods.peas.BasePea.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocesssing.Process</span></code>.
+.. #noqa: DAR201</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.peas.BasePea.join">
+<code class="sig-name descname"><span class="pre">join</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/peas/#BasePea.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.peas.BasePea.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>Joins the Pea.
+This method calls <a class="reference internal" href="#jina.peapods.peas.BasePea.join" title="jina.peapods.peas.BasePea.join"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join()</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocesssing.Process</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – extra positional arguments to pass to join</p></li>
+<li><p><strong>kwargs</strong> – extra keyword arguments to pass to join</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.peas.BasePea.terminate">
+<code class="sig-name descname"><span class="pre">terminate</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/peas/#BasePea.terminate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.peas.BasePea.terminate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminate the Pea.
+This method calls <a class="reference internal" href="#jina.peapods.peas.BasePea.terminate" title="jina.peapods.peas.BasePea.terminate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">terminate()</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocesssing.Process</span></code>.</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.peas.BasePea.run">
@@ -433,10 +456,9 @@ Hence, please do not raise any exception here.</p>
 </div>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.peapods.peas.BasePea.start">
-<code class="sig-name descname"><span class="pre">start</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/peas/#BasePea.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.peas.BasePea.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start the Pea.</p>
-<p>This method overrides <a class="reference internal" href="#jina.peapods.peas.BasePea.start" title="jina.peapods.peas.BasePea.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a> in <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">multiprocesssing.Process</span></code>.</p>
+<dt id="jina.peapods.peas.BasePea.activate_runtime">
+<code class="sig-name descname"><span class="pre">activate_runtime</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/peas/#BasePea.activate_runtime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.peas.BasePea.activate_runtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send activate control message.</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.peas.BasePea.wait_start_success">

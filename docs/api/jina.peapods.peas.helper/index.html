@@ -395,21 +395,17 @@
         <div class="section" id="module-jina.peapods.peas.helper">
 <span id="jina-peapods-peas-helper-module"></span><h1>jina.peapods.peas.helper module<a class="headerlink" href="#module-jina.peapods.peas.helper" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="jina.peapods.peas.helper.PeaType">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.peas.helper.</span></code><code class="sig-name descname"><span class="pre">PeaType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dct</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/peas/helper/#PeaType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.peas.helper.PeaType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
-<p>Type of <code class="xref py py-class docutils literal notranslate"><span class="pre">Pea</span></code>, metaclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePea</span></code>.</p>
-<p>Create and register a new class with this meta class.</p>
+<dt id="jina.peapods.peas.helper.ConditionalEvent">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.peas.helper.</span></code><code class="sig-name descname"><span class="pre">ConditionalEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backend_runtime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/peas/helper/#ConditionalEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.peas.helper.ConditionalEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p><a class="reference internal" href="#jina.peapods.peas.helper.ConditionalEvent" title="jina.peapods.peas.helper.ConditionalEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConditionalEvent</span></code></a> provides a common interface to an event (multiprocessing or threading event)
+that gets triggered when any of the events provided in input is triggered (OR logic)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – name of the <code class="xref py py-class docutils literal notranslate"><span class="pre">Pea</span></code></p></li>
-<li><p><strong>bases</strong> – bases of <code class="xref py py-class docutils literal notranslate"><span class="pre">Pea</span></code></p></li>
-<li><p><strong>dct</strong> – arguments dictionary</p></li>
+<li><p><strong>backend_runtime</strong> (<a class="reference internal" href="../jina.enums/#jina.enums.RuntimeBackendType" title="jina.enums.RuntimeBackendType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeBackendType</span></code></a>) – The runtime type to decide which type of Event to instantiate</p></li>
+<li><p><strong>events_list</strong> – The list of events that compose this composable event</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>registered class</p>
 </dd>
 </dl>
 </dd></dl>

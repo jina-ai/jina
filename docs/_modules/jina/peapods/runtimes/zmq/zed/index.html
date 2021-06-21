@@ -371,7 +371,8 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.peapods.runtimes.zmq.zed</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">re</span>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
@@ -403,11 +404,8 @@
 <div class="viewcode-block" id="ZEDRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime">[docs]</a><span class="k">class</span> <span class="nc">ZEDRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""</span>
 
-<div class="viewcode-block" id="ZEDRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Start the `ZmqStreamlet`."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_callback</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="ZEDRuntime.setup"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">)</span>
         <span class="sd">"""Initialize private parameters and execute private loading functions."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_active_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
@@ -425,7 +423,11 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_zmqlet</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_plugins</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_executor</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_executor</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ZEDRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Start the `ZmqStreamlet`."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_callback</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ZEDRuntime.teardown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Close the `ZmqStreamlet` and `Executor`."""</span>

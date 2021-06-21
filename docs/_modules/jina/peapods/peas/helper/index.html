@@ -371,14 +371,15 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.peapods.peas.helper</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">from</span> <span class="nn">multiprocessing.synchronize</span> <span class="kn">import</span> <span class="n">Event</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">RuntimeBackendType</span>
 
 
-<span class="k">def</span> <span class="nf">_get_event</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_event</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">]:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">):</span>
@@ -389,79 +390,51 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_make_or_event</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="n">events</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
-    <span class="n">or_event</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<div class="viewcode-block" id="ConditionalEvent"><a class="viewcode-back" href="../../../../../api/jina.peapods.peas.helper/#jina.peapods.peas.helper.ConditionalEvent">[docs]</a><span class="k">class</span> <span class="nc">ConditionalEvent</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    :class:`ConditionalEvent` provides a common interface to an event (multiprocessing or threading event)</span>
+<span class="sd">    that gets triggered when any of the events provided in input is triggered (OR logic)</span>
 
-    <span class="k">def</span> <span class="nf">or_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+<span class="sd">    :param backend_runtime: The runtime type to decide which type of Event to instantiate</span>
+<span class="sd">    :param events_list: The list of events that compose this composable event</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">or_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="p">()</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend_runtime</span><span class="p">:</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">events_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">backend_runtime</span> <span class="o">==</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">synchronize</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="o">=</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">get_context</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_list</span> <span class="o">=</span> <span class="n">events_list</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_state_changed</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">orify</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">changed_callback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_changed</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_state_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bools</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_list</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">bools</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_custom_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">_set</span><span class="p">()</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">_state_changed</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_custom_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">_state_changed</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">changed_callback</span><span class="p">):</span>
         <span class="n">e</span><span class="o">.</span><span class="n">_set</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">set</span>
         <span class="n">e</span><span class="o">.</span><span class="n">_clear</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">clear</span>
-        <span class="n">e</span><span class="o">.</span><span class="n">changed</span> <span class="o">=</span> <span class="n">changed_callback</span>
-        <span class="n">e</span><span class="o">.</span><span class="n">set</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">or_set</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="n">e</span><span class="o">.</span><span class="n">clear</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">or_clear</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">changed</span><span class="p">():</span>
-        <span class="n">bools</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">bools</span><span class="p">):</span>
-            <span class="n">or_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">or_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-
-    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
-        <span class="n">orify</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">changed</span><span class="p">)</span>
-    <span class="n">changed</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">or_event</span>
-
-
-<div class="viewcode-block" id="PeaType"><a class="viewcode-back" href="../../../../../api/jina.peapods.peas.helper/#jina.peapods.peas.helper.PeaType">[docs]</a><span class="k">class</span> <span class="nc">PeaType</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="sd">"""Type of :class:`Pea`, metaclass of :class:`BasePea`."""</span>
-
-    <span class="n">_dct</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Create and register a new class with this meta class.</span>
-
-<span class="sd">        :param name: name of the :class:`Pea`</span>
-<span class="sd">        :param bases: bases of :class:`Pea`</span>
-<span class="sd">        :param dct: arguments dictionary</span>
-<span class="sd">        :return: registered class</span>
-<span class="sd">        """</span>
-        <span class="n">_cls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">dct</span><span class="p">)</span>
-        <span class="n">PeaType</span><span class="o">.</span><span class="n">_dct</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">'cls'</span><span class="p">:</span> <span class="bp">cls</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">'bases'</span><span class="p">:</span> <span class="n">bases</span><span class="p">,</span> <span class="s1">'dct'</span><span class="p">:</span> <span class="n">dct</span><span class="p">}}</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">_cls</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'PeaType'</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        change runtime backend</span>
-
-<span class="sd">        :param args: arguments</span>
-<span class="sd">        :param kwargs: keyword arguments</span>
-<span class="sd">        :return: Call self as a function.</span>
-<span class="sd">        """</span>
-        <span class="c1"># switch to the new backend</span>
-        <span class="n">_cls</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">,</span>
-            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">PROCESS</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">,</span>
-        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'runtime_backend'</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">))</span>
-
-        <span class="c1"># rebuild the class according to mro</span>
-        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mro</span><span class="p">()[</span><span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="n">arg_cls</span> <span class="o">=</span> <span class="n">PeaType</span><span class="o">.</span><span class="n">_dct</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">][</span><span class="s1">'cls'</span><span class="p">]</span>
-            <span class="n">arg_name</span> <span class="o">=</span> <span class="n">PeaType</span><span class="o">.</span><span class="n">_dct</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">][</span><span class="s1">'name'</span><span class="p">]</span>
-            <span class="n">arg_dct</span> <span class="o">=</span> <span class="n">PeaType</span><span class="o">.</span><span class="n">_dct</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="vm">__name__</span><span class="p">][</span><span class="s1">'dct'</span><span class="p">]</span>
-            <span class="n">_cls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">arg_cls</span><span class="p">,</span> <span class="n">arg_name</span><span class="p">,</span> <span class="p">(</span><span class="n">_cls</span><span class="p">,),</span> <span class="n">arg_dct</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="nb">type</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="n">e</span><span class="o">.</span><span class="n">_state_changed</span> <span class="o">=</span> <span class="n">changed_callback</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">set</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_set</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">clear</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_clear</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

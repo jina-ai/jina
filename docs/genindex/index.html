@@ -378,14 +378,8 @@
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime.activate">activate() (jina.peapods.runtimes.base.BaseRuntime method)</a>
-
-        <ul>
-          <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.activate">(jina.peapods.runtimes.jinad.JinadRuntime method)</a>
+        <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.activate_runtime">activate_runtime() (jina.peapods.peas.BasePea method)</a>
 </li>
-          <li><a href="../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQRuntime.activate">(jina.peapods.runtimes.zmq.base.ZMQRuntime method)</a>
-</li>
-        </ul></li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">add() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
@@ -678,14 +672,6 @@
         </ul></li>
         <li><a href="../api/jina.clients.helper/#jina.clients.helper.callback_exec">callback_exec() (in module jina.clients.helper)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime.cancel">cancel() (jina.peapods.runtimes.base.BaseRuntime method)</a>
-
-        <ul>
-          <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.cancel">(jina.peapods.runtimes.jinad.JinadRuntime method)</a>
-</li>
-          <li><a href="../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQRuntime.cancel">(jina.peapods.runtimes.zmq.base.ZMQRuntime method)</a>
-</li>
-        </ul></li>
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.CategoricalParameter">CategoricalParameter (class in jina.optimizers.parameters)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.ChainedPodException">ChainedPodException</a>
@@ -796,15 +782,17 @@
 </li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin">CommandMixin (class in jina.types.request.mixin)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.complete_path">complete_path() (in module jina.jaml.helper)</a>
 </li>
         <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">CompoundPod (class in jina.peapods.pods.compound)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.CompressAlgo">CompressAlgo (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.CompressionRateTooLow">CompressionRateTooLow</a>
+</li>
+        <li><a href="../api/jina.peapods.peas.helper/#jina.peapods.peas.helper.ConditionalEvent">ConditionalEvent (class in jina.peapods.peas.helper)</a>
 </li>
         <li><a href="../api/jina.optimizers.discovery/#jina.optimizers.discovery.config_global_environment">config_global_environment() (in module jina.optimizers.discovery)</a>
 </li>
@@ -1088,10 +1076,10 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.DaemonConnectivityError">DaemonConnectivityError</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus">DaemonStatus (class in daemon.models.status)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus">DaemonStatus (class in daemon.models.status)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.RequestType.DATA">DATA (jina.enums.RequestType attribute)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaRequestModel.data">data (jina.peapods.runtimes.asyncio.http.models.JinaRequestModel attribute)</a>
@@ -1102,14 +1090,6 @@
 </li>
         <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest">DataRequest (class in jina.types.request.data)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime.deactivate">deactivate() (jina.peapods.runtimes.base.BaseRuntime method)</a>
-
-        <ul>
-          <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.deactivate">(jina.peapods.runtimes.jinad.JinadRuntime method)</a>
-</li>
-          <li><a href="../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQRuntime.deactivate">(jina.peapods.runtimes.zmq.base.ZMQRuntime method)</a>
-</li>
-        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.DEALER_CONNECT">DEALER_CONNECT (jina.enums.SocketType attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.DEBUG">DEBUG (jina.enums.LogVerbosity attribute)</a>
@@ -2774,6 +2754,8 @@
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.join">(jina.flow.base.Flow method)</a>
 </li>
+          <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.join">(jina.peapods.peas.BasePea method)</a>
+</li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.join">(jina.peapods.pods.BasePod method)</a>
 </li>
           <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod.join">(jina.peapods.pods.compound.CompoundPod method)</a>
@@ -3540,8 +3522,6 @@
 </li>
         <li><a href="../api/daemon.stores.pea/#daemon.stores.pea.PeaStore">PeaStore (class in daemon.stores.pea)</a>
 </li>
-        <li><a href="../api/jina.peapods.peas.helper/#jina.peapods.peas.helper.PeaType">PeaType (class in jina.peapods.peas.helper)</a>
-</li>
         <li><a href="../api/cli.api/#cli.api.ping">ping() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.PlainFormatter">PlainFormatter (class in jina.logging.formatter)</a>
@@ -3848,8 +3828,6 @@
 </li>
         <li><a href="../api/daemon.excepts/#daemon.excepts.Runtime400Exception">Runtime400Exception</a>
 </li>
-        <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.runtime_cls">runtime_cls (jina.peapods.peas.BasePea attribute)</a>
-</li>
         <li><a href="../api/jina.enums/#jina.enums.RuntimeBackendType">RuntimeBackendType (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.RuntimeFailToStart">RuntimeFailToStart</a>
@@ -3970,18 +3948,6 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_pod_parser">set_pod_parser() (in module jina.parsers)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.asyncio.base/#jina.peapods.runtimes.asyncio.base.AsyncNewLoopRuntime.setup">setup() (jina.peapods.runtimes.asyncio.base.AsyncNewLoopRuntime method)</a>
-
-        <ul>
-          <li><a href="../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime.setup">(jina.peapods.runtimes.base.BaseRuntime method)</a>
-</li>
-          <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.setup">(jina.peapods.runtimes.container.ContainerRuntime method)</a>
-</li>
-          <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.setup">(jina.peapods.runtimes.jinad.JinadRuntime method)</a>
-</li>
-          <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.setup">(jina.peapods.runtimes.zmq.zed.ZEDRuntime method)</a>
-</li>
-        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.SingleFlowRunner">SingleFlowRunner (class in jina.optimizers.flow_runner)</a>
@@ -4080,6 +4046,8 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.SUCCESS">SUCCESS (jina.enums.LogVerbosity attribute)</a>
 </li>
+        <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.success">success() (jina.logging.logger.JinaLogger method)</a>
+</li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.supported">supported (jina.logging.logger.JinaLogger attribute)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper">SysLogHandlerWrapper (class in jina.logging.logger)</a>
@@ -4122,6 +4090,8 @@
           <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.teardown">(jina.peapods.runtimes.zmq.zed.ZEDRuntime method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.terminate">terminate() (jina.peapods.peas.BasePea method)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.text">text() (jina.Document property)</a>
 
         <ul>

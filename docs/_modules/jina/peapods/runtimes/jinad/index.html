@@ -376,7 +376,6 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">PeaDaemonClient</span>
-<span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span><span class="p">,</span> <span class="n">send_ctrl_message</span>
 <span class="kn">from</span> <span class="nn">..asyncio.base</span> <span class="kn">import</span> <span class="n">AsyncZMQRuntime</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">DaemonConnectivityError</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">colored</span><span class="p">,</span> <span class="n">is_yaml_filepath</span>
@@ -385,12 +384,10 @@
 <div class="viewcode-block" id="JinadRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime">[docs]</a><span class="k">class</span> <span class="nc">JinadRuntime</span><span class="p">(</span><span class="n">AsyncZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure for Jinad."""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="c1"># Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main` process.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">remote_ctrl_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span> <span class="o">=</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">)</span>
+        <span class="c1"># Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`</span>
+        <span class="c1"># process.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_expose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">PeaDaemonClient</span><span class="p">(</span>
@@ -399,29 +396,7 @@
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span><span class="p">,</span>
         <span class="p">)</span>
-
-<div class="viewcode-block" id="JinadRuntime.cancel"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Send terminate control message."""</span>
-        <span class="c1"># (Joan) I put it here, to show how hacky it is. it recycles the logic to send terminate signal to</span>
-        <span class="c1"># a remote Pea Runtime by capturing it locally in `_wait_async`. That's why we need to recycle the control addr</span>
-        <span class="n">send_ctrl_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="JinadRuntime.activate"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Send activate control message."""</span>
-        <span class="n">send_ctrl_message</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">remote_ctrl_addr</span><span class="p">,</span> <span class="s1">'ACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="JinadRuntime.deactivate"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Send deactivate control message."""</span>
-        <span class="n">send_ctrl_message</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">remote_ctrl_addr</span><span class="p">,</span> <span class="s1">'DEACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="JinadRuntime.setup"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Uploads Pod/Pea context to remote &amp; Creates remote Pod/Pea using :class:`JinadAPI`</span>
-<span class="sd">        """</span>
+        <span class="c1"># Uploads PPea context to remote &amp; Creates remote Pea using :class:`JinadAPI`</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'created a remote </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
@@ -434,7 +409,7 @@
                 <span class="sa">f</span><span class="s1">'- on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">, have you set the security policy to public for all required ports?</span><span class="se">\n</span><span class="s1">'</span>
                 <span class="sa">f</span><span class="s1">'- on local, are you behind VPN or proxy?'</span>
             <span class="p">)</span>
-            <span class="k">raise</span> <span class="n">DaemonConnectivityError</span></div>
+            <span class="k">raise</span> <span class="n">DaemonConnectivityError</span>
 
 <div class="viewcode-block" id="JinadRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>

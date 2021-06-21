@@ -388,12 +388,9 @@
 <div class="viewcode-block" id="ContainerRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime">[docs]</a><span class="k">class</span> <span class="nc">ContainerRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure for container."""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_network_for_dind_linux</span><span class="p">()</span>
-
-<div class="viewcode-block" id="ContainerRuntime.setup"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Run the container."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docker_run</span><span class="p">()</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_container_alive</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">:</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -403,7 +400,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_docker_run</span><span class="p">(</span><span class="n">replay</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s1">'the container fails to start, check the arguments or entrypoint'</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="ContainerRuntime.teardown"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Stop the container."""</span>

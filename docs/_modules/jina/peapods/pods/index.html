@@ -871,8 +871,7 @@
     <span class="k">def</span> <span class="nf">_activate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># order is good. Activate from tail to head</span>
         <span class="k">for</span> <span class="n">pea</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">pea</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span>
-                <span class="n">pea</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
+            <span class="n">pea</span><span class="o">.</span><span class="n">activate_runtime</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span> <span class="o">=</span> <span class="kc">True</span>
 

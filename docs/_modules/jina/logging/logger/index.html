@@ -468,18 +468,21 @@
         <span class="c1"># note logger.success isn't default there</span>
         <span class="n">success_level</span> <span class="o">=</span> <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">SUCCESS</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># between WARNING and INFO</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">addLevelName</span><span class="p">(</span><span class="n">success_level</span><span class="p">,</span> <span class="s1">'SUCCESS'</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="s1">'success'</span><span class="p">,</span>
-            <span class="k">lambda</span> <span class="n">message</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">success_level</span><span class="p">,</span> <span class="n">message</span><span class="p">),</span>
-        <span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="s1">'success'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">critical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">warning</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span>
+
+<div class="viewcode-block" id="JinaLogger.success"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.success">[docs]</a>    <span class="k">def</span> <span class="nf">success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Prints messages as success</span>
+
+<span class="sd">        :param message: Message to log</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">LogVerbosity</span><span class="o">.</span><span class="n">SUCCESS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
