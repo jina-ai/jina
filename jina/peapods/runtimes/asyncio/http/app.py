@@ -4,7 +4,7 @@ from typing import Dict
 
 from google.protobuf.json_format import MessageToDict
 
-from .models import JinaResponseModel
+
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
 from ..... import __version__
@@ -26,7 +26,12 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     with ImportExtensions(required=True):
         from fastapi import FastAPI
         from fastapi.middleware.cors import CORSMiddleware
-        from .models import JinaStatusModel, JinaRequestModel, JinaEndpointRequestModel
+        from .models import (
+            JinaStatusModel,
+            JinaRequestModel,
+            JinaEndpointRequestModel,
+            JinaResponseModel,
+        )
 
     app = FastAPI(
         title=args.title or 'My Jina Service',
