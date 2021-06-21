@@ -194,7 +194,7 @@ class BasePea:
                 self._zed_runtime_ctrl_addres, 'DEACTIVATE', timeout=self._timeout_ctrl
             )
 
-    def _cancel_rumtime(self):
+    def _cancel_runtime(self):
         """Send terminate control message."""
         send_ctrl_message(
             self._local_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
@@ -255,7 +255,7 @@ class BasePea:
             try:
                 self._deactivate_runtime()
                 time.sleep(0.1)
-                self._cancel_rumtime()
+                self._cancel_runtime()
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(
