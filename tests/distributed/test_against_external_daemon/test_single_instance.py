@@ -113,10 +113,10 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
         Flow()
         .add()
         .add(
-            uses='mwu-encoder/mwu_encoder.yml',
+            uses='mwu_encoder.yml',
             host=CLOUD_HOST,
             parallel=parallels,
-            upload_files=[os.path.join(cur_dir, 'mwu-encoder/mwu_encoder.py')],
+            upload_files=['mwu_encoder.py'],
             quiet_remote_logs=silent_log,
         )
         .add()
