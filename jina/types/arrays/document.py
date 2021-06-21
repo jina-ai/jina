@@ -46,7 +46,7 @@ if False:
 
 
 class DocumentArrayGetAttrMixin:
-    """A mixin that provides attributes getter in bulk """
+    """A mixin that provides attributes getter in bulk"""
 
     @abstractmethod
     def __iter__(self):
@@ -170,6 +170,7 @@ class DocumentArray(
             del self._pb_body[index]
         elif isinstance(index, str):
             del self[self._id_to_index[index]]
+            del self._id_to_index[index]
         elif isinstance(index, slice):
             del self._pb_body[index]
         else:
@@ -239,8 +240,9 @@ class DocumentArray(
 
     def clear(self):
         """Clear the data of :class:`DocumentArray`"""
-        while len(self._pb_body) > 0:
-            self._pb_body.pop()
+        for item in self._pb_body:
+            del self._id_to_index[item.id]
+            self._pb_body.remove(item)
 
     def reverse(self):
         """In-place reverse the sequence."""
