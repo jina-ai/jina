@@ -322,7 +322,6 @@ def test_da_contains():
     d1 = Document(id=1)
     d2 = Document(id='2')
     da.extend([d1, d2])
-    print(da._id_to_index)
     assert d1.id in da
     assert d2.id in da
     da.clear()
