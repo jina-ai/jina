@@ -130,7 +130,7 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
     )
 
     gp.add_argument(
-        '--dynamic-out-routing',
+        '--dynamic-routing-out',
         action='store_true',
         default=False,
         help='Tells if ZEDRuntime should respect routing graph for outgoing traffic.'
@@ -139,7 +139,7 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
     )
 
     gp.add_argument(
-        '--dynamic-in-routing',
+        '--dynamic-routing-in',
         action='store_true',
         default=False,
         help='Tells if ZEDRuntime should handle incoming traffic as dynamic routing.'

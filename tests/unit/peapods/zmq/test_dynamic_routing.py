@@ -26,7 +26,7 @@ def get_args():
             'DEALER_CONNECT',
             '--timeout-ctrl',
             '-1',
-            '--dynamic-out-routing',
+            '--dynamic-routing-out',
         ]
     )
 
