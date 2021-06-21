@@ -1,6 +1,7 @@
 import pytest
 
 from jina import Executor, requests, Flow
+from jina.excepts import BadClient
 
 
 class MyExec(Executor):
@@ -14,7 +15,7 @@ def test_flow_debug_endpoints():
         uses=MyExec
     )
 
-    with pytest.raises(ConnectionError):
+    with pytest.raises(BadClient):
         with f1:
             f1.post('/foo')
 
