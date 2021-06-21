@@ -4,19 +4,22 @@ import copy
 import json
 import os
 import re
+import subprocess
 import threading
 import uuid
 import warnings
+
 from collections import OrderedDict, defaultdict
 from contextlib import ExitStack
+from google.protobuf import json_format
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
 
-from .builder import allowed_levels, _build_flow, _hanging_pods
+from .builder import allowed_levels, _hanging_pods
 from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
-from ..excepts import FlowTopologyError, FlowMissingPodError
+from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingGraphCyclicError
 from ..helper import (
     colored,
     get_public_ip,
@@ -28,8 +31,8 @@ from ..helper import (
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
-from ..peapods import Pod
-from ..peapods.pods.compound import CompoundPod
+from ..peapods import CompoundPod, Pod
+from ..types.routing.graph import RoutingGraph
 from ..peapods.pods.factory import PodFactory
 
 __all__ = ['Flow']
@@ -48,6 +51,8 @@ if False:
     from ..executors import BaseExecutor
     from ..clients.base import BaseClient
     from .asyncio import AsyncFlow
+
+GATEWAY_NAME = 'gateway'
 
 
 class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
@@ -108,7 +113,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         including_default_value_fields: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
-        name: Optional[str] = 'gateway',
+        name: Optional[str] = GATEWAY_NAME,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
@@ -283,7 +288,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self._endpoints_mapping = {}  # type: Dict[str, Dict]
         self._build_level = FlowBuildLevel.EMPTY
         self._last_changed_pod = [
-            'gateway'
+            GATEWAY_NAME
         ]  #: default first pod is gateway, will add when build()
         self._update_args(args, **kwargs)
 
@@ -376,11 +381,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def _add_gateway(self, needs, **kwargs):
-        pod_name = 'gateway'
-
         kwargs.update(
             dict(
-                name=pod_name,
+                name=GATEWAY_NAME,
                 ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
                 host=self.host,
                 protocol=self.protocol,
@@ -393,7 +396,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
-        self._pod_nodes[pod_name] = Pod(args, needs)
+        self._pod_nodes[GATEWAY_NAME] = Pod(args, needs)
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs(
@@ -498,7 +501,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
-        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow, and is considered with `--freeze-network-settings`
+        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
@@ -670,6 +673,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args.workspace = os.path.abspath(args.workspace or self.workspace)
 
         op_flow._pod_nodes[pod_name] = PodFactory.build_pod(args, needs)
+
         op_flow.last_pod = pod_name
 
         return op_flow
@@ -767,6 +771,48 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             # no inspect node is in the graph, return the current graph
             return self
 
+    def _get_gateway_target(self, prefix):
+        gateway_pod = self._pod_nodes[GATEWAY_NAME]
+        return (
+            f'{prefix}-{GATEWAY_NAME}',
+            {
+                'host': gateway_pod.head_host,
+                'port': gateway_pod.head_port_in,
+                'expected_parts': 0,
+            },
+        )
+
+    def _get_routing_graph(self):
+        graph = RoutingGraph()
+        for pod_id, pod in self._pod_nodes.items():
+            if pod_id == GATEWAY_NAME:
+                graph.add_pod(f'start-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
+                graph.add_pod(f'end-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
+            else:
+                graph.add_pod(pod_id, pod.head_host, pod.head_port_in)
+
+        for end, pod in self._pod_nodes.items():
+
+            if end == GATEWAY_NAME:
+                end = f'end-{GATEWAY_NAME}'
+
+            for start in pod.needs:
+                if start == GATEWAY_NAME:
+                    start = f'start-{GATEWAY_NAME}'
+
+                graph.add_edge(start, end)
+
+        graph.active_pod = f'start-{GATEWAY_NAME}'
+        return graph
+
+    def _set_initial_dynamic_routing_graph(self):
+        routing_graph = self._get_routing_graph()
+        if not routing_graph.is_acyclic():
+            raise RoutingGraphCyclicError(
+                'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
+            )
+        self._pod_nodes[GATEWAY_NAME].set_routing_graph(routing_graph)
+
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
         """
@@ -802,11 +848,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
 
-        if 'gateway' not in op_flow._pod_nodes:
+        if GATEWAY_NAME not in op_flow._pod_nodes:
             op_flow._add_gateway(needs={op_flow.last_pod})
-
-        # construct a map with a key a start node and values an array of its end nodes
-        _outgoing_map = defaultdict(list)
 
         # if set no_inspect then all inspect related nodes are removed
         if op_flow.args.inspect == FlowInspectType.REMOVE:
@@ -826,14 +869,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
-            for start in pod.needs:
-                if start not in op_flow._pod_nodes:
-                    raise FlowMissingPodError(
-                        f'{start} is not in this flow, misspelled name?'
-                    )
-                _outgoing_map[start].append(end)
+        op_flow._set_initial_dynamic_routing_graph()
 
-        op_flow = _build_flow(op_flow, _outgoing_map)
+        for pod in op_flow._pod_nodes.values():
+            pod.args.host = self._parse_host(pod.args.host)
+
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
             op_flow.logger.warning(
@@ -842,6 +882,19 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
+
+    def _parse_host(self, host):
+
+        try:
+            result = subprocess.run(['getent', 'hosts', host], capture_output=True)
+
+            ip_address = result.stdout.decode().split(' ')[0]
+            if ip_address == get_internal_ip():
+                return __default_host__
+            else:
+                return host
+        except:
+            return host
 
     def __call__(self, *args, **kwargs):
         """Builds the Flow
@@ -881,8 +934,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if self.args.env:
             for k in self.args.env.keys():
                 os.unsetenv(k)
-        if 'gateway' in self._pod_nodes:
-            self._pod_nodes.pop('gateway')
+        if GATEWAY_NAME in self._pod_nodes:
+            self._pod_nodes.pop(GATEWAY_NAME)
         self._build_level = FlowBuildLevel.EMPTY
         self.logger.success(
             f'flow is closed and all resources are released, current build level is {self._build_level}'
@@ -1194,8 +1247,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """Return the exposed port of the gateway
         .. # noqa: DAR201
         """
-        if 'gateway' in self._pod_nodes:
-            return self._pod_nodes['gateway'].port_expose
+        if GATEWAY_NAME in self._pod_nodes:
+            return self._pod_nodes[GATEWAY_NAME].port_expose
         else:
             return self._common_kwargs.get('port_expose', None)
 
@@ -1209,21 +1262,21 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self['gateway'].args.port_expose = self._common_kwargs['port_expose']
+            self[GATEWAY_NAME].args.port_expose = self._common_kwargs['port_expose']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
-            self['gateway'].close()
-            self.enter_context(self['gateway'])
-            self['gateway'].wait_start_success()
+            self[GATEWAY_NAME].close()
+            self.enter_context(self[GATEWAY_NAME])
+            self[GATEWAY_NAME].wait_start_success()
 
     @property
     def host(self) -> str:
         """Return the local address of the gateway
         .. # noqa: DAR201
         """
-        if 'gateway' in self._pod_nodes:
-            return self._pod_nodes['gateway'].host
+        if GATEWAY_NAME in self._pod_nodes:
+            return self._pod_nodes[GATEWAY_NAME].host
         else:
             return self._common_kwargs.get('host', __default_host__)
 
@@ -1237,13 +1290,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self['gateway'].args.host = self._common_kwargs['host']
+            self[GATEWAY_NAME].args.host = self._common_kwargs['host']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
-            self['gateway'].close()
-            self.enter_context(self['gateway'])
-            self['gateway'].wait_start_success()
+            self[GATEWAY_NAME].close()
+            self.enter_context(self[GATEWAY_NAME])
+            self[GATEWAY_NAME].wait_start_success()
 
     @property
     def address_private(self) -> str:
@@ -1341,13 +1394,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # Flow is build to graph already
         if self._build_level >= FlowBuildLevel.GRAPH:
-            self['gateway'].args.protocol = self._common_kwargs['protocol']
+            self[GATEWAY_NAME].args.protocol = self._common_kwargs['protocol']
 
         # Flow is running already, then close the existing gateway
         if self._build_level >= FlowBuildLevel.RUNNING:
-            self['gateway'].close()
-            self.enter_context(self['gateway'])
-            self['gateway'].wait_start_success()
+            self[GATEWAY_NAME].close()
+            self.enter_context(self[GATEWAY_NAME])
+            self[GATEWAY_NAME].wait_start_success()
 
     def __getitem__(self, item):
         if isinstance(item, str):

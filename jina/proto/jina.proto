@@ -164,6 +164,21 @@ message RouteProto {
     StatusProto status = 5; // the status of the execution
 }
 
+message TargetPodProto{
+    string host = 1; // the host HeadPea of the BasePod
+    uint32 port = 2; // the port HeadPea of the BasePod
+    uint32 expected_parts = 3; // the number of parts the pod should expect
+    repeated string out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
+}
+
+message RoutingGraphProto {
+    // Pods that get visited during a Flow. Gateway should be both the first and the last entry.
+    map<string, TargetPodProto>  pods = 1;
+
+    // The currently active Pod. Needed for ZMQ.
+    string active_pod = 2;
+}
+
 /**
  * Represents a Envelope, a part of the ``Message``.
  */
@@ -212,6 +227,8 @@ message EnvelopeProto {
     CompressConfigProto compression = 9; // compress configuration used for request
 
     repeated RouteProto routes = 10; // status info on every routes
+
+    RoutingGraphProto routing_graph = 13;
 
     StatusProto status = 11; // status info
 
