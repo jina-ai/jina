@@ -122,7 +122,7 @@ A `Flow` object has the following common methods:
 |Run Flow| `with` context manager |
 |Visualize Flow| `.plot()` |
 |Send Request| `.post()`|
-|Control| `.block()`, `.use_grpc_gateway()`, `.use_rest_gateway()` |
+|Control| `.block()` |
 
 ### Create a Flow
 
