@@ -12,6 +12,14 @@ Subpackages
    jina.peapods.runtimes
    jina.peapods.zmq
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.peapods.networking
+
 Module contents
 ---------------
 

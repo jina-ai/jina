@@ -12,6 +12,7 @@ Subpackages
    jina.types.message
    jina.types.ndarray
    jina.types.request
+   jina.types.routing
    jina.types.score
 
 Submodules

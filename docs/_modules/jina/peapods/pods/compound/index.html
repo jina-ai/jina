@@ -271,6 +271,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -329,7 +330,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -346,7 +351,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -382,6 +387,7 @@
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PollingType</span><span class="p">,</span> <span class="n">SocketType</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
+<span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 
 
 <div class="viewcode-block" id="CompoundPod"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">[docs]</a><span class="k">class</span> <span class="nc">CompoundPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
@@ -585,12 +591,17 @@
             <span class="n">_args</span><span class="o">.</span><span class="n">port_ctrl</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">dynamic_routing</span> <span class="o">=</span> <span class="kc">False</span>
 
-            <span class="n">_args</span><span class="o">.</span><span class="n">host_in</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-                <span class="n">bind_args</span><span class="o">=</span><span class="n">head_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">host_in</span> <span class="o">=</span> <span class="n">get_connect_host</span><span class="p">(</span>
+                <span class="n">bind_host</span><span class="o">=</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">bind_expose_public</span><span class="o">=</span><span class="n">head_args</span><span class="o">.</span><span class="n">expose_public</span><span class="p">,</span>
+                <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">_args</span><span class="o">.</span><span class="n">host_out</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-                <span class="n">bind_args</span><span class="o">=</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">host_out</span> <span class="o">=</span> <span class="n">get_connect_host</span><span class="p">(</span>
+                <span class="n">bind_host</span><span class="o">=</span><span class="n">tail_args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">bind_expose_public</span><span class="o">=</span><span class="n">tail_args</span><span class="o">.</span><span class="n">expose_public</span><span class="p">,</span>
+                <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>

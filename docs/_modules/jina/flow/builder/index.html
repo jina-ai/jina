@@ -271,6 +271,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -329,7 +330,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -346,7 +351,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -371,14 +376,11 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.flow.builder</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
-<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowBuildLevelError</span><span class="p">,</span> <span class="n">SocketTypeError</span><span class="p">,</span> <span class="n">FlowTopologyError</span>
-<span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">BasePod</span>
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowBuildLevel</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowBuildLevelError</span>
 
 <span class="c1"># noinspection PyUnreachableCode</span>
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
@@ -419,30 +421,6 @@
     <span class="k">return</span> <span class="n">__build_level</span></div>
 
 
-<span class="k">def</span> <span class="nf">_traverse_graph</span><span class="p">(</span>
-    <span class="n">op_flow</span><span class="p">:</span> <span class="s1">'Flow'</span><span class="p">,</span>
-    <span class="n">outgoing_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'Flow'</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
-    <span class="n">_outgoing_idx</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">outgoing_map</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">stack</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
-    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'gateway'</span><span class="p">)</span>
-    <span class="n">op_flow</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Traversing dependency graph:'</span><span class="p">)</span>
-    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
-        <span class="n">start_node_name</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">start_node_name</span> <span class="ow">in</span> <span class="n">_outgoing_idx</span><span class="p">:</span>
-            <span class="n">end_node_idx</span> <span class="o">=</span> <span class="n">_outgoing_idx</span><span class="p">[</span><span class="n">start_node_name</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">end_node_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_map</span><span class="p">[</span><span class="n">start_node_name</span><span class="p">]):</span>
-                <span class="c1"># else, you are back to the gateway</span>
-                <span class="n">end_node_name</span> <span class="o">=</span> <span class="n">outgoing_map</span><span class="p">[</span><span class="n">start_node_name</span><span class="p">][</span><span class="n">end_node_idx</span><span class="p">]</span>
-                <span class="n">func</span><span class="p">(</span><span class="n">op_flow</span><span class="p">,</span> <span class="n">start_node_name</span><span class="p">,</span> <span class="n">end_node_name</span><span class="p">)</span>
-                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end_node_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">end_node_idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_map</span><span class="p">[</span><span class="n">start_node_name</span><span class="p">]):</span>
-                    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">start_node_name</span><span class="p">)</span>
-                <span class="n">_outgoing_idx</span><span class="p">[</span><span class="n">start_node_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_node_idx</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">op_flow</span>
-
-
 <span class="k">def</span> <span class="nf">_hanging_pods</span><span class="p">(</span><span class="n">op_flow</span><span class="p">:</span> <span class="s1">'Flow'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">"""</span>
 <span class="sd">    :param op_flow: the Flow we're operating on</span>
@@ -452,122 +430,6 @@
     <span class="n">all_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
     <span class="c1"># all_names is always a superset of all_needs</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_names</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_needs</span><span class="p">))</span>
-
-
-<span class="k">def</span> <span class="nf">_build_flow</span><span class="p">(</span><span class="n">op_flow</span><span class="p">:</span> <span class="s1">'Flow'</span><span class="p">,</span> <span class="n">outgoing_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">_connect_two_nodes</span><span class="p">(</span><span class="n">flow</span><span class="p">:</span> <span class="s1">'Flow'</span><span class="p">,</span> <span class="n">start_node_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_node_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="c1"># Rule</span>
-        <span class="c1"># if a node has multiple income/outgoing peas,</span>
-        <span class="c1"># then its socket_in/out must be PULL_BIND or PUB_BIND</span>
-        <span class="c1"># otherwise it should be different than its income</span>
-        <span class="c1"># i.e. income=BIND =&gt; this=CONNECT, income=CONNECT =&gt; this = BIND</span>
-        <span class="c1">#</span>
-        <span class="c1"># when a socket is BIND, then host must NOT be set, aka default host 0.0.0.0</span>
-        <span class="c1"># host_in and host_out is only set when corresponding socket is CONNECT</span>
-        <span class="n">start_node</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">start_node_name</span><span class="p">]</span>
-        <span class="n">end_node</span> <span class="o">=</span> <span class="n">flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">end_node_name</span><span class="p">]</span>
-
-        <span class="n">first_socket_type</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_map</span><span class="p">[</span><span class="n">start_node_name</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">first_socket_type</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUB_BIND</span>
-        <span class="k">elif</span> <span class="n">end_node_name</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
-            <span class="n">first_socket_type</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">start_node</span><span class="o">.</span><span class="n">host</span> <span class="o">!=</span> <span class="n">__default_host__</span>
-            <span class="ow">and</span> <span class="n">end_node</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">__default_host__</span>
-            <span class="ow">and</span> <span class="n">end_node</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">!=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">JOIN</span>
-        <span class="p">):</span>
-            <span class="c1"># first node is on remote, second is local. in this case, local node is often behind router/private</span>
-            <span class="c1"># network, there is no way that first node can send data "actively" (CONNECT) to it</span>
-            <span class="n">first_socket_type</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span>
-        <span class="n">_connect</span><span class="p">(</span><span class="n">start_node</span><span class="p">,</span> <span class="n">end_node</span><span class="p">,</span> <span class="n">first_out_socket_type</span><span class="o">=</span><span class="n">first_socket_type</span><span class="p">)</span>
-        <span class="n">flow</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'Connect </span><span class="si">{</span><span class="n">start_node_name</span><span class="si">}</span><span class="s1"> '</span>
-            <span class="sa">f</span><span class="s1">'with </span><span class="si">{</span><span class="n">end_node_name</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">end_node</span><span class="o">.</span><span class="n">role</span><span class="p">)</span><span class="si">}</span><span class="s1"> require '</span>
-            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">end_node</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="s2">"num_part"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s1"> messages'</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">_traverse_graph</span><span class="p">(</span><span class="n">op_flow</span><span class="p">,</span> <span class="n">outgoing_map</span><span class="p">,</span> <span class="n">_connect_two_nodes</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span>
-    <span class="n">first</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">,</span> <span class="n">first_out_socket_type</span><span class="p">:</span> <span class="s1">'SocketType'</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">"""Connect two Pods.</span>
-
-<span class="sd">    This will change the args of the tail Pea of the first, and the args of the head pea of the second.</span>
-
-<span class="sd">    .. # noqa: DAR401</span>
-<span class="sd">    :param first: the first BasePod</span>
-<span class="sd">    :param second: the second BasePod</span>
-<span class="sd">    :param first_out_socket_type: socket type of the first BasePod, one of PUSH_BIND, PUSH_CONNECT and PUB_BIND</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="nf">_valid_update</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">:</span> <span class="n">BasePod</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value_to_set</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">functools</span>
-
-        <span class="k">def</span> <span class="nf">_rgetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-            <span class="k">def</span> <span class="nf">_getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">_getattr</span><span class="p">,</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">+</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">))</span>
-
-        <span class="k">def</span> <span class="nf">_rsetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-            <span class="n">pre</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">post</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">setattr</span><span class="p">(</span><span class="n">_rgetattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">pre</span><span class="p">)</span> <span class="k">if</span> <span class="n">pre</span> <span class="k">else</span> <span class="n">obj</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">node_to_update</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">freeze_network_settings</span>
-            <span class="ow">and</span> <span class="n">_rgetattr</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">)</span> <span class="o">!=</span> <span class="n">value_to_set</span>
-        <span class="p">):</span>
-            <span class="n">org_value</span> <span class="o">=</span> <span class="n">_rgetattr</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">FlowTopologyError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Cannot set `</span><span class="si">{</span><span class="n">node_to_update</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">attr_to_set</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">value_to_set</span><span class="si">!s}</span><span class="s1">` '</span>
-                <span class="sa">f</span><span class="s1">'because it is frozen to </span><span class="si">{</span><span class="n">org_value</span><span class="si">!s}</span><span class="s1"> by --freeze-network-settings'</span>
-            <span class="p">)</span>
-        <span class="n">_rsetattr</span><span class="p">(</span><span class="n">node_to_update</span><span class="p">,</span> <span class="n">attr_to_set</span><span class="p">,</span> <span class="n">value_to_set</span><span class="p">)</span>
-
-    <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.socket_out'</span><span class="p">,</span> <span class="n">first_out_socket_type</span><span class="p">)</span>
-    <span class="n">_valid_update</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.socket_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">socket_out</span><span class="o">.</span><span class="n">paired</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">first_out_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_BIND</span><span class="p">:</span>
-        <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.host_out'</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">)</span>
-        <span class="n">_valid_update</span><span class="p">(</span>
-            <span class="n">second</span><span class="p">,</span>
-            <span class="s1">'head_args.host_in'</span><span class="p">,</span>
-            <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-                <span class="n">bind_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="n">_valid_update</span><span class="p">(</span><span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.port_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">first_out_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span><span class="p">:</span>
-        <span class="n">_valid_update</span><span class="p">(</span>
-            <span class="n">first</span><span class="p">,</span>
-            <span class="s1">'tail_args.host_out'</span><span class="p">,</span>
-            <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-                <span class="n">connect_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">bind_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-        <span class="c1"># (Joan) - Commented to allow the Flow composed by G-R-L-R-G (G: Gateway) (L: Local Pod) (R: Remote Pod)</span>
-        <span class="c1"># https://github.com/jina-ai/jina/pull/1654</span>
-        <span class="c1"># second.head_args.host_in = __default_host__</span>
-        <span class="n">_valid_update</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.port_out'</span><span class="p">,</span> <span class="n">second</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">first_out_socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUB_BIND</span><span class="p">:</span>
-        <span class="n">_valid_update</span><span class="p">(</span>
-            <span class="n">first</span><span class="p">,</span> <span class="s1">'tail_args.host_out'</span><span class="p">,</span> <span class="n">__default_host__</span>
-        <span class="p">)</span>  <span class="c1"># bind always get default 0.0.0.0</span>
-        <span class="n">_valid_update</span><span class="p">(</span>
-            <span class="n">second</span><span class="p">,</span>
-            <span class="s1">'head_args.host_in'</span><span class="p">,</span>
-            <span class="n">BasePod</span><span class="o">.</span><span class="n">_fill_in_host</span><span class="p">(</span>
-                <span class="n">bind_args</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="p">,</span> <span class="n">connect_args</span><span class="o">=</span><span class="n">second</span><span class="o">.</span><span class="n">head_args</span>
-            <span class="p">),</span>
-        <span class="p">)</span>  <span class="c1"># the hostname of s_pod</span>
-        <span class="n">_valid_update</span><span class="p">(</span>
-            <span class="n">second</span><span class="p">,</span> <span class="s1">'head_args.port_in'</span><span class="p">,</span> <span class="n">first</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span>
-        <span class="p">)</span>  <span class="c1"># the hostname of s_pod</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">SocketTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">first_out_socket_type</span><span class="si">!r}</span><span class="s1"> is not supported here'</span><span class="p">)</span>
 </pre></div>
       </article>
       <footer>

@@ -21,9 +21,12 @@
     - [RequestProto.ControlRequestProto](#jina.RequestProto.ControlRequestProto)
     - [RequestProto.DataRequestProto](#jina.RequestProto.DataRequestProto)
     - [RouteProto](#jina.RouteProto)
+    - [RoutingGraphProto](#jina.RoutingGraphProto)
+    - [RoutingGraphProto.PodsEntry](#jina.RoutingGraphProto.PodsEntry)
     - [SparseNdArrayProto](#jina.SparseNdArrayProto)
     - [StatusProto](#jina.StatusProto)
     - [StatusProto.ExceptionProto](#jina.StatusProto.ExceptionProto)
+    - [TargetPodProto](#jina.TargetPodProto)
   
     - [DenseNdArrayProto.QuantizationMode](#jina.DenseNdArrayProto.QuantizationMode)
     - [RequestProto.ControlRequestProto.Command](#jina.RequestProto.ControlRequestProto.Command)
@@ -131,6 +134,7 @@ Represents a Envelope, a part of the ``Message``.
 | check_version | [bool](#bool) |  | check local Protobuf version on every Pod that this message flows to |
 | compression | [EnvelopeProto.CompressConfigProto](#jina.EnvelopeProto.CompressConfigProto) |  | compress configuration used for request |
 | routes | [RouteProto](#jina.RouteProto) | repeated | status info on every routes |
+| routing_graph | [RoutingGraphProto](#jina.RoutingGraphProto) |  |  |
 | status | [StatusProto](#jina.StatusProto) |  | status info |
 | header | [HeaderProto](#jina.HeaderProto) |  | header contains meta info defined by the user, copied from Request, for lazy serialization |
 
@@ -365,6 +369,38 @@ Represents a the route paths of this message
 
 
 
+<a name="jina.RoutingGraphProto"></a>
+
+### RoutingGraphProto
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pods | [RoutingGraphProto.PodsEntry](#jina.RoutingGraphProto.PodsEntry) | repeated | Pods that get visited during a Flow. Gateway should be both the first and the last entry. |
+| active_pod | [string](#string) |  | The currently active Pod. Needed for ZMQ. |
+
+
+
+
+
+
+<a name="jina.RoutingGraphProto.PodsEntry"></a>
+
+### RoutingGraphProto.PodsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [TargetPodProto](#jina.TargetPodProto) |  |  |
+
+
+
+
+
+
 <a name="jina.SparseNdArrayProto"></a>
 
 ### SparseNdArrayProto
@@ -411,6 +447,24 @@ Represents a Status
 | args | [string](#string) | repeated | the list of arguments given to the exception constructor. |
 | stacks | [string](#string) | repeated | the exception traceback stacks |
 | executor | [string](#string) |  | the name of the executor bind to that peapod (if applicable) |
+
+
+
+
+
+
+<a name="jina.TargetPodProto"></a>
+
+### TargetPodProto
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| host | [string](#string) |  | the host HeadPea of the BasePod |
+| port | [uint32](#uint32) |  | the port HeadPea of the BasePod |
+| expected_parts | [uint32](#uint32) |  | the number of parts the pod should expect |
+| out_edges | [string](#string) | repeated | pod_name of Pods, the TailPea should send traffic to |
 
 
 

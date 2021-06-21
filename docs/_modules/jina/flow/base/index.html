@@ -271,6 +271,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -329,7 +330,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -346,7 +351,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -377,19 +382,22 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
+<span class="kn">from</span> <span class="nn">google.protobuf</span> <span class="kn">import</span> <span class="n">json_format</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Type</span>
 
-<span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">allowed_levels</span><span class="p">,</span> <span class="n">_build_flow</span><span class="p">,</span> <span class="n">_hanging_pods</span>
+<span class="kn">from</span> <span class="nn">.builder</span> <span class="kn">import</span> <span class="n">allowed_levels</span><span class="p">,</span> <span class="n">_hanging_pods</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">..clients</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">..clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">PostMixin</span>
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">FlowBuildLevel</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">FlowInspectType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowTopologyError</span><span class="p">,</span> <span class="n">FlowMissingPodError</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">FlowTopologyError</span><span class="p">,</span> <span class="n">FlowMissingPodError</span><span class="p">,</span> <span class="n">RoutingGraphCyclicError</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">colored</span><span class="p">,</span>
     <span class="n">get_public_ip</span><span class="p">,</span>
@@ -401,8 +409,8 @@
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..parsers</span> <span class="kn">import</span> <span class="n">set_gateway_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span><span class="p">,</span> <span class="n">set_client_cli_parser</span>
-<span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">Pod</span>
-<span class="kn">from</span> <span class="nn">..peapods.pods.compound</span> <span class="kn">import</span> <span class="n">CompoundPod</span>
+<span class="kn">from</span> <span class="nn">..peapods</span> <span class="kn">import</span> <span class="n">CompoundPod</span><span class="p">,</span> <span class="n">Pod</span>
+<span class="kn">from</span> <span class="nn">..types.routing.graph</span> <span class="kn">import</span> <span class="n">RoutingGraph</span>
 <span class="kn">from</span> <span class="nn">..peapods.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Flow'</span><span class="p">]</span>
@@ -421,6 +429,8 @@
     <span class="kn">from</span> <span class="nn">..executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
     <span class="kn">from</span> <span class="nn">..clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
     <span class="kn">from</span> <span class="nn">.asyncio</span> <span class="kn">import</span> <span class="n">AsyncFlow</span>
+
+<span class="n">GATEWAY_NAME</span> <span class="o">=</span> <span class="s1">'gateway'</span>
 
 
 <div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
@@ -481,7 +491,7 @@
         <span class="n">including_default_value_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">memory_hwm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'gateway'</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">GATEWAY_NAME</span><span class="p">,</span>
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">on_error_strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'IGNORE'</span><span class="p">,</span>
@@ -656,7 +666,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_endpoints_mapping</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, Dict]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_changed_pod</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s1">'gateway'</span>
+            <span class="n">GATEWAY_NAME</span>
         <span class="p">]</span>  <span class="c1">#: default first pod is gateway, will add when build()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_args</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -749,11 +759,9 @@
 
     <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">_add_gateway</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">pod_name</span> <span class="o">=</span> <span class="s1">'gateway'</span>
-
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="nb">dict</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">pod_name</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">GATEWAY_NAME</span><span class="p">,</span>
                 <span class="n">ctrl_with_ipc</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># otherwise ctrl port would be conflicted</span>
                 <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
                 <span class="n">protocol</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span>
@@ -766,7 +774,7 @@
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">)</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_gateway_parser</span><span class="p">())</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pod</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">Pod</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Flow.needs"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.needs">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">needs</span><span class="p">(</span>
@@ -871,7 +879,7 @@
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</span>
-<span class="sd">        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow, and is considered with `--freeze-network-settings`</span>
+<span class="sd">        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow.</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for input, by default it is 0.0.0.0</span>
 <span class="sd">        :param host_out: The host address for output, by default it is 0.0.0.0</span>
@@ -1043,6 +1051,7 @@
         <span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">workspace</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace</span><span class="p">)</span>
 
         <span class="n">op_flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
+
         <span class="n">op_flow</span><span class="o">.</span><span class="n">last_pod</span> <span class="o">=</span> <span class="n">pod_name</span>
 
         <span class="k">return</span> <span class="n">op_flow</span></div>
@@ -1140,6 +1149,48 @@
             <span class="c1"># no inspect node is in the graph, return the current graph</span>
             <span class="k">return</span> <span class="bp">self</span></div>
 
+    <span class="k">def</span> <span class="nf">_get_gateway_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="n">gateway_pod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s1">'host'</span><span class="p">:</span> <span class="n">gateway_pod</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span>
+                <span class="s1">'port'</span><span class="p">:</span> <span class="n">gateway_pod</span><span class="o">.</span><span class="n">head_port_in</span><span class="p">,</span>
+                <span class="s1">'expected_parts'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_routing_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">RoutingGraph</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pod_id</span><span class="p">,</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">pod_id</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_pod</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_port_in</span><span class="p">)</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_pod</span><span class="p">(</span><span class="sa">f</span><span class="s1">'end-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_port_in</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_pod</span><span class="p">(</span><span class="n">pod_id</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_port_in</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">end</span><span class="p">,</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'end-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span>
+
+            <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">needs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="n">GATEWAY_NAME</span><span class="p">:</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'start-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span>
+
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">active_pod</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'start-</span><span class="si">{</span><span class="n">GATEWAY_NAME</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="n">graph</span>
+
+    <span class="k">def</span> <span class="nf">_set_initial_dynamic_routing_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">routing_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_routing_graph</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">routing_graph</span><span class="o">.</span><span class="n">is_acyclic</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">RoutingGraphCyclicError</span><span class="p">(</span>
+                <span class="s1">'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">set_routing_graph</span><span class="p">(</span><span class="n">routing_graph</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Flow.build"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.build">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Flow'</span><span class="p">:</span>
         <span class="sd">"""</span>
@@ -1175,11 +1226,8 @@
         <span class="k">if</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">inspect</span> <span class="o">==</span> <span class="n">FlowInspectType</span><span class="o">.</span><span class="n">COLLECT</span><span class="p">:</span>
             <span class="n">op_flow</span><span class="o">.</span><span class="n">gather_inspect</span><span class="p">(</span><span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">'gateway'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
             <span class="n">op_flow</span><span class="o">.</span><span class="n">_add_gateway</span><span class="p">(</span><span class="n">needs</span><span class="o">=</span><span class="p">{</span><span class="n">op_flow</span><span class="o">.</span><span class="n">last_pod</span><span class="p">})</span>
-
-        <span class="c1"># construct a map with a key a start node and values an array of its end nodes</span>
-        <span class="n">_outgoing_map</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
 
         <span class="c1"># if set no_inspect then all inspect related nodes are removed</span>
         <span class="k">if</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">inspect</span> <span class="o">==</span> <span class="n">FlowInspectType</span><span class="o">.</span><span class="n">REMOVE</span><span class="p">:</span>
@@ -1199,14 +1247,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">pod</span><span class="o">.</span><span class="n">needs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">reverse_inspect_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">ep</span><span class="p">)</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">needs</span><span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">pod</span><span class="o">.</span><span class="n">needs</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">start</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">FlowMissingPodError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s1"> is not in this flow, misspelled name?'</span>
-                    <span class="p">)</span>
-                <span class="n">_outgoing_map</span><span class="p">[</span><span class="n">start</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+        <span class="n">op_flow</span><span class="o">.</span><span class="n">_set_initial_dynamic_routing_graph</span><span class="p">()</span>
 
-        <span class="n">op_flow</span> <span class="o">=</span> <span class="n">_build_flow</span><span class="p">(</span><span class="n">op_flow</span><span class="p">,</span> <span class="n">_outgoing_map</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_host</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+
         <span class="n">hanging_pods</span> <span class="o">=</span> <span class="n">_hanging_pods</span><span class="p">(</span><span class="n">op_flow</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">hanging_pods</span><span class="p">:</span>
             <span class="n">op_flow</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -1215,6 +1260,19 @@
             <span class="p">)</span>
         <span class="n">op_flow</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span>
         <span class="k">return</span> <span class="n">op_flow</span></div>
+
+    <span class="k">def</span> <span class="nf">_parse_host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">'getent'</span><span class="p">,</span> <span class="s1">'hosts'</span><span class="p">,</span> <span class="n">host</span><span class="p">],</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="n">ip_address</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">' '</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ip_address</span> <span class="o">==</span> <span class="n">get_internal_ip</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">__default_host__</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">host</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">host</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Builds the Flow</span>
@@ -1254,8 +1312,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">'gateway'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'gateway'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">GATEWAY_NAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'flow is closed and all resources are released, current build level is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span><span class="si">}</span><span class="s1">'</span>
@@ -1567,8 +1625,8 @@
         <span class="sd">"""Return the exposed port of the gateway</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="s1">'gateway'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">port_expose</span>
+        <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">port_expose</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port_expose'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -1582,21 +1640,21 @@
 
         <span class="c1"># Flow is build to graph already</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port_expose'</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'port_expose'</span><span class="p">]</span>
 
         <span class="c1"># Flow is running already, then close the existing gateway</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">])</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">])</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the local address of the gateway</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="s1">'gateway'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">host</span>
+        <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">host</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">)</span>
 
@@ -1610,13 +1668,13 @@
 
         <span class="c1"># Flow is build to graph already</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'host'</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'host'</span><span class="p">]</span>
 
         <span class="c1"># Flow is running already, then close the existing gateway</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">])</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">])</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">address_private</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1714,13 +1772,13 @@
 
         <span class="c1"># Flow is build to graph already</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'protocol'</span><span class="p">]</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="p">[</span><span class="s1">'protocol'</span><span class="p">]</span>
 
         <span class="c1"># Flow is running already, then close the existing gateway</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">&gt;=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">])</span>
-            <span class="bp">self</span><span class="p">[</span><span class="s1">'gateway'</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">])</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>

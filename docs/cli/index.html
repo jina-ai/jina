@@ -294,6 +294,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -352,7 +353,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -369,7 +374,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -455,7 +460,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “15b7bead-2093-4f0d-b5e1-bb154ee61036”</p>
+<p>Default: “20a83f1c-7a25-4830-9007-2e7a7b38d7dd”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -530,7 +535,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “850dbb5a-9c70-4644-8786-0a33463c3fde”</p>
+<p>Default: “658e4c7b-2a1e-4af7-918d-875ceb9e209d”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -563,7 +568,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “931f8bbc-553b-4b0d-ac9d-62cefdb20fea”</p>
+<p>Default: “d1a841e0-d86b-42c1-ba85-040bd5a1069a”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -603,10 +608,10 @@
                       <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">out</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">freeze</span><span class="o">-</span><span class="n">network</span><span class="o">-</span><span class="n">settings</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
@@ -618,11 +623,25 @@
                       <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">TAIL</span><span class="p">,</span> <span class="n">PARALLEL</span><span class="p">}]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">parallel</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">polling</span> <span class="p">{</span><span class="n">ANY</span><span class="p">,</span> <span class="n">ALL</span><span class="p">,</span> <span class="n">ALL_ASYNC</span><span class="p">}]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">polling</span> <span class="p">{</span><span class="n">ANY</span><span class="p">,</span> <span class="n">ALL</span><span class="p">,</span> <span class="n">ALL_ASYNC</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">scheduling</span> <span class="p">{</span><span class="n">LOAD_BALANCE</span><span class="p">,</span> <span class="n">ROUND_ROBIN</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">pod</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">POD</span><span class="p">,</span> <span class="n">JOIN</span><span class="p">,</span> <span class="n">INSPECT</span><span class="p">,</span> <span class="n">GATEWAY</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">peas</span><span class="o">-</span><span class="n">hosts</span>  <span class="p">[</span><span class="o">...</span><span class="p">]]</span>
 </pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat3">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<dl class="option-list">
+<dt><kbd>--dynamic-routing</kbd></dt>
+<dd><p>The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--no-dynamic-routing</kbd></dt>
+<dd><p>The Gateway should not do dynamic routing.</p>
+<p>Default: True</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="Essential arguments">
 <h4>Essential arguments<a class="headerlink" href="#Essential arguments" title="Permalink to this headline">¶</a></h4>
@@ -658,7 +677,7 @@
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 50039</p>
+<p>Default: 37725</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -703,11 +722,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 59493</p>
+<p>Default: 57707</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 43159</p>
+<p>Default: 45981</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -726,6 +745,14 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 <dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
 <p>The socket type for output port</p>
 <p>Default: 2</p>
+</dd>
+<dt><kbd>--dynamic-out-routing</kbd></dt>
+<dd><p>Tells if ZEDRuntime should respect routing graph for outgoing traffic.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--dynamic-in-routing</kbd></dt>
+<dd><p>Tells if ZEDRuntime should handle incoming traffic as dynamic routing.</p>
+<p>Default: False</p>
 </dd>
 <dt><kbd>--memory-hwm</kbd></dt>
 <dd><p>The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</p>
@@ -746,13 +773,6 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <dt><kbd>--num-part</kbd></dt>
 <dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
 <p>Default: 0</p>
-</dd>
-<dt><kbd>--freeze-network-settings</kbd></dt>
-<dd><dl class="simple">
-<dt>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related</dt><dd><p>parameters are frozen. They can not be changed by the Flow during the build time.</p>
-</dd>
-</dl>
-<p>Default: False</p>
 </dd>
 </dl>
 </div>
@@ -795,7 +815,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 44157</p>
+<p>Default: 54671</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -822,7 +842,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “d0b9404f-20b6-4b97-8934-f0fe6e102086”</p>
+<p>Default: “1ca17cb8-66d8-429b-9f4e-e8aabab7c52d”</p>
 </dd>
 </dl>
 </div>
@@ -898,7 +918,7 @@ Python files, data files.</p>
 <p>Default: 0</p>
 </dd>
 <dt><kbd>--external</kbd></dt>
-<dd><p>The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow, and is considered with <cite>–freeze-network-settings</cite></p>
+<dd><p>The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--pod-role</kbd></dt>
@@ -990,8 +1010,8 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 </dl>
 </div>
-<div class="section" id="Named Arguments_repeat3">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat4">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
@@ -1020,14 +1040,14 @@ peas are running on host provided by the argument <code class="docutils literal 
                      <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">out</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">freeze</span><span class="o">-</span><span class="n">network</span><span class="o">-</span><span class="n">settings</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">recv</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">including</span><span class="o">-</span><span class="n">default</span><span class="o">-</span><span class="n">value</span><span class="o">-</span><span class="n">fields</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">sort</span><span class="o">-</span><span class="n">keys</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">integers</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">enums</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="nb">float</span><span class="o">-</span><span class="n">precision</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">recv</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">including</span><span class="o">-</span><span class="n">default</span><span class="o">-</span><span class="n">value</span><span class="o">-</span><span class="n">fields</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sort</span><span class="o">-</span><span class="n">keys</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">integers</span><span class="o">-</span><span class="k">for</span><span class="o">-</span><span class="n">enums</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">float</span><span class="o">-</span><span class="n">precision</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">compress</span> <span class="p">{</span><span class="n">NONE</span><span class="p">,</span> <span class="n">LZ4</span><span class="p">,</span> <span class="n">ZLIB</span><span class="p">,</span> <span class="n">GZIP</span> <span class="o">...</span> <span class="mi">2</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="nb">bytes</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compress</span><span class="o">-</span><span class="nb">min</span><span class="o">-</span><span class="n">ratio</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
@@ -1036,16 +1056,28 @@ peas are running on host provided by the argument <code class="docutils literal 
                      <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="o">=</span><span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">public</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="nb">id</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">pea</span><span class="o">-</span><span class="n">role</span> <span class="p">{</span><span class="n">SINGLETON</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">TAIL</span><span class="p">,</span> <span class="n">PARALLEL</span><span class="p">}]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">noblock</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">start</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">routing</span><span class="o">-</span><span class="n">graph</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat4">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat5">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--protocol</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
 <p>Communication protocol between server and client.</p>
 <p>Default: 0</p>
+</dd>
+<dt><kbd>--routing-graph</kbd></dt>
+<dd><p>Routing graph for the gateway</p>
+</dd>
+<dt><kbd>--dynamic-routing</kbd></dt>
+<dd><p>Tells if the gateway should incoming and outgoing traffic as dynamic routing.</p>
+<p>Default: True</p>
+</dd>
+<dt><kbd>--no-dynamic-routing</kbd></dt>
+<dd><p>The Gateway should not do dynamic routing.</p>
+<p>Default: True</p>
 </dd>
 </dl>
 </div>
@@ -1084,7 +1116,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 51273</p>
+<p>Default: 49331</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1129,11 +1161,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 47921</p>
+<p>Default: 54717</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 33351</p>
+<p>Default: 48125</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1152,6 +1184,14 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 <dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
 <p>The socket type for output port</p>
 <p>Default: 3</p>
+</dd>
+<dt><kbd>--dynamic-out-routing</kbd></dt>
+<dd><p>Tells if ZEDRuntime should respect routing graph for outgoing traffic.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--dynamic-in-routing</kbd></dt>
+<dd><p>Tells if ZEDRuntime should handle incoming traffic as dynamic routing.</p>
+<p>Default: False</p>
 </dd>
 <dt><kbd>--memory-hwm</kbd></dt>
 <dd><p>The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</p>
@@ -1172,13 +1212,6 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <dt><kbd>--num-part</kbd></dt>
 <dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
 <p>Default: 0</p>
-</dd>
-<dt><kbd>--freeze-network-settings</kbd></dt>
-<dd><dl class="simple">
-<dt>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related</dt><dd><p>parameters are frozen. They can not be changed by the Flow during the build time.</p>
-</dd>
-</dl>
-<p>Default: False</p>
 </dd>
 </dl>
 </div>
@@ -1279,7 +1312,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 34935</p>
+<p>Default: 50733</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1353,8 +1386,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">hub</span> <span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">secret</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">public</span> <span class="o">|</span> <span class="o">--</span><span class="n">private</span><span class="p">]</span> <span class="n">path</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat5">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h6>
+<div class="section" id="Named Arguments_repeat6">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--public</kbd></dt>
 <dd><p>If set, the published executor is visible to public</p>
@@ -1394,10 +1427,9 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
                  <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">out</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">freeze</span><span class="o">-</span><span class="n">network</span><span class="o">-</span><span class="n">settings</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">internal</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">pull</span><span class="o">-</span><span class="n">latest</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span>
@@ -1443,7 +1475,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <dl class="option-list">
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 57577</p>
+<p>Default: 35303</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1488,11 +1520,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 41843</p>
+<p>Default: 33545</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 56851</p>
+<p>Default: 53721</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1511,6 +1543,14 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 <dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
 <p>The socket type for output port</p>
 <p>Default: 2</p>
+</dd>
+<dt><kbd>--dynamic-out-routing</kbd></dt>
+<dd><p>Tells if ZEDRuntime should respect routing graph for outgoing traffic.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--dynamic-in-routing</kbd></dt>
+<dd><p>Tells if ZEDRuntime should handle incoming traffic as dynamic routing.</p>
+<p>Default: False</p>
 </dd>
 <dt><kbd>--memory-hwm</kbd></dt>
 <dd><p>The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction</p>
@@ -1531,13 +1571,6 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
 <dt><kbd>--num-part</kbd></dt>
 <dd><p>the number of messages expected from upstream, 0 and 1 means single part</p>
 <p>Default: 0</p>
-</dd>
-<dt><kbd>--freeze-network-settings</kbd></dt>
-<dd><dl class="simple">
-<dt>If set, then <cite>host-in</cite>, <cite>host-out</cite>, <cite>port-in</cite>, <cite>port-out</cite>, <cite>socket-in</cite>, <cite>socket-out</cite> network-related</dt><dd><p>parameters are frozen. They can not be changed by the Flow during the build time.</p>
-</dd>
-</dl>
-<p>Default: False</p>
 </dd>
 </dl>
 </div>
@@ -1580,7 +1613,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 35859</p>
+<p>Default: 35043</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1607,7 +1640,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--workspace-id</kbd></dt>
 <dd><p>the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same <cite>workspace-id</cite>.</p>
-<p>Default: “e53c2a1e-38de-4b5e-8962-7518a72eda94”</p>
+<p>Default: “8a92f7e1-5fc4-44ad-b43d-a0b45ed44e88”</p>
 </dd>
 </dl>
 </div>
@@ -1662,8 +1695,8 @@ Python files, data files.</p>
                     <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">results</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat6">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat7">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -1685,7 +1718,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 46639</p>
+<p>Default: 39523</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1723,8 +1756,8 @@ Python files, data files.</p>
                         <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat8">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
 <dd><p>The YAML file path for storing the exported API</p>
@@ -1824,6 +1857,7 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#executor (pod)">executor (pod)</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments">ZEDRuntime arguments</a></li>
@@ -1841,11 +1875,11 @@ Python files, data files.</p>
 </li>
 <li><a class="reference internal" href="#ping">ping</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat1">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat1">ZEDRuntime arguments</a></li>
@@ -1860,7 +1894,7 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#subcommands_repeat2">subcommands</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 </ul>
 </li>
@@ -1879,13 +1913,13 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 <li><a class="reference internal" href="#Expose arguments_repeat3">Expose arguments</a></li>
 <li><a class="reference internal" href="#Client Features arguments">Client Features arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#export-api">export-api</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 </ul>
 </li>
 </ul>

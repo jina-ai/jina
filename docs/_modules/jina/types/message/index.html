@@ -271,6 +271,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -329,7 +330,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -346,7 +351,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -388,6 +393,7 @@
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">...executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
+    <span class="kn">from</span> <span class="nn">...types.routing.graph</span> <span class="kn">import</span> <span class="n">RoutingGraph</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Message'</span><span class="p">]</span>
 
@@ -446,6 +452,15 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">check_version</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_version</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Message.from_proto"><a class="viewcode-back" href="../../../../api/jina.types.message/#jina.types.message.Message.from_proto">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_proto</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'jina_pb2.MessageProto'</span><span class="p">):</span>
+        <span class="sd">"""Creates a new Message object from a given :class:`MessageProto` object.</span>
+
+<span class="sd">        :param msg: the to-be-copied message</span>
+<span class="sd">        :return: the new message object</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Request'</span><span class="p">:</span>
@@ -523,6 +538,7 @@
         <span class="n">compress</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'NONE'</span><span class="p">,</span>
         <span class="n">compress_min_bytes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">compress_min_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">routing_graph</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'RoutingGraph'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'jina_pb2.EnvelopeProto'</span><span class="p">:</span>
@@ -542,6 +558,7 @@
 <span class="sd">        :param compress: used compression algorithm</span>
 <span class="sd">        :param compress_min_bytes: used for configuring compression</span>
 <span class="sd">        :param compress_min_ratio: used for configuring compression</span>
+<span class="sd">        :param routing_graph: routing graph filled by gateway</span>
 <span class="sd">        :return: the resulted protobuf message</span>
 <span class="sd">        """</span>
         <span class="n">envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
@@ -583,6 +600,8 @@
         <span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">min_ratio</span> <span class="o">=</span> <span class="n">compress_min_ratio</span>
         <span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">min_bytes</span> <span class="o">=</span> <span class="n">compress_min_bytes</span>
         <span class="n">envelope</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">5000</span>
+        <span class="k">if</span> <span class="n">routing_graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">envelope</span><span class="o">.</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_version</span><span class="p">(</span><span class="n">envelope</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_route</span><span class="p">(</span><span class="n">pod_name</span><span class="p">,</span> <span class="n">identity</span><span class="p">,</span> <span class="n">envelope</span><span class="p">)</span>
         <span class="n">envelope</span><span class="o">.</span><span class="n">check_version</span> <span class="o">=</span> <span class="n">check_version</span>

@@ -294,6 +294,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -352,7 +353,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -369,7 +374,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -702,6 +707,12 @@
 <em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">jina.excepts.</span></code><code class="sig-name descname"><span class="pre">SocketTypeError</span></code><a class="reference internal" href="../../_modules/jina/excepts/#SocketTypeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.SocketTypeError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Raised when such socket type is not supported or does not exist.</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="jina.excepts.RoutingGraphCyclicError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">jina.excepts.</span></code><code class="sig-name descname"><span class="pre">RoutingGraphCyclicError</span></code><a class="reference internal" href="../../_modules/jina/excepts/#RoutingGraphCyclicError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.RoutingGraphCyclicError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when the routing graph has cycles.</p>
 </dd></dl>
 </div>
 

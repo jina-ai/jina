@@ -271,6 +271,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -329,7 +330,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -346,7 +351,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -438,7 +443,6 @@
     <span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.zmq</span> <span class="kn">import</span> <span class="n">mixin_zmq_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.zed</span> <span class="kn">import</span> <span class="n">mixin_zed_runtime_parser</span>
-    <span class="kn">from</span> <span class="nn">.peapods.runtimes.container</span> <span class="kn">import</span> <span class="n">mixin_container_runtime_parser</span>
     <span class="kn">from</span> <span class="nn">.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">mixin_remote_parser</span><span class="p">,</span>
         <span class="n">mixin_prefetch_gateway_parser</span><span class="p">,</span>
@@ -467,6 +471,25 @@
         <span class="n">runtime_cls</span><span class="o">=</span><span class="s1">'GRPCRuntime'</span><span class="p">,</span>
         <span class="n">pod_role</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--routing-graph'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Routing graph for the gateway'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--dynamic-routing'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Tells if the gateway should incoming and outgoing traffic as dynamic routing.'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--no-dynamic-routing'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_false'</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The Gateway should not do dynamic routing.'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">dynamic_routing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">parser</span></div>
 
@@ -498,7 +521,7 @@
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
     <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
-    <span class="kn">from</span> <span class="nn">.helloworld</span> <span class="kn">import</span> <span class="n">set_hw_parser</span><span class="p">,</span> <span class="n">set_hello_parser</span>
+    <span class="kn">from</span> <span class="nn">.helloworld</span> <span class="kn">import</span> <span class="n">set_hello_parser</span>
     <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_chf</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 
     <span class="kn">from</span> <span class="nn">.export_api</span> <span class="kn">import</span> <span class="n">set_export_api_parser</span>
@@ -515,8 +538,8 @@
     <span class="n">sp</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span>
         <span class="n">dest</span><span class="o">=</span><span class="s1">'cli'</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">        Use `</span><span class="si">%(prog)-8s</span><span class="s1"> [sub-command] --help` to get detailed information about each sub-command. </span>
-<span class="s1">        </span>
+<span class="s1">        Use `</span><span class="si">%(prog)-8s</span><span class="s1"> [sub-command] --help` to get detailed information about each sub-command.</span>
+
 <span class="s1">        To show all commands, run `JINA_FULL_CLI=1 jina --help`.</span>
 <span class="s1">        '''</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

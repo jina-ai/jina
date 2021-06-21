@@ -271,6 +271,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -329,7 +330,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -346,7 +351,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -425,6 +430,20 @@
 <span class="s1">- ALL: all Peas poll the message (like a broadcast)</span>
 <span class="s1">'''</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--dynamic-routing'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--no-dynamic-routing'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_false'</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">'dynamic_routing'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The Gateway should not do dynamic routing.'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">dynamic_routing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--scheduling'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">SchedulerType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
@@ -437,8 +456,8 @@
         <span class="s1">'--external'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The Pod will be considered an external Pod that has been started independently from the Flow. This Pod '</span>
-        <span class="s1">'will not be context managed by the Flow, and is considered with `--freeze-network-settings`'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The Pod will be considered an external Pod that has been started independently from the Flow.'</span>
+        <span class="s1">'This Pod will not be context managed by the Flow.'</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="c1"># hidden CLI used for internal only</span>

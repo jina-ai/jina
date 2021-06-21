@@ -294,6 +294,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.peapods.zmq/">jina.peapods.zmq package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.peapods.networking/">jina.peapods.networking module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label for="toctree-checkbox-32"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -352,7 +353,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.score.map/">jina.types.score.map module</a></li>
 </ul>
 </li>
@@ -369,7 +374,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Jina Command-Line Interface</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../proto/">Jina Protobuf Specification</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" type="checkbox"/><label for="toctree-checkbox-44"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
 </ul>
 </li>
@@ -467,9 +472,10 @@ are properly closed.</p>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.peapods.pods.BasePod.host_in">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">host_in</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.host_in" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the host_in of this pod</p>
+<dt id="jina.peapods.pods.BasePod.head_host">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">head_host</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.head_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the host of the HeadPea of this pod
+.. # noqa: DAR201</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
@@ -477,34 +483,10 @@ are properly closed.</p>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.peapods.pods.BasePod.host_out">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">host_out</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.host_out" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the host_out of this pod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.peapods.pods.BasePod.address_in">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">address_in</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.address_in" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the full incoming address of this pod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.peapods.pods.BasePod.address_out">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">address_out</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.address_out" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the full outgoing address of this pod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-</dl>
+<dt id="jina.peapods.pods.BasePod.head_port_in">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">head_port_in</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.head_port_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the port_in of the HeadPea of this pod
+.. # noqa: DAR201</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.BasePod.head_args">
@@ -677,6 +659,19 @@ are properly closed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.pods.Pod.set_routing_graph">
+<code class="sig-name descname"><span class="pre">set_routing_graph</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">routing_graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#Pod.set_routing_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.Pod.set_routing_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the routing graph for the Gateway. The Gateway will equip each message with the given graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>routing_graph</strong> (<a class="reference internal" href="../jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph" title="jina.types.routing.graph.RoutingGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingGraph</span></code></a>) – The to-be-used routing graph</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
