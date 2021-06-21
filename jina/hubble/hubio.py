@@ -27,12 +27,7 @@ JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, "/v1/executors")
 
 HubExecutor = namedtuple(
     "HubExecutor",
-    "id",
-    "current_tag",
-    "visibility",
-    "image_name",
-    "archive_url",
-    "md5sum",
+    ["id", "current_tag", "visibility", "image_name", "archive_url", "md5sum"],
 )
 
 
@@ -181,18 +176,19 @@ class HubIO:
             else:
                 resp.raise_for_status()
 
+        resp = resp.json()
         assert resp["id"] == id
 
-        resp = resp.json()
-
-        return HubExecutor(
-            id=resp["id"],
-            current_tag=f'v{resp["currentVersion"]}',
-            visibility=resp["visibility"],
-            image_name=resp["pullPath"],
-            archive_url=resp["package"]["download"],
-            md5sum=resp["package"]["md5"],
+        result = HubExecutor(
+            resp["id"],
+            f'v{resp["currentVersion"]}',
+            resp["visibility"],
+            resp["pullPath"],
+            resp["package"]["download"],
+            resp["package"]["md5"],
         )
+
+        return result
 
     def pull(self) -> None:
         """Pull the executor pacakge from Jina Hub."""
@@ -227,7 +223,7 @@ class HubIO:
                     return
 
                 # download the package
-                with TimeContext(f"downloading {archive_url}", self.logger):
+                with TimeContext(f"downloading {self.args.id}", self.logger):
                     cached_zip_file = Path(f"{id}-{md5sum}.zip")
                     download_with_resume(
                         archive_url,
@@ -236,7 +232,7 @@ class HubIO:
                         md5sum=md5sum,
                     )
 
-                with TimeContext(f"installing {archive_url}", self.logger):
+                with TimeContext(f"installing {self.args.id}", self.logger):
                     # TODO: get latest tag
                     install_locall(JINA_HUB_CACHE_DIR / cached_zip_file, id, tag)
 
