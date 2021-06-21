@@ -261,7 +261,7 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
         ],
-        'hub push': ['--help', '--public', '--force', '--secret'],
+        'hub push': ['--help', '--force', '--secret', '--public', '--private'],
         'hub pull': ['--help', '--docker', '--secret'],
         'hub': ['--help', 'push', 'pull'],
         'pea': [

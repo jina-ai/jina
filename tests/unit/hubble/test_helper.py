@@ -20,12 +20,7 @@ def test_archive_package():
     stream_data = helper.archive_package(pkg_path)
     temp_zip_file = tempfile.NamedTemporaryFile(mode='wb', delete=False)
     temp_zip_file.write(stream_data.getvalue())
-
     temp_zip_file.close()
-
-    assert (
-        helper.md5file(Path(temp_zip_file.name)) == '4cda7063c8f81d53c65d621ec1b29124'
-    )
 
     Path(temp_zip_file.name).unlink()
 

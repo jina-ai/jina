@@ -39,7 +39,7 @@ class MockResponse:
 
 
 @pytest.mark.parametrize('path', ['dummy_executor'])
-@pytest.mark.parametrize('mode', ['--public'])
+@pytest.mark.parametrize('mode', ['--public', '--private'])
 def test_push(mocker, monkeypatch, path, mode):
     mock = mocker.Mock()
 

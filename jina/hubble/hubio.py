@@ -135,7 +135,7 @@ class HubIO:
                 )
 
             else:
-                raise Exception(resp.text)
+                raise Exception(resp.text) if resp.text else resp.raise_for_status()
 
         except Exception as e:  # IO related errors
             self.logger.error(
