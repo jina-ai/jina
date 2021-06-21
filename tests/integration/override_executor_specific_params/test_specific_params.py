@@ -15,26 +15,23 @@ class DummyOverrideParams(Executor):
 
 
 def test_override_params(mocker):
-    def validate(response):
-        assert len(response.docs) == 1
-        for doc in response.docs:
-            assert doc.tags['param1'] == 'changed'
-            assert doc.tags['param2'] == 60
-
-    f = Flow().add(
+    f = Flow(return_results=True).add(
         uses={'jtype': 'DummyOverrideParams', 'metas': {'name': 'exec_name'}},
     )
 
-    mock = mocker.Mock()
     error_mock = mocker.Mock()
 
     with f:
-        f.index(
+        resp = f.index(
             inputs=DocumentArray([Document()]),
             parameters={'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}},
-            on_done=mock,
             on_error=error_mock,
         )
-    mock.assert_called_once()
-    validate_callback(mock, validate)
     error_mock.assert_not_called()
+
+    assert len(resp) == 1
+    assert len(resp[0].docs) == 1
+    for doc in resp[0].docs:
+        assert doc.tags['param1'] == 'changed'
+        assert doc.tags['param2'] == 60
+        assert doc.tags['exec_name']['param1'] == 'changed'

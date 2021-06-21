@@ -177,7 +177,6 @@ class ZEDRuntime(ZMQRuntime):
         specific_parameters = parameters.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
-            del parsed_params[executor_name]
         return parsed_params
 
     def _handle(self, msg: 'Message') -> 'ZEDRuntime':

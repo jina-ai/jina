@@ -12,4 +12,4 @@ def test_zed_runtime_parse_params():
 
     assert parsed_params['traversal_path'] == 'c'
     assert parsed_params['param1'] == 5
-    assert 'executor_name' not in parsed_params
+    assert parsed_params['executor_name']['traversal_path'] == 'c'
