@@ -16,9 +16,6 @@ from ..zmq import Zmqlet, send_ctrl_message
 
 __all__ = ['BasePea']
 
-if False:
-    from ..runtimes.base import BaseRuntime
-
 
 class BasePea:
     """
