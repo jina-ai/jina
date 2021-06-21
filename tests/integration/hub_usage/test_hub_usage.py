@@ -1,9 +1,10 @@
 import os
 
 import pytest
+
+from jina import Flow
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
-from jina import Flow
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 

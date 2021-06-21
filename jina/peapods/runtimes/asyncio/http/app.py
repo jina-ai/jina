@@ -2,7 +2,8 @@ import argparse
 import json
 from typing import Dict
 
-from google.protobuf.json_format import MessageToJson
+from google.protobuf.json_format import MessageToDict
+
 
 from ..grpc.async_call import AsyncPrefetchCall
 from ....zmq import AsyncZmqlet
@@ -25,10 +26,11 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     with ImportExtensions(required=True):
         from fastapi import FastAPI
         from fastapi.middleware.cors import CORSMiddleware
-        from starlette.responses import StreamingResponse
         from .models import (
             JinaStatusModel,
             JinaRequestModel,
+            JinaEndpointRequestModel,
+            JinaResponseModel,
         )
 
     app = FastAPI(
@@ -60,7 +62,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     openapi_tags = []
     if not args.no_debug_endpoints:
-
         openapi_tags.append(
             {
                 'name': 'Debug',
@@ -93,10 +94,10 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',
-            response_model=JinaRequestModel,
-            tags=['Debug'],
+            tags=['Debug']
+            # do not add response_model here, this debug endpoint should not restricts the response model
         )
-        async def post(body: JinaRequestModel):
+        async def post(body: JinaEndpointRequestModel):
             """
             Post a data request to some endpoint.
 
@@ -115,9 +116,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             # The above comment is written in Markdown for better rendering in FastAPI
 
             bd = body.dict()  # type: Dict
-            return StreamingResponse(
-                result_in_stream(request_generator(**bd)), media_type='application/json'
-            )
+            return await _get_singleton_result(request_generator(**bd))
 
     def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
         """Exposing an executor endpoint to http endpoint
@@ -129,8 +128,10 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         # set some default kwargs for richer semantics
         # group flow exposed endpoints into `customized` group
         kwargs['tags'] = kwargs.get('tags', ['Customized'])
-        # add fullrequest as response model
-        kwargs['response_model'] = kwargs.get('response_model', JinaRequestModel)
+        kwargs['response_model'] = kwargs.get(
+            'response_model',
+            JinaResponseModel,  # use standard response model by default
+        )
 
         @app.api_route(
             path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
@@ -138,9 +139,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         async def foo(body: JinaRequestModel):
             bd = body.dict() if body else {'data': None}
             bd['exec_endpoint'] = exec_endpoint
-            return StreamingResponse(
-                result_in_stream(request_generator(**bd)), media_type='application/json'
-            )
+            return await _get_singleton_result(request_generator(**bd))
 
     if not args.no_crud_endpoints:
         openapi_tags.append(
@@ -159,7 +158,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         for k, v in crud.items():
             v['tags'] = ['CRUD']
             v[
-                'summary'
+                'description'
             ] = f'Post data requests to the Flow. Executors with `@requests(on="{k}")` will respond.'
             expose_executor_endpoint(exec_endpoint=k, **v)
 
@@ -171,19 +170,18 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 
-    async def result_in_stream(req_iter):
+    async def _get_singleton_result(req_iter) -> Dict:
         """
-        Streams results from AsyncPrefetchCall as json
+        Streams results from AsyncPrefetchCall as a dict
 
-        :param req_iter: request iterator
-        :yield: result
+        :param req_iter: request iterator, with length of 1
+        :return: the first result from the request iterator
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
-            yield MessageToJson(
+            return MessageToDict(
                 k,
                 including_default_value_fields=args.including_default_value_fields,
                 preserving_proto_field_name=True,
-                sort_keys=args.sort_keys,
                 use_integers_for_enums=args.use_integers_for_enums,
                 float_precision=args.float_precision,
             )
