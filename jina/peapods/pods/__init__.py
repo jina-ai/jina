@@ -8,7 +8,8 @@ from typing import Dict, Union, Set
 from typing import List, Optional
 
 from ..peas import BasePea
-from ... import __default_host__, __default_executor__
+from ... import __default_executor__
+from ...types.routing.graph import RoutingGraph
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -16,9 +17,9 @@ from ...enums import (
     SocketType,
     PeaRoleType,
     PollingType,
-    GatewayProtocolType,
 )
-from ...helper import get_public_ip, get_internal_ip, random_identity
+from ...helper import random_identity
+from ..networking import get_connect_host
 
 
 class ExitFIFO(ExitStack):
@@ -136,40 +137,18 @@ class BasePod(ExitFIFO):
         return self.args.name
 
     @property
-    def host_in(self) -> str:
-        """Get the host_in of this pod
-
-
+    def head_host(self) -> str:
+        """Get the host of the HeadPea of this pod
         .. # noqa: DAR201
         """
-        return self.head_args.host_in
+        return self.head_args.host
 
     @property
-    def host_out(self) -> str:
-        """Get the host_out of this pod
-
-
+    def head_port_in(self):
+        """Get the port_in of the HeadPea of this pod
         .. # noqa: DAR201
         """
-        return self.tail_args.host_out
-
-    @property
-    def address_in(self) -> str:
-        """Get the full incoming address of this pod
-
-
-        .. # noqa: DAR201
-        """
-        return f'{self.head_args.host_in}:{self.head_args.port_in} ({self.head_args.socket_in!s})'
-
-    @property
-    def address_out(self) -> str:
-        """Get the full outgoing address of this pod
-
-
-        .. # noqa: DAR201
-        """
-        return f'{self.tail_args.host_out}:{self.tail_args.port_out} ({self.tail_args.socket_out!s})'
+        return self.head_args.port_in
 
     def __enter__(self) -> 'BasePod':
         return self.start()
@@ -203,6 +182,9 @@ class BasePod(ExitFIFO):
                 _head_args.socket_out = SocketType.ROUTER_BIND
         else:
             _head_args.socket_out = SocketType.PUB_BIND
+
+        Pod._set_dynamic_in_routing(_head_args)
+
         if as_router:
             _head_args.uses = args.uses_before or __default_executor__
 
@@ -247,57 +229,9 @@ class BasePod(ExitFIFO):
             _tail_args.pea_role = PeaRoleType.TAIL
             _tail_args.num_part = 1 if polling_type.is_push else args.parallel
 
+        Pod._set_dynamic_out_routing(_tail_args)
+
         return _tail_args
-
-    @staticmethod
-    def _fill_in_host(bind_args: Namespace, connect_args: Namespace) -> str:
-        """
-        Compute the host address for ``connect_args``
-
-        :param bind_args: configuration for the host ip binding
-        :param connect_args: configuration for the host ip connection
-        :return: host ip
-        """
-        from sys import platform
-
-        # by default __default_host__ is 0.0.0.0
-
-        # is BIND at local
-        bind_local = bind_args.host == __default_host__
-
-        # is CONNECT at local
-        conn_local = connect_args.host == __default_host__
-
-        # is CONNECT inside docker?
-        conn_docker = getattr(
-            connect_args, 'uses', None
-        ) is not None and connect_args.uses.startswith('docker://')
-
-        # is BIND & CONNECT all on the same remote?
-        bind_conn_same_remote = (
-            not bind_local and not conn_local and (bind_args.host == connect_args.host)
-        )
-
-        if platform in ('linux', 'linux2'):
-            local_host = __default_host__
-        else:
-            local_host = 'host.docker.internal'
-
-        # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
-        if bind_local and conn_local:
-            return local_host if conn_docker else __default_host__
-
-        # pod1 and pod2 are remote but they are in the same host (pod2 is local w.r.t pod1)
-        if bind_conn_same_remote:
-            return local_host if conn_docker else __default_host__
-
-        # From here: Missing consideration of docker
-        if bind_local and not conn_local:
-            # in this case we are telling CONN (at remote) our local ip address
-            return get_public_ip() if bind_args.expose_public else get_internal_ip()
-        else:
-            # in this case we (at local) need to know about remote the BIND address
-            return bind_args.host
 
     @property
     @abstractmethod
@@ -601,6 +535,7 @@ class Pod(BasePod):
             if args.parallel > 1:
                 _args.pea_role = PeaRoleType.PARALLEL
                 _args.identity = random_identity()
+
                 if _args.peas_hosts:
                     _args.host = pea_host
                 if _args.name:
@@ -629,13 +564,21 @@ class Pod(BasePod):
             else:
                 _args.socket_in = SocketType.SUB_CONNECT
             if head_args:
-                _args.host_in = BasePod._fill_in_host(
-                    bind_args=head_args, connect_args=_args
+                _args.host_in = get_connect_host(
+                    bind_host=head_args.host,
+                    bind_expose_public=head_args.expose_public,
+                    connect_args=_args,
                 )
+            else:
+                Pod._set_dynamic_in_routing(_args)
             if tail_args:
-                _args.host_out = BasePod._fill_in_host(
-                    bind_args=tail_args, connect_args=_args
+                _args.host_out = get_connect_host(
+                    bind_host=tail_args.host,
+                    bind_expose_public=tail_args.expose_public,
+                    connect_args=_args,
                 )
+            else:
+                Pod._set_dynamic_out_routing(_args)
 
             # pea workspace if not set then derive from workspace
             if not _args.workspace:
@@ -679,7 +622,28 @@ class Pod(BasePod):
         else:
             self.is_head_router = False
             self.is_tail_router = False
+            Pod._set_dynamic_in_routing(args)
+            Pod._set_dynamic_out_routing(args)
             parsed_args['peas'] = [args]
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args
+
+    @staticmethod
+    def _set_dynamic_in_routing(args):
+        if args.dynamic_routing:
+            args.dynamic_in_routing = True
+            args.socket_in = SocketType.ROUTER_BIND
+
+    @staticmethod
+    def _set_dynamic_out_routing(args):
+        if args.dynamic_routing:
+            args.dynamic_out_routing = True
+            args.socket_out = SocketType.DEALER_CONNECT
+
+    def set_routing_graph(self, routing_graph: RoutingGraph) -> None:
+        """Sets the routing graph for the Gateway. The Gateway will equip each message with the given graph.
+
+        :param routing_graph: The to-be-used routing graph
+        """
+        self.args.routing_graph = routing_graph

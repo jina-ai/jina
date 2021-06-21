@@ -46,14 +46,7 @@ def test_name(pod_args):
 def test_host(pod_args):
     with CompoundPod(pod_args) as pod:
         assert pod.host == '0.0.0.0'
-        assert pod.host_in == '0.0.0.0'
-        assert pod.host_out == '0.0.0.0'
-
-
-def test_address_in_out(pod_args):
-    with CompoundPod(pod_args) as pod:
-        assert pod.host in pod.address_in
-        assert pod.host in pod.address_out
+        assert pod.head_host == '0.0.0.0'
 
 
 def test_is_ready(pod_args):
@@ -242,12 +235,12 @@ def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_ou
     )
     with CompoundPod(args) as compound_pod:
         head = compound_pod.head_args
-        assert head.socket_in == SocketType.PULL_BIND
+        assert head.socket_in == SocketType.ROUTER_BIND
         assert head.socket_out == SocketType.ROUTER_BIND
         assert head.scheduling == SchedulerType.LOAD_BALANCE
         tail = compound_pod.tail_args
         assert tail.socket_in == SocketType.PULL_BIND
-        assert tail.socket_out == SocketType.PUSH_BIND
+        assert tail.socket_out == SocketType.DEALER_CONNECT
         assert tail.scheduling == SchedulerType.LOAD_BALANCE
         replicas = compound_pod.replicas
         for replica in replicas:
