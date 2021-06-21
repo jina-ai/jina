@@ -113,10 +113,10 @@ def test_l_r_l_with_upload(silent_log, parallels, mocker):
         Flow()
         .add()
         .add(
-            uses='mwu_encoder.yml',
+            uses=os.path.join(cur_dir, 'mwu_encoder/mwu_encoder.yml'),
             host=CLOUD_HOST,
             parallel=parallels,
-            upload_files=['mwu_encoder.py'],
+            upload_files=[os.path.join(cur_dir, 'mwu_encoder.py')],
             quiet_remote_logs=silent_log,
         )
         .add()
@@ -135,9 +135,7 @@ def docker_image():
     import docker
 
     client = docker.from_env()
-    client.images.build(
-        path=os.path.join(cur_dir, '../../unit/mwu-encoder/'), tag=img_name
-    )
+    client.images.build(path=os.path.join(cur_dir, 'mwu-encoder/'), tag=img_name)
     client.close()
     yield img_name
     client = docker.from_env()
@@ -174,10 +172,10 @@ def test_create_pea_timeout(parallels):
         Flow()
         .add()
         .add(
-            uses='delayed_executor.yml',
+            uses=os.path.join(cur_dir, 'delayed_executor.yml'),
             host=CLOUD_HOST,
             parallel=parallels,
-            upload_files=['delayed_executor.py'],
+            upload_files=[os.path.join(cur_dir, 'delayed_executor.py')],
             timeout_ready=20000,
         )
         .add()
