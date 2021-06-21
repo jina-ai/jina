@@ -16,17 +16,27 @@ from ....jaml.helper import complete_path
 class ContainerRuntime(ZMQRuntime):
     """Runtime procedure for container."""
 
-    def __init__(self, args: 'argparse.Namespace'):
-        super().__init__(args)
+    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
+        super().__init__(args, ctrl_addr)
         self.ctrl_addr = Zmqlet.get_ctrl_address(
             self._host_ctrl, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
         self._set_network_for_dind_linux()
+        self._docker_run()
+        while self._is_container_alive and not self.is_ready:
+            time.sleep(1)
+        # two cases to reach here: 1. is_ready, 2. container is dead
+        if not self._is_container_alive:
+            # replay it to see the log
+            self._docker_run(replay=True)
+            raise Exception(
+                'the container fails to start, check the arguments or entrypoint'
+            )
 
     @property
     def _host_ctrl(self) -> str:
         """
-        Checks if caller (jinad) has set `docker_kwargs['extra_hosts']` to _docker_host.
+        Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to _docker_host.
         If yes, set host_ctrl to _docker_host, else set it to localhost
 
         :return: host for control port
@@ -39,19 +49,6 @@ class ContainerRuntime(ZMQRuntime):
             and _docker_host in self.args.docker_kwargs['extra_hosts']
             else self.args.host
         )
-
-    def setup(self):
-        """Run the container."""
-        self._docker_run()
-        while self._is_container_alive and not self.is_ready:
-            time.sleep(1)
-        # two cases to reach here: 1. is_ready, 2. container is dead
-        if not self._is_container_alive:
-            # replay it to see the log
-            self._docker_run(replay=True)
-            raise Exception(
-                'the container fails to start, check the arguments or entrypoint'
-            )
 
     def teardown(self):
         """Stop the container."""

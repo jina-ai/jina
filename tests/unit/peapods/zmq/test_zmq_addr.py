@@ -35,7 +35,7 @@ def zmq_args_dict(zmq_args_argparse):
 
 @pytest.fixture
 def runtime(zmq_args_argparse):
-    return ZMQRuntime(args=zmq_args_argparse)
+    return ZMQRuntime(args=zmq_args_argparse, ctrl_addr='')
 
 
 @pytest.fixture
@@ -47,14 +47,9 @@ def ctrl_messages():
 
 @pytest.fixture(params=['zmq_args_dict', 'zmq_args_argparse'])
 def test_init(request):
-    runtime = ZMQRuntime(args=request.param)
+    runtime = ZMQRuntime(args=request.param, ctrl_addr='')
     assert runtime.host == '0.0.0.0'
     assert runtime.port_expose == 45678
-    assert runtime.timeout_ctrl == 5000
-
-
-def test_cancel(runtime):
-    assert runtime.cancel() is None
 
 
 def test_status(runtime, ctrl_messages, mocker):
