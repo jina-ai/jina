@@ -320,14 +320,11 @@ def test_da_sort_by_score():
 def test_da_contains():
     da = DocumentArray()
     d1 = Document(id=1)
-    d2 = Document(id=2)
+    d2 = Document(id='2')
     da.extend([d1, d2])
+    print(da._id_to_index)
     assert d1.id in da
     assert d2.id in da
     da.clear()
     assert d1.id not in da
-    da.extend([d1, d2])
-    del da[0]
-    assert d1.id not in da
-    del da['2']
     assert d2.id not in da
