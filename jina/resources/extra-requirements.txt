@@ -22,7 +22,7 @@
 
 scipy>=1.6.1:               sparse, cicd, graph
 fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal
-uvicorn>=0.12.1:            devel, cicd, http, test, daemon, chatbot, multimodal
+uvicorn[standard]>=0.14.0:  devel, cicd, http, test, daemon, chatbot, multimodal
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
 docker:                     devel, cicd, network, hub, daemon
 pathspec:                   devel, cicd, hub
