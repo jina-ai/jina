@@ -17,7 +17,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 _document_fields = sorted(set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)))
 
 # check if this can be bypassed
-IGNORED_FIELDS = ['embedding', 'score', 'graph_info']
+IGNORED_FIELDS = ['embedding', 'scores', 'graph_info', 'evaluations']
 
 
 @pytest.fixture
@@ -50,14 +50,16 @@ class MockExecutor(Executor):
 
 def test_no_matches_rest(query_dict):
     port = helper.random_port()
-    with Flow(restful=True, port_expose=port, including_default_value_fields=True).add(
-        uses=MockExecutor
-    ):
+    with Flow(
+        protocol='http',
+        port_expose=port,
+        including_default_value_fields=True,
+    ).add(uses=MockExecutor):
         # temporarily adding sleep
         time.sleep(0.5)
         query = json.dumps(query_dict).encode('utf-8')
         req = request.Request(
-            f'http://0.0.0.0:{port}/search',
+            f'http://localhost:{port}/search',
             data=query,
             headers={'content-type': 'application/json'},
         )

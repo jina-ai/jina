@@ -33,11 +33,11 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # NOTE: this represents the NEXT release version
 
 # TODO: remove 'rcN' on final release
-__version__ = '2.0.0rc7'
+__version__ = '2.0.0rc8'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.0.82'
+__proto_version__ = '0.0.84'
 
 __uptime__ = _datetime.datetime.now().isoformat()
 

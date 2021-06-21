@@ -1,4 +1,5 @@
 from collections.abc import MutableMapping
+from typing import Union, Dict
 
 from google.protobuf import struct_pb2
 
@@ -27,9 +28,12 @@ class StructView(ProtoTypeMixin, MutableMapping):
     def __getitem__(self, key):
         if key in self._pb_body.keys():
             value = self._pb_body[key]
-            # TODO: Maybe do the same with ListValue and build a ListValueView
             if isinstance(value, struct_pb2.Struct):
                 return StructView(value)
+            elif isinstance(value, struct_pb2.ListValue):
+                from .list import ListView
+
+                return ListView(value)
             else:
                 return value
         else:
@@ -41,6 +45,14 @@ class StructView(ProtoTypeMixin, MutableMapping):
     def __iter__(self):
         for key in self._pb_body.keys():
             yield key
+
+    def __eq__(self, other: Union['StructView', Dict]):
+        if isinstance(other, StructView):
+            return self.dict() == other.dict()
+        elif isinstance(other, Dict):
+            return self.dict() == other
+        else:
+            return False
 
     def update(self, d, **kwargs):  # pylint: disable=invalid-name
         """

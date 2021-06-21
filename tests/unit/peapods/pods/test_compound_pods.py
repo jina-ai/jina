@@ -120,52 +120,33 @@ def test_pod_naming_with_parallel(runtime):
 
         assert bp.replicas[0].name == 'pod/rep-0'
         assert bp.replicas[0].peas[0].name == 'pod/rep-0/head'
-        assert bp.replicas[0].peas[0].inner is False
+        assert bp.replicas[0].peas[0]._is_inner_pea is False
         assert bp.replicas[0].peas[1].name == 'pod/rep-0/pea-0'
-        assert bp.replicas[0].peas[1].inner
+        assert bp.replicas[0].peas[1]._is_inner_pea
         assert bp.replicas[0].peas[2].name == 'pod/rep-0/pea-1'
-        assert bp.replicas[0].peas[2].inner
+        assert bp.replicas[0].peas[2]._is_inner_pea
         assert bp.replicas[0].peas[3].name == 'pod/rep-0/tail'
-        assert bp.replicas[0].peas[3].inner is False
+        assert bp.replicas[0].peas[3]._is_inner_pea is False
 
         assert bp.replicas[1].name == 'pod/rep-1'
         assert bp.replicas[1].peas[0].name == 'pod/rep-1/head'
-        assert bp.replicas[1].peas[0].inner is False
+        assert bp.replicas[1].peas[0]._is_inner_pea is False
         assert bp.replicas[1].peas[1].name == 'pod/rep-1/pea-0'
-        assert bp.replicas[1].peas[1].inner
+        assert bp.replicas[1].peas[1]._is_inner_pea
         assert bp.replicas[1].peas[2].name == 'pod/rep-1/pea-1'
-        assert bp.replicas[1].peas[2].inner
+        assert bp.replicas[1].peas[2]._is_inner_pea
         assert bp.replicas[1].peas[3].name == 'pod/rep-1/tail'
-        assert bp.replicas[1].peas[3].inner is False
+        assert bp.replicas[1].peas[3]._is_inner_pea is False
 
         assert bp.replicas[2].name == 'pod/rep-2'
         assert bp.replicas[2].peas[0].name == 'pod/rep-2/head'
-        assert bp.replicas[2].peas[0].inner is False
+        assert bp.replicas[2].peas[0]._is_inner_pea is False
         assert bp.replicas[2].peas[1].name == 'pod/rep-2/pea-0'
-        assert bp.replicas[2].peas[1].inner
+        assert bp.replicas[2].peas[1]._is_inner_pea
         assert bp.replicas[2].peas[2].name == 'pod/rep-2/pea-1'
-        assert bp.replicas[2].peas[2].inner
+        assert bp.replicas[2].peas[2]._is_inner_pea
         assert bp.replicas[2].peas[3].name == 'pod/rep-2/tail'
-        assert bp.replicas[2].peas[3].inner is False
-
-        # runtime
-        assert bp.head_pea.runtime.name == 'pod/head/ZEDRuntime'
-        assert bp.tail_pea.runtime.name == 'pod/tail/ZEDRuntime'
-
-        assert bp.replicas[0].peas[0].runtime.name == 'pod/rep-0/head/ZEDRuntime'
-        assert bp.replicas[0].peas[1].runtime.name == 'pod/rep-0/pea-0/ZEDRuntime'
-        assert bp.replicas[0].peas[2].runtime.name == 'pod/rep-0/pea-1/ZEDRuntime'
-        assert bp.replicas[0].peas[3].runtime.name == 'pod/rep-0/tail/ZEDRuntime'
-
-        assert bp.replicas[1].peas[0].runtime.name == 'pod/rep-1/head/ZEDRuntime'
-        assert bp.replicas[1].peas[1].runtime.name == 'pod/rep-1/pea-0/ZEDRuntime'
-        assert bp.replicas[1].peas[2].runtime.name == 'pod/rep-1/pea-1/ZEDRuntime'
-        assert bp.replicas[1].peas[3].runtime.name == 'pod/rep-1/tail/ZEDRuntime'
-
-        assert bp.replicas[2].peas[0].runtime.name == 'pod/rep-2/head/ZEDRuntime'
-        assert bp.replicas[2].peas[1].runtime.name == 'pod/rep-2/pea-0/ZEDRuntime'
-        assert bp.replicas[2].peas[2].runtime.name == 'pod/rep-2/pea-1/ZEDRuntime'
-        assert bp.replicas[2].peas[3].runtime.name == 'pod/rep-2/tail/ZEDRuntime'
+        assert bp.replicas[2].peas[3]._is_inner_pea is False
 
 
 @pytest.mark.parametrize(
@@ -207,7 +188,7 @@ def test_host_list_matching(num_hosts, used_hosts):
             '--replicas',
             '3',
             '--peas-hosts',
-            *[f'0.0.0.{i+1}' for i in range(num_hosts)],
+            *[f'0.0.0.{i + 1}' for i in range(num_hosts)],
             '--runtime-backend',
             'process',
         ]

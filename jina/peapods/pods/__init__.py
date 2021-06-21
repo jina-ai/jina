@@ -10,7 +10,14 @@ from typing import List, Optional
 from ..peas import BasePea
 from ... import __default_host__, __default_executor__
 from ... import helper
-from ...enums import SchedulerType, PodRoleType, SocketType, PeaRoleType, PollingType
+from ...enums import (
+    SchedulerType,
+    PodRoleType,
+    SocketType,
+    PeaRoleType,
+    PollingType,
+    GatewayProtocolType,
+)
 from ...helper import get_public_ip, get_internal_ip, random_identity
 
 
@@ -86,7 +93,6 @@ class BasePod(ExitFIFO):
     ):
         super().__init__()
         self.args = args
-        self._set_conditional_args(self.args)
         self.needs = (
             needs if needs else set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
@@ -111,14 +117,6 @@ class BasePod(ExitFIFO):
         .. # noqa: DAR201
         """
         self.__exit__(None, None, None)
-
-    @staticmethod
-    def _set_conditional_args(args):
-        if args.pod_role == PodRoleType.GATEWAY:
-            if args.restful:
-                args.runtime_cls = 'RESTRuntime'
-            else:
-                args.runtime_cls = 'GRPCRuntime'
 
     @property
     def role(self) -> 'PodRoleType':
@@ -500,8 +498,7 @@ class Pod(BasePod):
     def _activate(self):
         # order is good. Activate from tail to head
         for pea in reversed(self.peas):
-            if pea.args.socket_in == SocketType.DEALER_CONNECT:
-                pea.runtime.activate()
+            pea.activate_runtime()
 
         self._activated = True
 

@@ -68,11 +68,19 @@ message NamedScoreProto {
 }
 
 /**
+ * Represents the mapping of score by keys
+ */
+message NamedScoreMappingProto {
+    map<string, NamedScoreProto> values = 1;
+}
+
+/**
  * Represents a Graph
  */
 message GraphProto {
     SparseNdArrayProto adjacency = 1; // adjacency list
     google.protobuf.Struct edge_features = 2; // Container structure to store edge features
+    bool undirected = 3; //Flag indicating if the graph is to be interpreted as an undirected graph
 }
 
 /**
@@ -135,14 +143,14 @@ message DocumentProto {
     // the embedding `ndarray` of this document
     NdArrayProto embedding = 19;
 
-    // TODO: List of matching scores performed on the document, each element corresponds to a metric
-    NamedScoreProto score = 20;
+    // Scores performed on the document, each element corresponds to a metric
+    NamedScoreMappingProto scores = 28;
 
     // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
     string modality = 21;
 
-    // List of evaluations performed on the document, each element corresponds to a metric
-    repeated NamedScoreProto evaluations = 23;
+    // Evaluations performed on the document, each element corresponds to a metric
+    NamedScoreMappingProto evaluations = 29;
 }
 
 /**

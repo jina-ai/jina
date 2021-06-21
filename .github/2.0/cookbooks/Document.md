@@ -29,6 +29,7 @@ Table of Contents
   - [Construct `Document`](#construct-document)
     - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
     - [Conversion between `doc.content`](#conversion-between-doccontent)
+    - [Support for Sparse arrays](#support-for-sparse-arrays)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
     - [Construct from Another `Document`](#construct-from-another-document)
@@ -75,7 +76,7 @@ d = Document()
 
 A `Document` object has the following attributes, which can be put into the following categories:
 
-| | | 
+| | |
 |---|---|
 | Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
 | Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality`, `siblings` |
@@ -212,6 +213,40 @@ from jina import Document
 
 d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
+```
+
+#### Support for Sparse arrays
+
+ Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
+
+```python
+import scipy.sparse as sp 
+
+d1 = Document(embedding=sp.coo_matrix([0,0,0,1,0]))
+d2 = Document(embedding=sp.csr_matrix([0,0,0,1,0]))
+d3 = Document(embedding=sp.bsr_matrix([0,0,0,1,0]))
+d4 = Document(embedding=sp.csc_matrix([0,0,0,1,0]))
+
+d5 = Document(blob=sp.coo_matrix([0,0,0,1,0]))
+d6 = Document(blob=sp.csr_matrix([0,0,0,1,0]))
+d7 = Document(blob=sp.bsr_matrix([0,0,0,1,0]))
+d8 = Document(blob=sp.csc_matrix([0,0,0,1,0]))
+```
+
+Tensorflow and Pytorch sparse arrays are also supported
+
+```python
+import torch
+import tensorflow as tf
+
+indices = [[0, 0], [1, 2]]
+values = [1, 2]
+dense_shape = [3, 4]
+
+d1 = Document(embedding=torch.sparse_coo_tensor(indices, values, dense_shape))
+d2 = Document(embedding=tf.SparseTensor(indices, values, dense_shape))
+d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
+d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 ```
 
 #### Construct with Multiple Attributes
@@ -536,8 +571,8 @@ d0.plot()  # simply `d0` on JupyterLab
 
 |     |     |
 | --- | --- |
-| `doc.score` | The relevance information of this Document |
-| `doc.evaluations` | The evaluation information of this Document |
+| `doc.scores` | The relevance information of this Document. A dict-like structure supporting storing different metrics |
+| `doc.evaluations` | The evaluation information of this Document. A dict-like structure supporting storing different metrics |
 
 You can add a relevance score to a `Document` object via:
 
@@ -545,13 +580,17 @@ You can add a relevance score to a `Document` object via:
 from jina import Document
 
 d = Document()
-d.score.value = 0.96
-d.score.description = 'cosine similarity'
-d.score.op_name = 'cosine()'
+d.scores['cosine similarity'] = 0.96
+d.scores['cosine similarity'].description = 'cosine similarity'
+d.scores['cosine similarity'].op_name = 'cosine()'
+d.evaluations['recall'] = 0.56
+d.evaluations['recall'].description = 'recall at 10'
+d.evaluations['recall'].op_name = 'recall()'
+d
 ```
 
 ```text
-<jina.types.document.Document id=0a986c50-aeff-11eb-84c1-1e008a366d48 score={'value': 0.96, 'opName': 'cosine()', 'description': 'cosine similarity'} at 6281686928>
+<jina.types.document.Document id=6c4db2c8-cdf1-11eb-be5d-e86a64801cb1 scores={'values': {'cosine similarity': {'value': 0.96, 'op_name': 'cosine()', 'description': 'cosine similarity'}}} evaluations={'values': {'recall': {'value': 0.56, 'op_name': 'recall()', 'description': 'recall at 10'}}} at 140003211429776>```
 ```
 
 Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
@@ -564,8 +603,32 @@ from jina import Document
 q = Document()
 # get match Document `m`
 m = Document()
-m.score.value = 0.96
+m.scores['metric'] = 0.96
 q.matches.append(m)
+```
+
+```text
+<jina.types.document.Document id=1aaba345-cdf1-11eb-be5d-e86a64801cb1 adjacency=1 scores={'values': {'metric': {'value': 0.96, 'ref_id': '1aaba344-cdf1-11eb-be5d-e86a64801cb1'}}} at 140001502011856>
+```
+
+These attributes (`scores` and `evaluations`) provide a dict-like interface that lets access all its elements:
+```python
+from jina import Document
+
+d = Document()
+d.evaluations['precision'] = 1.0
+d.evaluations['precision'].description = 'precision at 10'
+d.evaluations['precision'].op_name = 'precision()'
+d.evaluations['recall'] = 0.5
+d.evaluations['recall'].description = 'recall at 10'
+d.evaluations['recall'].op_name = 'recall()'
+for evaluation_key, evaluation_score in d.evaluations.items():
+    print(f' {evaluation_key} => {evaluation_score.description}: {evaluation_score.value}') 
+```
+
+```text
+ precision => precision at 10: 1.0
+ recall => recall at 10: 0.5
 ```
 
 ## `DocumentArray` API
@@ -681,16 +744,16 @@ from jina import DocumentArray, Document
 da = DocumentArray([Document() for _ in range(6)])
 
 for j in range(6):
-    da[j].score.value = j
+    da[j].scores['metric'] = j
 
-for d in filter(lambda d: d.score.value > 2, da):
+for d in filter(lambda d: d.scores['metric'].value > 2, da):
     print(d)
 ```
 
 ```text
-<jina.types.document.Document id=c5e588f4-b6b0-11eb-af83-1e008a366d49 score={'value': 3.0} at 5696708048>
-<jina.types.document.Document id=c5e58958-b6b0-11eb-af83-1e008a366d49 score={'value': 4.0} at 5696705040>
-<jina.types.document.Document id=c5e589b2-b6b0-11eb-af83-1e008a366d49 score={'value': 5.0} at 5696708048>
+{'id': 'b5fa4871-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 3.0}}}}
+{'id': 'b5fa4872-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 4.0}}}}
+{'id': 'b5fa4873-cdf1-11eb-be5d-e86a64801cb1', 'scores': {'values': {'metric': {'value': 5.0}}}}
 ```
 
 You can build a `DocumentArray` object from the filtered results:

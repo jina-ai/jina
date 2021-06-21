@@ -12,8 +12,8 @@ class DummyCrafterSkip(Executor):
         return 1 / 0
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_bad_flow_skip_handle(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_bad_flow_skip_handle(mocker, protocol):
     def validate(req):
         bad_routes = [
             r for r in req.routes if r.status.code >= jina_pb2.StatusProto.ERROR
@@ -27,7 +27,7 @@ def test_bad_flow_skip_handle(mocker, restful):
         assert bad_routes[2].status.code == jina_pb2.StatusProto.ERROR_CHAINED
 
     f = (
-        Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
+        Flow(protocol=protocol, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
         .add(name='r1', uses='!DummyCrafterSkip')
         .add(name='r2')
         .add(name='r3')
@@ -42,8 +42,8 @@ def test_bad_flow_skip_handle(mocker, restful):
     validate_callback(on_error_mock, validate)
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_bad_flow_skip_handle_join(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_bad_flow_skip_handle_join(mocker, protocol):
     """When skipmode is set to handle, reduce driver wont work anymore"""
 
     def validate(req):
@@ -66,7 +66,7 @@ def test_bad_flow_skip_handle_join(mocker, restful):
         assert bad_routes[-1].status.exception.name == ''
 
     f = (
-        Flow(restful=restful, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
+        Flow(protocol=protocol, on_error_strategy=OnErrorStrategy.SKIP_HANDLE)
         .add(name='r1', uses=DummyCrafterSkip)
         .add(name='r2')
         .add(name='r3', needs='r1')

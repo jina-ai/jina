@@ -66,10 +66,12 @@ jobs:
         run: |
           mkdir -p schema/daemon/
           cp jinad.html schema/daemon/master.html
+          cp schema/daemon.json schema/daemon/master.json
           rm schema/daemon.json schema/daemon-with-code.json
           rm -rf schema/jinad
           mkdir -p schema/rest/
           cp rest.html schema/rest/master.html
+          cp schema/gateway.json schema/rest/master.json
           rm schema/gateway.json schema/gateway-with-code.json
           cd schema
           git config --local user.email "dev-bot@jina.ai"

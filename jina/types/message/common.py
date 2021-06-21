@@ -35,7 +35,7 @@ class ControlMessage(Message):
         super().__init__(
             None, req, pod_name=pod_name, identity=identity, *args, **kwargs
         )
-        req.request_type = 'control'
+        req = req.as_typed_request('control')
         args = kwargs.get('args', None)
         if args:
             req.args = args

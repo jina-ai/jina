@@ -9,7 +9,7 @@ from jina.parsers import set_pea_parser, set_gateway_parser
 from jina.peapods import Pea
 from jina.peapods.peas import BasePea
 from jina.peapods.runtimes.asyncio.grpc import GRPCRuntime
-from jina.peapods.runtimes.asyncio.rest import RESTRuntime
+from jina.peapods.runtimes.asyncio.websocket import WebSocketRuntime
 from jina.peapods.runtimes.container import ContainerRuntime
 from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 
@@ -25,9 +25,9 @@ def test_zed_runtime(runtime, ctrl_ipc):
     )
     with Pea1(arg) as p:
         if runtime == 'thread':
-            assert isinstance(p, threading.Thread)
+            assert isinstance(p.worker, threading.Thread)
         elif runtime == 'process':
-            assert isinstance(p, multiprocessing.Process)
+            assert isinstance(p.worker, multiprocessing.Process)
 
 
 @pytest.mark.skipif(
@@ -35,7 +35,7 @@ def test_zed_runtime(runtime, ctrl_ipc):
     reason='for unknown reason, this test is flaky on Github action, '
     'but locally it SHOULD work fine',
 )
-@pytest.mark.parametrize('cls', [GRPCRuntime, RESTRuntime])
+@pytest.mark.parametrize('cls', [GRPCRuntime, WebSocketRuntime])
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_gateway_runtime(cls, runtime):
     class Pea1(BasePea):
@@ -98,7 +98,7 @@ def test_address_in_use(runtime):
             set_pea_parser,
             ['--uses', 'docker://jinaai/jina:test-pip', '--entrypoint', 'jina pod'],
         ),
-        (RESTRuntime, set_gateway_parser, []),
+        (WebSocketRuntime, set_gateway_parser, []),
         (ZEDRuntime, set_pea_parser, []),
     ],
 )

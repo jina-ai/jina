@@ -25,7 +25,7 @@ def validate(req):
     assert len(chunk_ids) == 20
 
 
-@pytest.mark.parametrize('restful', [False, True])
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 @pytest.mark.parametrize(
     'uses',
     [
@@ -33,10 +33,10 @@ def validate(req):
         os.path.join(cur_dir, 'yaml/dummy-seg-not-random.yml'),
     ],
 )
-def test_seg(mocker, restful, uses):
+def test_seg(mocker, protocol, uses):
     """tests segments provided the uses for a flow."""
     mock = mocker.Mock()
-    f = Flow(restful=restful).add(uses=uses)
+    f = Flow(protocol=protocol).add(uses=uses)
     with f:
         f.index(inputs=random_docs(10, chunks_per_doc=0), on_done=mock)
     mock.assert_called_once()

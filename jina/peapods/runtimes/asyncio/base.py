@@ -52,8 +52,13 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
     """
     The runtime to start a new event loop.
 
-    Base class for :class:`GRPCRuntime` and :class:`RESTRuntime`.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self._loop)
+        self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
         """
@@ -62,12 +67,6 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         Run the event loop until a Future is done.
         """
         self._loop.run_until_complete(self._loop_body())
-
-    def setup(self):
-        """Setup the event loop."""
-        self._loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self._loop)
-        self._loop.run_until_complete(self.async_setup())
 
     def teardown(self):
         """Stop and close the event loop."""

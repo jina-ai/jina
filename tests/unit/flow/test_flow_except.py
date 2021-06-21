@@ -13,8 +13,8 @@ class DummyCrafterExcept(Executor):
         return 1 / 0
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_bad_flow(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_bad_flow(mocker, protocol):
     def validate(req):
         bad_routes = [
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
@@ -30,7 +30,7 @@ def test_bad_flow(mocker, restful):
             raise NotImplementedError
 
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='r1', uses=BadExecutor)
         .add(name='r2')
         .add(name='r3')
@@ -46,8 +46,8 @@ def test_bad_flow(mocker, restful):
     validate_callback(on_error_mock, validate)
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_bad_flow_customized(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_bad_flow_customized(mocker, protocol):
     def validate(req):
         bad_routes = [
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
@@ -57,7 +57,7 @@ def test_bad_flow_customized(mocker, restful):
         assert bad_routes[0].status.exception.name == 'ZeroDivisionError'
 
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='r1')
         .add(name='r2', uses='!DummyCrafterExcept')
         .add(name='r3', uses='!BaseExecutor')
@@ -76,8 +76,8 @@ def test_bad_flow_customized(mocker, restful):
     validate_callback(on_error_mock, validate)
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_except_with_parallel(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_except_with_parallel(mocker, protocol):
     from jina import Executor, Flow, requests
 
     class MyExecutor(Executor):
@@ -97,7 +97,7 @@ def test_except_with_parallel(mocker, restful):
         assert err_routes[1].exception.name == 'NotImplementedError'
 
     f = (
-        Flow(restful=restful)
+        Flow(protocol=protocol)
         .add(name='r1')
         .add(name='r2', uses=DummyCrafterExcept, parallel=3)
         .add(name='r3', uses=MyExecutor)
@@ -116,8 +116,8 @@ def test_except_with_parallel(mocker, restful):
     validate_callback(on_error_mock, validate)
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_on_error_callback(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_on_error_callback(mocker, protocol):
     def validate1():
         raise NotImplementedError
 
@@ -132,7 +132,7 @@ def test_on_error_callback(mocker, restful):
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
         assert badones[0].pod == 'r3/ZEDRuntime'
 
-    f = Flow(restful=restful).add(name='r1').add(name='r3', uses=MyExecutor)
+    f = Flow(protocol=protocol).add(name='r1').add(name='r3', uses=MyExecutor)
 
     on_error_mock = mocker.Mock()
 
@@ -146,15 +146,15 @@ def test_on_error_callback(mocker, restful):
     validate_callback(on_error_mock, validate2)
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_no_error_callback(mocker, restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_no_error_callback(mocker, protocol):
     def validate2():
         raise NotImplementedError
 
     def validate1(x, *args):
         pass
 
-    f = Flow(restful=restful).add(name='r1').add(name='r3')
+    f = Flow(protocol=protocol).add(name='r1').add(name='r3')
 
     response_mock = mocker.Mock()
     on_error_mock = mocker.Mock()
@@ -170,9 +170,9 @@ def test_no_error_callback(mocker, restful):
     on_error_mock.assert_not_called()
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow_on_callback(restful):
-    f = Flow(restful=restful).add()
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_on_callback(protocol):
+    f = Flow(protocol=protocol).add()
     hit = []
 
     def f1(*args):
@@ -197,14 +197,14 @@ def test_flow_on_callback(restful):
     hit.clear()
 
 
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow_on_error_callback(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_on_error_callback(protocol):
     class DummyCrafterNotImplemented(Executor):
         @requests
         def craft(self, text, *args, **kwargs):
             raise NotImplementedError
 
-    f = Flow(restful=restful).add(uses='!DummyCrafterNotImplemented')
+    f = Flow(protocol=protocol).add(uses='!DummyCrafterNotImplemented')
     hit = []
 
     def f1(*args):
@@ -230,13 +230,13 @@ def test_flow_on_error_callback(restful):
 
 
 @pytest.mark.timeout(10)
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow_startup_exception_not_hanging(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging(protocol):
     class ExceptionExecutor(Executor):
         def __init__(self, *args, **kwargs):
             raise Exception
 
-    f = Flow(restful=restful).add(uses=ExceptionExecutor)
+    f = Flow(protocol=protocol).add(uses=ExceptionExecutor)
     from jina.excepts import RuntimeFailToStart
 
     with pytest.raises(RuntimeFailToStart):
@@ -245,14 +245,14 @@ def test_flow_startup_exception_not_hanging(restful):
 
 
 @pytest.mark.timeout(10)
-@pytest.mark.parametrize('restful', [False, True])
-def test_flow_startup_exception_not_hanging2(restful):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging2(protocol):
     class ExceptionExecutor(Executor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             raise Exception
 
-    f = Flow(restful=restful).add(uses=ExceptionExecutor)
+    f = Flow(protocol=protocol).add(uses=ExceptionExecutor)
     from jina.excepts import RuntimeFailToStart
 
     with pytest.raises(RuntimeFailToStart):

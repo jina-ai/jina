@@ -12,7 +12,7 @@ if False:
     from . import Flow
 
 
-def build_required(required_level: 'FlowBuildLevel'):
+def allowed_levels(levels: List['FlowBuildLevel']):
     """Annotate a function so that it requires certain build level to run.
 
     Example:
@@ -24,7 +24,7 @@ def build_required(required_level: 'FlowBuildLevel'):
         def foo():
             print(1)
 
-    :param required_level: required build level to run this function.
+    :param levels: required build level to run this function.
     :return: annotated function
     """
 
@@ -32,11 +32,11 @@ def build_required(required_level: 'FlowBuildLevel'):
         @wraps(func)
         def arg_wrapper(self, *args, **kwargs):
             if hasattr(self, '_build_level'):
-                if self._build_level.value >= required_level.value:
+                if self._build_level in levels:
                     return func(self, *args, **kwargs)
                 else:
                     raise FlowBuildLevelError(
-                        f'build_level check failed for {func!r}, required level: {required_level}, actual level: {self._build_level}'
+                        f'build_level check failed for {func!r}, required level: {levels}, actual level: {self._build_level}'
                     )
             else:
                 raise AttributeError(f'{self!r} has no attribute "_build_level"')

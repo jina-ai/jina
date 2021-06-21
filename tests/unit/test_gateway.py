@@ -29,8 +29,8 @@ def test_compression(compress_algo, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.parametrize('rest_api', [True, False])
-def test_grpc_gateway_concurrency(rest_api):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_grpc_gateway_concurrency(protocol):
     def _validate(req, start, status_codes, durations, index):
         end = time.time()
         durations[index] = end - start
@@ -50,7 +50,7 @@ def test_grpc_gateway_concurrency(rest_api):
             batch_size=16,
         )
 
-    f = Flow(restful=rest_api).add(parallel=2)
+    f = Flow(protocol=protocol).add(parallel=2)
     concurrency = 100
     with f:
         threads = []
