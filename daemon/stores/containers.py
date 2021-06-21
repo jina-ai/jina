@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+from platform import uname
 from typing import Dict, TYPE_CHECKING
 
 import requests
@@ -100,7 +101,11 @@ class ContainerStore(BaseStore):
             # linux: this would only work if we start jinad passing extra_hosts.
             # check if we actually are in docker, needed for unit tests
             # if not docker, use localhost
-            if sys.platform == 'linux' and not os.path.exists('/.dockerenv'):
+            if (
+                sys.platform == 'linux'
+                and 'microsoft' not in uname().release
+                and not os.path.exists('/.dockerenv')
+            ):
                 self.host = f'http://localhost:{self.minid_port}'
             else:
                 self.host = f'http://{__dockerhost__}:{self.minid_port}'
@@ -158,7 +163,8 @@ class ContainerStore(BaseStore):
         """
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
-        Dockerizer.rm_container(id=self[id].metadata.container_id)
+
+        self._delete()
         workspace_id = self[id].workspace_id
         del self[id]
         from . import workspace_store
