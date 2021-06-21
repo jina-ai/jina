@@ -68,13 +68,13 @@ class BasePea:
 
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
-        self._zed_runtime_ctrl_addres = Zmqlet.get_ctrl_address(
+        self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
             self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
         self._local_runtime_ctrl_address = (
             Zmqlet.get_ctrl_address(None, None, True)[0]
             if self.runtime_cls == JinadRuntime
-            else self._zed_runtime_ctrl_addres
+            else self._zed_runtime_ctrl_address
         )
         self._timeout_ctrl = self.args.timeout_ctrl
 
@@ -116,7 +116,7 @@ class BasePea:
         ctrl_addr = (
             self._local_runtime_ctrl_address
             if self.runtime_cls == JinadRuntime
-            else self._zed_runtime_ctrl_addres
+            else self._zed_runtime_ctrl_address
         )
         return self.runtime_cls(self.args, ctrl_addr=ctrl_addr)
 
@@ -184,14 +184,14 @@ class BasePea:
         """ Send activate control message. """
         if self._dealer:
             send_ctrl_message(
-                self._zed_runtime_ctrl_addres, 'ACTIVATE', timeout=self._timeout_ctrl
+                self._zed_runtime_ctrl_address, 'ACTIVATE', timeout=self._timeout_ctrl
             )
 
     def _deactivate_runtime(self):
         """Send deactivate control message. """
         if self._dealer:
             send_ctrl_message(
-                self._zed_runtime_ctrl_addres, 'DEACTIVATE', timeout=self._timeout_ctrl
+                self._zed_runtime_ctrl_address, 'DEACTIVATE', timeout=self._timeout_ctrl
             )
 
     def _cancel_runtime(self):
