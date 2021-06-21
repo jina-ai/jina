@@ -1,11 +1,13 @@
 name: CI
 
-on:
- pull_request_target:
+# on:
+#  pull_request_target:
 # on:
 #   push:
 #     branches-ignore:
 #       - '**'  # temporally ignore all
+on:
+  workflow_dispatch:
 
 jobs:
   latency-tracking:
@@ -26,7 +28,7 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Run current latency vs. last 3 versions
+      - name: Run current latency vs. last ${{ env.NUM_LAST_RELEASE }} versions
         run: |
           sudo apt-get install jq
           cd latency
