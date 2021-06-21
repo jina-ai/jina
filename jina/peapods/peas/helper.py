@@ -1,11 +1,12 @@
+from typing import Union
 import multiprocessing
 import threading
-from multiprocessing.synchronize import Event
+from functools import partial
 
 from ...enums import RuntimeBackendType
 
 
-def _get_event(obj) -> Event:
+def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
     if isinstance(obj, threading.Thread):
         return threading.Event()
     elif isinstance(obj, multiprocessing.Process):
@@ -16,76 +17,48 @@ def _get_event(obj) -> Event:
         )
 
 
-def _make_or_event(obj, *events) -> Event:
-    or_event = _get_event(obj)
+class ConditionalEvent:
+    """
+    :class:`ConditionalEvent` provides a common interface to an event (multiprocessing or threading event)
+    that gets triggered when any of the events provided in input is triggered (OR logic)
 
-    def or_set(self):
-        self._set()
-        self.changed()
+    :param backend_runtime: The runtime type to decide which type of Event to instantiate
+    :param events_list: The list of events that compose this composable event
+    """
 
-    def or_clear(self):
-        self._clear()
-        self.changed()
+    def __init__(self, backend_runtime: RuntimeBackendType, events_list):
+        super().__init__()
+        self.event = None
+        if backend_runtime == RuntimeBackendType.THREAD:
+            self.event = threading.Event()
+        else:
+            self.event = multiprocessing.synchronize.Event(
+                ctx=multiprocessing.get_context()
+            )
+        self.event_list = events_list
+        for e in events_list:
+            self._setup(e, self._state_changed)
 
-    def orify(e, changed_callback):
+        self._state_changed()
+
+    def _state_changed(self):
+        bools = [e.is_set() for e in self.event_list]
+        if any(bools):
+            self.event.set()
+        else:
+            self.event.clear()
+
+    def _custom_set(self, e):
+        e._set()
+        e._state_changed()
+
+    def _custom_clear(self, e):
+        e._clear()
+        e._state_changed()
+
+    def _setup(self, e, changed_callback):
         e._set = e.set
         e._clear = e.clear
-        e.changed = changed_callback
-        e.set = lambda: or_set(e)
-        e.clear = lambda: or_clear(e)
-
-    def changed():
-        bools = [e.is_set() for e in events]
-        if any(bools):
-            or_event.set()
-        else:
-            or_event.clear()
-
-    for e in events:
-        orify(e, changed)
-    changed()
-    return or_event
-
-
-class PeaType(type):
-    """Type of :class:`Pea`, metaclass of :class:`BasePea`."""
-
-    _dct = {}
-
-    def __new__(cls, name, bases, dct):
-        """
-        Create and register a new class with this meta class.
-
-        :param name: name of the :class:`Pea`
-        :param bases: bases of :class:`Pea`
-        :param dct: arguments dictionary
-        :return: registered class
-        """
-        _cls = super().__new__(cls, name, bases, dct)
-        PeaType._dct.update(
-            {name: {'cls': cls, 'name': name, 'bases': bases, 'dct': dct}}
-        )
-        return _cls
-
-    def __call__(cls, *args, **kwargs) -> 'PeaType':
-        """
-        change runtime backend
-
-        :param args: arguments
-        :param kwargs: keyword arguments
-        :return: Call self as a function.
-        """
-        # switch to the new backend
-        _cls = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args[0], 'runtime_backend', RuntimeBackendType.THREAD))
-
-        # rebuild the class according to mro
-        for c in cls.mro()[-2::-1]:
-            arg_cls = PeaType._dct[c.__name__]['cls']
-            arg_name = PeaType._dct[c.__name__]['name']
-            arg_dct = PeaType._dct[c.__name__]['dct']
-            _cls = super().__new__(arg_cls, arg_name, (_cls,), arg_dct)
-
-        return type.__call__(_cls, *args, **kwargs)
+        e._state_changed = changed_callback
+        e.set = partial(self._custom_set, e)
+        e.clear = partial(self._custom_clear, e)
