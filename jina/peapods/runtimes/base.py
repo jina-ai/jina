@@ -17,10 +17,10 @@ class BaseRuntime:
 
         0. :meth:`__init__`
 
-        2. :meth:`run_forever`. Note that this will block ``S``, step 3 won't be
+        1. :meth:`run_forever`. Note that this will block ``S``, step 3 won't be
         reached until it is unblocked by :meth:`cancel`
 
-        3. :meth:`teardown` in ``S``. Note that ``S`` is blocked by
+        2. :meth:`teardown` in ``S``. Note that ``S`` is blocked by
         :meth:`run_forever`, this step won't be reached until step 2 is unblocked by :meth:`cancel`
 
      The :meth:`__init__` and :meth:`teardown` pair together, which defines instructions that will be executed before
