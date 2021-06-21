@@ -53,19 +53,6 @@ The polling strategy of the Pod (when `parallel>1`)
 ''',
     )
 
-    parser.add_argument(
-        '--dynamic-routing',
-        action='store_true',
-        dest='dynamic_routing',
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.',
-    )
-    parser.add_argument(
-        '--no-dynamic-routing',
-        action='store_false',
-        dest='dynamic_routing',
-        help='The Gateway should not do dynamic routing.',
-    )
-    parser.set_defaults(dynamic_routing=True)
     gp.add_argument(
         '--scheduling',
         type=SchedulerType.from_string,
@@ -82,6 +69,15 @@ The polling strategy of the Pod (when `parallel>1`)
         'This Pod will not be context managed by the Flow.',
     )
 
+    gp.add_argument(
+        '--peas-hosts',
+        nargs='+',
+        type=str,
+        help='''The hosts of the peas when parallel greater than 1.
+        Peas will be evenly distributed among the hosts. By default,
+        peas are running on host provided by the argument ``host``''',
+    )
+
     # hidden CLI used for internal only
 
     gp.add_argument(
@@ -91,12 +87,4 @@ The polling strategy of the Pod (when `parallel>1`)
         help='The role of this pod in the flow'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
-    )
-    gp.add_argument(
-        '--peas-hosts',
-        nargs='+',
-        type=str,
-        help='''The hosts of the peas when parallel greater than 1.
-        Peas will be evenly distributed among the hosts. By default,
-        peas are running on host provided by the argument ``host``''',
     )

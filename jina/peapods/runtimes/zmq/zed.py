@@ -164,7 +164,6 @@ class ZEDRuntime(ZMQRuntime):
         # all meta information should be stored and accessed via `msg.envelope`
 
         self._last_active_time = time.perf_counter()
-        self._zmqlet.print_stats()
         self._check_memory_watermark()
 
         if self.expect_parts > 1:
@@ -173,6 +172,14 @@ class ZEDRuntime(ZMQRuntime):
 
         msg.update_timestamp()
         return self
+
+    @staticmethod
+    def _parse_params(parameters: Dict, executor_name: str):
+        parsed_params = parameters
+        specific_parameters = parameters.get(executor_name, None)
+        if specific_parameters:
+            parsed_params.update(**specific_parameters)
+        return parsed_params
 
     def _handle(self, msg: 'Message') -> 'ZEDRuntime':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
@@ -204,11 +211,13 @@ class ZEDRuntime(ZMQRuntime):
         ):
             return self
 
+        params = self._parse_params(self.request.parameters, self._executor.metas.name)
+
         # executor logic
         r_docs = self._executor(
             req_endpoint=self.envelope.header.exec_endpoint,
             docs=self.docs,
-            parameters=self.request.parameters,
+            parameters=params,
             docs_matrix=self.docs_matrix,
             groundtruths=self.groundtruths,
             groundtruths_matrix=self.groundtruths_matrix,
