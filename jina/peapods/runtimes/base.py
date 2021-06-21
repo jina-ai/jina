@@ -1,5 +1,6 @@
 import argparse
 
+from ...excepts import RuntimeTerminated
 from ...logging.logger import JinaLogger
 
 
@@ -80,3 +81,30 @@ class BaseRuntime:
         You can tidy up things here.  Optional in subclasses. The default implementation does nothing.
         """
         self.logger.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type == RuntimeTerminated:
+            self.logger.info(f'{self!r} is ended')
+        elif exc_type == KeyboardInterrupt:
+            self.logger.info(f'{self!r} is interrupted by user')
+        elif exc_type in {Exception, SystemError}:
+            self.logger.error(
+                f'{exc_val!r} during {self.run_forever!r}'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
+        try:
+            self.teardown()
+        except Exception as ex:
+            self.logger.error(
+                f'{ex!r} during {self.teardown!r}'
+                + f'\n add "--quiet-error" to suppress the exception details'
+                if not self.args.quiet_error
+                else '',
+                exc_info=not self.args.quiet_error,
+            )
