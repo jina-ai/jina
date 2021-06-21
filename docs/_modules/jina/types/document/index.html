@@ -534,6 +534,7 @@
         <span class="n">document</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentSourceType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">hash_content</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
@@ -549,6 +550,7 @@
 <span class="sd">                names defined in Protobuf. This is only used when the given ``document`` is</span>
 <span class="sd">                a JSON string or a Python dict.</span>
 <span class="sd">        :param kwargs: other parameters to be set _after_ the document is constructed</span>
+<span class="sd">        :param hash_content: whether to hash the content of the Document</span>
 
 <span class="sd">        .. note::</span>
 
@@ -667,6 +669,8 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mermaid_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>  <span class="c1">#: for mermaid visualize id</span>
+        <span class="k">if</span> <span class="n">hash_content</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Document.pop"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Remove the values from the given fields of this Document.</span>
