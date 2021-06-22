@@ -88,14 +88,14 @@ def from_files(
 
 
 def from_csv(
-    fp: Iterable[str],
+    csv_file: Iterable[str],
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
 ) -> Generator['Document', None, None]:
     """Generator function for CSV. Yields documents.
 
-    :param fp: file paths
+    :param csv_file: csv file descriptor object
     :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
             names defined in Protobuf. This is only used when the given ``document`` is
             a JSON string or a Python dict.
@@ -106,7 +106,7 @@ def from_csv(
     """
     from ..document import Document
 
-    lines = csv.DictReader(fp)
+    lines = csv.DictReader(csv_file)
     for value in _subsample(lines, size, sampling_rate):
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(
@@ -117,14 +117,14 @@ def from_csv(
 
 
 def from_ndjson(
-    fp: Iterable[str],
+    ndjson_file: Iterable[str],
     field_resolver: Optional[Dict[str, str]] = None,
     size: Optional[int] = None,
     sampling_rate: Optional[float] = None,
 ) -> Generator['Document', None, None]:
     """Generator function for line separated JSON. Yields documents.
 
-    :param fp: file paths
+    :param ndjson_file: a ndjson file descriptor object or a list of json strings
     :param field_resolver: a map from field names defined in ``document`` (JSON, dict) to the field
             names defined in Protobuf. This is only used when the given ``document`` is
             a JSON string or a Python dict.
@@ -135,7 +135,7 @@ def from_ndjson(
     """
     from ..document import Document
 
-    for line in _subsample(fp, size, sampling_rate):
+    for line in _subsample(ndjson_file, size, sampling_rate):
         value = json.loads(line)
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(
