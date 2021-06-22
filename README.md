@@ -155,7 +155,7 @@ It finds the lines most similar to "`request(on=something)`" from the server cod
 
 - 🧠 [What is "Neural Search"?](.github/2.0/neural-search.md)
 - 📄 `Document` & `DocumentArray`: the basic data type in Jina.
-    - [Minimum working example](.github/2.0/cookbooks/Document.md#minimum-working-example)
+    - [Minimum Working Example](.github/2.0/cookbooks/Document.md#minimum-working-example)
     - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
     - [`DocumentArray` API](.github/2.0/cookbooks/Document.md#documentarray-api)
 - ⚙️ `Executor`: how Jina processes Documents.
@@ -164,13 +164,15 @@ It finds the lines most similar to "`request(on=something)`" from the server cod
     - [`Executor` Built-in Features](.github/2.0/cookbooks/Executor.md#executor-built-in-features)
     - [Use Tensorflow, Pytorch, Pytorch Lightning, Fastai, Mindspore, PaddlePaddle, Scikit-learn in `Executor`](.github/2.0/cookbooks/Executor.md#executors-in-action)
 - 🔀 `Flow`: how Jina streamlines and distributes Executors.
-    - [Minimum working example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
+    - [Minimum Working Example](.github/2.0/cookbooks/Flow.md#minimum-working-example)
     - [`Flow` API](.github/2.0/cookbooks/Flow.md#flow-api)
 - 🤹 [Serving Jina](.github/2.0/cookbooks/Serving.md)
+    - [Minimum Working Example](.github/2.0/cookbooks/Serving.md#minimum-working-example)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
-- 🧼 [Write clean code in Jina](.github/2.0/cookbooks/CleanCode.md)
+    - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#via-http)
+- 🧼 [Write Clean Code in Jina](.github/2.0/cookbooks/CleanCode.md)
 - 📓 [Developer References](https://docs.jina.ai)
-- 😎 [3 Reasons to use Jina 2.0](.github/2.0/1vs2.md)
+- 😎 [3 Reasons to Use Jina 2.0](.github/2.0/1vs2.md)
 
 ## Support
 
