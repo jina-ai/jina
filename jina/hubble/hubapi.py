@@ -22,7 +22,7 @@ def get_dist_path(id: str, tag: str) -> Tuple['Path', 'Path']:
     return pkg_path, pkg_dist_path
 
 
-def install_locall(zip_package: "Path", id: str, tag: str, force: bool = False):
+def install_local(zip_package: "Path", id: str, tag: str, force: bool = False):
     """Install the package in zip format to the Jina Hub root.
 
     :param zip_package: the path of the zip file
