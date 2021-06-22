@@ -16,6 +16,7 @@ from ...helper import colored, random_identity, get_readable_size, get_or_reuse_
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
 from ...logging.logger import JinaLogger
+from ...proto import jina_pb2
 from ...types.message import Message
 from ...types.message.common import ControlMessage
 from ...types.request import Request
@@ -280,11 +281,13 @@ class Zmqlet:
         return next_routes
 
     def _send_message_dynamic(self, msg: 'Message'):
-        for routing_graph, out_sock in self._get_dynamic_next_routes(msg):
-            new_message_proto = msg.proto
-            new_message_proto.envelope.routing_graph.CopyFrom(routing_graph.proto)
-
-            self._send_message_via(out_sock, Message.from_proto(new_message_proto))
+        next_routes = self._get_dynamic_next_routes(msg)
+        for routing_graph, out_sock in next_routes:
+            new_envelope = jina_pb2.EnvelopeProto()
+            new_envelope.CopyFrom(msg.envelope)
+            new_envelope.routing_graph.CopyFrom(routing_graph.proto)
+            new_message = Message(request=msg.request, envelope=new_envelope)
+            self._send_message_via(out_sock, new_message)
 
     def send_message(self, msg: 'Message'):
         """Send a message via the output socket
@@ -375,11 +378,11 @@ class AsyncZmqlet(Zmqlet):
     async def _send_message_dynamic(self, msg: 'Message'):
         tasks = []
         for routing_graph, out_sock in self._get_dynamic_next_routes(msg):
-            new_message_proto = msg.proto
-            new_message_proto.envelope.routing_graph.CopyFrom(routing_graph.proto)
-            tasks.append(
-                self._send_message_via(out_sock, Message.from_proto(new_message_proto))
-            )
+            new_envelope = jina_pb2.EnvelopeProto()
+            new_envelope.CopyFrom(msg.envelope)
+            new_envelope.routing_graph.CopyFrom(routing_graph.proto)
+            new_message = Message(request=msg.request, envelope=new_envelope)
+            tasks.append(self._send_message_via(out_sock, new_message))
         await asyncio.gather(*tasks)
 
     async def _send_message_via(self, socket, msg):

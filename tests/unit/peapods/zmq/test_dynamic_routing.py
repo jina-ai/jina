@@ -131,7 +131,7 @@ def test_double_dynamic_routing_zmqlet():
         number_messages = 100
         trips = 10
         for i in range(trips):
-            for i in range(number_messages):
+            for j in range(number_messages):
                 z1.send_message(msg)
             time.sleep(1)
             for i in range(number_messages):
