@@ -150,6 +150,7 @@ class ContainerStore(BaseStore):
                 f'{colored(id, "green")} is added to workspace {colored(workspace_id, "green")}'
             )
 
+            del self.host
             workspace_store[workspace_id].metadata.managed_objects.add(id)
             return id
 
@@ -164,7 +165,7 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
-        self._delete()
+        self._delete(host=self[id].metadata.host)
         workspace_id = self[id].workspace_id
         del self[id]
         from . import workspace_store

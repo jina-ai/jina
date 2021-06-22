@@ -252,7 +252,13 @@ class PeaDaemonClient(DaemonClient):
 
         try:
             r = requests.delete(url=f'{self.store_api}/{id}', timeout=self.timeout)
-            return r.status_code == 200
+            rj = r.json()
+            if r.status_code != requests.codes.ok:
+                rj_body = '\n'.join(j for j in rj['body'])
+                self.logger.error(
+                    f'deletion for {id} failed: {rj["detail"]}\n{rj_body}'
+                )
+            return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'failed to delete {id} as {ex!r}')
             return False
@@ -320,11 +326,17 @@ class WorkspaceDaemonClient(PeaDaemonClient):
             # NOTE: This deletes the container, network by default & leaves the files as-is on remote.
             # TODO: do we parameterize it?
             r = requests.delete(
-                url=f'{self.store_api}/{id}',
+                url=f'{self.store_api}/{self._daemonize_id(id)}',
                 params={'container': True, 'network': True, 'files': False},
                 timeout=self.timeout,
             )
-            return r.status_code == 200
+            rj = r.json()
+            if r.status_code != requests.codes.ok:
+                rj_body = ''.join(j for j in rj['body'])
+                self.logger.error(
+                    f'deletion for {id} failed: {rj["detail"]}\n{rj_body}'
+                )
+            return r.status_code == requests.codes.ok
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'failed to delete {id} as {ex!r}')
             return False

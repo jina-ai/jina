@@ -37,14 +37,14 @@ class PartialStore:
     def delete(self) -> None:
         """Terminates the object in the store & stops the server"""
         try:
-            if getattr(self, 'object', None):
+            if hasattr(self, 'object'):
                 self.object.close()
             else:
-                self._logger.info(f'nothing to close. exiting')
+                self._logger.warning(f'nothing to close. exiting')
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        else:
+        finally:
             os.kill(os.getpid(), signal.SIGINT)
 
 

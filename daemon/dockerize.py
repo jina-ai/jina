@@ -308,27 +308,45 @@ class Dockerizer:
             cls.rm_container(id)
 
     @classmethod
-    def rm_network(cls, id: str):
+    def containers_in_network(cls, id: str) -> List:
+        return [
+            container["Name"]
+            for container in cls.raw_client.inspect_network(net_id=id)[
+                'Containers'
+            ].values()
+        ]
+
+    @classmethod
+    def rm_network(cls, id: str) -> bool:
         """
-        Remove network from local
+        Remove network from local if no containers are connected
 
         :param id: network id
         :raises KeyError: if network is not found on local
         :raises DockerNetworkException: error during network removal
+        :return: True if deletion is successful else False
         """
         try:
+            containers = cls.containers_in_network(id)
+            if containers:
+                cls.logger.info(
+                    f'following containers are still connected to the network. skipping delete {containers}'
+                )
+                return False
+
             network: 'Network' = cls.client.networks.get(id)
             network.remove()
+            cls.logger.success(f'network {colored(id, "cyan")} successfully removed')
+            return True
         except docker.errors.NotFound as e:
-            cls.logger.error(f'Couldn\'t fetch network with id: `{id}`')
-            raise KeyError(f'network {id} not found')
+            cls.logger.error(f'Couldn\'t find a network with id: `{id}`')
+            return False
         except docker.errors.APIError as e:
-            cls.logger.error(
-                f'dockerd threw an error while removing the network `{id}`: {e}'
+            cls.logger.warning(
+                f'dockerd threw an error while removing the network. '
+                f'There might be containers still connected to the network `{id}`: \n{e}'
             )
-            raise DockerNetworkException(
-                f'dockerd error while removing network {id} {e!r}'
-            )
+            return False
 
     @classmethod
     def rm_image(cls, id: str):

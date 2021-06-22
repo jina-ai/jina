@@ -99,21 +99,15 @@ class WorkspaceStore(BaseStore):
         try:
             network = self[id].metadata.network
             # TODO: check what containers are using this network
+            status = False
             if id in Dockerizer.networks:
-                Dockerizer.rm_network(network)
-                assert id not in Dockerizer.networks
-                self._logger.success(
-                    f'network {colored(network, "cyan")} is successfully removed'
-                )
+                status = Dockerizer.rm_network(network)
             else:
                 self._logger.info(f'no network to delete for id {colored(id, "cyan")}')
-            if network:
+            if network and status:
                 self[id].metadata.network = None
         except AttributeError as e:
             self._logger.info(f'there\'s no network to remove {e!r}')
-        except AssertionError as e:
-            self._logger.error(f'something went wrong while removing the container')
-            raise
 
     def rm_container(self, id: DaemonID) -> None:
         """Remove docker container
