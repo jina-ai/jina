@@ -228,7 +228,7 @@ message EnvelopeProto {
 
     repeated RouteProto routes = 10; // status info on every routes
 
-    RoutingTableProto routing_graph = 13;
+    RoutingTableProto routing_table = 13;  // the routing table contains information to the next pods
 
     StatusProto status = 11; // status info
 
