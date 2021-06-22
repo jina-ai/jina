@@ -97,8 +97,8 @@ def set_gateway_parser(parser=None):
     )
 
     parser.add_argument(
-        '--routing-graph',
-        default=None,
+        '--routing-table',
+        type=str,
         help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 

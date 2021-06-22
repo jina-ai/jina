@@ -265,7 +265,7 @@ ac_table = {
             '--pea-id',
             '--pea-role',
             '--noblock-on-start',
-            '--routing-graph',
+            '--routing-table',
         ],
         'hub push': ['--help', '--force', '--secret', '--public', '--private'],
         'hub': ['--help', 'push'],
