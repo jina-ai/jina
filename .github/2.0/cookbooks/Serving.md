@@ -29,6 +29,9 @@ Table of Contents
 <td>
 <b>Server</b>
 </td>
+<td>
+<b>Client</b>
+</td>
 </tr>
 <tr>
 <td>
@@ -42,13 +45,6 @@ with f:
 ```
 
 </td>
-</tr>
-<tr>
-<td>
-<b>Client</b>
-</td>
-</tr>
-<tr>
 <td>
 
 ```python
