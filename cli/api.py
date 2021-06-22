@@ -17,10 +17,6 @@ def pod(args: 'Namespace'):
         pass
 
 
-# alias
-executor = pod
-
-
 def pea(args: 'Namespace'):
     """
     Start a Pea
@@ -34,6 +30,10 @@ def pea(args: 'Namespace'):
             p.join()
     except KeyboardInterrupt:
         pass
+
+
+# alias
+executor = pea
 
 
 def gateway(args: 'Namespace'):
