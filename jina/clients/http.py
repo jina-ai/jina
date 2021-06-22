@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC
 from contextlib import nullcontext
 from typing import Callable, Optional
@@ -13,6 +14,14 @@ from ..types.request import Request
 
 class HTTPClientMixin(BaseClient, ABC):
     """A MixIn for HTTP Client."""
+
+    async def _get_http_response(self, session, dest_url, req_dict):
+        async with session.post(
+            dest_url,
+            json=req_dict,
+        ) as response:
+            resp_str = await response.json()
+            return response.status, resp_str
 
     async def _get_results(
         self,
@@ -56,36 +65,43 @@ class HTTPClientMixin(BaseClient, ABC):
                 cm1, cm2 = nullcontext(), nullcontext()
             try:
                 with cm1 as p_bar, cm2:
+                    all_responses = []
                     for req in req_iter:
                         # fix the mismatch between pydantic model and Protobuf model
                         req_dict = req.dict()
                         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
                         req_dict['data'] = req_dict['data'].get('docs', None)
 
-                        async with session.post(
-                            f'http://{self.args.host}:{self.args.port_expose}/post',
-                            json=req_dict,
-                        ) as response:
-                            resp_str = await response.json()
-                            if response.status == 404:
-                                raise BadClient('no such endpoint on the server')
-                            elif not response.ok:
-                                raise ValueError(resp_str)
-                            resp = Request(resp_str)
-                            resp = resp.as_typed_request(
-                                resp.request_type
-                            ).as_response()
-                            callback_exec(
-                                response=resp,
-                                on_error=on_error,
-                                on_done=on_done,
-                                on_always=on_always,
-                                continue_on_error=self.args.continue_on_error,
-                                logger=self.logger,
+                        all_responses.append(
+                            asyncio.create_task(
+                                self._get_http_response(
+                                    session,
+                                    f'http://{self.args.host}:{self.args.port_expose}/post',
+                                    req_dict,
+                                )
                             )
-                            if self.args.show_progress:
-                                p_bar.update(self.args.request_size)
-                            yield resp
+                        )
+
+                    for resp in asyncio.as_completed(all_responses):
+                        r_status, r_str = await resp
+                        if r_status == 404:
+                            raise BadClient('no such endpoint on the server')
+                        elif r_status < 200 or r_status > 300:
+                            raise ValueError(r_str)
+
+                        resp = Request(r_str)
+                        resp = resp.as_typed_request(resp.request_type).as_response()
+                        callback_exec(
+                            response=resp,
+                            on_error=on_error,
+                            on_done=on_done,
+                            on_always=on_always,
+                            continue_on_error=self.args.continue_on_error,
+                            logger=self.logger,
+                        )
+                        if self.args.show_progress:
+                            p_bar.update(self.args.request_size)
+                        yield resp
             except aiohttp.client_exceptions.ClientConnectorError:
                 self.logger.warning(f'Client got disconnected from the HTTP server')
 
