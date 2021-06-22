@@ -354,7 +354,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -423,8 +423,8 @@
 <li><p><a class="reference external" href="#jina.RequestProto.ControlRequestProto">RequestProto.ControlRequestProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RequestProto.DataRequestProto">RequestProto.DataRequestProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RouteProto">RouteProto</a></p></li>
-<li><p><a class="reference external" href="#jina.RoutingGraphProto">RoutingGraphProto</a></p></li>
-<li><p><a class="reference external" href="#jina.RoutingGraphProto.PodsEntry">RoutingGraphProto.PodsEntry</a></p></li>
+<li><p><a class="reference external" href="#jina.RoutingTableProto">RoutingTableProto</a></p></li>
+<li><p><a class="reference external" href="#jina.RoutingTableProto.PodsEntry">RoutingTableProto.PodsEntry</a></p></li>
 <li><p><a class="reference external" href="#jina.SparseNdArrayProto">SparseNdArrayProto</a></p></li>
 <li><p><a class="reference external" href="#jina.StatusProto">StatusProto</a></p></li>
 <li><p><a class="reference external" href="#jina.StatusProto.ExceptionProto">StatusProto.ExceptionProto</a></p></li>
@@ -737,10 +737,10 @@
 <td>status info on every routes</td>
 </tr>
 <tr>
-<td>routing_graph</td>
-<td><a href="#jina.RoutingGraphProto">RoutingGraphProto</a></td>
+<td>routing_table</td>
+<td><a href="#jina.RoutingTableProto">RoutingTableProto</a></td>
 <td></td>
-<td></td>
+<td>the routing table contains information to the next pods</td>
 </tr>
 <tr>
 <td>status</td>
@@ -1208,10 +1208,10 @@
 <td>the status of the execution</td>
 </tr>
 </tbody>
-</table></div><p><a name="jina.RoutingGraphProto"></a></p>
+</table></div><p><a name="jina.RoutingTableProto"></a></p>
 </div>
-<div class="section" id="routinggraphproto">
-<h3>RoutingGraphProto<a class="headerlink" href="#routinggraphproto" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="routingtableproto">
+<h3>RoutingTableProto<a class="headerlink" href="#routingtableproto" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
 <tr>
@@ -1224,7 +1224,7 @@
 <tbody>
 <tr>
 <td>pods</td>
-<td><a href="#jina.RoutingGraphProto.PodsEntry">RoutingGraphProto.PodsEntry</a></td>
+<td><a href="#jina.RoutingTableProto.PodsEntry">RoutingTableProto.PodsEntry</a></td>
 <td>repeated</td>
 <td>Pods that get visited during a Flow. Gateway should be both the first and the last entry.</td>
 </tr>
@@ -1235,10 +1235,10 @@
 <td>The currently active Pod. Needed for ZMQ.</td>
 </tr>
 </tbody>
-</table></div><p><a name="jina.RoutingGraphProto.PodsEntry"></a></p>
+</table></div><p><a name="jina.RoutingTableProto.PodsEntry"></a></p>
 </div>
-<div class="section" id="routinggraphproto-podsentry">
-<h3>RoutingGraphProto.PodsEntry<a class="headerlink" href="#routinggraphproto-podsentry" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="routingtableproto-podsentry">
+<h3>RoutingTableProto.PodsEntry<a class="headerlink" href="#routingtableproto-podsentry" title="Permalink to this headline">¶</a></h3>
 <div class="table-wrapper"><table border="1" class="docutils">
 <thead>
 <tr>
@@ -1808,8 +1808,8 @@
 <li><a class="reference internal" href="#requestproto-controlrequestproto">RequestProto.ControlRequestProto</a></li>
 <li><a class="reference internal" href="#requestproto-datarequestproto">RequestProto.DataRequestProto</a></li>
 <li><a class="reference internal" href="#routeproto">RouteProto</a></li>
-<li><a class="reference internal" href="#routinggraphproto">RoutingGraphProto</a></li>
-<li><a class="reference internal" href="#routinggraphproto-podsentry">RoutingGraphProto.PodsEntry</a></li>
+<li><a class="reference internal" href="#routingtableproto">RoutingTableProto</a></li>
+<li><a class="reference internal" href="#routingtableproto-podsentry">RoutingTableProto.PodsEntry</a></li>
 <li><a class="reference internal" href="#sparsendarrayproto">SparseNdArrayProto</a></li>
 <li><a class="reference internal" href="#statusproto">StatusProto</a></li>
 <li><a class="reference internal" href="#statusproto-exceptionproto">StatusProto.ExceptionProto</a></li>

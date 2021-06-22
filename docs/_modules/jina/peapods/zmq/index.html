@@ -331,7 +331,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -394,10 +394,11 @@
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">...types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 <span class="kn">from</span> <span class="nn">...types.message.common</span> <span class="kn">import</span> <span class="n">ControlMessage</span>
 <span class="kn">from</span> <span class="nn">...types.request</span> <span class="kn">import</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">...types.routing.graph</span> <span class="kn">import</span> <span class="n">RoutingGraph</span>
+<span class="kn">from</span> <span class="nn">...types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
 <span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 
 
@@ -646,8 +647,8 @@
         <span class="k">return</span> <span class="n">out_sock</span>
 
     <span class="k">def</span> <span class="nf">_get_dynamic_next_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-        <span class="n">routing_graph</span> <span class="o">=</span> <span class="n">RoutingGraph</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_graph</span><span class="p">)</span>
-        <span class="n">next_targets</span> <span class="o">=</span> <span class="n">routing_graph</span><span class="o">.</span><span class="n">get_next_targets</span><span class="p">()</span>
+        <span class="n">routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
+        <span class="n">next_targets</span> <span class="o">=</span> <span class="n">routing_table</span><span class="o">.</span><span class="n">get_next_targets</span><span class="p">()</span>
         <span class="n">next_routes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">next_targets</span><span class="p">:</span>
             <span class="n">pod_address</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">full_address</span>
@@ -658,11 +659,13 @@
         <span class="k">return</span> <span class="n">next_routes</span>
 
     <span class="k">def</span> <span class="nf">_send_message_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">routing_graph</span><span class="p">,</span> <span class="n">out_sock</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_next_routes</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
-            <span class="n">new_message_proto</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">proto</span>
-            <span class="n">new_message_proto</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">Message</span><span class="o">.</span><span class="n">from_proto</span><span class="p">(</span><span class="n">new_message_proto</span><span class="p">))</span>
+        <span class="n">next_routes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_next_routes</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">routing_table</span><span class="p">,</span> <span class="n">out_sock</span> <span class="ow">in</span> <span class="n">next_routes</span><span class="p">:</span>
+            <span class="n">new_envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
+            <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
+            <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
+            <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">new_message</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Zmqlet.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
         <span class="sd">"""Send a message via the output socket</span>
@@ -752,12 +755,12 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_send_message_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
         <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">routing_graph</span><span class="p">,</span> <span class="n">out_sock</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_next_routes</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
-            <span class="n">new_message_proto</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">proto</span>
-            <span class="n">new_message_proto</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
-            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">Message</span><span class="o">.</span><span class="n">from_proto</span><span class="p">(</span><span class="n">new_message_proto</span><span class="p">))</span>
-            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">routing_table</span><span class="p">,</span> <span class="n">out_sock</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_next_routes</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+            <span class="n">new_envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
+            <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
+            <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
+            <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">new_message</span><span class="p">))</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_send_message_via</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>

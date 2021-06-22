@@ -331,7 +331,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -431,7 +431,6 @@
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">,</span> <span class="s1">'__anext__'</span><span class="p">):</span>
                         <span class="n">next_request</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request_iterator</span><span class="o">.</span><span class="fm">__anext__</span><span class="p">()</span>
                     <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">,</span> <span class="s1">'__next__'</span><span class="p">):</span>
-                        <span class="c1"># This code block will be executed for REST based invocations</span>
                         <span class="n">next_request</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>

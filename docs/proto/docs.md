@@ -21,8 +21,8 @@
     - [RequestProto.ControlRequestProto](#jina.RequestProto.ControlRequestProto)
     - [RequestProto.DataRequestProto](#jina.RequestProto.DataRequestProto)
     - [RouteProto](#jina.RouteProto)
-    - [RoutingGraphProto](#jina.RoutingGraphProto)
-    - [RoutingGraphProto.PodsEntry](#jina.RoutingGraphProto.PodsEntry)
+    - [RoutingTableProto](#jina.RoutingTableProto)
+    - [RoutingTableProto.PodsEntry](#jina.RoutingTableProto.PodsEntry)
     - [SparseNdArrayProto](#jina.SparseNdArrayProto)
     - [StatusProto](#jina.StatusProto)
     - [StatusProto.ExceptionProto](#jina.StatusProto.ExceptionProto)
@@ -134,7 +134,7 @@ Represents a Envelope, a part of the ``Message``.
 | check_version | [bool](#bool) |  | check local Protobuf version on every Pod that this message flows to |
 | compression | [EnvelopeProto.CompressConfigProto](#jina.EnvelopeProto.CompressConfigProto) |  | compress configuration used for request |
 | routes | [RouteProto](#jina.RouteProto) | repeated | status info on every routes |
-| routing_graph | [RoutingGraphProto](#jina.RoutingGraphProto) |  |  |
+| routing_table | [RoutingTableProto](#jina.RoutingTableProto) |  | the routing table contains information to the next pods |
 | status | [StatusProto](#jina.StatusProto) |  | status info |
 | header | [HeaderProto](#jina.HeaderProto) |  | header contains meta info defined by the user, copied from Request, for lazy serialization |
 
@@ -369,15 +369,15 @@ Represents a the route paths of this message
 
 
 
-<a name="jina.RoutingGraphProto"></a>
+<a name="jina.RoutingTableProto"></a>
 
-### RoutingGraphProto
+### RoutingTableProto
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| pods | [RoutingGraphProto.PodsEntry](#jina.RoutingGraphProto.PodsEntry) | repeated | Pods that get visited during a Flow. Gateway should be both the first and the last entry. |
+| pods | [RoutingTableProto.PodsEntry](#jina.RoutingTableProto.PodsEntry) | repeated | Pods that get visited during a Flow. Gateway should be both the first and the last entry. |
 | active_pod | [string](#string) |  | The currently active Pod. Needed for ZMQ. |
 
 
@@ -385,9 +385,9 @@ Represents a the route paths of this message
 
 
 
-<a name="jina.RoutingGraphProto.PodsEntry"></a>
+<a name="jina.RoutingTableProto.PodsEntry"></a>
 
-### RoutingGraphProto.PodsEntry
+### RoutingTableProto.PodsEntry
 
 
 

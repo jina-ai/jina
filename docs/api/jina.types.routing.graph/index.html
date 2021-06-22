@@ -24,7 +24,7 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types.score package" href="../jina.types.score/" /><link rel="prev" title="jina.types.routing package" href="../jina.types.routing/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.types.routing.graph module - Jina 2.0.0rc9 documentation</title>
@@ -135,8 +135,8 @@
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Developer Reference</span></p>
-<ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
@@ -310,7 +310,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.schemas.pod/">jina.schemas.pod module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label for="toctree-checkbox-34"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.arrays/">jina.types.arrays package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" type="checkbox"/><label for="toctree-checkbox-35"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.chunk/">jina.types.arrays.chunk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.arrays.document/">jina.types.arrays.document module</a></li>
@@ -352,8 +352,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.request.mixin/">jina.types.request.mixin module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">jina.types.routing.graph module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -397,229 +397,16 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="module-jina.types.routing.graph">
-<span id="jina-types-routing-graph-module"></span><h1>jina.types.routing.graph module<a class="headerlink" href="#module-jina.types.routing.graph" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="jina.types.routing.graph.TargetPod">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.routing.graph.</span></code><code class="sig-name descname"><span class="pre">TargetPod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/graph/#TargetPod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.graph.TargetPod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Wrapper class around <cite>TargetPodProto</cite>.</p>
-<p>It offers a Pythonic interface to allow users access to the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jina_pb2.TargetPodProto</span></code> object without working with Protobuf itself.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TargetPodProto</span></code>) – the protobuff object of the TargetPod</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.TargetPod.port">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">port</span></code><a class="headerlink" href="#jina.types.routing.graph.TargetPod.port" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the <cite>port</cite> field of this TargetPod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>port</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.TargetPod.host">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">host</span></code><a class="headerlink" href="#jina.types.routing.graph.TargetPod.host" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the <cite>host</cite> field of this TargetPod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>host</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.TargetPod.full_address">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">full_address</span></code><a class="headerlink" href="#jina.types.routing.graph.TargetPod.full_address" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the full zmq adress of this TargetPod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>address</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.TargetPod.expected_parts">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">expected_parts</span></code><a class="headerlink" href="#jina.types.routing.graph.TargetPod.expected_parts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <cite>expected_parts</cite> field of this TargetPod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>expected_parts</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.TargetPod.out_edges">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">out_edges</span></code><a class="headerlink" href="#jina.types.routing.graph.TargetPod.out_edges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the <cite>out_edges</cite> field of this TargetPod</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>out_edges</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.TargetPod.add_edge">
-<code class="sig-name descname"><span class="pre">add_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/graph/#TargetPod.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.graph.TargetPod.add_edge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds an edge to the internal representation of the out_edges.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>to_pod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the pod outtraffic should go to</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.types.routing.graph.RoutingGraph">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.routing.graph.</span></code><code class="sig-name descname"><span class="pre">RoutingGraph</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/graph/#RoutingGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Wrapper class around <cite>RoutingGraphProto</cite>.</p>
-<p>It offers a Pythonic interface to allow users access to the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">jina.jina_pb2.RoutingGraphProto</span></code> object without working with Protobuf itself.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>graph</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingGraphProto</span></code>]) – the protobuff object of the RoutingGraph</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.RoutingGraph.add_edge">
-<code class="sig-name descname"><span class="pre">add_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/graph/#RoutingGraph.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph.add_edge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds an edge to the graph.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>from_pod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Pod from which traffic is send</p></li>
-<li><p><strong>to_pod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Pod to which traffic is send</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.RoutingGraph.add_pod">
-<code class="sig-name descname"><span class="pre">add_pod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/graph/#RoutingGraph.add_pod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph.add_pod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a Pod vertex to the graph.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pod_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the Pod. Should be unique to the graph.</p></li>
-<li><p><strong>host</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the host of the Pod.</p></li>
-<li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the port of the Pod.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.RoutingGraph.active_pod">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">active_pod</span></code><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph.active_pod" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the active Pod name</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.RoutingGraph.active_target_pod">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">active_target_pod</span></code><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph.active_target_pod" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#jina.types.routing.graph.TargetPod" title="jina.types.routing.graph.TargetPod"><code class="xref py py-class docutils literal notranslate"><span class="pre">TargetPod</span></code></a></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a <a class="reference internal" href="#jina.types.routing.graph.TargetPod" title="jina.types.routing.graph.TargetPod"><code class="xref py py-class docutils literal notranslate"><span class="pre">TargetPod</span></code></a> object of the currently active Pod</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.RoutingGraph.pods">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">pods</span></code><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph.pods" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>all Pod/vertices of the graph.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.RoutingGraph.get_next_targets">
-<code class="sig-name descname"><span class="pre">get_next_targets</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/graph/#RoutingGraph.get_next_targets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph.get_next_targets" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates next routing graph for all currently outgoing edges.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#jina.types.routing.graph.RoutingGraph" title="jina.types.routing.graph.RoutingGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">RoutingGraph</span></code></a>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>new routing graphs with updated active Pods.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.routing.graph.RoutingGraph.is_acyclic">
-<code class="sig-name descname"><span class="pre">is_acyclic</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/graph/#RoutingGraph.is_acyclic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.graph.RoutingGraph.is_acyclic" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True, if graph is acyclic, False otherwise.</p>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
+        <div class="section" id="jina-types-routing-graph-module">
+<h1>jina.types.routing.graph module<a class="headerlink" href="#jina-types-routing-graph-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../jina.types.score/">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">jina.types.score package</div>
-              </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="../jina.types.routing/">
-              <svg><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">jina.types.routing package</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
 
         <div class="related-information">

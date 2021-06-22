@@ -331,7 +331,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -390,10 +390,11 @@
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+<span class="kn">from</span> <span class="nn">...types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">...executors</span> <span class="kn">import</span> <span class="n">BaseExecutor</span>
-    <span class="kn">from</span> <span class="nn">...types.routing.graph</span> <span class="kn">import</span> <span class="n">RoutingGraph</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Message'</span><span class="p">]</span>
 
@@ -538,7 +539,7 @@
         <span class="n">compress</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'NONE'</span><span class="p">,</span>
         <span class="n">compress_min_bytes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">compress_min_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">routing_graph</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'RoutingGraph'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">routing_table</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'jina_pb2.EnvelopeProto'</span><span class="p">:</span>
@@ -558,7 +559,7 @@
 <span class="sd">        :param compress: used compression algorithm</span>
 <span class="sd">        :param compress_min_bytes: used for configuring compression</span>
 <span class="sd">        :param compress_min_ratio: used for configuring compression</span>
-<span class="sd">        :param routing_graph: routing graph filled by gateway</span>
+<span class="sd">        :param routing_table: routing graph filled by gateway</span>
 <span class="sd">        :return: the resulted protobuf message</span>
 <span class="sd">        """</span>
         <span class="n">envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
@@ -600,8 +601,8 @@
         <span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">min_ratio</span> <span class="o">=</span> <span class="n">compress_min_ratio</span>
         <span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">min_bytes</span> <span class="o">=</span> <span class="n">compress_min_bytes</span>
         <span class="n">envelope</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="mi">5000</span>
-        <span class="k">if</span> <span class="n">routing_graph</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">envelope</span><span class="o">.</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_graph</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">routing_table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">RoutingTable</span><span class="p">(</span><span class="n">routing_table</span><span class="p">)</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_version</span><span class="p">(</span><span class="n">envelope</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_route</span><span class="p">(</span><span class="n">pod_name</span><span class="p">,</span> <span class="n">identity</span><span class="p">,</span> <span class="n">envelope</span><span class="p">)</span>
         <span class="n">envelope</span><span class="o">.</span><span class="n">check_version</span> <span class="o">=</span> <span class="n">check_version</span>

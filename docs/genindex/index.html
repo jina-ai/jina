@@ -330,7 +330,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -385,9 +385,9 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.activate_runtime">activate_runtime() (jina.peapods.peas.BasePea method)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph.active_pod">active_pod() (jina.types.routing.graph.RoutingGraph property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_pod">active_pod() (jina.types.routing.table.RoutingTable property)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph.active_target_pod">active_target_pod() (jina.types.routing.graph.RoutingGraph property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_target_pod">active_target_pod() (jina.types.routing.table.RoutingTable property)</a>
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">add() (daemon.stores.base.BaseStore method)</a>
 
@@ -408,9 +408,9 @@
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_edge">add_edge() (jina.types.document.graph.GraphDocument method)</a>
 
         <ul>
-          <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph.add_edge">(jina.types.routing.graph.RoutingGraph method)</a>
+          <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.add_edge">(jina.types.routing.table.RoutingTable method)</a>
 </li>
-          <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.TargetPod.add_edge">(jina.types.routing.graph.TargetPod method)</a>
+          <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.add_edge">(jina.types.routing.table.TargetPod method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.add_exception">add_exception() (jina.types.message.Message method)</a>
@@ -423,7 +423,7 @@
 </li>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.add_node">add_node() (jina.types.document.graph.GraphDocument method)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph.add_pod">add_pod() (jina.types.routing.graph.RoutingGraph method)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.add_pod">add_pod() (jina.types.routing.table.RoutingTable method)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.add_route">add_route() (jina.types.message.Message method)</a>
 </li>
@@ -1259,7 +1259,7 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.expect_parts">expect_parts() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.TargetPod.expected_parts">expected_parts() (jina.types.routing.graph.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.expected_parts">expected_parts() (jina.types.routing.table.TargetPod property)</a>
 </li>
         <li><a href="../api/cli.api/#cli.api.export_api">export_api() (in module cli.api)</a>
 </li>
@@ -1362,7 +1362,7 @@
 </li>
         <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.RequestProto.FromString">FromString() (jina.proto.serializer.RequestProto static method)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.TargetPod.full_address">full_address() (jina.types.routing.graph.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.full_address">full_address() (jina.types.routing.table.TargetPod property)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -1442,7 +1442,7 @@
           <li><a href="../api/jina.parsers/#jina.parsers.get_main_parser">(in module jina.parsers)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph.get_next_targets">get_next_targets() (jina.types.routing.graph.RoutingGraph method)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.get_next_targets">get_next_targets() (jina.types.routing.table.RoutingTable method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
@@ -1557,7 +1557,7 @@
 </li>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.host">(jina.peapods.pods.Pod property)</a>
 </li>
-          <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.TargetPod.host">(jina.types.routing.graph.TargetPod property)</a>
+          <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.host">(jina.types.routing.table.TargetPod property)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.HTTP">HTTP (jina.enums.GatewayProtocolType attribute)</a>
@@ -1632,7 +1632,7 @@
 </li>
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.IntegerParameter">IntegerParameter (class in jina.optimizers.parameters)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph.is_acyclic">is_acyclic() (jina.types.routing.graph.RoutingGraph method)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.is_acyclic">is_acyclic() (jina.types.routing.table.RoutingTable method)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.is_alive">is_alive() (jina.peapods.runtimes.jinad.client.DaemonClient property)</a>
 </li>
@@ -2722,10 +2722,10 @@
 </li>
         </ul></li>
         <li>
-    jina.types.routing.graph
+    jina.types.routing.table
 
         <ul>
-          <li><a href="../api/jina.types.routing.graph/#module-jina.types.routing.graph">module</a>
+          <li><a href="../api/jina.types.routing.table/#module-jina.types.routing.table">module</a>
 </li>
         </ul></li>
         <li>
@@ -3343,7 +3343,7 @@
 </li>
           <li><a href="../api/jina.types.routing/#module-jina.types.routing">jina.types.routing</a>
 </li>
-          <li><a href="../api/jina.types.routing.graph/#module-jina.types.routing.graph">jina.types.routing.graph</a>
+          <li><a href="../api/jina.types.routing.table/#module-jina.types.routing.table">jina.types.routing.table</a>
 </li>
           <li><a href="../api/jina.types.score/#module-jina.types.score">jina.types.score</a>
 </li>
@@ -3482,7 +3482,7 @@
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.OptimizerCallback">OptimizerCallback (class in jina.optimizers)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.TargetPod.out_edges">out_edges() (jina.types.routing.graph.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.out_edges">out_edges() (jina.types.routing.table.TargetPod property)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -3590,7 +3590,7 @@
 </li>
         <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.pods">pods (daemon.models.status.DaemonStatus attribute)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph.pods">pods() (jina.types.routing.graph.RoutingGraph property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.pods">pods() (jina.types.routing.table.RoutingTable property)</a>
 </li>
         <li><a href="../api/daemon.stores.pod/#daemon.stores.pod.PodStore">PodStore (class in daemon.stores.pod)</a>
 </li>
@@ -3602,7 +3602,7 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.pop">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.TargetPod.port">port() (jina.types.routing.graph.TargetPod property)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port">port() (jina.types.routing.table.TargetPod property)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow.port_expose">port_expose() (jina.Flow property)</a>
 
@@ -3828,9 +3828,9 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.ROUTER_BIND">ROUTER_BIND (jina.enums.SocketType attribute)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.RoutingGraph">RoutingGraph (class in jina.types.routing.graph)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable">RoutingTable (class in jina.types.routing.table)</a>
 </li>
-        <li><a href="../api/jina.excepts/#jina.excepts.RoutingGraphCyclicError">RoutingGraphCyclicError</a>
+        <li><a href="../api/jina.excepts/#jina.excepts.RoutingTableCyclicError">RoutingTableCyclicError</a>
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner.run">run() (jina.optimizers.flow_runner.FlowRunner method)</a>
 
@@ -3986,8 +3986,6 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.set_routing_graph">set_routing_graph() (jina.peapods.pods.Pod method)</a>
-</li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.SingleFlowRunner">SingleFlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.SINGLETON">SINGLETON (jina.enums.PeaRoleType attribute)</a>
@@ -4116,7 +4114,7 @@
         </ul></li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaRequestModel.target_peapod">target_peapod (jina.peapods.runtimes.asyncio.http.models.JinaRequestModel attribute)</a>
 </li>
-        <li><a href="../api/jina.types.routing.graph/#jina.types.routing.graph.TargetPod">TargetPod (class in jina.types.routing.graph)</a>
+        <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod">TargetPod (class in jina.types.routing.table)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.base/#jina.peapods.runtimes.asyncio.base.AsyncNewLoopRuntime.teardown">teardown() (jina.peapods.runtimes.asyncio.base.AsyncNewLoopRuntime method)</a>
 

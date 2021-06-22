@@ -331,7 +331,7 @@
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.routing/">jina.types.routing package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" type="checkbox"/><label for="toctree-checkbox-42"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.graph/">jina.types.routing.graph module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.routing.table/">jina.types.routing.table module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types.score/">jina.types.score package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" type="checkbox"/><label for="toctree-checkbox-43"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -385,9 +385,9 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 <span class="kn">from</span> <span class="nn">..peas</span> <span class="kn">import</span> <span class="n">BasePea</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
-<span class="kn">from</span> <span class="nn">...types.routing.graph</span> <span class="kn">import</span> <span class="n">RoutingGraph</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SchedulerType</span><span class="p">,</span>
@@ -397,7 +397,6 @@
     <span class="n">PollingType</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
-<span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 
 
 <div class="viewcode-block" id="ExitFIFO"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.ExitFIFO">[docs]</a><span class="k">class</span> <span class="nc">ExitFIFO</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
@@ -1017,14 +1016,7 @@
     <span class="k">def</span> <span class="nf">_set_dynamic_routing_out</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span>
-
-<div class="viewcode-block" id="Pod.set_routing_graph"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.Pod.set_routing_graph">[docs]</a>    <span class="k">def</span> <span class="nf">set_routing_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">routing_graph</span><span class="p">:</span> <span class="n">RoutingGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Sets the routing graph for the Gateway. The Gateway will equip each message with the given graph.</span>
-
-<span class="sd">        :param routing_graph: The to-be-used routing graph</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">routing_graph</span> <span class="o">=</span> <span class="n">routing_graph</span></div></div>
+            <span class="n">args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span></div>
 </pre></div>
       </article>
       <footer>

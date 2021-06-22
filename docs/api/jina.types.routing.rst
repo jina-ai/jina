@@ -7,7 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   jina.types.routing.graph
+   jina.types.routing.table
 
 Module contents
 ---------------
