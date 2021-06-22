@@ -134,7 +134,7 @@ def download_with_resume(
                 f.write(chunk)
 
     if filename is None:
-        filename = url.split("/")[-1]
+        filename = url.split('/')[-1]
     filepath = target_dir / filename
 
     _resume_byte_pos = None
@@ -149,6 +149,6 @@ def download_with_resume(
     _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
-        raise RuntimeError("MD5 checksum failed.")
+        raise RuntimeError('MD5 checksum failed.')
 
     return filepath

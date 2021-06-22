@@ -66,7 +66,7 @@ class HubIO:
             self._client: DockerClient = docker.from_env()
 
             # low-level client
-            self._raw_client = APIClient(base_url="unix://var/run/docker.sock")
+            self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""

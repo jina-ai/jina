@@ -83,7 +83,7 @@ def list_local():
     return result
 
 
-def resolve_local(id: str, tag: Optional[str] = None) -> "Path":
+def resolve_local(id: str, tag: Optional[str] = None) -> 'Path':
     """Return the path of the executor if available.
 
     :param id: the ID of executor
