@@ -139,20 +139,16 @@ def download_with_resume(
         filename = Path(url.split("/")[-1])
     filepath = target_dir / filename
 
-    if not (filepath.exists() and md5file(filepath) == md5sum):
+    _resume_byte_pos = None
+    if filepath.exists():
+        if md5file(filepath) == md5sum:
+            return filepath
         head_info = requests.head(url)
-
         file_size_online = int(head_info.headers.get('content-length', 0))
-
-        if filepath.exists():
-            file_size_offline = filepath.stat().st_size
-            if file_size_online > file_size_offline:
-                # resume download
-                _download(url, filepath, file_size_offline)
-            else:
-                _download(url, filepath)
-        else:
-            _download(url, filepath)
+        file_size_offline = filepath.stat().st_size
+        if file_size_online > file_size_offline:
+            _resume_byte_pos = file_size_offline
+    _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
         raise RuntimeError("MD5 checksum failed.")
