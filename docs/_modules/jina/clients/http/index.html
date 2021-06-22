@@ -376,7 +376,8 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.clients.http</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 
@@ -391,6 +392,14 @@
 
 <div class="viewcode-block" id="HTTPClientMixin"><a class="viewcode-back" href="../../../../api/jina.clients.http/#jina.clients.http.HTTPClientMixin">[docs]</a><span class="k">class</span> <span class="nc">HTTPClientMixin</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
     <span class="sd">"""A MixIn for HTTP Client."""</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_http_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">dest_url</span><span class="p">,</span> <span class="n">req_dict</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">dest_url</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">req_dict</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">resp_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">resp_str</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -434,36 +443,43 @@
                 <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(),</span> <span class="n">nullcontext</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">,</span> <span class="n">cm2</span><span class="p">:</span>
+                    <span class="n">all_responses</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">req_iter</span><span class="p">:</span>
                         <span class="c1"># fix the mismatch between pydantic model and Protobuf model</span>
                         <span class="n">req_dict</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
                         <span class="n">req_dict</span><span class="p">[</span><span class="s1">'exec_endpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">][</span><span class="s1">'exec_endpoint'</span><span class="p">]</span>
                         <span class="n">req_dict</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'docs'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-                        <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/post'</span><span class="p">,</span>
-                            <span class="n">json</span><span class="o">=</span><span class="n">req_dict</span><span class="p">,</span>
-                        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
-                            <span class="n">resp_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="s1">'no such endpoint on the server'</span><span class="p">)</span>
-                            <span class="k">elif</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">resp_str</span><span class="p">)</span>
-                            <span class="n">resp</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">resp_str</span><span class="p">)</span>
-                            <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span>
-                                <span class="n">resp</span><span class="o">.</span><span class="n">request_type</span>
-                            <span class="p">)</span><span class="o">.</span><span class="n">as_response</span><span class="p">()</span>
-                            <span class="n">callback_exec</span><span class="p">(</span>
-                                <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
-                                <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                                <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                                <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                                <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
-                                <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="n">all_responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_get_http_response</span><span class="p">(</span>
+                                    <span class="n">session</span><span class="p">,</span>
+                                    <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/post'</span><span class="p">,</span>
+                                    <span class="n">req_dict</span><span class="p">,</span>
+                                <span class="p">)</span>
                             <span class="p">)</span>
-                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                                <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">)</span>
-                            <span class="k">yield</span> <span class="n">resp</span>
+                        <span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">all_responses</span><span class="p">):</span>
+                        <span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resp</span>
+                        <span class="k">if</span> <span class="n">r_status</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="s1">'no such endpoint on the server'</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">r_status</span> <span class="o">&lt;</span> <span class="mi">200</span> <span class="ow">or</span> <span class="n">r_status</span> <span class="o">&gt;</span> <span class="mi">300</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
+
+                        <span class="n">resp</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
+                        <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">request_type</span><span class="p">)</span><span class="o">.</span><span class="n">as_response</span><span class="p">()</span>
+                        <span class="n">callback_exec</span><span class="p">(</span>
+                            <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
+                            <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+                            <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                            <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                            <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
+                            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
+                            <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">)</span>
+                        <span class="k">yield</span> <span class="n">resp</span>
             <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">client_exceptions</span><span class="o">.</span><span class="n">ClientConnectorError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Client got disconnected from the HTTP server'</span><span class="p">)</span></div>
 
