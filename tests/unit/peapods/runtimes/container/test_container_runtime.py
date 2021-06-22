@@ -292,7 +292,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
 
     mock = mocker.Mock()
     mocker.patch(
-        'jina.peapods.runtimes.zmq.base.ZMQRuntime.is_ready',
+        'jina.peapods.runtimes.container.ContainerRuntime.is_ready',
         return_value=True,
     )
 

@@ -159,8 +159,6 @@ class BasePea:
 
     def _cancel_runtime(self):
         """Send terminate control message."""
-        self.logger.warning(f' should I CANCEL?')
-
         from ..runtimes.zmq.zed import ZEDRuntime
         from ..runtimes.container import ContainerRuntime
 
