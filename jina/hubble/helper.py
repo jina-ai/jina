@@ -126,7 +126,10 @@ def download_with_resume(
             {'Range': f'bytes={resume_byte_pos}-'} if resume_byte_pos else None
         )
 
-        r = requests.get(url, stream=True, headers=resume_header)
+        try:
+            r = requests.get(url, stream=True, headers=resume_header)
+        except requests.exceptions.RequestException as e:
+            raise HubDownloadError(e)
 
         block_size = 1024
         mode = 'ab' if resume_byte_pos else 'wb'
