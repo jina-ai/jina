@@ -364,7 +364,7 @@ def extend_rest_function(app):
 
 
 jina.helper.extend_rest_interface = extend_rest_function
-f = Flow(protocl='http')
+f = Flow(protocol='http')
 
 with f:
     f.block()
