@@ -35,10 +35,7 @@ def get_connect_host(
         not bind_local and not conn_local and (bind_host == connect_args.host)
     )
 
-    if platform in ('linux', 'linux2'):
-        local_host = __default_host__
-    else:
-        local_host = 'host.docker.internal'
+    local_host = 'host.docker.internal'
 
     # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
     if bind_local and conn_local:

@@ -6,6 +6,7 @@ import multiprocessing
 import threading
 
 from .helper import _get_event, ConditionalEvent
+from ..networking import get_connect_host
 from ... import __stop_msg__, __ready_msg__, __default_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart, RuntimeTerminated
@@ -66,10 +67,16 @@ class BasePea:
         # control address of runtime
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
 
+        # connection host for control messages may need to be adjusted. E.g. for Docker to Docker communication.
+        control_host = get_connect_host(
+            bind_host=self.args.host,
+            bind_expose_public=self.args.expose_public,
+            connect_args=self.args,
+        )
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
         self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
-            self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
+            control_host, self.args.port_ctrl, self.args.ctrl_with_ipc
         )[0]
         self._local_runtime_ctrl_address = (
             Zmqlet.get_ctrl_address(None, None, True)[0]
