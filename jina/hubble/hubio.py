@@ -1,7 +1,6 @@
 """Module for wrapping Jina Hub API calls."""
 
 
-from jina.parsers.hubble import pull
 import os
 import argparse
 import json
@@ -118,12 +117,12 @@ class HubIO:
 
             if 200 <= resp.status_code < 300:
                 # TODO: only support single executor now
-                image = resp.json()["executors"][0]
+                image = resp.json()['executors'][0]
 
-                uuid8 = image["id"]
-                secret = image["secret"]
-                docker_image = image["pullPath"]
-                visibility = image["visibility"]
+                uuid8 = image['id']
+                secret = image['secret']
+                docker_image = image['pullPath']
+                visibility = image['visibility']
                 usage = (
                     f'jinahub://{uuid8}'
                     if visibility == 'public'
