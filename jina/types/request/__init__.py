@@ -80,7 +80,9 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(request)} is not recognizable')
         except Exception as ex:
-            raise BadRequestType(f'fail to construct a request from {request}') from ex
+            raise BadRequestType(
+                f'fail to construct a {self.__class__} object from {request}'
+            ) from ex
 
     def __getattr__(self, name: str):
         # https://docs.python.org/3/reference/datamodel.html#object.__getattr__

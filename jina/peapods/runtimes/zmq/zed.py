@@ -26,7 +26,7 @@ from ....proto import jina_pb2
 from ....types.arrays.document import DocumentArray
 from ....types.message import Message
 from ....types.request import Request
-from ....types.routing.graph import RoutingGraph
+from ....types.routing.table import RoutingTable
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -375,7 +375,7 @@ class ZEDRuntime(ZMQRuntime):
         """
         if self.message.is_data_request:
             if self.args.socket_in == SocketType.ROUTER_BIND:
-                graph = RoutingGraph(self._message.envelope.routing_graph)
+                graph = RoutingTable(self._message.envelope.routing_table)
                 return graph.active_target_pod.expected_parts
             else:
                 return self.args.num_part

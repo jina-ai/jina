@@ -7,9 +7,9 @@ from itertools import cycle
 from typing import Dict, Union, Set
 from typing import List, Optional
 
+from ..networking import get_connect_host
 from ..peas import BasePea
 from ... import __default_executor__
-from ...types.routing.graph import RoutingGraph
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -19,7 +19,6 @@ from ...enums import (
     PollingType,
 )
 from ...helper import random_identity
-from ..networking import get_connect_host
 
 
 class ExitFIFO(ExitStack):
@@ -640,10 +639,3 @@ class Pod(BasePod):
         if args.dynamic_routing:
             args.dynamic_routing_out = True
             args.socket_out = SocketType.DEALER_CONNECT
-
-    def set_routing_graph(self, routing_graph: RoutingGraph) -> None:
-        """Sets the routing graph for the Gateway. The Gateway will equip each message with the given graph.
-
-        :param routing_graph: The to-be-used routing graph
-        """
-        self.args.routing_graph = routing_graph
