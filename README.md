@@ -17,7 +17,7 @@
 
 <!-- start elevator-pitch -->
 
-Jina allows you to build deep learning-powered search-as-a-service in just minutes.
+Jina<sup><sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup></sup> allows you to build deep learning-powered search-as-a-service in just minutes.
 
 <!-- end elevator-pitch -->
 
