@@ -1,4 +1,5 @@
 import os
+import time
 
 import pytest
 
@@ -44,7 +45,6 @@ def test_delete(api, fastapi_client):
 def _validate_response(response, payload, id, workspace_id):
     assert response.status_code == 200
     get_response = response.json()
-    print(f'\n\n{get_response}')
     item = ContainerItem(**get_response)
     assert item.workspace_id == workspace_id
     assert item.metadata.container_name == id
@@ -90,10 +90,11 @@ def test_add_same_del_all(api, payload, fastapi_client, workspace):
     response = fastapi_client.delete(api)
     assert response.status_code == 200
 
-    assert Dockerizer.containers == _existing_containers
     response = fastapi_client.get(api)
     assert response.status_code == 200
     assert response.json()['num_del'] == num_add
+    time.sleep(1)
+    assert Dockerizer.containers == _existing_containers
 
 
 @pytest.mark.parametrize(

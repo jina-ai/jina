@@ -309,6 +309,11 @@ class Dockerizer:
 
     @classmethod
     def containers_in_network(cls, id: str) -> List:
+        """Get all containers currently connected to network
+
+        :param id: network id
+        :return: list of containers connected to network id
+        """
         return [
             container["Name"]
             for container in cls.raw_client.inspect_network(net_id=id)[
@@ -322,8 +327,6 @@ class Dockerizer:
         Remove network from local if no containers are connected
 
         :param id: network id
-        :raises KeyError: if network is not found on local
-        :raises DockerNetworkException: error during network removal
         :return: True if deletion is successful else False
         """
         try:
@@ -365,7 +368,7 @@ class Dockerizer:
             raise KeyError(f'image `{id}` not found')
         except docker.errors.APIError as e:
             cls.logger.error(
-                f'dockerd threw an error while removing the network `{id}`: {e}'
+                f'dockerd threw an error while removing the image `{id}`: {e}'
             )
             raise DockerImageException(f'dockerd error while removing image {id} {e!r}')
 

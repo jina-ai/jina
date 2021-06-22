@@ -14,8 +14,6 @@ services:
       host.docker.internal: host-gateway
     ports:
       - "8000:8000"
-    env_file:
-      - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
@@ -28,8 +26,6 @@ services:
     expose:
       - 8000
       - 10000-60000
-    env_file:
-      - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
@@ -42,8 +38,6 @@ services:
     expose:
       - 8000
       - 10000-60000
-    env_file:
-      - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp

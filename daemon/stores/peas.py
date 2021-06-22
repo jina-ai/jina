@@ -34,6 +34,7 @@ class PeaStore(ContainerStore):
         """Sends a delete request to terminate the Pea & remove the container
 
         :param host: host of mini-jinad
+        :param kwargs: keyword args
         :raises Runtime400Exception: if deletion fails
         """
         try:
