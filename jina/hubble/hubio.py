@@ -50,8 +50,7 @@ class HubIO:
     def _load_docker_client(self):
         with ImportExtensions(
             required=False,
-            help_text='missing "docker" dependency, available CLIs limited to "jina hub [list, new]"'
-            'to enable full CLI, please do pip install "jina[docker]"',
+            help_text='missing "docker" dependency, please do pip install "jina[docker]"',
         ):
             import docker
             from docker import APIClient, DockerClient
@@ -157,9 +156,10 @@ class HubIO:
         :param tag: the version tag of the executor
         :return: meta of executor
         """
+    with ImportExtensions(required=True):
         import requests
 
-        pull_url = JINA_HUBBLE_PUSHPULL_URL + f"/{id}"
+        pull_url = urljoin(JINA_HUBBLE_PUSHPULL_URL, f'{id}')
         path_params = []
         if self.args.secret:
             path_params.append(f"secret={self.args.secret}")
@@ -191,11 +191,10 @@ class HubIO:
         return result
 
     def pull(self) -> None:
-        """Pull the executor pacakge from Jina Hub."""
+        """Pull the executor package from Jina Hub."""
         cached_zip_file = None
         try:
             id = self.args.id
-            tag = None
 
             executor = self.fetch(id, tag)
 
@@ -215,8 +214,8 @@ class HubIO:
                 self.logger.success(
                     f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
                 )
-            else:
-                if exist_locall(id, tag):
+                return
+            if exist_locall(id, tag):
                     self.logger.warning(
                         f"The executor {self.args.id} has already been downloaded in {JINA_HUB_ROOT}"
                     )
@@ -234,7 +233,7 @@ class HubIO:
 
                 with TimeContext(f"installing {self.args.id}", self.logger):
                     # TODO: get latest tag
-                    install_locall(JINA_HUB_CACHE_DIR / cached_zip_file, id, tag)
+                    install_local(JINA_HUB_CACHE_DIR / cached_zip_file, id, tag)
 
         except Exception as e:
             self.logger.error(
