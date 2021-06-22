@@ -10,12 +10,13 @@ from ...zmq import Zmqlet
 from ....excepts import BadImageNameError
 from ....helper import ArgNamespace, is_valid_local_config_source, slugify
 from ....jaml.helper import complete_path
+from ...zmq import send_ctrl_message
 
 
 class ContainerRuntime(ZMQRuntime):
     """Runtime procedure for container."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
+    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str, **kwargs):
         super().__init__(args, ctrl_addr)
         self._set_network_for_dind_linux()
         self._docker_run()
@@ -189,6 +190,27 @@ class ContainerRuntime(ZMQRuntime):
             self._stream_logs()
 
         client.close()
+
+    @property
+    def status(self):
+        """
+        Send get status control message.
+
+        :return: control message.
+        """
+        return send_ctrl_message(
+            self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl
+        )
+
+    @property
+    def is_ready(self) -> bool:
+        """
+        Check if status is ready.
+
+        :return: True if status is ready else False.
+        """
+        status = self.status
+        return status and status.is_ready
 
     @property
     def _is_container_alive(self) -> bool:

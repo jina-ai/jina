@@ -6,15 +6,19 @@ from .client import PeaDaemonClient
 from ..asyncio.base import AsyncZMQRuntime
 from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored, is_yaml_filepath
+from ...zmq import send_ctrl_message
 
 
 class JinadRuntime(AsyncZMQRuntime):
     """Runtime procedure for Jinad."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
-        super().__init__(args, ctrl_addr)
+    def __init__(
+        self, args: 'argparse.Namespace', ctrl_addr: str, timeout_ctrl: int, **kwargs
+    ):
+        super().__init__(args, ctrl_addr, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
+        self.timeout_ctrl = timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
         self.api = PeaDaemonClient(
@@ -37,6 +41,16 @@ class JinadRuntime(AsyncZMQRuntime):
                 f'- on local, are you behind VPN or proxy?'
             )
             raise DaemonConnectivityError
+
+    async def _wait_for_cancel(self):
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        while True:
+            if self.cancel_event.is_set():
+                await self.async_cancel()
+                send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
+                return
+            else:
+                await asyncio.sleep(0.1)
 
     async def async_run_forever(self):
         """
