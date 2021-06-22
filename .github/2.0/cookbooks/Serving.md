@@ -315,6 +315,8 @@ f = Flow(protocol='http',
 
 `Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
 
+![img.png](../expose-endpoints.svg)
+
 ```python
 from jina import Executor, requests, Flow
 
@@ -331,6 +333,8 @@ with f:
 ```
 
 ![img.png](../customized-foo-endpoint.png)
+
+Now, sending HTTP data request to `/foo` is equivalent as calling `f.post('/foo', ...)` in Python.
 
 You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
 

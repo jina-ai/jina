@@ -169,7 +169,7 @@ It finds the lines most similar to "`request(on=something)`" from the server cod
 - 🤹 [Serving Jina](.github/2.0/cookbooks/Serving.md)
     - [Minimum Working Example](.github/2.0/cookbooks/Serving.md#minimum-working-example)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
-    - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#via-http)
+    - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#extend-http-interface)
 - 🧼 [Write Clean Code in Jina](.github/2.0/cookbooks/CleanCode.md)
 - 📓 [Developer References](https://docs.jina.ai)
 - 😎 [3 Reasons to Use Jina 2.0](.github/2.0/1vs2.md)
