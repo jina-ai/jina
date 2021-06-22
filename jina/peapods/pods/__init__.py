@@ -7,9 +7,9 @@ from itertools import cycle
 from typing import Dict, Union, Set
 from typing import List, Optional
 
+from ..networking import get_connect_host
 from ..peas import BasePea
 from ... import __default_executor__
-from ...types.routing.graph import RoutingGraph
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -19,7 +19,6 @@ from ...enums import (
     PollingType,
 )
 from ...helper import random_identity
-from ..networking import get_connect_host
 
 
 class ExitFIFO(ExitStack):

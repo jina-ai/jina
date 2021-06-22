@@ -12,10 +12,11 @@ from ...excepts import MismatchedVersion
 from ...helper import colored
 from ...logging.predefined import default_logger
 from ...proto import jina_pb2
+from ...types.routing.graph import RoutingGraph
 
 if False:
     from ...executors import BaseExecutor
-    from ...types.routing.graph import RoutingGraph
+
 
 __all__ = ['Message']
 
