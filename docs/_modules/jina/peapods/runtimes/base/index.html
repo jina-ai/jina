@@ -485,7 +485,16 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                 <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
                 <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
+
+        <span class="c1"># https://stackoverflow.com/a/28158006</span>
+        <span class="c1"># return True will silent all exception stack trace here, silence is desired here as otherwise it is too</span>
+        <span class="c1"># noisy</span>
+        <span class="c1">#</span>
+        <span class="c1"># doc: If an exception is supplied, and the method wishes to suppress the exception (i.e., prevent it</span>
+        <span class="c1"># from being propagated), it should return a true value. Otherwise, the exception will be processed normally</span>
+        <span class="c1"># upon exit from this method.</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 </pre></div>
       </article>
       <footer>
