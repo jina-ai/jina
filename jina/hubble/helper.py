@@ -7,8 +7,8 @@ from typing import Tuple, Optional
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
-from jina import __resources_path__
-from jina.importer import ImportExtensions
+from .. import __resources_path__
+from ..importer import ImportExtensions
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
@@ -23,7 +23,7 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     uuid = items[0]
     secret = items[1] if len(items) > 1 else None
     tag = parser.path.strip('/') if parser.path else None
-    return (scheme, uuid, tag, secret)
+    return scheme, uuid, tag, secret
 
 
 def md5file(file_path: 'Path') -> str:
@@ -121,7 +121,10 @@ def download_with_resume(
             {'Range': f'bytes={resume_byte_pos}-'} if resume_byte_pos else None
         )
 
-        r = requests.get(url, stream=True, headers=resume_header)
+        try:
+            r = requests.get(url, stream=True, headers=resume_header)
+        except requests.exceptions.RequestException as e:
+            raise e
 
         block_size = 1024
         mode = 'ab' if resume_byte_pos else 'wb'
@@ -134,20 +137,16 @@ def download_with_resume(
         filename = Path(url.split("/")[-1])
     filepath = target_dir / filename
 
-    if not (filepath.exists() and md5sum and md5file(filepath) == md5sum):
+    _resume_byte_pos = None
+    if filepath.exists():
+        if md5file(filepath) == md5sum:
+            return filepath
         head_info = requests.head(url)
-
         file_size_online = int(head_info.headers.get('content-length', 0))
-
-        if filepath.exists():
-            file_size_offline = filepath.stat().st_size
-            if file_size_online > file_size_offline:
-                # resume download
-                _download(url, filepath, file_size_offline)
-            else:
-                _download(url, filepath)
-        else:
-            _download(url, filepath)
+        file_size_offline = filepath.stat().st_size
+        if file_size_online > file_size_offline:
+            _resume_byte_pos = file_size_offline
+    _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
         raise RuntimeError("MD5 checksum failed.")

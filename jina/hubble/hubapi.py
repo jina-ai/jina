@@ -18,12 +18,12 @@ def get_dist_path(id: str, tag: str) -> Tuple['Path', 'Path']:
     :return: package and its dist-info path
     """
     pkg_path = JINA_HUB_ROOT / id
-    pkg_dist_path = JINA_HUB_ROOT / f"{id}-{tag}.dist-info"
+    pkg_dist_path = JINA_HUB_ROOT / f'{id}-{tag}.dist-info'
     return pkg_path, pkg_dist_path
 
 
 def install_locall(
-    zip_package: "Path", id: str, tag: str, force: Optional[bool] = False
+    zip_package: 'Path', id: str, tag: str, force: Optional[bool] = False
 ):
     """Install the package in zip format to the Jina Hub root.
 
@@ -38,7 +38,7 @@ def install_locall(
         return
 
     # clean existed dist-info
-    for dist in JINA_HUB_ROOT.glob(f"{id}-*.dist-info"):
+    for dist in JINA_HUB_ROOT.glob(f'{id}-*.dist-info'):
         shutil.rmtree(dist)
 
     # unpack the zip package to the root pkg_path
@@ -49,13 +49,13 @@ def install_locall(
     # create dist-info folder
     pkg_dist_path.mkdir(parents=False, exist_ok=True)
 
-    manifest_path = pkg_path / "manifest.yml"
+    manifest_path = pkg_path / 'manifest.yml'
     if manifest_path.exists():
-        shutil.copyfile(manifest_path, pkg_dist_path / "manifest.yml")
+        shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
 
-    requirements_path = pkg_path / "requirements.txt"
+    requirements_path = pkg_path / 'requirements.txt'
     if requirements_path.exists():
-        shutil.copyfile(requirements_path, pkg_dist_path / "requirements.txt")
+        shutil.copyfile(requirements_path, pkg_dist_path / 'requirements.txt')
 
 
 def list_local():
@@ -64,7 +64,7 @@ def list_local():
     :return: the list of local executors (if found)
     """
     result = []
-    for dist_name in JINA_HUB_ROOT.glob("*-*.dist-info"):
+    for dist_name in JINA_HUB_ROOT.glob('*-*.dist-info'):
         result.append(dist_name)
 
     return dist_name
@@ -78,7 +78,7 @@ def resolve_local(id: str, tag: Optional[str] = None) -> "Path":
     :return: the path of the executor package
     """
     pkg_path = JINA_HUB_ROOT / id
-    pkg_dist_path = JINA_HUB_ROOT / f"{id}-{tag}.dist-info"
+    pkg_dist_path = JINA_HUB_ROOT / f'{id}-{tag}.dist-info'
     if not pkg_path.exists():
         return None
     if tag and (not pkg_dist_path.exists()):
