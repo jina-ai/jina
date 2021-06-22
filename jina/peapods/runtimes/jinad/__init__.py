@@ -45,7 +45,7 @@ class JinadRuntime(AsyncZMQRuntime):
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         while True:
-            if self.cancel_event.is_set():
+            if self.is_cancel.is_set():
                 await self.async_cancel()
                 send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
                 return

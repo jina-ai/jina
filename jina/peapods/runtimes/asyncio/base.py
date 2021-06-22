@@ -27,7 +27,7 @@ class AsyncZMQRuntime(ZMQRuntime):
         **kwargs
     ):
         super().__init__(args, ctrl_addr)
-        self.cancel_event = cancel_event
+        self.is_cancel = cancel_event
 
     def run_forever(self):
         """Running method to block the main thread."""
@@ -44,7 +44,7 @@ class AsyncZMQRuntime(ZMQRuntime):
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         while True:
-            if self.cancel_event.is_set():
+            if self.is_cancel.is_set():
                 await self.async_cancel()
                 return
             else:
