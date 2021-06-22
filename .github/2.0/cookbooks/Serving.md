@@ -21,13 +21,48 @@ Table of Contents
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Minimum Working Example
+
+
+<table>
+<tr>
+<td>
+<b>Server</b>
+</td>
+<td>
+<b>Client</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```python
+from jina import Flow
+
+f = Flow(protocol='grpc', port_expose=12345)
+with f:
+    f.block()
+```
+
+</td>
+<td>
+
+```python
+from jina import Client, Document
+
+c = Client(protocol='grpc', port_expose=12345)
+c.post('/', Document())
+```
+
+</td>
+</tr>
+</table>
+
 ## Flow-as-a-service
 
-Flow is how Jina streamlines and scales Executors, and you can serve it as a service.
+A `Flow` _is_ a service by nature. Though implicitly, you are already using it as a service.
 
-More precisely, a `Flow` _is_ a service by nature. Though implicit, you are already using it as a service.
-
-When you start a `Flow` and call `.post()` inside the context, a `jina.Client` object is started and used for
+When you start a `Flow` and call `.post()` inside the context, a `jina.Client` object is created and used for
 communication.
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/implict-vs-explicit-service.svg?raw=true"/>
@@ -55,6 +90,8 @@ Jina supports `grpc`, `websocket`, `http` three communication protocols between 
 
 The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s constructor.
 
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/client-server.svg?raw=true"/>
+
 ### via gRPC
 
 On the server-side, create an empty Flow and use `.block` to prevent the process exiting.
@@ -66,7 +103,7 @@ with Flow(port_expose=12345) as f:
     f.block()
 ```
 
-```text
+```console
         gateway@14736[I]:input tcp://0.0.0.0:56392 (PULL_CONNECT) output tcp://0.0.0.0:56392 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp5pe2snw1 (PAIR_BIND)
         gateway@14736[S]:GRPCRuntime is listening at: 0.0.0.0:12345
         gateway@14733[S]:ready and listening
@@ -90,8 +127,8 @@ c = Client(host='192.168.31.159', port_expose=12345)
 c.post('/')
 ```
 
-```text
-     GRPCClient@14744[S]:connected to the gateway at 0.0.0.0:12345!
+```console
+GRPCClient@14744[S]:connected to the gateway at 0.0.0.0:12345!
 ```
 
 
@@ -158,6 +195,8 @@ with f:
 	📚 Redoc:		    http://localhost:12345/redoc
 ```
 
+#### Use Swagger UI to Send HTTP Request
+
 You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/swagger-ui.png?raw=true"/>
@@ -167,7 +206,7 @@ You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 Now you can send data request via `curl`/Postman:
 
 ```console
-$ curl --request POST -d '{"data": [{"text": "hello world"}]}' -H 'Content-Type: application/json' http://localhost:12345/post/index
+$ curl --request POST -d '{"exec_entrypoint":"index", "data": [{"text": "hello world"}]}' -H 'Content-Type: application/json' http://localhost:12345/post/
 
 {
   "request_id": "1f52dae0-93a5-47b5-9fa0-522a75301d99",
@@ -243,9 +282,36 @@ f = Flow(cors=True, protocol='http')
 
 #### Extend HTTP Interface
 
-##### Expose Executor Endpoints to HTTP Interface
+By default the following endpoints are exposed to the public:
+
+| Endpoint | Description |
+| --- | ---|
+| `/status` | Check Jina service running status |
+| `/post` | Corresponds to `f.post()` method in Python |
+| `/index` | Corresponds to `f.post('/index')` method in Python |
+| `/search` | Corresponds to `f.post('/search')` method in Python |
+| `/update` | Corresponds to `f.post('/update')` method in Python |
+| `/delete` | Corresponds to `f.post('/delete')` method in Python |
+
+##### Hide CRUD and Debug Endpoints from HTTP Interface
+
+User can decide to hide CRUD and debug endpoints in production, or when the context is not applicable. For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
+
+```python
+from jina import Flow
+f = Flow(protocol='http', 
+         no_debug_endpoints=True, 
+         no_crud_endpoints=True)
+```
+
+![img.png](../hide-crud-debug-endpoints.png)
+
+
+##### Expose Customized Endpoints to HTTP Interface
 
 `Flow.expose_endpoint` can be used to expose executor's endpoint to HTTP interface, e.g.
+
+![img.png](../expose-endpoints.svg)
 
 ```python
 from jina import Executor, requests, Flow
@@ -264,18 +330,20 @@ with f:
 
 ![img.png](../customized-foo-endpoint.png)
 
-You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by SwaggerUI and be forwarded to the generated OpenAPI schema.
+Now, sending HTTP data request to `/foo` is equivalent as calling `f.post('/foo', ...)` in Python.
 
-##### Hide CRUD and Debug Endpoints from HTTP Interface
-
-User can decide to hide CRUD and debug endpoints in production, or when the context is not applicable. For example, in the code snippet above, we didn't implment any CRUD executors' endpoints, hence it does not make sense to expose them to public.
+You can add more kwargs to build richer semantics on your HTTP endpoint. Those meta information will be rendered by Swagger UI and be forwarded to the OpenAPI schema.
 
 ```python
-from jina import Flow
-f = Flow(protocol='http', no_debug_endpoints=True, no_crud_endpoints=True)
+f.expose_endpoint('/bar', 
+                  summary='my endpoint',
+                  tags=['fine-tuning'],
+                  methods=['PUT']
+                  )
 ```
 
-![img.png](../hide-crud-debug-endpoints.png)
+![img.png](../rich-openapi.png)
+
 
 ##### Add non-Jina Related Routes
 
@@ -308,16 +376,15 @@ And you will see `/hello` is now available:
 
 ### Switch Between Communication Protocols
 
-You can switch to other protocol also via `.protocol` setter. This setter works even in Flow runtime.
+You can switch to other protocol also via `.protocol` property setter. This setter works even in Flow runtime.
 
 ```python
 from jina import Flow, Document
 
-f = Flow()  # protocol = grpc 
+f = Flow(protocol='grpc') 
 
 with f:
-    f.post('/index', Document())  # indexing data
-
+    f.post('/', Document())
     f.protocol = 'http'  # switch to HTTP protocol request
     f.block()
 ```
