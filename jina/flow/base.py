@@ -17,7 +17,7 @@ from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
-from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingGraphCyclicError
+from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
 from ..helper import (
     colored,
     get_public_ip,
@@ -31,7 +31,7 @@ from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
 from ..peapods.pods.factory import PodFactory
-from ..types.routing.graph import RoutingGraph
+from ..types.routing.table import RoutingTable
 
 __all__ = ['Flow']
 
@@ -779,8 +779,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    def _get_routing_graph(self) -> RoutingGraph:
-        graph = RoutingGraph()
+    def _get_routing_table(self) -> RoutingTable:
+        graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
                 graph.add_pod(f'start-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
@@ -802,13 +802,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
 
-    def _set_initial_dynamic_routing_graph(self):
-        routing_graph = self._get_routing_graph()
-        if not routing_graph.is_acyclic():
-            raise RoutingGraphCyclicError(
+    def _set_initial_dynamic_routing_table(self):
+        routing_table = self._get_routing_table()
+        if not routing_table.is_acyclic():
+            raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
             )
-        self._pod_nodes[GATEWAY_NAME].args.routing_graph = routing_graph.json()
+        self._pod_nodes[GATEWAY_NAME].args.routing_table = routing_table.json()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
@@ -866,7 +866,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
-        op_flow._set_initial_dynamic_routing_graph()
+        op_flow._set_initial_dynamic_routing_table()
 
         for pod in op_flow._pod_nodes.values():
             pod.args.host = self._resolve_host(pod.args.host)
@@ -880,12 +880,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 
-    def _resolve_host(self, host: str):
-
+    def _resolve_host(self, host: str) -> str:
         try:
-            return socket.gethostbyname(host)
+            ip_address = socket.gethostbyname(host)
+            if ip_address == get_internal_ip():
+                return __default_host__
+            else:
+                return host
         except socket.gaierror:
             self.logger.warning(f'{host} can not be resolved into a valid IP address.')
+            # return the original one, as it might be some special docker host literal
             return host
 
     def __call__(self, *args, **kwargs):

@@ -1,8 +1,8 @@
-from jina.types.routing.graph import RoutingGraph
+from jina.types.routing.table import RoutingTable
 
 
 def test_single_routing():
-    graph = RoutingGraph()
+    graph = RoutingTable()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.active_pod = 'pod0'
     next_routes = graph.get_next_targets()
@@ -11,7 +11,7 @@ def test_single_routing():
 
 
 def test_simple_routing():
-    graph = RoutingGraph()
+    graph = RoutingTable()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
     graph.add_edge('pod0', 'pod1')
@@ -23,7 +23,7 @@ def test_simple_routing():
 
 
 def test_double_routing():
-    graph = RoutingGraph()
+    graph = RoutingTable()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
     graph.add_pod('pod2', '0.0.0.0', 1232)
@@ -41,7 +41,7 @@ def test_double_routing():
 
 
 def test_nested_routing():
-    graph = RoutingGraph()
+    graph = RoutingTable()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
     graph.add_pod('pod2', '0.0.0.0', 1232)
@@ -84,7 +84,7 @@ def test_nested_routing():
 
 
 def test_topological_sorting():
-    graph = RoutingGraph()
+    graph = RoutingTable()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
     graph.add_pod('pod2', '0.0.0.0', 1232)
@@ -107,7 +107,7 @@ def test_topological_sorting():
 
 
 def test_cycle():
-    graph = RoutingGraph()
+    graph = RoutingTable()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
     graph.add_edge('pod0', 'pod1')
@@ -117,7 +117,7 @@ def test_cycle():
 
 
 def test_no_cycle():
-    graph = RoutingGraph()
+    graph = RoutingTable()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
     graph.add_pod('pod2', '0.0.0.0', 1232)

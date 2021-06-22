@@ -29,7 +29,7 @@ class TargetPod(ProtoTypeMixin):
 
         :return: port
         """
-        return self._pb_body.port
+        return self.proto.port
 
     @property
     def host(self) -> str:
@@ -37,7 +37,7 @@ class TargetPod(ProtoTypeMixin):
 
         :return: host
         """
-        return self._pb_body.host
+        return self.proto.host
 
     @property
     def full_address(self) -> str:
@@ -53,7 +53,7 @@ class TargetPod(ProtoTypeMixin):
 
         :return: expected_parts
         """
-        return self._pb_body.expected_parts
+        return self.proto.expected_parts
 
     @expected_parts.setter
     def expected_parts(self, value: int) -> None:
@@ -61,7 +61,7 @@ class TargetPod(ProtoTypeMixin):
 
         :param value: the new number of expected parts
         """
-        self._pb_body.expected_parts = value
+        self.proto.expected_parts = value
 
     @property
     def out_edges(self) -> List[str]:
@@ -69,41 +69,41 @@ class TargetPod(ProtoTypeMixin):
 
         :return: out_edges
         """
-        return list(self._pb_body.out_edges)
+        return list(self.proto.out_edges)
 
     def add_edge(self, to_pod: str) -> None:
         """Adds an edge to the internal representation of the out_edges.
 
         :param to_pod: the name of the pod outtraffic should go to
         """
-        self._pb_body.out_edges.append(to_pod)
+        self.proto.out_edges.append(to_pod)
 
 
-class RoutingGraph(ProtoTypeMixin):
+class RoutingTable(ProtoTypeMixin):
     """
-    Wrapper class around `RoutingGraphProto`.
+    Wrapper class around `RoutingTableProto`.
 
     It offers a Pythonic interface to allow users access to the
-    :class:`jina.jina_pb2.RoutingGraphProto` object without working with Protobuf itself.
+    :class:`jina.jina_pb2.RoutingTableProto` object without working with Protobuf itself.
 
-    :param graph: the protobuf object of the RoutingGraph
+    :param graph: the protobuf object of the RoutingTable
     """
 
     def __init__(
         self,
         graph: Optional[
-            Union['jina_pb2.RoutingGraphProto', bytes, dict, str, 'RoutingGraph']
+            Union['jina_pb2.RoutingTableProto', bytes, dict, str, 'RoutingTable']
         ] = None,
         copy: bool = False,
     ) -> None:
-        self._pb_body = jina_pb2.RoutingGraphProto()
+        self._pb_body = jina_pb2.RoutingTableProto()
         try:
-            if isinstance(graph, RoutingGraph):
+            if isinstance(graph, RoutingTable):
                 if copy:
                     self._pb_body.CopyFrom(graph._pb_body)
                 else:
                     self._pb_body = graph._pb_body
-            elif isinstance(graph, jina_pb2.RoutingGraphProto):
+            elif isinstance(graph, jina_pb2.RoutingTableProto):
                 if copy:
                     self._pb_body.CopyFrom(graph)
                 else:
@@ -154,7 +154,7 @@ class RoutingGraph(ProtoTypeMixin):
         """
         :return: the active Pod name
         """
-        return self._pb_body.active_pod
+        return self.proto.active_pod
 
     @active_pod.setter
     def active_pod(self, pod_name: str) -> None:
@@ -162,7 +162,7 @@ class RoutingGraph(ProtoTypeMixin):
 
         .. # noqa: DAR101
         """
-        self._pb_body.active_pod = pod_name
+        self.proto.active_pod = pod_name
 
     def _get_out_edges(self, pod: str) -> List[str]:
         return self._get_target_pod(pod).out_edges
@@ -179,9 +179,9 @@ class RoutingGraph(ProtoTypeMixin):
         """
         :return: all Pod/vertices of the graph.
         """
-        return self._pb_body.pods
+        return self.proto.pods
 
-    def get_next_targets(self) -> List['RoutingGraph']:
+    def get_next_targets(self) -> List['RoutingTable']:
         """
         Calculates next routing graph for all currently outgoing edges.
 
@@ -189,7 +189,7 @@ class RoutingGraph(ProtoTypeMixin):
         """
         targets = []
         for next_pod_index in self._get_out_edges(self.active_pod):
-            new_graph = RoutingGraph(self, copy=True)
+            new_graph = RoutingTable(self, copy=True)
             new_graph.active_pod = next_pod_index
             targets.append(new_graph)
         return targets

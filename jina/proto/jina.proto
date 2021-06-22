@@ -171,7 +171,7 @@ message TargetPodProto{
     repeated string out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
 }
 
-message RoutingGraphProto {
+message RoutingTableProto {
     // Pods that get visited during a Flow. Gateway should be both the first and the last entry.
     map<string, TargetPodProto>  pods = 1;
 
@@ -228,7 +228,7 @@ message EnvelopeProto {
 
     repeated RouteProto routes = 10; // status info on every routes
 
-    RoutingGraphProto routing_graph = 13;
+    RoutingTableProto routing_graph = 13;
 
     StatusProto status = 11; // status info
 
