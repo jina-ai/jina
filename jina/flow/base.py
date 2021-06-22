@@ -4,14 +4,12 @@ import copy
 import json
 import os
 import re
-import subprocess
+import socket
 import threading
 import uuid
 import warnings
-
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 from contextlib import ExitStack
-from google.protobuf import json_format
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
 
 from .builder import allowed_levels, _hanging_pods
@@ -32,8 +30,8 @@ from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
-from ..types.routing.graph import RoutingGraph
 from ..peapods.pods.factory import PodFactory
+from ..types.routing.graph import RoutingGraph
 
 __all__ = ['Flow']
 
@@ -810,7 +808,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             raise RoutingGraphCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
             )
-        self._pod_nodes[GATEWAY_NAME].args = routing_graph.json()
+        self._pod_nodes[GATEWAY_NAME].args.routing_graph = routing_graph.json()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
@@ -871,7 +869,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow._set_initial_dynamic_routing_graph()
 
         for pod in op_flow._pod_nodes.values():
-            pod.args.host = self._parse_host(pod.args.host)
+            pod.args.host = self._resolve_host(pod.args.host)
 
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
@@ -882,17 +880,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 
-    def _parse_host(self, host):
+    def _resolve_host(self, host: str):
 
         try:
-            result = subprocess.run(['getent', 'hosts', host], capture_output=True)
-
-            ip_address = result.stdout.decode().split(' ')[0]
-            if ip_address == get_internal_ip():
-                return __default_host__
-            else:
-                return host
-        except:
+            return socket.gethostbyname(host)
+        except socket.gaierror:
+            self.logger.warning(f'{host} can not be resolved into a valid IP address.')
             return host
 
     def __call__(self, *args, **kwargs):
