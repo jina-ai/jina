@@ -184,7 +184,7 @@ def test_all_sync_clients(protocol, mocker):
     m3 = mocker.Mock()
     m4 = mocker.Mock()
     with f:
-        f.post('', on_done=m1)
+        f.post('/', on_done=m1)
         f.post('/foo', docs, on_done=m2)
         f.post('/foo', on_done=m3)
         f.post('/foo', docs, parameters={'hello': 'world'}, on_done=m4)

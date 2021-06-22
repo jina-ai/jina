@@ -16,10 +16,11 @@ from ...helper import colored, random_identity, get_readable_size, get_or_reuse_
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
 from ...logging.logger import JinaLogger
+from ...proto import jina_pb2
 from ...types.message import Message
 from ...types.message.common import ControlMessage
 from ...types.request import Request
-from ...types.routing.graph import RoutingGraph
+from ...types.routing.table import RoutingTable
 from ..networking import get_connect_host
 
 
@@ -177,7 +178,7 @@ class Zmqlet:
             self.logger.debug(
                 f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}'
             )
-            if not self.args.dynamic_out_routing:
+            if not self.args.dynamic_routing_out:
                 out_sock, out_addr = _init_socket(
                     ctx,
                     self.args.host_out,
@@ -268,8 +269,8 @@ class Zmqlet:
         return out_sock
 
     def _get_dynamic_next_routes(self, message):
-        routing_graph = RoutingGraph(message.envelope.routing_graph)
-        next_targets = routing_graph.get_next_targets()
+        routing_table = RoutingTable(message.envelope.routing_table)
+        next_targets = routing_table.get_next_targets()
         next_routes = []
         for target in next_targets:
             pod_address = target.active_target_pod.full_address
@@ -280,11 +281,13 @@ class Zmqlet:
         return next_routes
 
     def _send_message_dynamic(self, msg: 'Message'):
-        for routing_graph, out_sock in self._get_dynamic_next_routes(msg):
-            new_message_proto = msg.proto
-            new_message_proto.envelope.routing_graph.CopyFrom(routing_graph.proto)
-
-            self._send_message_via(out_sock, Message.from_proto(new_message_proto))
+        next_routes = self._get_dynamic_next_routes(msg)
+        for routing_table, out_sock in next_routes:
+            new_envelope = jina_pb2.EnvelopeProto()
+            new_envelope.CopyFrom(msg.envelope)
+            new_envelope.routing_table.CopyFrom(routing_table.proto)
+            new_message = Message(request=msg.request, envelope=new_envelope)
+            self._send_message_via(out_sock, new_message)
 
     def send_message(self, msg: 'Message'):
         """Send a message via the output socket
@@ -293,7 +296,7 @@ class Zmqlet:
         """
         # choose output sock
         if msg.is_data_request:
-            if self.args.dynamic_out_routing:
+            if self.args.dynamic_routing_out:
                 self._send_message_dynamic(msg)
                 return
             out_sock = self.out_sock
@@ -367,19 +370,19 @@ class AsyncZmqlet(Zmqlet):
         :param kwargs: keyword arguments
         """
         # await asyncio.sleep(sleep)  # preventing over-speed sending
-        if self.args.dynamic_out_routing:
+        if self.args.dynamic_routing_out:
             await self._send_message_dynamic(msg)
         else:
             self._send_message_via(self.out_sock, msg)
 
     async def _send_message_dynamic(self, msg: 'Message'):
         tasks = []
-        for routing_graph, out_sock in self._get_dynamic_next_routes(msg):
-            new_message_proto = msg.proto
-            new_message_proto.envelope.routing_graph.CopyFrom(routing_graph.proto)
-            tasks.append(
-                self._send_message_via(out_sock, Message.from_proto(new_message_proto))
-            )
+        for routing_table, out_sock in self._get_dynamic_next_routes(msg):
+            new_envelope = jina_pb2.EnvelopeProto()
+            new_envelope.CopyFrom(msg.envelope)
+            new_envelope.routing_table.CopyFrom(routing_table.proto)
+            new_message = Message(request=msg.request, envelope=new_envelope)
+            tasks.append(self._send_message_via(out_sock, new_message))
         await asyncio.gather(*tasks)
 
     async def _send_message_via(self, socket, msg):

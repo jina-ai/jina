@@ -10,15 +10,14 @@ Table of Contents
 
 - [Flow-as-a-service](#flow-as-a-service)
   - [Supported Communication Protocols](#supported-communication-protocols)
-  - [Python Client with gRPC Request](#python-client-with-grpc-request)
-  - [Python Client with WebSocket Protocol](#python-client-with-websocket-protocol)
-  - [Enable HTTP Access](#enable-http-access)
-  - [`curl` with HTTP Request](#curl-with-http-request)
-  - [Enable Cross-origin-resources-sharing (CORS)](#enable-cross-origin-resources-sharing-cors)
-  - [Extend HTTP Interface](#extend-http-interface)
-    - [Expose Executor Endpoints to HTTP Interface](#expose-executor-endpoints-to-http-interface)
-    - [Hide CRUD and Debug Endpoints from HTTP Interface](#hide-crud-and-debug-endpoints-from-http-interface)
-    - [Add non-Jina Related Routes](#add-non-jina-related-routes)
+  - [via gRPC](#via-grpc)
+  - [via WebSocket](#via-websocket)
+  - [via HTTP](#via-http)
+    - [Use `curl` to Send HTTP Request](#use-curl-to-send-http-request)
+    - [Use Python to Send HTTP Request](#use-python-to-send-http-request)
+    - [Enable Cross-origin-resources-sharing (CORS)](#enable-cross-origin-resources-sharing-cors)
+    - [Extend HTTP Interface](#extend-http-interface)
+  - [Switch Between Communication Protocols](#switch-between-communication-protocols)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 

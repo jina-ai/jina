@@ -26,7 +26,7 @@ from ....proto import jina_pb2
 from ....types.arrays.document import DocumentArray
 from ....types.message import Message
 from ....types.request import Request
-from ....types.routing.graph import RoutingGraph
+from ....types.routing.table import RoutingTable
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -162,7 +162,6 @@ class ZEDRuntime(ZMQRuntime):
         # all meta information should be stored and accessed via `msg.envelope`
 
         self._last_active_time = time.perf_counter()
-        self._zmqlet.print_stats()
         self._check_memory_watermark()
 
         if self.expect_parts > 1:
@@ -171,6 +170,14 @@ class ZEDRuntime(ZMQRuntime):
 
         msg.update_timestamp()
         return self
+
+    @staticmethod
+    def _parse_params(parameters: Dict, executor_name: str):
+        parsed_params = parameters
+        specific_parameters = parameters.get(executor_name, None)
+        if specific_parameters:
+            parsed_params.update(**specific_parameters)
+        return parsed_params
 
     def _handle(self, msg: 'Message') -> 'ZEDRuntime':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
@@ -202,11 +209,13 @@ class ZEDRuntime(ZMQRuntime):
         ):
             return self
 
+        params = self._parse_params(self.request.parameters, self._executor.metas.name)
+
         # executor logic
         r_docs = self._executor(
             req_endpoint=self.envelope.header.exec_endpoint,
             docs=self.docs,
-            parameters=self.request.parameters,
+            parameters=params,
             docs_matrix=self.docs_matrix,
             groundtruths=self.groundtruths,
             groundtruths_matrix=self.groundtruths_matrix,
@@ -366,7 +375,7 @@ class ZEDRuntime(ZMQRuntime):
         """
         if self.message.is_data_request:
             if self.args.socket_in == SocketType.ROUTER_BIND:
-                graph = RoutingGraph(self._message.envelope.routing_graph)
+                graph = RoutingTable(self._message.envelope.routing_table)
                 return graph.active_target_pod.expected_parts
             else:
                 return self.args.num_part

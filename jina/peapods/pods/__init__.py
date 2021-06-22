@@ -7,10 +7,10 @@ from itertools import cycle
 from typing import Dict, Union, Set
 from typing import List, Optional
 
+from ..networking import get_connect_host
 from ..peas import BasePea
 from ...jaml.helper import complete_path
 from ... import __default_host__, __default_executor__
-from ...types.routing.graph import RoutingGraph
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -20,7 +20,6 @@ from ...enums import (
     PollingType,
 )
 from ...helper import random_identity
-from ..networking import get_connect_host
 
 
 class ExitFIFO(ExitStack):
@@ -217,7 +216,7 @@ class BasePod(ExitFIFO):
         else:
             _head_args.socket_out = SocketType.PUB_BIND
 
-        Pod._set_dynamic_in_routing(_head_args)
+        Pod._set_dynamic_routing_in(_head_args)
 
         if as_router:
             _head_args.uses = args.uses_before or __default_executor__
@@ -263,7 +262,7 @@ class BasePod(ExitFIFO):
             _tail_args.pea_role = PeaRoleType.TAIL
             _tail_args.num_part = 1 if polling_type.is_push else args.parallel
 
-        Pod._set_dynamic_out_routing(_tail_args)
+        Pod._set_dynamic_routing_out(_tail_args)
 
         return _tail_args
 
@@ -604,7 +603,7 @@ class Pod(BasePod):
                     connect_args=_args,
                 )
             else:
-                Pod._set_dynamic_in_routing(_args)
+                Pod._set_dynamic_routing_in(_args)
             if tail_args:
                 _args.host_out = get_connect_host(
                     bind_host=tail_args.host,
@@ -612,7 +611,7 @@ class Pod(BasePod):
                     connect_args=_args,
                 )
             else:
-                Pod._set_dynamic_out_routing(_args)
+                Pod._set_dynamic_routing_out(_args)
 
             # pea workspace if not set then derive from workspace
             if not _args.workspace:
@@ -656,28 +655,21 @@ class Pod(BasePod):
         else:
             self.is_head_router = False
             self.is_tail_router = False
-            Pod._set_dynamic_in_routing(args)
-            Pod._set_dynamic_out_routing(args)
+            Pod._set_dynamic_routing_in(args)
+            Pod._set_dynamic_routing_out(args)
             parsed_args['peas'] = [args]
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args
 
     @staticmethod
-    def _set_dynamic_in_routing(args):
+    def _set_dynamic_routing_in(args):
         if args.dynamic_routing:
-            args.dynamic_in_routing = True
+            args.dynamic_routing_in = True
             args.socket_in = SocketType.ROUTER_BIND
 
     @staticmethod
-    def _set_dynamic_out_routing(args):
+    def _set_dynamic_routing_out(args):
         if args.dynamic_routing:
-            args.dynamic_out_routing = True
+            args.dynamic_routing_out = True
             args.socket_out = SocketType.DEALER_CONNECT
-
-    def set_routing_graph(self, routing_graph: RoutingGraph) -> None:
-        """Sets the routing graph for the Gateway. The Gateway will equip each message with the given graph.
-
-        :param routing_graph: The to-be-used routing graph
-        """
-        self.args.routing_graph = routing_graph

@@ -1,4 +1,6 @@
 from jina.parsers.client import mixin_comm_protocol_parser
+from .helper import _SHOW_ALL_ARGS
+import argparse
 
 
 def set_pea_parser(parser=None):
@@ -95,23 +97,10 @@ def set_gateway_parser(parser=None):
     )
 
     parser.add_argument(
-        '--routing-graph',
-        default=None,
-        help='Routing graph for the gateway',
+        '--routing-table',
+        type=str,
+        help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
-    parser.add_argument(
-        '--dynamic-routing',
-        action='store_true',
-        dest='dynamic_routing',
-        help='Tells if the gateway should incoming and outgoing traffic as dynamic routing.',
-    )
-    parser.add_argument(
-        '--no-dynamic-routing',
-        action='store_false',
-        dest='dynamic_routing',
-        help='The Gateway should not do dynamic routing.',
-    )
-    parser.set_defaults(dynamic_routing=True)
 
     return parser
 
