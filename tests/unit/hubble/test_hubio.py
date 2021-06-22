@@ -45,13 +45,13 @@ class GetMockResponse:
     def json(self):
         return {
             'keywords': [],
-            'id': 'hello',
+            'id': 'dummy_mwu_encoder',
             'currentVersion': 0,
             'versions': [],
             'visibility': 'public',
-            'pullPath': 'jinahub/helloword:v0',
+            'pullPath': 'jinahub/pod.dummy_mwu_encoder',
             'package': {
-                'download': 'http://hubbleapi.jina.ai/files/helloworld_v0.zip',
+                'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
                 'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
             },
         }
@@ -91,12 +91,24 @@ def test_fetch(mocker, monkeypatch):
         return GetMockResponse(response_code=requests.codes.ok)
 
     monkeypatch.setattr(requests, 'get', _mock_get)
-    _args_list = ['hello']
+    _args_list = ['dummy_mwu_encoder']
     args = set_hub_pull_parser().parse_args(_args_list)
 
-    executor = HubIO(args).fetch('hello')
+    executor = HubIO(args).fetch('dummy_mwu_encoder')
 
-    assert executor.id == 'hello'
+    assert executor.id == 'dummy_mwu_encoder'
     assert executor.current_tag == 'v0'
-    assert executor.image_name == 'jinahub/helloword:v0'
+    assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+
+
+def test_pull(mocker, monkeypatch):
+    _args_list = ['dummy_mwu_encoder']
+    args = set_hub_pull_parser().parse_args(_args_list)
+
+    HubIO(args).pull()
+
+    _args_list = ['dummy_mwu_encoder', '--docker']
+    args = set_hub_pull_parser().parse_args(_args_list)
+
+    HubIO(args).pull()
