@@ -20,7 +20,7 @@ class PeaStore(ContainerStore):
         except requests.exceptions.RequestException as ex:
             self._logger.error(f'{ex!r}')
             raise Runtime400Exception(
-                f'{self._kind.title()} creation failed: {r.json()}'
+                f'{self._kind.title()} deletion failed. request timed out'
             )
 
     def _update(self):
@@ -36,5 +36,5 @@ class PeaStore(ContainerStore):
                 )
         except requests.exceptions.RequestException as ex:
             raise Runtime400Exception(
-                f'{self._kind.title()} deletion failed: {r.json()}'
+                f'{self._kind.title()} deletion failed. request timed out'
             )

@@ -135,9 +135,10 @@ class DaemonClient:
             else:
                 _args.runtime_cls = 'ZEDRuntime'
 
-        # reset the host default host
         # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
-        _args.host = __default_host__
+        # _args.host = __default_host__
+        # host resetting disables dynamic routing. Use `disable_remote` instead
+        _args.disable_remote = True
 
         # NOTE: on remote relative filepaths should be converted to filename only
         def basename(field):

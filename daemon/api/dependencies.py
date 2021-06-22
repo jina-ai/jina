@@ -77,10 +77,11 @@ class PeaDepends:
 
         :return: host_in
         """
+        # TAIL & SINGLETON peas are handled by dynamic routing
         return (
             __dockerhost__
-            if self.params.runtime_cls == 'ZEDRuntime'
-            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
+            if PeaRoleType.from_string(self.params.pea_role)
+            in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
             else self.params.host_in
         )
 
@@ -91,10 +92,11 @@ class PeaDepends:
 
         :return: host_out
         """
+        # TAIL & SINGLETON peas are handled by dynamic routing
         return (
             __dockerhost__
-            if self.params.runtime_cls == 'ZEDRuntime'
-            or PeaRoleType.from_string(self.params.pea_role) == PeaRoleType.PARALLEL
+            if PeaRoleType.from_string(self.params.pea_role)
+            in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
             else self.params.host_in
         )
 
@@ -128,6 +130,7 @@ class PeaDepends:
 
     def validate(self):
         """
+        This would need changes
         Validates and sets arguments to be used in store
         DOCKER_HOST = 'host.docker.internal'
 
