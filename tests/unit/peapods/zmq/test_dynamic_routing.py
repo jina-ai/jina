@@ -10,6 +10,7 @@ from jina.parsers import set_pea_parser
 from jina.peapods.zmq import Zmqlet, AsyncZmqlet, ZmqStreamlet
 from jina.proto import jina_pb2
 from jina.types.message import Message
+from jina.types.routing.graph import RoutingGraph
 
 
 def get_args():
@@ -102,7 +103,6 @@ def test_double_dynamic_routing_zmqlet():
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
-        routing_pb = jina_pb2.RoutingGraphProto()
         routing_graph = {
             'active_pod': 'pod1',
             'pods': {
@@ -126,8 +126,7 @@ def test_double_dynamic_routing_zmqlet():
                 },
             },
         }
-        json_format.ParseDict(routing_graph, routing_pb)
-        msg.envelope.routing_graph.CopyFrom(routing_pb)
+        msg.envelope.routing_graph.CopyFrom(RoutingGraph(routing_graph).proto)
 
         number_messages = 100
         trips = 10
