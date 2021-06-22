@@ -1,4 +1,6 @@
 """Argparser module for hub push"""
+
+import argparse
 from ..helper import add_arg_group
 
 
@@ -33,17 +35,13 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
     mutually_exclusive_group.add_argument(
         '--public',
         action='store_true',
-        default=False,
-        help=f'''
-        {colored('default: enabled', attrs=['dark'])}
-
-        If set, the published executor is visible to public
-        ''',
+        default=argparse.SUPPRESS,
+        help='If set, the published executor is visible to public',
     )
 
     mutually_exclusive_group.add_argument(
         '--private',
         action='store_true',
-        default=False,
+        default=argparse.SUPPRESS,
         help='If set, the published executor is invisible to public',
     )

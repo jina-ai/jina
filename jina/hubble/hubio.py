@@ -88,8 +88,10 @@ class HubIO:
             form_data = {
                 "meta": json.dumps(meta),
                 "env": json.dumps(env),
-                "public": self.args.public,
-                "private": self.args.private,
+                "public": self.args.public if hasattr(self.args, 'public') else False,
+                "private": self.args.private
+                if hasattr(self.args, 'private')
+                else False,
                 "md5sum": md5_digest,
                 "force": self.args.force,
                 "secret": self.args.secret,

@@ -13,17 +13,17 @@ def test_push_parser():
 
     args = parser.parse_args(['foo/'])
     assert args.path == 'foo/'
-    assert args.public is False
-    assert args.private is False
     assert args.force is None
     assert args.secret is None
+    assert not hasattr(args, 'public')
+    assert not hasattr(args, 'private')
 
     args = parser.parse_args(['foo/', '--public'])
     assert args.public is True
-    assert args.private is False
+    assert not hasattr(args, 'private')
 
     args = parser.parse_args(['foo/', '--private'])
-    assert args.public is False
+    assert not hasattr(args, 'public')
     assert args.private is True
 
     with pytest.raises(SystemExit) as pytest_wrapped_e:
@@ -34,8 +34,8 @@ def test_push_parser():
     args = parser.parse_args(['foo/', '--force', '8iag38yu', '--secret', '8iag38yu'])
     assert args.force == '8iag38yu'
     assert args.secret == '8iag38yu'
-    assert args.public is False
-    assert args.private is False
+    assert not hasattr(args, 'public')
+    assert not hasattr(args, 'private')
 
 
 def test_pull_parser():
