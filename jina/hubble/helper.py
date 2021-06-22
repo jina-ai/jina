@@ -98,7 +98,7 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
 def download_with_resume(
     url: str,
     target_dir: 'Path',
-    filename: Optional['Path'] = None,
+    filename: Optional[str] = None,
     md5sum: Optional[str] = None,
 ) -> 'Path':
     """
@@ -134,12 +134,12 @@ def download_with_resume(
                 f.write(chunk)
 
     if filename is None:
-        filename = Path(url.split("/")[-1])
+        filename = url.split("/")[-1]
     filepath = target_dir / filename
 
     _resume_byte_pos = None
     if filepath.exists():
-        if md5file(filepath) == md5sum:
+        if md5sum and md5file(filepath) == md5sum:
             return filepath
         head_info = requests.head(url)
         file_size_online = int(head_info.headers.get('content-length', 0))

@@ -1,7 +1,7 @@
 """Module for wrapping Jina Hub API calls."""
 
 
-from daemon import excepts
+from jina.parsers.hubble import pull
 import os
 import argparse
 import json
@@ -169,7 +169,7 @@ class HubIO:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = urljoin(JINA_HUBBLE_PUSHPULL_URL, f'{id}')
+        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{id}'
         path_params = []
         if self.args.secret:
             path_params.append(f'secret={self.args.secret}')
@@ -202,7 +202,7 @@ class HubIO:
 
     def pull(self) -> None:
         """Pull the executor package from Jina Hub."""
-        cached_zip_file = None
+        cached_zip_filepath = None
         try:
             id = self.args.id
 
@@ -234,17 +234,17 @@ class HubIO:
 
                 # download the package
                 with TimeContext(f'downloading {self.args.id}', self.logger):
-                    cached_zip_file = Path(f'{id}-{md5sum}.zip')
-                    download_with_resume(
+                    cached_zip_filename = f'{id}-{md5sum}.zip'
+                    cached_zip_filepath = download_with_resume(
                         archive_url,
                         JINA_HUB_CACHE_DIR,
-                        cached_zip_file,
+                        cached_zip_filename,
                         md5sum=md5sum,
                     )
 
                 with TimeContext(f'installing {self.args.id}', self.logger):
                     try:
-                        install_locall(JINA_HUB_CACHE_DIR / cached_zip_file, id, tag)
+                        install_locall(cached_zip_filepath, id, tag)
                     except Exception as ex:
                         raise HubDownloadError(str(ex))
 
@@ -254,5 +254,5 @@ class HubIO:
             )
         finally:
             # delete downloaded zip package if existed
-            if cached_zip_file is not None:
-                (JINA_HUB_CACHE_DIR / cached_zip_file).unlink(missing_ok=True)
+            if cached_zip_filepath is not None:
+                cached_zip_filepath.unlink(missing_ok=True)

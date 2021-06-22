@@ -5,11 +5,12 @@ import requests
 
 from jina.hubble.hubio import HubIO
 from jina.parsers.hubble import set_hub_push_parser
+from jina.parsers.hubble import set_hub_pull_parser
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-class MockResponse:
+class PostMockResponse:
     def __init__(self, response_code: int = 201):
         self.response_code = response_code
 
@@ -17,16 +18,42 @@ class MockResponse:
         return {
             'code': 0,
             'success': True,
-            'data': {
-                'images': [
-                    {
-                        'id': 'w7qckiqy',
-                        'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
-                        'pullPath': 'jinahub/w7qckiqy:v3',
-                    }
-                ]
-            },
+            'executors': [
+                {
+                    'id': 'w7qckiqy',
+                    'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
+                    'pullPath': 'jinahub/w7qckiqy:v3',
+                    'visibility': 'public',
+                }
+            ],
             'message': 'uploaded successfully',
+        }
+
+    @property
+    def text(self):
+        return json.dumps(self.json())
+
+    @property
+    def status_code(self):
+        return self.response_code
+
+
+class GetMockResponse:
+    def __init__(self, response_code: int = 201):
+        self.response_code = response_code
+
+    def json(self):
+        return {
+            'keywords': [],
+            'id': 'hello',
+            'currentVersion': 0,
+            'versions': [],
+            'visibility': 'public',
+            'pullPath': 'jinahub/helloword:v0',
+            'package': {
+                'download': 'http://hubbleapi.jina.ai/files/helloworld_v0.zip',
+                'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
+            },
         }
 
     @property
@@ -45,7 +72,7 @@ def test_push(mocker, monkeypatch, path, mode):
 
     def _mock_post(url, files, data):
         mock(url=url, files=files, data=data)
-        return MockResponse(response_code=requests.codes.created)
+        return PostMockResponse(response_code=requests.codes.created)
 
     monkeypatch.setattr(requests, 'post', _mock_post)
 
@@ -54,3 +81,22 @@ def test_push(mocker, monkeypatch, path, mode):
 
     args = set_hub_push_parser().parse_args(_args_list)
     result = HubIO(args).push()
+
+
+def test_fetch(mocker, monkeypatch):
+    mock = mocker.Mock()
+
+    def _mock_get(url):
+        mock(url=url)
+        return GetMockResponse(response_code=requests.codes.ok)
+
+    monkeypatch.setattr(requests, 'get', _mock_get)
+    _args_list = ['hello']
+    args = set_hub_pull_parser().parse_args(_args_list)
+
+    executor = HubIO(args).fetch('hello')
+
+    assert executor.id == 'hello'
+    assert executor.current_tag == 'v0'
+    assert executor.image_name == 'jinahub/helloword:v0'
+    assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'

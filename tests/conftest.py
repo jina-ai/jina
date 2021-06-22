@@ -63,3 +63,12 @@ def patched_random_port(mocker):
         raise NoAvailablePortError
 
     mocker.patch('jina.helper.random_port', new_callable=lambda: _random_port)
+
+
+@pytest.fixture(scope='function')
+def test_envs(tmpdir):
+    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
+    os.environ['JINA_HUB_CACHE_DIR'] = str(tmpdir)
+    yield None
+    del os.environ['JINA_HUB_ROOT']
+    del os.environ['JINA_HUB_CACHE_DIR']

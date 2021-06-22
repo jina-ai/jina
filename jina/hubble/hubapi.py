@@ -1,7 +1,6 @@
 """Module wrapping interactions with the local executor packages."""
 
 
-import os
 import shutil
 from pathlib import Path
 from typing import Tuple, Optional
@@ -40,6 +39,8 @@ def install_locall(
     # clean existed dist-info
     for dist in JINA_HUB_ROOT.glob(f'{id}-*.dist-info'):
         shutil.rmtree(dist)
+    if pkg_path.exists():
+        shutil.rmtree(pkg_path)
 
     # unpack the zip package to the root pkg_path
     unpack_package(zip_package, pkg_path)
@@ -58,16 +59,28 @@ def install_locall(
         shutil.copyfile(requirements_path, pkg_dist_path / 'requirements.txt')
 
 
+def uninstall_locall(id: str):
+    """Uninstall the executor package.
+
+    :param id: the ID of the executor
+    """
+    pkg_path, _ = get_dist_path(id, None)
+    for dist in JINA_HUB_ROOT.glob(f'{id}-*.dist-info'):
+        shutil.rmtree(dist)
+    if pkg_path.exists():
+        shutil.rmtree(pkg_path)
+
+
 def list_local():
     """List the locally-available executor packages.
 
     :return: the list of local executors (if found)
     """
     result = []
-    for dist_name in JINA_HUB_ROOT.glob('*-*.dist-info'):
+    for dist_name in JINA_HUB_ROOT.glob(r'*-v*.dist-info'):
         result.append(dist_name)
 
-    return dist_name
+    return result
 
 
 def resolve_local(id: str, tag: Optional[str] = None) -> "Path":

@@ -648,7 +648,7 @@ class Pod(BasePod):
 
         if getattr(args, 'uses', None):
             # use the executor existed in Jina Hub.
-            if re.match('^jinahub(\+docker)?://', args.uses):
+            if re.match(r'^jinahub(\+docker)?://', args.uses):
                 from ...hubble.hubio import HubIO
                 from ...hubble.helper import parse_hub_uri
                 from ...hubble.hubapi import resolve_local
