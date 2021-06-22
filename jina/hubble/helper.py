@@ -20,7 +20,7 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     parser = urlparse(uri_path)
     scheme = parser.scheme
     items = list(parser.netloc.split(':'))
-    id = items[0]
+    uuid = items[0]
     secret = items[1] if len(items) > 1 else None
     tag = parser.path.strip('/') if parser.path else None
     return (scheme, id, tag, secret)
