@@ -4,8 +4,8 @@ with:
 executors:
   - name: name
     uses: docker://override-config-test
-    override_with_params:
+    override_with:
       param1: 50
       param2: 30
-    override_metas_params:
+    override_metas:
       workspace: 'different_workspace'

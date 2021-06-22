@@ -32,7 +32,7 @@ def mixin_zed_runtime_parser(parser):
         ''',
     )
     gp.add_argument(
-        '--override-with-params',
+        '--override-with',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
@@ -41,7 +41,7 @@ def mixin_zed_runtime_parser(parser):
     ''',
     )
     gp.add_argument(
-        '--override-metas-params',
+        '--override-metas',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',

@@ -14,8 +14,8 @@ def flow(request):
     elif flow_src == 'python':
         return Flow(return_results=True).add(
             uses=os.path.join(cur_dir, 'default_config.yml'),
-            override_with_params={'param1': 50, 'param2': 30},
-            override_metas_params={'workspace': 'different_workspace'},
+            override_with={'param1': 50, 'param2': 30},
+            override_metas={'workspace': 'different_workspace'},
         )
 
 
