@@ -87,18 +87,18 @@ def test_flow_topo1(docker_image_built):
         .add(
             name='d0',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
         )
         .add(
             name='d1',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
         )
         .add(
             name='d2',
             uses='docker://jinaai/jina:test-pip',
             needs='d0',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
         )
         .join(['d2', 'd1'])
     )
@@ -113,14 +113,14 @@ def test_flow_topo_mixed(docker_image_built, _logforward):
         .add(
             name='d4',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
         )
         .add(name='d5', uses=_logforward)
         .add(
             name='d6',
             uses='docker://jinaai/jina:test-pip',
             needs='d4',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
         )
         .join(['d6', 'd5'])
     )
@@ -135,14 +135,14 @@ def test_flow_topo_parallel():
         .add(
             name='d7',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
             parallel=3,
         )
         .add(name='d8', parallel=3)
         .add(
             name='d9',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
             needs='d7',
         )
         .join(['d9', 'd8'])
@@ -159,7 +159,7 @@ def test_flow_topo_ldl_parallel():
         .add(
             name='d11',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
             parallel=3,
         )
         .add(name='d12')
@@ -189,7 +189,7 @@ def test_tail_host_docker2local_parallel():
         .add(
             name='d10',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
             parallel=3,
         )
         .add(name='d11')
@@ -204,7 +204,7 @@ def test_tail_host_docker2local():
         .add(
             name='d12',
             uses='docker://jinaai/jina:test-pip',
-            entrypoint='jina pea',
+            entrypoint='jina executor',
         )
         .add(name='d13')
     )
