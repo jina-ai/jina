@@ -80,18 +80,6 @@ class HubDownloadError(Exception):
     """Exception to raise when :command:`jina hub pull` fails to download package."""
 
 
-class CompressionRateTooLow(Exception):
-    """Compression rate is too low, no need to compression."""
-
-
-class DryRunException(Exception):
-    """Dryrun is not successful on the given flow."""
-
-
-class BadDocID(Exception):
-    """Exception when user give a non-hex string as the doc id."""
-
-
 class BadDocType(TypeError):
     """Exception when can not construct a document from the given data."""
 
