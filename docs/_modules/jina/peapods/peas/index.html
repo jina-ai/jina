@@ -377,20 +377,18 @@
         </label>
         <h1>Source code for jina.peapods.peas</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">ConditionalEvent</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeTerminated</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">..runtimes.jinad</span> <span class="kn">import</span> <span class="n">JinadRuntime</span>
-<span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span><span class="p">,</span> <span class="n">send_ctrl_message</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BasePea'</span><span class="p">]</span>
 
@@ -443,9 +441,13 @@
 
         <span class="c1"># This logic must be improved specially when it comes to naming. It is about relative local/remote position</span>
         <span class="c1"># between the runtime and the `ZEDRuntime` it may control</span>
+        <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span> <span class="o">=</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ctrl_with_ipc</span>
         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="kn">from</span> <span class="nn">..runtimes.jinad</span> <span class="kn">import</span> <span class="n">JinadRuntime</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_runtime_ctrl_address</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">JinadRuntime</span>
@@ -488,6 +490,8 @@
         <span class="c1"># This is due to the fact that JinadRuntime instantiates a Zmq server at local_ctrl_addr that will itself</span>
         <span class="c1"># send ctrl command</span>
         <span class="c1"># (TODO: Joan) Fix that in _wait_for_cancel from async runtime</span>
+        <span class="kn">from</span> <span class="nn">..runtimes.jinad</span> <span class="kn">import</span> <span class="n">JinadRuntime</span>
+
         <span class="n">ctrl_addr</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_local_runtime_ctrl_address</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">JinadRuntime</span>
@@ -527,6 +531,8 @@
 <div class="viewcode-block" id="BasePea.activate_runtime"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.activate_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">activate_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">""" Send activate control message. """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dealer</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
+
             <span class="n">send_ctrl_message</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span> <span class="s1">'ACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span>
             <span class="p">)</span></div>
@@ -534,12 +540,16 @@
     <span class="k">def</span> <span class="nf">_deactivate_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Send deactivate control message. """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dealer</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
+
             <span class="n">send_ctrl_message</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span> <span class="s1">'DEACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_cancel_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Send terminate control message."""</span>
+        <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
+
         <span class="n">send_ctrl_message</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_local_runtime_ctrl_address</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span>
         <span class="p">)</span>
