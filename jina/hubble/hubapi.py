@@ -4,7 +4,7 @@
 import os
 import shutil
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Optional
 
 from .helper import unpack_package
 
@@ -22,7 +22,9 @@ def get_dist_path(id: str, tag: str) -> Tuple['Path', 'Path']:
     return pkg_path, pkg_dist_path
 
 
-def install_locall(zip_package: "Path", id: str, tag: str, force: bool = False):
+def install_locall(
+    zip_package: "Path", id: str, tag: str, force: Optional[bool] = False
+):
     """Install the package in zip format to the Jina Hub root.
 
     :param zip_package: the path of the zip file
@@ -68,7 +70,7 @@ def list_local():
     return dist_name
 
 
-def resolve_local(id: str, tag: str = None) -> "Path":
+def resolve_local(id: str, tag: Optional[str] = None) -> "Path":
     """Return the path of the executor if available.
 
     :param id: the ID of executor

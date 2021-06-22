@@ -1,5 +1,6 @@
 import copy
 import sys
+import re
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -647,14 +648,18 @@ class Pod(BasePod):
 
         if getattr(args, 'uses', None):
             # use the executor existed in Jina Hub.
-            if args.uses.startswith('jinahub'):
-
+            if re.match('^jinahub(\+docker)?://', args.uses):
                 from ...hubble.hubio import HubIO
                 from ...hubble.helper import parse_hub_uri
                 from ...hubble.hubapi import resolve_local
                 from ...parsers.hubble import set_hub_pull_parser
 
                 scheme, id, tag, secret = parse_hub_uri(self.args.uses)
+
+                if not id:
+                    raise ValueError(
+                        f'The given executor URI {self.args.uses} is not valid, please double check it!'
+                    )
 
                 _args_list = [id]
                 if secret:

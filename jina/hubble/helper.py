@@ -3,7 +3,7 @@
 import io
 import os
 import hashlib
-from typing import Tuple
+from typing import Tuple, Optional
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
@@ -20,10 +20,10 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     parser = urlparse(uri_path)
     scheme = parser.scheme
     items = list(parser.netloc.split(':'))
-    id = items[0]
+    uuid = items[0]
     secret = items[1] if len(items) > 1 else None
     tag = parser.path.strip('/') if parser.path else None
-    return (scheme, id, tag, secret)
+    return (scheme, uuid, tag, secret)
 
 
 def md5file(file_path: 'Path') -> str:
@@ -34,10 +34,7 @@ def md5file(file_path: 'Path') -> str:
     """
     hash_md5 = hashlib.md5()
     with file_path.open(mode='rb') as fp:
-        while True:
-            chunk = fp.read(4096)
-            if not chunk:
-                break
+        for chunk in iter(lambda: fp.read(128 * hash_md5.block_size), b''):
             hash_md5.update(chunk)
 
     return hash_md5.hexdigest()
@@ -50,13 +47,11 @@ def unpack_package(filepath: 'Path', target_dir: 'Path'):
     :param target_dir: the path of target folder
     """
     if filepath.suffix == '.zip':
-        zip = zipfile.ZipFile(filepath, 'r')
-        zip.extractall(target_dir)
-        zip.close()
+        with zipfile.ZipFile(filepath, 'r') as zip:
+            zip.extractall(target_dir)
     elif filepath.suffix in ['.tar', '.gz']:
-        tar = zipfile.open(filepath)
-        tar.extractall(target_dir)
-        tar.close()
+        with zipfile.open(filepath) as tar:
+            tar.extractall(target_dir)
     else:
         raise ValueError("File format is not supported for unpacking.")
 
@@ -103,8 +98,8 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
 def download_with_resume(
     url: str,
     target_dir: 'Path',
-    filename: 'Path' = None,
-    md5sum: str = None,
+    filename: Optional['Path'] = None,
+    md5sum: Optional[str] = None,
 ) -> 'Path':
     """
     Download file from url to target_dir, and check md5sum.
@@ -112,9 +107,9 @@ def download_with_resume(
     The HTTP server must support byte ranges.
 
     :param url: the URL to download
-    :param md5sum: the MD5 checksum to match
     :param target_dir: the target path for the file
     :param filename: the filename of the downloaded file
+    :param md5sum: the MD5 checksum to match
 
     :return: the filepath of the downloaded file
     """
@@ -139,7 +134,7 @@ def download_with_resume(
         filename = Path(url.split("/")[-1])
     filepath = target_dir / filename
 
-    if not (filepath.exists() and md5file(filepath) == md5sum):
+    if not (filepath.exists() and md5sum and md5file(filepath) == md5sum):
         head_info = requests.head(url)
 
         file_size_online = int(head_info.headers.get('content-length', 0))

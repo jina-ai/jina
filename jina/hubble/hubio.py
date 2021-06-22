@@ -5,6 +5,7 @@ import os
 import argparse
 import json
 from pathlib import Path
+from typing import Optional
 from collections import namedtuple
 from urllib.parse import urljoin
 import hashlib
@@ -153,7 +154,7 @@ class HubIO:
                 f"Error when trying to push the executor at {self.args.path}: {e!r}"
             )
 
-    def fetch(self, id: str, tag: str = None) -> HubExecutor:
+    def fetch(self, id: str, tag: Optional[str] = None) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param id: the ID of the executor
         :param tag: the version tag of the executor
