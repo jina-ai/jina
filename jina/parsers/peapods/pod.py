@@ -52,6 +52,7 @@ The polling strategy of the Pod (when `parallel>1`)
 - ALL: all Peas poll the message (like a broadcast)
 ''',
     )
+
     gp.add_argument(
         '--scheduling',
         type=SchedulerType.from_string,
@@ -64,8 +65,17 @@ The polling strategy of the Pod (when `parallel>1`)
         '--external',
         action='store_true',
         default=False,
-        help='The Pod will be considered an external Pod that has been started independently from the Flow. This Pod '
-        'will not be context managed by the Flow, and is considered with `--freeze-network-settings`',
+        help='The Pod will be considered an external Pod that has been started independently from the Flow.'
+        'This Pod will not be context managed by the Flow.',
+    )
+
+    gp.add_argument(
+        '--peas-hosts',
+        nargs='+',
+        type=str,
+        help='''The hosts of the peas when parallel greater than 1.
+        Peas will be evenly distributed among the hosts. By default,
+        peas are running on host provided by the argument ``host``''',
     )
 
     # hidden CLI used for internal only
@@ -77,12 +87,4 @@ The polling strategy of the Pod (when `parallel>1`)
         help='The role of this pod in the flow'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
-    )
-    gp.add_argument(
-        '--peas-hosts',
-        nargs='+',
-        type=str,
-        help='''The hosts of the peas when parallel greater than 1.
-        Peas will be evenly distributed among the hosts. By default,
-        peas are running on host provided by the argument ``host``''',
     )

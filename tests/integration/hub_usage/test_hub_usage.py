@@ -3,12 +3,13 @@ import json
 from pathlib import Path
 import requests
 import pytest
-from jina.logging.logger import JinaLogger
 
 from jina import __version__ as jina_version
-from jina.excepts import RuntimeFailToStart, ImageAlreadyExists
+from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina import Flow
+from jina.excepts import RuntimeFailToStart
+from jina.executors import BaseExecutor
 from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 

@@ -16,5 +16,6 @@ pods:
   - name: indexer
     # for now all the uploaded files are stored in the same folder, so no subpaths allowed in remote
     read_only: False
+    host: $JINA_INTERNAL_HOST
     method: $JINA_INDEXER_METHOD
     needs: $JINA_INDEXER_NEEDS

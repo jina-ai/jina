@@ -1,4 +1,6 @@
 from jina.parsers.client import mixin_comm_protocol_parser
+from .helper import _SHOW_ALL_ARGS
+import argparse
 
 
 def set_pea_parser(parser=None):
@@ -65,7 +67,6 @@ def set_gateway_parser(parser=None):
     from .peapods.base import mixin_base_ppr_parser
     from .peapods.runtimes.zmq import mixin_zmq_runtime_parser
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
-    from .peapods.runtimes.container import mixin_container_runtime_parser
     from .peapods.runtimes.remote import (
         mixin_remote_parser,
         mixin_prefetch_gateway_parser,
@@ -93,6 +94,12 @@ def set_gateway_parser(parser=None):
         ctrl_with_ipc=True,  # otherwise ctrl port would be conflicted
         runtime_cls='GRPCRuntime',
         pod_role=PodRoleType.GATEWAY,
+    )
+
+    parser.add_argument(
+        '--routing-table',
+        type=str,
+        help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 
     return parser
@@ -125,7 +132,7 @@ def get_main_parser():
     :return: the parser
     """
     from .base import set_base_parser
-    from .helloworld import set_hw_parser, set_hello_parser
+    from .helloworld import set_hello_parser
     from .helper import _chf, _SHOW_ALL_ARGS
 
     from .export_api import set_export_api_parser
@@ -142,8 +149,8 @@ def get_main_parser():
     sp = parser.add_subparsers(
         dest='cli',
         description='''
-        Use `%(prog)-8s [sub-command] --help` to get detailed information about each sub-command. 
-        
+        Use `%(prog)-8s [sub-command] --help` to get detailed information about each sub-command.
+
         To show all commands, run `JINA_FULL_CLI=1 jina --help`.
         ''',
         required=True,

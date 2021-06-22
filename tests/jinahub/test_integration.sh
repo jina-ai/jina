@@ -14,7 +14,7 @@ CONTAINER_ID=$(docker run -v /var/run/docker.sock:/var/run/docker.sock --network
 
 sleep 10
 
-RESPONSE=$(curl --request POST -d '{"top_k": 10, "data": ["text:hey, dude"]}' -H 'Content-Type: application/json' 'localhost:45678/index')
+RESPONSE=$(curl --request POST -d '{"data": ["text:hey, dude"]}' -H 'Content-Type: application/json' 'localhost:45678/index')
 
 echo "Response is: ${RESPONSE}"
 

@@ -120,12 +120,29 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         else argparse.SUPPRESS,
     )
 
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
     gp.add_argument(
-        '--freeze-network-settings',
+        '--dynamic-routing-out',
         action='store_true',
         default=False,
-        help='''If set, then `host-in`, `host-out`, `port-in`, `port-out`, `socket-in`, `socket-out` network-related 
-        parameters are frozen. They can not be changed by the Flow during the build time. '''
+        help='Tells if ZEDRuntime should respect routing graph for outgoing traffic.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    gp.add_argument(
+        '--dynamic-routing-in',
+        action='store_true',
+        default=False,
+        help='Tells if ZEDRuntime should handle incoming traffic as dynamic routing.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

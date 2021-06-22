@@ -190,7 +190,7 @@ class DocumentArray(
         from ..document import Document
 
         for d in self._pb_body:
-            yield Document(d)
+            yield Document(d, hash_content=False)
 
     def __contains__(self, item: str):
         return item in self._id_to_index
