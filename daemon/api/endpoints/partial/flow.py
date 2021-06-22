@@ -43,7 +43,7 @@ async def _create(flow: 'FlowModel', port_expose: int):
 @router.put(
     path='',
     summary='Run an update operation on the Flow object',
-    description='Types supported: "rolling_update" and "dump"',
+    description='Types supported: "rolling_update"',
     response_model=PartialFlowItem,
 )
 def update(

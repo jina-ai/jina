@@ -84,12 +84,14 @@ def test_dump_dbms_remote(docker_compose):
 
     _send_rest_request(REST_PORT_DBMS, 'index', 'post', [doc.dict() for doc in docs])
 
-    # jinad is used for ctrl requests
-    _jinad_dump(
-        'indexer_dbms',
-        DUMP_PATH_DOCKER,  # the internal path in the docker container
-        SHARDS,
-        f'http://{jinad_ip}:{JINAD_PORT}/flows/{dbms_flow_id}',
+    _send_rest_request(
+        REST_PORT_DBMS,
+        'post',
+        'post',
+        data=[],
+        exec_endpoint='/dump',
+        params={'shards': SHARDS, 'dump_path': DUMP_PATH_DOCKER},
+        target_peapod='indexer_dbms',
     )
 
     container_id = get_container_id(dbms_flow_id, jinad_ip)

@@ -1558,28 +1558,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 f'The BasePod {pod_name} is not a CompoundPod and does not support updating'
             )
 
-    def dump(
-        self,
-        pod_name: str,
-        dump_path: str,
-        shards: int,
-        on_done=None,
-    ):
-        """
-        Send a dump request to the pod specified with pod_name
-
-        :param pod_name: pod to target with the dump request
-        :param dump_path: the path to which to dump
-        :param shards: nr of shards to dump for
-        :param on_done: the function to be called after the dump request has completed
-        """
-        self.post(
-            on='/dump',
-            target_peapod=pod_name,
-            parameters={'dump_path': dump_path, 'shards': shards},
-            on_done=on_done,
-        )
-
     @property
     def client_args(self) -> argparse.Namespace:
         """Get Client settings.

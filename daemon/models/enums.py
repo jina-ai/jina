@@ -73,5 +73,4 @@ class UpdateOperation(DaemonEnum):
     We consider these an `update` operation since they **change** the underlying state
     """
 
-    DUMP = 'dump'
     ROLLING_UPDATE = 'rolling_update'

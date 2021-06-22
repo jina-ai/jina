@@ -44,7 +44,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
 @router.put(
     path='/{id}',
     summary='Run an update operation on the Flow object',
-    description='Types supported: "rolling_update" and "dump"',
+    description='Types supported: "rolling_update"',
 )
 def update(
     id: DaemonID,
