@@ -677,7 +677,7 @@ class Pod(BasePod):
                     # use docker image
                     args.uses = f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
-                    pkg_path = resolve_local(id, tag)
+                    pkg_path = resolve_local(id, tag or executor.current_tag)
                     if not pkg_path:
                         hubio.pull()
 
