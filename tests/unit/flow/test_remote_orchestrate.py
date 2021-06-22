@@ -3,10 +3,11 @@ import pytest
 from jina import Flow, __default_host__
 from jina.enums import SocketType
 from jina.helper import get_internal_ip, get_public_ip
+from jina.types.routing.graph import RoutingGraph
 
 
 def ip_from(flow, pod_number):
-    return flow['gateway'].args.routing_graph.pods[pod_number].host
+    return RoutingGraph(flow['gateway'].args.routing_graph).pods[pod_number].host
 
 
 @pytest.mark.parametrize(

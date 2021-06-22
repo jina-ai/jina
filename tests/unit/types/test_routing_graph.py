@@ -1,12 +1,4 @@
-from google.protobuf import json_format
-
 from jina.types.routing.graph import RoutingGraph
-from jina.proto import jina_pb2
-
-
-def get_next_routes(routing):
-    routing = RoutingGraph.from_dict(routing)
-    return routing.get_next_targets()
 
 
 def test_single_routing():
@@ -49,7 +41,6 @@ def test_double_routing():
 
 
 def test_nested_routing():
-
     graph = RoutingGraph()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
@@ -93,7 +84,6 @@ def test_nested_routing():
 
 
 def test_topological_sorting():
-
     graph = RoutingGraph()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
@@ -117,7 +107,6 @@ def test_topological_sorting():
 
 
 def test_cycle():
-
     graph = RoutingGraph()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)
@@ -128,7 +117,6 @@ def test_cycle():
 
 
 def test_no_cycle():
-
     graph = RoutingGraph()
     graph.add_pod('pod0', '0.0.0.0', 1230)
     graph.add_pod('pod1', '0.0.0.0', 1231)

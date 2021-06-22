@@ -160,7 +160,7 @@ class Message:
         compress: str = 'NONE',
         compress_min_bytes: int = 0,
         compress_min_ratio: float = 1.0,
-        routing_graph: Optional['RoutingGraph'] = None,
+        routing_graph: Optional[str] = None,
         *args,
         **kwargs,
     ) -> 'jina_pb2.EnvelopeProto':
@@ -223,7 +223,7 @@ class Message:
         envelope.compression.min_bytes = compress_min_bytes
         envelope.timeout = 5000
         if routing_graph is not None:
-            envelope.routing_graph.CopyFrom(routing_graph.proto)
+            envelope.routing_graph.CopyFrom(RoutingGraph(routing_graph).proto)
         self._add_version(envelope)
         self._add_route(pod_name, identity, envelope)
         envelope.check_version = check_version

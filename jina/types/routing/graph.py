@@ -1,22 +1,27 @@
-from typing import List
+from typing import List, Optional, Union
 
 from collections import defaultdict
 
+from google.protobuf import json_format
+
+from ..mixin import ProtoTypeMixin
+from ...excepts import BadRequestType
+from ...helper import typename
 from ...proto import jina_pb2
 
 
-class TargetPod:
+class TargetPod(ProtoTypeMixin):
     """
     Wrapper class around `TargetPodProto`.
 
     It offers a Pythonic interface to allow users access to the
     :class:`jina.jina_pb2.TargetPodProto` object without working with Protobuf itself.
 
-    :param target: the protobuff object of the TargetPod
+    :param target: the protobuf object of the TargetPod
     """
 
     def __init__(self, target: 'jina_pb2.TargetPodProto') -> None:
-        self.proto = target
+        self._pb_body = target
 
     @property
     def port(self) -> int:
@@ -24,7 +29,7 @@ class TargetPod:
 
         :return: port
         """
-        return self.proto.port
+        return self._pb_body.port
 
     @property
     def host(self) -> str:
@@ -32,7 +37,7 @@ class TargetPod:
 
         :return: host
         """
-        return self.proto.host
+        return self._pb_body.host
 
     @property
     def full_address(self) -> str:
@@ -48,7 +53,7 @@ class TargetPod:
 
         :return: expected_parts
         """
-        return self.proto.expected_parts
+        return self._pb_body.expected_parts
 
     @expected_parts.setter
     def expected_parts(self, value: int) -> None:
@@ -56,7 +61,7 @@ class TargetPod:
 
         :param value: the new number of expected parts
         """
-        self.proto.expected_parts = value
+        self._pb_body.expected_parts = value
 
     @property
     def out_edges(self) -> List[str]:
@@ -64,30 +69,58 @@ class TargetPod:
 
         :return: out_edges
         """
-        return list(self.proto.out_edges)
+        return list(self._pb_body.out_edges)
 
     def add_edge(self, to_pod: str) -> None:
         """Adds an edge to the internal representation of the out_edges.
 
         :param to_pod: the name of the pod outtraffic should go to
         """
-        self.proto.out_edges.append(to_pod)
+        self._pb_body.out_edges.append(to_pod)
 
 
-class RoutingGraph:
+class RoutingGraph(ProtoTypeMixin):
     """
     Wrapper class around `RoutingGraphProto`.
 
     It offers a Pythonic interface to allow users access to the
     :class:`jina.jina_pb2.RoutingGraphProto` object without working with Protobuf itself.
 
-    :param graph: the protobuff object of the RoutingGraph
+    :param graph: the protobuf object of the RoutingGraph
     """
 
-    def __init__(self, graph: 'jina_pb2.RoutingGraphProto' = None) -> None:
-        if graph is None:
-            graph = jina_pb2.RoutingGraphProto()
-        self.proto = graph
+    def __init__(
+        self,
+        graph: Optional[
+            Union['jina_pb2.RoutingGraphProto', bytes, dict, str, 'RoutingGraph']
+        ] = None,
+        copy: bool = False,
+    ) -> None:
+        self._pb_body = jina_pb2.RoutingGraphProto()
+        try:
+            if isinstance(graph, RoutingGraph):
+                if copy:
+                    self._pb_body.CopyFrom(graph._pb_body)
+                else:
+                    self._pb_body = graph._pb_body
+            elif isinstance(graph, jina_pb2.RoutingGraphProto):
+                if copy:
+                    self._pb_body.CopyFrom(graph)
+                else:
+                    self._pb_body = graph
+            elif isinstance(graph, dict):
+                json_format.ParseDict(graph, self._pb_body)
+            elif isinstance(graph, str):
+                json_format.Parse(graph, self._pb_body)
+            elif isinstance(graph, bytes):
+                self._pb_body.ParseFromString(graph)
+            elif graph is not None:
+                # note ``None`` is not considered as a bad type
+                raise ValueError(f'{typename(graph)} is not recognizable')
+        except Exception as ex:
+            raise BadRequestType(
+                f'fail to construct a {self.__class__} object from {graph}'
+            ) from ex
 
     def add_edge(self, from_pod: str, to_pod: str) -> None:
         """Adds an edge to the graph.
@@ -121,7 +154,7 @@ class RoutingGraph:
         """
         :return: the active Pod name
         """
-        return self.proto.active_pod
+        return self._pb_body.active_pod
 
     @active_pod.setter
     def active_pod(self, pod_name: str) -> None:
@@ -129,7 +162,7 @@ class RoutingGraph:
 
         .. # noqa: DAR101
         """
-        self.proto.active_pod = pod_name
+        self._pb_body.active_pod = pod_name
 
     def _get_out_edges(self, pod: str) -> List[str]:
         return self._get_target_pod(pod).out_edges
@@ -146,7 +179,7 @@ class RoutingGraph:
         """
         :return: all Pod/vertices of the graph.
         """
-        return self.proto.pods
+        return self._pb_body.pods
 
     def get_next_targets(self) -> List['RoutingGraph']:
         """
@@ -156,10 +189,9 @@ class RoutingGraph:
         """
         targets = []
         for next_pod_index in self._get_out_edges(self.active_pod):
-            new_graph = jina_pb2.RoutingGraphProto()
-            new_graph.CopyFrom(self.proto)
+            new_graph = RoutingGraph(self, copy=True)
             new_graph.active_pod = next_pod_index
-            targets.append(RoutingGraph(new_graph))
+            targets.append(new_graph)
         return targets
 
     def is_acyclic(self) -> bool:

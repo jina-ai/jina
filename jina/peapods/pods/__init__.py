@@ -640,10 +640,3 @@ class Pod(BasePod):
         if args.dynamic_routing:
             args.dynamic_routing_out = True
             args.socket_out = SocketType.DEALER_CONNECT
-
-    def set_routing_graph(self, routing_graph: RoutingGraph) -> None:
-        """Sets the routing graph for the Gateway. The Gateway will equip each message with the given graph.
-
-        :param routing_graph: The to-be-used routing graph
-        """
-        self.args.routing_graph = routing_graph

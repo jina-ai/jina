@@ -47,7 +47,6 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
 if False:
-    from ..peapods import BasePod
     from ..executors import BaseExecutor
     from ..clients.base import BaseClient
     from .asyncio import AsyncFlow
@@ -283,7 +282,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._pod_nodes = OrderedDict()  # type: Dict[str, BasePod]
+        self._pod_nodes = OrderedDict()  # type: Dict[str, Pod]
         self._inspect_pods = {}  # type: Dict[str, str]
         self._endpoints_mapping = {}  # type: Dict[str, Dict]
         self._build_level = FlowBuildLevel.EMPTY
@@ -782,7 +781,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    def _get_routing_graph(self):
+    def _get_routing_graph(self) -> RoutingGraph:
         graph = RoutingGraph()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
@@ -811,7 +810,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             raise RoutingGraphCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
             )
-        self._pod_nodes[GATEWAY_NAME].set_routing_graph(routing_graph)
+        self._pod_nodes[GATEWAY_NAME].args = routing_graph.json()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
