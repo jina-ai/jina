@@ -134,7 +134,7 @@ class BasePod(ExitFIFO):
                 return False
 
         _upload_files = set()
-        for param in ['uses', 'uses_internal', 'uses_before', 'uses_after']:
+        for param in ['uses', 'uses_before', 'uses_after']:
             param_value = getattr(args, param, None)
             if param_value and valid_path(param_value):
                 _upload_files.add(param_value)
