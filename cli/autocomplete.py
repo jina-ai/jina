@@ -269,7 +269,7 @@ ac_table = {
             '--routing-table',
         ],
         'hub push': ['--help', '--force', '--secret', '--public', '--private'],
-        'hub pull': ['--help', '--docker', '--secret'],
+        'hub pull': ['--help'],
         'hub': ['--help', 'push', 'pull'],
         'pea': [
             '--help',
