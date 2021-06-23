@@ -91,10 +91,8 @@ class HubIO:
                 md5_digest = md5_hash.hexdigest()
 
             # upload the archived package
-            meta, env = get_full_version()
+            metas, envs = get_full_version()
             form_data = {
-                'meta': json.dumps(meta),
-                'env': json.dumps(env),
                 'public': self.args.public if hasattr(self.args, 'public') else False,
                 'private': self.args.private
                 if hasattr(self.args, 'private')
@@ -114,6 +112,7 @@ class HubIO:
                     JINA_HUBBLE_PUSHPULL_URL,
                     files={'file': content},
                     data=form_data,
+                    headers={**metas, **envs},
                 )
 
             if 200 <= resp.status_code < 300:
