@@ -46,7 +46,7 @@ async def _create(flow: 'FlowModel', port_expose: int):
     description='Types supported: "rolling_update"',
     response_model=PartialFlowItem,
 )
-def update(
+async def _update(
     kind: UpdateOperation,
     dump_path: str,
     pod_name: str,

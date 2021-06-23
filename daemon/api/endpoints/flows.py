@@ -46,7 +46,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
     summary='Run an update operation on the Flow object',
     description='Types supported: "rolling_update"',
 )
-def update(
+async def _update(
     id: DaemonID,
     kind: UpdateOperation,
     dump_path: str,
