@@ -10,34 +10,34 @@ from .helper import unpack_package
 from . import JINA_HUB_ROOT
 
 
-def get_dist_path(id: str, tag: str) -> Tuple['Path', 'Path']:
+def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
     """Get the package path according ID and TAG
-    :param id: the ID of the executor
+    :param uuid: the UUID of the executor
     :param tag: the TAG of the executor
     :return: package and its dist-info path
     """
-    pkg_path = JINA_HUB_ROOT / id
-    pkg_dist_path = JINA_HUB_ROOT / f'{id}-{tag}.dist-info'
+    pkg_path = JINA_HUB_ROOT / uuid
+    pkg_dist_path = JINA_HUB_ROOT / f'{uuid}-{tag}.dist-info'
     return pkg_path, pkg_dist_path
 
 
 def install_local(
-    zip_package: 'Path', id: str, tag: str, force: Optional[bool] = False
+    zip_package: 'Path', uuid: str, tag: str, force: Optional[bool] = False
 ):
     """Install the package in zip format to the Jina Hub root.
 
     :param zip_package: the path of the zip file
-    :param id: the ID of the executor
+    :param uuid: the UUID of the executor
     :param tag: the TAG of the executor
     :param force: if set, overwrites the package
     """
 
-    pkg_path, pkg_dist_path = get_dist_path(id, tag)
+    pkg_path, pkg_dist_path = get_dist_path(uuid, tag)
     if pkg_dist_path.exists() and not force:
         return
 
     # clean existed dist-info
-    for dist in JINA_HUB_ROOT.glob(f'{id}-*.dist-info'):
+    for dist in JINA_HUB_ROOT.glob(f'{uuid}-*.dist-info'):
         shutil.rmtree(dist)
     if pkg_path.exists():
         shutil.rmtree(pkg_path)
@@ -59,13 +59,13 @@ def install_local(
         shutil.copyfile(requirements_path, pkg_dist_path / 'requirements.txt')
 
 
-def uninstall_local(id: str):
+def uninstall_local(uuid: str):
     """Uninstall the executor package.
 
-    :param id: the ID of the executor
+    :param uuid: the UUID of the executor
     """
-    pkg_path, _ = get_dist_path(id, None)
-    for dist in JINA_HUB_ROOT.glob(f'{id}-*.dist-info'):
+    pkg_path, _ = get_dist_path(uuid, None)
+    for dist in JINA_HUB_ROOT.glob(f'{uuid}-*.dist-info'):
         shutil.rmtree(dist)
     if pkg_path.exists():
         shutil.rmtree(pkg_path)
@@ -83,15 +83,15 @@ def list_local():
     return result
 
 
-def resolve_local(id: str, tag: Optional[str] = None) -> 'Path':
+def resolve_local(uuid: str, tag: Optional[str] = None) -> 'Path':
     """Return the path of the executor if available.
 
-    :param id: the ID of executor
+    :param uuid: the UUID of executor
     :param tag: the TAG of executor
     :return: the path of the executor package
     """
-    pkg_path = JINA_HUB_ROOT / id
-    pkg_dist_path = JINA_HUB_ROOT / f'{id}-{tag}.dist-info'
+    pkg_path = JINA_HUB_ROOT / uuid
+    pkg_dist_path = JINA_HUB_ROOT / f'{uuid}-{tag}.dist-info'
     if not pkg_path.exists():
         return None
     if tag and (not pkg_dist_path.exists()):
@@ -99,12 +99,12 @@ def resolve_local(id: str, tag: Optional[str] = None) -> 'Path':
     return pkg_path
 
 
-def exist_local(id: str, tag: str = None) -> bool:
+def exist_local(uuid: str, tag: str = None) -> bool:
     """Check whether the executor exists in local
 
-    :param id: the ID of the executor
+    :param uuid: the UUID of the executor
     :param tag: the TAG of the executor
     :return: True if existed, else False
     """
 
-    return resolve_local(id=id, tag=tag) is not None
+    return resolve_local(uuid, tag=tag) is not None
