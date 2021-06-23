@@ -138,11 +138,11 @@ class BasePod(ExitFIFO):
             if param_value and valid_path(param_value):
                 _upload_files.add(param_value)
 
-        if getattr(args, 'py_modules', None):
+        if hasattr(args, 'py_modules'):
             _upload_files.update(
                 {py_module for py_module in args.py_modules if valid_path(py_module)}
             )
-        if getattr(args, 'upload_files', None):
+        if hasattr(args, 'upload_files'):
             _upload_files.update(
                 {
                     upload_file
