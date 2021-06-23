@@ -63,7 +63,7 @@ class PeaDepends:
     """Validates & Sets host/port dependencies during Pea creation/update"""
 
     def __init__(self, workspace_id: DaemonID, pea: PeaModel):
-        # Deepankar: adding quotes around PeaModel breaks things
+        # Deepankar: adding quotes around PeaModel breaks things,
         self.workspace_id = workspace_id
         self.params = pea
         self.id = DaemonID('jpea')
