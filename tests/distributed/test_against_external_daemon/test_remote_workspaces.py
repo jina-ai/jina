@@ -125,9 +125,11 @@ def test_custom_project():
 
 
 def test_multiple_workspaces_networks():
-    workspace_id_1 = create_workspace()
+    workspace_id_1 = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
     assert wait_for_workspace(workspace_id_1)
-    workspace_id_2 = create_workspace()
+    workspace_id_2 = create_workspace(
+        filepaths=[os.path.join(cur_dir, 'blocking.jinad')]
+    )
     assert wait_for_workspace(workspace_id_2)
 
     client = docker.from_env()
