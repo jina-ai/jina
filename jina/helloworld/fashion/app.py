@@ -83,6 +83,7 @@ def hello_world(args):
         f.index(
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
             request_size=args.request_size,
+            show_progress=True,
         )
 
         f.post(
@@ -94,6 +95,7 @@ def hello_world(args):
             on_done=print_result,
             request_size=args.request_size,
             parameters={'top_k': args.top_k},
+            show_progress=True,
         )
 
         # write result to html

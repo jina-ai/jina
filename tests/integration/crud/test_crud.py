@@ -51,7 +51,9 @@ def test_crud(tmpdir, rest):
             results = rest_post(f, 'search', inputs)
             matches = results['data']['docs'][0]['matches']
         else:
-            results = f.post(on='/search', inputs=inputs, parameters=PARAMS)
+            results = f.post(
+                on='/search', inputs=inputs, parameters=PARAMS, return_results=True
+            )
             matches = results[0].docs[0].matches
 
         assert len(matches) == 10
@@ -73,7 +75,9 @@ def test_crud(tmpdir, rest):
             matches = results['data']['docs'][0]['matches']
 
         else:
-            results = f.post(on='/search', inputs=inputs, parameters=PARAMS)
+            results = f.post(
+                on='/search', inputs=inputs, parameters=PARAMS, return_results=True
+            )
             matches = results[0].docs[0].matches
 
         assert len(matches) == 5
@@ -96,7 +100,9 @@ def test_crud(tmpdir, rest):
                 results['data']['docs'][0]['matches'], key=lambda match: match['id']
             )
         else:
-            results = f.post(on='/search', inputs=inputs, parameters=PARAMS)
+            results = f.post(
+                on='/search', inputs=inputs, parameters=PARAMS, return_results=True
+            )
             matches = sorted(results[0].docs[0].matches, key=lambda match: match.id)
 
         assert len(matches) == 5

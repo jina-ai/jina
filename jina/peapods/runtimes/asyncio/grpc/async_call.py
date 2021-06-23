@@ -73,7 +73,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
         with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
             self.logger.warning(
                 'if this takes too long, you may want to take smaller "--prefetch" or '
-                'ask client to reduce "--request-size"'
+                'ask client to reduce `request_size`'
             )
             prefetch_task = []
             is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)

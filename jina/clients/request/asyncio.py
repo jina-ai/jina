@@ -23,7 +23,7 @@ async def request_generator(
 
     :param exec_endpoint: the endpoint string, by convention starts with `/`
     :param data: the data to use in the request
-    :param request_size: the request size for the client
+    :param request_size: the number of Documents per request
     :param data_type: if ``data`` is an iterator over self-contained document, i.e. :class:`DocumentSourceType`;
             or an iterator over possible Document content (set to text, blob and buffer).
     :param parameters: the kwargs that will be sent to the executor

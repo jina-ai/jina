@@ -199,7 +199,6 @@ class ProgressBar(TimeContext):
         self,
         bar_len: int = 20,
         task_name: str = '',
-        batch_unit: str = 'requests',
         logger=None,
     ):
         """
@@ -207,14 +206,12 @@ class ProgressBar(TimeContext):
 
         :param bar_len: Total length of the bar.
         :param task_name: The name of the task, will be displayed in front of the bar.
-        :param batch_unit: Unit of batch
         :param logger: Jina logger
         """
         super().__init__(task_name, logger)
         self.bar_len = bar_len
         self.num_docs = 0
         self._ticks = 0
-        self.batch_unit = batch_unit
 
     def update_tick(self, tick: float = 0.1) -> None:
         """
@@ -244,15 +241,13 @@ class ProgressBar(TimeContext):
             self.num_docs += progress
 
         sys.stdout.write(
-            '{:>10} |{:<{}}| 📃 {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f}/s {:6d} {:>10}'.format(
+            '{:>10} |{:<{}}| ⏳ {:6d} ⏱️ {:3.1f}s 🐎 {:3.0f} QPS'.format(
                 colored(self.task_name, 'cyan'),
                 colored('█' * num_bars, 'green'),
                 self.bar_len + 9,
-                self.num_docs,
-                elapsed,
-                self.num_docs / elapsed,
                 self.num_reqs,
-                self.batch_unit,
+                elapsed,
+                self.num_reqs / elapsed,
             )
         )
         if num_bars == self.bar_len:
@@ -270,10 +265,7 @@ class ProgressBar(TimeContext):
         pass
 
     def _exit_msg(self):
-        if self.num_docs > 0:
-            speed = self.num_docs / self.duration
-        else:
-            speed = self.num_reqs / self.duration
+        speed = self.num_reqs / self.duration
         sys.stdout.write(
-            f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f}/s", "green")}\n'
+            f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.0f} QPS", "green")}\n'
         )
