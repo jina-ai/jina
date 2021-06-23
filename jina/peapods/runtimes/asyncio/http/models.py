@@ -231,12 +231,23 @@ for proto in (
     protobuf_to_pydantic_model(proto)
 
 
+def _to_camel_case(snake_str: str) -> str:
+    components = snake_str.split('_')
+    # We capitalize the first letter of each component except the first one
+    # with the 'title' method and join them together.
+    return components[0] + ''.join(x.title() for x in components[1:])
+
+
 class JinaStatusModel(BaseModel):
     """Pydantic BaseModel for Jina status, used as the response model in REST app."""
 
     jina: Dict
     envs: Dict
     used_memory: str
+
+    class Config:
+        alias_generator = _to_camel_case
+        allow_population_by_field_name = True
 
 
 def _get_example_data():
@@ -252,7 +263,6 @@ def _get_example_data():
     return MessageToDict(
         _example,
         including_default_value_fields=True,
-        preserving_proto_field_name=True,
     )['docs']
 
 
@@ -293,6 +303,10 @@ class JinaRequestModel(BaseModel):
         description='A dictionary of parameters to be sent to the executor.',
     )
 
+    class Config:
+        alias_generator = _to_camel_case
+        allow_population_by_field_name = True
+
 
 class JinaResponseModel(BaseModel):
     """
@@ -309,6 +323,10 @@ class JinaResponseModel(BaseModel):
         description='The id given by Jina service',
     )
     data: Optional[DataRequestModel] = Field(None, description='Returned Documents')
+
+    class Config:
+        alias_generator = _to_camel_case
+        allow_population_by_field_name = True
 
 
 class JinaEndpointRequestModel(JinaRequestModel):
