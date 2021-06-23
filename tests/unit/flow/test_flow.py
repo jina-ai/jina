@@ -503,8 +503,10 @@ def test_flow_with_pod_envs():
 @pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_return_results_sync_flow(return_results, protocol):
-    with Flow(protocol=protocol, return_results=return_results).add() as f:
-        r = f.index(from_ndarray(np.random.random([10, 2])))
+    with Flow(protocol=protocol).add() as f:
+        r = f.index(
+            from_ndarray(np.random.random([10, 2])), return_results=return_results
+        )
         if return_results:
             assert isinstance(r, list)
             assert isinstance(r[0], Response)

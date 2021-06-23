@@ -76,8 +76,8 @@ class PretrainedModelFileDoesNotExist(ModelCheckpointNotExist):
     """
 
 
-class HubBuilderError(Exception):
-    """Base exception to raise when :command:`jina hub build` fails."""
+class HubDownloadError(Exception):
+    """Exception to raise when :command:`jina hub pull` fails to download package."""
 
 
 class BadDocType(TypeError):

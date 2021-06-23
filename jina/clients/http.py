@@ -59,7 +59,7 @@ class HTTPClientMixin(BaseClient, ABC):
 
         req_iter = self._get_requests(**kwargs)
         async with aiohttp.ClientSession() as session:
-            if self.args.show_progress:
+            if self.show_progress:
                 cm1, cm2 = ProgressBar(), TimeContext('')
             else:
                 cm1, cm2 = nullcontext(), nullcontext()
@@ -96,11 +96,11 @@ class HTTPClientMixin(BaseClient, ABC):
                             on_error=on_error,
                             on_done=on_done,
                             on_always=on_always,
-                            continue_on_error=self.args.continue_on_error,
+                            continue_on_error=self.continue_on_error,
                             logger=self.logger,
                         )
-                        if self.args.show_progress:
-                            p_bar.update(self.args.request_size)
+                        if self.show_progress:
+                            p_bar.update()
                         yield resp
             except aiohttp.client_exceptions.ClientConnectorError:
                 self.logger.warning(f'Client got disconnected from the HTTP server')

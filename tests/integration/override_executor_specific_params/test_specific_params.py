@@ -39,7 +39,7 @@ class DummyAssertIfParamsCanBeChangedInsidePods(Executor):
 
 def test_override_params(mocker):
     f = (
-        Flow(return_results=True)
+        Flow()
         .add(
             uses={'jtype': 'DummyOverrideParams', 'metas': {'name': 'exec_name'}},
         )
@@ -54,6 +54,7 @@ def test_override_params(mocker):
             inputs=DocumentArray([Document()]),
             parameters={'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}},
             on_error=error_mock,
+            return_results=True,
         )
     error_mock.assert_not_called()
 

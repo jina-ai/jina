@@ -162,3 +162,12 @@ def _create_workspace_directly(cur_dir):
         ),
     )
     return image_id, network_id, workspace_id, workspace_store
+
+
+@pytest.fixture(scope='function')
+def test_envs(tmpdir):
+    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
+    os.environ['JINA_HUB_CACHE_DIR'] = str(tmpdir)
+    yield None
+    del os.environ['JINA_HUB_ROOT']
+    del os.environ['JINA_HUB_CACHE_DIR']
