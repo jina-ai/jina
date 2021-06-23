@@ -1,6 +1,6 @@
 from argparse import Namespace
 
-from .. import __default_host__
+from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip
 
 
@@ -18,8 +18,6 @@ def get_connect_host(
     from sys import platform
 
     # by default __default_host__ is 0.0.0.0
-
-    __docker_host__ = 'host.docker.internal'
 
     # is BIND at local
     bind_local = bind_host == __default_host__
@@ -59,7 +57,7 @@ def get_connect_host(
     if bind_local and not conn_local:
         # in this case we are telling CONN (at remote) our local ip address
         if connect_args.host.startswith('localhost'):
-            # this is for the tests to pass
+            # this is for the "psuedo" remote tests to pass
             return __docker_host__
         return get_public_ip() if bind_expose_public else get_internal_ip()
     else:

@@ -2,13 +2,12 @@ import os
 import signal
 from argparse import Namespace
 
-from jina import Flow
-from jina.peapods import Pea, Pod
 from jina.helper import colored
+from jina.peapods import Pea, Pod
+from jina import Flow, __docker_host__
 from jina.logging.logger import JinaLogger
 
-from ..models import DaemonID
-from .. import jinad_args, __dockerhost__
+from .. import jinad_args
 from ..models.enums import UpdateOperation
 from ..models.partial import PartialFlowItem, PartialStoreItem
 
@@ -62,9 +61,10 @@ class PartialPeaStore(PartialStore):
         """
         try:
             _id = args.identity
-            # This is set so that ContainerRuntime sets host_ctrl to __dockerhost__
+            # This is set so that ContainerRuntime sets host_ctrl to __docker_host__
             # and on linux machines, we can access dockerhost inside containers
-            args.docker_kwargs = {'extra_hosts': {__dockerhost__: 'host-gateway'}}
+            if args.runtime_cls == 'ContainerRuntime':
+                args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
             self.object = self.peapod_cls(args).start()
         except Exception as e:
             self._logger.error(f'{e!r}')

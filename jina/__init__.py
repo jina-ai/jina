@@ -67,6 +67,7 @@ __jina_env__ = (
 )
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
+__docker_host__ = 'host.docker.internal'
 __default_executor__ = 'BaseExecutor'
 __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'

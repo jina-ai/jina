@@ -1,6 +1,5 @@
 from jina.helper import get_internal_ip
-from jina import __default_host__
-from daemon import __dockerhost__
+from jina import __default_host__, __docker_host__
 from jina.peapods.networking import get_connect_host
 from jina.parsers import set_pea_parser
 
@@ -40,13 +39,13 @@ docker_uses = 'docker://abc'
             __default_host__,
             'localhost:8000',
             None,
-            __dockerhost__,
+            __docker_host__,
         ),  # local bind & "pseudo" remote connect (used in tests), should be dockerhost
         (
             __default_host__,
             'localhost:8000',
             docker_uses,
-            __dockerhost__,
+            __docker_host__,
         ),  # local bind & "pseudo" remote connect (used in tests), should be dockerhost
         (
             __default_host__,
@@ -64,13 +63,13 @@ docker_uses = 'docker://abc'
             '1.2.3.4',
             '1.2.3.4',
             None,
-            __dockerhost__,
+            __docker_host__,
         ),  # bind and connect same remote
         (
             '1.2.3.4',
             '1.2.3.4',
             None,
-            __dockerhost__,
+            __docker_host__,
         ),  # bind and connect same remote, connect inside docker
         ('2.3.4.5', '1.2.3.4', None, '2.3.4.5'),  # bind and connect diff remotes
         (

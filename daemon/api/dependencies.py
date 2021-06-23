@@ -4,11 +4,10 @@ from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
 from fastapi import HTTPException, UploadFile, File
 
-from jina import __default_host__, Flow
+from jina import __default_host__, __docker_host__, Flow
 from jina.enums import PeaRoleType, SocketType
 from jina.helper import cached_property, random_port
 
-from .. import __dockerhost__
 from ..helper import get_workspace_path
 from ..models.enums import WorkspaceState
 from ..stores import workspace_store as store
@@ -79,7 +78,7 @@ class PeaDepends:
         """
         # TAIL & SINGLETON peas are handled by dynamic routing
         return (
-            __dockerhost__
+            __docker_host__
             if PeaRoleType.from_string(self.params.pea_role)
             in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
             else self.params.host_in
@@ -94,7 +93,7 @@ class PeaDepends:
         """
         # TAIL & SINGLETON peas are handled by dynamic routing
         return (
-            __dockerhost__
+            __docker_host__
             if PeaRoleType.from_string(self.params.pea_role)
             in [PeaRoleType.PARALLEL, PeaRoleType.HEAD]
             else self.params.host_in
@@ -130,7 +129,7 @@ class PeaDepends:
 
     def validate(self):
         """
-        This would need changes
+        # TODO (deepankar): These docs would need changes after dynamic routing changes.
         Validates and sets arguments to be used in store
         DOCKER_HOST = 'host.docker.internal'
 

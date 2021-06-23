@@ -1,10 +1,10 @@
-from jina.helper import colored
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
 
-from jina import __ready_msg__
+from jina.helper import colored
 from jina.logging.logger import JinaLogger
+from jina import __ready_msg__, __docker_host__
 
 from .models import DaemonID
 from .models.enums import IDLiterals
@@ -14,7 +14,6 @@ from . import (
     __dockerfiles__,
     __root_workspace__,
     jinad_args,
-    __dockerhost__,
 )
 from .excepts import (
     DockerNotFoundException,
@@ -248,7 +247,7 @@ class Dockerizer:
                 detach=True,
                 command=command,
                 entrypoint=entrypoint,
-                extra_hosts={__dockerhost__: 'host-gateway'},
+                extra_hosts={__docker_host__: 'host-gateway'},
             )
         except docker.errors.NotFound as e:
             cls.logger.critical(

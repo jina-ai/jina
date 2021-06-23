@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
-from jina import __version__, __resources_path__
+from jina import __version__, __resources_path__, __docker_host__
 from jina.logging.logger import JinaLogger
 from .excepts import (
     RequestValidationError,
@@ -23,7 +23,6 @@ jinad_args = get_main_parser().parse_args([])
 daemon_logger = JinaLogger('DAEMON', **vars(jinad_args))
 
 __task_queue__ = Queue()
-__dockerhost__ = 'host.docker.internal'
 __root_workspace__ = jinad_args.workspace
 __rootdir__ = str(Path(__file__).parent.parent.absolute())
 __dockerfiles__ = str(Path(__file__).parent.absolute() / 'Dockerfiles')
