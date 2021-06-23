@@ -79,16 +79,10 @@ def test_flowstore_update(partial_flow_store, mocker):
     partial_flow_store.add(args, port_expose)
 
     update_mock = mocker.Mock()
-    dump_mock = mocker.Mock()
     partial_flow_store.object.rolling_update = update_mock
-    partial_flow_store.object.dump = dump_mock
 
     partial_flow_store.update(
         kind=UpdateOperation.ROLLING_UPDATE, dump_path='', pod_name='pod1', shards=1
     )
-    partial_flow_store.update(
-        kind=UpdateOperation.DUMP, dump_path='', pod_name='pod1', shards=1
-    )
 
     update_mock.assert_called()
-    dump_mock.assert_called()

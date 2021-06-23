@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from jina.helper import ArgNamespace
 from jina.parsers import set_pod_parser
 
-from ....models import DaemonID, PodModel
+from ....models import PodModel
 from ....excepts import Runtime400Exception
 from ....models.partial import PartialStoreItem
 from ....stores import partial_store as store

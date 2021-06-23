@@ -91,8 +91,3 @@ async def _list(id: DaemonID):
         return store[id]
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in store')
-
-
-# @router.on_event('shutdown')
-# def _shutdown():
-#     store.reset()

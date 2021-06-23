@@ -48,7 +48,7 @@ class FlowStore(ContainerStore):
         """Sends `put` request to `mini-jinad` to execute a command on a Flow.
 
         :param id: flow id
-        :param kind: type of update command to execute (dump/rolling_update)
+        :param kind: type of update command to execute (only rolling_update for now)
         :param dump_path: the path to which to dump on disk
         :param pod_name: pod to target with the dump request
         :param shards: nr of shards to dump
@@ -60,7 +60,9 @@ class FlowStore(ContainerStore):
                 'pod_name': pod_name,
                 'shards': shards,
             }
-            r = requests.put(url=f'{self.host}/{self._kind}', params=params)
+            r = requests.put(
+                url=f'{self[id].metadata.host}/{self._kind}', params=params
+            )
 
             if r.status_code != requests.codes.ok:
                 raise Runtime400Exception(

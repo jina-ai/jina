@@ -136,8 +136,6 @@ class PartialFlowStore(PartialStore):
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
-            elif kind == UpdateOperation.DUMP:
-                self.object.dump(pod_name=pod_name, dump_path=dump_path, shards=shards)
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise

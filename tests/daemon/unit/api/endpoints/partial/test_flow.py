@@ -40,16 +40,5 @@ def test_flow_api(monkeypatch, partial_flow_client):
     )
     assert response.status_code == 400
 
-    response = partial_flow_client.put(
-        api,
-        params={
-            'kind': UpdateOperation.DUMP,
-            'dump_path': '',
-            'pod_name': 'hello',
-            'shards': 1,
-        },
-    )
-    assert response
-
     response = partial_flow_client.delete(api)
     assert response
