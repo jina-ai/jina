@@ -16,7 +16,7 @@ To use these enums in YAML config, following the example below:
         parallel_type: any
 """
 
-from enum import IntEnum, EnumMeta
+from enum import Enum, IntEnum, EnumMeta
 
 
 class EnumType(EnumMeta):
@@ -427,6 +427,17 @@ class EmbeddingClsType(BetterEnum):
         :return: True is class is stackable
         """
         return self.value in [1, 2]
+
+
+class RemoteWorkspaceState(str, Enum):
+    """Enum representing state of remote workspace created by JinaD"""
+
+    PENDING = 'PENDING'
+    CREATING = 'CREATING'
+    UPDATING = 'UPDATING'
+    ACTIVE = 'ACTIVE'
+    FAILED = 'FAILED'
+    DELETING = 'DELETING'
 
 
 def replace_enum_to_str(obj):

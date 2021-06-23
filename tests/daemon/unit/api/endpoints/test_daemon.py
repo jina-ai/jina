@@ -1,7 +1,10 @@
 import os
 from pathlib import Path
 
-from daemon.stores.helper import get_workspace_path
+from daemon.helper import get_workspace_path
+from daemon.models.enums import WorkspaceState
+from daemon.models.workspaces import WorkspaceItem
+
 
 cur_dir = Path(__file__).parent
 
@@ -26,5 +29,12 @@ def test_upload(fastapi_client):
         '/workspaces', files=[('files', open(str(cur_dir / d), 'rb')) for d in deps]
     )
     assert response.status_code == 201
+    response_json = response.json()
+    workspace_id = next(iter(response_json))
+    item = WorkspaceItem(**response_json[workspace_id])
+    assert item.state == WorkspaceState.PENDING
+    assert item.metadata is None
+    assert item.arguments is None
+
     for d in deps:
-        os.path.exists(get_workspace_path(response.json(), d))
+        os.path.exists(get_workspace_path(workspace_id, d))
