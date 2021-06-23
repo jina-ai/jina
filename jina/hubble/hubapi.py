@@ -59,7 +59,7 @@ def install_locall(
         shutil.copyfile(requirements_path, pkg_dist_path / 'requirements.txt')
 
 
-def uninstall_locall(id: str):
+def uninstall_local(id: str):
     """Uninstall the executor package.
 
     :param id: the ID of the executor
