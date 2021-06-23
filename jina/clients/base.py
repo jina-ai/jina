@@ -152,7 +152,7 @@ class BaseClient:
                     f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
                 )
 
-                if self.args.show_progress:
+                if self.show_progress:
                     cm1, cm2 = ProgressBar(), TimeContext('')
                 else:
                     cm1, cm2 = nullcontext(), nullcontext()
@@ -166,11 +166,11 @@ class BaseClient:
                             on_error=on_error,
                             on_done=on_done,
                             on_always=on_always,
-                            continue_on_error=self.args.continue_on_error,
+                            continue_on_error=self.continue_on_error,
                             logger=self.logger,
                         )
-                        if self.args.show_progress:
-                            p_bar.update(self.args.request_size)
+                        if self.show_progress:
+                            p_bar.update()
                         yield resp
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')

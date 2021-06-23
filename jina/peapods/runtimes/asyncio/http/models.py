@@ -2,14 +2,13 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, Any, Optional, List, Union, TypeVar, Tuple
+from typing import Callable, Dict, Any, Optional, List, Union, Tuple
 
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import Field, BaseModel, BaseConfig, create_model, root_validator
 
-from .....parsers import set_client_cli_parser
 from .....proto import jina_pb2
 from .....proto.jina_pb2 import (
     DenseNdArrayProto,
@@ -25,7 +24,6 @@ from .....proto.jina_pb2 import (
 )
 from .....types.document import Document
 
-DEFAULT_REQUEST_SIZE = set_client_cli_parser().parse_args([]).request_size
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
     FieldDescriptor.TYPE_INT32: int,

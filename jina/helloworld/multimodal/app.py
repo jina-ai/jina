@@ -57,7 +57,7 @@ def hello_world(args):
     f = Flow.load_config('flow-index.yml')
 
     with f, open(f'{args.workdir}/people-img/meta.csv', newline='') as fp:
-        f.index(inputs=from_csv(fp), request_size=10)
+        f.index(inputs=from_csv(fp), request_size=10, show_progress=True)
 
     # search it!
     f = Flow.load_config('flow-search.yml')
@@ -98,7 +98,7 @@ def download_data(targets, download_proxy=None, task_name='download fashion-mnis
         )
         opener.add_handler(proxy)
     urllib.request.install_opener(opener)
-    with ProgressBar(task_name=task_name, batch_unit='') as t:
+    with ProgressBar(task_name=task_name) as t:
         for k, v in targets.items():
             if not os.path.exists(v['filename']):
                 urllib.request.urlretrieve(

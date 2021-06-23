@@ -18,6 +18,10 @@ class PostMixin:
         on_always: CallbackFnType = None,
         parameters: Optional[Dict] = None,
         target_peapod: Optional[str] = None,
+        request_size: int = 100,
+        show_progress: bool = False,
+        continue_on_error: bool = False,
+        return_results: bool = False,
         **kwargs,
     ) -> Optional[List[Response]]:
         """Post a general data request to the Flow.
@@ -29,18 +33,24 @@ class PostMixin:
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param parameters: the kwargs that will be sent to the executor
         :param target_peapod: a regex string represent the certain peas/pods request targeted
+        :param request_size: the number of Documents per request. <=0 means all inputs in one request.
+        :param show_progress: if set, client will show a progress bar on receiving every request.
+        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
+        :param return_results: if set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
         :param kwargs: additional parameters
-        :return: None
+        :return: None or list of Response
         """
 
         async def _get_results(*args, **kwargs):
             result = []
             c = self.client
+            c.show_progress = show_progress
+            c.continue_on_error = continue_on_error
             async for resp in c._get_results(*args, **kwargs):
-                if c.args.return_results:
+                if return_results:
                     result.append(resp)
 
-            if c.args.return_results:
+            if return_results:
                 return result
 
         return run_async(
@@ -52,6 +62,7 @@ class PostMixin:
             exec_endpoint=on,
             target_peapod=target_peapod,
             parameters=parameters,
+            request_size=request_size,
             **kwargs,
         )
 
@@ -74,6 +85,9 @@ class AsyncPostMixin:
         on_always: CallbackFnType = None,
         parameters: Optional[Dict] = None,
         target_peapod: Optional[str] = None,
+        request_size: int = 100,
+        show_progress: bool = False,
+        continue_on_error: bool = False,
         **kwargs,
     ) -> AsyncGenerator[None, Response]:
         """Post a general data request to the Flow.
@@ -85,10 +99,16 @@ class AsyncPostMixin:
         :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.
         :param parameters: the kwargs that will be sent to the executor
         :param target_peapod: a regex string represent the certain peas/pods request targeted
+        :param request_size: the number of Documents per request. <=0 means all inputs in one request.
+        :param show_progress: if set, client will show a progress bar on receiving every request.
+        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
         :param kwargs: additional parameters
         :yield: Response object
         """
-        async for r in self.client._get_results(
+        c = self.client
+        c.show_progress = show_progress
+        c.continue_on_error = continue_on_error
+        async for r in c._get_results(
             inputs=inputs,
             on_done=on_done,
             on_error=on_error,
@@ -96,6 +116,7 @@ class AsyncPostMixin:
             exec_endpoint=on,
             target_peapod=target_peapod,
             parameters=parameters,
+            request_size=request_size,
             **kwargs,
         ):
             yield r
