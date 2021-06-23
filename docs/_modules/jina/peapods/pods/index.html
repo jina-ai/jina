@@ -1006,13 +1006,13 @@
             <span class="c1"># use the executor existed in Jina Hub.</span>
             <span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">parse_hub_uri</span>
 
-            <span class="n">scheme</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
+            <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">scheme</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub'</span><span class="p">):</span>
                 <span class="kn">from</span> <span class="nn">...hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
                 <span class="kn">from</span> <span class="nn">...parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_pull_parser</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">uuid</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">'The given executor URI </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1"> is not valid, please double check it!'</span>
                     <span class="p">)</span>
@@ -1020,11 +1020,8 @@
                 <span class="n">pull_args</span> <span class="o">=</span> <span class="n">set_hub_pull_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">])</span>
                 <span class="n">hubio</span> <span class="o">=</span> <span class="n">HubIO</span><span class="p">(</span><span class="n">pull_args</span><span class="p">)</span>
 
-                <span class="c1"># # TODO: locate the local executor</span>
-                <span class="c1"># if not tag:</span>
-                <span class="c1">#     executor = hubio.fetch(id, tag)</span>
-
-                <span class="n">executor</span> <span class="o">=</span> <span class="n">hubio</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+                <span class="n">executor</span> <span class="o">=</span> <span class="n">hubio</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+                <span class="n">uuid</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span>
 
                 <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
                     <span class="c1"># use docker image</span>
@@ -1032,10 +1029,10 @@
                 <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub'</span><span class="p">:</span>
                     <span class="kn">from</span> <span class="nn">...hubble.hubapi</span> <span class="kn">import</span> <span class="n">resolve_local</span>
 
-                    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">current_tag</span><span class="p">)</span>
+                    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="p">:</span>
                         <span class="n">hubio</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
-                        <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">current_tag</span><span class="p">)</span>
+                        <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
                     <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">"config.yml"</span><span class="si">}</span><span class="s1">'</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown schema: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>

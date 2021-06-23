@@ -410,7 +410,7 @@
 
 <span class="n">HubExecutor</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
     <span class="s1">'HubExecutor'</span><span class="p">,</span>
-    <span class="p">[</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'current_tag'</span><span class="p">,</span> <span class="s1">'visibility'</span><span class="p">,</span> <span class="s1">'image_name'</span><span class="p">,</span> <span class="s1">'archive_url'</span><span class="p">,</span> <span class="s1">'md5sum'</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">'uuid'</span><span class="p">,</span> <span class="s1">'alias'</span><span class="p">,</span> <span class="s1">'tag'</span><span class="p">,</span> <span class="s1">'visibility'</span><span class="p">,</span> <span class="s1">'image_name'</span><span class="p">,</span> <span class="s1">'archive_url'</span><span class="p">,</span> <span class="s1">'md5sum'</span><span class="p">],</span>
 <span class="p">)</span>
 
 
@@ -541,10 +541,10 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.fetch"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
         <span class="sd">"""Fetch the executor meta info from Jina Hub.</span>
-<span class="sd">        :param id: the ID of the executor</span>
+<span class="sd">        :param name: the UUID/Alias of the executor</span>
 <span class="sd">        :param tag: the version tag of the executor</span>
 <span class="sd">        :param secret: the access secret of the executor</span>
 <span class="sd">        :return: meta of executor</span>
@@ -552,7 +552,7 @@
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">requests</span>
 
-        <span class="n">pull_url</span> <span class="o">=</span> <span class="n">JINA_HUBBLE_PUSHPULL_URL</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">/?'</span>
+        <span class="n">pull_url</span> <span class="o">=</span> <span class="n">JINA_HUBBLE_PUSHPULL_URL</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">/?'</span>
         <span class="n">path_params</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">secret</span><span class="p">:</span>
             <span class="n">path_params</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="n">secret</span>
@@ -567,13 +567,13 @@
             <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
 
         <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">resp</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="n">HubExecutor</span><span class="p">(</span>
             <span class="n">resp</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span>
-            <span class="sa">f</span><span class="s1">'v</span><span class="si">{</span><span class="n">resp</span><span class="p">[</span><span class="s2">"currentVersion"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'alias'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">resp</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">],</span>
             <span class="n">resp</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">],</span>
-            <span class="n">resp</span><span class="p">[</span><span class="s1">'pullPath'</span><span class="p">],</span>
+            <span class="n">resp</span><span class="p">[</span><span class="s1">'image'</span><span class="p">],</span>
             <span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'download'</span><span class="p">],</span>
             <span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'md5'</span><span class="p">],</span>
         <span class="p">)</span>
@@ -584,16 +584,17 @@
         <span class="sd">"""Pull the executor package from Jina Hub."""</span>
         <span class="n">cached_zip_filepath</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">scheme</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'jinahub'</span><span class="p">,</span> <span class="s1">'jinahub+docker'</span><span class="p">]:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unkonwn schema: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-            <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">tag</span><span class="p">:</span>
-                <span class="n">tag</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">current_tag</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span>
 
+            <span class="n">uuid</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span>
             <span class="n">image_name</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">image_name</span>
             <span class="n">archive_url</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">archive_url</span>
             <span class="n">md5sum</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">md5sum</span>

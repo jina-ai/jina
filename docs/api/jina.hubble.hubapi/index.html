@@ -405,10 +405,10 @@
 <p>Module wrapping interactions with the local executor packages.</p>
 <dl class="py function">
 <dt id="jina.hubble.hubapi.get_dist_path">
-<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">get_dist_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#get_dist_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.get_dist_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">get_dist_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#get_dist_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.get_dist_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the package path according ID and TAG
-:type id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param id: the ID of the executor
+:type uuid: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param uuid: the UUID of the executor
 :type tag: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param tag: the TAG of the executor
 :rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]
@@ -416,13 +416,13 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.hubble.hubapi.install_local">
-<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">install_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#install_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.install_local" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">install_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#install_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.install_local" title="Permalink to this definition">¶</a></dt>
 <dd><p>Install the package in zip format to the Jina Hub root.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zip_package</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the path of the zip file</p></li>
-<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the ID of the executor</p></li>
+<li><p><strong>uuid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the UUID of the executor</p></li>
 <li><p><strong>tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the TAG of the executor</p></li>
 <li><p><strong>force</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – if set, overwrites the package</p></li>
 </ul>
@@ -431,11 +431,11 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.hubble.hubapi.uninstall_local">
-<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">uninstall_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#uninstall_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.uninstall_local" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">uninstall_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#uninstall_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.uninstall_local" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uninstall the executor package.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the ID of the executor</p>
+<dd class="field-odd"><p><strong>uuid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the UUID of the executor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -451,12 +451,12 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.hubble.hubapi.resolve_local">
-<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">resolve_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#resolve_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.resolve_local" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">resolve_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#resolve_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.resolve_local" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the path of the executor if available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the ID of executor</p></li>
+<li><p><strong>uuid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the UUID of executor</p></li>
 <li><p><strong>tag</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the TAG of executor</p></li>
 </ul>
 </dd>
@@ -470,12 +470,12 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.hubble.hubapi.exist_local">
-<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">exist_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#exist_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.exist_local" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">exist_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#exist_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.exist_local" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether the executor exists in local</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the ID of the executor</p></li>
+<li><p><strong>uuid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the UUID of the executor</p></li>
 <li><p><strong>tag</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the TAG of the executor</p></li>
 </ul>
 </dd>
