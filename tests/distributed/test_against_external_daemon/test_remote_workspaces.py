@@ -152,3 +152,40 @@ def _get_network(workspace_id):
     url = _jinad_url(__default_host__, 8000, 'workspaces')
     r = requests.get(f'{url}/{workspace_id}')
     return r.json()['metadata']['network']
+
+
+def test_multiple_workspaces_networks_after_restart():
+    client = docker.from_env()
+    workspace_id_1 = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
+    assert wait_for_workspace(workspace_id_1)
+
+    # restart jinad
+    _restart_external_jinad(client)
+
+    workspace_id_2 = create_workspace(
+        filepaths=[os.path.join(cur_dir, 'blocking.jinad')]
+    )
+    assert wait_for_workspace(workspace_id_2)
+
+    docker_network1 = client.networks.get(_get_network(workspace_id_1))
+    docker_network2 = client.networks.get(_get_network(workspace_id_2))
+
+    network1 = ipaddress.ip_network(
+        docker_network1.attrs['IPAM']['Config'][0]['Subnet']
+    )
+    network2 = ipaddress.ip_network(
+        docker_network2.attrs['IPAM']['Config'][0]['Subnet']
+    )
+    assert not network1.overlaps(network2)
+
+    delete_workspace(workspace_id_1)
+    delete_workspace(workspace_id_2)
+
+
+def _restart_external_jinad(client):
+    containers = client.containers.list()
+    for container in containers:
+        if container.name == 'jinad':
+            container.restart()
+            time.sleep(5.0)
+            return
