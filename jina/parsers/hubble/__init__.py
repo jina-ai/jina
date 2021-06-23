@@ -16,6 +16,20 @@ def set_hub_push_parser(parser=None):
     return parser
 
 
+def set_hub_pull_parser(parser=None):
+    """Set the parser for the hub pull
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    from .pull import mixin_hub_pull_parser
+
+    mixin_hub_pull_parser(parser)
+    return parser
+
+
 def set_hub_parser(parser=None):
     """Set the parser for the hub
     :param parser: the parser configure
@@ -35,6 +49,15 @@ def set_hub_parser(parser=None):
             'push',
             help='push an executor package to the Jina hub',
             description='Push an executor package to the Jina hub',
+            formatter_class=_chf,
+        )
+    )
+
+    set_hub_pull_parser(
+        spp.add_parser(
+            'pull',
+            help='download an executor package/image from the Jina hub',
+            description='Download an executor package/image from the Jina hub',
             formatter_class=_chf,
         )
     )

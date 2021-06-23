@@ -1,5 +1,6 @@
 import copy
 import sys
+import re
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -586,6 +587,45 @@ class Pod(BasePod):
         return result
 
     def _parse_base_pod_args(self, args):
+
+        if getattr(args, 'uses', None):
+            # use the executor existed in Jina Hub.
+            from ...hubble.helper import parse_hub_uri
+
+            scheme, uuid, tag, secret = parse_hub_uri(self.args.uses)
+
+            if scheme.startswith('jinahub'):
+                from ...hubble.hubio import HubIO
+                from ...parsers.hubble import set_hub_pull_parser
+
+                if not uuid:
+                    raise ValueError(
+                        f'The given executor URI {self.args.uses} is not valid, please double check it!'
+                    )
+
+                pull_args = set_hub_pull_parser().parse_args([self.args.uses])
+                hubio = HubIO(pull_args)
+
+                # # TODO: locate the local executor
+                # if not tag:
+                #     executor = hubio.fetch(id, tag)
+
+                executor = hubio.fetch(uuid, tag=tag, secret=secret)
+
+                if scheme == 'jinahub+docker':
+                    # use docker image
+                    args.uses = f'docker://{executor.image_name}'
+                elif scheme == 'jinahub':
+                    from ...hubble.hubapi import resolve_local
+
+                    pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                    if not pkg_path:
+                        hubio.pull()
+                        pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                    args.uses = f'{pkg_path / "config.yml"}'
+                else:
+                    raise ValueError(f'Unknown schema: {scheme}')
+
         parsed_args = {'head': None, 'tail': None, 'peas': []}
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they
