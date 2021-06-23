@@ -5,7 +5,11 @@ import numpy as np
 import pytest
 
 from jina import Flow, Client, Document, __default_host__
-from ..helpers import create_workspace, wait_for_workspace, delete_workspace
+from tests.distributed.helpers import (
+    create_workspace,
+    wait_for_workspace,
+    delete_workspace,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -92,7 +96,7 @@ def test_custom_project():
     HOST = __default_host__
 
     workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'flow_app_ws'), host=HOST
+        dirpath=os.path.join(cur_dir, '../flow_app_ws'), host=HOST
     )
     assert wait_for_workspace(workspace_id, host=HOST)
     # we need to wait for the flow to start in the custom project
