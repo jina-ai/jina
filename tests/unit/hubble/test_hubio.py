@@ -91,8 +91,7 @@ def test_fetch(mocker, monkeypatch):
         return GetMockResponse(response_code=requests.codes.ok)
 
     monkeypatch.setattr(requests, 'get', _mock_get)
-    _args_list = ['dummy_mwu_encoder']
-    args = set_hub_pull_parser().parse_args(_args_list)
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
     executor = HubIO(args).fetch('dummy_mwu_encoder')
 
@@ -103,12 +102,10 @@ def test_fetch(mocker, monkeypatch):
 
 
 def test_pull(mocker, monkeypatch):
-    _args_list = ['dummy_mwu_encoder']
-    args = set_hub_pull_parser().parse_args(_args_list)
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
     HubIO(args).pull()
 
-    _args_list = ['dummy_mwu_encoder', '--docker']
-    args = set_hub_pull_parser().parse_args(_args_list)
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
 
     HubIO(args).pull()

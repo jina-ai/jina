@@ -45,17 +45,5 @@ def test_pull_parser():
 
     mixin_hub_pull_parser(parser)
 
-    args = parser.parse_args(['12345'])
-    assert args.id == '12345'
-    assert args.secret is None
-    assert args.docker is False
-
-    args = parser.parse_args(['12345', '--secret', '8iag38yu'])
-    assert args.id == '12345'
-    assert args.secret == '8iag38yu'
-    assert args.docker is False
-
-    args = parser.parse_args(['12345', '--docker'])
-    assert args.id == '12345'
-    assert args.secret is None
-    assert args.docker is True
+    args = parser.parse_args(['jinahub://dummy'])
+    assert args.uri == 'jinahub://dummy'

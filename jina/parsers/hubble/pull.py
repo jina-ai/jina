@@ -8,18 +8,7 @@ def mixin_hub_pull_parser(parser):
     """
     gp = add_arg_group(parser, title='Pull')
     gp.add_argument(
-        'id',
+        'uri',
         type=str,
-        help='The UUID8 of the executor to download',
-    )
-    gp.add_argument(
-        '--docker',
-        action='store_true',
-        default=False,
-        help='If set, pull the Docker image from the Jina Hub registry',
-    )
-    gp.add_argument(
-        '--secret',
-        type=str,
-        help='The secret key of the identified Jina Hub executor',
+        help='The URI of the executor to download (e.g., jinahub(+docker)://dummy_executor)',
     )

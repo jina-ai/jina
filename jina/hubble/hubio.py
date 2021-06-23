@@ -19,7 +19,7 @@ from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
 from ..excepts import HubDownloadError
-from .helper import archive_package, download_with_resume
+from .helper import archive_package, download_with_resume, parse_hub_uri
 from .hubapi import install_local, exist_local
 from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
 
@@ -160,10 +160,13 @@ class HubIO:
                 f'Error when trying to push the executor at {self.args.path}: {e!r}'
             )
 
-    def fetch(self, id: str, tag: Optional[str] = None) -> HubExecutor:
+    def fetch(
+        self, id: str, tag: Optional[str] = None, secret: Optional[str] = None
+    ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param id: the ID of the executor
         :param tag: the version tag of the executor
+        :param secret: the access secret of the executor
         :return: meta of executor
         """
         with ImportExtensions(required=True):
@@ -171,8 +174,8 @@ class HubIO:
 
         pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{id}/?'
         path_params = {}
-        if self.args.secret:
-            path_params['secret'] = self.args.secret
+        if secret:
+            path_params['secret'] = secret
         if tag:
             path_params['tag'] = tag
 
@@ -201,17 +204,21 @@ class HubIO:
         """Pull the executor package from Jina Hub."""
         cached_zip_filepath = None
         try:
-            id = self.args.id
+            scheme, uuid, tag, secret = parse_hub_uri(self.args.uri)
 
-            executor = self.fetch(id)
+            if scheme not in ['jinahub', 'jinahub+docker']:
+                raise ValueError(f'Unkonwn schema: {scheme}')
 
-            tag = executor.current_tag
+            executor = self.fetch(uuid, tag=tag, secret=secret)
+
+            if not tag:
+                tag = executor.current_tag
 
             image_name = executor.image_name
             archive_url = executor.archive_url
             md5sum = executor.md5sum
 
-            if self.args.docker:
+            if scheme == 'jinahub+docker':
                 # pull the Docker image
                 with TimeContext(f'pulling {image_name}', self.logger):
                     image = self._client.images.pull(image_name)
@@ -223,15 +230,15 @@ class HubIO:
                 )
                 return
 
-            if exist_local(id, tag):
+            if exist_local(uuid, tag):
                 self.logger.warning(
-                    f'The executor {self.args.id} has already been downloaded in {JINA_HUB_ROOT}'
+                    f'The executor {self.args.uri} has already been downloaded in {JINA_HUB_ROOT}'
                 )
                 return
 
             # download the package
-            with TimeContext(f'downloading {self.args.id}', self.logger):
-                cached_zip_filename = f'{id}-{md5sum}.zip'
+            with TimeContext(f'downloading {self.args.uri}', self.logger):
+                cached_zip_filename = f'{uuid}-{md5sum}.zip'
                 cached_zip_filepath = download_with_resume(
                     archive_url,
                     JINA_HUB_CACHE_DIR,
@@ -239,15 +246,15 @@ class HubIO:
                     md5sum=md5sum,
                 )
 
-            with TimeContext(f'installing {self.args.id}', self.logger):
+            with TimeContext(f'installing {self.args.uri}', self.logger):
                 try:
-                    install_local(cached_zip_filepath, id, tag)
+                    install_local(cached_zip_filepath, uuid, tag)
                 except Exception as ex:
                     raise HubDownloadError(str(ex))
 
         except Exception as e:
             self.logger.error(
-                f'Error when trying to pull the executor: {self.args.id}: {e!r}'
+                f'Error when trying to pull the executor: {self.args.uri}: {e!r}'
             )
         finally:
             # delete downloaded zip package if existed
