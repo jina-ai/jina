@@ -390,7 +390,8 @@
 
 <span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 <span class="kn">from</span> <span class="nn">..peas</span> <span class="kn">import</span> <span class="n">BasePea</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
+<span class="kn">from</span> <span class="nn">...jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__default_executor__</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">SchedulerType</span><span class="p">,</span>
@@ -473,6 +474,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">upload_files</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_set_upload_files</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">needs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">needs</span> <span class="k">if</span> <span class="n">needs</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
@@ -498,6 +500,38 @@
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_set_upload_files</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="c1"># sets args.upload_files at the pod level so that peas inherit from it.</span>
+        <span class="c1"># all peas work under one remote workspace, hence important to have upload_files set for all</span>
+
+        <span class="k">def</span> <span class="nf">valid_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">complete_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">_upload_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'uses'</span><span class="p">,</span> <span class="s1">'uses_internal'</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">]:</span>
+            <span class="n">param_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">param_value</span> <span class="ow">and</span> <span class="n">valid_path</span><span class="p">(</span><span class="n">param_value</span><span class="p">):</span>
+                <span class="n">_upload_files</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'py_modules'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">_upload_files</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span><span class="n">py_module</span> <span class="k">for</span> <span class="n">py_module</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">py_modules</span> <span class="k">if</span> <span class="n">valid_path</span><span class="p">(</span><span class="n">py_module</span><span class="p">)}</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'upload_files'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">_upload_files</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="n">upload_file</span>
+                    <span class="k">for</span> <span class="n">upload_file</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">upload_files</span>
+                    <span class="k">if</span> <span class="n">valid_path</span><span class="p">(</span><span class="n">upload_file</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_upload_files</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'PodRoleType'</span><span class="p">:</span>

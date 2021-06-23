@@ -1,17 +1,25 @@
 daemon.api.endpoints package
 ============================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   daemon.api.endpoints.partial
+
 Submodules
 ----------
 
 .. toctree::
    :maxdepth: 4
 
-   daemon.api.endpoints.flow
+   daemon.api.endpoints.flows
    daemon.api.endpoints.logs
-   daemon.api.endpoints.pea
-   daemon.api.endpoints.pod
-   daemon.api.endpoints.workspace
+   daemon.api.endpoints.peas
+   daemon.api.endpoints.pods
+   daemon.api.endpoints.workspaces
 
 Module contents
 ---------------

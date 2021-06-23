@@ -412,30 +412,21 @@
         <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
-        <span class="c1"># for now it is http. but it can be https or unix socket or fd</span>
-        <span class="c1"># TODO: for https, the jinad server would need a tls certificate.</span>
-        <span class="c1"># no changes would be required in terms of how the api gets invoked,</span>
-        <span class="c1"># as requests does ssl verfication. we'd need to add some exception handling logic though</span>
         <span class="n">base_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
         <span class="n">rest_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s1">'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alive_api</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">rest_url</span><span class="si">}</span><span class="s1">/'</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">upload_api</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">rest_url</span><span class="si">}</span><span class="s1">/workspaces'</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">upload_api_arg</span> <span class="o">=</span> <span class="s1">'files'</span>  <span class="c1"># this is defined in Daemon API upload interface</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">'pea'</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">store_api</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">rest_url</span><span class="si">}</span><span class="s1">/peas'</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">'pod'</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">store_api</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">rest_url</span><span class="si">}</span><span class="s1">/pods'</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1"> is not supported'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'pea'</span><span class="p">,</span> <span class="s1">'pod'</span><span class="p">,</span> <span class="s1">'workspace'</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'daemon kind </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1"> is not supported'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_api</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">rest_url</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">s'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logstream_api</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'ws://</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s1">/logstream'</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">alive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Return True if ``jinad`` is alive at remote</span>
 
@@ -451,111 +442,34 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'remote manager is not alive: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="DaemonClient.get_status"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identity</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">"""Get status of the remote Pea / Pod</span>
-
-<span class="sd">        :param identity: UUID string based identity for the Pea</span>
-<span class="sd">        :raises: requests.exceptions.RequestException</span>
-<span class="sd">        :return: json response of the remote Pea / Pod status</span>
-<span class="sd">        :rtype: Dict</span>
+<div class="viewcode-block" id="DaemonClient.get"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identity</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
 <span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">requests</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">identity</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="n">rj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">rj</span>
-            <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">(</span><span class="n">rj</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can</span><span class="se">\'</span><span class="s1">t get status of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DaemonClient.upload"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.upload">[docs]</a>    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""Upload local file dependencies to remote server by extracting from the pea_args</span>
-
-<span class="sd">        :param dependencies: file dependencies</span>
-<span class="sd">        :type dependencies: Sequence[str]</span>
-<span class="sd">        :param workspace_id: Workspace to which the files will get uploaded, defaults to None</span>
-<span class="sd">        :type workspace_id: str</span>
-<span class="sd">        :raises: requests.exceptions.RequestException</span>
-<span class="sd">        :return: json response for upload</span>
-<span class="sd">        :rtype: str</span>
+<div class="viewcode-block" id="DaemonClient.post"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
 <span class="sd">        """</span>
-        <span class="kn">import</span> <span class="nn">requests</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-        <span class="k">with</span> <span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">file_stack</span><span class="p">:</span>
-            <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">upload_api_arg</span><span class="p">,</span>
-                    <span class="n">file_stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">complete_path</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="s1">'rb'</span><span class="p">)),</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dependencies</span>
-            <span class="p">]</span>
-
-            <span class="k">if</span> <span class="n">files</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'uploading </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s1"> file(s): </span><span class="si">{</span><span class="n">dependencies</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-                    <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">upload_api</span><span class="p">,</span>
-                        <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span>
-                        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">'workspace_id'</span><span class="p">:</span> <span class="n">workspace_id</span><span class="p">}</span> <span class="k">if</span> <span class="n">workspace_id</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                        <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">rj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">rj</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">(</span><span class="n">rj</span><span class="p">)</span>
-                <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fail to upload as </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DaemonClient.create"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">"""Create a remote Pea / Pod</span>
-
-<span class="sd">        :param args: the arguments for remote Pea</span>
-<span class="sd">        :type args: Namespace</span>
-<span class="sd">        :raises: requests.exceptions.RequestException</span>
-<span class="sd">        :return: the identity of the spawned Pea / Pod</span>
-<span class="sd">        :rtype: Optional[str]</span>
+<div class="viewcode-block" id="DaemonClient.delete"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
 <span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">requests</span>
+    <span class="k">def</span> <span class="nf">_daemonize_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'workspace'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'j</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">'</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">payload</span> <span class="o">=</span> <span class="n">replace_enum_to_str</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask_args</span><span class="p">(</span><span class="n">args</span><span class="p">)))</span>
-            <span class="c1"># set timeout to None if args.timeout_ready is -1 (wait forever)</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="p">,</span>
-                <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
-                <span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">rj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">rj</span>
-            <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
-                <span class="c1"># known internal error</span>
-                <span class="n">rj_body</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">rj</span><span class="p">[</span><span class="s1">'body'</span><span class="p">])</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">rj</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">rj_body</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">422</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s1">'your payload is not correct, please follow the error message and double check'</span>
-                <span class="p">)</span>
-            <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">(</span><span class="n">rj</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fail to create as </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="DaemonClient.logstream"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.logstream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">logstream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="DaemonClient.logstream"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.logstream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">logstream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">"""Websocket log stream from remote Pea / Pod</span>
 
-<span class="sd">        :param workspace_id: the identity of the workspace</span>
-<span class="sd">        :type workspace_id: str</span>
-<span class="sd">        :param log_id:  the identity of that Pea / Pod</span>
-<span class="sd">        :type log_id: str</span>
+<span class="sd">        :param id:  the identity of that Pea / Pod</span>
 <span class="sd">        """</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">websockets</span>
@@ -563,9 +477,8 @@
         <span class="n">remote_log_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'logging.remote.yml'</span><span class="p">)</span>
         <span class="n">all_remote_loggers</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">logstream_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">log_id</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">logstream_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
                 <span class="k">async</span> <span class="k">for</span> <span class="n">log_line</span> <span class="ow">in</span> <span class="n">websocket</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">ll</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">log_line</span><span class="p">)</span>
@@ -592,25 +505,6 @@
             <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">all_remote_loggers</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">l</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DaemonClient.delete"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remote_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Delete a remote pea/pod</span>
-
-<span class="sd">        :param remote_id: the identity of that pea/pod</span>
-<span class="sd">        :param kwargs: keyword arguments</span>
-<span class="sd">        :return: True if the deletion is successful</span>
-<span class="sd">        """</span>
-        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">requests</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">remote_id</span><span class="si">}</span><span class="s1">'</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fail to delete </span><span class="si">{</span><span class="n">remote_id</span><span class="si">}</span><span class="s1"> as </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
-
     <span class="k">def</span> <span class="nf">_mask_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
         <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
@@ -621,9 +515,27 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ZEDRuntime'</span>
 
-        <span class="c1"># reset the host default host</span>
         <span class="c1"># TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)</span>
-        <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">__default_host__</span>
+        <span class="c1"># _args.host = __default_host__</span>
+        <span class="c1"># host resetting disables dynamic routing. Use `disable_remote` instead</span>
+        <span class="n">_args</span><span class="o">.</span><span class="n">disable_remote</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># NOTE: on remote relative filepaths should be converted to filename only</span>
+        <span class="k">def</span> <span class="nf">basename</span><span class="p">(</span><span class="n">field</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">field</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">complete_path</span><span class="p">(</span><span class="n">field</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">return</span> <span class="n">field</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'uses'</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="s1">'uses_internal'</span><span class="p">,</span> <span class="s1">'py_modules'</span><span class="p">):</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_args</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">_args</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="n">basename</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">])</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">attr</span><span class="p">,</span> <span class="nb">list</span>
+            <span class="p">)</span> <span class="k">else</span> <span class="nb">setattr</span><span class="p">(</span><span class="n">_args</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">basename</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
 
         <span class="n">_args</span><span class="o">.</span><span class="n">log_config</span> <span class="o">=</span> <span class="s1">''</span>  <span class="c1"># do not use local log_config</span>
         <span class="n">_args</span><span class="o">.</span><span class="n">upload_files</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># reset upload files</span>
@@ -645,13 +557,169 @@
 <div class="viewcode-block" id="PeaDaemonClient"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient">[docs]</a><span class="k">class</span> <span class="nc">PeaDaemonClient</span><span class="p">(</span><span class="n">DaemonClient</span><span class="p">):</span>
     <span class="sd">"""Pea API, we might have different endpoints for peas &amp; pods later"""</span>
 
-    <span class="n">kind</span> <span class="o">=</span> <span class="s1">'pea'</span></div>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s1">'pea'</span>
+
+<div class="viewcode-block" id="PeaDaemonClient.get"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Get status of the remote Pea / Pod</span>
+
+<span class="sd">        :param id: 'DaemonID' based identity for the Pea</span>
+<span class="sd">        :raises: requests.exceptions.RequestException</span>
+<span class="sd">        :return: json response of the remote Pea / Pod status</span>
+<span class="sd">        :rtype: Dict</span>
+<span class="sd">        """</span>
+
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">requests</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_daemonize_id</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">not_found</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'couldn</span><span class="se">\'</span><span class="s1">t find </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1"> in remote </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1"> store'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can</span><span class="se">\'</span><span class="s1">t get status of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PeaDaemonClient.post"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""Create a remote Pea / Pod</span>
+
+<span class="sd">        :param args: the arguments for remote Pea</span>
+<span class="sd">        :type args: Namespace</span>
+<span class="sd">        :raises: requests.exceptions.RequestException</span>
+<span class="sd">        :return: the identity of the spawned Pea / Pod</span>
+<span class="sd">        :rtype: Optional[str]</span>
+<span class="sd">        """</span>
+
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">requests</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="n">replace_enum_to_str</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask_args</span><span class="p">(</span><span class="n">args</span><span class="p">)))</span>
+            <span class="c1"># set timeout to None if args.timeout_ready is -1 (wait forever)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'workspace_id'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_daemonize_id</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">)},</span>
+                <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">rj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">rj</span>
+            <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">400</span><span class="p">:</span>
+                <span class="c1"># known internal error</span>
+                <span class="n">rj_body</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">rj</span><span class="p">[</span><span class="s1">'body'</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">rj</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">rj_body</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">422</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">'your payload is not correct, please follow the error message and double check'</span>
+                <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">(</span><span class="n">rj</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to create as </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PeaDaemonClient.delete"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Delete a remote pea/pod</span>
+
+<span class="sd">        :param id: the identity of that pea/pod</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
+<span class="sd">        :return: True if the deletion is successful</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">requests</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="n">rj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="n">rj_body</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">rj</span><span class="p">[</span><span class="s1">'body'</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'deletion for </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1"> failed: </span><span class="si">{</span><span class="n">rj</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">rj_body</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to delete </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1"> as </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
 
 
-<div class="viewcode-block" id="PodDaemonClient"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PodDaemonClient">[docs]</a><span class="k">class</span> <span class="nc">PodDaemonClient</span><span class="p">(</span><span class="n">DaemonClient</span><span class="p">):</span>
+<div class="viewcode-block" id="PodDaemonClient"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PodDaemonClient">[docs]</a><span class="k">class</span> <span class="nc">PodDaemonClient</span><span class="p">(</span><span class="n">PeaDaemonClient</span><span class="p">):</span>
     <span class="sd">"""Pod API, we might have different endpoints for peas &amp; pods later"""</span>
 
     <span class="n">kind</span> <span class="o">=</span> <span class="s1">'pod'</span></div>
+
+
+<div class="viewcode-block" id="WorkspaceDaemonClient"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient">[docs]</a><span class="k">class</span> <span class="nc">WorkspaceDaemonClient</span><span class="p">(</span><span class="n">PeaDaemonClient</span><span class="p">):</span>
+    <span class="sd">""" Defines interaction with Daemon Workspace API  """</span>
+
+    <span class="n">kind</span> <span class="o">=</span> <span class="s1">'workspace'</span>
+
+<div class="viewcode-block" id="WorkspaceDaemonClient.post"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dependencies</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+        <span class="sd">"""Create a remote workspace (includes file upload, docker build on remote)</span>
+
+<span class="sd">        :param dependencies: file dependencies</span>
+<span class="sd">        :param workspace_id: Workspace to which the files will get uploaded</span>
+<span class="sd">        :raises: requests.exceptions.RequestException</span>
+<span class="sd">        :return: dict response for upload</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">requests</span>
+
+        <span class="k">with</span> <span class="n">ExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">file_stack</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span>
+                    <span class="s1">'files'</span><span class="p">,</span>
+                    <span class="n">file_stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">complete_path</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="s1">'rb'</span><span class="p">)),</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dependencies</span>
+            <span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'uploading </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s1"> file(s): </span><span class="si">{</span><span class="n">dependencies</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                    <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="p">,</span>
+                    <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_daemonize_id</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">)},</span>
+                    <span class="n">files</span><span class="o">=</span><span class="n">files</span> <span class="k">if</span> <span class="n">files</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">rj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">created</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">rj</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">(</span><span class="n">rj</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fail to upload as </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WorkspaceDaemonClient.delete"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Delete a remote workspace</span>
+
+<span class="sd">        :param id: the identity of that pea/pod/workspace</span>
+<span class="sd">        :param kwargs: keyword arguments</span>
+<span class="sd">        :return: True if the deletion is successful</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">requests</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># NOTE: This deletes the container, network by default &amp; leaves the files as-is on remote.</span>
+            <span class="c1"># TODO: do we parameterize it?</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_daemonize_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'container'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">'network'</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">'files'</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">rj</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="n">rj_body</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">rj</span><span class="p">[</span><span class="s1">'body'</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'deletion for </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1"> failed: </span><span class="si">{</span><span class="n">rj</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">rj_body</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to delete </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1"> as </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
 </pre></div>
       </article>
       <footer>

@@ -7,8 +7,13 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   daemon.models.base
+   daemon.models.containers
    daemon.models.custom
-   daemon.models.status
+   daemon.models.enums
+   daemon.models.id
+   daemon.models.partial
+   daemon.models.workspaces
 
 Module contents
 ---------------

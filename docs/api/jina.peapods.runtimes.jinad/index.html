@@ -430,7 +430,20 @@
 <dl class="py method">
 <dt id="jina.peapods.runtimes.jinad.JinadRuntime.teardown">
 <code class="sig-name descname"><span class="pre">teardown</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/jinad/#JinadRuntime.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.jinad.JinadRuntime.teardown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Closes the remote Pod/Pea using <code class="xref py py-class docutils literal notranslate"><span class="pre">JinadAPI</span></code></p>
+<dd><p>Terminates the remote Workspace/Pod/Pea using <code class="xref py py-class docutils literal notranslate"><span class="pre">JinadAPI</span></code></p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.jinad.JinadRuntime.create_workspace">
+<code class="sig-name descname"><span class="pre">create_workspace</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/jinad/#JinadRuntime.create_workspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.jinad.JinadRuntime.create_workspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a workspace on remote (includes file upload &amp; docker build)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="../jina.excepts/#jina.excepts.DaemonConnectivityError" title="jina.excepts.DaemonConnectivityError"><strong>DaemonConnectivityError</strong></a> – if remote daemon is not reachable</p></li>
+<li><p><strong>RuntimeError</strong> – if workspace creation fails</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 </dd></dl>
 </div>

@@ -9,6 +9,14 @@ Subpackages
 
    daemon.api.endpoints
 
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   daemon.api.dependencies
+
 Module contents
 ---------------
 

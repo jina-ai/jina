@@ -414,10 +414,11 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="set_flow_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.flow/#jina.parsers.flow.set_flow_parser">[docs]</a><span class="k">def</span> <span class="nf">set_flow_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="set_flow_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.flow/#jina.parsers.flow.set_flow_parser">[docs]</a><span class="k">def</span> <span class="nf">set_flow_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_identity</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">"""Set the parser for the flow</span>
 
 <span class="sd">    :param parser: an (optional) initial parser to build upon</span>
+<span class="sd">    :param with_identity: if to include identity in the parser</span>
 <span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
     <span class="kn">from</span> <span class="nn">.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
@@ -425,7 +426,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">with_identity</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">with_identity</span><span class="o">=</span><span class="n">with_identity</span><span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">workspace</span><span class="o">=</span><span class="s1">'./'</span><span class="p">)</span>
 

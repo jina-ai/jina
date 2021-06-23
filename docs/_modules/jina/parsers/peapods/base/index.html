@@ -405,7 +405,7 @@
 <span class="s1">- log message header</span>
 <span class="s1">- ...</span>
 
-<span class="s1">When not given, then the default naming strategy will apply. </span>
+<span class="s1">When not given, then the default naming strategy will apply.</span>
 <span class="s1">                    '''</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -448,7 +448,18 @@
             <span class="n">help</span><span class="o">=</span><span class="s1">'A UUID string to represent the logger identity of this object'</span>
             <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
             <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--workspace-id'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">random_identity</span><span class="p">(),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'the UUID for identifying the workspace. When not given a random id will be assigned.'</span>
+        <span class="s1">'Multiple Pea/Pod/Flow will work under the same workspace if they share the same '</span>
+        <span class="s1">'`workspace-id`.'</span>
+        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
+        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+    <span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

@@ -17,8 +17,12 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   daemon.dockerize
    daemon.excepts
+   daemon.files
+   daemon.helper
    daemon.parser
+   daemon.tasks
 
 Module contents
 ---------------

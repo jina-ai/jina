@@ -399,47 +399,8 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="module-daemon.stores.flow">
-<span id="daemon-stores-flow-module"></span><h1>daemon.stores.flow module<a class="headerlink" href="#module-daemon.stores.flow" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="daemon.stores.flow.FlowStore">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.stores.flow.</span></code><code class="sig-name descname"><span class="pre">FlowStore</span></code><a class="reference internal" href="../../_modules/daemon/stores/flow/#FlowStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flow.FlowStore" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../daemon.stores.base/#daemon.stores.base.BaseStore" title="daemon.stores.base.BaseStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.stores.base.BaseStore</span></code></a></p>
-<p>A Store of Flows for jinad</p>
-<dl class="py method">
-<dt id="daemon.stores.flow.FlowStore.add">
-<code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/flow/#FlowStore.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flow.FlowStore.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new Flow</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>config</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryIO</span></code>) – the binary data from the yaml</p></li>
-<li><p><strong>workspace_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – the id of the workspace</p></li>
-<li><p><strong>kwargs</strong> – other kwargs, not used</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>flow id</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="daemon.stores.flow.FlowStore.update">
-<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/flow/#FlowStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flow.FlowStore.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run an update operation on the Flow</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>) – the id of the Flow</p></li>
-<li><p><strong>kind</strong> (<a class="reference internal" href="../daemon.models/#daemon.models.UpdateOperationEnum" title="daemon.models.UpdateOperationEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateOperationEnum</span></code></a>) – the kind of update operation</p></li>
-<li><p><strong>dump_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the dump path</p></li>
-<li><p><strong>pod_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the pod to target</p></li>
-<li><p><strong>shards</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the nr of shards to dump for (only used for the <cite>dump</cite> op)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
+        <div class="section" id="daemon-stores-flow-module">
+<h1>daemon.stores.flow module<a class="headerlink" href="#daemon-stores-flow-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
       </article>

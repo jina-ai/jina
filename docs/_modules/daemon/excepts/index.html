@@ -380,8 +380,26 @@
         <h1>Source code for daemon.excepts</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">traceback</span>
 
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">status</span>
 <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
+<span class="kn">from</span> <span class="nn">fastapi.encoders</span> <span class="kn">import</span> <span class="n">jsonable_encoder</span>
+<span class="kn">from</span> <span class="nn">fastapi.exceptions</span> <span class="kn">import</span> <span class="n">RequestValidationError</span>
+
+
+<div class="viewcode-block" id="DockerNotFoundException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerNotFoundException">[docs]</a><span class="k">class</span> <span class="nc">DockerNotFoundException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">""" Exception if docker client cannot communicate with dockerd"""</span></div>
+
+
+<div class="viewcode-block" id="DockerImageException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerImageException">[docs]</a><span class="k">class</span> <span class="nc">DockerImageException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">""" Exception while handling a docker image in the workspace"""</span></div>
+
+
+<div class="viewcode-block" id="DockerNetworkException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerNetworkException">[docs]</a><span class="k">class</span> <span class="nc">DockerNetworkException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">""" Exception while handling docker networks in the workspace """</span></div>
+
+
+<div class="viewcode-block" id="DockerContainerException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerContainerException">[docs]</a><span class="k">class</span> <span class="nc">DockerContainerException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">""" Exception while handling a docker container in the workspace"""</span></div>
 
 
 <div class="viewcode-block" id="Runtime400Exception"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.Runtime400Exception">[docs]</a><span class="k">class</span> <span class="nc">Runtime400Exception</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -389,14 +407,35 @@
 
 
 <div class="viewcode-block" id="daemon_runtime_exception_handler"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.daemon_runtime_exception_handler">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">daemon_runtime_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="s1">'Runtime400Exception'</span><span class="p">):</span>
+    <span class="sd">"""Exception handler for all Runtime400Exceptions</span>
+
+<span class="sd">    :param request: starlette request</span>
+<span class="sd">    :param ex: actual Runtime400Exception</span>
+<span class="sd">    :return: json response representing the error</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span>
-        <span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
-        <span class="n">content</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">'detail'</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span>
-            <span class="s1">'body'</span><span class="p">:</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span>
-                <span class="n">etype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span> <span class="n">value</span><span class="o">=</span><span class="n">ex</span><span class="p">,</span> <span class="n">tb</span><span class="o">=</span><span class="n">ex</span><span class="o">.</span><span class="n">__traceback__</span>
-            <span class="p">),</span>
-        <span class="p">},</span>
+        <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">jsonable_encoder</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s1">'detail'</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span>
+                <span class="s1">'body'</span><span class="p">:</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exception</span><span class="p">(</span>
+                    <span class="n">etype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">ex</span><span class="p">),</span> <span class="n">value</span><span class="o">=</span><span class="n">ex</span><span class="p">,</span> <span class="n">tb</span><span class="o">=</span><span class="n">ex</span><span class="o">.</span><span class="n">__traceback__</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="validation_exception_handler"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.validation_exception_handler">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">validation_exception_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">ex</span><span class="p">:</span> <span class="s1">'RequestValidationError'</span><span class="p">):</span>
+    <span class="sd">"""Exception handler for all RequestValidationError raised by pydantic</span>
+
+<span class="sd">    :param request: starlette request</span>
+<span class="sd">    :param ex: actual Validation exception</span>
+<span class="sd">    :return: json response representing the error</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">JSONResponse</span><span class="p">(</span>
+        <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_422_UNPROCESSABLE_ENTITY</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">jsonable_encoder</span><span class="p">({</span><span class="s2">"detail"</span><span class="p">:</span> <span class="n">ex</span><span class="o">.</span><span class="n">errors</span><span class="p">(),</span> <span class="s2">"body"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)}),</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>

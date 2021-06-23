@@ -378,14 +378,16 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.peapods.runtimes.jinad</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">PeaDaemonClient</span>
+<span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">RemoteWorkspaceState</span>
 <span class="kn">from</span> <span class="nn">..asyncio.base</span> <span class="kn">import</span> <span class="n">AsyncZMQRuntime</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">DaemonConnectivityError</span>
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">colored</span><span class="p">,</span> <span class="n">is_yaml_filepath</span>
+<span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">PeaDaemonClient</span><span class="p">,</span> <span class="n">WorkspaceDaemonClient</span>
 
 
 <div class="viewcode-block" id="JinadRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime">[docs]</a><span class="k">class</span> <span class="nc">JinadRuntime</span><span class="p">(</span><span class="n">AsyncZMQRuntime</span><span class="p">):</span>
@@ -397,26 +399,23 @@
         <span class="c1"># process.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_expose</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">PeaDaemonClient</span><span class="p">(</span>
+        <span class="c1"># NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,</span>
+        <span class="c1"># so it can't be used for Client timeout.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workspace_api</span> <span class="o">=</span> <span class="n">WorkspaceDaemonClient</span><span class="p">(</span>
             <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
             <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="c1"># Uploads PPea context to remote &amp; Creates remote Pea using :class:`JinadAPI`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pea_api</span> <span class="o">=</span> <span class="n">PeaDaemonClient</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Uploads Pea context to remote &amp; Creates remote Pea using :class:`PeaDaemonClient`</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'created a remote </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'created a remote </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pea_api</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'fail to connect to the daemon at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">, please check:</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="sa">f</span><span class="s1">'- is there a typo in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">?</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="sa">f</span><span class="s1">'- on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">, are you running `docker run --network host jinaai/jina:latest-daemon`?</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="sa">f</span><span class="s1">'- on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">, have you set the security policy to public for all required ports?</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="sa">f</span><span class="s1">'- on local, are you behind VPN or proxy?'</span>
-            <span class="p">)</span>
-            <span class="k">raise</span> <span class="n">DaemonConnectivityError</span>
 
 <div class="viewcode-block" id="JinadRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -425,7 +424,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logging_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_forever</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_remote_logs</span>
-            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">logstream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workspace_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">)</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">pea_api</span><span class="o">.</span><span class="n">logstream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="JinadRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -436,46 +435,73 @@
 
 <div class="viewcode-block" id="JinadRuntime.teardown"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        Closes the remote Pod/Pea using :class:`JinadAPI`</span>
+<span class="sd">        Terminates the remote Workspace/Pod/Pea using :class:`JinadAPI`</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">remote_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pea_api</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">)</span>
+        <span class="c1"># TODO: don't fail if workspace deletion fails. all peas would make this call. can be optimized</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workspace_api</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="JinadRuntime.create_workspace"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.create_workspace">[docs]</a>    <span class="k">def</span> <span class="nf">create_workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Create a workspace on remote (includes file upload &amp; docker build)</span>
+
+<span class="sd">        :raises DaemonConnectivityError: if remote daemon is not reachable</span>
+<span class="sd">        :raises RuntimeError: if workspace creation fails</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace_api</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'fail to connect to the daemon at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">, please check:</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- is there a typo in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">?</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">, are you running `docker run --network host jinaai/jina:latest-daemon`?</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- on </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">, have you set the security policy to public for all required ports?</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'- on local, are you behind VPN or proxy?'</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">DaemonConnectivityError</span>
+
+        <span class="n">sleep</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">retries</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="k">for</span> <span class="n">retry</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span><span class="p">):</span>
+            <span class="n">workspace_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">workspace_api</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">workspace_status</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">DaemonConnectivityError</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">workspace_status</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'state'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'creating workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1"> on remote. This might take some time.'</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">workspace_api</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                    <span class="n">dependencies</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upload_files</span><span class="p">,</span>
+                    <span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">state</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">PENDING</span><span class="p">,</span>
+                <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">CREATING</span><span class="p">,</span>
+                <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">UPDATING</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="k">if</span> <span class="n">retry</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'workspace </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1"> is getting created on remote. waiting..'</span>
+                    <span class="p">)</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'successfully created a remote workspace: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'remote workspace creation failed'</span><span class="p">)</span></div>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">_remote_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">is_alive</span><span class="p">:</span>
-            <span class="n">upload_files</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="n">is_yaml_filepath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">):</span>
-                <span class="n">upload_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
+        <span class="sd">"""Creates a workspace &amp; a pea on remote</span>
 
-            <span class="k">if</span> <span class="n">is_yaml_filepath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="p">):</span>
-                <span class="n">upload_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upload_files</span><span class="p">:</span>
-                <span class="n">upload_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">upload_files</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'will upload </span><span class="si">{</span><span class="n">upload_files</span><span class="si">}</span><span class="s1"> to remote, to include more local file '</span>
-                    <span class="sa">f</span><span class="s1">'dependencies, please use `--upload-files`'</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">upload_files</span><span class="p">:</span>
-                <span class="n">workspace_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
-                    <span class="n">dependencies</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">upload_files</span><span class="p">)),</span>
-                    <span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="n">workspace_id</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'uploaded to workspace: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'can not upload required files to remote'</span><span class="p">)</span>
-
-            <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-
-            <span class="c1"># if there is a new workspace_id, then use it</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_workspace_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">get_status</span><span class="p">(</span><span class="n">_id</span><span class="p">)[</span><span class="s1">'workspace_id'</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">_id</span>
+<span class="sd">        :return: id of rempte pea</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_workspace</span><span class="p">()</span>
+        <span class="n">pea_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pea_api</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pea_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'remote pea creation failed'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pea_id</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_sleep_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Sleep forever, no prince will come."""</span>

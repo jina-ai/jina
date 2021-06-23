@@ -378,26 +378,38 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
 
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
 <span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
 <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
 
-<span class="kn">from</span> <span class="nn">daemon.excepts</span> <span class="kn">import</span> <span class="n">Runtime400Exception</span><span class="p">,</span> <span class="n">daemon_runtime_exception_handler</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__resources_path__</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span><span class="p">,</span> <span class="n">__resources_path__</span><span class="p">,</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RequestValidationError</span><span class="p">,</span>
+    <span class="n">Runtime400Exception</span><span class="p">,</span>
+    <span class="n">daemon_runtime_exception_handler</span><span class="p">,</span>
+    <span class="n">validation_exception_handler</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">get_main_parser</span><span class="p">,</span> <span class="n">_get_run_args</span>
 
 <span class="n">jinad_args</span> <span class="o">=</span> <span class="n">get_main_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([])</span>
 <span class="n">daemon_logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="s1">'DAEMON'</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">jinad_args</span><span class="p">))</span>
 
+<span class="n">__task_queue__</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+<span class="n">__root_workspace__</span> <span class="o">=</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace</span>
+<span class="n">__rootdir__</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
+<span class="n">__dockerfiles__</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span> <span class="o">/</span> <span class="s1">'Dockerfiles'</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">_get_app</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.api.endpoints</span> <span class="kn">import</span> <span class="n">router</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">pea</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">workspace</span>
+
+<span class="k">def</span> <span class="nf">_get_app</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">.api.endpoints</span> <span class="kn">import</span> <span class="n">router</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="s1">'JinaD (Daemon)'</span><span class="p">,</span>
@@ -408,26 +420,6 @@
                 <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'daemon'</span><span class="p">,</span>
                 <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage the Daemon'</span><span class="p">,</span>
             <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'flows'</span><span class="p">,</span>
-                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Flows'</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'pods'</span><span class="p">,</span>
-                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Pods'</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'peas'</span><span class="p">,</span>
-                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Peas'</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'logs'</span><span class="p">,</span>
-                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to stream Logs'</span><span class="p">,</span>
-            <span class="p">},</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'workspaces'</span><span class="p">,</span>
-                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Workspaces'</span><span class="p">,</span>
-            <span class="p">},</span>
         <span class="p">],</span>
     <span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">add_middleware</span><span class="p">(</span>
@@ -437,13 +429,73 @@
         <span class="n">allow_methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
         <span class="n">allow_headers</span><span class="o">=</span><span class="p">[</span><span class="s1">'*'</span><span class="p">],</span>
     <span class="p">)</span>
+
     <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">pea</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">workspace</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">add_exception_handler</span><span class="p">(</span><span class="n">Runtime400Exception</span><span class="p">,</span> <span class="n">daemon_runtime_exception_handler</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">add_exception_handler</span><span class="p">(</span><span class="n">RequestValidationError</span><span class="p">,</span> <span class="n">validation_exception_handler</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.api.endpoints</span> <span class="kn">import</span> <span class="n">flows</span><span class="p">,</span> <span class="n">pods</span><span class="p">,</span> <span class="n">peas</span><span class="p">,</span> <span class="n">logs</span><span class="p">,</span> <span class="n">workspaces</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">peas</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">pods</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">flows</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">workspaces</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">openapi_tags</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'flows'</span><span class="p">,</span>
+                    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Flows'</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'pods'</span><span class="p">,</span>
+                    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Pods'</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'peas'</span><span class="p">,</span>
+                    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Peas'</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'logs'</span><span class="p">,</span>
+                    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to stream Logs'</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'workspaces'</span><span class="p">,</span>
+                    <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage Workspaces'</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">'pod'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.api.endpoints.partial</span> <span class="kn">import</span> <span class="n">pod</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">pod</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">openapi_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'pod'</span><span class="p">,</span>
+                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage a Pod'</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">'pea'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.api.endpoints.partial</span> <span class="kn">import</span> <span class="n">pea</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">pea</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">openapi_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'pea'</span><span class="p">,</span>
+                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage a Pea'</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">'flow'</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.api.endpoints.partial</span> <span class="kn">import</span> <span class="n">flow</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">flow</span><span class="o">.</span><span class="n">router</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">openapi_tags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'flow'</span><span class="p">,</span>
+                <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'API to manage a Flow'</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">app</span>
 
@@ -458,6 +510,7 @@
     <span class="p">)</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__stop_msg__</span>
 
     <span class="n">daemon_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
@@ -477,17 +530,30 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fluentd_proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
             <span class="n">daemon_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'fluentd: </span><span class="si">{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-        <span class="n">daemon_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Fluentd not found locally, Jinad cannot stream logs!'</span><span class="p">)</span>
+        <span class="n">daemon_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'fluentd not found locally, jinad cannot stream logs!'</span><span class="p">)</span>
         <span class="n">jinad_args</span><span class="o">.</span><span class="n">no_fluentd</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/daemon/#daemon.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="sd">"""Entrypoint for JinaD"""</span>
-    <span class="k">global</span> <span class="n">jinad_args</span>
+<span class="k">def</span> <span class="nf">_start_consumer</span><span class="p">():</span>
+    <span class="kn">from</span> <span class="nn">.tasks</span> <span class="kn">import</span> <span class="n">ConsumerThread</span>
+
+    <span class="n">ConsumerThread</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">_update_default_args</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">jinad_args</span><span class="p">,</span> <span class="n">__root_workspace__</span>
     <span class="n">jinad_args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
+    <span class="n">__root_workspace__</span> <span class="o">=</span> <span class="s1">'/workspace'</span> <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">mode</span> <span class="k">else</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace</span>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/daemon/#daemon.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">"""Entrypoint for jinad"""</span>
+    <span class="n">_update_default_args</span><span class="p">()</span>
+    <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">__root_workspace__</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">no_fluentd</span><span class="p">:</span>
-        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_start_fluentd</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-    <span class="n">_start_uvicorn</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">_get_app</span><span class="p">())</span></div>
+        <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_start_fluentd</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">_start_consumer</span><span class="p">()</span>
+    <span class="n">_start_uvicorn</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">_get_app</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">mode</span><span class="p">))</span></div>
 </pre></div>
       </article>
       <footer>

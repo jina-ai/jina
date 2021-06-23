@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/api/daemon.stores.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Submodules: daemon.stores.base module, daemon.stores.flow module, daemon.stores.helper module, daemon.stores.pea module, daemon.stores.pod module, daemon.stores.workspace module. Module contents:" />
+  <meta property="og:description" content="Submodules: daemon.stores.base module, daemon.stores.containers module, daemon.stores.flows module, daemon.stores.partial module, daemon.stores.peas module, daemon.stores.pods module, daemon.stores.workspaces module. Module contents:" />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -407,16 +407,33 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.stores.base/">daemon.stores.base module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.flow/">daemon.stores.flow module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.helper/">daemon.stores.helper module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.pea/">daemon.stores.pea module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.pod/">daemon.stores.pod module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.workspace/">daemon.stores.workspace module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.containers/">daemon.stores.containers module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.flows/">daemon.stores.flows module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.partial/">daemon.stores.partial module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.peas/">daemon.stores.peas module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.pods/">daemon.stores.pods module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.stores.workspaces/">daemon.stores.workspaces module</a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="module-daemon.stores">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-daemon.stores" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="daemon.stores.get_store_from_id">
+<code class="sig-prename descclassname"><span class="pre">daemon.stores.</span></code><code class="sig-name descname"><span class="pre">get_store_from_id</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/#get_store_from_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.get_store_from_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get store from id</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>entity_id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – DaemonID</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../daemon.stores.base/#daemon.stores.base.BaseStore" title="daemon.stores.base.BaseStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStore</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>store object</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 </div>
 

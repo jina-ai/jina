@@ -380,12 +380,15 @@
         <h1>Source code for daemon.parser</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
-<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
+
+<span class="kn">from</span> <span class="nn">.models.enums</span> <span class="kn">import</span> <span class="n">PartialDaemonModes</span>
 
 
 <div class="viewcode-block" id="mixin_daemon_parser"><a class="viewcode-back" href="../../../api/daemon.parser/#daemon.parser.mixin_daemon_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_daemon_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -395,12 +398,28 @@
 <span class="sd">    # noqa: DAR103</span>
 <span class="sd">    """</span>
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Daemon'</span><span class="p">)</span>
-
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--no-fluentd'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'do not start fluentd, no log streaming'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--store'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">    Load from local store (if any), while starting JinaD</span>
+<span class="s1">    '''</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--mode'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">PartialDaemonModes</span><span class="p">),</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Mode for partial jinad. Can be flow/pod/pea. If none provided main jinad is run.'</span>
+        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
+        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -431,13 +450,18 @@
 
 
 <span class="k">def</span> <span class="nf">_get_run_args</span><span class="p">(</span><span class="n">print_args</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">"""Fetch run args for jinad</span>
+
+<span class="sd">    :param print_args: True if we want to print args to console</span>
+<span class="sd">    :return: jinad args</span>
+<span class="sd">    """</span>
     <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
     <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">daemon_logger</span>
 
     <span class="n">parser</span> <span class="o">=</span> <span class="n">get_main_parser</span><span class="p">()</span>
     <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span>
 
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">args</span><span class="p">,</span> <span class="n">argv</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_known_args</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">print_args</span><span class="p">:</span>
 
         <span class="n">default_args</span> <span class="o">=</span> <span class="p">{</span>

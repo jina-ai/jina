@@ -402,6 +402,30 @@
         <div class="section" id="module-daemon.excepts">
 <span id="daemon-excepts-module"></span><h1>daemon.excepts module<a class="headerlink" href="#module-daemon.excepts" title="Permalink to this headline">¶</a></h1>
 <dl class="py exception">
+<dt id="daemon.excepts.DockerNotFoundException">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.excepts.</span></code><code class="sig-name descname"><span class="pre">DockerNotFoundException</span></code><a class="reference internal" href="../../_modules/daemon/excepts/#DockerNotFoundException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.excepts.DockerNotFoundException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception if docker client cannot communicate with dockerd</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="daemon.excepts.DockerImageException">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.excepts.</span></code><code class="sig-name descname"><span class="pre">DockerImageException</span></code><a class="reference internal" href="../../_modules/daemon/excepts/#DockerImageException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.excepts.DockerImageException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception while handling a docker image in the workspace</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="daemon.excepts.DockerNetworkException">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.excepts.</span></code><code class="sig-name descname"><span class="pre">DockerNetworkException</span></code><a class="reference internal" href="../../_modules/daemon/excepts/#DockerNetworkException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.excepts.DockerNetworkException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception while handling docker networks in the workspace</p>
+</dd></dl>
+<dl class="py exception">
+<dt id="daemon.excepts.DockerContainerException">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.excepts.</span></code><code class="sig-name descname"><span class="pre">DockerContainerException</span></code><a class="reference internal" href="../../_modules/daemon/excepts/#DockerContainerException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.excepts.DockerContainerException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception while handling a docker container in the workspace</p>
+</dd></dl>
+<dl class="py exception">
 <dt id="daemon.excepts.Runtime400Exception">
 <em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.excepts.</span></code><code class="sig-name descname"><span class="pre">Runtime400Exception</span></code><a class="reference internal" href="../../_modules/daemon/excepts/#Runtime400Exception"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.excepts.Runtime400Exception" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
@@ -410,7 +434,35 @@
 <dl class="py function">
 <dt id="daemon.excepts.daemon_runtime_exception_handler">
 <em class="property"><span class="pre">async</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.excepts.</span></code><code class="sig-name descname"><span class="pre">daemon_runtime_exception_handler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/excepts/#daemon_runtime_exception_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.excepts.daemon_runtime_exception_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Exception handler for all Runtime400Exceptions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code>) – starlette request</p></li>
+<li><p><strong>ex</strong> (<a class="reference internal" href="#daemon.excepts.Runtime400Exception" title="daemon.excepts.Runtime400Exception"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runtime400Exception</span></code></a>) – actual Runtime400Exception</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>json response representing the error</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="daemon.excepts.validation_exception_handler">
+<em class="property"><span class="pre">async</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.excepts.</span></code><code class="sig-name descname"><span class="pre">validation_exception_handler</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/excepts/#validation_exception_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.excepts.validation_exception_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception handler for all RequestValidationError raised by pydantic</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code>) – starlette request</p></li>
+<li><p><strong>ex</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">RequestValidationError</span></code>) – actual Validation exception</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>json response representing the error</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>

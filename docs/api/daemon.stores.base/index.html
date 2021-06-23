@@ -405,14 +405,14 @@
 <dt id="daemon.stores.base.BaseStore">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.stores.base.</span></code><code class="sig-name descname"><span class="pre">BaseStore</span></code><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">collections.abc.MutableMapping</span></code></p>
-<p>The Base class for Jinad stores</p>
+<p>The Base class for Daemon stores</p>
 <dl class="py method">
 <dt id="daemon.stores.base.BaseStore.add">
 <code class="sig-name descname"><span class="pre">add</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new element to the store. This method needs to be overridden by the subclass</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></p>
+<dd class="field-odd"><p><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -422,32 +422,98 @@
 <dd><p>Updates the element to the store. This method needs to be overridden by the subclass</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></p>
+<dd class="field-odd"><p><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.stores.base.BaseStore.delete">
-<code class="sig-name descname"><span class="pre">delete</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">everything</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>delete an object from the store</p>
+<code class="sig-name descname"><span class="pre">delete</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes an element from the store. This method needs to be overridden by the subclass</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="daemon.stores.base.BaseStore.keys">
+<code class="sig-name descname"><span class="pre">keys</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get keys in the store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Keys in the local store</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="daemon.stores.base.BaseStore.values">
+<code class="sig-name descname"><span class="pre">values</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get values in the store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Values in the local store</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="daemon.stores.base.BaseStore.items">
+<code class="sig-name descname"><span class="pre">items</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.items"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get items in the store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]]]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Items in the local store</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="daemon.stores.base.BaseStore.dump">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">dump</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.dump"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump store as a pickle to local workspace</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]) – the id of the object</p></li>
-<li><p><strong>workspace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to delete the workdir of the object</p></li>
-<li><p><strong>everything</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to delete everything</p></li>
-<li><p><strong>kwargs</strong> – not used</p></li>
-</ul>
+<dd class="field-odd"><p><strong>func</strong> – function to be wrapped</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>decorator for dump</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="daemon.stores.base.BaseStore.load">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load store from a pickle in local workspace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>, <a class="reference internal" href="#daemon.stores.base.BaseStore" title="daemon.stores.base.BaseStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStore</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Store from local or empty store</p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.stores.base.BaseStore.clear">
-<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.clear" title="Permalink to this definition">¶</a></dt>
-<dd><p>delete all the objects in the store</p>
+<code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/base/#BaseStore.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.base.BaseStore.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all the objects in the store</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – keyward args</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -458,16 +524,6 @@
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="daemon.stores.base.BaseStore.status">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">status</span></code><a class="headerlink" href="#daemon.stores.base.BaseStore.status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the status of this store as a dict</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
 </dd>
 </dl>
 </dd></dl>

@@ -384,6 +384,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">platform</span> <span class="kn">import</span> <span class="n">uname</span>
 
 <span class="kn">from</span> <span class="nn">..zmq.base</span> <span class="kn">import</span> <span class="n">ZMQRuntime</span>
 <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
@@ -432,7 +433,9 @@
         <span class="c1"># Related to potential docker-in-docker communication. If `ContainerPea` lives already inside a container.</span>
         <span class="c1"># it will need to communicate using the `bridge` network.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_net_mode</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'linux2'</span><span class="p">):</span>
+
+        <span class="c1"># In WSL, we need to set ports explicitly</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'linux2'</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">'microsoft'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">release</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_net_mode</span> <span class="o">=</span> <span class="s1">'host'</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">bridge_network</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'bridge'</span><span class="p">)</span>

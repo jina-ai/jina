@@ -396,7 +396,7 @@
 <span class="sd">        parallel_type: any</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">EnumMeta</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">EnumMeta</span>
 
 
 <div class="viewcode-block" id="EnumType"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.EnumType">[docs]</a><span class="k">class</span> <span class="nc">EnumType</span><span class="p">(</span><span class="n">EnumMeta</span><span class="p">):</span>
@@ -807,6 +807,17 @@
 <span class="sd">        :return: True is class is stackable</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="RemoteWorkspaceState"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.RemoteWorkspaceState">[docs]</a><span class="k">class</span> <span class="nc">RemoteWorkspaceState</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">"""Enum representing state of remote workspace created by JinaD"""</span>
+
+    <span class="n">PENDING</span> <span class="o">=</span> <span class="s1">'PENDING'</span>
+    <span class="n">CREATING</span> <span class="o">=</span> <span class="s1">'CREATING'</span>
+    <span class="n">UPDATING</span> <span class="o">=</span> <span class="s1">'UPDATING'</span>
+    <span class="n">ACTIVE</span> <span class="o">=</span> <span class="s1">'ACTIVE'</span>
+    <span class="n">FAILED</span> <span class="o">=</span> <span class="s1">'FAILED'</span>
+    <span class="n">DELETING</span> <span class="o">=</span> <span class="s1">'DELETING'</span></div>
 
 
 <div class="viewcode-block" id="replace_enum_to_str"><a class="viewcode-back" href="../../../api/jina.enums/#jina.enums.replace_enum_to_str">[docs]</a><span class="k">def</span> <span class="nf">replace_enum_to_str</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>

@@ -386,7 +386,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">ConditionalEvent</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span>
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
@@ -440,22 +440,40 @@
         <span class="c1"># or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows</span>
         <span class="c1"># control address of runtime</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_remote_controlled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runtime_cls</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_ctrl_adrr</span><span class="p">()</span>
 
+<div class="viewcode-block" id="BasePea.set_ctrl_adrr"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.set_ctrl_adrr">[docs]</a>    <span class="k">def</span> <span class="nf">set_ctrl_adrr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Sets control address for different runtimes"""</span>
         <span class="c1"># This logic must be improved specially when it comes to naming. It is about relative local/remote position</span>
         <span class="c1"># between the runtime and the `ZEDRuntime` it may control</span>
         <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span> <span class="o">=</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ctrl_with_ipc</span>
-        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="kn">from</span> <span class="nn">..runtimes.jinad</span> <span class="kn">import</span> <span class="n">JinadRuntime</span>
+        <span class="kn">from</span> <span class="nn">..runtimes.container</span> <span class="kn">import</span> <span class="n">ContainerRuntime</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">ContainerRuntime</span><span class="p">:</span>
+            <span class="c1"># Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.</span>
+            <span class="c1"># If yes, set host_ctrl to __docker_host__, else keep it as __default_host__</span>
+            <span class="n">ctrl_host</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">__docker_host__</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
+                <span class="ow">and</span> <span class="s1">'extra_hosts'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
+                <span class="ow">and</span> <span class="n">__docker_host__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="p">[</span><span class="s1">'extra_hosts'</span><span class="p">]</span>
+                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span> <span class="o">=</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span>
+                <span class="n">ctrl_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ctrl_with_ipc</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span> <span class="o">=</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ctrl_with_ipc</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_runtime_ctrl_address</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">JinadRuntime</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BasePea.start"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Start the Pea.</span>
@@ -664,8 +682,11 @@
 
     <span class="k">def</span> <span class="nf">_get_runtime_cls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
         <span class="n">is_remote_controlled</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">!=</span> <span class="n">__default_host__</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">!=</span> <span class="n">__default_host__</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">disable_remote</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'JinadRuntime'</span>
+            <span class="c1"># NOTE: remote pea would also create a remote workspace which might take alot of time.</span>
+            <span class="c1"># setting it to -1 so that wait_start_success doesn't fail</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
             <span class="n">is_remote_controlled</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
             <span class="s1">'docker://'</span>

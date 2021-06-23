@@ -378,138 +378,180 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.stores.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableMapping</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableMapping</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">jinad_args</span>
+<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
+<span class="kn">from</span> <span class="nn">..models.base</span> <span class="kn">import</span> <span class="n">StoreItem</span><span class="p">,</span> <span class="n">StoreStatus</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">jinad_args</span><span class="p">,</span> <span class="n">__root_workspace__</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..models.workspaces</span> <span class="kn">import</span> <span class="n">WorkspaceItem</span>
+    <span class="kn">from</span> <span class="nn">..models.containers</span> <span class="kn">import</span> <span class="n">ContainerItem</span>
 
 
 <div class="viewcode-block" id="BaseStore"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore">[docs]</a><span class="k">class</span> <span class="nc">BaseStore</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">):</span>
-    <span class="sd">"""The Base class for Jinad stores"""</span>
+    <span class="sd">"""The Base class for Daemon stores"""</span>
+
+    <span class="n">_kind</span> <span class="o">=</span> <span class="s1">''</span>
+    <span class="n">_status_model</span> <span class="o">=</span> <span class="n">StoreStatus</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict['uuid.UUID', Dict[str, Any]]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">jinad_args</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_stats</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">_status_model</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_init_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Initialize the stats """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_time_created</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_time_updated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_created</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_add</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_del</span> <span class="o">=</span> <span class="mi">0</span>
-
-<div class="viewcode-block" id="BaseStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'uuid.UUID'</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseStore.add"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
         <span class="sd">"""Add a new element to the store. This method needs to be overridden by the subclass</span>
 
 
 <span class="sd">        .. #noqa: DAR101"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseStore.update"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'uuid.UUID'</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseStore.update"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
         <span class="sd">"""Updates the element to the store. This method needs to be overridden by the subclass</span>
 
 
 <span class="sd">        .. #noqa: DAR101"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BaseStore.delete"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">],</span>
-        <span class="n">workspace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">everything</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""delete an object from the store</span>
+<div class="viewcode-block" id="BaseStore.delete"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
+        <span class="sd">"""Deletes an element from the store. This method needs to be overridden by the subclass</span>
 
-<span class="sd">        :param id: the id of the object</span>
-<span class="sd">        :param workspace: whether to delete the workdir of the object</span>
-<span class="sd">        :param everything: whether to delete everything</span>
-<span class="sd">        :param kwargs: not used</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="nb">id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s1">'object'</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">'object'</span><span class="p">],</span> <span class="s1">'close'</span><span class="p">):</span>
-                <span class="n">v</span><span class="p">[</span><span class="s1">'object'</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">workspace</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'workdir'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">'workdir'</span><span class="p">])</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">'[!logging.log]*'</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'file to be deleted: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-                        <span class="n">path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">everything</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'workdir'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'directory to be deleted: </span><span class="si">{</span><span class="n">v</span><span class="p">[</span><span class="s2">"workdir"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">'workdir'</span><span class="p">])</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.'</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">),</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.'</span><span class="p">)</span></div>
+<span class="sd">        .. #noqa: DAR101"""</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'uuid.UUID'</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">):</span>
-        <span class="sd">"""Release a Pea/Pod/Flow object from the store</span>
+<div class="viewcode-block" id="BaseStore.keys"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="s1">'DaemonID'</span><span class="p">]:</span>
+        <span class="sd">"""Get keys in the store</span>
 
-<span class="sd">        :param key: the key of the object</span>
+<span class="sd">        :return: Keys in the local store</span>
+<span class="sd">        """</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseStore.values"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'WorkspaceItem'</span><span class="p">,</span> <span class="s1">'ContainerItem'</span><span class="p">]]:</span>
+        <span class="sd">"""Get values in the store</span>
+
+<span class="sd">        :return: Values in the local store</span>
+<span class="sd">        """</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseStore.items"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s1">'DaemonID'</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'WorkspaceItem'</span><span class="p">,</span> <span class="s1">'ContainerItem'</span><span class="p">]]]:</span>
+        <span class="sd">"""Get items in the store</span>
+
+<span class="sd">        :return: Items in the local store</span>
+<span class="sd">        """</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'WorkspaceItem'</span><span class="p">,</span> <span class="s1">'ContainerItem'</span><span class="p">]:</span>
+        <span class="sd">"""Fetch a Container/Workspace object from the store</span>
+
+<span class="sd">        :param key: the key (DaemonID) of the object</span>
+<span class="sd">        :return: the value of the object</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">StoreItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Add a Container/Workspace object to the store</span>
+
+<span class="sd">        :param key: the key (DaemonID) of the object</span>
+<span class="sd">        :param value: the value to be assigned</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">num_add</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">time_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Release a Container/Workspace object from the store</span>
+
+<span class="sd">        :param key: the key (DaemonID) of the object</span>
 
 
 <span class="sd">        .. #noqa: DAR201"""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_time_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_del</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">num_del</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">time_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 
-<div class="viewcode-block" id="BaseStore.clear"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""delete all the objects in the store"""</span>
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">jinad_args</span><span class="p">))</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_model</span><span class="p">(</span><span class="o">**</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">time_updated</span> <span class="o">=</span> <span class="n">now</span>
 
-        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseStore.dump"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.dump">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">"""Dump store as a pickle to local workspace</span>
+
+<span class="sd">        :param func: function to be wrapped</span>
+<span class="sd">        :return: decorator for dump</span>
+<span class="sd">        """</span>
+
+        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_workspace__</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">.store'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s1">.backup'</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">r</span>
+
+        <span class="k">return</span> <span class="n">wrapper</span></div>
+
+<div class="viewcode-block" id="BaseStore.load"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="s1">'BaseStore'</span><span class="p">]:</span>
+        <span class="sd">"""Load store from a pickle in local workspace</span>
+
+<span class="sd">        :return: Store from local or empty store</span>
+<span class="sd">        """</span>
+
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_workspace__</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">.store'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BaseStore.clear"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Delete all the objects in the store</span>
+
+<span class="sd">        :param kwargs: keyward args</span>
+<span class="sd">        """</span>
+
+        <span class="n">_status</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseStore.reset"><a class="viewcode-back" href="../../../../api/daemon.stores.base/#daemon.stores.base.BaseStore.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Calling :meth:`clear` and reset all stats """</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_stats</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_model</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="s1">'uuid.UUID'</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="n">value</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'time_created'</span><span class="p">:</span> <span class="n">t</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_time_updated</span> <span class="o">=</span> <span class="n">t</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_num_add</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">"""Return the status of this store as a dict</span>
-
-
-<span class="sd">        .. #noqa: DAR201"""</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">'size'</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">),</span>
-            <span class="s1">'time_created'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_created</span><span class="p">,</span>
-            <span class="s1">'time_updated'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_updated</span><span class="p">,</span>
-            <span class="s1">'num_add'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_add</span><span class="p">,</span>
-            <span class="s1">'num_del'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_del</span><span class="p">,</span>
-            <span class="s1">'items'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">,</span>
-        <span class="p">}</span></div>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
 </pre></div>
       </article>
       <footer>

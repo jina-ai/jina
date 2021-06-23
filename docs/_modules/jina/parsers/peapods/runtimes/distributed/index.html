@@ -379,8 +379,8 @@
         </label>
         <h1>Source code for jina.parsers.peapods.runtimes.distributed</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Argparser module for distributed runtimes"""</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
-<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 
 
 <div class="viewcode-block" id="mixin_distributed_feature_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.peapods.runtimes.distributed/#jina.parsers.peapods.runtimes.distributed.mixin_distributed_feature_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_distributed_feature_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -416,12 +416,12 @@
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--workspace-id'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">random_identity</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'the UUID for identifying the workspace. When not given a random id will be assigned.'</span>
-        <span class="s1">'Multiple Pea/Pod/Flow will work under the same workspace if they share the same '</span>
-        <span class="s1">'`workspace-id`.'</span><span class="p">,</span>
+        <span class="s1">'--disable-remote'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, remote pea invocation is avoided. This is used by peas created by JinaD'</span>
+        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
+        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>

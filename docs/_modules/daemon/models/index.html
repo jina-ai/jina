@@ -379,12 +379,30 @@
         </label>
         <h1>Source code for daemon.models</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
+<span class="kn">from</span> <span class="nn">.id</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">.custom</span> <span class="kn">import</span> <span class="n">build_pydantic_model</span>
+<span class="kn">from</span> <span class="nn">.containers</span> <span class="kn">import</span> <span class="n">ContainerItem</span><span class="p">,</span> <span class="n">ContainerStoreStatus</span>
+<span class="kn">from</span> <span class="nn">.workspaces</span> <span class="kn">import</span> <span class="n">WorkspaceItem</span><span class="p">,</span> <span class="n">WorkspaceStoreStatus</span>
+
 
 <span class="n">FlowModel</span> <span class="o">=</span> <span class="n">build_pydantic_model</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">'FlowModel'</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">'flow'</span><span class="p">)</span>
 <span class="n">PodModel</span> <span class="o">=</span> <span class="n">build_pydantic_model</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">'PodModel'</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">'pod'</span><span class="p">)</span>
 <span class="n">PeaModel</span> <span class="o">=</span> <span class="n">build_pydantic_model</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="s1">'PeaModel'</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">'pea'</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DaemonStatus"><a class="viewcode-back" href="../../../api/daemon.models/#daemon.models.DaemonStatus">[docs]</a><span class="k">class</span> <span class="nc">DaemonStatus</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">"""Pydantic model for DaemonStatus"""</span>
+
+    <span class="n">jina</span><span class="p">:</span> <span class="n">Dict</span>
+    <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span>
+    <span class="n">workspaces</span><span class="p">:</span> <span class="n">WorkspaceStoreStatus</span>
+    <span class="n">peas</span><span class="p">:</span> <span class="n">ContainerStoreStatus</span>
+    <span class="n">pods</span><span class="p">:</span> <span class="n">ContainerStoreStatus</span>
+    <span class="n">flows</span><span class="p">:</span> <span class="n">ContainerStoreStatus</span>
+    <span class="n">used_memory</span><span class="p">:</span> <span class="nb">str</span></div>
 
 
 <div class="viewcode-block" id="UpdateOperationEnum"><a class="viewcode-back" href="../../../api/daemon.models/#daemon.models.UpdateOperationEnum">[docs]</a><span class="k">class</span> <span class="nc">UpdateOperationEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>

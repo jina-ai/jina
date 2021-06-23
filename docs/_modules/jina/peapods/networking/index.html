@@ -380,7 +380,7 @@
         <h1>Source code for jina.peapods.networking</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span>
 
 
@@ -406,19 +406,25 @@
     <span class="n">conn_local</span> <span class="o">=</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">host</span> <span class="o">==</span> <span class="n">__default_host__</span>
 
     <span class="c1"># is CONNECT inside docker?</span>
-    <span class="n">conn_docker</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
-        <span class="n">connect_args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
+    <span class="c1"># check if `uses` has 'docker://' or,</span>
+    <span class="c1"># it is a remote pea managed by jinad. (all remote peas are inside docker)</span>
+    <span class="n">conn_docker</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">connect_args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
+    <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">conn_local</span>
 
     <span class="c1"># is BIND &amp; CONNECT all on the same remote?</span>
     <span class="n">bind_conn_same_remote</span> <span class="o">=</span> <span class="p">(</span>
         <span class="ow">not</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conn_local</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bind_host</span> <span class="o">==</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'linux2'</span><span class="p">):</span>
+    <span class="c1"># for remote peas managed by jinad, always set to __docker_host__</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conn_local</span><span class="p">:</span>
+        <span class="n">local_host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
+    <span class="k">elif</span> <span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'linux2'</span><span class="p">):</span>
         <span class="n">local_host</span> <span class="o">=</span> <span class="n">__default_host__</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">local_host</span> <span class="o">=</span> <span class="s1">'host.docker.internal'</span>
+        <span class="n">local_host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
 
     <span class="c1"># pod1 in local, pod2 in local (conn_docker if pod2 in docker)</span>
     <span class="k">if</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="n">conn_local</span><span class="p">:</span>
@@ -428,9 +434,11 @@
     <span class="k">if</span> <span class="n">bind_conn_same_remote</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">local_host</span> <span class="k">if</span> <span class="n">conn_docker</span> <span class="k">else</span> <span class="n">__default_host__</span>
 
-    <span class="c1"># From here: Missing consideration of docker</span>
     <span class="k">if</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conn_local</span><span class="p">:</span>
         <span class="c1"># in this case we are telling CONN (at remote) our local ip address</span>
+        <span class="k">if</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'localhost'</span><span class="p">):</span>
+            <span class="c1"># this is for the "psuedo" remote tests to pass</span>
+            <span class="k">return</span> <span class="n">__docker_host__</span>
         <span class="k">return</span> <span class="n">get_public_ip</span><span class="p">()</span> <span class="k">if</span> <span class="n">bind_expose_public</span> <span class="k">else</span> <span class="n">get_internal_ip</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># in this case we (at local) need to know about remote the BIND address</span>

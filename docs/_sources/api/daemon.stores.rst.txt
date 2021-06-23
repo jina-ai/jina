@@ -8,11 +8,12 @@ Submodules
    :maxdepth: 4
 
    daemon.stores.base
-   daemon.stores.flow
-   daemon.stores.helper
-   daemon.stores.pea
-   daemon.stores.pod
-   daemon.stores.workspace
+   daemon.stores.containers
+   daemon.stores.flows
+   daemon.stores.partial
+   daemon.stores.peas
+   daemon.stores.pods
+   daemon.stores.workspaces
 
 Module contents
 ---------------

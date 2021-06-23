@@ -419,23 +419,22 @@
     <span class="k">return</span> <span class="n">all_d</span></div>
 
 
-<span class="k">def</span> <span class="nf">_export_parser_args</span><span class="p">(</span><span class="n">parser_fn</span><span class="p">,</span> <span class="n">type_as_str</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_export_parser_args</span><span class="p">(</span><span class="n">parser_fn</span><span class="p">,</span> <span class="n">type_as_str</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
     <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span>
+    <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 
     <span class="n">port_attr</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'help'</span><span class="p">,</span> <span class="s1">'choices'</span><span class="p">,</span> <span class="s1">'default'</span><span class="p">,</span> <span class="s1">'required'</span><span class="p">,</span> <span class="s1">'option_strings'</span><span class="p">,</span> <span class="s1">'dest'</span><span class="p">)</span>
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">parser_fn</span><span class="p">()</span>
-    <span class="n">parser2</span> <span class="o">=</span> <span class="n">parser_fn</span><span class="p">()</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">parser_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">parser2</span> <span class="o">=</span> <span class="n">parser_fn</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="n">random_dest</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">_actions</span><span class="p">,</span> <span class="n">parser2</span><span class="o">.</span><span class="n">_actions</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">default</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">default</span><span class="p">:</span>
             <span class="n">random_dest</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">_actions</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">))</span>
-            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">help</span> <span class="o">!=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">_StoreAction</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_SHOW_ALL_ARGS</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">help</span> <span class="o">==</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="n">ddd</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">port_attr</span><span class="p">}</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_StoreTrueAction</span><span class="p">):</span>
                 <span class="n">ddd</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span>

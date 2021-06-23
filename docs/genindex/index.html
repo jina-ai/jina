@@ -387,6 +387,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.activate_runtime">activate_runtime() (jina.peapods.peas.BasePea method)</a>
 </li>
+        <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.ACTIVE">ACTIVE (jina.enums.RemoteWorkspaceState attribute)</a>
+</li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_pod">active_pod() (jina.types.routing.table.RoutingTable property)</a>
 </li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.active_target_pod">active_target_pod() (jina.types.routing.table.RoutingTable property)</a>
@@ -394,11 +396,15 @@
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.add">add() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
-          <li><a href="../api/daemon.stores.flow/#daemon.stores.flow.FlowStore.add">(daemon.stores.flow.FlowStore method)</a>
+          <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.add">(daemon.stores.containers.ContainerStore method)</a>
 </li>
-          <li><a href="../api/daemon.stores.pea/#daemon.stores.pea.PeaStore.add">(daemon.stores.pea.PeaStore method)</a>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.add">(daemon.stores.partial.PartialFlowStore method)</a>
 </li>
-          <li><a href="../api/daemon.stores.workspace/#daemon.stores.workspace.WorkspaceStore.add">(daemon.stores.workspace.WorkspaceStore method)</a>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPeaStore.add">(daemon.stores.partial.PartialPeaStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.add">(daemon.stores.partial.PartialStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.add">(daemon.stores.workspaces.WorkspaceStore method)</a>
 </li>
           <li><a href="../api/jina/#jina.Flow.add">(jina.Flow method)</a>
 </li>
@@ -455,6 +461,8 @@
         </ul></li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.EvaluationCallback.AGGREGATE_FUNCTIONS">AGGREGATE_FUNCTIONS (jina.optimizers.EvaluationCallback attribute)</a>
 </li>
+        <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.alive">alive() (jina.peapods.runtimes.jinad.client.DaemonClient property)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL">ALL (jina.enums.PollingType attribute)</a>
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.all_args">all_args() (jina.peapods.pods.Pod property)</a>
@@ -489,8 +497,16 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace">ArgNamespace (class in jina.helper)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus.arguments">arguments (daemon.models.status.StoreItemStatus attribute)</a>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerItem.arguments">arguments (daemon.models.containers.ContainerItem attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.partial/#daemon.models.partial.PartialStoreItem.arguments">(daemon.models.partial.PartialStoreItem attribute)</a>
 </li>
+          <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceItem.arguments">(daemon.models.workspaces.WorkspaceItem attribute)</a>
+</li>
+          <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.arguments">(daemon.tasks.DaemonWorker attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.types.request/#jina.types.request.Request.as_response">as_response() (jina.types.request.Request method)</a>
 </li>
         <li><a href="../api/jina.types.request/#jina.types.request.Request.as_typed_request">as_typed_request() (jina.types.request.Request method)</a>
@@ -611,10 +627,10 @@
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore">BaseStore (class in daemon.stores.base)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.helper/#jina.helper.batch_iterator">batch_iterator() (in module jina.helper)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor.best_parameters">best_parameters() (jina.optimizers.ResultProcessor property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BetterEnum">BetterEnum (class in jina.enums)</a>
@@ -649,9 +665,13 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.buffer">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina/#jina.Flow.build">build() (jina.Flow method)</a>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.build">build() (daemon.dockerize.Dockerizer class method)</a>
 
         <ul>
+          <li><a href="../api/daemon.files/#daemon.files.DaemonFile.build">(daemon.files.DaemonFile property)</a>
+</li>
+          <li><a href="../api/jina/#jina.Flow.build">(jina.Flow method)</a>
+</li>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.build">(jina.flow.base.Flow method)</a>
 </li>
         </ul></li>
@@ -699,6 +719,8 @@
           <li><a href="../api/jina.types.document.helper/#jina.types.document.helper.DocGroundtruthPair.chunks">(jina.types.document.helper.DocGroundtruthPair property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.helper/#daemon.helper.classproperty">classproperty (class in daemon.helper)</a>
+</li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.clear">clear() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
@@ -745,6 +767,8 @@
           <li><a href="../api/cli.export/#module-cli.export">module</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.client">client (daemon.dockerize.Dockerizer attribute)</a>
+</li>
         <li><a href="../api/cli.api/#cli.api.client">client() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina/#jina.Client">Client() (in module jina)</a>
@@ -789,6 +813,8 @@
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter">ColorFormatter (class in jina.logging.formatter)</a>
 </li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerArguments.command">command (daemon.models.containers.ContainerArguments attribute)</a>
+</li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin.command">command() (jina.types.request.mixin.CommandMixin property)</a>
 </li>
         <li><a href="../api/jina.types.request.mixin/#jina.types.request.mixin.CommandMixin">CommandMixin (class in jina.types.request.mixin)</a>
@@ -797,8 +823,6 @@
 </li>
         <li><a href="../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">CompoundPod (class in jina.peapods.pods.compound)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.CompressAlgo">CompressAlgo (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.peapods.peas.helper/#jina.peapods.peas.helper.ConditionalEvent">ConditionalEvent (class in jina.peapods.peas.helper)</a>
@@ -809,9 +833,37 @@
 </li>
         <li><a href="../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager">ConnectionManager (class in daemon.api.endpoints.logs)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_mapping">construct_mapping() (jina.jaml.helper.JinaConstructor method)</a>
 </li>
+        <li><a href="../api/daemon.tasks/#daemon.tasks.ConsumerThread">ConsumerThread (class in daemon.tasks)</a>
+</li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.container_id">container_id (daemon.models.containers.ContainerMetadata attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.container_id">(daemon.models.workspaces.WorkspaceMetadata attribute)</a>
+</li>
+          <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.container_id">(daemon.tasks.DaemonWorker attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.container_name">container_name (daemon.models.containers.ContainerMetadata attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerArguments">ContainerArguments (class in daemon.models.containers)</a>
+</li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerItem">ContainerItem (class in daemon.models.containers)</a>
+</li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata">ContainerMetadata (class in daemon.models.containers)</a>
+</li>
         <li><a href="../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime">ContainerRuntime (class in jina.peapods.runtimes.container)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.containers">containers (daemon.dockerize.Dockerizer attribute)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.containers_in_network">containers_in_network() (daemon.dockerize.Dockerizer class method)</a>
+</li>
+        <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore">ContainerStore (class in daemon.stores.containers)</a>
+</li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerStoreStatus">ContainerStoreStatus (class in daemon.models.containers)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.CONTENT">CONTENT (jina.enums.DataInputType attribute)</a>
 </li>
@@ -923,7 +975,11 @@
         </ul></li>
         <li><a href="../api/jina.helper/#jina.helper.countdown">countdown() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.create">create() (jina.peapods.runtimes.jinad.client.DaemonClient method)</a>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.CPU">CPU (daemon.models.enums.DaemonBuild attribute)</a>
+</li>
+        <li><a href="../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.create_workspace">create_workspace() (jina.peapods.runtimes.jinad.JinadRuntime method)</a>
+</li>
+        <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.CREATING">CREATING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.CRITICAL">CRITICAL (jina.enums.LogVerbosity attribute)</a>
 </li>
@@ -956,6 +1012,13 @@
 </li>
         </ul></li>
         <li>
+    daemon.api.dependencies
+
+        <ul>
+          <li><a href="../api/daemon.api.dependencies/#module-daemon.api.dependencies">module</a>
+</li>
+        </ul></li>
+        <li>
     daemon.api.endpoints
 
         <ul>
@@ -963,10 +1026,10 @@
 </li>
         </ul></li>
         <li>
-    daemon.api.endpoints.flow
+    daemon.api.endpoints.flows
 
         <ul>
-          <li><a href="../api/daemon.api.endpoints.flow/#module-daemon.api.endpoints.flow">module</a>
+          <li><a href="../api/daemon.api.endpoints.flows/#module-daemon.api.endpoints.flows">module</a>
 </li>
         </ul></li>
         <li>
@@ -977,24 +1040,59 @@
 </li>
         </ul></li>
         <li>
-    daemon.api.endpoints.pea
+    daemon.api.endpoints.partial
 
         <ul>
-          <li><a href="../api/daemon.api.endpoints.pea/#module-daemon.api.endpoints.pea">module</a>
+          <li><a href="../api/daemon.api.endpoints.partial/#module-daemon.api.endpoints.partial">module</a>
 </li>
         </ul></li>
         <li>
-    daemon.api.endpoints.pod
+    daemon.api.endpoints.partial.flow
 
         <ul>
-          <li><a href="../api/daemon.api.endpoints.pod/#module-daemon.api.endpoints.pod">module</a>
+          <li><a href="../api/daemon.api.endpoints.partial.flow/#module-daemon.api.endpoints.partial.flow">module</a>
 </li>
         </ul></li>
         <li>
-    daemon.api.endpoints.workspace
+    daemon.api.endpoints.partial.pea
 
         <ul>
-          <li><a href="../api/daemon.api.endpoints.workspace/#module-daemon.api.endpoints.workspace">module</a>
+          <li><a href="../api/daemon.api.endpoints.partial.pea/#module-daemon.api.endpoints.partial.pea">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.api.endpoints.partial.pod
+
+        <ul>
+          <li><a href="../api/daemon.api.endpoints.partial.pod/#module-daemon.api.endpoints.partial.pod">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.api.endpoints.peas
+
+        <ul>
+          <li><a href="../api/daemon.api.endpoints.peas/#module-daemon.api.endpoints.peas">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.api.endpoints.pods
+
+        <ul>
+          <li><a href="../api/daemon.api.endpoints.pods/#module-daemon.api.endpoints.pods">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.api.endpoints.workspaces
+
+        <ul>
+          <li><a href="../api/daemon.api.endpoints.workspaces/#module-daemon.api.endpoints.workspaces">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.dockerize
+
+        <ul>
+          <li><a href="../api/daemon.dockerize/#module-daemon.dockerize">module</a>
 </li>
         </ul></li>
         <li>
@@ -1005,10 +1103,38 @@
 </li>
         </ul></li>
         <li>
+    daemon.files
+
+        <ul>
+          <li><a href="../api/daemon.files/#module-daemon.files">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.helper
+
+        <ul>
+          <li><a href="../api/daemon.helper/#module-daemon.helper">module</a>
+</li>
+        </ul></li>
+        <li>
     daemon.models
 
         <ul>
           <li><a href="../api/daemon.models/#module-daemon.models">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.models.base
+
+        <ul>
+          <li><a href="../api/daemon.models.base/#module-daemon.models.base">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.models.containers
+
+        <ul>
+          <li><a href="../api/daemon.models.containers/#module-daemon.models.containers">module</a>
 </li>
         </ul></li>
         <li>
@@ -1019,10 +1145,31 @@
 </li>
         </ul></li>
         <li>
-    daemon.models.status
+    daemon.models.enums
 
         <ul>
-          <li><a href="../api/daemon.models.status/#module-daemon.models.status">module</a>
+          <li><a href="../api/daemon.models.enums/#module-daemon.models.enums">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.models.id
+
+        <ul>
+          <li><a href="../api/daemon.models.id/#module-daemon.models.id">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.models.partial
+
+        <ul>
+          <li><a href="../api/daemon.models.partial/#module-daemon.models.partial">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.models.workspaces
+
+        <ul>
+          <li><a href="../api/daemon.models.workspaces/#module-daemon.models.workspaces">module</a>
 </li>
         </ul></li>
         <li>
@@ -1047,49 +1194,75 @@
 </li>
         </ul></li>
         <li>
-    daemon.stores.flow
+    daemon.stores.containers
 
         <ul>
-          <li><a href="../api/daemon.stores.flow/#module-daemon.stores.flow">module</a>
+          <li><a href="../api/daemon.stores.containers/#module-daemon.stores.containers">module</a>
 </li>
         </ul></li>
         <li>
-    daemon.stores.helper
+    daemon.stores.flows
 
         <ul>
-          <li><a href="../api/daemon.stores.helper/#module-daemon.stores.helper">module</a>
+          <li><a href="../api/daemon.stores.flows/#module-daemon.stores.flows">module</a>
 </li>
         </ul></li>
         <li>
-    daemon.stores.pea
+    daemon.stores.partial
 
         <ul>
-          <li><a href="../api/daemon.stores.pea/#module-daemon.stores.pea">module</a>
+          <li><a href="../api/daemon.stores.partial/#module-daemon.stores.partial">module</a>
 </li>
         </ul></li>
         <li>
-    daemon.stores.pod
+    daemon.stores.peas
 
         <ul>
-          <li><a href="../api/daemon.stores.pod/#module-daemon.stores.pod">module</a>
+          <li><a href="../api/daemon.stores.peas/#module-daemon.stores.peas">module</a>
 </li>
         </ul></li>
         <li>
-    daemon.stores.workspace
+    daemon.stores.pods
 
         <ul>
-          <li><a href="../api/daemon.stores.workspace/#module-daemon.stores.workspace">module</a>
+          <li><a href="../api/daemon.stores.pods/#module-daemon.stores.pods">module</a>
 </li>
         </ul></li>
+        <li>
+    daemon.stores.workspaces
+
+        <ul>
+          <li><a href="../api/daemon.stores.workspaces/#module-daemon.stores.workspaces">module</a>
+</li>
+        </ul></li>
+        <li>
+    daemon.tasks
+
+        <ul>
+          <li><a href="../api/daemon.tasks/#module-daemon.tasks">module</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.daemon_file">daemon_file (daemon.tasks.DaemonWorker attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.excepts/#daemon.excepts.daemon_runtime_exception_handler">daemon_runtime_exception_handler() (in module daemon.excepts)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild">DaemonBuild (class in daemon.models.enums)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient">DaemonClient (class in jina.peapods.runtimes.jinad.client)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.DaemonConnectivityError">DaemonConnectivityError</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus">DaemonStatus (class in daemon.models.status)</a>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonEnum">DaemonEnum (class in daemon.models.enums)</a>
+</li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile">DaemonFile (class in daemon.files)</a>
+</li>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID">DaemonID (class in daemon.models.id)</a>
+</li>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus">DaemonStatus (class in daemon.models)</a>
+</li>
+        <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker">DaemonWorker (class in daemon.tasks)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RequestType.DATA">DATA (jina.enums.RequestType attribute)</a>
 </li>
@@ -1107,23 +1280,45 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.DEBUG">DEBUG (jina.enums.LogVerbosity attribute)</a>
 </li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.DEFAULT">DEFAULT (daemon.models.enums.DaemonBuild attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.default">default (daemon.models.enums.DaemonBuild attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.enums/#daemon.models.enums.PythonVersion.default">(daemon.models.enums.PythonVersion attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.logging.predefined/#jina.logging.predefined.default_logger">default_logger (in module jina.logging.predefined)</a>
 </li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.delete">delete() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
+          <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.delete">(daemon.stores.containers.ContainerStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.delete">(daemon.stores.partial.PartialStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.delete">(daemon.stores.workspaces.WorkspaceStore method)</a>
+</li>
           <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.delete">(jina.clients.mixin.AsyncPostMixin method)</a>
 </li>
           <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.delete">(jina.clients.mixin.PostMixin method)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.delete">(jina.peapods.runtimes.jinad.client.DaemonClient method)</a>
 </li>
+          <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient.delete">(jina.peapods.runtimes.jinad.client.PeaDaemonClient method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient.delete">(jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient method)</a>
+</li>
         </ul></li>
+        <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.DELETING">DELETING (jina.enums.RemoteWorkspaceState attribute)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.DENSE">DENSE (jina.enums.EmbeddingClsType attribute)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.deprecated_alias">deprecated_alias() (in module jina.helper)</a>
 </li>
         <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.description">description() (jina.types.score.NamedScore property)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.DEVEL">DEVEL (daemon.models.enums.DaemonBuild attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.dict">dict() (jina.Document method)</a>
 
@@ -1138,6 +1333,22 @@
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.DiscreteUniformParameter">DiscreteUniformParameter (class in jina.optimizers.parameters)</a>
 </li>
         <li><a href="../api/jina.types.document.helper/#jina.types.document.helper.DocGroundtruthPair">DocGroundtruthPair (class in jina.types.document.helper)</a>
+</li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.dockerargs">dockerargs (daemon.files.DaemonFile attribute)</a>
+</li>
+        <li><a href="../api/daemon.excepts/#daemon.excepts.DockerContainerException">DockerContainerException</a>
+</li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.dockercontext">dockercontext (daemon.files.DaemonFile attribute)</a>
+</li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.dockerfile">dockerfile (daemon.files.DaemonFile attribute)</a>
+</li>
+        <li><a href="../api/daemon.excepts/#daemon.excepts.DockerImageException">DockerImageException</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer">Dockerizer (class in daemon.dockerize)</a>
+</li>
+        <li><a href="../api/daemon.excepts/#daemon.excepts.DockerNetworkException">DockerNetworkException</a>
+</li>
+        <li><a href="../api/daemon.excepts/#daemon.excepts.DockerNotFoundException">DockerNotFoundException</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaResponseModel.DataRequestModel.docs">docs (jina.peapods.runtimes.asyncio.http.models.JinaResponseModel.DataRequestModel attribute)</a>
 </li>
@@ -1179,9 +1390,11 @@
 </li>
         <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum.dump">dump (daemon.models.UpdateOperationEnum attribute)</a>
 </li>
-        <li><a href="../api/jina.jaml/#jina.jaml.JAML.dump">dump() (jina.jaml.JAML static method)</a>
+        <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.dump">dump() (daemon.stores.base.BaseStore class method)</a>
 
         <ul>
+          <li><a href="../api/jina.jaml/#jina.jaml.JAML.dump">(jina.jaml.JAML static method)</a>
+</li>
           <li><a href="../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.dump">(jina.jaml.parsers.base.VersionedYAMLParser method)</a>
 </li>
           <li><a href="../api/jina.jaml.parsers.default.v1/#jina.jaml.parsers.default.v1.V1Parser.dump">(jina.jaml.parsers.default.v1.V1Parser method)</a>
@@ -1223,7 +1436,9 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.envelope">envelope() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.envs">envs (daemon.models.status.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.environment">environment() (daemon.dockerize.Dockerizer class method)</a>
+</li>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.envs">envs (daemon.models.DaemonStatus attribute)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaStatusModel.envs">(jina.peapods.runtimes.asyncio.http.models.JinaStatusModel attribute)</a>
@@ -1289,6 +1504,8 @@
           <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.extend">(jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.extension">extension (daemon.files.DaemonFile attribute)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -1297,6 +1514,8 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.FAILED">FAILED (jina.enums.RemoteWorkspaceState attribute)</a>
+</li>
         <li>
     fastentrypoints
 
@@ -1308,6 +1527,8 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.CustomConfig.fields">fields (jina.peapods.runtimes.asyncio.http.models.CustomConfig attribute)</a>
 </li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.files">files (daemon.models.workspaces.WorkspaceArguments attribute)</a>
+</li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.first_pea_args">first_pea_args() (jina.peapods.pods.Pod property)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.flatten_to_dict">flatten_to_dict() (jina.helper.ArgNamespace static method)</a>
@@ -1318,31 +1539,33 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow">(class in jina.flow.base)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.FLOW">FLOW (jina.enums.BuildTestLevel attribute)</a>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PartialDaemonModes.FLOW">FLOW (daemon.models.enums.PartialDaemonModes attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.FLOW">(jina.enums.BuildTestLevel attribute)</a>
 </li>
+        </ul></li>
         <li><a href="../api/cli.api/#cli.api.flow">flow() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowBuildLevel">FlowBuildLevel (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowBuildLevelError">FlowBuildLevelError</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends">FlowDepends (class in daemon.api.dependencies)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.FlowItemStatus">FlowItemStatus (class in daemon.models.status)</a>
+        <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.flows">flows (daemon.models.status.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.flows">flows (daemon.models.DaemonStatus attribute)</a>
 </li>
-        <li><a href="../api/daemon.stores.flow/#daemon.stores.flow.FlowStore">FlowStore (class in daemon.stores.flow)</a>
-</li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.FlowStoreStatus">FlowStoreStatus (class in daemon.models.status)</a>
+        <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore">FlowStore (class in daemon.stores.flows)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowTopologyError">FlowTopologyError</a>
 </li>
@@ -1402,6 +1625,14 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.gather_inspect">(jina.flow.base.Flow method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.generate_image">generate_image() (daemon.tasks.DaemonWorker method)</a>
+</li>
+        <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.get">get() (jina.peapods.runtimes.jinad.client.DaemonClient method)</a>
+
+        <ul>
+          <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient.get">(jina.peapods.runtimes.jinad.client.PeaDaemonClient method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/fastentrypoints/#fastentrypoints.get_args">get_args() (in module fastentrypoints)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.get_attributes">get_attributes() (jina.Document method)</a>
@@ -1450,6 +1681,8 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_internal_ip">get_internal_ip() (in module jina.helper)</a>
 </li>
+        <li><a href="../api/daemon.helper/#daemon.helper.get_log_file_path">get_log_file_path() (in module daemon.helper)</a>
+</li>
         <li><a href="../api/daemon.parser/#daemon.parser.get_main_parser">get_main_parser() (in module daemon.parser)</a>
 
         <ul>
@@ -1484,11 +1717,13 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.get_sparse_embedding">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.get_status">get_status() (jina.peapods.runtimes.jinad.client.DaemonClient method)</a>
+        <li><a href="../api/daemon.stores/#daemon.stores.get_store_from_id">get_store_from_id() (in module daemon.stores)</a>
 </li>
         <li><a href="../api/jina.jaml.parsers/#jina.jaml.parsers.get_supported_versions">get_supported_versions() (in module jina.jaml.parsers)</a>
 </li>
-        <li><a href="../api/daemon.stores.helper/#daemon.stores.helper.get_workspace_path">get_workspace_path() (in module daemon.stores.helper)</a>
+        <li><a href="../api/daemon.helper/#daemon.helper.get_workspace_path">get_workspace_path() (in module daemon.helper)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.GPU">GPU (daemon.models.enums.DaemonBuild attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.granularity">granularity() (jina.Document property)</a>
 
@@ -1560,6 +1795,8 @@
           <li><a href="../api/jina.helloworld.multimodal.app/#jina.helloworld.multimodal.app.hello_world">(in module jina.helloworld.multimodal.app)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.host">host (daemon.models.containers.ContainerMetadata attribute)</a>
+</li>
         <li><a href="../api/jina/#jina.Flow.host">host() (jina.Flow property)</a>
 
         <ul>
@@ -1574,6 +1811,10 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.host_in">host_in() (daemon.api.dependencies.PeaDepends property)</a>
+</li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.host_out">host_out() (daemon.api.dependencies.PeaDepends property)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.HTTP">HTTP (jina.enums.GatewayProtocolType attribute)</a>
 </li>
         <li><a href="../api/jina.clients.http/#jina.clients.http.HTTPClient">HTTPClient (class in jina.clients.http)</a>
@@ -1606,15 +1847,29 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.id">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.helper/#daemon.helper.id_cleaner">id_cleaner() (in module daemon.helper)</a>
+</li>
         <li><a href="../api/jina/#jina.Flow.identity">identity() (jina.Flow property)</a>
 
         <ul>
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.identity">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals">IDLiterals (class in daemon.models.enums)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy.IGNORE">IGNORE (jina.enums.OnErrorStrategy attribute)</a>
 </li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.image_id">image_id (daemon.models.containers.ContainerMetadata attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.image_id">(daemon.models.workspaces.WorkspaceMetadata attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.image_name">image_name (daemon.models.workspaces.WorkspaceMetadata attribute)</a>
+</li>
         <li><a href="../api/jina.hubble.hubio/#jina.hubble.hubio.HubExecutor.image_name">image_name() (jina.hubble.hubio.HubExecutor property)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.images">images (daemon.dockerize.Dockerizer attribute)</a>
 </li>
         <li><a href="../api/jina.importer/#jina.importer.ImportExtensions">ImportExtensions (class in jina.importer)</a>
 </li>
@@ -1654,14 +1909,16 @@
 </li>
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.IntegerParameter">IntegerParameter (class in jina.optimizers.parameters)</a>
 </li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus.ip_range_current_offset">ip_range_current_offset (daemon.models.workspaces.WorkspaceStoreStatus attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus.ip_range_start">ip_range_start (daemon.models.workspaces.WorkspaceStoreStatus attribute)</a>
+</li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.is_acyclic">is_acyclic() (jina.types.routing.table.RoutingTable method)</a>
-</li>
-        <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.is_alive">is_alive() (jina.peapods.runtimes.jinad.client.DaemonClient property)</a>
-</li>
-        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_bind">is_bind() (jina.enums.SocketType property)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.enums/#jina.enums.SocketType.is_bind">is_bind() (jina.enums.SocketType property)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.is_block">is_block() (jina.enums.PollingType property)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.is_data_request">is_data_request() (jina.types.message.Message property)</a>
@@ -1671,6 +1928,8 @@
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.is_dense">is_dense() (jina.enums.EmbeddingClsType property)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.is_error">is_error() (jina.types.message.Message property)</a>
+</li>
+        <li><a href="../api/daemon.helper/#daemon.helper.is_error_message">is_error_message() (in module daemon.helper)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_idle">is_idle() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
 </li>
@@ -1716,12 +1975,18 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.is_valid_local_config_source">is_valid_local_config_source() (in module jina.helper)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.FlowStoreStatus.items">items (daemon.models.status.FlowStoreStatus attribute)</a>
+        <li><a href="../api/daemon.models.base/#daemon.models.base.StoreStatus.items">items (daemon.models.base.StoreStatus attribute)</a>
 
         <ul>
-          <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.items">(daemon.models.status.StoreStatus attribute)</a>
+          <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerStoreStatus.items">(daemon.models.containers.ContainerStoreStatus attribute)</a>
+</li>
+          <li><a href="../api/daemon.models.partial/#daemon.models.partial.PartialStoreStatus.items">(daemon.models.partial.PartialStoreStatus attribute)</a>
+</li>
+          <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus.items">(daemon.models.workspaces.WorkspaceStoreStatus attribute)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.items">items() (daemon.stores.base.BaseStore method)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -1734,6 +1999,10 @@
 </li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAMLCompatible">JAMLCompatible (class in jina.jaml)</a>
 </li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JFLOW">JFLOW (daemon.models.enums.IDLiterals attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.jid">jid() (daemon.models.id.DaemonID property)</a>
+</li>
         <li>
     jina
 
@@ -1741,7 +2010,7 @@
           <li><a href="../api/jina/#module-jina">module</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.jina">jina (daemon.models.status.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.jina">jina (daemon.models.DaemonStatus attribute)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaStatusModel.jina">(jina.peapods.runtimes.asyncio.http.models.JinaStatusModel attribute)</a>
@@ -2300,8 +2569,6 @@
           <li><a href="../api/jina.peapods/#module-jina.peapods">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.networking
 
@@ -2309,6 +2576,8 @@
           <li><a href="../api/jina.peapods.networking/#module-jina.peapods.networking">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas
 
@@ -2785,9 +3054,9 @@
           <li><a href="../api/jina.types.struct/#module-jina.types.struct">module</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.stores.helper/#daemon.stores.helper.jina_workspace">jina_workspace() (in module daemon.stores.helper)</a>
-</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor">JinaConstructor (class in jina.jaml.helper)</a>
+</li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.jinad">jinad (daemon.models.workspaces.WorkspaceArguments attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteAccessType.JINAD">JINAD (jina.enums.RemoteAccessType attribute)</a>
 </li>
@@ -2815,6 +3084,8 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaStatusModel">JinaStatusModel (class in jina.peapods.runtimes.asyncio.http.models)</a>
 </li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JNETWORK">JNETWORK (daemon.models.enums.IDLiterals attribute)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType.JOIN">JOIN (jina.enums.PodRoleType attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow.join">join() (jina.Flow method)</a>
@@ -2833,6 +3104,10 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType.JOIN_INSPECT">JOIN_INSPECT (jina.enums.PodRoleType attribute)</a>
 </li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JPEA">JPEA (daemon.models.enums.IDLiterals attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JPOD">JPOD (daemon.models.enums.IDLiterals attribute)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.json">json() (jina.Document method)</a>
 
         <ul>
@@ -2842,6 +3117,10 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.JsonFormatter">JsonFormatter (class in jina.logging.formatter)</a>
+</li>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.jtype">jtype() (daemon.models.id.DaemonID property)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.IDLiterals.JWORKSPACE">JWORKSPACE (daemon.models.enums.IDLiterals attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -2853,12 +3132,16 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.JsonFormatter.KEYS">KEYS (jina.logging.formatter.JsonFormatter attribute)</a>
 </li>
+        <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.keys">keys() (daemon.stores.base.BaseStore method)</a>
+</li>
         <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.kind">kind (jina.peapods.runtimes.jinad.client.DaemonClient attribute)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient.kind">(jina.peapods.runtimes.jinad.client.PeaDaemonClient attribute)</a>
 </li>
           <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PodDaemonClient.kind">(jina.peapods.runtimes.jinad.client.PodDaemonClient attribute)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient.kind">(jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient attribute)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -2895,9 +3178,11 @@
 </li>
         <li><a href="../api/jina.types.list/#jina.types.list.ListView">ListView (class in jina.types.list)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArray.load">load() (jina.DocumentArray class method)</a>
+        <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.load">load() (daemon.stores.base.BaseStore class method)</a>
 
         <ul>
+          <li><a href="../api/jina/#jina.DocumentArray.load">(jina.DocumentArray class method)</a>
+</li>
           <li><a href="../api/jina.jaml/#jina.jaml.JAML.load">(jina.jaml.JAML static method)</a>
 </li>
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.load">(jina.types.arrays.document.DocumentArray class method)</a>
@@ -2911,10 +3196,10 @@
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.load_binary">(jina.types.arrays.document.DocumentArray class method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml/#jina.jaml.JAMLCompatible.load_config">load_config() (jina.jaml.JAMLCompatible class method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.load_from_dgl_graph">load_from_dgl_graph() (jina.types.document.graph.GraphDocument static method)</a>
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.load_json">load_json() (jina.DocumentArray class method)</a>
@@ -2932,6 +3217,10 @@
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.load_optimization_parameters">load_optimization_parameters() (in module jina.optimizers.parameters)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.load_py_modules">load_py_modules() (in module jina.jaml.helper)</a>
+</li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.localpath">localpath() (daemon.api.dependencies.FlowDepends method)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.logger">logger (daemon.dockerize.Dockerizer attribute)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.logstream">logstream() (jina.peapods.runtimes.jinad.client.DaemonClient method)</a>
 </li>
@@ -2961,6 +3250,8 @@
           <li><a href="../api/jina.optimizers.discovery/#jina.optimizers.discovery.main">(in module jina.optimizers.discovery)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.managed_objects">managed_objects (daemon.models.workspaces.WorkspaceMetadata attribute)</a>
+</li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter.MAPPING">MAPPING (jina.logging.formatter.ColorFormatter attribute)</a>
 </li>
         <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray">MatchArray (class in jina.types.arrays.match)</a>
@@ -2991,6 +3282,14 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.message">message() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
 </li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerItem.metadata">metadata (daemon.models.containers.ContainerItem attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceItem.metadata">(daemon.models.workspaces.WorkspaceItem attribute)</a>
+</li>
+          <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.metadata">(daemon.tasks.DaemonWorker attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina/#jina.Document.mime_type">mime_type() (jina.Document property)</a>
 
         <ul>
@@ -3063,25 +3362,51 @@
 </li>
           <li><a href="../api/daemon.api/#module-daemon.api">daemon.api</a>
 </li>
+          <li><a href="../api/daemon.api.dependencies/#module-daemon.api.dependencies">daemon.api.dependencies</a>
+</li>
           <li><a href="../api/daemon.api.endpoints/#module-daemon.api.endpoints">daemon.api.endpoints</a>
 </li>
-          <li><a href="../api/daemon.api.endpoints.flow/#module-daemon.api.endpoints.flow">daemon.api.endpoints.flow</a>
+          <li><a href="../api/daemon.api.endpoints.flows/#module-daemon.api.endpoints.flows">daemon.api.endpoints.flows</a>
 </li>
           <li><a href="../api/daemon.api.endpoints.logs/#module-daemon.api.endpoints.logs">daemon.api.endpoints.logs</a>
 </li>
-          <li><a href="../api/daemon.api.endpoints.pea/#module-daemon.api.endpoints.pea">daemon.api.endpoints.pea</a>
+          <li><a href="../api/daemon.api.endpoints.partial/#module-daemon.api.endpoints.partial">daemon.api.endpoints.partial</a>
 </li>
-          <li><a href="../api/daemon.api.endpoints.pod/#module-daemon.api.endpoints.pod">daemon.api.endpoints.pod</a>
+          <li><a href="../api/daemon.api.endpoints.partial.flow/#module-daemon.api.endpoints.partial.flow">daemon.api.endpoints.partial.flow</a>
 </li>
-          <li><a href="../api/daemon.api.endpoints.workspace/#module-daemon.api.endpoints.workspace">daemon.api.endpoints.workspace</a>
+          <li><a href="../api/daemon.api.endpoints.partial.pea/#module-daemon.api.endpoints.partial.pea">daemon.api.endpoints.partial.pea</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.partial.pod/#module-daemon.api.endpoints.partial.pod">daemon.api.endpoints.partial.pod</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.peas/#module-daemon.api.endpoints.peas">daemon.api.endpoints.peas</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.pods/#module-daemon.api.endpoints.pods">daemon.api.endpoints.pods</a>
+</li>
+          <li><a href="../api/daemon.api.endpoints.workspaces/#module-daemon.api.endpoints.workspaces">daemon.api.endpoints.workspaces</a>
+</li>
+          <li><a href="../api/daemon.dockerize/#module-daemon.dockerize">daemon.dockerize</a>
 </li>
           <li><a href="../api/daemon.excepts/#module-daemon.excepts">daemon.excepts</a>
 </li>
+          <li><a href="../api/daemon.files/#module-daemon.files">daemon.files</a>
+</li>
+          <li><a href="../api/daemon.helper/#module-daemon.helper">daemon.helper</a>
+</li>
           <li><a href="../api/daemon.models/#module-daemon.models">daemon.models</a>
+</li>
+          <li><a href="../api/daemon.models.base/#module-daemon.models.base">daemon.models.base</a>
+</li>
+          <li><a href="../api/daemon.models.containers/#module-daemon.models.containers">daemon.models.containers</a>
 </li>
           <li><a href="../api/daemon.models.custom/#module-daemon.models.custom">daemon.models.custom</a>
 </li>
-          <li><a href="../api/daemon.models.status/#module-daemon.models.status">daemon.models.status</a>
+          <li><a href="../api/daemon.models.enums/#module-daemon.models.enums">daemon.models.enums</a>
+</li>
+          <li><a href="../api/daemon.models.id/#module-daemon.models.id">daemon.models.id</a>
+</li>
+          <li><a href="../api/daemon.models.partial/#module-daemon.models.partial">daemon.models.partial</a>
+</li>
+          <li><a href="../api/daemon.models.workspaces/#module-daemon.models.workspaces">daemon.models.workspaces</a>
 </li>
           <li><a href="../api/daemon.parser/#module-daemon.parser">daemon.parser</a>
 </li>
@@ -3089,15 +3414,19 @@
 </li>
           <li><a href="../api/daemon.stores.base/#module-daemon.stores.base">daemon.stores.base</a>
 </li>
-          <li><a href="../api/daemon.stores.flow/#module-daemon.stores.flow">daemon.stores.flow</a>
+          <li><a href="../api/daemon.stores.containers/#module-daemon.stores.containers">daemon.stores.containers</a>
 </li>
-          <li><a href="../api/daemon.stores.helper/#module-daemon.stores.helper">daemon.stores.helper</a>
+          <li><a href="../api/daemon.stores.flows/#module-daemon.stores.flows">daemon.stores.flows</a>
 </li>
-          <li><a href="../api/daemon.stores.pea/#module-daemon.stores.pea">daemon.stores.pea</a>
+          <li><a href="../api/daemon.stores.partial/#module-daemon.stores.partial">daemon.stores.partial</a>
 </li>
-          <li><a href="../api/daemon.stores.pod/#module-daemon.stores.pod">daemon.stores.pod</a>
+          <li><a href="../api/daemon.stores.peas/#module-daemon.stores.peas">daemon.stores.peas</a>
 </li>
-          <li><a href="../api/daemon.stores.workspace/#module-daemon.stores.workspace">daemon.stores.workspace</a>
+          <li><a href="../api/daemon.stores.pods/#module-daemon.stores.pods">daemon.stores.pods</a>
+</li>
+          <li><a href="../api/daemon.stores.workspaces/#module-daemon.stores.workspaces">daemon.stores.workspaces</a>
+</li>
+          <li><a href="../api/daemon.tasks/#module-daemon.tasks">daemon.tasks</a>
 </li>
           <li><a href="../api/fastentrypoints/#module-fastentrypoints">fastentrypoints</a>
 </li>
@@ -3444,7 +3773,19 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.needs_all">(jina.flow.base.Flow method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.network">network (daemon.models.containers.ContainerMetadata attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.network">(daemon.models.workspaces.WorkspaceMetadata attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.network">network() (daemon.dockerize.Dockerizer class method)</a>
+</li>
+        <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.network_id">network_id (daemon.tasks.DaemonWorker attribute)</a>
+</li>
         <li><a href="../api/jina.checker/#jina.checker.NetworkChecker">NetworkChecker (class in jina.checker)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.networks">networks (daemon.dockerize.Dockerizer attribute)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.NoAvailablePortError">NoAvailablePortError</a>
 </li>
@@ -3458,14 +3799,14 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.non_empty_fields">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.NONE">NONE (jina.enums.BuildTestLevel attribute)</a>
 
         <ul>
           <li><a href="../api/jina.enums/#jina.enums.CompressAlgo.NONE">(jina.enums.CompressAlgo attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.excepts/#jina.excepts.NotSupportedError">NotSupportedError</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext.now">now() (jina.logging.profile.TimeContext method)</a>
@@ -3482,9 +3823,9 @@
           <li><a href="../api/jina.types.ndarray.sparse/#jina.types.ndarray.sparse.BaseSparseNdArray.null_proto">(jina.types.ndarray.sparse.BaseSparseNdArray method)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.num_add">num_add (daemon.models.status.StoreStatus attribute)</a>
+        <li><a href="../api/daemon.models.base/#daemon.models.base.StoreStatus.num_add">num_add (daemon.models.base.StoreStatus attribute)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.num_del">num_del (daemon.models.status.StoreStatus attribute)</a>
+        <li><a href="../api/daemon.models.base/#daemon.models.base.StoreStatus.num_del">num_del (daemon.models.base.StoreStatus attribute)</a>
 </li>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.num_edges">num_edges() (jina.types.document.graph.GraphDocument property)</a>
 </li>
@@ -3514,16 +3855,18 @@
   <h2>O</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerArguments.object">object (daemon.models.containers.ContainerArguments attribute)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy">OnErrorStrategy (class in jina.enums)</a>
 </li>
         <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.op_name">op_name() (jina.types.score.NamedScore property)</a>
 </li>
         <li><a href="../api/jina.types.score/#jina.types.score.NamedScore.operands">operands() (jina.types.score.NamedScore property)</a>
 </li>
-        <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.OptimizationParameter">OptimizationParameter (class in jina.optimizers.parameters)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.OptimizationParameter">OptimizationParameter (class in jina.optimizers.parameters)</a>
+</li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer.optimize_flow">optimize_flow() (jina.optimizers.FlowOptimizer method)</a>
 </li>
         <li><a href="../api/cli.api/#cli.api.optimizer">optimizer() (in module cli.api)</a>
@@ -3580,7 +3923,25 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.partial_requests">partial_requests() (jina.peapods.runtimes.zmq.zed.ZEDRuntime property)</a>
 </li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PartialDaemonModes">PartialDaemonModes (class in daemon.models.enums)</a>
+</li>
+        <li><a href="../api/daemon.models.partial/#daemon.models.partial.PartialFlowItem">PartialFlowItem (class in daemon.models.partial)</a>
+</li>
+        <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore">PartialFlowStore (class in daemon.stores.partial)</a>
+</li>
+        <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPeaStore">PartialPeaStore (class in daemon.stores.partial)</a>
+</li>
+        <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPodStore">PartialPodStore (class in daemon.stores.partial)</a>
+</li>
+        <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialStore">PartialStore (class in daemon.stores.partial)</a>
+</li>
+        <li><a href="../api/daemon.models.partial/#daemon.models.partial.PartialStoreItem">PartialStoreItem (class in daemon.models.partial)</a>
+</li>
+        <li><a href="../api/daemon.models.partial/#daemon.models.partial.PartialStoreStatus">PartialStoreStatus (class in daemon.models.partial)</a>
+</li>
         <li><a href="../api/jina.importer/#jina.importer.PathImporter">PathImporter (class in jina.importer)</a>
+</li>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.pattern">pattern (daemon.models.id.DaemonID attribute)</a>
 </li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.pause_pollin">pause_pollin() (jina.peapods.zmq.Zmqlet method)</a>
 
@@ -3588,21 +3949,27 @@
           <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.ZmqStreamlet.pause_pollin">(jina.peapods.zmq.ZmqStreamlet method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PartialDaemonModes.PEA">PEA (daemon.models.enums.PartialDaemonModes attribute)</a>
+</li>
         <li><a href="../api/cli.api/#cli.api.pea">pea() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient">PeaDaemonClient (class in jina.peapods.runtimes.jinad.client)</a>
 </li>
-        <li><a href="../api/daemon.stores.pea/#daemon.stores.pea.PeaStore.peapod_cls">peapod_cls (daemon.stores.pea.PeaStore attribute)</a>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends">PeaDepends (class in daemon.api.dependencies)</a>
+</li>
+        <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPeaStore.peapod_cls">peapod_cls (daemon.stores.partial.PartialPeaStore attribute)</a>
 
         <ul>
-          <li><a href="../api/daemon.stores.pod/#daemon.stores.pod.PodStore.peapod_cls">(daemon.stores.pod.PodStore attribute)</a>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialPodStore.peapod_cls">(daemon.stores.partial.PartialPodStore attribute)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType">PeaRoleType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.peas">peas (daemon.models.status.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.peas">peas (daemon.models.DaemonStatus attribute)</a>
 </li>
-        <li><a href="../api/daemon.stores.pea/#daemon.stores.pea.PeaStore">PeaStore (class in daemon.stores.pea)</a>
+        <li><a href="../api/daemon.stores.peas/#daemon.stores.peas.PeaStore">PeaStore (class in daemon.stores.peas)</a>
+</li>
+        <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.PENDING">PENDING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
         <li><a href="../api/cli.api/#cli.api.ping">ping() (in module cli.api)</a>
 </li>
@@ -3622,8 +3989,12 @@
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod">Pod (class in jina.peapods.pods)</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.PodRoleType.POD">POD (jina.enums.PodRoleType attribute)</a>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PartialDaemonModes.POD">POD (daemon.models.enums.PartialDaemonModes attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.enums/#jina.enums.PodRoleType.POD">(jina.enums.PodRoleType attribute)</a>
 </li>
+        </ul></li>
         <li><a href="../api/cli.api/#cli.api.pod">pod() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.POD_DOCKER">POD_DOCKER (jina.enums.BuildTestLevel attribute)</a>
@@ -3632,17 +4003,19 @@
 </li>
         <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PodDaemonClient">PodDaemonClient (class in jina.peapods.runtimes.jinad.client)</a>
 </li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">PodDepends (class in daemon.api.dependencies)</a>
+</li>
         <li><a href="../api/jina.peapods.pods.factory/#jina.peapods.pods.factory.PodFactory">PodFactory (class in jina.peapods.pods.factory)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType">PodRoleType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.pods">pods (daemon.models.status.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.pods">pods (daemon.models.DaemonStatus attribute)</a>
 </li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.pods">pods() (jina.types.routing.table.RoutingTable property)</a>
 </li>
-        <li><a href="../api/daemon.stores.pod/#daemon.stores.pod.PodStore">PodStore (class in daemon.stores.pod)</a>
+        <li><a href="../api/daemon.stores.pods/#daemon.stores.pods.PodStore">PodStore (class in daemon.stores.pods)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType">PollingType (class in jina.enums)</a>
 </li>
@@ -3654,6 +4027,8 @@
         </ul></li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.port">port() (jina.types.routing.table.TargetPod property)</a>
 </li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.port_expose">port_expose (daemon.api.dependencies.FlowDepends attribute)</a>
+</li>
         <li><a href="../api/jina/#jina.Flow.port_expose">port_expose() (jina.Flow property)</a>
 
         <ul>
@@ -3664,10 +4039,24 @@
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.port_expose">(jina.peapods.pods.Pod property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.ports">ports (daemon.api.dependencies.PeaDepends attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.ports">(daemon.models.containers.ContainerMetadata attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.ports">ports() (daemon.files.DaemonFile property)</a>
+</li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.post">post() (jina.clients.mixin.AsyncPostMixin method)</a>
 
         <ul>
           <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post">(jina.clients.mixin.PostMixin method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.post">(jina.peapods.runtimes.jinad.client.DaemonClient method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.PeaDaemonClient.post">(jina.peapods.runtimes.jinad.client.PeaDaemonClient method)</a>
+</li>
+          <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient.post">(jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.PostMixin">PostMixin (class in jina.clients.mixin)</a>
@@ -3685,6 +4074,8 @@
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.priority_map">priority_map (jina.logging.logger.SysLogHandlerWrapper attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RuntimeBackendType.PROCESS">PROCESS (jina.enums.RuntimeBackendType attribute)</a>
+</li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.process_file">process_file() (daemon.files.DaemonFile method)</a>
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ProfileFormatter">ProfileFormatter (class in jina.logging.formatter)</a>
 </li>
@@ -3730,6 +4121,18 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.PUSH_CONNECT">PUSH_CONNECT (jina.enums.SocketType attribute)</a>
 </li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PythonVersion.PY37">PY37 (daemon.models.enums.PythonVersion attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PythonVersion.PY38">PY38 (daemon.models.enums.PythonVersion attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PythonVersion.PY39">PY39 (daemon.models.enums.PythonVersion attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.pydantic_validate">pydantic_validate() (daemon.models.id.DaemonID class method)</a>
+</li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.python">python() (daemon.files.DaemonFile property)</a>
+</li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.PythonVersion">PythonVersion (class in daemon.models.enums)</a>
+</li>
     </ul></td>
   </tr></table>
 </section>
@@ -3753,6 +4156,10 @@
         <li><a href="../api/jina.helper/#jina.helper.random_port">random_port() (in module jina.helper)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.random_uuid">random_uuid() (in module jina.helper)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.raw_client">raw_client (daemon.dockerize.Dockerizer attribute)</a>
+</li>
+        <li><a href="../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.ready">ready() (daemon.stores.containers.ContainerStore property)</a>
 </li>
         <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.recv_message">recv_message() (in module jina.peapods.zmq)</a>
 
@@ -3786,7 +4193,11 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteAccessType">RemoteAccessType (class in jina.enums)</a>
 </li>
+        <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState">RemoteWorkspaceState (class in jina.enums)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.FlowInspectType.REMOVE">REMOVE (jina.enums.FlowInspectType attribute)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.remove">remove() (daemon.dockerize.Dockerizer class method)</a>
 </li>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.remove_edge">remove_edge() (jina.types.document.graph.GraphDocument method)</a>
 </li>
@@ -3834,18 +4245,24 @@
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.RequestType">RequestType (class in jina.enums)</a>
 </li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.requirements">requirements (daemon.files.DaemonFile attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.requirements">(daemon.models.workspaces.WorkspaceArguments attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.reset">reset() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
           <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeDict.reset">(jina.logging.profile.TimeDict method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.hubble.hubapi/#jina.hubble.hubapi.resolve_local">resolve_local() (in module jina.hubble.hubapi)</a>
 </li>
         <li><a href="../api/jina.types.request/#jina.types.request.Response">Response (class in jina.types.request)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.response">response() (jina.types.message.Message property)</a>
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor">ResultProcessor (class in jina.optimizers)</a>
@@ -3862,12 +4279,30 @@
           <li><a href="../api/jina.types.arrays.document/#jina.types.arrays.document.DocumentArray.reverse">(jina.types.arrays.document.DocumentArray method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.rm_container">rm_container() (daemon.dockerize.Dockerizer class method)</a>
+
+        <ul>
+          <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.rm_container">(daemon.stores.workspaces.WorkspaceStore method)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.rm_files">rm_files() (daemon.stores.workspaces.WorkspaceStore method)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.rm_image">rm_image() (daemon.dockerize.Dockerizer class method)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.rm_network">rm_network() (daemon.dockerize.Dockerizer class method)</a>
+
+        <ul>
+          <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.rm_network">(daemon.stores.workspaces.WorkspaceStore method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.role">role() (jina.peapods.peas.BasePea property)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.BasePod.role">(jina.peapods.pods.BasePod property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.UpdateOperation.ROLLING_UPDATE">ROLLING_UPDATE (daemon.models.enums.UpdateOperation attribute)</a>
+</li>
         <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum.rolling_update">rolling_update (daemon.models.UpdateOperationEnum attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow.rolling_update">rolling_update() (jina.Flow method)</a>
@@ -3886,9 +4321,17 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.RoutingTableCyclicError">RoutingTableCyclicError</a>
 </li>
-        <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner.run">run() (jina.optimizers.flow_runner.FlowRunner method)</a>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.run">run() (daemon.dockerize.Dockerizer class method)</a>
 
         <ul>
+          <li><a href="../api/daemon.files/#daemon.files.DaemonFile.run">(daemon.files.DaemonFile property)</a>
+</li>
+          <li><a href="../api/daemon.tasks/#daemon.tasks.ConsumerThread.run">(daemon.tasks.ConsumerThread method)</a>
+</li>
+          <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.run">(daemon.tasks.DaemonWorker method)</a>
+</li>
+          <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner.run">(jina.optimizers.flow_runner.FlowRunner method)</a>
+</li>
           <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.MultiFlowRunner.run">(jina.optimizers.flow_runner.MultiFlowRunner method)</a>
 </li>
           <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.SingleFlowRunner.run">(jina.optimizers.flow_runner.SingleFlowRunner method)</a>
@@ -3897,6 +4340,8 @@
 </li>
         </ul></li>
         <li><a href="../api/jina.helper/#jina.helper.run_async">run_async() (in module jina.helper)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.run_custom">run_custom() (daemon.dockerize.Dockerizer class method)</a>
 </li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.base/#jina.peapods.runtimes.asyncio.base.AsyncNewLoopRuntime.run_forever">run_forever() (jina.peapods.runtimes.asyncio.base.AsyncNewLoopRuntime method)</a>
 
@@ -3998,6 +4443,8 @@
           <li><a href="../api/jina.types.request/#jina.types.request.Request.SerializeToString">(jina.types.request.Request method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.files/#daemon.files.DaemonFile.set_args">set_args() (daemon.files.DaemonFile method)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.set_attributes">set_attributes() (jina.Document method)</a>
 
         <ul>
@@ -4009,6 +4456,8 @@
         <li><a href="../api/jina.parsers.base/#jina.parsers.base.set_base_parser">set_base_parser() (in module jina.parsers.base)</a>
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_client_cli_parser">set_client_cli_parser() (in module jina.parsers)</a>
+</li>
+        <li><a href="../api/jina.peapods.peas/#jina.peapods.peas.BasePea.set_ctrl_adrr">set_ctrl_adrr() (jina.peapods.peas.BasePea method)</a>
 </li>
         <li><a href="../api/jina.parsers.export_api/#jina.parsers.export_api.set_export_api_parser">set_export_api_parser() (in module jina.parsers.export_api)</a>
 </li>
@@ -4036,17 +4485,15 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_pea_parser">set_pea_parser() (in module jina.parsers)</a>
 </li>
-        <li><a href="../api/jina.parsers.ping/#jina.parsers.ping.set_ping_parser">set_ping_parser() (in module jina.parsers.ping)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.parsers.ping/#jina.parsers.ping.set_ping_parser">set_ping_parser() (in module jina.parsers.ping)</a>
+</li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_pod_parser">set_pod_parser() (in module jina.parsers)</a>
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.SingleFlowRunner">SingleFlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PeaRoleType.SINGLETON">SINGLETON (jina.enums.PeaRoleType attribute)</a>
-</li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.size">size (daemon.models.status.StoreStatus attribute)</a>
 </li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.size">size() (jina.types.message.Message property)</a>
 </li>
@@ -4116,17 +4563,15 @@
         </ul></li>
         <li><a href="../api/daemon.api.endpoints/#daemon.api.endpoints.startup">startup() (in module daemon.api.endpoints)</a>
 </li>
-        <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.status">status() (daemon.stores.base.BaseStore property)</a>
-
-        <ul>
-          <li><a href="../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQRuntime.status">(jina.peapods.runtimes.zmq.base.ZMQRuntime property)</a>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceItem.state">state (daemon.models.workspaces.WorkspaceItem attribute)</a>
 </li>
-        </ul></li>
+        <li><a href="../api/jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQRuntime.status">status() (jina.peapods.runtimes.zmq.base.ZMQRuntime property)</a>
+</li>
         <li><a href="../api/jina.executors.decorators/#jina.executors.decorators.store_init_kwargs">store_init_kwargs() (in module jina.executors.decorators)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus">StoreItemStatus (class in daemon.models.status)</a>
+        <li><a href="../api/daemon.models.base/#daemon.models.base.StoreItem">StoreItem (class in daemon.models.base)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus">StoreStatus (class in daemon.models.status)</a>
+        <li><a href="../api/daemon.models.base/#daemon.models.base.StoreStatus">StoreStatus (class in daemon.models.base)</a>
 </li>
         <li><a href="../api/jina.types.struct/#jina.types.struct.StructView">StructView (class in jina.types.struct)</a>
 </li>
@@ -4135,6 +4580,8 @@
         <li><a href="../api/jina.enums/#jina.enums.SocketType.SUB_BIND">SUB_BIND (jina.enums.SocketType attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.SocketType.SUB_CONNECT">SUB_CONNECT (jina.enums.SocketType attribute)</a>
+</li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus.subnet_size">subnet_size (daemon.models.workspaces.WorkspaceStoreStatus attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.SUCCESS">SUCCESS (jina.enums.LogVerbosity attribute)</a>
 </li>
@@ -4152,6 +4599,8 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.tag">tag() (daemon.models.id.DaemonID property)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.tags">tags() (jina.Document property)</a>
 
         <ul>
@@ -4202,13 +4651,13 @@
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext.time_attrs">time_attrs (jina.logging.profile.TimeContext attribute)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus.time_created">time_created (daemon.models.status.StoreItemStatus attribute)</a>
+        <li><a href="../api/daemon.models.base/#daemon.models.base.StoreItem.time_created">time_created (daemon.models.base.StoreItem attribute)</a>
 
         <ul>
-          <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.time_created">(daemon.models.status.StoreStatus attribute)</a>
+          <li><a href="../api/daemon.models.base/#daemon.models.base.StoreStatus.time_created">(daemon.models.base.StoreStatus attribute)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreStatus.time_updated">time_updated (daemon.models.status.StoreStatus attribute)</a>
+        <li><a href="../api/daemon.models.base/#daemon.models.base.StoreStatus.time_updated">time_updated (daemon.models.base.StoreStatus attribute)</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext">TimeContext (class in jina.logging.profile)</a>
 </li>
@@ -4229,6 +4678,8 @@
         <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat">traverse_flat() (jina.types.arrays.traversable.TraversableSequence method)</a>
 </li>
         <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence.traverse_flat_per_path">traverse_flat_per_path() (jina.types.arrays.traversable.TraversableSequence method)</a>
+</li>
+        <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.type">type() (daemon.models.id.DaemonID property)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.typename">typename() (in module jina.helper)</a>
 </li>
@@ -4255,7 +4706,13 @@
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.update">update() (daemon.stores.base.BaseStore method)</a>
 
         <ul>
-          <li><a href="../api/daemon.stores.flow/#daemon.stores.flow.FlowStore.update">(daemon.stores.flow.FlowStore method)</a>
+          <li><a href="../api/daemon.stores.flows/#daemon.stores.flows.FlowStore.update">(daemon.stores.flows.FlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialFlowStore.update">(daemon.stores.partial.PartialFlowStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.partial/#daemon.stores.partial.PartialStore.update">(daemon.stores.partial.PartialStore method)</a>
+</li>
+          <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore.update">(daemon.stores.workspaces.WorkspaceStore method)</a>
 </li>
           <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.update">(jina.clients.mixin.AsyncPostMixin method)</a>
 </li>
@@ -4296,9 +4753,11 @@
           <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.OptimizationParameter.update_trial_params">(jina.optimizers.parameters.OptimizationParameter method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.UpdateOperation">UpdateOperation (class in daemon.models.enums)</a>
+</li>
         <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum">UpdateOperationEnum (class in daemon.models)</a>
 </li>
-        <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient.upload">upload() (jina.peapods.runtimes.jinad.client.DaemonClient method)</a>
+        <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.UPDATING">UPDATING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.uri">uri() (jina.Document property)</a>
 
@@ -4308,7 +4767,7 @@
         </ul></li>
         <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.CustomConfig.use_enum_values">use_enum_values (jina.peapods.runtimes.asyncio.http.models.CustomConfig attribute)</a>
 </li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.used_memory">used_memory (daemon.models.status.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.used_memory">used_memory (daemon.models.DaemonStatus attribute)</a>
 
         <ul>
           <li><a href="../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaStatusModel.used_memory">(jina.peapods.runtimes.asyncio.http.models.JinaStatusModel attribute)</a>
@@ -4332,6 +4791,16 @@
           <li><a href="../api/jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser">(class in jina.jaml.parsers.flow.v1)</a>
 </li>
         </ul></li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends.validate">validate() (daemon.api.dependencies.FlowDepends method)</a>
+
+        <ul>
+          <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PeaDepends.validate">(daemon.api.dependencies.PeaDepends method)</a>
+</li>
+          <li><a href="../api/daemon.models.id/#daemon.models.id.DaemonID.validate">(daemon.models.id.DaemonID class method)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/daemon.excepts/#daemon.excepts.validation_exception_handler">validation_exception_handler() (in module daemon.excepts)</a>
+</li>
         <li><a href="../api/jina.excepts/#jina.excepts.ValidationError">ValidationError</a>
 </li>
         <li><a href="../api/jina.types.ndarray/#jina.types.ndarray.BaseNdArray.value">value() (jina.types.ndarray.BaseNdArray property)</a>
@@ -4346,6 +4815,10 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonEnum.values">values (daemon.models.enums.DaemonEnum attribute)</a>
+</li>
+        <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore.values">values() (daemon.stores.base.BaseStore method)</a>
+</li>
         <li><a href="../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.version">version (jina.jaml.parsers.base.VersionedYAMLParser attribute)</a>
 
         <ul>
@@ -4361,6 +4834,8 @@
         <li><a href="../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser">VersionedYAMLParser (class in jina.jaml.parsers.base)</a>
 </li>
         <li><a href="../api/jina.hubble.hubio/#jina.hubble.hubio.HubExecutor.visibility">visibility() (jina.hubble.hubio.HubExecutor property)</a>
+</li>
+        <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.volume">volume() (daemon.dockerize.Dockerizer class method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -4394,10 +4869,12 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.weight">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus.workdir">workdir (daemon.models.status.StoreItemStatus attribute)</a>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.workdir">workdir (daemon.models.workspaces.WorkspaceMetadata attribute)</a>
+
+        <ul>
+          <li><a href="../api/daemon.tasks/#daemon.tasks.DaemonWorker.workdir">(daemon.tasks.DaemonWorker attribute)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.executors/#jina.executors.BaseExecutor.workspace">workspace() (jina.executors.BaseExecutor property)</a>
 
         <ul>
@@ -4406,7 +4883,11 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.workspace">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.StoreItemStatus.workspace_id">workspace_id (daemon.models.status.StoreItemStatus attribute)</a>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.files/#daemon.files.workspace_files">workspace_files() (in module daemon.files)</a>
+</li>
+        <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerItem.workspace_id">workspace_id (daemon.models.containers.ContainerItem attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow.workspace_id">workspace_id() (jina.Flow property)</a>
 
@@ -4414,9 +4895,21 @@
           <li><a href="../api/jina.flow.base/#jina.flow.base.Flow.workspace_id">(jina.flow.base.Flow property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.DaemonStatus.workspaces">workspaces (daemon.models.status.DaemonStatus attribute)</a>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments">WorkspaceArguments (class in daemon.models.workspaces)</a>
 </li>
-        <li><a href="../api/daemon.stores.workspace/#daemon.stores.workspace.WorkspaceStore">WorkspaceStore (class in daemon.stores.workspace)</a>
+        <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.WorkspaceDaemonClient">WorkspaceDaemonClient (class in jina.peapods.runtimes.jinad.client)</a>
+</li>
+        <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.WorkspaceDepends">WorkspaceDepends (class in daemon.api.dependencies)</a>
+</li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceItem">WorkspaceItem (class in daemon.models.workspaces)</a>
+</li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata">WorkspaceMetadata (class in daemon.models.workspaces)</a>
+</li>
+        <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.workspaces">workspaces (daemon.models.DaemonStatus attribute)</a>
+</li>
+        <li><a href="../api/daemon.stores.workspaces/#daemon.stores.workspaces.WorkspaceStore">WorkspaceStore (class in daemon.stores.workspaces)</a>
+</li>
+        <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus">WorkspaceStoreStatus (class in daemon.models.workspaces)</a>
 </li>
         <li><a href="../api/jina.executors.decorators/#jina.executors.decorators.wrap_func">wrap_func() (in module jina.executors.decorators)</a>
 </li>
@@ -4434,7 +4927,7 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="../api/daemon.models.status/#daemon.models.status.FlowItemStatus.yaml_source">yaml_source (daemon.models.status.FlowItemStatus attribute)</a>
+        <li><a href="../api/daemon.models.partial/#daemon.models.partial.PartialFlowItem.yaml_source">yaml_source (daemon.models.partial.PartialFlowItem attribute)</a>
 </li>
     </ul></td>
   </tr></table>

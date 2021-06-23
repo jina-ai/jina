@@ -408,12 +408,12 @@
     <span class="k">return</span> <span class="n">validator</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">allow_reuse</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">validate_arg_choices</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_pydantic_fields</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s1">'argparse.ArgumentParser'</span><span class="p">]):</span>
+<span class="k">def</span> <span class="nf">_get_pydantic_fields</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="s1">'argparse.ArgumentParser'</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">all_options</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">choices_validators</span> <span class="o">=</span> <span class="p">{}</span>
 
-    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">_export_parser_args</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'choices'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">_export_parser_args</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'choices'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'default'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">choices_validators</span><span class="p">[</span><span class="sa">f</span><span class="s1">'validator_for_</span><span class="si">{</span><span class="n">a</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_validator</span><span class="p">(</span>
                 <span class="n">field</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">choices</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s1">'choices'</span><span class="p">])</span>
             <span class="p">)</span>
@@ -461,16 +461,18 @@
     <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_pea_parser</span><span class="p">,</span> <span class="n">set_pod_parser</span>
     <span class="kn">from</span> <span class="nn">jina.parsers.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
 
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">'pod'</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_pod_parser</span>
     <span class="k">elif</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">'pea'</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_pea_parser</span>
     <span class="k">elif</span> <span class="n">module</span> <span class="o">==</span> <span class="s1">'flow'</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_flow_parser</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'with_identity'</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> is not supported'</span><span class="p">)</span>
 
-    <span class="n">all_fields</span><span class="p">,</span> <span class="n">field_validators</span> <span class="o">=</span> <span class="n">_get_pydantic_fields</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">all_fields</span><span class="p">,</span> <span class="n">field_validators</span> <span class="o">=</span> <span class="n">_get_pydantic_fields</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="n">helper</span><span class="o">.</span><span class="n">_SHOW_ALL_ARGS</span> <span class="o">=</span> <span class="n">old_val</span>
     <span class="k">return</span> <span class="n">create_model</span><span class="p">(</span>

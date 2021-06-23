@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/api/daemon.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Subpackages: daemon.api package- Subpackages- daemon.api.endpoints package- Submodules, Module contents.., Module contents., daemon.models package- Submodules- daemon.models.custom module, daemon.models.status module., Module contents., daemon.stores package- Submodules- daemon.stores.base module..." />
+  <meta property="og:description" content="Subpackages: daemon.api package- Subpackages- daemon.api.endpoints package- Subpackages, Submodules, Module contents.., Submodules- daemon.api.dependencies module., Module contents., daemon.models package- Submodules- daemon.models.base module, daemon.models.containers module, daemon.models.custo..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -409,10 +409,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../daemon.api/">daemon.api package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../daemon.api/#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.api.endpoints/">daemon.api.endpoints package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints/#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints/#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../daemon.api.endpoints/#module-daemon.api.endpoints">Module contents</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../daemon.api/#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.api.dependencies/">daemon.api.dependencies module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../daemon.api/#module-daemon.api">Module contents</a></li>
@@ -420,8 +425,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.models/">daemon.models package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../daemon.models/#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.models.base/">daemon.models.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.models.containers/">daemon.models.containers module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.models.custom/">daemon.models.custom module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.models.status/">daemon.models.status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.models.enums/">daemon.models.enums module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.models.id/">daemon.models.id module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.models.partial/">daemon.models.partial module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.models.workspaces/">daemon.models.workspaces module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../daemon.models/#module-daemon.models">Module contents</a></li>
@@ -430,11 +440,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../daemon.stores/">daemon.stores package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../daemon.stores/#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../daemon.stores.base/">daemon.stores.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.flow/">daemon.stores.flow module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.helper/">daemon.stores.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.pea/">daemon.stores.pea module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.pod/">daemon.stores.pod module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.workspace/">daemon.stores.workspace module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.containers/">daemon.stores.containers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.flows/">daemon.stores.flows module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.partial/">daemon.stores.partial module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.peas/">daemon.stores.peas module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.pods/">daemon.stores.pods module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../daemon.stores.workspaces/">daemon.stores.workspaces module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../daemon.stores/#module-daemon.stores">Module contents</a></li>
@@ -447,8 +458,12 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.dockerize/">daemon.dockerize module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.excepts/">daemon.excepts module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.files/">daemon.files module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.helper/">daemon.helper module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../daemon.parser/">daemon.parser module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daemon.tasks/">daemon.tasks module</a></li>
 </ul>
 </div>
 </div>
@@ -457,7 +472,7 @@
 <dl class="py function">
 <dt id="daemon.main">
 <code class="sig-prename descclassname"><span class="pre">daemon.</span></code><code class="sig-name descname"><span class="pre">main</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.main" title="Permalink to this definition">¶</a></dt>
-<dd><p>Entrypoint for JinaD</p>
+<dd><p>Entrypoint for jinad</p>
 </dd></dl>
 </div>
 </div>
