@@ -1,19 +1,16 @@
 import argparse
-import os
-from typing import Any, Tuple
-import time
 import multiprocessing
+import os
 import threading
+import time
+from typing import Any, Tuple
 
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
-from ...excepts import RuntimeFailToStart, RuntimeTerminated
+from ...excepts import RuntimeFailToStart
 from ...helper import typename
 from ...logging.logger import JinaLogger
-from ..runtimes.jinad import JinadRuntime
-from ..runtimes.container import ContainerRuntime
-from ..zmq import Zmqlet, send_ctrl_message
 
 __all__ = ['BasePea']
 
@@ -70,6 +67,10 @@ class BasePea:
         """Sets control address for different runtimes"""
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
+        from ..zmq import Zmqlet
+        from ..runtimes.jinad import JinadRuntime
+        from ..runtimes.container import ContainerRuntime
+
         if self.runtime_cls == ContainerRuntime:
             # Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.
             # If yes, set host_ctrl to __docker_host__, else keep it as __default_host__
@@ -87,6 +88,7 @@ class BasePea:
             self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
                 self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
             )[0]
+
         self._local_runtime_ctrl_address = (
             Zmqlet.get_ctrl_address(None, None, True)[0]
             if self.runtime_cls == JinadRuntime
@@ -128,6 +130,8 @@ class BasePea:
         # This is due to the fact that JinadRuntime instantiates a Zmq server at local_ctrl_addr that will itself
         # send ctrl command
         # (TODO: Joan) Fix that in _wait_for_cancel from async runtime
+        from ..runtimes.jinad import JinadRuntime
+
         ctrl_addr = (
             self._local_runtime_ctrl_address
             if self.runtime_cls == JinadRuntime
@@ -167,6 +171,8 @@ class BasePea:
     def activate_runtime(self):
         """ Send activate control message. """
         if self._dealer:
+            from ..zmq import send_ctrl_message
+
             send_ctrl_message(
                 self._zed_runtime_ctrl_address, 'ACTIVATE', timeout=self._timeout_ctrl
             )
@@ -174,12 +180,16 @@ class BasePea:
     def _deactivate_runtime(self):
         """Send deactivate control message. """
         if self._dealer:
+            from ..zmq import send_ctrl_message
+
             send_ctrl_message(
                 self._zed_runtime_ctrl_address, 'DEACTIVATE', timeout=self._timeout_ctrl
             )
 
     def _cancel_runtime(self):
         """Send terminate control message."""
+        from ..zmq import send_ctrl_message
+
         send_ctrl_message(
             self._local_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
         )

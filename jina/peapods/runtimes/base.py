@@ -108,3 +108,12 @@ class BaseRuntime:
                 else '',
                 exc_info=not self.args.quiet_error,
             )
+
+        # https://stackoverflow.com/a/28158006
+        # return True will silent all exception stack trace here, silence is desired here as otherwise it is too
+        # noisy
+        #
+        # doc: If an exception is supplied, and the method wishes to suppress the exception (i.e., prevent it
+        # from being propagated), it should return a true value. Otherwise, the exception will be processed normally
+        # upon exit from this method.
+        return True
