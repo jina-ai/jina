@@ -1,0 +1,15 @@
+jtype: Flow
+version: '1'
+with:
+  read_only: false
+  protocol: http
+  port_expose: 9001
+  cors: true
+pods:
+  - name: indexer_query
+    uses: indexer_query.yml
+    replicas: 2
+    parallel: 3
+    polling: all
+    uses_after: merge_matches.yml
+    timeout_ready: '-1'
