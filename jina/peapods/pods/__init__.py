@@ -626,13 +626,13 @@ class Pod(BasePod):
             # use the executor existed in Jina Hub.
             from ...hubble.helper import parse_hub_uri
 
-            scheme, uuid, tag, secret = parse_hub_uri(self.args.uses)
+            scheme, name, tag, secret = parse_hub_uri(self.args.uses)
 
             if scheme.startswith('jinahub'):
                 from ...hubble.hubio import HubIO
                 from ...parsers.hubble import set_hub_pull_parser
 
-                if not uuid:
+                if not name:
                     raise ValueError(
                         f'The given executor URI {self.args.uses} is not valid, please double check it!'
                     )
@@ -640,11 +640,8 @@ class Pod(BasePod):
                 pull_args = set_hub_pull_parser().parse_args([self.args.uses])
                 hubio = HubIO(pull_args)
 
-                # # TODO: locate the local executor
-                # if not tag:
-                #     executor = hubio.fetch(id, tag)
-
-                executor = hubio.fetch(uuid, tag=tag, secret=secret)
+                executor = hubio.fetch(name, tag=tag, secret=secret)
+                uuid = executor.uuid
 
                 if scheme == 'jinahub+docker':
                     # use docker image
@@ -652,10 +649,10 @@ class Pod(BasePod):
                 elif scheme == 'jinahub':
                     from ...hubble.hubapi import resolve_local
 
-                    pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                    pkg_path = resolve_local(uuid, tag or executor.tag)
                     if not pkg_path:
                         hubio.pull()
-                        pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                        pkg_path = resolve_local(uuid, tag or executor.tag)
                     args.uses = f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'Unknown schema: {scheme}')

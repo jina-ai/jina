@@ -20,10 +20,10 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     parser = urlparse(uri_path)
     scheme = parser.scheme
     items = list(parser.netloc.split(':'))
-    uuid = items[0]
+    name = items[0]
     secret = items[1] if len(items) > 1 else None
     tag = parser.path.strip('/') if parser.path else None
-    return scheme, uuid, tag, secret
+    return scheme, name, tag, secret
 
 
 def md5file(file_path: 'Path') -> str:
