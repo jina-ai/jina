@@ -53,7 +53,6 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                     if hasattr(request_iterator, '__anext__'):
                         next_request = await request_iterator.__anext__()
                     elif hasattr(request_iterator, '__next__'):
-                        # This code block will be executed for REST based invocations
                         next_request = next(request_iterator)
                     else:
                         raise TypeError(

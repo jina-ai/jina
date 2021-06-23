@@ -2,6 +2,11 @@ import itertools
 from typing import Iterable
 
 
+def _check_traversal_path_type(traversal_paths):
+    if isinstance(traversal_paths, str):
+        raise ValueError('traversal_paths needs to be an Iterable[str]')
+
+
 class TraversableSequence:
     """
     A mixin used for traversing a `Sequence[Traversable]`.
@@ -28,6 +33,7 @@ class TraversableSequence:
             - [`r`, `c`]: docs in this TraversableSequence and all child-documents at granularity 1
 
         """
+        _check_traversal_path_type(traversal_paths)
 
         for p in traversal_paths:
             yield from self._traverse(self, p)
@@ -61,6 +67,8 @@ class TraversableSequence:
         :param traversal_paths: a list of string that represents the traversal path
         :yield: :class:``TraversableSequence`` containing the document of all leaves per path.
         """
+        _check_traversal_path_type(traversal_paths)
+
         for p in traversal_paths:
             yield self._flatten(self._traverse(self, p))
 
@@ -77,6 +85,8 @@ class TraversableSequence:
         :param traversal_paths: a list of string that represents the traversal path
         :return: a single :class:``TraversableSequence`` containing the document of all leaves when applying the traversal_paths.
         """
+        _check_traversal_path_type(traversal_paths)
+
         leaves = self.traverse(traversal_paths)
         return self._flatten(leaves)
 

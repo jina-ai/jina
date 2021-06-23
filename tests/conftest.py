@@ -109,6 +109,9 @@ def patched_random_port(mocker):
 def _clean_up_workspace(image_id, network_id, workspace_id, workspace_store):
     from daemon.dockerize import Dockerizer
 
+    import time
+
+    time.sleep(1)
     Dockerizer.rm_image(image_id)
     Dockerizer.rm_network(network_id)
     workspace_store.delete(workspace_id, files=False)

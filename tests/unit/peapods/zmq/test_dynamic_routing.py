@@ -1,16 +1,16 @@
-import asyncio
 import logging
-import pytest
 import threading
 import time
 
+import pytest
 from google.protobuf import json_format
 
+from jina.helper import random_identity
 from jina.parsers import set_pea_parser
 from jina.peapods.zmq import Zmqlet, AsyncZmqlet, ZmqStreamlet
 from jina.proto import jina_pb2
 from jina.types.message import Message
-from jina.helper import random_identity
+from jina.types.routing.table import RoutingTable
 
 
 def get_args():
@@ -27,7 +27,7 @@ def get_args():
             'DEALER_CONNECT',
             '--timeout-ctrl',
             '-1',
-            '--dynamic-out-routing',
+            '--dynamic-routing-out',
         ]
     )
 
@@ -53,8 +53,8 @@ def test_simple_dynamic_routing_zmqlet():
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
-        routing_pb = jina_pb2.RoutingGraphProto()
-        routing_graph = {
+        routing_pb = jina_pb2.RoutingTableProto()
+        routing_table = {
             'active_pod': 'pod1',
             'pods': {
                 'pod1': {
@@ -71,8 +71,8 @@ def test_simple_dynamic_routing_zmqlet():
                 },
             },
         }
-        json_format.ParseDict(routing_graph, routing_pb)
-        msg.envelope.routing_graph.CopyFrom(routing_pb)
+        json_format.ParseDict(routing_table, routing_pb)
+        msg.envelope.routing_table.CopyFrom(routing_pb)
         z2.recv_message(callback)
 
         assert z2.msg_sent == 0
@@ -103,8 +103,7 @@ def test_double_dynamic_routing_zmqlet():
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
-        routing_pb = jina_pb2.RoutingGraphProto()
-        routing_graph = {
+        routing_table = {
             'active_pod': 'pod1',
             'pods': {
                 'pod1': {
@@ -127,13 +126,12 @@ def test_double_dynamic_routing_zmqlet():
                 },
             },
         }
-        json_format.ParseDict(routing_graph, routing_pb)
-        msg.envelope.routing_graph.CopyFrom(routing_pb)
+        msg.envelope.routing_table.CopyFrom(RoutingTable(routing_table).proto)
 
         number_messages = 100
         trips = 10
         for i in range(trips):
-            for i in range(number_messages):
+            for j in range(number_messages):
                 z1.send_message(msg)
             time.sleep(1)
             for i in range(number_messages):
@@ -171,8 +169,8 @@ async def test_double_dynamic_routing_async_zmqlet():
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
-        routing_pb = jina_pb2.RoutingGraphProto()
-        routing_graph = {
+        routing_pb = jina_pb2.RoutingTableProto()
+        routing_table = {
             'active_pod': 'pod1',
             'pods': {
                 'pod1': {
@@ -195,8 +193,8 @@ async def test_double_dynamic_routing_async_zmqlet():
                 },
             },
         }
-        json_format.ParseDict(routing_graph, routing_pb)
-        msg.envelope.routing_graph.CopyFrom(routing_pb)
+        json_format.ParseDict(routing_table, routing_pb)
+        msg.envelope.routing_table.CopyFrom(routing_pb)
 
         await send_msg(z1, msg)
 
@@ -228,8 +226,8 @@ def test_double_dynamic_routing_zmqstreamlet():
         d = req.data.docs.add()
         d.tags['id'] = 2
         msg = Message(None, req, 'tmp', '')
-        routing_pb = jina_pb2.RoutingGraphProto()
-        routing_graph = {
+        routing_pb = jina_pb2.RoutingTableProto()
+        routing_table = {
             'active_pod': 'pod1',
             'pods': {
                 'pod1': {
@@ -252,8 +250,8 @@ def test_double_dynamic_routing_zmqstreamlet():
                 },
             },
         }
-        json_format.ParseDict(routing_graph, routing_pb)
-        msg.envelope.routing_graph.CopyFrom(routing_pb)
+        json_format.ParseDict(routing_table, routing_pb)
+        msg.envelope.routing_table.CopyFrom(routing_pb)
         for pea in [z1, z2, z3]:
             thread = threading.Thread(target=pea.start, args=(callback,))
             thread.daemon = True

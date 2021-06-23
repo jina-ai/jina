@@ -18,9 +18,6 @@ class ContainerRuntime(ZMQRuntime):
 
     def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
         super().__init__(args, ctrl_addr)
-        self.ctrl_addr = Zmqlet.get_ctrl_address(
-            self._host_ctrl, self.args.port_ctrl, self.args.ctrl_with_ipc
-        )[0]
         self._set_network_for_dind_linux()
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
@@ -32,23 +29,6 @@ class ContainerRuntime(ZMQRuntime):
             raise Exception(
                 'the container fails to start, check the arguments or entrypoint'
             )
-
-    @property
-    def _host_ctrl(self) -> str:
-        """
-        Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to _docker_host.
-        If yes, set host_ctrl to _docker_host, else set it to localhost
-
-        :return: host for control port
-        """
-        _docker_host = 'host.docker.internal'
-        return (
-            _docker_host
-            if self.args.docker_kwargs
-            and 'extra_hosts' in self.args.docker_kwargs
-            and _docker_host in self.args.docker_kwargs['extra_hosts']
-            else self.args.host
-        )
 
     def teardown(self):
         """Stop the container."""

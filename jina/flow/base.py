@@ -4,14 +4,12 @@ import copy
 import json
 import os
 import re
-import subprocess
+import socket
 import threading
 import uuid
 import warnings
-
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 from contextlib import ExitStack
-from google.protobuf import json_format
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
 
 from .builder import allowed_levels, _hanging_pods
@@ -19,7 +17,7 @@ from .. import __default_host__
 from ..clients import Client
 from ..clients.mixin import AsyncPostMixin, PostMixin
 from ..enums import FlowBuildLevel, PodRoleType, FlowInspectType, GatewayProtocolType
-from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingGraphCyclicError
+from ..excepts import FlowTopologyError, FlowMissingPodError, RoutingTableCyclicError
 from ..helper import (
     colored,
     get_public_ip,
@@ -32,8 +30,8 @@ from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
-from ..types.routing.graph import RoutingGraph
 from ..peapods.pods.factory import PodFactory
+from ..types.routing.table import RoutingTable
 
 __all__ = ['Flow']
 
@@ -47,7 +45,6 @@ class FlowType(type(ExitStack), type(JAMLCompatible)):
 _regex_port = r'(.*?):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
 
 if False:
-    from ..peapods import BasePod
     from ..executors import BaseExecutor
     from ..clients.base import BaseClient
     from .asyncio import AsyncFlow
@@ -113,7 +110,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         including_default_value_fields: Optional[bool] = False,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
-        name: Optional[str] = GATEWAY_NAME,
+        name: Optional[str] = 'gateway',
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
@@ -283,7 +280,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
-        self._pod_nodes = OrderedDict()  # type: Dict[str, BasePod]
+        self._pod_nodes = OrderedDict()  # type: Dict[str, Pod]
         self._inspect_pods = {}  # type: Dict[str, str]
         self._endpoints_mapping = {}  # type: Dict[str, Dict]
         self._build_level = FlowBuildLevel.EMPTY
@@ -501,7 +498,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
-        :param external: The Pod will be considered an external Pod that has been started independently from the Flow. This Pod will not be context managed by the Flow.
+        :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
@@ -782,8 +779,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    def _get_routing_graph(self):
-        graph = RoutingGraph()
+    def _get_routing_table(self) -> RoutingTable:
+        graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
                 graph.add_pod(f'start-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
@@ -805,13 +802,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
 
-    def _set_initial_dynamic_routing_graph(self):
-        routing_graph = self._get_routing_graph()
-        if not routing_graph.is_acyclic():
-            raise RoutingGraphCyclicError(
+    def _set_initial_dynamic_routing_table(self):
+        routing_table = self._get_routing_table()
+        if not routing_table.is_acyclic():
+            raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
             )
-        self._pod_nodes[GATEWAY_NAME].set_routing_graph(routing_graph)
+        self._pod_nodes[GATEWAY_NAME].args.routing_table = routing_table.json()
 
     @allowed_levels([FlowBuildLevel.EMPTY])
     def build(self, copy_flow: bool = False) -> 'Flow':
@@ -869,10 +866,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
-        op_flow._set_initial_dynamic_routing_graph()
+        op_flow._set_initial_dynamic_routing_table()
 
         for pod in op_flow._pod_nodes.values():
-            pod.args.host = self._parse_host(pod.args.host)
+            pod.args.host = self._resolve_host(pod.args.host)
 
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
@@ -883,17 +880,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         op_flow._build_level = FlowBuildLevel.GRAPH
         return op_flow
 
-    def _parse_host(self, host):
-
+    def _resolve_host(self, host: str) -> str:
         try:
-            result = subprocess.run(['getent', 'hosts', host], capture_output=True)
-
-            ip_address = result.stdout.decode().split(' ')[0]
+            ip_address = socket.gethostbyname(host)
             if ip_address == get_internal_ip():
                 return __default_host__
             else:
                 return host
-        except:
+        except socket.gaierror:
+            self.logger.warning(f'{host} can not be resolved into a valid IP address.')
+            # return the original one, as it might be some special docker host literal
             return host
 
     def __call__(self, *args, **kwargs):
@@ -1038,6 +1034,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             host=self.host,
             port_expose=self.port_expose,
             protocol=self.protocol,
+            show_progress=True,
         )
         kwargs.update(self._common_kwargs)
         return Client(**kwargs)

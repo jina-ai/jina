@@ -2,8 +2,7 @@ import os
 
 import pytest
 
-from jina import __default_host__
-from daemon import __dockerhost__
+from jina import __default_host__, __docker_host__
 from ..helpers import create_workspace, wait_for_workspace, create_flow, assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,6 +15,7 @@ JINAD_PORT = 8000
 GATEWAY_PORT = 45630
 
 
+@pytest.mark.skip('jinad with docker-compose not supported for now')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_simple_hub_pods(docker_compose):
     workspace_id = create_workspace(filepaths=[flow_yaml])

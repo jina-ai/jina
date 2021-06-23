@@ -1,23 +1,18 @@
 import argparse
-import os
-from typing import Any, Tuple
-import time
 import multiprocessing
+import os
 import threading
+import time
+from typing import Any, Tuple
 
 from .helper import _get_event, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__, __default_host__
+from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
-from ...excepts import RuntimeFailToStart, RuntimeTerminated
+from ...excepts import RuntimeFailToStart
 from ...helper import typename
 from ...logging.logger import JinaLogger
-from ..runtimes.jinad import JinadRuntime
-from ..zmq import Zmqlet, send_ctrl_message
 
 __all__ = ['BasePea']
-
-if False:
-    from ..runtimes.base import BaseRuntime
 
 
 class BasePea:
@@ -65,18 +60,40 @@ class BasePea:
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
         # control address of runtime
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
+        self._timeout_ctrl = self.args.timeout_ctrl
+        self.set_ctrl_adrr()
 
+    def set_ctrl_adrr(self):
+        """Sets control address for different runtimes"""
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
-        self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
-            self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
-        )[0]
+        from ..zmq import Zmqlet
+        from ..runtimes.jinad import JinadRuntime
+        from ..runtimes.container import ContainerRuntime
+
+        if self.runtime_cls == ContainerRuntime:
+            # Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.
+            # If yes, set host_ctrl to __docker_host__, else keep it as __default_host__
+            ctrl_host = (
+                __docker_host__
+                if self.args.docker_kwargs
+                and 'extra_hosts' in self.args.docker_kwargs
+                and __docker_host__ in self.args.docker_kwargs['extra_hosts']
+                else self.args.host
+            )
+            self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
+                ctrl_host, self.args.port_ctrl, self.args.ctrl_with_ipc
+            )[0]
+        else:
+            self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
+                self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
+            )[0]
+
         self._local_runtime_ctrl_address = (
             Zmqlet.get_ctrl_address(None, None, True)[0]
             if self.runtime_cls == JinadRuntime
             else self._zed_runtime_ctrl_address
         )
-        self._timeout_ctrl = self.args.timeout_ctrl
 
     def start(self):
         """Start the Pea.
@@ -113,6 +130,8 @@ class BasePea:
         # This is due to the fact that JinadRuntime instantiates a Zmq server at local_ctrl_addr that will itself
         # send ctrl command
         # (TODO: Joan) Fix that in _wait_for_cancel from async runtime
+        from ..runtimes.jinad import JinadRuntime
+
         ctrl_addr = (
             self._local_runtime_ctrl_address
             if self.runtime_cls == JinadRuntime
@@ -142,39 +161,8 @@ class BasePea:
             )
         else:
             self.is_ready.set()
-            try:
+            with runtime:
                 runtime.run_forever()
-            except RuntimeFailToStart as ex:
-                self.logger.error(
-                    f'{ex!r} during {self.runtime_cls.__init__!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-            except RuntimeTerminated:
-                self.logger.info(f'{runtime!r} is end')
-            except KeyboardInterrupt:
-                self.logger.info(f'{runtime!r} is interrupted by user')
-            except (Exception, SystemError) as ex:
-                self.logger.error(
-                    f'{ex!r} during {runtime.run_forever!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
-
-            try:
-                runtime.teardown()
-            except Exception as ex:
-                self.logger.error(
-                    f'{ex!r} during {runtime.teardown!r}'
-                    + f'\n add "--quiet-error" to suppress the exception details'
-                    if not self.args.quiet_error
-                    else '',
-                    exc_info=not self.args.quiet_error,
-                )
         finally:
             self.is_shutdown.set()
             self.is_ready.clear()
@@ -183,6 +171,8 @@ class BasePea:
     def activate_runtime(self):
         """ Send activate control message. """
         if self._dealer:
+            from ..zmq import send_ctrl_message
+
             send_ctrl_message(
                 self._zed_runtime_ctrl_address, 'ACTIVATE', timeout=self._timeout_ctrl
             )
@@ -190,12 +180,16 @@ class BasePea:
     def _deactivate_runtime(self):
         """Send deactivate control message. """
         if self._dealer:
+            from ..zmq import send_ctrl_message
+
             send_ctrl_message(
                 self._zed_runtime_ctrl_address, 'DEACTIVATE', timeout=self._timeout_ctrl
             )
 
     def _cancel_runtime(self):
         """Send terminate control message."""
+        from ..zmq import send_ctrl_message
+
         send_ctrl_message(
             self._local_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
         )
@@ -308,7 +302,7 @@ class BasePea:
 
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
         is_remote_controlled = False
-        if self.args.host != __default_host__:
+        if self.args.host != __default_host__ and not self.args.disable_remote:
             self.args.runtime_cls = 'JinadRuntime'
             # NOTE: remote pea would also create a remote workspace which might take alot of time.
             # setting it to -1 so that wait_start_success doesn't fail

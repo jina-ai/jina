@@ -6,11 +6,10 @@ from typing import Dict, TYPE_CHECKING
 
 import requests
 
-from jina import __default_host__
 from jina.helper import colored, random_port
+from jina import __default_host__, __docker_host__
 
 from .base import BaseStore
-from .. import __dockerhost__
 from ..models import DaemonID
 from ..helper import id_cleaner
 from ..dockerize import Dockerizer
@@ -60,7 +59,7 @@ class ContainerStore(BaseStore):
                 r = requests.get(f'{self.host}/')
                 if r.status_code == requests.codes.ok:
                     self._logger.success(
-                        f'Connected to {self.host} to create a {self._kind}'
+                        f'connected to {self.host} to create a {self._kind}'
                     )
                     return True
             except Exception:
@@ -108,7 +107,7 @@ class ContainerStore(BaseStore):
             ):
                 self.host = f'http://localhost:{self.minid_port}'
             else:
-                self.host = f'http://{__dockerhost__}:{self.minid_port}'
+                self.host = f'http://{__docker_host__}:{self.minid_port}'
 
             self.params = params.dict(exclude={'log_config'})
             # NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`
@@ -150,6 +149,7 @@ class ContainerStore(BaseStore):
                 f'{colored(id, "green")} is added to workspace {colored(workspace_id, "green")}'
             )
 
+            del self.host
             workspace_store[workspace_id].metadata.managed_objects.add(id)
             return id
 
@@ -164,7 +164,7 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
-        self._delete()
+        self._delete(host=self[id].metadata.host)
         workspace_id = self[id].workspace_id
         del self[id]
         from . import workspace_store

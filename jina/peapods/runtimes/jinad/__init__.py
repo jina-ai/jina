@@ -19,22 +19,19 @@ class JinadRuntime(AsyncZMQRuntime):
         # process.
         self.host = args.host
         self.port_expose = args.port_expose
-        # TODO: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
-        # so it can't be used for Client timeout. Setting `timeout` to `None` would wait forever in `DaemonClient`,
-        # which is not ideal. Setting it to 15 secs for testing.
+        # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
+        # so it can't be used for Client timeout.
         self.workspace_api = WorkspaceDaemonClient(
             host=self.host,
             port=self.port_expose,
             logger=self.logger,
-            timeout=15,
         )
         self.pea_api = PeaDaemonClient(
             host=self.host,
             port=self.port_expose,
             logger=self.logger,
-            timeout=15,
         )
-        # Uploads PPea context to remote & Creates remote Pea using :class:`JinadAPI`
+        # Uploads Pea context to remote & Creates remote Pea using :class:`PeaDaemonClient`
         if self._remote_id:
             self.logger.success(
                 f'created a remote {self.pea_api.kind}: {colored(self._remote_id, "cyan")}'

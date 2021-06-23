@@ -10,6 +10,8 @@ from ..models.enums import UpdateOperation
 class FlowStore(ContainerStore):
     """A Store of Flows spawned by as Containers by Daemon"""
 
+    # TODO: lot of duplicate code with peas.py, refactor needed
+
     _kind = 'flow'
 
     def _add(self, port_expose: int, **kwargs) -> Dict:
@@ -70,15 +72,18 @@ class FlowStore(ContainerStore):
             self._logger.error(f'{ex!r}')
             raise Runtime400Exception(f'{self._kind.title()} update failed: {r.json()}')
 
-    def _delete(self) -> None:
-        """Sends `delete` request to `mini-jinad` to terminate a Flow."""
+    def _delete(self, host, **kwargs) -> None:
+        """Sends a delete request to terminate the Flow & remove the container
+
+        :param host: host of mini-jinad
+        :param kwargs: keyword args
+        :raises Runtime400Exception: if deletion fails
+        """
         try:
-            r = requests.delete(url=f'{self.host}/{self._kind}')
+            r = requests.delete(url=f'{host}/{self._kind}')
             if r.status_code != requests.codes.ok:
                 raise Runtime400Exception(
                     f'{self._kind.title()} deletion failed \n{"".join(r.json()["body"])}'
                 )
         except requests.exceptions.RequestException as ex:
-            raise Runtime400Exception(
-                f'{self._kind.title()} deletion failed: {r.json()}'
-            )
+            raise Runtime400Exception(f'{self._kind.title()} deletion failed')
