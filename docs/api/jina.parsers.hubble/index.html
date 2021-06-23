@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/api/jina.parsers.hubble.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Submodules: jina.parsers.hubble.push module. Module contents:" />
+  <meta property="og:description" content="Submodules: jina.parsers.hubble.pull module, jina.parsers.hubble.push module. Module contents:" />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -25,7 +25,7 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.parsers.hubble.push module" href="../jina.parsers.hubble.push/" /><link rel="prev" title="jina.parsers package" href="../jina.parsers/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.parsers.hubble.pull module" href="../jina.parsers.hubble.pull/" /><link rel="prev" title="jina.parsers package" href="../jina.parsers/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.parsers.hubble package - Jina 2.0.0rc9 documentation</title>
@@ -186,6 +186,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
@@ -225,6 +226,7 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.parsers/">jina.parsers package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">jina.parsers.hubble package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
@@ -404,6 +406,7 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </div>
@@ -414,6 +417,13 @@
 <dt id="jina.parsers.hubble.set_hub_push_parser">
 <code class="sig-prename descclassname"><span class="pre">jina.parsers.hubble.</span></code><code class="sig-name descname"><span class="pre">set_hub_push_parser</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/hubble/#set_hub_push_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.hubble.set_hub_push_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the parser for the hub push
+:param parser: an optional existing parser to build upon
+:return: the parser</p>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.parsers.hubble.set_hub_pull_parser">
+<code class="sig-prename descclassname"><span class="pre">jina.parsers.hubble.</span></code><code class="sig-name descname"><span class="pre">set_hub_pull_parser</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/hubble/#set_hub_pull_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.hubble.set_hub_pull_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parser for the hub pull
 :param parser: an optional existing parser to build upon
 :return: the parser</p>
 </dd></dl>
@@ -430,12 +440,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../jina.parsers.hubble.push/">
+          <a class="next-page" href="../jina.parsers.hubble.pull/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">jina.parsers.hubble.push module</div>
+                <div class="title">jina.parsers.hubble.pull module</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>

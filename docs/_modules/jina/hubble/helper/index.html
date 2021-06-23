@@ -163,6 +163,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
@@ -202,6 +203,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
@@ -380,11 +382,58 @@
 
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
-<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+
+<div class="viewcode-block" id="parse_hub_uri"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.parse_hub_uri">[docs]</a><span class="k">def</span> <span class="nf">parse_hub_uri</span><span class="p">(</span><span class="n">uri_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""Parse the uri of the Jina Hub executor.</span>
+
+<span class="sd">    :param uri_path: the uri of Jina Hub executor</span>
+<span class="sd">    :return: a tuple of schema, id, tag, and secret</span>
+<span class="sd">    """</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">uri_path</span><span class="p">)</span>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">scheme</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">netloc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">))</span>
+    <span class="n">uuid</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span> <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">path</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span></div>
+
+
+<div class="viewcode-block" id="md5file"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.md5file">[docs]</a><span class="k">def</span> <span class="nf">md5file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">"""Retrun the MD5 checksum of the file</span>
+
+<span class="sd">    :param file_path: the file to check md5sum</span>
+<span class="sd">    :return: the MD5 checksum</span>
+<span class="sd">    """</span>
+    <span class="n">hash_md5</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">file_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nb">iter</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">128</span> <span class="o">*</span> <span class="n">hash_md5</span><span class="o">.</span><span class="n">block_size</span><span class="p">),</span> <span class="sa">b</span><span class="s1">''</span><span class="p">):</span>
+            <span class="n">hash_md5</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hash_md5</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="unpack_package"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.unpack_package">[docs]</a><span class="k">def</span> <span class="nf">unpack_package</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span> <span class="n">target_dir</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">):</span>
+    <span class="sd">"""Unpack the file to the target_dir.</span>
+
+<span class="sd">    :param filepath: the path of given file</span>
+<span class="sd">    :param target_dir: the path of target folder</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">'.zip'</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="nb">zip</span><span class="p">:</span>
+            <span class="nb">zip</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">target_dir</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">filepath</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'.tar'</span><span class="p">,</span> <span class="s1">'.gz'</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
+            <span class="n">tar</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">target_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"File format is not supported for unpacking."</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="archive_package"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.archive_package">[docs]</a><span class="k">def</span> <span class="nf">archive_package</span><span class="p">(</span><span class="n">package_folder</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'io.BytesIO'</span><span class="p">:</span>
@@ -424,6 +473,65 @@
     <span class="n">zip_stream</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">zip_stream</span></div>
+
+
+<div class="viewcode-block" id="download_with_resume"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.download_with_resume">[docs]</a><span class="k">def</span> <span class="nf">download_with_resume</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">target_dir</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">md5sum</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Path'</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Download file from url to target_dir, and check md5sum.</span>
+<span class="sd">    Performs a HTTP(S) download that can be restarted if prematurely terminated.</span>
+<span class="sd">    The HTTP server must support byte ranges.</span>
+
+<span class="sd">    :param url: the URL to download</span>
+<span class="sd">    :param target_dir: the target path for the file</span>
+<span class="sd">    :param filename: the filename of the downloaded file</span>
+<span class="sd">    :param md5sum: the MD5 checksum to match</span>
+
+<span class="sd">    :return: the filepath of the downloaded file</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">requests</span>
+
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">resume_byte_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">resume_header</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{</span><span class="s1">'Range'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'bytes=</span><span class="si">{</span><span class="n">resume_byte_pos</span><span class="si">}</span><span class="s1">-'</span><span class="p">}</span> <span class="k">if</span> <span class="n">resume_byte_pos</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">resume_header</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="n">block_size</span> <span class="o">=</span> <span class="mi">1024</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">'ab'</span> <span class="k">if</span> <span class="n">resume_byte_pos</span> <span class="k">else</span> <span class="s1">'wb'</span>
+
+        <span class="k">with</span> <span class="n">target</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="mi">32</span> <span class="o">*</span> <span class="n">block_size</span><span class="p">):</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">target_dir</span> <span class="o">/</span> <span class="n">filename</span>
+
+    <span class="n">_resume_byte_pos</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">md5sum</span> <span class="ow">and</span> <span class="n">md5file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">md5sum</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">filepath</span>
+        <span class="n">head_info</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">file_size_online</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">head_info</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'content-length'</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">file_size_offline</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span>
+        <span class="k">if</span> <span class="n">file_size_online</span> <span class="o">&gt;</span> <span class="n">file_size_offline</span><span class="p">:</span>
+            <span class="n">_resume_byte_pos</span> <span class="o">=</span> <span class="n">file_size_offline</span>
+    <span class="n">_download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_resume_byte_pos</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">md5sum</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">md5file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">md5sum</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'MD5 checksum failed.'</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">filepath</span></div>
 </pre></div>
       </article>
       <footer>

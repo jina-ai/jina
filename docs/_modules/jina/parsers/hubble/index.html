@@ -163,6 +163,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
@@ -202,6 +203,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
@@ -394,6 +396,20 @@
     <span class="k">return</span> <span class="n">parser</span></div>
 
 
+<div class="viewcode-block" id="set_hub_pull_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_pull_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_pull_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">"""Set the parser for the hub pull</span>
+<span class="sd">    :param parser: an optional existing parser to build upon</span>
+<span class="sd">    :return: the parser</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
+
+    <span class="kn">from</span> <span class="nn">.pull</span> <span class="kn">import</span> <span class="n">mixin_hub_pull_parser</span>
+
+    <span class="n">mixin_hub_pull_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
 <div class="viewcode-block" id="set_hub_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">"""Set the parser for the hub</span>
 <span class="sd">    :param parser: the parser configure</span>
@@ -413,6 +429,15 @@
             <span class="s1">'push'</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s1">'push an executor package to the Jina hub'</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">'Push an executor package to the Jina hub'</span><span class="p">,</span>
+            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">set_hub_pull_parser</span><span class="p">(</span>
+        <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+            <span class="s1">'pull'</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'download an executor package/image from the Jina hub'</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'Download an executor package/image from the Jina hub'</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span></div>

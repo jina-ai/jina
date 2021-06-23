@@ -25,7 +25,7 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.jaml package" href="../jina.jaml/" /><link rel="prev" title="jina.hubble.helper module" href="../jina.hubble.helper/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.jaml package" href="../jina.jaml/" /><link rel="prev" title="jina.hubble.hubapi module" href="../jina.hubble.hubapi/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.hubble.hubio module - Jina 2.0.0rc9 documentation</title>
@@ -186,6 +186,7 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.hubble/">jina.hubble package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">jina.hubble.hubio module</a></li>
 </ul>
 </li>
@@ -225,6 +226,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
@@ -402,6 +404,42 @@
 <span id="jina-hubble-hubio-module"></span><h1>jina.hubble.hubio module<a class="headerlink" href="#module-jina.hubble.hubio" title="Permalink to this headline">¶</a></h1>
 <p>Module for wrapping Jina Hub API calls.</p>
 <dl class="py class">
+<dt id="jina.hubble.hubio.HubExecutor">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.hubio.</span></code><code class="sig-name descname"><span class="pre">HubExecutor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visibility</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md5sum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.hubble.hubio.HubExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Create new instance of HubExecutor(id, current_tag, visibility, image_name, archive_url, md5sum)</p>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubExecutor.archive_url">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">archive_url</span></code><a class="headerlink" href="#jina.hubble.hubio.HubExecutor.archive_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubExecutor.current_tag">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">current_tag</span></code><a class="headerlink" href="#jina.hubble.hubio.HubExecutor.current_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubExecutor.id">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">id</span></code><a class="headerlink" href="#jina.hubble.hubio.HubExecutor.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubExecutor.image_name">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">image_name</span></code><a class="headerlink" href="#jina.hubble.hubio.HubExecutor.image_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubExecutor.md5sum">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">md5sum</span></code><a class="headerlink" href="#jina.hubble.hubio.HubExecutor.md5sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubExecutor.visibility">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">visibility</span></code><a class="headerlink" href="#jina.hubble.hubio.HubExecutor.visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
 <dt id="jina.hubble.hubio.HubIO">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.hubio.</span></code><code class="sig-name descname"><span class="pre">HubIO</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -414,13 +452,41 @@ Examples:</p>
 <li><p><strong class="command">jina hub pull UUID8</strong> to download the executor identified by UUID8</p></li>
 </ul>
 </div></blockquote>
-<p>Create a new HubIO.
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args: arguments</p>
+<p>To create a <a class="reference internal" href="#jina.hubble.hubio.HubIO" title="jina.hubble.hubio.HubIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubIO</span></code></a> object, simply:</p>
+<blockquote>
+<div></div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="jina.hubble.hubio.HubIO.push">
 <code class="sig-name descname"><span class="pre">push</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.push" title="Permalink to this definition">¶</a></dt>
 <dd><p>Push the executor pacakge to Jina Hub.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubIO.fetch">
+<code class="sig-name descname"><span class="pre">fetch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch the executor meta info from Jina Hub.
+:type id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param id: the ID of the executor
+:type tag: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:param tag: the version tag of the executor
+:type secret: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:param secret: the access secret of the executor
+:rtype: <a class="reference internal" href="#jina.hubble.hubio.HubExecutor" title="jina.hubble.hubio.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a>
+:return: meta of executor</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.hubble.hubio.HubIO.pull">
+<code class="sig-name descname"><span class="pre">pull</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.pull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.pull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pull the executor package from Jina Hub.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -443,14 +509,14 @@ Examples:</p>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../jina.hubble.helper/">
+          <a class="prev-page" href="../jina.hubble.hubapi/">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">jina.hubble.helper module</div>
+                <div class="title">jina.hubble.hubapi module</div>
                 
               </div>
             </a>

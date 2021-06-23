@@ -163,6 +163,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
@@ -202,6 +203,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
@@ -378,25 +380,38 @@
         <h1>Source code for jina.hubble.hubio</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module for wrapping Jina Hub API calls."""</span>
 
+
+<span class="kn">from</span> <span class="nn">jina.parsers.hubble</span> <span class="kn">import</span> <span class="n">pull</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span><span class="p">,</span> <span class="n">urlencode</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">colored</span><span class="p">,</span>
     <span class="n">get_full_version</span><span class="p">,</span>
+    <span class="n">get_readable_size</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">archive_package</span>
-
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">HubDownloadError</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">archive_package</span><span class="p">,</span> <span class="n">download_with_resume</span><span class="p">,</span> <span class="n">parse_hub_uri</span>
+<span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">exist_local</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">JINA_HUB_ROOT</span><span class="p">,</span> <span class="n">JINA_HUB_CACHE_DIR</span>
 
 <span class="n">JINA_HUBBLE_REGISTRY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s1">'JINA_HUBBLE_REGISTRY'</span><span class="p">,</span> <span class="s1">'https://api.hubble.jina.ai'</span>
+    <span class="s1">'JINA_HUBBLE_REGISTRY'</span><span class="p">,</span> <span class="s1">'https://apihubble.jina.ai'</span>
 <span class="p">)</span>
-<span class="n">JINA_HUBBLE_PUSH_URL</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">JINA_HUBBLE_REGISTRY</span><span class="p">,</span> <span class="s1">'/v1/executors'</span><span class="p">)</span>
+<span class="n">JINA_HUBBLE_PUSHPULL_URL</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">JINA_HUBBLE_REGISTRY</span><span class="p">,</span> <span class="s1">'/v1/executors'</span><span class="p">)</span>
+
+<span class="n">HubExecutor</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
+    <span class="s1">'HubExecutor'</span><span class="p">,</span>
+    <span class="p">[</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'current_tag'</span><span class="p">,</span> <span class="s1">'visibility'</span><span class="p">,</span> <span class="s1">'image_name'</span><span class="p">,</span> <span class="s1">'archive_url'</span><span class="p">,</span> <span class="s1">'md5sum'</span><span class="p">],</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="HubIO"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO">[docs]</a><span class="k">class</span> <span class="nc">HubIO</span><span class="p">:</span>
@@ -405,14 +420,33 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        - :command:`jina hub push my_executor/` to push the executor package to Jina Hub</span>
 <span class="sd">        - :command:`jina hub pull UUID8` to download the executor identified by UUID8</span>
+
+<span class="sd">    To create a :class:`HubIO` object, simply:</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+<span class="sd">            hubio = HubIO(args)</span>
+
+<span class="sd">    :param args: arguments</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
-        <span class="sd">"""Create a new HubIO.</span>
-<span class="sd">        :param args: arguments</span>
-<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_docker_client</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_load_docker_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
+            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">help_text</span><span class="o">=</span><span class="s1">'missing "docker" dependency, please do pip install "jina[docker]"'</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">docker</span>
+            <span class="kn">from</span> <span class="nn">docker</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">DockerClient</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">DockerClient</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+
+            <span class="c1"># low-level client</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s1">'unix://var/run/docker.sock'</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Push the executor pacakge to Jina Hub."""</span>
@@ -441,8 +475,10 @@
             <span class="n">form_data</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s1">'meta'</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span>
                 <span class="s1">'env'</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">env</span><span class="p">),</span>
-                <span class="s1">'public'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">public</span><span class="p">,</span>
-                <span class="s1">'private'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">private</span><span class="p">,</span>
+                <span class="s1">'public'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">public</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s1">'private'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">private</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">)</span>
+                <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
                 <span class="s1">'force'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">,</span>
                 <span class="s1">'secret'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">,</span>
@@ -451,11 +487,13 @@
             <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="k">else</span> <span class="s1">'post'</span>
             <span class="c1"># upload the archived executor to Jina Hub</span>
             <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'uploading to </span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">JINA_HUBBLE_PUSH_URL</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="sa">f</span><span class="s1">'uploading to </span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">JINA_HUBBLE_PUSHPULL_URL</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
             <span class="p">):</span>
                 <span class="n">request</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
                 <span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span>
-                    <span class="n">JINA_HUBBLE_PUSH_URL</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span> <span class="n">data</span><span class="o">=</span><span class="n">form_data</span>
+                    <span class="n">JINA_HUBBLE_PUSHPULL_URL</span><span class="p">,</span>
+                    <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
@@ -491,13 +529,117 @@
                     <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">usage</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">)</span>
                 <span class="p">)</span>
 
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="c1"># NOTE: sometimes resp.text returns empty</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># IO related errors</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Error when trying to push the executor at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
-            <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="HubIO.fetch"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
+        <span class="sd">"""Fetch the executor meta info from Jina Hub.</span>
+<span class="sd">        :param id: the ID of the executor</span>
+<span class="sd">        :param tag: the version tag of the executor</span>
+<span class="sd">        :param secret: the access secret of the executor</span>
+<span class="sd">        :return: meta of executor</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">requests</span>
+
+        <span class="n">pull_url</span> <span class="o">=</span> <span class="n">JINA_HUBBLE_PUSHPULL_URL</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">/?'</span>
+        <span class="n">path_params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">secret</span><span class="p">:</span>
+            <span class="n">path_params</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="n">secret</span>
+        <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
+            <span class="n">path_params</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
+
+        <span class="n">pull_url</span> <span class="o">+=</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">path_params</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pull_url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">resp</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">==</span> <span class="nb">id</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">HubExecutor</span><span class="p">(</span>
+            <span class="n">resp</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span>
+            <span class="sa">f</span><span class="s1">'v</span><span class="si">{</span><span class="n">resp</span><span class="p">[</span><span class="s2">"currentVersion"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="n">resp</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">],</span>
+            <span class="n">resp</span><span class="p">[</span><span class="s1">'pullPath'</span><span class="p">],</span>
+            <span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'download'</span><span class="p">],</span>
+            <span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'md5'</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="HubIO.pull"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Pull the executor package from Jina Hub."""</span>
+        <span class="n">cached_zip_filepath</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">scheme</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'jinahub'</span><span class="p">,</span> <span class="s1">'jinahub+docker'</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unkonwn schema: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+            <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">tag</span><span class="p">:</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">current_tag</span>
+
+            <span class="n">image_name</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">image_name</span>
+            <span class="n">archive_url</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">archive_url</span>
+            <span class="n">md5sum</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">md5sum</span>
+
+            <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
+                <span class="c1"># pull the Docker image</span>
+                <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'pulling </span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="n">image_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">image_tag</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span> <span class="k">else</span> <span class="s1">''</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'🎉 pulled </span><span class="si">{</span><span class="n">image_tag</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">image</span><span class="o">.</span><span class="n">short_id</span><span class="si">}</span><span class="s1">) uncompressed size: </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Size"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="n">exist_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'The executor </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1"> has already been downloaded in </span><span class="si">{</span><span class="n">JINA_HUB_ROOT</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="c1"># download the package</span>
+            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'downloading </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
+                <span class="n">cached_zip_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">md5sum</span><span class="si">}</span><span class="s1">.zip'</span>
+                <span class="n">cached_zip_filepath</span> <span class="o">=</span> <span class="n">download_with_resume</span><span class="p">(</span>
+                    <span class="n">archive_url</span><span class="p">,</span>
+                    <span class="n">JINA_HUB_CACHE_DIR</span><span class="p">,</span>
+                    <span class="n">cached_zip_filename</span><span class="p">,</span>
+                    <span class="n">md5sum</span><span class="o">=</span><span class="n">md5sum</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'installing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">install_local</span><span class="p">(</span><span class="n">cached_zip_filepath</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">HubDownloadError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Error when trying to pull the executor: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
+            <span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># delete downloaded zip package if existed</span>
+            <span class="k">if</span> <span class="n">cached_zip_filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cached_zip_filepath</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

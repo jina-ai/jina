@@ -25,7 +25,7 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.hubble.hubio module" href="../jina.hubble.hubio/" /><link rel="prev" title="jina.hubble package" href="../jina.hubble/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.hubble.hubapi module" href="../jina.hubble.hubapi/" /><link rel="prev" title="jina.hubble package" href="../jina.hubble/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.hubble.helper module - Jina 2.0.0rc9 documentation</title>
@@ -186,6 +186,7 @@
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.hubble/">jina.hubble package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">jina.hubble.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
@@ -225,6 +226,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
@@ -402,6 +404,51 @@
 <span id="jina-hubble-helper-module"></span><h1>jina.hubble.helper module<a class="headerlink" href="#module-jina.hubble.helper" title="Permalink to this headline">¶</a></h1>
 <p>Module for helper functions for Hub API.</p>
 <dl class="py function">
+<dt id="jina.hubble.helper.parse_hub_uri">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">parse_hub_uri</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#parse_hub_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.parse_hub_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the uri of the Jina Hub executor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the uri of Jina Hub executor</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a tuple of schema, id, tag, and secret</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.hubble.helper.md5file">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">md5file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#md5file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.md5file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrun the MD5 checksum of the file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the file to check md5sum</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the MD5 checksum</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.hubble.helper.unpack_package">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">unpack_package</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#unpack_package"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.unpack_package" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpack the file to the target_dir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the path of given file</p></li>
+<li><p><strong>target_dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the path of target folder</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt id="jina.hubble.helper.archive_package">
 <code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">archive_package</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package_folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#archive_package"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.archive_package" title="Permalink to this definition">¶</a></dt>
 <dd><p>Archives the given folder in zip format and return a data stream.
@@ -410,18 +457,41 @@
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">BytesIO</span></code>
 :return: the data stream of zip content</p>
 </dd></dl>
+<dl class="py function">
+<dt id="jina.hubble.helper.download_with_resume">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">download_with_resume</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md5sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#download_with_resume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.download_with_resume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download file from url to target_dir, and check md5sum.
+Performs a HTTP(S) download that can be restarted if prematurely terminated.
+The HTTP server must support byte ranges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the URL to download</p></li>
+<li><p><strong>target_dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the target path for the file</p></li>
+<li><p><strong>filename</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the filename of the downloaded file</p></li>
+<li><p><strong>md5sum</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the MD5 checksum to match</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the filepath of the downloaded file</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../jina.hubble.hubio/">
+          <a class="next-page" href="../jina.hubble.hubapi/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">jina.hubble.hubio module</div>
+                <div class="title">jina.hubble.hubapi module</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>

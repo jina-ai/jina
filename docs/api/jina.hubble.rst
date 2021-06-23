@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    jina.hubble.helper
+   jina.hubble.hubapi
    jina.hubble.hubio
 
 Module contents

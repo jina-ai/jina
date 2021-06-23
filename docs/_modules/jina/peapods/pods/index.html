@@ -163,6 +163,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label for="toctree-checkbox-10"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 </ul>
 </li>
@@ -202,6 +203,7 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label for="toctree-checkbox-19"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
@@ -378,6 +380,7 @@
         <h1>Source code for jina.peapods.pods</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
@@ -964,6 +967,45 @@
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">_parse_base_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="c1"># use the executor existed in Jina Hub.</span>
+            <span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">parse_hub_uri</span>
+
+            <span class="n">scheme</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">scheme</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub'</span><span class="p">):</span>
+                <span class="kn">from</span> <span class="nn">...hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
+                <span class="kn">from</span> <span class="nn">...parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_pull_parser</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">uuid</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'The given executor URI </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1"> is not valid, please double check it!'</span>
+                    <span class="p">)</span>
+
+                <span class="n">pull_args</span> <span class="o">=</span> <span class="n">set_hub_pull_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">])</span>
+                <span class="n">hubio</span> <span class="o">=</span> <span class="n">HubIO</span><span class="p">(</span><span class="n">pull_args</span><span class="p">)</span>
+
+                <span class="c1"># # TODO: locate the local executor</span>
+                <span class="c1"># if not tag:</span>
+                <span class="c1">#     executor = hubio.fetch(id, tag)</span>
+
+                <span class="n">executor</span> <span class="o">=</span> <span class="n">hubio</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
+                    <span class="c1"># use docker image</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub'</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">...hubble.hubapi</span> <span class="kn">import</span> <span class="n">resolve_local</span>
+
+                    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">current_tag</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="p">:</span>
+                        <span class="n">hubio</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
+                        <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">current_tag</span><span class="p">)</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">"config.yml"</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown schema: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
         <span class="n">parsed_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'head'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'tail'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'peas'</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'parallel'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># reasons to separate head and tail from peas is that they</span>

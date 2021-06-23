@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.parsers.hubble.pull
    jina.parsers.hubble.push
 
 Module contents
