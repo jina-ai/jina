@@ -606,10 +606,6 @@ class Pod(BasePod):
                 pull_args = set_hub_pull_parser().parse_args([self.args.uses])
                 hubio = HubIO(pull_args)
 
-                # # TODO: locate the local executor
-                # if not tag:
-                #     executor = hubio.fetch(id, tag)
-
                 executor = hubio.fetch(name, tag=tag, secret=secret)
                 uuid = executor.uuid
 
