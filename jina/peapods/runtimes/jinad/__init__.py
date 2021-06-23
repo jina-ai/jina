@@ -1,11 +1,13 @@
-import argparse
+import time
 import asyncio
+import argparse
 from typing import Optional
 
-from .client import PeaDaemonClient
+from ....enums import RemoteWorkspaceState
 from ..asyncio.base import AsyncZMQRuntime
+from ....helper import cached_property, colored
 from ....excepts import DaemonConnectivityError
-from ....helper import cached_property, colored, is_yaml_filepath
+from .client import PeaDaemonClient, WorkspaceDaemonClient
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -17,26 +19,23 @@ class JinadRuntime(AsyncZMQRuntime):
         # process.
         self.host = args.host
         self.port_expose = args.port_expose
-        self.api = PeaDaemonClient(
+        # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
+        # so it can't be used for Client timeout.
+        self.workspace_api = WorkspaceDaemonClient(
             host=self.host,
             port=self.port_expose,
             logger=self.logger,
-            timeout=self.args.timeout_ready,
         )
-        # Uploads PPea context to remote & Creates remote Pea using :class:`JinadAPI`
+        self.pea_api = PeaDaemonClient(
+            host=self.host,
+            port=self.port_expose,
+            logger=self.logger,
+        )
+        # Uploads Pea context to remote & Creates remote Pea using :class:`PeaDaemonClient`
         if self._remote_id:
             self.logger.success(
-                f'created a remote {self.api.kind}: {colored(self._remote_id, "cyan")}'
+                f'created a remote {self.pea_api.kind}: {colored(self._remote_id, "cyan")}'
             )
-        else:
-            self.logger.error(
-                f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
-                f'- is there a typo in {self.host}?\n'
-                f'- on {self.host}, are you running `docker run --network host jinaai/jina:latest-daemon`?\n'
-                f'- on {self.host}, have you set the security policy to public for all required ports?\n'
-                f'- on local, are you behind VPN or proxy?'
-            )
-            raise DaemonConnectivityError
 
     async def async_run_forever(self):
         """
@@ -45,7 +44,7 @@ class JinadRuntime(AsyncZMQRuntime):
         self._logging_task = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs
-            else self.api.logstream(self._workspace_id, self._remote_id)
+            else self.pea_api.logstream(self._remote_id)
         )
 
     async def async_cancel(self):
@@ -56,46 +55,73 @@ class JinadRuntime(AsyncZMQRuntime):
 
     def teardown(self):
         """
-        Closes the remote Pod/Pea using :class:`JinadAPI`
+        Terminates the remote Workspace/Pod/Pea using :class:`JinadAPI`
         """
-        self.api.delete(remote_id=self._remote_id)
+        self.pea_api.delete(id=self._remote_id)
+        # TODO: don't fail if workspace deletion fails. all peas would make this call. can be optimized
+        self.workspace_api.delete(id=self.args.workspace_id)
         super().teardown()
+
+    def create_workspace(self):
+        """Create a workspace on remote (includes file upload & docker build)
+
+        :raises DaemonConnectivityError: if remote daemon is not reachable
+        :raises RuntimeError: if workspace creation fails
+        """
+        if not self.workspace_api.alive:
+            self.logger.error(
+                f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
+                f'- is there a typo in {self.host}?\n'
+                f'- on {self.host}, are you running `docker run --network host jinaai/jina:latest-daemon`?\n'
+                f'- on {self.host}, have you set the security policy to public for all required ports?\n'
+                f'- on local, are you behind VPN or proxy?'
+            )
+            raise DaemonConnectivityError
+
+        sleep = 2
+        retries = 100
+        for retry in range(retries):
+            workspace_status = self.workspace_api.get(id=self.args.workspace_id)
+            if not workspace_status:
+                raise DaemonConnectivityError
+            state = workspace_status.get('state', None)
+            if not state:
+                self.logger.info(
+                    f'creating workspace {colored(self.args.workspace_id, "cyan")} on remote. This might take some time.'
+                )
+                self.workspace_api.post(
+                    dependencies=self.args.upload_files,
+                    workspace_id=self.args.workspace_id,
+                )
+            elif state in [
+                RemoteWorkspaceState.PENDING,
+                RemoteWorkspaceState.CREATING,
+                RemoteWorkspaceState.UPDATING,
+            ]:
+                if retry % 10 == 0:
+                    self.logger.info(
+                        f'workspace {self.args.workspace_id} is getting created on remote. waiting..'
+                    )
+                time.sleep(sleep)
+            elif state == RemoteWorkspaceState.ACTIVE:
+                self.logger.success(
+                    f'successfully created a remote workspace: {colored(self.args.workspace_id, "cyan")}'
+                )
+                break
+            else:
+                raise RuntimeError(f'remote workspace creation failed')
 
     @cached_property
     def _remote_id(self) -> Optional[str]:
-        if self.api.is_alive:
-            upload_files = []
-            if is_yaml_filepath(self.args.uses):
-                upload_files.append(self.args.uses)
+        """Creates a workspace & a pea on remote
 
-            if is_yaml_filepath(self.args.uses_internal):
-                upload_files.append(self.args.uses_internal)
-
-            if self.args.upload_files:
-                upload_files.extend(self.args.upload_files)
-            else:
-                self.logger.warning(
-                    f'will upload {upload_files} to remote, to include more local file '
-                    f'dependencies, please use `--upload-files`'
-                )
-
-            if upload_files:
-                workspace_id = self.api.upload(
-                    dependencies=list(set(upload_files)),
-                    workspace_id=self.args.workspace_id,
-                )
-                if workspace_id:
-                    self.logger.success(
-                        f'uploaded to workspace: {colored(workspace_id, "cyan")}'
-                    )
-                else:
-                    raise RuntimeError('can not upload required files to remote')
-
-            _id = self.api.create(self.args)
-
-            # if there is a new workspace_id, then use it
-            self._workspace_id = self.api.get_status(_id)['workspace_id']
-            return _id
+        :return: id of rempte pea
+        """
+        self.create_workspace()
+        pea_id = self.pea_api.post(self.args)
+        if not pea_id:
+            raise RuntimeError('remote pea creation failed')
+        return pea_id
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""

@@ -133,5 +133,8 @@ shell/jina-wizard.sh
 *.iml
 .idea
 
+# VSCode
+.vscode
+
 # test with config in resources
 tests/integration/crud/simple/simple_indexer/

@@ -1,0 +1,4 @@
+!DummyExecutor
+metas:
+  name: dummy_executor
+  py_modules: dummy_executor.py
