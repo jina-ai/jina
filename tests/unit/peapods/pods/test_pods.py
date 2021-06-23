@@ -279,11 +279,10 @@ def test_pod_remote_pea_parallel_pea_host_set_completely(
     [[os.path.join(cur_dir, __file__), os.path.join(cur_dir, '__init__.py')]],
 )
 @pytest.mark.parametrize(
-    'uses, uses_internal, uses_before, uses_after, py_modules, expected',
+    'uses, uses_before, uses_after, py_modules, expected',
     [
         (
             os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-            '',
             '',
             '',
             [
@@ -299,29 +298,21 @@ def test_pod_remote_pea_parallel_pea_host_set_completely(
         ),
         (
             os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
-            os.path.join(cur_dir, '../../mwu-encoder/mwu_encoder_volume_change.yml'),
-            os.path.join(cur_dir, '../../mwu-encoder/mwu_encoder_ext.yml'),
-            os.path.join(cur_dir, '../../mwu-encoder/mwu_encoder_upd.yml'),
+            os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
+            os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
             [
                 os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
-                os.path.join(cur_dir, '../../mwu-encoder/mwu_encoder.py'),
+                os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
             ],
             [
                 os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
                 os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
-                os.path.join(
-                    cur_dir, '../../mwu-encoder/mwu_encoder_volume_change.yml'
-                ),
-                os.path.join(cur_dir, '../../mwu-encoder/mwu_encoder_ext.yml'),
-                os.path.join(cur_dir, '../../mwu-encoder/mwu_encoder_upd.yml'),
-                os.path.join(cur_dir, '../../mwu-encoder/mwu_encoder.py'),
                 os.path.join(cur_dir, __file__),
                 os.path.join(cur_dir, '__init__.py'),
             ],
         ),
         (
             'non_existing1.yml',
-            'non_existing2.yml',
             'non_existing3.yml',
             'non_existing4.yml',
             ['non_existing1.py', 'non_existing2.py'],
@@ -333,7 +324,6 @@ def test_pod_upload_files(
     parallel,
     upload_files,
     uses,
-    uses_internal,
     uses_before,
     uses_after,
     py_modules,
@@ -343,8 +333,6 @@ def test_pod_upload_files(
         [
             '--uses',
             uses,
-            '--uses-internal',
-            uses_internal,
             '--uses-before',
             uses_before,
             '--uses-after',

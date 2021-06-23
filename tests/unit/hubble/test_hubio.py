@@ -46,10 +46,11 @@ class GetMockResponse:
         return {
             'keywords': [],
             'id': 'dummy_mwu_encoder',
-            'currentVersion': 0,
+            'alias': 'alias_dummy',
+            'tag': 'v0',
             'versions': [],
             'visibility': 'public',
-            'pullPath': 'jinahub/pod.dummy_mwu_encoder',
+            'image': 'jinahub/pod.dummy_mwu_encoder',
             'package': {
                 'download': 'http://hubbleapi.jina.ai/files/dummy_mwu_encoder-v0.zip',
                 'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
@@ -95,8 +96,9 @@ def test_fetch(mocker, monkeypatch):
 
     executor = HubIO(args).fetch('dummy_mwu_encoder')
 
-    assert executor.id == 'dummy_mwu_encoder'
-    assert executor.current_tag == 'v0'
+    assert executor.uuid == 'dummy_mwu_encoder'
+    assert executor.alias == 'alias_dummy'
+    assert executor.tag == 'v0'
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
 

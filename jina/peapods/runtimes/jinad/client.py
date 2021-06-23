@@ -149,7 +149,7 @@ class DaemonClient:
                     pass
             return field
 
-        for f in ('uses', 'uses_after', 'uses_before', 'uses_internal', 'py_modules'):
+        for f in ('uses', 'uses_after', 'uses_before', 'py_modules'):
             attr = getattr(_args, f, None)
             if not attr:
                 continue

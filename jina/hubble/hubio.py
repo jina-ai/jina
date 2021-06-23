@@ -30,7 +30,7 @@ JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
 HubExecutor = namedtuple(
     'HubExecutor',
-    ['id', 'current_tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
+    ['uuid', 'alias', 'tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
 )
 
 
@@ -161,10 +161,10 @@ class HubIO:
             )
 
     def fetch(
-        self, id: str, tag: Optional[str] = None, secret: Optional[str] = None
+        self, name: str, tag: Optional[str] = None, secret: Optional[str] = None
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
-        :param id: the ID of the executor
+        :param name: the UUID/Alias of the executor
         :param tag: the version tag of the executor
         :param secret: the access secret of the executor
         :return: meta of executor
@@ -172,7 +172,7 @@ class HubIO:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{id}/?'
+        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{name}/?'
         path_params = {}
         if secret:
             path_params['secret'] = secret
@@ -187,13 +187,13 @@ class HubIO:
             resp.raise_for_status()
 
         resp = resp.json()
-        assert resp['id'] == id
 
         result = HubExecutor(
             resp['id'],
-            f'v{resp["currentVersion"]}',
+            resp.get('alias', None),
+            resp['tag'],
             resp['visibility'],
-            resp['pullPath'],
+            resp['image'],
             resp['package']['download'],
             resp['package']['md5'],
         )
@@ -204,16 +204,17 @@ class HubIO:
         """Pull the executor package from Jina Hub."""
         cached_zip_filepath = None
         try:
-            scheme, uuid, tag, secret = parse_hub_uri(self.args.uri)
+            scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
             if scheme not in ['jinahub', 'jinahub+docker']:
                 raise ValueError(f'Unkonwn schema: {scheme}')
 
-            executor = self.fetch(uuid, tag=tag, secret=secret)
+            executor = self.fetch(name, tag=tag, secret=secret)
 
             if not tag:
-                tag = executor.current_tag
+                tag = executor.tag
 
+            uuid = executor.uuid
             image_name = executor.image_name
             archive_url = executor.archive_url
             md5sum = executor.md5sum
