@@ -1,132 +1,174 @@
+import os
 import shutil
-import uuid
-from collections.abc import MutableMapping
-from datetime import datetime
+import pickle
 from pathlib import Path
-from typing import Dict, Any, Union
+from copy import deepcopy
+from datetime import datetime
+from collections.abc import MutableMapping
+from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union
 
-from jina.helper import colored
 from jina.logging.logger import JinaLogger
-from .. import jinad_args
+from ..models import DaemonID
+from ..models.base import StoreItem, StoreStatus
+from .. import jinad_args, __root_workspace__
+
+if TYPE_CHECKING:
+    from ..models.workspaces import WorkspaceItem
+    from ..models.containers import ContainerItem
 
 
 class BaseStore(MutableMapping):
-    """The Base class for Jinad stores"""
+    """The Base class for Daemon stores"""
+
+    _kind = ''
+    _status_model = StoreStatus
 
     def __init__(self):
-        self._items = {}  # type: Dict['uuid.UUID', Dict[str, Any]]
         self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
-        self._init_stats()
+        self.status = self.__class__._status_model()
 
-    def _init_stats(self):
-        """Initialize the stats """
-        self._time_created = datetime.now()
-        self._time_updated = self._time_created
-        self._num_add = 0
-        self._num_del = 0
-
-    def add(self, *args, **kwargs) -> 'uuid.UUID':
+    def add(self, *args, **kwargs) -> DaemonID:
         """Add a new element to the store. This method needs to be overridden by the subclass
 
 
         .. #noqa: DAR101"""
         raise NotImplementedError
 
-    def update(self, *args, **kwargs) -> 'uuid.UUID':
+    def update(self, *args, **kwargs) -> DaemonID:
         """Updates the element to the store. This method needs to be overridden by the subclass
 
 
         .. #noqa: DAR101"""
         raise NotImplementedError
 
-    def delete(
-        self,
-        id: Union[str, uuid.UUID],
-        workspace: bool = False,
-        everything: bool = False,
-        **kwargs,
-    ):
-        """delete an object from the store
+    def delete(self, *args, **kwargs) -> DaemonID:
+        """Deletes an element from the store. This method needs to be overridden by the subclass
 
-        :param id: the id of the object
-        :param workspace: whether to delete the workdir of the object
-        :param everything: whether to delete everything
-        :param kwargs: not used
-        """
-        if isinstance(id, str):
-            id = uuid.UUID(id)
 
-        if id in self._items:
-            v = self._items[id]
-            if 'object' in v and hasattr(v['object'], 'close'):
-                v['object'].close()
-            if workspace and v.get('workdir', None):
-                for path in Path(v['workdir']).rglob('[!logging.log]*'):
-                    if path.is_file():
-                        self._logger.debug(f'file to be deleted: {path}')
-                        path.unlink()
-            if everything and v.get('workdir', None):
-                self._logger.debug(f'directory to be deleted: {v["workdir"]}')
-                shutil.rmtree(v['workdir'])
-            del self[id]
-            self._logger.success(
-                f'{colored(str(id), "cyan")} is released from the store.'
-            )
-        else:
-            raise KeyError(f'{colored(str(id), "cyan")} not found in store.')
+        .. #noqa: DAR101"""
+        raise NotImplementedError
 
     def __iter__(self):
-        return iter(self._items)
+        return iter(self.status.items)
 
     def __len__(self):
-        return len(self._items)
+        return len(self.status.items)
 
-    def __getitem__(self, key: Union['uuid.UUID', str]):
-        if isinstance(key, str):
-            key = uuid.UUID(key)
-        return self._items[key]
+    def __repr__(self) -> str:
+        return str(self.status.dict())
 
-    def __delitem__(self, key: uuid.UUID):
-        """Release a Pea/Pod/Flow object from the store
+    def keys(self) -> Sequence['DaemonID']:
+        """Get keys in the store
 
-        :param key: the key of the object
+        :return: Keys in the local store
+        """
+
+        return self.status.items.keys()
+
+    def values(self) -> Sequence[Union['WorkspaceItem', 'ContainerItem']]:
+        """Get values in the store
+
+        :return: Values in the local store
+        """
+
+        return self.status.items.values()
+
+    def items(
+        self,
+    ) -> Sequence[Tuple['DaemonID', Union['WorkspaceItem', 'ContainerItem']]]:
+        """Get items in the store
+
+        :return: Items in the local store
+        """
+
+        return self.status.items.items()
+
+    def __getitem__(self, key: DaemonID) -> Union['WorkspaceItem', 'ContainerItem']:
+        """Fetch a Container/Workspace object from the store
+
+        :param key: the key (DaemonID) of the object
+        :return: the value of the object
+        """
+        return self.status.items[key]
+
+    def __setitem__(self, key: DaemonID, value: StoreItem) -> None:
+        """Add a Container/Workspace object to the store
+
+        :param key: the key (DaemonID) of the object
+        :param value: the value to be assigned
+        """
+        self.status.items[key] = value
+        self.status.num_add += 1
+        self.status.time_updated = datetime.now()
+
+    def __delitem__(self, key: DaemonID) -> None:
+        """Release a Container/Workspace object from the store
+
+        :param key: the key (DaemonID) of the object
 
 
         .. #noqa: DAR201"""
-        self._items.pop(key)
-        self._time_updated = datetime.now()
-        self._num_del += 1
+        self.status.items.pop(key)
+        self.status.num_del += 1
+        self.status.time_updated = datetime.now()
 
-    def clear(self) -> None:
-        """delete all the objects in the store"""
+    def __setstate__(self, state: Dict):
+        self._logger = JinaLogger(self.__class__.__name__, **vars(jinad_args))
+        now = datetime.now()
+        self.status = self._status_model(**state)
+        self.status.time_updated = now
 
-        keys = list(self._items.keys())
-        for k in keys:
-            self.delete(id=k, workspace=True)
+    def __getstate__(self) -> Dict:
+        return self.status.dict()
+
+    @classmethod
+    def dump(cls, func) -> Callable:
+        """Dump store as a pickle to local workspace
+
+        :param func: function to be wrapped
+        :return: decorator for dump
+        """
+
+        def wrapper(self, *args, **kwargs):
+            r = func(self, *args, **kwargs)
+            filepath = os.path.join(__root_workspace__, f'{self._kind}.store')
+            if Path(filepath).is_file():
+                shutil.copyfile(filepath, f'{filepath}.backup')
+            with open(filepath, 'wb') as f:
+                pickle.dump(self, f)
+            return r
+
+        return wrapper
+
+    @classmethod
+    def load(cls) -> Union[Dict, 'BaseStore']:
+        """Load store from a pickle in local workspace
+
+        :return: Store from local or empty store
+        """
+
+        filepath = os.path.join(__root_workspace__, f'{cls._kind}.store')
+        if Path(filepath).is_file() and os.path.getsize(filepath) > 0:
+            with open(filepath, 'rb') as f:
+                return pickle.load(f)
+        else:
+            return cls()
+
+    def clear(self, **kwargs) -> None:
+        """Delete all the objects in the store
+
+        :param kwargs: keyward args
+        """
+
+        _status = deepcopy(self.status)
+        for k in _status.items.keys():
+            self.delete(id=k, workspace=True, **kwargs)
 
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """
+
         self.clear()
-        self._init_stats()
+        self.status = self._status_model()
 
-    def __setitem__(self, key: 'uuid.UUID', value: Dict) -> None:
-        self._items[key] = value
-        t = datetime.now()
-        value.update({'time_created': t})
-        self._time_updated = t
-        self._num_add += 1
-
-    @property
-    def status(self) -> Dict:
-        """Return the status of this store as a dict
-
-
-        .. #noqa: DAR201"""
-        return {
-            'size': len(self._items),
-            'time_created': self._time_created,
-            'time_updated': self._time_updated,
-            'num_add': self._num_add,
-            'num_del': self._num_del,
-            'items': self._items,
-        }
+    def __len__(self):
+        return len(self.items())

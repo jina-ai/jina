@@ -168,7 +168,7 @@ def test_flow_identical(tmpdir):
 def test_flow_no_container(protocol):
     f = Flow(protocol=protocol).add(
         name='dummyEncoder',
-        uses=os.path.join(cur_dir, '../mwu-encoder/mwu_encoder.yml'),
+        uses=os.path.join(cur_dir, 'mwu-encoder/mwu_encoder.yml'),
     )
 
     with f:
@@ -540,8 +540,8 @@ def test_flow_host_expose_shortcut(input, expect_host, expect_port):
 
 def test_flow_workspace_id():
     f = Flow().add().add().add().build()
-    assert len(f.workspace_id) == 3
-    assert len(set(f.workspace_id.values())) == 3
+    assert len(f.workspace_id) == 4
+    assert len(set(f.workspace_id.values())) == 4
 
     with pytest.raises(ValueError):
         f.workspace_id = 'hello'

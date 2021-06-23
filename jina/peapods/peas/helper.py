@@ -9,8 +9,12 @@ from ...enums import RuntimeBackendType
 def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
     if isinstance(obj, threading.Thread):
         return threading.Event()
-    elif isinstance(obj, multiprocessing.Process):
+    elif isinstance(obj, multiprocessing.Process) or isinstance(
+        obj, multiprocessing.context.ForkProcess
+    ):
         return multiprocessing.Event()
+    elif isinstance(obj, multiprocessing.context.SpawnProcess):
+        return multiprocessing.get_context('spawn').Event()
     else:
         raise TypeError(
             f'{obj} is not an instance of "threading.Thread" nor "multiprocessing.Process"'

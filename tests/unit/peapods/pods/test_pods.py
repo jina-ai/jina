@@ -8,6 +8,8 @@ from jina.parsers import set_pod_parser
 from jina.peapods import Pod
 from jina import __default_executor__
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 @pytest.fixture(scope='function')
 def pod_args():
@@ -269,3 +271,88 @@ def test_pod_remote_pea_parallel_pea_host_set_completely(
                 assert pea_arg.host == pea_host
                 assert pea_arg.host_in == expected_host_in
                 assert pea_arg.host_out == expected_host_out
+
+
+@pytest.mark.parametrize('parallel', [1])
+@pytest.mark.parametrize(
+    'upload_files',
+    [[os.path.join(cur_dir, __file__), os.path.join(cur_dir, '__init__.py')]],
+)
+@pytest.mark.parametrize(
+    'uses, uses_before, uses_after, py_modules, expected',
+    [
+        (
+            os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
+            '',
+            '',
+            [
+                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
+                os.path.join(cur_dir, '__init__.py'),
+            ],
+            [
+                os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
+                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
+                os.path.join(cur_dir, __file__),
+                os.path.join(cur_dir, '__init__.py'),
+            ],
+        ),
+        (
+            os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
+            os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
+            os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
+            [
+                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
+                os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
+            ],
+            [
+                os.path.join(cur_dir, '../../yaml/dummy_ext_exec.yml'),
+                os.path.join(cur_dir, '../../yaml/dummy_exec.py'),
+                os.path.join(cur_dir, __file__),
+                os.path.join(cur_dir, '__init__.py'),
+            ],
+        ),
+        (
+            'non_existing1.yml',
+            'non_existing3.yml',
+            'non_existing4.yml',
+            ['non_existing1.py', 'non_existing2.py'],
+            [os.path.join(cur_dir, __file__), os.path.join(cur_dir, '__init__.py')],
+        ),
+    ],
+)
+def test_pod_upload_files(
+    parallel,
+    upload_files,
+    uses,
+    uses_before,
+    uses_after,
+    py_modules,
+    expected,
+):
+    args = set_pod_parser().parse_args(
+        [
+            '--uses',
+            uses,
+            '--uses-before',
+            uses_before,
+            '--uses-after',
+            uses_after,
+            '--py-modules',
+            *py_modules,
+            '--upload-files',
+            *upload_files,
+            '--parallel',
+            str(parallel),
+        ]
+    )
+    pod = Pod(args)
+    for k, v in pod.peas_args.items():
+        if k in ['head', 'tail']:
+            if v:
+                pass
+                # assert sorted(v.upload_files) == sorted(expected)
+        else:
+            for pea in v:
+                print(sorted(pea.upload_files))
+                print(sorted(expected))
+                assert sorted(pea.upload_files) == sorted(expected)

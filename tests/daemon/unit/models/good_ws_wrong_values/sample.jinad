@@ -1,0 +1,3 @@
+build = abc
+python = 3.6
+ports = thats_wrong

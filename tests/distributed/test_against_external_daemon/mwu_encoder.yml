@@ -1,6 +1,6 @@
-!MWUEncoder
+jtype: MWUEncoder
 with:
-  greetings: im from internal yaml!
+  greetings: hello there!
 metas:
   name: my-mwu-encoder
   py_modules: mwu_encoder.py

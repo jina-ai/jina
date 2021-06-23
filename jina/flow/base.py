@@ -104,6 +104,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
+        override_metas: Optional[dict] = None,
+        override_with: Optional[dict] = None,
         port_ctrl: Optional[int] = None,
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
@@ -170,6 +172,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
+        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
+        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_expose: The port of the host exposed to the public
         :param port_in: The port for input data, default a random port between [49152, 65535]
@@ -432,6 +436,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
         on_error_strategy: Optional[str] = 'IGNORE',
+        override_metas: Optional[dict] = None,
+        override_with: Optional[dict] = None,
         parallel: Optional[int] = 1,
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
@@ -465,7 +471,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ] = 'BaseExecutor',
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
-        workspace_id: Optional[str] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
@@ -502,6 +507,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
+        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
+        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
         :param parallel: The number of parallel peas in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param peas_hosts: The hosts of the peas when parallel greater than 1.
                   Peas will be evenly distributed among the hosts. By default,
@@ -566,7 +573,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :param workspace_id: the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same `workspace-id`.
         :return: a (new) Flow object with modification
 
         .. # noqa: DAR202
