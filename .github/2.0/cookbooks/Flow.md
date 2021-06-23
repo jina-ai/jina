@@ -33,6 +33,8 @@ Table of Contents
     - [Define Data via `inputs`](#define-data-via-inputs)
     - [Callback Functions](#callback-functions)
     - [Send Parameters](#send-parameters)
+    - [Fine-grained Control on Request](#fine-grained-control-on-request)
+    - [Get All Responses](#get-all-responses)
   - [Asynchronous Flow](#asynchronous-flow)
 - [Remarks](#remarks)
   - [Joining/Merging](#joiningmerging)
