@@ -486,6 +486,8 @@
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">on_error_strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'IGNORE'</span><span class="p">,</span>
+        <span class="n">override_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">override_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -559,6 +561,8 @@
 
 <span class="sd">          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something</span>
 <span class="sd">          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</span>
+<span class="sd">        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`</span>
+<span class="sd">        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`</span>
 <span class="sd">        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]</span>
 <span class="sd">        :param port_expose: The port of the host exposed to the public</span>
 <span class="sd">        :param port_in: The port for input data, default a random port between [49152, 65535]</span>
@@ -823,6 +827,8 @@
         <span class="n">memory_hwm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">on_error_strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'IGNORE'</span><span class="p">,</span>
+        <span class="n">override_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">override_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parallel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">peas_hosts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
@@ -856,7 +862,6 @@
         <span class="p">]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
         <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">workspace_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Flow'</span><span class="p">,</span> <span class="s1">'AsyncFlow'</span><span class="p">]:</span>
         <span class="sd">"""Add an Executor to the current Flow object.</span>
@@ -893,6 +898,8 @@
 
 <span class="sd">          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something</span>
 <span class="sd">          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</span>
+<span class="sd">        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`</span>
+<span class="sd">        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`</span>
 <span class="sd">        :param parallel: The number of parallel peas in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary</span>
 <span class="sd">        :param peas_hosts: The hosts of the peas when parallel greater than 1.</span>
 <span class="sd">                  Peas will be evenly distributed among the hosts. By default,</span>
@@ -957,7 +964,6 @@
 <span class="sd">          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.</span>
 <span class="sd">          - All volumes are mounted with read-write mode.</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
-<span class="sd">        :param workspace_id: the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same `workspace-id`.</span>
 <span class="sd">        :return: a (new) Flow object with modification</span>
 
 <span class="sd">        .. # noqa: DAR202</span>

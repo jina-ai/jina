@@ -458,6 +458,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">BaseExecutor</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span>
+                <span class="n">override_with</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">override_with</span><span class="p">,</span>
+                <span class="n">override_metas</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">override_metas</span><span class="p">,</span>
                 <span class="n">runtime_args</span><span class="o">=</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">BadConfigSource</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>

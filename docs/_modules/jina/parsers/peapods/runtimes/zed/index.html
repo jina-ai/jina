@@ -381,7 +381,7 @@
 <span></span><span class="sd">"""Argparser module for ZED runtime"""</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">KVAppendAction</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">OnErrorStrategy</span><span class="p">,</span> <span class="n">SocketType</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">helper</span>
@@ -410,6 +410,24 @@
 <span class="s1">        - a Python dict that represents the config</span>
 <span class="s1">        - a text file stream has `.read()` interface</span>
 <span class="s1">        '''</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--override-with'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">    Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`</span>
+<span class="s1">    '''</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--override-metas'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">    Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`</span>
+<span class="s1">    '''</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--py-modules'</span><span class="p">,</span>

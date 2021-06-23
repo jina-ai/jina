@@ -831,6 +831,8 @@
         <span class="n">allow_py_modules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">substitute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">override_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">override_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'JAMLCompatible'</span><span class="p">:</span>
         <span class="sd">"""A high-level interface for loading configuration with features</span>
@@ -877,6 +879,8 @@
 <span class="sd">        :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels</span>
 <span class="sd">        :param substitute: substitute environment, internal reference and context variables.</span>
 <span class="sd">        :param context: context replacement variables in a dict, the value of the dict is the replacement.</span>
+<span class="sd">        :param override_with: dictionary of parameters to overwrite from the default config</span>
+<span class="sd">        :param override_metas: dictionary of parameters to overwrite from the default config</span>
 <span class="sd">        :param kwargs: kwargs for parse_config_source</span>
 <span class="sd">        :return: :class:`JAMLCompatible` object</span>
 <span class="sd">        """</span>
@@ -885,8 +889,21 @@
             <span class="c1"># first load yml with no tag</span>
             <span class="n">no_tag_yml</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load_no_tags</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">no_tag_yml</span><span class="p">:</span>
-                <span class="c1"># extra arguments are parsed to inject_config</span>
                 <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">override_with</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">with_params</span> <span class="o">=</span> <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'with'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">with_params</span><span class="p">:</span>
+                        <span class="n">with_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">override_with</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">with_params</span> <span class="o">=</span> <span class="n">override_with</span>
+                    <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">with_params</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">override_metas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">metas_params</span> <span class="o">=</span> <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'metas'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">metas_params</span><span class="p">:</span>
+                        <span class="n">metas_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">override_metas</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">metas_params</span> <span class="o">=</span> <span class="n">override_metas</span>
+                    <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">metas_params</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">BadConfigSource</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'can not construct </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s1"> from an empty </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">. nothing to read from there'</span>
@@ -911,7 +928,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># revert yaml's tag and load again, this time with substitution</span>
                 <span class="n">tag_yml</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">unescape</span><span class="p">(</span><span class="n">JAML</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">))</span>
-
             <span class="c1"># load into object, no more substitute</span>
             <span class="k">return</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tag_yml</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div></div>
 </pre></div>

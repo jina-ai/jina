@@ -514,21 +514,6 @@
             <span class="p">)</span>
 
         <span class="n">_volumes</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="p">:</span>
-            <span class="n">full_path</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">full_path</span> <span class="o">=</span> <span class="n">complete_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-                <span class="k">pass</span>
-            <span class="k">if</span> <span class="n">full_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
-                <span class="c1"># external YAML config, need to be volumed into the container</span>
-                <span class="c1"># uses takes value from uses_internal</span>
-                <span class="n">non_defaults</span><span class="p">[</span><span class="s1">'uses'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
-                <span class="n">_volumes</span><span class="p">[</span><span class="n">full_path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'bind'</span><span class="p">:</span> <span class="n">non_defaults</span><span class="p">[</span><span class="s1">'uses'</span><span class="p">],</span> <span class="s1">'mode'</span><span class="p">:</span> <span class="s1">'ro'</span><span class="p">}</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_valid_local_config_source</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'"uses_internal" </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_internal</span><span class="si">}</span><span class="s1"> is not like a path, please check it'</span>
-                <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
                 <span class="n">paths</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>

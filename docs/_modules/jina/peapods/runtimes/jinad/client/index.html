@@ -529,7 +529,7 @@
                     <span class="k">pass</span>
             <span class="k">return</span> <span class="n">field</span>
 
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'uses'</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="s1">'uses_internal'</span><span class="p">,</span> <span class="s1">'py_modules'</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'uses'</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="s1">'py_modules'</span><span class="p">):</span>
             <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_args</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span><span class="p">:</span>
                 <span class="k">continue</span>
