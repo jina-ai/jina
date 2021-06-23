@@ -60,7 +60,9 @@ class FlowStore(ContainerStore):
                 'pod_name': pod_name,
                 'shards': shards,
             }
-            r = requests.put(url=f'{self.host}/{self._kind}', params=params)
+            r = requests.put(
+                url=f'{self[id].metadata.host}/{self._kind}', params=params
+            )
 
             if r.status_code != requests.codes.ok:
                 raise Runtime400Exception(
