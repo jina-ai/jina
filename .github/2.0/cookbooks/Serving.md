@@ -8,11 +8,13 @@ guide you from basic serving for demo purpose to advanced serving in production.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 Table of Contents
 
+- [Minimum Working Example](#minimum-working-example)
 - [Flow-as-a-service](#flow-as-a-service)
   - [Supported Communication Protocols](#supported-communication-protocols)
   - [via gRPC](#via-grpc)
   - [via WebSocket](#via-websocket)
   - [via HTTP](#via-http)
+    - [Use Swagger UI to Send HTTP Request](#use-swagger-ui-to-send-http-request)
     - [Use `curl` to Send HTTP Request](#use-curl-to-send-http-request)
     - [Use Python to Send HTTP Request](#use-python-to-send-http-request)
     - [Enable Cross-origin-resources-sharing (CORS)](#enable-cross-origin-resources-sharing-cors)
