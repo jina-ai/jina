@@ -28,12 +28,12 @@ def _get_validator(field: str, choices: Iterable):
     return validator(field, allow_reuse=True)(validate_arg_choices)
 
 
-def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser']):
+def _get_pydantic_fields(parser: Callable[..., 'argparse.ArgumentParser'], **kwargs):
     all_options = {}
     choices_validators = {}
 
-    for a in _export_parser_args(parser):
-        if a.get('choices', None):
+    for a in _export_parser_args(parser, **kwargs):
+        if a.get('choices', None) and a.get('default', None):
             choices_validators[f'validator_for_{a["name"]}'] = _get_validator(
                 field=a['name'], choices=set(a['choices'])
             )
@@ -81,16 +81,18 @@ def build_pydantic_model(model_name: str, module: str):
     from jina.parsers import set_pea_parser, set_pod_parser
     from jina.parsers.flow import set_flow_parser
 
+    kwargs = {}
     if module == 'pod':
         parser = set_pod_parser
     elif module == 'pea':
         parser = set_pea_parser
     elif module == 'flow':
         parser = set_flow_parser
+        kwargs = {'with_identity': True}
     else:
         raise TypeError(f'{module} is not supported')
 
-    all_fields, field_validators = _get_pydantic_fields(parser)
+    all_fields, field_validators = _get_pydantic_fields(parser, **kwargs)
 
     helper._SHOW_ALL_ARGS = old_val
     return create_model(

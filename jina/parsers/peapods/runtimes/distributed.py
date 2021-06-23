@@ -1,6 +1,6 @@
 """Argparser module for distributed runtimes"""
-from jina.helper import random_identity
-from jina.parsers.helper import add_arg_group
+import argparse
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 
 
 def mixin_distributed_feature_parser(parser):
@@ -36,10 +36,10 @@ Note,
     )
 
     gp.add_argument(
-        '--workspace-id',
-        type=str,
-        default=random_identity(),
-        help='the UUID for identifying the workspace. When not given a random id will be assigned.'
-        'Multiple Pea/Pod/Flow will work under the same workspace if they share the same '
-        '`workspace-id`.',
+        '--disable-remote',
+        action='store_true',
+        default=False,
+        help='If set, remote pea invocation is avoided. This is used by peas created by JinaD'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )

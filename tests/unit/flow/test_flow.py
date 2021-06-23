@@ -503,8 +503,10 @@ def test_flow_with_pod_envs():
 @pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_return_results_sync_flow(return_results, protocol):
-    with Flow(protocol=protocol, return_results=return_results).add() as f:
-        r = f.index(from_ndarray(np.random.random([10, 2])))
+    with Flow(protocol=protocol).add() as f:
+        r = f.index(
+            from_ndarray(np.random.random([10, 2])), return_results=return_results
+        )
         if return_results:
             assert isinstance(r, list)
             assert isinstance(r[0], Response)
@@ -538,8 +540,8 @@ def test_flow_host_expose_shortcut(input, expect_host, expect_port):
 
 def test_flow_workspace_id():
     f = Flow().add().add().add().build()
-    assert len(f.workspace_id) == 3
-    assert len(set(f.workspace_id.values())) == 3
+    assert len(f.workspace_id) == 4
+    assert len(set(f.workspace_id.values())) == 4
 
     with pytest.raises(ValueError):
         f.workspace_id = 'hello'

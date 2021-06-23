@@ -60,27 +60,19 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         asyncio: Optional[bool] = False,
-        continue_on_error: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
         port_expose: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
-        request_size: Optional[int] = 100,
-        return_results: Optional[bool] = False,
-        show_progress: Optional[bool] = False,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-        :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param port_expose: The port of the host exposed to the public
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param request_size: The number of Documents in each Request.
-        :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
-        :param show_progress: If set, client will show a progress bar on receiving every request.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -490,7 +482,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ] = 'BaseExecutor',
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
-        workspace_id: Optional[str] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
@@ -593,7 +584,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
-        :param workspace_id: the UUID for identifying the workspace. When not given a random id will be assigned.Multiple Pea/Pod/Flow will work under the same workspace if they share the same `workspace-id`.
         :return: a (new) Flow object with modification
 
         .. # noqa: DAR202
@@ -1042,7 +1032,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             host=self.host,
             port_expose=self.port_expose,
             protocol=self.protocol,
-            show_progress=True,
         )
         kwargs.update(self._common_kwargs)
         return Client(**kwargs)

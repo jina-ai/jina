@@ -934,7 +934,7 @@ def get_public_ip():
     """
     import urllib.request
 
-    timeout = 0.5
+    timeout = 0.25
 
     results = []
 

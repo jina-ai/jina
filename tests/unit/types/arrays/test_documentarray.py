@@ -315,3 +315,23 @@ def test_da_sort_by_score():
     da.sort(key=lambda d: d.scores['euclid'].value)  # sort matches by their values
     assert da[0].id == '9'
     assert da[0].scores['euclid'].value == 1
+
+
+def test_traversal_path():
+    da = DocumentArray([Document() for _ in range(6)])
+    assert len(da) == 6
+
+    da.traverse_flat(['r'])
+
+    with pytest.raises(ValueError):
+        da.traverse_flat('r')
+
+    da.traverse(['r'])
+    with pytest.raises(ValueError):
+        for _ in da.traverse('r'):
+            pass
+
+    da.traverse(['r'])
+    with pytest.raises(ValueError):
+        for _ in da.traverse('r'):
+            pass
