@@ -180,7 +180,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         """
         async for k in servicer.Call(request_iterator=req_iter, context=None):
             return MessageToDict(
-                k
+                k, including_default_value_fields=True
             )  # DO NOT customize serialization here. Scheme is handled by Pydantic in `models.py`
 
     return app
