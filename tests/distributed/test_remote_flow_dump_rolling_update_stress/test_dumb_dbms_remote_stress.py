@@ -7,24 +7,31 @@ from threading import Thread
 from typing import List
 
 import numpy as np
+import pytest
 import requests
 from requests.exceptions import ConnectionError
 from urllib3.exceptions import ReadTimeoutError, NewConnectionError
 
-from jina import Document
+from jina import Document, __default_host__
 from jina.logging.logger import JinaLogger
+from tests.distributed.helpers import (
+    container_ip,
+    create_workspace,
+    wait_for_workspace,
+    create_flow,
+    delete_workspace,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 dbms_flow_yml = os.path.join(cur_dir, 'flow_dbms.yml')
 query_flow_yml = os.path.join(cur_dir, 'flow_query.yml')
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
-JINAD_PORT_DBMS = '8000'  # created during CI
-JINAD_PORT_QUERY = '8000'  # created during CI
+JINAD_PORT = '8000'
 REST_PORT_DBMS = '9000'
 REST_PORT_QUERY = '9001'
 
-DUMP_PATH_DOCKER = '/tmp/dump'  # hardcoded in yaml
+DUMP_PATH_DOCKER = '/workspace/dump'  # hardcoded in yaml
 
 logger = JinaLogger('test-dump')
 
@@ -113,7 +120,7 @@ def _dump_roll_update(dbms_flow_id, query_flow_id):
             'indexer_dbms',
             DUMP_PATH_DOCKER,  # the internal path in the docker container
             SHARDS,
-            f'http://localhost:{JINAD_PORT_DBMS}/flows/{dbms_flow_id}',
+            f'http://localhost:{JINAD_PORT}/flows/{dbms_flow_id}',
         )
 
         # jinad is used for ctrl requests
@@ -121,7 +128,7 @@ def _dump_roll_update(dbms_flow_id, query_flow_id):
         _jinad_rolling_update(
             'indexer_query',
             DUMP_PATH_DOCKER,  # the internal path in the docker container
-            f'http://localhost:{JINAD_PORT_QUERY}/flows/{query_flow_id}',
+            f'http://localhost:{JINAD_PORT}/flows/{query_flow_id}',
         )
         folder_id += 1
         logger.info(f'rolling update done!')
@@ -129,101 +136,108 @@ def _dump_roll_update(dbms_flow_id, query_flow_id):
         time.sleep(10)
 
 
+# @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+# def test_dump_dbms_remote_stress(reraise, docker_compose):
 def test_dump_dbms_remote_stress(reraise):
-    if os.path.exists(DUMP_PATH_DOCKER):
-        os.remove(DUMP_PATH_DOCKER)
+    try:
+        if os.path.exists(DUMP_PATH_DOCKER):
+            os.remove(DUMP_PATH_DOCKER)
 
-    def _inner_query_client(nr_docs_search):
-        with reraise:
-            _query_client(nr_docs_search)
+        def _inner_query_client(nr_docs_search):
+            with reraise:
+                _query_client(nr_docs_search)
 
-    def _inner_index_client(nr_docs_index):
-        with reraise:
-            _index_client(nr_docs_index)
+        def _inner_index_client(nr_docs_index):
+            with reraise:
+                _index_client(nr_docs_index)
 
-    def _inner_dump_rolling_update(dbms_flow_id, query_flow_id):
-        with reraise:
-            _dump_roll_update(dbms_flow_id, query_flow_id)
+        def _inner_dump_rolling_update(dbms_flow_id, query_flow_id):
+            with reraise:
+                _dump_roll_update(dbms_flow_id, query_flow_id)
 
-    global KEEP_RUNNING
-    nr_docs_index = 20
-    nr_docs_search = 3
+        global KEEP_RUNNING
+        nr_docs_index = 20
+        nr_docs_search = 3
 
-    time.sleep(2)
-    dbms_flow_id, query_flow_id = _create_flows()
-    time.sleep(4)
+        time.sleep(2)
+        try:
+            jinad_ip = container_ip('test_jinad_rolling_update')
+        except:
+            jinad_ip = __default_host__
 
-    query_thread = MyThread(
-        target=_inner_query_client,
-        name='_query_client',
-        args=(nr_docs_search,),
-        daemon=True,
-    )
-    query_thread.start()
+        dbms_flow_id, query_flow_id, workspace_id = _create_flows(jinad_ip)
+        time.sleep(4)
 
-    index_thread = MyThread(
-        target=_inner_index_client,
-        name='_index_client',
-        args=(nr_docs_index,),
-        daemon=True,
-    )
-    index_thread.start()
+        query_thread = MyThread(
+            target=_inner_query_client,
+            name='_query_client',
+            args=(nr_docs_search,),
+            daemon=True,
+        )
+        query_thread.start()
 
-    # give it time to index
-    time.sleep(2)
-    dump_roll_update_thread = MyThread(
-        target=_inner_dump_rolling_update,
-        name='_dump_roll_update',
-        args=(dbms_flow_id, query_flow_id),
-        daemon=True,
-    )
-    dump_roll_update_thread.start()
+        index_thread = MyThread(
+            target=_inner_index_client,
+            name='_index_client',
+            args=(nr_docs_index,),
+            daemon=True,
+        )
+        index_thread.start()
 
-    threads = [query_thread, index_thread, dump_roll_update_thread]
+        # give it time to index
+        time.sleep(2)
+        dump_roll_update_thread = MyThread(
+            target=_inner_dump_rolling_update,
+            name='_dump_roll_update',
+            args=(dbms_flow_id, query_flow_id),
+            daemon=True,
+        )
+        dump_roll_update_thread.start()
 
-    logger.info('sleeping')
-    time.sleep(60)
-    KEEP_RUNNING = False
+        threads = [query_thread, index_thread, dump_roll_update_thread]
 
-    for t in threads:
-        if not t.is_alive():
-            logger.warning(f'something went wrong in thread {t.name}')
-            t.join()
-            assert False, f'check error from thread {t.name}'
+        logger.info('sleeping')
+        time.sleep(60)
+        KEEP_RUNNING = False
 
-    assert INDEX_TIMES > 3
-    assert QUERY_TIMES > 3
-    assert DUMP_ROLL_UPDATE_TIME > 2
+        for t in threads:
+            if not t.is_alive():
+                logger.warning(f'something went wrong in thread {t.name}')
+                t.join()
+                assert False, f'check error from thread {t.name}'
 
-    logger.info(f'ending and exit threads')
+        assert INDEX_TIMES > 3
+        assert QUERY_TIMES > 3
+        assert DUMP_ROLL_UPDATE_TIME > 2
+
+        logger.info(f'ending and exit threads')
+    finally:
+        # delete workspace
+        try:
+            delete_workspace(workspace_id=workspace_id, host=jinad_ip)
+        except:
+            # no sudo rights
+            pass
 
 
-def _create_flows():
+def _create_flows(ip):
+    workspace_id = create_workspace(host=ip, dirpath=cur_dir)
+    assert wait_for_workspace(workspace_id, host=ip)
     # create dbms flow
-    dbms_deps = [
-        os.path.join(cur_dir, 'indexer_dbms.yml'),
-        os.path.join(cur_dir, 'executors.py'),
-        os.path.join(cur_dir, 'merge_matches.yml'),
-    ]
-    dbms_flow_id = _create_flow(
-        dbms_flow_yml,
-        dbms_deps,
-        flow_url=f'http://localhost:{JINAD_PORT_DBMS}/flows',
-        ws_url=f'http://localhost:{JINAD_PORT_DBMS}/workspaces',
+    dbms_flow_id = create_flow(
+        workspace_id=workspace_id,
+        filename='flow_dbms.yml',
+        host=ip,
     )
+
     # create query flow
-    query_deps = [
-        os.path.join(cur_dir, 'indexer_query.yml'),
-        os.path.join(cur_dir, 'executors.py'),
-        os.path.join(cur_dir, 'merge_matches.yml'),
-    ]
-    query_flow_id = _create_flow(
-        query_flow_yml,
-        query_deps,
-        flow_url=f'http://localhost:{JINAD_PORT_QUERY}/flows',
-        ws_url=f'http://localhost:{JINAD_PORT_QUERY}/workspaces',
+    query_flow_id = create_flow(
+        workspace_id=workspace_id,
+        filename='flow_query.yml',
+        host=ip,
+        port=JINAD_PORT,
     )
-    return dbms_flow_id, query_flow_id
+    return dbms_flow_id, query_flow_id, workspace_id
 
 
 def _create_flow(
