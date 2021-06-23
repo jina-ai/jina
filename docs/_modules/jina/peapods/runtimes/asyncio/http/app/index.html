@@ -384,7 +384,6 @@
 
 <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
 
-
 <span class="kn">from</span> <span class="nn">..grpc.async_call</span> <span class="kn">import</span> <span class="n">AsyncPrefetchCall</span>
 <span class="kn">from</span> <span class="nn">....zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
 <span class="kn">from</span> <span class="nn">.....</span> <span class="kn">import</span> <span class="n">__version__</span>
@@ -411,6 +410,7 @@
             <span class="n">JinaRequestModel</span><span class="p">,</span>
             <span class="n">JinaEndpointRequestModel</span><span class="p">,</span>
             <span class="n">JinaResponseModel</span><span class="p">,</span>
+            <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
@@ -474,6 +474,7 @@
         <span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="s1">'/post'</span><span class="p">,</span>
             <span class="n">summary</span><span class="o">=</span><span class="s1">'Post a data request to some endpoint'</span><span class="p">,</span>
+            <span class="n">response_model</span><span class="o">=</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">RequestProto</span><span class="p">,</span>
             <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'Debug'</span><span class="p">]</span>
             <span class="c1"># do not add response_model here, this debug endpoint should not restricts the response model</span>
         <span class="p">)</span>
@@ -559,12 +560,8 @@
 <span class="sd">        """</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">servicer</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span>
-                <span class="n">k</span><span class="p">,</span>
-                <span class="n">including_default_value_fields</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">including_default_value_fields</span><span class="p">,</span>
-                <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">use_integers_for_enums</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">use_integers_for_enums</span><span class="p">,</span>
-                <span class="n">float_precision</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">float_precision</span><span class="p">,</span>
-            <span class="p">)</span>
+                <span class="n">k</span><span class="p">,</span> <span class="n">including_default_value_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_integers_for_enums</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>  <span class="c1"># DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`</span>
 
     <span class="k">return</span> <span class="n">app</span></div>
 </pre></div>

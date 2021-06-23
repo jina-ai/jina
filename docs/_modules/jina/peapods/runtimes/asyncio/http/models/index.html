@@ -611,12 +611,23 @@
     <span class="n">protobuf_to_pydantic_model</span><span class="p">(</span><span class="n">proto</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_to_camel_case</span><span class="p">(</span><span class="n">snake_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="n">snake_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'_'</span><span class="p">)</span>
+    <span class="c1"># We capitalize the first letter of each component except the first one</span>
+    <span class="c1"># with the 'title' method and join them together.</span>
+    <span class="k">return</span> <span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">title</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+
 <div class="viewcode-block" id="JinaStatusModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaStatusModel">[docs]</a><span class="k">class</span> <span class="nc">JinaStatusModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="sd">"""Pydantic BaseModel for Jina status, used as the response model in REST app."""</span>
 
     <span class="n">jina</span><span class="p">:</span> <span class="n">Dict</span>
     <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span>
-    <span class="n">used_memory</span><span class="p">:</span> <span class="nb">str</span></div>
+    <span class="n">used_memory</span><span class="p">:</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="JinaStatusModel.Config"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaStatusModel.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
+        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_get_example_data</span><span class="p">():</span>
@@ -632,7 +643,6 @@
     <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span>
         <span class="n">_example</span><span class="p">,</span>
         <span class="n">including_default_value_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)[</span><span class="s1">'docs'</span><span class="p">]</span>
 
 
@@ -671,7 +681,11 @@
         <span class="kc">None</span><span class="p">,</span>
         <span class="n">example</span><span class="o">=</span><span class="p">{</span><span class="s1">'top_k'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'model'</span><span class="p">:</span> <span class="s1">'bert'</span><span class="p">},</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">'A dictionary of parameters to be sent to the executor.'</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="JinaRequestModel.Config"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaRequestModel.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
+        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="JinaResponseModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaResponseModel">[docs]</a><span class="k">class</span> <span class="nc">JinaResponseModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -688,7 +702,11 @@
         <span class="n">example</span><span class="o">=</span><span class="s1">'b5110ed9-1954-4a3d-9180-0795a1e0d7d8'</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s1">'The id given by Jina service'</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataRequestModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">'Returned Documents'</span><span class="p">)</span></div>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataRequestModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">'Returned Documents'</span><span class="p">)</span>
+
+<div class="viewcode-block" id="JinaResponseModel.Config"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaResponseModel.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">alias_generator</span> <span class="o">=</span> <span class="n">_to_camel_case</span>
+        <span class="n">allow_population_by_field_name</span> <span class="o">=</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="JinaEndpointRequestModel"><a class="viewcode-back" href="../../../../../../../api/jina.peapods.runtimes.asyncio.http.models/#jina.peapods.runtimes.asyncio.http.models.JinaEndpointRequestModel">[docs]</a><span class="k">class</span> <span class="nc">JinaEndpointRequestModel</span><span class="p">(</span><span class="n">JinaRequestModel</span><span class="p">):</span>
