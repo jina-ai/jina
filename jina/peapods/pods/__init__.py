@@ -622,7 +622,7 @@ class Pod(BasePod):
                     pkg_path = resolve_local(id, tag or executor.current_tag)
                     if not pkg_path:
                         hubio.pull()
-
+                        pkg_path = resolve_local(id, tag or executor.current_tag)
                     args.uses = f'{pkg_path / "config.yml"}'
 
                 else:
