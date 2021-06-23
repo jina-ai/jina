@@ -1,13 +1,14 @@
 """Module for wrapping Jina Hub API calls."""
 
 
+from jina.parsers.hubble import pull
 import os
 import argparse
 import json
 from pathlib import Path
 from typing import Optional
 from collections import namedtuple
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlencode
 import hashlib
 from ..helper import (
     colored,
@@ -19,7 +20,7 @@ from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
 from ..excepts import HubDownloadError
 from .helper import archive_package, download_with_resume
-from .hubapi import install_locall, exist_locall
+from .hubapi import install_local, exist_local
 from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
@@ -56,7 +57,7 @@ class HubIO:
 
     def _load_docker_client(self):
         with ImportExtensions(
-            required=False,
+            required=True,
             help_text='missing "docker" dependency, please do pip install "jina[docker]"',
         ):
             import docker
@@ -81,7 +82,7 @@ class HubIO:
 
         try:
             # archive the executor package
-            with TimeContext(f"archiving {self.args.path}", self.logger):
+            with TimeContext(f'archiving {self.args.path}', self.logger):
                 md5_hash = hashlib.md5()
                 bytesio = archive_package(pkg_path)
                 content = bytesio.getvalue()
@@ -168,22 +169,19 @@ class HubIO:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{id}'
-        path_params = []
+        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{id}/?'
+        path_params = {}
         if self.args.secret:
-            path_params.append(f'secret={self.args.secret}')
+            path_params['secret'] = self.args.secret
         if tag:
-            path_params.append(f'tag={tag}')
+            path_params['tag'] = tag
 
-        if len(path_params) > 0:
-            pull_url += '?' + ','.join(path_params)
-
+        pull_url += urlencode(path_params)
         resp = requests.get(pull_url)
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
-            else:
-                resp.raise_for_status()
+            resp.raise_for_status()
 
         resp = resp.json()
         assert resp['id'] == id
@@ -224,28 +222,28 @@ class HubIO:
                     f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
                 )
                 return
-            else:
-                if exist_locall(id, tag):
-                    self.logger.warning(
-                        f'The executor {self.args.id} has already been downloaded in {JINA_HUB_ROOT}'
-                    )
-                    return
 
-                # download the package
-                with TimeContext(f'downloading {self.args.id}', self.logger):
-                    cached_zip_filename = f'{id}-{md5sum}.zip'
-                    cached_zip_filepath = download_with_resume(
-                        archive_url,
-                        JINA_HUB_CACHE_DIR,
-                        cached_zip_filename,
-                        md5sum=md5sum,
-                    )
+            if exist_local(id, tag):
+                self.logger.warning(
+                    f'The executor {self.args.id} has already been downloaded in {JINA_HUB_ROOT}'
+                )
+                return
 
-                with TimeContext(f'installing {self.args.id}', self.logger):
-                    try:
-                        install_locall(cached_zip_filepath, id, tag)
-                    except Exception as ex:
-                        raise HubDownloadError(str(ex))
+            # download the package
+            with TimeContext(f'downloading {self.args.id}', self.logger):
+                cached_zip_filename = f'{id}-{md5sum}.zip'
+                cached_zip_filepath = download_with_resume(
+                    archive_url,
+                    JINA_HUB_CACHE_DIR,
+                    cached_zip_filename,
+                    md5sum=md5sum,
+                )
+
+            with TimeContext(f'installing {self.args.id}', self.logger):
+                try:
+                    install_local(cached_zip_filepath, id, tag)
+                except Exception as ex:
+                    raise HubDownloadError(str(ex))
 
         except Exception as e:
             self.logger.error(

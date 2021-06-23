@@ -590,13 +590,13 @@ class Pod(BasePod):
 
         if getattr(args, 'uses', None):
             # use the executor existed in Jina Hub.
-            if re.match(r'^jinahub(\+docker)?://', args.uses):
-                from ...hubble.hubio import HubIO
-                from ...hubble.helper import parse_hub_uri
-                from ...hubble.hubapi import resolve_local
-                from ...parsers.hubble import set_hub_pull_parser
+            from ...hubble.helper import parse_hub_uri
 
-                scheme, id, tag, secret = parse_hub_uri(self.args.uses)
+            scheme, id, tag, secret = parse_hub_uri(self.args.uses)
+
+            if scheme.startswith('jinahub'):
+                from ...hubble.hubio import HubIO
+                from ...parsers.hubble import set_hub_pull_parser
 
                 if not id:
                     raise ValueError(
@@ -618,17 +618,14 @@ class Pod(BasePod):
                 if scheme == 'jinahub+docker':
                     # use docker image
                     args.uses = f'docker://{executor.image_name}'
-                elif scheme == 'jinahub':
+                else:
+                    from ...hubble.hubapi import resolve_local
+
                     pkg_path = resolve_local(id, tag or executor.current_tag)
                     if not pkg_path:
                         hubio.pull()
                         pkg_path = resolve_local(id, tag or executor.current_tag)
                     args.uses = f'{pkg_path / "config.yml"}'
-
-                else:
-                    raise NotImplementedError(
-                        f'The jinahub protocal {scheme} has not been supported!'
-                    )
 
         parsed_args = {'head': None, 'tail': None, 'peas': []}
         if getattr(args, 'parallel', 1) > 1:

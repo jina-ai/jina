@@ -21,7 +21,7 @@ def get_dist_path(id: str, tag: str) -> Tuple['Path', 'Path']:
     return pkg_path, pkg_dist_path
 
 
-def install_locall(
+def install_local(
     zip_package: 'Path', id: str, tag: str, force: Optional[bool] = False
 ):
     """Install the package in zip format to the Jina Hub root.
@@ -99,7 +99,7 @@ def resolve_local(id: str, tag: Optional[str] = None) -> 'Path':
     return pkg_path
 
 
-def exist_locall(id: str, tag: str = None) -> bool:
+def exist_local(id: str, tag: str = None) -> bool:
     """Check whether the executor exists in local
 
     :param id: the ID of the executor
