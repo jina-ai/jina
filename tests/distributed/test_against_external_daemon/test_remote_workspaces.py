@@ -154,14 +154,24 @@ def _get_network(workspace_id):
     return r.json()['metadata']['network']
 
 
+def _get_workspace_network_state():
+    url = _jinad_url(__default_host__, 8000, 'workspaces')
+    r = requests.get(f'{url}/')
+    return r.json()['ip_range_current_offset'], r.json()['subnet_size']
+
+
 def test_multiple_workspaces_networks_after_restart():
     client = docker.from_env()
     workspace_id_1 = create_workspace(dirpath=os.path.join(cur_dir, 'flow_app_ws'))
     assert wait_for_workspace(workspace_id_1)
 
+    current_ip_offset_before, subnet_size = _get_workspace_network_state()
     # restart jinad
     _restart_external_jinad(client)
+    current_ip_offset_after, _ = _get_workspace_network_state()
 
+    assert current_ip_offset_after == current_ip_offset_after
+    assert current_ip_offset_after == 2 ** (32 - subnet_size)
     workspace_id_2 = create_workspace(
         filepaths=[os.path.join(cur_dir, 'blocking.jinad')]
     )
