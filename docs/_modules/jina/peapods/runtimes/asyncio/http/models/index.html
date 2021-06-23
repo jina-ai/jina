@@ -380,14 +380,13 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
-<span class="kn">from</span> <span class="nn">.....parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span>
 <span class="kn">from</span> <span class="nn">.....proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">.....proto.jina_pb2</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DenseNdArrayProto</span><span class="p">,</span>
@@ -403,7 +402,6 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.....types.document</span> <span class="kn">import</span> <span class="n">Document</span>
 
-<span class="n">DEFAULT_REQUEST_SIZE</span> <span class="o">=</span> <span class="n">set_client_cli_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([])</span><span class="o">.</span><span class="n">request_size</span>
 <span class="n">PROTO_TO_PYDANTIC_MODELS</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
 <span class="n">PROTOBUF_TO_PYTHON_TYPE</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">FieldDescriptor</span><span class="o">.</span><span class="n">TYPE_INT32</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -714,7 +712,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

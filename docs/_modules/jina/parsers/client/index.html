@@ -409,36 +409,6 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'If set, then the input and output of this Client work in an asynchronous manner. '</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--request-size'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The number of Documents in each Request.'</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--continue-on-error'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, a Request that causes error will be logged only without blocking the further '</span>
-        <span class="s1">'requests.'</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--show-progress'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, client will show a progress bar on receiving every request.'</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--return-results'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, the results of all Requests will be returned as a list. '</span>
-        <span class="s1">'This is useful when one wants process Responses in bulk instead of using callback.'</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>
@@ -452,7 +422,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

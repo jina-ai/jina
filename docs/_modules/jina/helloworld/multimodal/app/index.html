@@ -435,7 +435,7 @@
     <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'flow-index.yml'</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">f</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">workdir</span><span class="si">}</span><span class="s1">/people-img/meta.csv'</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">from_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">),</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">from_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">),</span> <span class="n">request_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># search it!</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">'flow-search.yml'</span><span class="p">)</span>
@@ -476,7 +476,7 @@
         <span class="p">)</span>
         <span class="n">opener</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">proxy</span><span class="p">)</span>
     <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="n">task_name</span><span class="p">,</span> <span class="n">batch_unit</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="n">task_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">t</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">targets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s1">'filename'</span><span class="p">]):</span>
                 <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span>
@@ -499,7 +499,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

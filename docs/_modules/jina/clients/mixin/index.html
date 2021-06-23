@@ -396,6 +396,10 @@
         <span class="n">on_always</span><span class="p">:</span> <span class="n">CallbackFnType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_peapod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Response</span><span class="p">]]:</span>
         <span class="sd">"""Post a general data request to the Flow.</span>
@@ -407,18 +411,24 @@
 <span class="sd">        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.</span>
 <span class="sd">        :param parameters: the kwargs that will be sent to the executor</span>
 <span class="sd">        :param target_peapod: a regex string represent the certain peas/pods request targeted</span>
+<span class="sd">        :param request_size: the number of Documents per request. &lt;=0 means all inputs in one request.</span>
+<span class="sd">        :param show_progress: if set, client will show a progress bar on receiving every request.</span>
+<span class="sd">        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.</span>
+<span class="sd">        :param return_results: if set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.</span>
 <span class="sd">        :param kwargs: additional parameters</span>
-<span class="sd">        :return: None</span>
+<span class="sd">        :return: None or list of Response</span>
 <span class="sd">        """</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="n">show_progress</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_results</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_results</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">return_results</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">result</span>
 
         <span class="k">return</span> <span class="n">run_async</span><span class="p">(</span>
@@ -430,6 +440,7 @@
             <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">on</span><span class="p">,</span>
             <span class="n">target_peapod</span><span class="o">=</span><span class="n">target_peapod</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -452,6 +463,9 @@
         <span class="n">on_always</span><span class="p">:</span> <span class="n">CallbackFnType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">target_peapod</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Response</span><span class="p">]:</span>
         <span class="sd">"""Post a general data request to the Flow.</span>
@@ -463,10 +477,16 @@
 <span class="sd">        :param on_always: the function to be called when the :class:`Request` object is  is either resolved or rejected.</span>
 <span class="sd">        :param parameters: the kwargs that will be sent to the executor</span>
 <span class="sd">        :param target_peapod: a regex string represent the certain peas/pods request targeted</span>
+<span class="sd">        :param request_size: the number of Documents per request. &lt;=0 means all inputs in one request.</span>
+<span class="sd">        :param show_progress: if set, client will show a progress bar on receiving every request.</span>
+<span class="sd">        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.</span>
 <span class="sd">        :param kwargs: additional parameters</span>
 <span class="sd">        :yield: Response object</span>
 <span class="sd">        """</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="n">show_progress</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span>
             <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
             <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
             <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
@@ -474,6 +494,7 @@
             <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">on</span><span class="p">,</span>
             <span class="n">target_peapod</span><span class="o">=</span><span class="n">target_peapod</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="k">yield</span> <span class="n">r</span></div>
@@ -495,7 +516,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

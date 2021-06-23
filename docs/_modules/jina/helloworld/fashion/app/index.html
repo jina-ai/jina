@@ -461,6 +461,7 @@
         <span class="n">f</span><span class="o">.</span><span class="n">index</span><span class="p">(</span>
             <span class="n">index_generator</span><span class="p">(</span><span class="n">num_docs</span><span class="o">=</span><span class="n">targets</span><span class="p">[</span><span class="s1">'index'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">target</span><span class="o">=</span><span class="n">targets</span><span class="p">),</span>
             <span class="n">request_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">,</span>
+            <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
@@ -472,6 +473,7 @@
             <span class="n">on_done</span><span class="o">=</span><span class="n">print_result</span><span class="p">,</span>
             <span class="n">request_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">'top_k'</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">top_k</span><span class="p">},</span>
+            <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># write result to html</span>
@@ -493,7 +495,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

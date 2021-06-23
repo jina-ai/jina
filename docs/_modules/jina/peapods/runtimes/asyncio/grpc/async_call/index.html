@@ -451,7 +451,7 @@
         <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'prefetching </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="si">}</span><span class="s1"> requests'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s1">'if this takes too long, you may want to take smaller "--prefetch" or '</span>
-                <span class="s1">'ask client to reduce "--request-size"'</span>
+                <span class="s1">'ask client to reduce `request_size`'</span>
             <span class="p">)</span>
             <span class="n">prefetch_task</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">is_req_empty</span> <span class="o">=</span> <span class="k">await</span> <span class="n">prefetch_req</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span> <span class="n">prefetch_task</span><span class="p">)</span>
@@ -500,7 +500,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

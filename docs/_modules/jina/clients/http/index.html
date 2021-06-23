@@ -437,7 +437,7 @@
 
         <span class="n">req_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_requests</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
                 <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(),</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(),</span> <span class="n">nullcontext</span><span class="p">()</span>
@@ -474,11 +474,11 @@
                             <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
                             <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
                             <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                            <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
+                            <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
                             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
                         <span class="p">)</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                            <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">request_size</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
+                            <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
                         <span class="k">yield</span> <span class="n">resp</span>
             <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">client_exceptions</span><span class="o">.</span><span class="n">ClientConnectorError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Client got disconnected from the HTTP server'</span><span class="p">)</span></div>
@@ -536,7 +536,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

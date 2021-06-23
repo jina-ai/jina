@@ -396,14 +396,10 @@
 <span class="nd">@overload</span>
 <span class="k">def</span> <span class="nf">Client</span><span class="p">(</span>
     <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">continue_on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
     <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">request_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-    <span class="n">return_results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">show_progress</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span>
     <span class="s1">'AsyncWebSocketClient'</span><span class="p">,</span>
@@ -416,14 +412,10 @@
     <span class="sd">"""Create a Client. Client is how user interact with Flow</span>
 
 <span class="sd">    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
-<span class="sd">    :param continue_on_error: If set, a Request that causes error will be logged only without blocking the further requests.</span>
 <span class="sd">    :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">    :param port_expose: The port of the host exposed to the public</span>
 <span class="sd">    :param protocol: Communication protocol between server and client.</span>
 <span class="sd">    :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
-<span class="sd">    :param request_size: The number of Documents in each Request.</span>
-<span class="sd">    :param return_results: If set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.</span>
-<span class="sd">    :param show_progress: If set, client will show a progress bar on receiving every request.</span>
 <span class="sd">    :return: the new Client object</span>
 
 <span class="sd">    .. # noqa: DAR202</span>
@@ -497,7 +489,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 22, 2021.
+            Last updated on Jun 23, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
