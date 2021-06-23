@@ -73,7 +73,7 @@ def test_traverse(tmpdir, mocker):
     dam = DocumentArrayMemmap(tmpdir)
     dam.extend(random_docs(100))
     mock = mocker.Mock()
-    for c in dam.traverse_flat('c'):
+    for c in dam.traverse_flat(['c']):
         assert c.granularity == 1
         mock()
     mock.assert_called()
