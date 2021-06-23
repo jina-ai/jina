@@ -25,9 +25,7 @@ def docker_image():
     import docker
 
     client = docker.from_env()
-    client.images.build(
-        path=os.path.join(cur_dir, '../../unit/mwu-encoder/'), tag=img_name
-    )
+    client.images.build(path=os.path.join(cur_dir, 'mwu-encoder/'), tag=img_name)
     client.close()
     yield img_name
     client = docker.from_env()
