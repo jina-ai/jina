@@ -13,7 +13,7 @@ from jina.parsers import set_pea_parser
 from jina.parsers.ping import set_ping_parser
 from jina.peapods import Pea
 from jina.peapods.runtimes.container import ContainerRuntime
-from tests import random_docs
+from tests import random_docs, validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -42,9 +42,7 @@ def docker_image_built():
     import docker
 
     client = docker.from_env()
-    client.images.build(
-        path=os.path.join(cur_dir, '../../../mwu-encoder/'), tag=img_name
-    )
+    client.images.build(path=os.path.join(cur_dir, 'mwu-encoder/'), tag=img_name)
     client.close()
     yield
     time.sleep(2)
@@ -62,33 +60,8 @@ def test_simple_container(docker_image_built):
     Pea(args).start().close()
 
 
-def test_simple_container_with_ext_yaml(docker_image_built):
-    args = set_pea_parser().parse_args(
-        [
-            '--uses',
-            f'docker://{img_name}',
-            '--uses-internal',
-            os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_ext.yml'),
-        ]
-    )
-
-    with Pea(args):
-        time.sleep(2)
-
-
 def test_flow_with_one_container_pod(docker_image_built):
     f = Flow().add(name='dummyEncoder1', uses=f'docker://{img_name}')
-
-    with f:
-        f.post(on='/index', inputs=random_docs(10))
-
-
-def test_flow_with_one_container_ext_yaml(docker_image_built):
-    f = Flow().add(
-        name='dummyEncoder2',
-        uses=f'docker://{img_name}',
-        uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_ext.yml'),
-    )
 
     with f:
         f.post(on='/index', inputs=random_docs(10))
@@ -98,8 +71,8 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
     f = Flow().add(
         name='dummyEncoder3',
         uses=f'docker://{img_name}',
-        uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_ext.yml'),
         parallel=3,
+        entrypoint='jina pea',
     )
 
     with f:
@@ -108,25 +81,22 @@ def test_flow_with_replica_container_ext_yaml(docker_image_built):
         f.post(on='/index', inputs=random_docs(10))
 
 
-def test_flow_topo1(docker_image_built, _logforward):
+def test_flow_topo1(docker_image_built):
     f = (
         Flow()
         .add(
             name='d0',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal=_logforward,
             entrypoint='jina executor',
         )
         .add(
             name='d1',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal=_logforward,
             entrypoint='jina executor',
         )
         .add(
             name='d2',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal=_logforward,
             needs='d0',
             entrypoint='jina executor',
         )
@@ -143,14 +113,12 @@ def test_flow_topo_mixed(docker_image_built, _logforward):
         .add(
             name='d4',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal=_logforward,
             entrypoint='jina executor',
         )
         .add(name='d5', uses=_logforward)
         .add(
             name='d6',
             uses='docker://jinaai/jina:test-pip',
-            uses_internal=_logforward,
             needs='d4',
             entrypoint='jina executor',
         )
@@ -161,14 +129,13 @@ def test_flow_topo_mixed(docker_image_built, _logforward):
         f.post(on='/index', inputs=random_docs(10))
 
 
-def test_flow_topo_parallel(docker_image_built, _logforward):
+def test_flow_topo_parallel():
     f = (
         Flow()
         .add(
             name='d7',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            uses_internal=_logforward,
             parallel=3,
         )
         .add(name='d8', parallel=3)
@@ -176,7 +143,6 @@ def test_flow_topo_parallel(docker_image_built, _logforward):
             name='d9',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            uses_internal=_logforward,
             needs='d7',
         )
         .join(['d9', 'd8'])
@@ -186,7 +152,7 @@ def test_flow_topo_parallel(docker_image_built, _logforward):
         f.post(on='/index', inputs=random_docs(10))
 
 
-def test_flow_topo_ldl_parallel(docker_image_built, _logforward):
+def test_flow_topo_ldl_parallel():
     f = (
         Flow()
         .add(name='d10')
@@ -194,7 +160,6 @@ def test_flow_topo_ldl_parallel(docker_image_built, _logforward):
             name='d11',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            uses_internal=_logforward,
             parallel=3,
         )
         .add(name='d12')
@@ -202,44 +167,6 @@ def test_flow_topo_ldl_parallel(docker_image_built, _logforward):
 
     with f:
         f.post(on='/index', inputs=random_docs(10))
-
-
-def test_container_volume(docker_image_built, tmpdir):
-    abc_path = os.path.join(tmpdir, 'abc')
-    f = Flow().add(
-        name=random_name(),
-        uses=f'docker://{img_name}',
-        volumes=abc_path,
-        workspace='/abc',
-        uses_internal=os.path.join(cur_dir, '../../../mwu-encoder/mwu_encoder_upd.yml'),
-    )
-
-    with f:
-        f.post(on='/index', inputs=random_docs(10))
-
-    assert os.path.exists(
-        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
-    )
-
-
-def test_container_volume_arbitrary(docker_image_built, tmpdir):
-    abc_path = os.path.join(tmpdir, 'abc')
-    f = Flow().add(
-        name=random_name(),
-        uses=f'docker://{img_name}',
-        volumes=abc_path + ':' + '/mapped/here/abc',
-        uses_internal=os.path.join(
-            cur_dir, '../../../mwu-encoder/mwu_encoder_volume_change.yml'
-        ),
-        workspace='/mapped/here/abc',
-    )
-
-    with f:
-        f.post(on='/index', inputs=random_docs(10))
-
-    assert os.path.exists(
-        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
-    )
 
 
 def test_container_ping(docker_image_built):
@@ -256,14 +183,13 @@ def test_container_ping(docker_image_built):
     assert cm.value.code == 0
 
 
-def test_tail_host_docker2local_parallel(docker_image_built, _logforward):
+def test_tail_host_docker2local_parallel():
     f = (
         Flow()
         .add(
             name='d10',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            uses_internal=_logforward,
             parallel=3,
         )
         .add(name='d11')
@@ -272,14 +198,13 @@ def test_tail_host_docker2local_parallel(docker_image_built, _logforward):
         assert getattr(f._pod_nodes['d10'].peas_args['tail'], 'host_out') == defaulthost
 
 
-def test_tail_host_docker2local(docker_image_built, _logforward):
+def test_tail_host_docker2local():
     f = (
         Flow()
         .add(
             name='d12',
             uses='docker://jinaai/jina:test-pip',
             entrypoint='jina executor',
-            uses_internal=_logforward,
         )
         .add(name='d13')
     )
@@ -358,3 +283,52 @@ def test_pass_arbitrary_kwargs_from_yaml():
         'hello': 0,
         'environment': ['VAR1=BAR', 'VAR2=FOO'],
     }
+
+
+def test_container_override_params(docker_image_built, tmpdir, mocker):
+    def validate_response(resp):
+        assert len(resp.docs) > 0
+        for doc in resp.docs:
+            assert doc.tags['greetings'] == 'overriden greetings'
+
+    mock = mocker.Mock()
+
+    abc_path = os.path.join(tmpdir, 'abc')
+    f = Flow().add(
+        name=random_name(),
+        uses=f'docker://{img_name}',
+        volumes=abc_path + ':' + '/mapped/here/abc',
+        override_with={'greetings': 'overriden greetings'},
+        override_metas={
+            'name': 'ext-mwu-encoder',
+            'workspace': '/mapped/here/abc',
+        },
+    )
+
+    with f:
+        f.index(random_docs(10), on_done=mock)
+
+    assert os.path.exists(
+        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
+    )
+    validate_callback(mock, validate_response)
+
+
+def test_container_volume(docker_image_built, tmpdir):
+    abc_path = os.path.join(tmpdir, 'abc')
+    f = Flow().add(
+        name=random_name(),
+        uses=f'docker://{img_name}',
+        volumes=abc_path + ':' + '/mapped/here/abc',
+        override_metas={
+            'name': 'ext-mwu-encoder',
+            'workspace': '/mapped/here/abc',
+        },
+    )
+
+    with f:
+        f.index(random_docs(10))
+
+    assert os.path.exists(
+        os.path.join(abc_path, 'ext-mwu-encoder', '0', 'ext-mwu-encoder.bin')
+    )
