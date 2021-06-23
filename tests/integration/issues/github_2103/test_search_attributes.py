@@ -6,6 +6,7 @@ import pytest
 from urllib import request
 
 from jina import Flow
+from jina.peapods.runtimes.asyncio.http.models import _to_camel_case
 from jina.proto import jina_pb2
 from jina import Document
 from jina import helper
@@ -14,10 +15,15 @@ from tests import validate_callback
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-_document_fields = sorted(set(list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)))
+_document_fields = sorted(
+    set(
+        _to_camel_case(k)
+        for k in list(jina_pb2.DocumentProto().DESCRIPTOR.fields_by_name)
+    )
+)
 
 # check if this can be bypassed
-IGNORED_FIELDS = ['embedding', 'scores', 'graph_info', 'evaluations']
+IGNORED_FIELDS = ['embedding', 'scores', 'graphInfo', 'evaluations']
 
 
 @pytest.fixture
@@ -66,6 +72,7 @@ def test_no_matches_rest(query_dict):
         resp = request.urlopen(req).read().decode('utf8')
         doc = json.loads(resp)['data']['docs'][0]
         present_keys = sorted(doc.keys())
+
         for field in _document_fields:
             if field not in IGNORED_FIELDS + [
                 'buffer',
