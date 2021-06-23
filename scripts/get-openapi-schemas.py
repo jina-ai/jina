@@ -17,10 +17,7 @@ logger = JinaLogger('')
 gateway_app = get_fastapi_app(args, logger)
 gateway_schema = gateway_app.openapi()
 gateway_schema['info']['x-logo'] = {'url': JINA_LOGO_URL}
-gateway_schema['servers'] = []
-gateway_schema['servers'].append(
-    {'url': f'http://localhost:{args.port_expose}', 'description': 'Local Jina gateway'}
-)
+gateway_schema['servers'] = [{'url': f'http://localhost:{args.port_expose}', 'description': 'Local JinaD server'}]
 with open(GATEWAY_SCHEMA_FILENAME, 'w') as f:
     json.dump(gateway_schema, f)
 
@@ -29,9 +26,6 @@ args = get_main_parser().parse_args([])
 daemon_app = _get_app()
 daemon_schema = daemon_app.openapi()
 daemon_schema['info']['x-logo'] = {'url': JINA_LOGO_URL}
-daemon_schema['servers'] = []
-daemon_schema['servers'].append(
-    {'url': f'http://localhost:{args.port_expose}', 'description': 'Local JinaD server'}
-)
+daemon_schema['servers'] = [{'url': f'http://localhost:{args.port_expose}', 'description': 'Local JinaD server'}]
 with open(DAEMON_SCHEMA_FILENAME, 'w') as f:
     json.dump(daemon_schema, f)
