@@ -1,4 +1,4 @@
-jtype: MWUEncoder
+!MWUEncoder
 with:
   greetings: hello there!
 metas:

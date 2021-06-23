@@ -30,16 +30,6 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
         :yield: task
         """
 
-        def handle(msg: 'Message') -> 'Request':
-            """
-            Add route into the `message` and return response of the message.
-
-            :param msg: gRPC message.
-            :return: message with route added.
-            """
-            msg.add_route(self.name, self._id)
-            return msg.response
-
         async def prefetch_req(num_req, fetch_to):
             """
             Fetch and send request.
@@ -64,7 +54,9 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                         )
                     )
                     fetch_to.append(
-                        asyncio.create_task(self.zmqlet.recv_message(callback=handle))
+                        asyncio.create_task(
+                            self.zmqlet.recv_message(callback=lambda x: x.response)
+                        )
                     )
                 except (StopIteration, StopAsyncIteration):
                     return True

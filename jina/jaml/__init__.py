@@ -451,6 +451,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         allow_py_modules: bool = True,
         substitute: bool = True,
         context: Optional[Dict[str, Any]] = None,
+        override_with: Optional[Dict] = None,
+        override_metas: Optional[Dict] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -497,6 +499,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param allow_py_modules: allow importing plugins specified by ``py_modules`` in YAML at any levels
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
+        :param override_with: dictionary of parameters to overwrite from the default config
+        :param override_metas: dictionary of parameters to overwrite from the default config
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
@@ -505,8 +509,21 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             # first load yml with no tag
             no_tag_yml = JAML.load_no_tags(fp)
             if no_tag_yml:
-                # extra arguments are parsed to inject_config
                 no_tag_yml.update(**kwargs)
+                if override_with is not None:
+                    with_params = no_tag_yml.get('with', None)
+                    if with_params:
+                        with_params.update(**override_with)
+                    else:
+                        with_params = override_with
+                    no_tag_yml.update(with_params)
+                if override_metas is not None:
+                    metas_params = no_tag_yml.get('metas', None)
+                    if metas_params:
+                        metas_params.update(**override_metas)
+                    else:
+                        metas_params = override_metas
+                    no_tag_yml.update(metas_params)
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
@@ -531,6 +548,5 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             else:
                 # revert yaml's tag and load again, this time with substitution
                 tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
-
             # load into object, no more substitute
             return JAML.load(tag_yml, substitute=False)
