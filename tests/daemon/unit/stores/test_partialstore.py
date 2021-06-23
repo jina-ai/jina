@@ -3,10 +3,10 @@ from pathlib import Path
 
 import pytest
 
-from daemon.models import PeaModel, DaemonID, FlowModel
+from daemon.models import PeaModel, FlowModel
 from daemon.models.enums import UpdateOperation
 from daemon.stores.partial import PartialStore, PartialPeaStore, PartialFlowStore
-from jina import helper, Flow
+from jina import helper, Flow, __default_host__
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
 from jina.parsers.flow import set_flow_parser
@@ -52,13 +52,9 @@ def test_peastore_add(partial_pea_store):
     )
     assert partial_store_item
     assert partial_pea_store.object
-
-    assert (
-        partial_store_item.arguments['docker_kwargs']['extra_hosts'][
-            'host.docker.internal'
-        ]
-        == 'host-gateway'
-    )
+    assert partial_store_item.arguments['runtime_cls'] == 'ZEDRuntime'
+    assert partial_store_item.arguments['host_in'] == __default_host__
+    assert partial_store_item.arguments['host_out'] == __default_host__
 
 
 def test_flowstore_add(monkeypatch, partial_flow_store):
