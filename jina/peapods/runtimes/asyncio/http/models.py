@@ -247,6 +247,7 @@ class JinaStatusModel(BaseModel):
 
     class Config:
         alias_generator = _to_camel_case
+        allow_population_by_field_name = True
 
 
 def _get_example_data():
@@ -304,6 +305,7 @@ class JinaRequestModel(BaseModel):
 
     class Config:
         alias_generator = _to_camel_case
+        allow_population_by_field_name = True
 
 
 class JinaResponseModel(BaseModel):
@@ -324,6 +326,7 @@ class JinaResponseModel(BaseModel):
 
     class Config:
         alias_generator = _to_camel_case
+        allow_population_by_field_name = True
 
 
 class JinaEndpointRequestModel(JinaRequestModel):
