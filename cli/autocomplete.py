@@ -28,6 +28,7 @@ def _update_autocomplete():
 if __name__ == '__main__':
     _update_autocomplete()
 
+
 ac_table = {
     'commands': [
         '--help',
@@ -268,7 +269,8 @@ ac_table = {
             '--routing-table',
         ],
         'hub push': ['--help', '--force', '--secret', '--public', '--private'],
-        'hub': ['--help', 'push'],
+        'hub pull': ['--help'],
+        'hub': ['--help', 'push', 'pull'],
         'pea': [
             '--help',
             '--name',

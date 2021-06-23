@@ -1,5 +1,6 @@
 import copy
 import sys
+import re
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -9,7 +10,8 @@ from typing import List, Optional
 
 from ..networking import get_connect_host
 from ..peas import BasePea
-from ... import __default_executor__
+from ...jaml.helper import complete_path
+from ... import __default_host__, __default_executor__
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -92,6 +94,7 @@ class BasePod(ExitFIFO):
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
         super().__init__()
+        args.upload_files = BasePod._set_upload_files(args)
         self.args = args
         self.needs = (
             needs if needs else set()
@@ -117,6 +120,38 @@ class BasePod(ExitFIFO):
         .. # noqa: DAR201
         """
         self.__exit__(None, None, None)
+
+    @staticmethod
+    def _set_upload_files(args):
+        # sets args.upload_files at the pod level so that peas inherit from it.
+        # all peas work under one remote workspace, hence important to have upload_files set for all
+
+        def valid_path(path):
+            try:
+                complete_path(path)
+                return True
+            except FileNotFoundError:
+                return False
+
+        _upload_files = set()
+        for param in ['uses', 'uses_internal', 'uses_before', 'uses_after']:
+            param_value = getattr(args, param, None)
+            if param_value and valid_path(param_value):
+                _upload_files.add(param_value)
+
+        if getattr(args, 'py_modules', None):
+            _upload_files.update(
+                {py_module for py_module in args.py_modules if valid_path(py_module)}
+            )
+        if getattr(args, 'upload_files', None):
+            _upload_files.update(
+                {
+                    upload_file
+                    for upload_file in args.upload_files
+                    if valid_path(upload_file)
+                }
+            )
+        return list(_upload_files)
 
     @property
     def role(self) -> 'PodRoleType':
@@ -586,6 +621,45 @@ class Pod(BasePod):
         return result
 
     def _parse_base_pod_args(self, args):
+
+        if getattr(args, 'uses', None):
+            # use the executor existed in Jina Hub.
+            from ...hubble.helper import parse_hub_uri
+
+            scheme, uuid, tag, secret = parse_hub_uri(self.args.uses)
+
+            if scheme.startswith('jinahub'):
+                from ...hubble.hubio import HubIO
+                from ...parsers.hubble import set_hub_pull_parser
+
+                if not uuid:
+                    raise ValueError(
+                        f'The given executor URI {self.args.uses} is not valid, please double check it!'
+                    )
+
+                pull_args = set_hub_pull_parser().parse_args([self.args.uses])
+                hubio = HubIO(pull_args)
+
+                # # TODO: locate the local executor
+                # if not tag:
+                #     executor = hubio.fetch(id, tag)
+
+                executor = hubio.fetch(uuid, tag=tag, secret=secret)
+
+                if scheme == 'jinahub+docker':
+                    # use docker image
+                    args.uses = f'docker://{executor.image_name}'
+                elif scheme == 'jinahub':
+                    from ...hubble.hubapi import resolve_local
+
+                    pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                    if not pkg_path:
+                        hubio.pull()
+                        pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                    args.uses = f'{pkg_path / "config.yml"}'
+                else:
+                    raise ValueError(f'Unknown schema: {scheme}')
+
         parsed_args = {'head': None, 'tail': None, 'peas': []}
         if getattr(args, 'parallel', 1) > 1:
             # reasons to separate head and tail from peas is that they

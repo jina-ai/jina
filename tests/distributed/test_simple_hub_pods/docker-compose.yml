@@ -10,30 +10,34 @@ services:
     build:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile
+    extra_hosts:
+      host.docker.internal: host-gateway
     ports:
       - "8000:8000"
-      - "45678:45678"
-    env_file:
-      - tests/distributed/test_simple_hub_pods/.env
-    expose:
-      - 10000-60000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
   pod1:
     image: test_simple_hub_pods
+    extra_hosts:
+      host.docker.internal: host-gateway
+    ports:
+      - "8001:8000"
     expose:
       - 8000
       - 10000-60000
-    env_file:
-      - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
   pod2:
     image: test_simple_hub_pods
+    extra_hosts:
+      host.docker.internal: host-gateway
+    ports:
+      - "8002:8000"
     expose:
       - 8000
       - 10000-60000
-    env_file:
-      - tests/distributed/test_simple_hub_pods/.env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp

@@ -5,31 +5,56 @@ services:
     build:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile
+    extra_hosts:
+      host.docker.internal: host-gateway
     ports:
       - "8000:8000"
-      - "45678:45678"
-    env_file:
-      - tests/distributed/test_join_local_from_remote/.env
     expose:
       - 10000-60000
+    env_file:
+      - tests/distributed/test_join_local_from_remote/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/jinad:/tmp/jinad
   pod_one:
     image: test_join_local_from_remote
+    extra_hosts:
+      host.docker.internal: host-gateway
+    ports:
+      - "8001:8000"
     expose:
       - 8000
       - 10000-60000
     env_file:
       - tests/distributed/test_join_local_from_remote/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/jinad:/tmp/jinad
   pod_two:
     image: test_join_local_from_remote
+    extra_hosts:
+      host.docker.internal: host-gateway
+    ports:
+      - "8002:8000"
     expose:
       - 8000
       - 10000-60000
     env_file:
       - tests/distributed/test_join_local_from_remote/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/jinad:/tmp/jinad
   pod_three:
     image: test_join_local_from_remote
+    extra_hosts:
+      host.docker.internal: host-gateway
+    ports:
+      - "8003:8000"
     expose:
       - 8000
       - 10000-60000
     env_file:
       - tests/distributed/test_join_local_from_remote/.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/jinad:/tmp/jinad
