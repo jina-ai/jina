@@ -231,7 +231,7 @@ class HubIO:
                 )
                 return
 
-            if exist_local(name, tag):
+            if exist_local(uuid, tag):
                 self.logger.warning(
                     f'The executor {self.args.uri} has already been downloaded in {JINA_HUB_ROOT}'
                 )
