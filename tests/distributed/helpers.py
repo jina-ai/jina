@@ -62,7 +62,6 @@ def create_workspace(
 
         if not files_to_upload:
             print('nothing to upload')
-            return
 
         print(f'will upload files: {files_to_upload}')
         url = _jinad_url(host, port, 'workspaces')

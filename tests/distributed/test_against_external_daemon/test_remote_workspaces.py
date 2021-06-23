@@ -1,11 +1,14 @@
+import ipaddress
 import os
 import time
 
+import docker
 import numpy as np
 import pytest
+import requests
 
 from jina import Flow, Client, Document, __default_host__
-from ..helpers import create_workspace, wait_for_workspace, delete_workspace
+from ..helpers import create_workspace, wait_for_workspace, delete_workspace, _jinad_url
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -119,3 +122,31 @@ def test_custom_project():
     assert res[0].data.docs[0].matches[0].tags.fields['first'].string_value == 's'
     assert res[0].data.docs[0].matches[0].tags.fields['second'].string_value == 't'
     delete_workspace(workspace_id, host=HOST)
+
+
+def test_multiple_workspaces_networks():
+    workspace_id_1 = create_workspace()
+    assert wait_for_workspace(workspace_id_1)
+    workspace_id_2 = create_workspace()
+    assert wait_for_workspace(workspace_id_2)
+
+    client = docker.from_env()
+    docker_network1 = client.networks.get(_get_network(workspace_id_1))
+    docker_network2 = client.networks.get(_get_network(workspace_id_2))
+
+    network1 = ipaddress.ip_network(
+        docker_network1.attrs['IPAM']['Config'][0]['Subnet']
+    )
+    network2 = ipaddress.ip_network(
+        docker_network2.attrs['IPAM']['Config'][0]['Subnet']
+    )
+    assert not network1.overlaps(network2)
+
+    delete_workspace(workspace_id_1)
+    delete_workspace(workspace_id_2)
+
+
+def _get_network(workspace_id):
+    url = _jinad_url(__default_host__, 8000, 'workspaces')
+    r = requests.get(f'{url}/{workspace_id}')
+    return r.json()['metadata']['network']
