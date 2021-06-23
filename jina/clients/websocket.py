@@ -82,7 +82,7 @@ class WebSocketClientMixin(BaseClient, ABC):
                         # There is nothing to send, disconnect gracefully
                         await websocket.close(reason='No data to send')
 
-                if self.args.show_progress:
+                if self.show_progress:
                     cm1, cm2 = ProgressBar(), TimeContext('')
                 else:
                     cm1, cm2 = nullcontext(), nullcontext()
@@ -105,11 +105,11 @@ class WebSocketClientMixin(BaseClient, ABC):
                             on_error=on_error,
                             on_done=on_done,
                             on_always=on_always,
-                            continue_on_error=self.args.continue_on_error,
+                            continue_on_error=self.continue_on_error,
                             logger=self.logger,
                         )
-                        if self.args.show_progress:
-                            p_bar.update(self.args.request_size)
+                        if self.show_progress:
+                            p_bar.update()
                         yield resp
                         self.num_responses += 1
                         if self.num_requests == self.num_responses:
