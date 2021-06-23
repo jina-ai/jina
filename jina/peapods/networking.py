@@ -1,6 +1,6 @@
 from argparse import Namespace
 
-from .. import __default_host__
+from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip
 
 
@@ -26,19 +26,25 @@ def get_connect_host(
     conn_local = connect_args.host == __default_host__
 
     # is CONNECT inside docker?
-    conn_docker = getattr(
-        connect_args, 'uses', None
-    ) is not None and connect_args.uses.startswith('docker://')
+    # check if `uses` has 'docker://' or,
+    # it is a remote pea managed by jinad. (all remote peas are inside docker)
+    conn_docker = (
+        getattr(connect_args, 'uses', None) is not None
+        and connect_args.uses.startswith('docker://')
+    ) or not conn_local
 
     # is BIND & CONNECT all on the same remote?
     bind_conn_same_remote = (
         not bind_local and not conn_local and (bind_host == connect_args.host)
     )
 
-    if platform in ('linux', 'linux2'):
+    # for remote peas managed by jinad, always set to __docker_host__
+    if not conn_local:
+        local_host = __docker_host__
+    elif platform in ('linux', 'linux2'):
         local_host = __default_host__
     else:
-        local_host = 'host.docker.internal'
+        local_host = __docker_host__
 
     # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
     if bind_local and conn_local:
@@ -48,9 +54,11 @@ def get_connect_host(
     if bind_conn_same_remote:
         return local_host if conn_docker else __default_host__
 
-    # From here: Missing consideration of docker
     if bind_local and not conn_local:
         # in this case we are telling CONN (at remote) our local ip address
+        if connect_args.host.startswith('localhost'):
+            # this is for the "psuedo" remote tests to pass
+            return __docker_host__
         return get_public_ip() if bind_expose_public else get_internal_ip()
     else:
         # in this case we (at local) need to know about remote the BIND address

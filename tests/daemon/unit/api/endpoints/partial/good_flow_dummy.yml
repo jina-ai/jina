@@ -1,0 +1,5 @@
+!Flow
+version: '1.0'
+pods:
+  - uses: dummy_executor.yml
+  - name: dummy_executor

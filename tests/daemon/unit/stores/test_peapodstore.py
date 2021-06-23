@@ -1,48 +1,71 @@
+import os
+
 import pytest
 
+from daemon.models import DaemonID, PeaModel, PodModel
 from daemon.stores import PeaStore, PodStore
 from jina import Executor
-from jina.parsers import set_pea_parser, set_pod_parser
+
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture(scope='module', autouse=True)
+def workspace():
+    from tests.conftest import _create_workspace_directly, _clean_up_workspace
+
+    image_id, network_id, workspace_id, workspace_store = _create_workspace_directly(
+        cur_dir
+    )
+    yield workspace_id
+    _clean_up_workspace(image_id, network_id, workspace_id, workspace_store)
 
 
 @pytest.mark.parametrize(
-    'parser, store', [(set_pea_parser, PeaStore), (set_pod_parser, PodStore)]
+    'model, store, id',
+    [
+        (PeaModel(), PeaStore, DaemonID(f'jpea')),
+        (PodModel(), PodStore, DaemonID(f'jpod')),
+    ],
 )
-def test_peastore_add(parser, store):
-    p_args = parser().parse_args([])
+def test_peastore_add(model, store, id, workspace):
     s = store()
-    s.add(p_args)
+    s.add(id=id, params=model, workspace_id=workspace, ports={})
     assert len(s) == 1
-    assert p_args.identity in s
-    s.delete(p_args.identity)
+    assert id in s
+    s.delete(id)
     assert not s
 
 
 @pytest.mark.parametrize(
-    'parser, store', [(set_pea_parser, PeaStore), (set_pod_parser, PodStore)]
+    'model, store, type', [(PeaModel(), PeaStore, 'pea'), (PodModel(), PodStore, 'pod')]
 )
-def test_peastore_multi_add(parser, store):
+def test_peastore_multi_add(model, store, type, workspace):
     s = store()
     for j in range(5):
-        p_args = parser().parse_args([])
-        s.add(p_args)
+        id = DaemonID(f'j{type}')
+        s.add(id=id, params=model, workspace_id=workspace, ports={})
+
         assert len(s) == j + 1
-        assert p_args.identity in s
+        assert id in s
     s.clear()
     assert not s
 
 
 @pytest.mark.parametrize(
-    'parser, store', [(set_pea_parser, PeaStore), (set_pod_parser, PodStore)]
+    'model, store, id',
+    [
+        (PeaModel(), PeaStore, DaemonID(f'jpea')),
+        (PodModel(), PodStore, DaemonID(f'jpod')),
+    ],
 )
-def test_peapod_store_add_bad(parser, store):
+def test_peapod_store_add_bad(model, store, id, workspace):
     class BadCrafter(Executor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             raise NotImplementedError
 
-    p_args = parser().parse_args(['--uses', 'BadCrafter'])
+    model.uses = 'BadCrafter'
     s = store()
     with pytest.raises(Exception):
-        s.add(p_args)
+        s.add(id=id, params=model, workspace_id=workspace, ports={})
     assert not s
