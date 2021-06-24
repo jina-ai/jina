@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   jina.clients.base
    jina.clients.request
 
 Submodules
@@ -15,8 +16,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   jina.clients.asyncio
-   jina.clients.base
    jina.clients.grpc
    jina.clients.helper
    jina.clients.http

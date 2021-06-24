@@ -1,5 +1,18 @@
-jina.clients.base module
-========================
+jina.clients.base package
+=========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.clients.base.grpc
+   jina.clients.base.http
+   jina.clients.base.websocket
+
+Module contents
+---------------
 
 .. automodule:: jina.clients.base
    :members:

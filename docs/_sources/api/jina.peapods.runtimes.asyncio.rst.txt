@@ -18,6 +18,7 @@ Submodules
    :maxdepth: 4
 
    jina.peapods.runtimes.asyncio.base
+   jina.peapods.runtimes.asyncio.prefetch
 
 Module contents
 ---------------
