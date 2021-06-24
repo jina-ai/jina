@@ -1,10 +1,8 @@
 """Module for wrapping Jina Hub API calls."""
 
 
-from jina.parsers.hubble import pull
 import os
 import argparse
-import json
 from pathlib import Path
 from typing import Optional, Dict
 from collections import namedtuple
@@ -18,7 +16,6 @@ from ..excepts import HubDownloadError
 from .helper import archive_package, download_with_resume, parse_hub_uri
 from .hubapi import install_local, exist_local
 from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
-from jina.hubble import helper
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
     'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
