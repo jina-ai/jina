@@ -1,30 +1,24 @@
 """Module containing the Base Client for Jina."""
-
+import abc
 import argparse
-import asyncio
 import inspect
 import os
-from contextlib import nullcontext
+from abc import ABC
 from typing import Callable, Union, Optional, Iterator, AsyncIterator
 
-import grpc
-
-from .helper import callback_exec
-from .request import GeneratorSourceType
-from ..excepts import BadClient, BadClientInput, ValidationError
-from ..helper import typename, ArgNamespace
-from ..logging.logger import JinaLogger
-from ..logging.predefined import default_logger
-from ..logging.profile import TimeContext, ProgressBar
-from ..parsers import set_client_cli_parser
-from ..proto import jina_pb2_grpc
-from ..types.request import Request, Response
+from ..request import GeneratorSourceType
+from ...excepts import BadClientInput, ValidationError
+from ...helper import typename, ArgNamespace
+from ...logging.logger import JinaLogger
+from ...logging.predefined import default_logger
+from ...parsers import set_client_cli_parser
+from ...types.request import Request, Response
 
 InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
 CallbackFnType = Optional[Callable[[Response], None]]
 
 
-class BaseClient:
+class BaseClient(ABC):
     """A base client for connecting to the Flow Gateway.
 
     :param args: the Namespace from argparse
@@ -72,7 +66,7 @@ class BaseClient:
             )
 
         try:
-            from .request import request_generator
+            from ..request import request_generator
 
             r = next(request_generator(**kwargs))
             if isinstance(r, Request):
@@ -98,11 +92,11 @@ class BaseClient:
         _kwargs.update(kwargs)
 
         if inspect.isasyncgen(self.inputs):
-            from .request.asyncio import request_generator
+            from ..request.asyncio import request_generator
 
             return request_generator(**_kwargs)
         else:
-            from .request import request_generator
+            from ..request import request_generator
 
             return request_generator(**_kwargs)
 
@@ -129,6 +123,7 @@ class BaseClient:
         else:
             self._inputs = bytes_gen
 
+    @abc.abstractmethod
     async def _get_results(
         self,
         inputs: InputType,
@@ -137,66 +132,12 @@ class BaseClient:
         on_always: Callable = None,
         **kwargs,
     ):
-        try:
-            self.inputs = inputs
-            req_iter = self._get_requests(**kwargs)
-            async with grpc.aio.insecure_channel(
-                f'{self.args.host}:{self.args.port_expose}',
-                options=[
-                    ('grpc.max_send_message_length', -1),
-                    ('grpc.max_receive_message_length', -1),
-                ],
-            ) as channel:
-                stub = jina_pb2_grpc.JinaRPCStub(channel)
-                self.logger.success(
-                    f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
-                )
+        ...
 
-                if self.show_progress:
-                    cm1, cm2 = ProgressBar(), TimeContext('')
-                else:
-                    cm1, cm2 = nullcontext(), nullcontext()
+    @property
+    def client(self) -> 'BaseClient':
+        """Return the client object itself
 
-                with cm1 as p_bar, cm2:
-                    async for resp in stub.Call(req_iter):
-                        resp.as_typed_request(resp.request_type)
-                        resp = resp.as_response()
-                        callback_exec(
-                            response=resp,
-                            on_error=on_error,
-                            on_done=on_done,
-                            on_always=on_always,
-                            continue_on_error=self.continue_on_error,
-                            logger=self.logger,
-                        )
-                        if self.show_progress:
-                            p_bar.update()
-                        yield resp
-        except KeyboardInterrupt:
-            self.logger.warning('user cancel the process')
-        except asyncio.CancelledError as ex:
-            self.logger.warning(f'process error: {ex!r}')
-        except grpc.aio._call.AioRpcError as rpc_ex:
-            # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
-            my_code = rpc_ex.code()
-            my_details = rpc_ex.details()
-            msg = f'gRPC error: {my_code} {my_details}'
-            if my_code == grpc.StatusCode.UNAVAILABLE:
-                self.logger.error(
-                    f'{msg}\nthe ongoing request is terminated as the server is not available or closed already'
-                )
-                raise rpc_ex
-            elif my_code == grpc.StatusCode.INTERNAL:
-                self.logger.error(f'{msg}\ninternal error on the server side')
-                raise rpc_ex
-            elif (
-                my_code == grpc.StatusCode.UNKNOWN
-                and 'asyncio.exceptions.TimeoutError' in my_details
-            ):
-                raise BadClientInput(
-                    f'{msg}\n'
-                    'often the case is that you define/send a bad input iterator to jina, '
-                    'please double check your input iterator'
-                ) from rpc_ex
-            else:
-                raise BadClient(msg) from rpc_ex
+        :return: the Client object
+        """
+        return self

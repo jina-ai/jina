@@ -4,7 +4,7 @@ from typing import Dict
 
 from google.protobuf.json_format import MessageToDict
 
-from ..grpc.async_call import AsyncPrefetchCall
+from ..prefetch import PrefetchCaller
 from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
@@ -54,7 +54,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         )
 
     zmqlet = AsyncZmqlet(args, logger)
-    servicer = AsyncPrefetchCall(args, zmqlet)
+    servicer = PrefetchCaller(args, zmqlet)
 
     @app.on_event('shutdown')
     def _shutdown():

@@ -1,25 +1,16 @@
 import asyncio
+from abc import ABC
 
-from .....helper import random_identity, typename
-from .....logging.logger import JinaLogger
-from .....logging.profile import TimeContext
-from .....proto import jina_pb2_grpc
-from .....types.message import Message
-from .....types.request import Request
+from ....helper import typename
+from ....logging.logger import JinaLogger
+from ....logging.profile import TimeContext
+from ....types.message import Message
 
-__all__ = ['AsyncPrefetchCall']
+__all__ = ['PrefetchCaller', 'PrefetchMixin']
 
 
-class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
+class PrefetchMixin(ABC):
     """JinaRPCServicer """
-
-    def __init__(self, args, zmqlet):
-        super().__init__()
-        self.args = args
-        self.zmqlet = zmqlet
-        self.name = args.name or self.__class__.__name__
-        self.logger = JinaLogger(self.name, **vars(args))
-        self._id = random_identity()
 
     async def Call(self, request_iterator, context):
         """
@@ -102,3 +93,19 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                 # this list dries, clear it and feed it with on_recv_task
                 prefetch_task.clear()
                 prefetch_task = [j for j in onrecv_task]
+
+
+class PrefetchCaller(PrefetchMixin):
+    """An async zmq request sender to be used in the Gateway"""
+
+    def __init__(self, args, zmqlet):
+        """
+
+        :param args: args from CLI
+        :param zmqlet: zeromq object
+        """
+        super().__init__()
+        self.args = args
+        self.zmqlet = zmqlet
+        self.name = args.name or self.__class__.__name__
+        self.logger = JinaLogger(self.name, **vars(args))
