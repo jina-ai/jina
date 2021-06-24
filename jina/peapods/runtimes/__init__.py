@@ -1,11 +1,3 @@
-from .asyncio.grpc import GRPCRuntime
-from .asyncio.http import HTTPRuntime
-from .asyncio.websocket import WebSocketRuntime
-from .container import ContainerRuntime
-from .jinad import JinadRuntime
-from .zmq.zed import ZEDRuntime
-
-
 def list_all_runtimes():
     """List all public runtimes that can be used directly with :class:`jina.peapods.peas.BasePea`
 
@@ -13,10 +5,16 @@ def list_all_runtimes():
     # noqa: DAR201
     """
     from ...peapods.runtimes.base import BaseRuntime
+    from .asyncio.grpc import GRPCRuntime
+    from .asyncio.http import HTTPRuntime
+    from .asyncio.websocket import WebSocketRuntime
+    from .container import ContainerRuntime
+    from .jinad import JinadRuntime
+    from .zmq.zed import ZEDRuntime
 
     return [
         k
-        for k, s in globals().items()
+        for k, s in locals().items()
         if isinstance(s, type) and issubclass(s, BaseRuntime)
     ]
 
@@ -28,8 +26,14 @@ def get_runtime(name: str):
     # noqa: DAR201
     """
     from ...peapods.runtimes.base import BaseRuntime
+    from .asyncio.grpc import GRPCRuntime
+    from .asyncio.http import HTTPRuntime
+    from .asyncio.websocket import WebSocketRuntime
+    from .container import ContainerRuntime
+    from .jinad import JinadRuntime
+    from .zmq.zed import ZEDRuntime
 
-    s = globals()[name]
+    s = locals()[name]
     if isinstance(s, type) and issubclass(s, BaseRuntime):
         return s
     else:
