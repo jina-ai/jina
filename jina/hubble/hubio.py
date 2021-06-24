@@ -78,8 +78,8 @@ class HubIO:
 
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
-
-        import requests
+        with ImportExtensions(required=True):
+            import requests
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
