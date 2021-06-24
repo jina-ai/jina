@@ -1,3 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+Table of Contents
+
+- [JinaD 2.0](#jinad-20)
+  - [Concepts](#concepts)
+    - [1. Workspace](#1-workspace)
+    - [2. RESTful Flows](#2-restful-flows)
+    - [3. RESTful Pods/Peas](#3-restful-podspeas)
+    - [Example Usage](#example-usage)
+  - [Using JinaD](#using-jinad)
+    - [Build](#build)
+    - [Run](#run)
+      - [Why?](#why)
+    - [Metaworks](#metaworks)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # JinaD 2.0
 
 JinaD is a daemon for deploying & managing Jina on remote via a RESTful interface. It achieves isolation of deployments by defining a `workspace` for each Jina object.
