@@ -7,11 +7,9 @@ __all__ = ['Client']
 from ..enums import GatewayProtocolType
 
 if False:
-    from .base import BaseClient
-    from .asyncio import AsyncClient, AsyncWebSocketClient, AsyncHTTPClient
-    from .grpc import GRPCClient
-    from .websocket import WebSocketClient
-    from .http import HTTPClient
+    from .grpc import GRPCClient, AsyncGRPCClient
+    from .websocket import WebSocketClient, AsyncWebSocketClient
+    from .http import HTTPClient, AsyncHTTPClient
 
 
 # overload_inject_start_client
@@ -26,7 +24,7 @@ def Client(
 ) -> Union[
     'AsyncWebSocketClient',
     'WebSocketClient',
-    'AsyncClient',
+    'AsyncGRPCClient',
     'GRPCClient',
     'HTTPClient',
     'AsyncHTTPClient',
@@ -52,7 +50,7 @@ def Client(
 ) -> Union[
     'AsyncWebSocketClient',
     'WebSocketClient',
-    'AsyncClient',
+    'AsyncGRPCClient',
     'GRPCClient',
     'HTTPClient',
     'AsyncHTTPClient',
@@ -74,16 +72,16 @@ def Client(
 
     if protocol == GatewayProtocolType.GRPC:
         if is_async:
-            from .asyncio import AsyncClient
+            from .grpc import AsyncGRPCClient
 
-            return AsyncClient(args, **kwargs)
+            return AsyncGRPCClient(args, **kwargs)
         else:
             from .grpc import GRPCClient
 
             return GRPCClient(args, **kwargs)
     elif protocol == GatewayProtocolType.WEBSOCKET:
         if is_async:
-            from .asyncio import AsyncWebSocketClient
+            from .websocket import AsyncWebSocketClient
 
             return AsyncWebSocketClient(args, **kwargs)
         else:
@@ -92,7 +90,7 @@ def Client(
             return WebSocketClient(args, **kwargs)
     elif protocol == GatewayProtocolType.HTTP:
         if is_async:
-            from .asyncio import AsyncHTTPClient
+            from .http import AsyncHTTPClient
 
             return AsyncHTTPClient(args, **kwargs)
         else:

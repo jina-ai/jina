@@ -1,148 +1,26 @@
-import asyncio
-from abc import ABC
-from contextlib import nullcontext
-from typing import Callable, Optional
-
-from .base import BaseClient, InputType
-from .grpc import GRPCClient
-from .helper import callback_exec
-from ..excepts import BadClient
-from ..importer import ImportExtensions
-from ..logging.profile import TimeContext, ProgressBar
-from ..types.request import Request
+from .base.http import HTTPBaseClient
+from .mixin import AsyncPostMixin, PostMixin
 
 
-class HTTPClientMixin(BaseClient, ABC):
-    """A MixIn for HTTP Client."""
-
-    async def _get_http_response(self, session, dest_url, req_dict):
-        async with session.post(
-            dest_url,
-            json=req_dict,
-        ) as response:
-            resp_str = await response.json()
-            return response.status, resp_str
-
-    async def _get_results(
-        self,
-        inputs: InputType,
-        on_done: Callable,
-        on_error: Optional[Callable] = None,
-        on_always: Optional[Callable] = None,
-        **kwargs,
-    ):
-        """
-        :meth:`send_requests()`
-            Traverses through the request iterator
-            Sends each request & awaits :meth:`websocket.send()`
-            Sends & awaits `byte(True)` to acknowledge request iterator is empty
-        Traversal logic:
-            Starts an independent task :meth:`send_requests()`
-            Awaits on each response from :meth:`websocket.recv()` (done in an async loop)
-            This makes sure client makes concurrent invocations
-        Await exit strategy:
-            :meth:`send_requests()` keeps track of num_requests sent
-            Async recv loop keeps track of num_responses received
-            Client exits out of await when num_requests == num_responses
-
-        :param inputs: the callable
-        :param on_done: the callback for on_done
-        :param on_error: the callback for on_error
-        :param on_always: the callback for on_always
-        :param kwargs: kwargs for _get_task_name and _get_requests
-        :yields: generator over results
-        """
-        with ImportExtensions(required=True):
-            import aiohttp
-
-        self.inputs = inputs
-
-        req_iter = self._get_requests(**kwargs)
-        async with aiohttp.ClientSession() as session:
-            if self.show_progress:
-                cm1, cm2 = ProgressBar(), TimeContext('')
-            else:
-                cm1, cm2 = nullcontext(), nullcontext()
-            try:
-                with cm1 as p_bar, cm2:
-                    all_responses = []
-                    for req in req_iter:
-                        # fix the mismatch between pydantic model and Protobuf model
-                        req_dict = req.dict()
-                        req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
-                        req_dict['data'] = req_dict['data'].get('docs', None)
-
-                        all_responses.append(
-                            asyncio.create_task(
-                                self._get_http_response(
-                                    session,
-                                    f'http://{self.args.host}:{self.args.port_expose}/post',
-                                    req_dict,
-                                )
-                            )
-                        )
-
-                    for resp in asyncio.as_completed(all_responses):
-                        r_status, r_str = await resp
-                        if r_status == 404:
-                            raise BadClient('no such endpoint on the server')
-                        elif r_status < 200 or r_status > 300:
-                            raise ValueError(r_str)
-
-                        resp = Request(r_str)
-                        resp = resp.as_typed_request(resp.request_type).as_response()
-                        callback_exec(
-                            response=resp,
-                            on_error=on_error,
-                            on_done=on_done,
-                            on_always=on_always,
-                            continue_on_error=self.continue_on_error,
-                            logger=self.logger,
-                        )
-                        if self.show_progress:
-                            p_bar.update()
-                        yield resp
-            except aiohttp.client_exceptions.ClientConnectorError:
-                self.logger.warning(f'Client got disconnected from the HTTP server')
+class HTTPClient(HTTPBaseClient, PostMixin):
+    """
+    A client communicates the server with HTTP protocol.
+    """
 
 
-class HTTPClient(GRPCClient, HTTPClientMixin):
-    """A Python Client to stream requests from a Flow with a REST Gateway.
+class AsyncHTTPClient(HTTPBaseClient, AsyncPostMixin):
+    """
+    A client communicates the server with HTTP protocol.
 
-    :class:`WebSocketClient` shares the same interface as :class:`Client` and provides methods like
-    :meth:`index`, "meth:`search`, :meth:`train`, :meth:`update` & :meth:`delete`.
+    Unlike :class:`HTTPClient`, here :meth:`post` is a coroutine (i.e. declared with the async/await syntax),
+    simply calling them will not schedule them to be executed.
 
-    It is used by default while running operations when we create a `Flow` with `restful=True`
+    To actually run a coroutine, user need to put them in an event loop, e.g. via ``asyncio.run()``,
+    ``asyncio.create_task()``.
 
-    .. highlight:: python
-    .. code-block:: python
+    :class:`AsyncHTTPClient` can be very useful in
+    the integration settings, where Jina/Flow/Client is NOT the main logic, but rather served as a part of other program.
+    In this case, users often do not want to let Jina control the ``asyncio.eventloop``. On contrary, :class:`Client`
+    is controlling and wrapping the event loop internally, making the Client looks synchronous from outside.
 
-        from jina.flow import Flow
-        f = Flow(protocol='http').add().add()
-
-        with f:
-            f.index(['abc'])
-
-
-    :class:`WebSocketClient` can also be used to run operations for a remote Flow
-
-    .. highlight:: python
-    .. code-block:: python
-
-        # A Flow running on remote
-        from jina.flow import Flow
-        f = Flow(protocol='http', port_expose=34567).add().add()
-
-        with f:
-            f.block()
-
-        # Local WebSocketClient running index & search
-        from jina.clients import WebSocketClient
-
-        client = WebSocketClient(...)
-        client.index(...)
-        client.search(...)
-
-
-    :class:`WebSocketClient` internally handles an event loop to run operations asynchronously.
     """
