@@ -59,6 +59,7 @@ prettytable:                devel, cicd
 optuna:                     cicd, optimizer
 websockets:                 http, devel, cicd, daemon, client
 pydantic:                   http, devel, cicd, daemon, chatbot, multimodal
+python-multipart:           devel, cicd, daemon
 aiohttp:                    devel, cicd, http, async, client
 bs4:                        cicd
 aiostream:                  devel, cicd, async, client
