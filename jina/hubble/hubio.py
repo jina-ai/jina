@@ -71,7 +71,7 @@ class HubIO:
         metas, envs = get_full_version()
 
         header = {
-            **{f'jianmeta_{k}': str(v) for k, v in metas.items()},
+            **{f'jinameta_{k}': str(v) for k, v in metas.items()},
             **envs,
         }
         return header
