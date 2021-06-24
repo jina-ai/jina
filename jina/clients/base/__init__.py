@@ -133,3 +133,11 @@ class BaseClient(ABC):
         **kwargs,
     ):
         ...
+
+    @property
+    def client(self) -> 'BaseClient':
+        """Return the client object itself
+
+        :return: the Client object
+        """
+        return self
