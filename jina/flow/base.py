@@ -771,7 +771,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
                 graph.add_pod(f'start-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
-                graph.add_pod(f'end-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
+                graph.add_pod(
+                    f'end-{GATEWAY_NAME}', get_internal_ip(), pod.head_port_in
+                )
             else:
                 graph.add_pod(pod_id, pod.head_host, pod.head_port_in)
 
@@ -791,6 +793,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _set_initial_dynamic_routing_table(self):
         routing_table = self._get_routing_table()
+        print(routing_table.json())
         if not routing_table.is_acyclic():
             raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
