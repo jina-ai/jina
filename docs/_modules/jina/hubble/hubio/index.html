@@ -381,20 +381,14 @@
 <span></span><span class="sd">"""Module for wrapping Jina Hub API calls."""</span>
 
 
-<span class="kn">from</span> <span class="nn">jina.parsers.hubble</span> <span class="kn">import</span> <span class="n">pull</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span><span class="p">,</span> <span class="n">urlencode</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">colored</span><span class="p">,</span>
-    <span class="n">get_full_version</span><span class="p">,</span>
-    <span class="n">get_readable_size</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">random_identity</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
@@ -448,10 +442,23 @@
             <span class="c1"># low-level client</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s1">'unix://var/run/docker.sock'</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_get_request_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Return the header of request.</span>
+
+<span class="sd">        :return: request header</span>
+<span class="sd">        """</span>
+        <span class="n">metas</span><span class="p">,</span> <span class="n">envs</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s1">'jinameta-</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metas</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="o">**</span><span class="n">envs</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">header</span>
+
 <div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Push the executor pacakge to Jina Hub."""</span>
-
-        <span class="kn">import</span> <span class="nn">requests</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">requests</span>
 
         <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -459,6 +466,8 @@
                 <span class="sa">f</span><span class="s1">'The folder "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">" does not exist, can not push'</span>
             <span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">request_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># archive the executor package</span>
@@ -471,10 +480,7 @@
                 <span class="n">md5_digest</span> <span class="o">=</span> <span class="n">md5_hash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
             <span class="c1"># upload the archived package</span>
-            <span class="n">meta</span><span class="p">,</span> <span class="n">env</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
             <span class="n">form_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">'meta'</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta</span><span class="p">),</span>
-                <span class="s1">'env'</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">env</span><span class="p">),</span>
                 <span class="s1">'public'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">public</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s1">'private'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">private</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">)</span>
@@ -485,6 +491,7 @@
             <span class="p">}</span>
 
             <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="k">else</span> <span class="s1">'post'</span>
+
             <span class="c1"># upload the archived executor to Jina Hub</span>
             <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'uploading to </span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">JINA_HUBBLE_PUSHPULL_URL</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
@@ -494,6 +501,7 @@
                     <span class="n">JINA_HUBBLE_PUSHPULL_URL</span><span class="p">,</span>
                     <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
@@ -528,20 +536,21 @@
                     <span class="s1">'You can use this Executor in the Flow via '</span>
                     <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">usage</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'underline'</span><span class="p">)</span>
                 <span class="p">)</span>
-
             <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
                 <span class="c1"># NOTE: sometimes resp.text returns empty</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># IO related errors</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Error when trying to push the executor at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'Error when trying to push the executor at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> with session_id = </span><span class="si">{</span><span class="n">request_headers</span><span class="p">[</span><span class="s2">"jinameta-session-id"</span><span class="p">]</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.fetch"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
         <span class="sd">"""Fetch the executor meta info from Jina Hub.</span>
 <span class="sd">        :param name: the UUID/Alias of the executor</span>
@@ -559,8 +568,10 @@
         <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
             <span class="n">path_params</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
 
+        <span class="n">request_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
+
         <span class="n">pull_url</span> <span class="o">+=</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">path_params</span><span class="p">)</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pull_url</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pull_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>

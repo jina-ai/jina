@@ -446,8 +446,15 @@
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">pathspec</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'Python.gitignore'</span><span class="p">))</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+    <span class="n">root_path</span> <span class="o">=</span> <span class="n">package_folder</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+    <span class="n">gitignore</span> <span class="o">=</span> <span class="n">root_path</span> <span class="o">/</span> <span class="s1">'.gitignore'</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gitignore</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">gitignore</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">)</span> <span class="o">/</span> <span class="s1">'Python.gitignore'</span>
+
+    <span class="k">with</span> <span class="n">gitignore</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
         <span class="n">ignored_spec</span> <span class="o">=</span> <span class="n">pathspec</span><span class="o">.</span><span class="n">PathSpec</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="s1">'gitwildmatch'</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+        <span class="n">ignored_spec</span> <span class="o">+=</span> <span class="n">pathspec</span><span class="o">.</span><span class="n">PathSpec</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="s1">'gitwildmatch'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'.git'</span><span class="p">])</span>
 
     <span class="n">zip_stream</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
@@ -456,17 +463,14 @@
         <span class="k">raise</span> <span class="n">e</span>
 
     <span class="k">def</span> <span class="nf">_zip</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">archive</span><span class="p">):</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">ignored_spec</span><span class="o">.</span><span class="n">match_file</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
                 <span class="k">continue</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
                 <span class="n">_zip</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">archive</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">archive</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">base_path</span><span class="p">))</span>
+                <span class="n">archive</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_path</span><span class="p">))</span>
 
-    <span class="n">root_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">package_folder</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
     <span class="n">_zip</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">zfile</span><span class="p">)</span>
 
     <span class="n">zfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
