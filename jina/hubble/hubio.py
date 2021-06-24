@@ -62,8 +62,7 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
-    @property
-    def request_header(self) -> Dict:
+    def _get_request_header(self) -> Dict:
         """Return the header of request.
 
         :return: request header
@@ -71,7 +70,7 @@ class HubIO:
         metas, envs = get_full_version()
 
         header = {
-            **{f'jinameta_{k}': str(v) for k, v in metas.items()},
+            **{f'jinameta-{k}': str(v) for k, v in metas.items()},
             **envs,
         }
         return header
@@ -87,6 +86,8 @@ class HubIO:
                 f'The folder "{self.args.path}" does not exist, can not push'
             )
             exit(1)
+
+        request_headers = self._get_request_header()
 
         try:
             # archive the executor package
@@ -110,6 +111,7 @@ class HubIO:
             }
 
             method = 'put' if self.args.force else 'post'
+
             # upload the archived executor to Jina Hub
             with TimeContext(
                 f'uploading to {method.upper()} {JINA_HUBBLE_PUSHPULL_URL}', self.logger
@@ -119,7 +121,7 @@ class HubIO:
                     JINA_HUBBLE_PUSHPULL_URL,
                     files={'file': content},
                     data=form_data,
-                    headers=self.request_header,
+                    headers=request_headers,
                 )
 
             if 200 <= resp.status_code < 300:
@@ -154,20 +156,21 @@ class HubIO:
                     'You can use this Executor in the Flow via '
                     + colored(usage, 'cyan', attrs='underline')
                 )
-
             elif resp.text:
                 # NOTE: sometimes resp.text returns empty
                 raise Exception(resp.text)
             else:
                 resp.raise_for_status()
-
         except Exception as e:  # IO related errors
             self.logger.error(
-                f'Error when trying to push the executor at {self.args.path}: {e!r}'
+                f'Error when trying to push the executor at {self.args.path} with session_id = {request_headers["jinameta-session-id"]}: {e!r}'
             )
 
     def fetch(
-        self, name: str, tag: Optional[str] = None, secret: Optional[str] = None
+        self,
+        name: str,
+        tag: Optional[str] = None,
+        secret: Optional[str] = None,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
         :param name: the UUID/Alias of the executor
@@ -185,8 +188,10 @@ class HubIO:
         if tag:
             path_params['tag'] = tag
 
+        request_headers = self._get_request_header()
+
         pull_url += urlencode(path_params)
-        resp = requests.get(pull_url, headers=self.request_header)
+        resp = requests.get(pull_url, headers=request_headers)
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
