@@ -54,7 +54,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
-cover/
+#cover/
 
 # Translations
 *.mo
@@ -66,9 +66,9 @@ cover/
 # db.sqlite3
 # db.sqlite3-journal
 
-# Flask stuff:
-instance/
-.webassets-cache
+## Flask stuff:
+#instance/
+#.webassets-cache
 
 # Scrapy stuff:
 .scrapy
@@ -78,7 +78,7 @@ docs/_build/
 
 # PyBuilder
 .pybuilder/
-target/
+# target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
