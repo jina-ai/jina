@@ -10,11 +10,7 @@ from typing import Optional
 from collections import namedtuple
 from urllib.parse import urljoin, urlencode
 import hashlib
-from ..helper import (
-    colored,
-    get_full_version,
-    get_readable_size,
-)
+from ..helper import colored, get_full_version, get_readable_size, random_identity
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
@@ -112,7 +108,11 @@ class HubIO:
                     JINA_HUBBLE_PUSHPULL_URL,
                     files={'file': content},
                     data=form_data,
-                    headers={**metas, **envs},
+                    headers={
+                        'x-hubble-request-id': str(random_identity()),
+                        **metas,
+                        **envs,
+                    },
                 )
 
             if 200 <= resp.status_code < 300:
