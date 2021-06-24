@@ -71,7 +71,7 @@ class GetMockResponse:
 def test_push(mocker, monkeypatch, path, mode):
     mock = mocker.Mock()
 
-    def _mock_post(url, files, data):
+    def _mock_post(url, files, data, headers=None):
         mock(url=url, files=files, data=data)
         return PostMockResponse(response_code=requests.codes.created)
 
@@ -87,7 +87,7 @@ def test_push(mocker, monkeypatch, path, mode):
 def test_fetch(mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_get(url):
+    def _mock_get(url, headers=None):
         mock(url=url)
         return GetMockResponse(response_code=requests.codes.ok)
 

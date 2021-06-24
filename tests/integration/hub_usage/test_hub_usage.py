@@ -80,7 +80,7 @@ def local_hub_executor(mocker, monkeypatch, tmpdir, test_envs):
 
     mock = mocker.Mock()
 
-    def _mock_get(url):
+    def _mock_get(url, headers=None):
         mock(url=url)
         return GetMockResponse(response_code=requests.codes.ok)
 
