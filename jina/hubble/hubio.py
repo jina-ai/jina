@@ -6,7 +6,7 @@ import os
 import argparse
 import json
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 from collections import namedtuple
 from urllib.parse import urljoin, urlencode
 import hashlib
@@ -18,6 +18,7 @@ from ..excepts import HubDownloadError
 from .helper import archive_package, download_with_resume, parse_hub_uri
 from .hubapi import install_local, exist_local
 from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
+from jina.hubble import helper
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
     'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
@@ -64,6 +65,20 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
+    @property
+    def request_header(self) -> Dict:
+        """Return the header of request.
+
+        :return: request header
+        """
+        metas, envs = get_full_version()
+
+        header = {
+            **{k: str(v) for k, v in metas.items()},
+            **envs,
+        }
+        return header
+
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
 
@@ -87,7 +102,6 @@ class HubIO:
                 md5_digest = md5_hash.hexdigest()
 
             # upload the archived package
-            metas, envs = get_full_version()
             form_data = {
                 'public': self.args.public if hasattr(self.args, 'public') else False,
                 'private': self.args.private
@@ -108,11 +122,7 @@ class HubIO:
                     JINA_HUBBLE_PUSHPULL_URL,
                     files={'file': content},
                     data=form_data,
-                    headers={
-                        'x-hubble-request-id': str(random_identity()),
-                        **metas,
-                        **envs,
-                    },
+                    headers=self.request_header,
                 )
 
             if 200 <= resp.status_code < 300:
@@ -179,9 +189,7 @@ class HubIO:
             path_params['tag'] = tag
 
         pull_url += urlencode(path_params)
-        resp = requests.get(
-            pull_url, headers={'x-hubble-request-id': str(random_identity())}
-        )
+        resp = requests.get(pull_url, headers=self.request_header)
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
