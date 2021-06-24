@@ -179,7 +179,9 @@ class HubIO:
             path_params['tag'] = tag
 
         pull_url += urlencode(path_params)
-        resp = requests.get(pull_url)
+        resp = requests.get(
+            pull_url, headers={'x-hubble-request-id': str(random_identity())}
+        )
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
