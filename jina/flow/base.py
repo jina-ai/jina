@@ -920,9 +920,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if GATEWAY_NAME in self._pod_nodes:
             self._pod_nodes.pop(GATEWAY_NAME)
         self._build_level = FlowBuildLevel.EMPTY
-        self.logger.success(
-            f'flow is closed and all resources are released, current build level is {self._build_level}'
-        )
+        self.logger.success(f'Flow is closed!')
         self.logger.close()
 
     def start(self):

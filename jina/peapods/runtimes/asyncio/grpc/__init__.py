@@ -48,7 +48,6 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         bind_addr = f'{self.args.host}:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
-        self.logger.success(f'{self.__class__.__name__} is listening at: {bind_addr}')
 
     async def async_cancel(self):
         """The async method to stop server."""

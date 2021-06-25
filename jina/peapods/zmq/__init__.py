@@ -413,7 +413,6 @@ class AsyncZmqlet(Zmqlet):
             self.logger.error(f'receiving message error: {ex!r}, gateway cancelled?')
 
     def __enter__(self):
-        time.sleep(0.2)  # sleep a bit until handshake is done
         return self
 
 

@@ -4,8 +4,7 @@ from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
 from itertools import cycle
-from typing import Dict, Union, Set
-from typing import List, Optional
+from typing import Dict, Union, Set, List, Optional
 
 from ..networking import get_connect_host
 from ..peas import BasePea
@@ -538,13 +537,6 @@ class Pod(BasePod):
         .. # noqa: DAR201
         """
         return all(p.is_ready.is_set() for p in self.peas) and self._activated
-
-    def _set_after_to_pass(self, args):
-        # TODO: check if needed
-        # remark 1: i think it's related to route driver.
-        if hasattr(args, 'polling') and args.polling.is_push:
-            # ONLY reset when it is push
-            args.uses_after = __default_executor__
 
     @staticmethod
     def _set_peas_args(
