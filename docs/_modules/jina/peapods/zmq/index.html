@@ -795,7 +795,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'receiving message error: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">, gateway cancelled?'</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>  <span class="c1"># sleep a bit until handshake is done</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 

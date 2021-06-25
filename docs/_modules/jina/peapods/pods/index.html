@@ -386,8 +386,7 @@
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">..networking</span> <span class="kn">import</span> <span class="n">get_connect_host</span>
 <span class="kn">from</span> <span class="nn">..peas</span> <span class="kn">import</span> <span class="n">BasePea</span>
@@ -920,13 +919,6 @@
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">peas</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_activated</span>
-
-    <span class="k">def</span> <span class="nf">_set_after_to_pass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="c1"># TODO: check if needed</span>
-        <span class="c1"># remark 1: i think it's related to route driver.</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'polling'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span><span class="o">.</span><span class="n">is_push</span><span class="p">:</span>
-            <span class="c1"># ONLY reset when it is push</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="o">=</span> <span class="n">__default_executor__</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_peas_args</span><span class="p">(</span>

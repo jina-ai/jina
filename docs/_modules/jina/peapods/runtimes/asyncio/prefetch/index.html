@@ -435,20 +435,15 @@
                     <span class="k">return</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'prefetching </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="si">}</span><span class="s1"> requests'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">'if this takes too long, you may want to take smaller "--prefetch" or '</span>
-                <span class="s1">'ask client to reduce `request_size`'</span>
+        <span class="n">prefetch_task</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">is_req_empty</span> <span class="o">=</span> <span class="k">await</span> <span class="n">prefetch_req</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span> <span class="n">prefetch_task</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_req_empty</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">prefetch_task</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">'receive an empty stream from the client! '</span>
+                <span class="s1">'please check your client</span><span class="se">\'</span><span class="s1">s inputs, '</span>
+                <span class="s1">'you can use "Client.check_input(inputs)"'</span>
             <span class="p">)</span>
-            <span class="n">prefetch_task</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">is_req_empty</span> <span class="o">=</span> <span class="k">await</span> <span class="n">prefetch_req</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span> <span class="n">prefetch_task</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">is_req_empty</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">prefetch_task</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s1">'receive an empty stream from the client! '</span>
-                    <span class="s1">'please check your client</span><span class="se">\'</span><span class="s1">s inputs, '</span>
-                    <span class="s1">'you can use "Client.check_input(inputs)"'</span>
-                <span class="p">)</span>
-                <span class="k">return</span>
+            <span class="k">return</span>
 
         <span class="c1"># the total num requests &lt; self.args.prefetch</span>
         <span class="k">if</span> <span class="n">is_req_empty</span><span class="p">:</span>
