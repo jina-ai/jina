@@ -19,7 +19,8 @@ from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
 
 JINA_HUBBLE_REGISTRY = os.environ.get(
     # 'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
-    'JINA_HUBBLE_REGISTRY', 'http://k8s-hubble-hubble-c0c205579b-915292866.us-east-1.elb.amazonaws.com'
+    'JINA_HUBBLE_REGISTRY',
+    'http://k8s-hubble-hubble-c0c205579b-915292866.us-east-1.elb.amazonaws.com',
 )
 JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
