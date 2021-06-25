@@ -87,9 +87,9 @@ class BaseRuntime:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type == RuntimeTerminated:
-            self.logger.info(f'{self!r} is ended')
+            self.logger.debug(f'{self!r} is ended')
         elif exc_type == KeyboardInterrupt:
-            self.logger.info(f'{self!r} is interrupted by user')
+            self.logger.debug(f'{self!r} is interrupted by user')
         elif exc_type in {Exception, SystemError}:
             self.logger.error(
                 f'{exc_val!r} during {self.run_forever!r}'
