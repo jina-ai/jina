@@ -36,7 +36,7 @@ Link to the _**detailed guidlines**_ for creating an executor is [here](https://
 
 ## 2. Push and Pull CLI
 
-### 2.1 Upload your executor
+### 2.1 Distribute your executor
 
 1. Push your local executor (without `--force`)
     ```bash
@@ -57,7 +57,7 @@ Link to the _**detailed guidlines**_ for creating an executor is [here](https://
     - With `--public` option, the resulted executor will be **visible to public**.
     - With `--private` options, the resulted executor will be **invisible to public**.
 
-### 2.2 Download your executor
+### 2.2 Pull distributed executor
 
 - Pull the executor's **docker image**
     ```bash
@@ -68,6 +68,10 @@ Link to the _**detailed guidlines**_ for creating an executor is [here](https://
     $ jina hub pull jinahub://<UUID8/Alias>[:<SECRET>]
     ```
 
+    _**Note**_:
+    - For public executor, you can ignore the `SECRET` option.
+    - For private executor, you must provide the `SECRET` option.
+
 ## 3. Use in Jina Flow
 
 ### 3.2 using docker images
@@ -76,10 +80,10 @@ Use the prebuilt images from `Hubble` in your python codes,
 
 ```python
 from jina import Flow
-	
+
+# SECRET must be provided for private executor
 f = Flow().add(uses='jinahub+docker://<UUID8/Alias>[:<SECRET>]')
 ```
-
 
 ### 3.2 using source codes
 
