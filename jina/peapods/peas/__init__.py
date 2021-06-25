@@ -235,10 +235,6 @@ class BasePea:
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
 
-        time.sleep(
-            0.1
-        )  #: required for success ctrl-C on `jina pea`, otherwise zmq close too slow.
-
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
