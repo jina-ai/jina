@@ -46,7 +46,7 @@ class WebSocketBaseClient(BaseClient):
             ) as websocket:
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
-                self.logger.success(
+                self.logger.debug(
                     f'connected to {self.args.host}:{self.args.port_expose}'
                 )
                 self.num_requests = 0
@@ -67,12 +67,9 @@ class WebSocketBaseClient(BaseClient):
                         # There is nothing to send, disconnect gracefully
                         await websocket.close(reason='No data to send')
 
-                if self.show_progress:
-                    cm1, cm2 = ProgressBar(), TimeContext('')
-                else:
-                    cm1, cm2 = nullcontext(), nullcontext()
+                cm1 = ProgressBar() if self.show_progress else nullcontext()
 
-                with cm1 as p_bar, cm2:
+                with cm1 as p_bar:
                     # Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.
                     # Simply iterating through the `req_iter` makes the request-response sequential.
                     # To make client unblocking, :func:`send_requests` and `recv_responses` are separate tasks

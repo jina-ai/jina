@@ -72,7 +72,7 @@ class PrefetchMixin(ABC):
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
             while prefetch_task:
-                self.logger.info(
+                self.logger.debug(
                     f'send: {self.zmqlet.msg_sent} '
                     f'recv: {self.zmqlet.msg_recv} '
                     f'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}'

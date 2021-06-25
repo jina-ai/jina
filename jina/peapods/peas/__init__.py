@@ -210,7 +210,7 @@ class BasePea:
                 # return too early and the shutdown is set, means something fails!!
                 raise RuntimeFailToStart
             else:
-                self.logger.success(__ready_msg__)
+                self.logger.debug(__ready_msg__)
         else:
             _timeout = _timeout or -1
             self.logger.warning(
@@ -256,7 +256,7 @@ class BasePea:
             # if it fails to start, the process will hang at `join`
             self.terminate()
 
-        self.logger.success(__stop_msg__)
+        self.logger.debug(__stop_msg__)
         self.logger.close()
 
     def _set_envs(self):

@@ -195,7 +195,7 @@ class Zmqlet:
             else:
                 out_sock, out_addr = None, None
 
-            self.logger.info(
+            self.logger.debug(
                 f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) '
                 f'output {colored(out_addr, "yellow")} ({self.args.socket_out.name}) '
                 f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})'
@@ -234,7 +234,7 @@ class Zmqlet:
 
     def print_stats(self):
         """Print out the network stats of of itself """
-        self.logger.info(
+        self.logger.debug(
             f'#sent: {self.msg_sent} '
             f'#recv: {self.msg_recv} '
             f'sent_size: {get_readable_size(self.bytes_sent)} '
@@ -454,8 +454,8 @@ class ZmqStreamlet(Zmqlet):
         if not self.is_closed and self.in_sock_type == zmq.DEALER:
             try:
                 self._send_cancel_to_router(raise_exception=True)
-            except zmq.error.ZMQError as e:
-                self.logger.info(
+            except zmq.error.ZMQError:
+                self.logger.debug(
                     f'The dealer {self.name} can not unsubscribe from the router. '
                     f'In case the router is down this is expected.'
                 )
