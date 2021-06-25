@@ -47,7 +47,7 @@ class WebSocketBaseClient(BaseClient):
                 # To enable websockets debug logs
                 # https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging
                 self.logger.success(
-                    f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
+                    f'connected to {self.args.host}:{self.args.port_expose}'
                 )
                 self.num_requests = 0
                 self.num_responses = 0

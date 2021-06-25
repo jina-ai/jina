@@ -58,9 +58,6 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
             )
         )
         await self._server.setup()
-        self.logger.success(
-            f'{self.__class__.__name__} is listening at: {self.args.host}:{self.args.port_expose}'
-        )
 
     async def async_run_forever(self):
         """Running method of ther server."""

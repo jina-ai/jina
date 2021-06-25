@@ -42,7 +42,7 @@ class GRPCBaseClient(BaseClient):
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.success(
-                    f'connected to the gateway at {self.args.host}:{self.args.port_expose}!'
+                    f'connected to {self.args.host}:{self.args.port_expose}'
                 )
 
                 if self.show_progress:
