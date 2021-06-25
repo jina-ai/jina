@@ -90,7 +90,7 @@ def mixin_http_gateway_parser(parser=None):
     )
 
 
-def mixin_prefetch_gateway_parser(parser=None):
+def mixin_prefetch_parser(parser=None):
     """Add the options for prefetching
     :param parser: the parser
     """
