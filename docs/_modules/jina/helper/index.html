@@ -1308,32 +1308,36 @@
     <span class="k">return</span> <span class="n">ip</span></div>
 
 
-<div class="viewcode-block" id="get_public_ip"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_public_ip">[docs]</a><span class="k">def</span> <span class="nf">get_public_ip</span><span class="p">():</span>
+<div class="viewcode-block" id="get_public_ip"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_public_ip">[docs]</a><span class="k">def</span> <span class="nf">get_public_ip</span><span class="p">(</span><span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Return the public IP address of the gateway for connecting from other machine in the public network.</span>
 
+<span class="sd">    :param timeout: the seconds to wait until return None.</span>
+
 <span class="sd">    :return: Public IP address.</span>
+
+<span class="sd">    .. warn::</span>
+<span class="sd">        Set :param:`timeout` to a large number will block the Flow.</span>
+
 <span class="sd">    """</span>
     <span class="kn">import</span> <span class="nn">urllib.request</span>
-
-    <span class="n">timeout</span> <span class="o">=</span> <span class="mf">0.25</span>
 
     <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">_get_ip</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">metas</span><span class="p">,</span> <span class="n">envs</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
-            <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span>
-                <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">,</span> <span class="o">**</span><span class="n">metas</span><span class="p">,</span> <span class="o">**</span><span class="n">envs</span><span class="p">}</span>
-            <span class="p">)</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">})</span>
             <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-                <span class="c1"># TODO: (deepankar) fix extra quote on the server side</span>
-                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'"'</span><span class="p">,</span> <span class="s1">''</span><span class="p">))</span>
+                <span class="n">_ip</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_ip</span><span class="p">)</span>
+
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>  <span class="c1"># intentionally ignored, public ip is not showed</span>
 
     <span class="n">ip_server_list</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s1">'https://getip.jina.ai/ip'</span><span class="p">,</span>
+        <span class="s1">'https://api.ipify.org'</span><span class="p">,</span>
+        <span class="s1">'https://ident.me'</span><span class="p">,</span>
+        <span class="s1">'https://checkip.amazonaws.com/'</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
