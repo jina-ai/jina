@@ -287,7 +287,7 @@ class ZEDRuntime(ZMQRuntime):
             # this is the proper way to end when a terminate signal is sent
             self._zmqlet.send_message(msg)
             self._zmqlet.close()
-        except (KeyboardInterrupt) as kbex:
+        except KeyboardInterrupt as kbex:
             # save executor
             self.logger.info(f'{kbex!r} causes the breaking from the event loop')
             self._zmqlet.send_message(msg)

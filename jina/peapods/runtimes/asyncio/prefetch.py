@@ -53,20 +53,15 @@ class PrefetchMixin(ABC):
                     return True
             return False
 
-        with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
-            self.logger.warning(
-                'if this takes too long, you may want to take smaller "--prefetch" or '
-                'ask client to reduce `request_size`'
+        prefetch_task = []
+        is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
+        if is_req_empty and not prefetch_task:
+            self.logger.error(
+                'receive an empty stream from the client! '
+                'please check your client\'s inputs, '
+                'you can use "Client.check_input(inputs)"'
             )
-            prefetch_task = []
-            is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
-            if is_req_empty and not prefetch_task:
-                self.logger.error(
-                    'receive an empty stream from the client! '
-                    'please check your client\'s inputs, '
-                    'you can use "Client.check_input(inputs)"'
-                )
-                return
+            return
 
         # the total num requests < self.args.prefetch
         if is_req_empty:

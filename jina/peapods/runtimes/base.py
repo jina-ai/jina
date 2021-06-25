@@ -100,6 +100,9 @@ class BaseRuntime:
             )
         try:
             self.teardown()
+        except OSError:
+            # OSError(Stream is closed) already
+            pass
         except Exception as ex:
             self.logger.error(
                 f'{ex!r} during {self.teardown!r}'
