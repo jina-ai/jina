@@ -926,32 +926,37 @@ def get_internal_ip():
     return ip
 
 
-def get_public_ip():
+def get_public_ip(timeout: float = 0.3):
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
 
+    :param timeout: the seconds to wait until return None.
+
     :return: Public IP address.
+
+    .. warn::
+        Set :param:`timeout` to a large number will block the Flow.
+
     """
     import urllib.request
-
-    timeout = 0.25
 
     results = []
 
     def _get_ip(url):
         try:
-            metas, envs = get_full_version()
-            req = urllib.request.Request(
-                url, headers={'User-Agent': 'Mozilla/5.0', **metas, **envs}
-            )
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=timeout) as fp:
-                # TODO: (deepankar) fix extra quote on the server side
-                results.append(fp.read().decode().replace('"', ''))
+                _ip = fp.read().decode()
+                print(f'{url}: {_ip}')
+                results.append(_ip)
+
         except:
             pass  # intentionally ignored, public ip is not showed
 
     ip_server_list = [
-        'https://getip.jina.ai/ip',
+        'https://api.ipify.org',
+        'https://ident.me',
+        'https://checkip.amazonaws.com/',
     ]
 
     threads = []
