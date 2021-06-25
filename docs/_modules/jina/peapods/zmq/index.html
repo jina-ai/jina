@@ -743,29 +743,24 @@
     <span class="k">def</span> <span class="nf">_get_zmq_ctx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">zmq</span><span class="o">.</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
 
-<div class="viewcode-block" id="AsyncZmqlet.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.AsyncZmqlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">,</span> <span class="n">sleep</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AsyncZmqlet.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.AsyncZmqlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Send a protobuf message in async via the output socket</span>
 
 <span class="sd">        :param msg: the protobuf message to send</span>
-<span class="sd">        :param sleep: the sleep time of every two sends in millisecond.</span>
-<span class="sd">                A near-zero value could result in bad load balancing in the proceeding pods.</span>
 <span class="sd">        :param kwargs: keyword arguments</span>
 <span class="sd">        """</span>
-        <span class="c1"># await asyncio.sleep(sleep)  # preventing over-speed sending</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span><span class="p">:</span>
-            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_dynamic</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_message_dynamic</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span></div>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_send_message_dynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
-        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">routing_table</span><span class="p">,</span> <span class="n">out_sock</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_next_routes</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
             <span class="n">new_envelope</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EnvelopeProto</span><span class="p">()</span>
             <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
             <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
             <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
-            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">new_message</span><span class="p">))</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">new_message</span><span class="p">))</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_send_message_via</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1215,7 +1210,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 24, 2021.
+            Last updated on Jun 25, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

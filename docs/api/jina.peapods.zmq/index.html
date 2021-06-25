@@ -518,14 +518,12 @@ It requires <code class="xref py py-mod docutils literal notranslate"><span clas
 The <a class="reference internal" href="#jina.peapods.zmq.send_message" title="jina.peapods.zmq.send_message"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_message()</span></code></a> and <a class="reference internal" href="#jina.peapods.zmq.recv_message" title="jina.peapods.zmq.recv_message"><code class="xref py py-func docutils literal notranslate"><span class="pre">recv_message()</span></code></a> works in the async manner.</p>
 <dl class="py method">
 <dt id="jina.peapods.zmq.AsyncZmqlet.send_message">
-<em class="property"><span class="pre">async</span> </em><code class="sig-name descname"><span class="pre">send_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sleep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/zmq/#AsyncZmqlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.zmq.AsyncZmqlet.send_message" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span> </em><code class="sig-name descname"><span class="pre">send_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/zmq/#AsyncZmqlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.zmq.AsyncZmqlet.send_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a protobuf message in async via the output socket</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>msg</strong> (<a class="reference internal" href="../jina.types.message/#jina.types.message.Message" title="jina.types.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>) – the protobuf message to send</p></li>
-<li><p><strong>sleep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the sleep time of every two sends in millisecond.
-A near-zero value could result in bad load balancing in the proceeding pods.</p></li>
 <li><p><strong>kwargs</strong> – keyword arguments</p></li>
 </ul>
 </dd>
@@ -743,7 +741,7 @@ It requires <code class="xref py py-mod docutils literal notranslate"><span clas
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 24, 2021.
+            Last updated on Jun 25, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
