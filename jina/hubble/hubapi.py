@@ -1,6 +1,8 @@
 """Module wrapping interactions with the local executor packages."""
 
 
+import sys
+import subprocess
 import shutil
 from pathlib import Path
 from typing import Tuple, Optional
@@ -19,6 +21,16 @@ def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
     pkg_path = JINA_HUB_ROOT / uuid
     pkg_dist_path = JINA_HUB_ROOT / f'{uuid}-{tag}.dist-info'
     return pkg_path, pkg_dist_path
+
+
+def install_requirements(requirements_file: 'Path'):
+    """Install modules included in requirments file
+
+    :param requirements_file: the requirements.txt file
+    """
+    subprocess.check_call(
+        [sys.executable, '-m', 'pip', 'install', '-r', f'{requirements_file}']
+    )
 
 
 def install_local(
@@ -42,21 +54,27 @@ def install_local(
     if pkg_path.exists():
         shutil.rmtree(pkg_path)
 
-    # unpack the zip package to the root pkg_path
-    unpack_package(zip_package, pkg_path)
+    try:
+        # unpack the zip package to the root pkg_path
+        unpack_package(zip_package, pkg_path)
 
-    # TODO: install the dependencies included in requirements.txt
+        # create dist-info folder
+        pkg_dist_path.mkdir(parents=False, exist_ok=True)
 
-    # create dist-info folder
-    pkg_dist_path.mkdir(parents=False, exist_ok=True)
+        # install the dependencies included in requirements.txt
+        requirements_file = pkg_path / 'requirements.txt'
+        if requirements_file.exists():
+            install_requirements(requirements_file)
+            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
-    manifest_path = pkg_path / 'manifest.yml'
-    if manifest_path.exists():
-        shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
-
-    requirements_path = pkg_path / 'requirements.txt'
-    if requirements_path.exists():
-        shutil.copyfile(requirements_path, pkg_dist_path / 'requirements.txt')
+        manifest_path = pkg_path / 'manifest.yml'
+        if manifest_path.exists():
+            shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
+    except Exception as ex:
+        # clean pkg_path, pkg_dist_path
+        shutil.rmtree(pkg_path)
+        shutil.rmtree(pkg_dist_path)
+        raise ex
 
 
 def uninstall_local(uuid: str):
