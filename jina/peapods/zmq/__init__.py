@@ -361,29 +361,24 @@ class AsyncZmqlet(Zmqlet):
     def _get_zmq_ctx(self):
         return zmq.asyncio.Context()
 
-    async def send_message(self, msg: 'Message', sleep: float = 0, **kwargs):
+    async def send_message(self, msg: 'Message', **kwargs):
         """Send a protobuf message in async via the output socket
 
         :param msg: the protobuf message to send
-        :param sleep: the sleep time of every two sends in millisecond.
-                A near-zero value could result in bad load balancing in the proceeding pods.
         :param kwargs: keyword arguments
         """
-        # await asyncio.sleep(sleep)  # preventing over-speed sending
         if self.args.dynamic_routing_out:
-            await self._send_message_dynamic(msg)
+            asyncio.create_task(self._send_message_dynamic(msg))
         else:
-            self._send_message_via(self.out_sock, msg)
+            asyncio.create_task(self._send_message_via(self.out_sock, msg))
 
     async def _send_message_dynamic(self, msg: 'Message'):
-        tasks = []
         for routing_table, out_sock in self._get_dynamic_next_routes(msg):
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
             new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
-            tasks.append(self._send_message_via(out_sock, new_message))
-        await asyncio.gather(*tasks)
+            asyncio.create_task(self._send_message_via(out_sock, new_message))
 
     async def _send_message_via(self, socket, msg):
         try:
