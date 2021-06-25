@@ -947,7 +947,6 @@ def get_public_ip(timeout: float = 0.3):
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=timeout) as fp:
                 _ip = fp.read().decode()
-                print(f'{url}: {_ip}')
                 results.append(_ip)
 
         except:
