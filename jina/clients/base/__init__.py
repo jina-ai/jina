@@ -69,9 +69,7 @@ class BaseClient(ABC):
             from ..request import request_generator
 
             r = next(request_generator(**kwargs))
-            if isinstance(r, Request):
-                default_logger.success(f'inputs is valid')
-            else:
+            if not isinstance(r, Request):
                 raise TypeError(f'{typename(r)} is not a valid Request')
         except Exception as ex:
             default_logger.error(f'inputs is not valid!')

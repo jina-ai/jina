@@ -920,7 +920,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if GATEWAY_NAME in self._pod_nodes:
             self._pod_nodes.pop(GATEWAY_NAME)
         self._build_level = FlowBuildLevel.EMPTY
-        self.logger.success(f'Flow is closed!')
+        self.logger.debug(f'Flow is closed!')
         self.logger.close()
 
     def start(self):
@@ -961,7 +961,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 self.close()
                 raise
 
-        self.logger.info(
+        self.logger.debug(
             f'{self.num_pods} Pods (i.e. {self.num_peas} Peas) are running in this Flow'
         )
 
@@ -1300,7 +1300,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _show_success_message(self):
 
-        self.logger.success(f'🎉 Flow is ready to use!')
+        self.logger.debug(f'🎉 Flow is ready to use!')
 
         address_table = [
             f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',

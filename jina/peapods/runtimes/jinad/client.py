@@ -120,7 +120,7 @@ class DaemonClient:
                 f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}'
             )
         except asyncio.CancelledError:
-            self.logger.info(f'log streaming is cancelled')
+            self.logger.warning(f'log streaming is cancelled')
         finally:
             for l in all_remote_loggers.values():
                 l.close()
@@ -197,7 +197,7 @@ class PeaDaemonClient(DaemonClient):
                 timeout=self.timeout,
             )
             if r.status_code == requests.codes.not_found:
-                self.logger.info(f'couldn\'t find {id} in remote {self.kind} store')
+                self.logger.warning(f'couldn\'t find {id} in remote {self.kind} store')
             return r.json()
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')

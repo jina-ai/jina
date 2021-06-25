@@ -241,7 +241,7 @@ class ProgressBar(TimeContext):
             self.num_docs += progress
 
         sys.stdout.write(
-            '{:>10} |{:<{}}| ⏳ {:6d} ⏱️ {:3.1f}s 🐎 {:3.0f} QPS'.format(
+            '{:>10} |{:<{}}| ⏳ {:6d} ⏱️ {:3.1f}s 🐎 {:3.1f} RPS'.format(
                 colored(self.task_name, 'cyan'),
                 colored('█' * num_bars, 'green'),
                 self.bar_len + 9,
@@ -267,5 +267,5 @@ class ProgressBar(TimeContext):
     def _exit_msg(self):
         speed = self.num_reqs / self.duration
         sys.stdout.write(
-            f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.0f} QPS", "green")}\n'
+            f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.1f} RPS", "green")}\n'
         )
