@@ -791,17 +791,6 @@ class Document(ProtoTypeMixin):
         :param value: the bytes value to set the buffer
         """
         self._pb_body.buffer = value
-        if value and not self._pb_body.mime_type:
-            with ImportExtensions(
-                required=False,
-                pkg_name='python-magic',
-                help_text=f'can not sniff the MIME type '
-                f'MIME sniffing requires brew install '
-                f'libmagic (Mac)/ apt-get install libmagic1 (Linux)',
-            ):
-                import magic
-
-                self._pb_body.mime_type = magic.from_buffer(value, mime=True)
 
     @property
     def text(self):
