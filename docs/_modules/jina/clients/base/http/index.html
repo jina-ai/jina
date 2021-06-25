@@ -439,12 +439,11 @@
 
         <span class="n">req_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_requests</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(),</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(),</span> <span class="n">nullcontext</span><span class="p">()</span>
+
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">,</span> <span class="n">cm2</span><span class="p">:</span>
+                <span class="n">cm1</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
+
+                <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
                     <span class="n">all_responses</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">req_iter</span><span class="p">:</span>
                         <span class="c1"># fix the mismatch between pydantic model and Protobuf model</span>

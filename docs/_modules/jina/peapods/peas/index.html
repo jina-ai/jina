@@ -592,7 +592,7 @@
                 <span class="c1"># return too early and the shutdown is set, means something fails!!</span>
                 <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_timeout</span> <span class="o">=</span> <span class="n">_timeout</span> <span class="ow">or</span> <span class="o">-</span><span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -638,7 +638,7 @@
             <span class="c1"># if it fails to start, the process will hang at `join`</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_set_envs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

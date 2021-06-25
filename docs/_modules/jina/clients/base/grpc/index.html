@@ -423,16 +423,13 @@
                 <span class="p">],</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">channel</span><span class="p">:</span>
                 <span class="n">stub</span> <span class="o">=</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaRPCStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'connected to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
 
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                    <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(),</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(),</span> <span class="n">nullcontext</span><span class="p">()</span>
+                <span class="n">cm1</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
 
-                <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">,</span> <span class="n">cm2</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
                     <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">req_iter</span><span class="p">):</span>
                         <span class="n">resp</span><span class="o">.</span><span class="n">as_typed_request</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">request_type</span><span class="p">)</span>
                         <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">as_response</span><span class="p">()</span>

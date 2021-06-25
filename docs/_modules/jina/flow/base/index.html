@@ -1302,7 +1302,7 @@
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pod_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">GATEWAY_NAME</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Flow is closed!'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Flow is closed!'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Flow.start"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1343,7 +1343,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="k">raise</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_peas</span><span class="si">}</span><span class="s1"> Peas) are running in this Flow'</span>
         <span class="p">)</span>
 
@@ -1682,7 +1682,7 @@
 
     <span class="k">def</span> <span class="nf">_show_success_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🎉 Flow is ready to use!'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🎉 Flow is ready to use!'</span><span class="p">)</span>
 
         <span class="n">address_table</span> <span class="o">=</span> <span class="p">[</span>
             <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔗 Protocol: </span><span class="se">\t\t</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>

@@ -428,7 +428,7 @@
             <span class="p">)</span> <span class="k">as</span> <span class="n">websocket</span><span class="p">:</span>
                 <span class="c1"># To enable websockets debug logs</span>
                 <span class="c1"># https://websockets.readthedocs.io/en/stable/cheatsheet.html#debugging</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'connected to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">num_requests</span> <span class="o">=</span> <span class="mi">0</span>
@@ -449,12 +449,9 @@
                         <span class="c1"># There is nothing to send, disconnect gracefully</span>
                         <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s1">'No data to send'</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                    <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(),</span> <span class="n">TimeContext</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">cm1</span><span class="p">,</span> <span class="n">cm2</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">(),</span> <span class="n">nullcontext</span><span class="p">()</span>
+                <span class="n">cm1</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
 
-                <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">,</span> <span class="n">cm2</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
                     <span class="c1"># Unlike gRPC, any arbitrary function (generator) cannot be passed via websockets.</span>
                     <span class="c1"># Simply iterating through the `req_iter` makes the request-response sequential.</span>
                     <span class="c1"># To make client unblocking, :func:`send_requests` and `recv_responses` are separate tasks</span>
