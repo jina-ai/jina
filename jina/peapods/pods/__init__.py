@@ -1,6 +1,5 @@
 import copy
 import sys
-import re
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
@@ -10,8 +9,7 @@ from typing import List, Optional
 
 from ..networking import get_connect_host
 from ..peas import BasePea
-from ...jaml.helper import complete_path
-from ... import __default_host__, __default_executor__
+from ... import __default_executor__
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -21,6 +19,7 @@ from ...enums import (
     PollingType,
 )
 from ...helper import random_identity
+from ...jaml.helper import complete_path
 
 
 class ExitFIFO(ExitStack):
@@ -112,7 +111,7 @@ class BasePod(ExitFIFO):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        raise NotImplemented()
+        raise NotImplementedError
 
     def close(self):
         """Stop all :class:`BasePea` in this BasePod.
