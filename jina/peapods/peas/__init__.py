@@ -112,7 +112,8 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
-        self.worker.join(*args, **kwargs)
+        if self.worker.is_alive():
+            self.worker.join(*args, **kwargs)
 
     def terminate(self):
         """Terminate the Pea.
@@ -207,11 +208,6 @@ class BasePea:
         if self.ready_or_shutdown.event.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                if self.args.quiet_error:
-                    self.logger.critical(
-                        f'fail to start {self!r} because {self.runtime_cls!r} throws some exception, '
-                        f'remove "--quiet-error" to see the exception stack in details'
-                    )
                 raise RuntimeFailToStart
             else:
                 self.logger.success(__ready_msg__)
@@ -238,6 +234,10 @@ class BasePea:
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
+
+        time.sleep(
+            0.1
+        )  #: required for success ctrl-C on `jina pea`, otherwise zmq close too slow.
 
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():

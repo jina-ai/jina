@@ -185,6 +185,10 @@ class BasePod(ExitFIFO):
     def __enter__(self) -> 'BasePod':
         return self.start()
 
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        super().__exit__(exc_type, exc_val, exc_tb)
+        self.join()
+
     @staticmethod
     def _copy_to_head_args(
         args: Namespace, polling_type: PollingType, as_router: bool = True
