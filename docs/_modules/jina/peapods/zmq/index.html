@@ -1112,15 +1112,8 @@
 
 <span class="sd">    :return: random IPC address</span>
 <span class="sd">    """</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'JINA_IPC_SOCK_TMP'</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">tmp</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'This directory for sockets (</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s1">) does not seems to exist.'</span>
-            <span class="p">)</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">random_identity</span><span class="p">())</span>
-    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">()</span><span class="o">.</span><span class="n">name</span>
+
     <span class="k">return</span> <span class="sa">f</span><span class="s1">'ipc://</span><span class="si">{</span><span class="n">tmp</span><span class="si">}</span><span class="s1">'</span>
 
 
@@ -1153,9 +1146,6 @@
 
     <span class="k">if</span> <span class="n">socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">set_string</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="n">identity</span><span class="p">)</span>
-
-    <span class="c1"># if not socket_type.is_pubsub:</span>
-    <span class="c1">#     sock.hwm = int(os.environ.get('JINA_SOCKET_HWM', 1))</span>
 
     <span class="k">if</span> <span class="n">socket_type</span><span class="o">.</span><span class="n">is_bind</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">use_ipc</span><span class="p">:</span>
@@ -1209,7 +1199,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 25, 2021.
+            Last updated on Jun 26, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
