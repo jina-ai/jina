@@ -730,15 +730,8 @@ def _get_random_ipc() -> str:
 
     :return: random IPC address
     """
-    try:
-        tmp = os.environ['JINA_IPC_SOCK_TMP']
-        if not os.path.exists(tmp):
-            raise ValueError(
-                f'This directory for sockets ({tmp}) does not seems to exist.'
-            )
-        tmp = os.path.join(tmp, random_identity())
-    except KeyError:
-        tmp = tempfile.NamedTemporaryFile().name
+    tmp = tempfile.NamedTemporaryFile().name
+
     return f'ipc://{tmp}'
 
 
@@ -771,9 +764,6 @@ def _init_socket(
 
     if socket_type == SocketType.DEALER_CONNECT:
         sock.set_string(zmq.IDENTITY, identity)
-
-    # if not socket_type.is_pubsub:
-    #     sock.hwm = int(os.environ.get('JINA_SOCKET_HWM', 1))
 
     if socket_type.is_bind:
         if use_ipc:
