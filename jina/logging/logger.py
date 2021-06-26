@@ -78,14 +78,12 @@ class JinaLogger:
         self.logger = logging.getLogger(context)
         self.logger.propagate = False
 
-        if workspace_path is None:
-            workspace_path = os.getenv('JINA_LOG_WORKSPACE', '/tmp/jina/')
-
         context_vars = {
             'name': name,
             'uptime': __uptime__,
             'context': context,
-            'workspace_path': workspace_path,
+            'workspace_path': workspace_path
+            or os.getenv('JINA_LOG_WORKSPACE', '/tmp/jina/'),
         }
         if identity:
             context_vars['log_id'] = identity

@@ -51,10 +51,9 @@ __jina_env__ = (
     'JINA_DEFAULT_HOST',
     'JINA_DISABLE_UVLOOP',
     'JINA_FULL_CLI',
-    'JINA_HUB_ROOT',
-    'JINA_HUB_CACHE_DIR',
     'JINA_HUBBLE_REGISTRY',
-    'JINA_IPC_SOCK_TMP',
+    'JINA_HUB_CACHE_DIR',
+    'JINA_HUB_ROOT',
     'JINA_LOG_CONFIG',
     'JINA_LOG_ID',
     'JINA_LOG_LEVEL',
@@ -62,7 +61,6 @@ __jina_env__ = (
     'JINA_LOG_WORKSPACE',
     'JINA_OPTIMIZER_TRIAL_WORKSPACE',
     'JINA_POD_NAME',
-    'JINA_RANDOM_PORTS',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
@@ -105,10 +103,7 @@ JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 JINA_GLOBAL.dgl_installed = None
 
-# import jina.importer as _ji
-#
-# _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
-#
+
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 
 
