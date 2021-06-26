@@ -1300,8 +1300,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def _show_success_message(self):
 
-        self.logger.debug(f'🎉 Flow is ready to use!')
-
         address_table = [
             f'\t🔗 Protocol: \t\t{colored(self.protocol, attrs="bold")}',
             f'\t🏠 Local access:\t'
@@ -1340,7 +1338,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 )
             )
 
-        self.logger.info('\n' + '\n'.join(address_table))
+        self.logger.info('🎉 Flow is ready to use!\n' + '\n'.join(address_table))
 
     def block(self):
         """Block the process until user hits KeyboardInterrupt"""
