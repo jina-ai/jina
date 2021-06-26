@@ -63,6 +63,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9221,4 +9222,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```269c4d13```](https://github.com/jina-ai/jina/commit/269c4d1345448c835a8e4b04804ad302cad1cdad)] __-__ http client is now fully async (#2732) (*Han Xiao*)
  - [[```c947e2f5```](https://github.com/jina-ai/jina/commit/c947e2f592eeee4fbfb4d9d3b205e32c00ab9a60)] __-__ hide zmq.asyncio import to speedup import (#2728) (*Han Xiao*)
  - [[```e999161e```](https://github.com/jina-ai/jina/commit/e999161e585539572326d29c531688493fe77e7a)] __-__ __version__: the next version will be 2.0.0rc9 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-0rc10></a>
+## Release Note (`2.0.0rc10`)
+
+> Release time: 2021-06-26 03:26:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  felix-wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```45403785```](https://github.com/jina-ai/jina/commit/454037855c2bce4ffe14d18f043ce113edadfd7f)] __-__ mute many log.info and log.success (#2771) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```b10bf61b```](https://github.com/jina-ai/jina/commit/b10bf61b2dcdd794b335a65fefb4344afafbdc6c)] __-__ remove unused env (#2772) (*Han Xiao*)
+ - [[```c613fa77```](https://github.com/jina-ai/jina/commit/c613fa7799e25c8385f826c3f26bce1ea55e3e7d)] __-__ double join invoke from Pod (#2769) (*Han Xiao*)
+ - [[```c48f37bc```](https://github.com/jina-ai/jina/commit/c48f37bc7924d9785088a050001e61020937f1b5)] __-__ __hubble__: put `metas` and `envs` in request header (#2756) (*felix-wang*)
+
+### 🚧 Code Refactoring
+
+ - [[```2c1c337d```](https://github.com/jina-ai/jina/commit/2c1c337d960669ca10894be7cfc12042d68b67cc)] __-__ get public ip (#2765) (*Han Xiao*)
+ - [[```72cca87e```](https://github.com/jina-ai/jina/commit/72cca87e7ffb6e6a3a22aad26ef8c454857328cb)] __-__ create task in async zmqlet (#2763) (*Han Xiao*)
+ - [[```537118de```](https://github.com/jina-ai/jina/commit/537118deb970d37709b588acf89bae0215c2816a)] __-__ __client__: separate http, websocket &amp; grpc (#2762) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```a2614936```](https://github.com/jina-ai/jina/commit/a261493666d5221d8e0f897a7455d6095fe52ada)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```8d83d584```](https://github.com/jina-ai/jina/commit/8d83d5843c76745f4efdfbcac33edfaeb8f760fe)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```b755af56```](https://github.com/jina-ai/jina/commit/b755af56b197255e1d8eb7b26d091239dedbab20)] __-__ __version__: the next version will be 2.0.0rc10 (*Jina Dev Bot*)
 
