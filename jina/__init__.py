@@ -103,10 +103,7 @@ JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 JINA_GLOBAL.dgl_installed = None
 
-# import jina.importer as _ji
-#
-# _ji.import_classes('jina.executors', show_import_table=False, import_once=True)
-#
+
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 
 
