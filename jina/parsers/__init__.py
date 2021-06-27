@@ -1,6 +1,7 @@
+import argparse
+
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
-import argparse
 
 
 def set_pea_parser(parser=None):
@@ -69,7 +70,7 @@ def set_gateway_parser(parser=None):
     from .peapods.runtimes.zed import mixin_zed_runtime_parser
     from .peapods.runtimes.remote import (
         mixin_remote_parser,
-        mixin_prefetch_gateway_parser,
+        mixin_prefetch_parser,
         mixin_http_gateway_parser,
         mixin_compressor_parser,
     )
@@ -78,7 +79,7 @@ def set_gateway_parser(parser=None):
     mixin_base_ppr_parser(parser)
     mixin_zmq_runtime_parser(parser)
     mixin_zed_runtime_parser(parser)
-    mixin_prefetch_gateway_parser(parser)
+    mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_compressor_parser(parser)
     mixin_comm_protocol_parser(parser)

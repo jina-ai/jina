@@ -1,20 +1,14 @@
 """Module for wrapping Jina Hub API calls."""
 
 
-from jina.parsers.hubble import pull
 import os
 import argparse
-import json
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict
 from collections import namedtuple
 from urllib.parse import urljoin, urlencode
 import hashlib
-from ..helper import (
-    colored,
-    get_full_version,
-    get_readable_size,
-)
+from ..helper import colored, get_full_version, get_readable_size, random_identity
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
@@ -30,7 +24,7 @@ JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
 HubExecutor = namedtuple(
     'HubExecutor',
-    ['id', 'current_tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
+    ['uuid', 'alias', 'tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
 )
 
 
@@ -68,10 +62,23 @@ class HubIO:
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
+    def _get_request_header(self) -> Dict:
+        """Return the header of request.
+
+        :return: request header
+        """
+        metas, envs = get_full_version()
+
+        header = {
+            **{f'jinameta-{k}': str(v) for k, v in metas.items()},
+            **envs,
+        }
+        return header
+
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
-
-        import requests
+        with ImportExtensions(required=True):
+            import requests
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
@@ -79,6 +86,8 @@ class HubIO:
                 f'The folder "{self.args.path}" does not exist, can not push'
             )
             exit(1)
+
+        request_headers = self._get_request_header()
 
         try:
             # archive the executor package
@@ -91,10 +100,7 @@ class HubIO:
                 md5_digest = md5_hash.hexdigest()
 
             # upload the archived package
-            meta, env = get_full_version()
             form_data = {
-                'meta': json.dumps(meta),
-                'env': json.dumps(env),
                 'public': self.args.public if hasattr(self.args, 'public') else False,
                 'private': self.args.private
                 if hasattr(self.args, 'private')
@@ -105,6 +111,7 @@ class HubIO:
             }
 
             method = 'put' if self.args.force else 'post'
+
             # upload the archived executor to Jina Hub
             with TimeContext(
                 f'uploading to {method.upper()} {JINA_HUBBLE_PUSHPULL_URL}', self.logger
@@ -114,6 +121,7 @@ class HubIO:
                     JINA_HUBBLE_PUSHPULL_URL,
                     files={'file': content},
                     data=form_data,
+                    headers=request_headers,
                 )
 
             if 200 <= resp.status_code < 300:
@@ -148,23 +156,24 @@ class HubIO:
                     'You can use this Executor in the Flow via '
                     + colored(usage, 'cyan', attrs='underline')
                 )
-
             elif resp.text:
                 # NOTE: sometimes resp.text returns empty
                 raise Exception(resp.text)
             else:
                 resp.raise_for_status()
-
         except Exception as e:  # IO related errors
             self.logger.error(
-                f'Error when trying to push the executor at {self.args.path}: {e!r}'
+                f'Error when trying to push the executor at {self.args.path} with session_id = {request_headers["jinameta-session-id"]}: {e!r}'
             )
 
     def fetch(
-        self, id: str, tag: Optional[str] = None, secret: Optional[str] = None
+        self,
+        name: str,
+        tag: Optional[str] = None,
+        secret: Optional[str] = None,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
-        :param id: the ID of the executor
+        :param name: the UUID/Alias of the executor
         :param tag: the version tag of the executor
         :param secret: the access secret of the executor
         :return: meta of executor
@@ -172,28 +181,30 @@ class HubIO:
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{id}/?'
+        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{name}/?'
         path_params = {}
         if secret:
             path_params['secret'] = secret
         if tag:
             path_params['tag'] = tag
 
+        request_headers = self._get_request_header()
+
         pull_url += urlencode(path_params)
-        resp = requests.get(pull_url)
+        resp = requests.get(pull_url, headers=request_headers)
         if resp.status_code != 200:
             if resp.text:
                 raise Exception(resp.text)
             resp.raise_for_status()
 
         resp = resp.json()
-        assert resp['id'] == id
 
         result = HubExecutor(
             resp['id'],
-            f'v{resp["currentVersion"]}',
+            resp.get('alias', None),
+            resp['tag'],
             resp['visibility'],
-            resp['pullPath'],
+            resp['image'],
             resp['package']['download'],
             resp['package']['md5'],
         )
@@ -204,16 +215,17 @@ class HubIO:
         """Pull the executor package from Jina Hub."""
         cached_zip_filepath = None
         try:
-            scheme, uuid, tag, secret = parse_hub_uri(self.args.uri)
+            scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
             if scheme not in ['jinahub', 'jinahub+docker']:
                 raise ValueError(f'Unkonwn schema: {scheme}')
 
-            executor = self.fetch(uuid, tag=tag, secret=secret)
+            executor = self.fetch(name, tag=tag, secret=secret)
 
             if not tag:
-                tag = executor.current_tag
+                tag = executor.tag
 
+            uuid = executor.uuid
             image_name = executor.image_name
             archive_url = executor.archive_url
             md5sum = executor.md5sum

@@ -2,7 +2,6 @@ import argparse
 import multiprocessing
 import os
 import threading
-import time
 from typing import Any, Tuple
 
 from .helper import _get_event, ConditionalEvent
@@ -106,7 +105,8 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
-        self.worker.join(*args, **kwargs)
+        if self.worker.is_alive():
+            self.worker.join(*args, **kwargs)
 
     def terminate(self):
         """Terminate the Pea.
@@ -159,7 +159,7 @@ class BasePea:
 
     def activate_runtime(self):
         """ Send activate control message. """
-        if self._dealer:
+        if self._is_dealer:
             from ..zmq import send_ctrl_message
 
             send_ctrl_message(
@@ -168,7 +168,7 @@ class BasePea:
 
     def _deactivate_runtime(self):
         """Send deactivate control message. """
-        if self._dealer:
+        if self._is_dealer:
             from ..zmq import send_ctrl_message
 
             send_ctrl_message(
@@ -202,14 +202,9 @@ class BasePea:
         if self.ready_or_shutdown.event.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                if self.args.quiet_error:
-                    self.logger.critical(
-                        f'fail to start {self!r} because {self.runtime_cls!r} throws some exception, '
-                        f'remove "--quiet-error" to see the exception stack in details'
-                    )
                 raise RuntimeFailToStart
             else:
-                self.logger.success(__ready_msg__)
+                self.logger.debug(__ready_msg__)
         else:
             _timeout = _timeout or -1
             self.logger.warning(
@@ -222,7 +217,7 @@ class BasePea:
             )
 
     @property
-    def _dealer(self):
+    def _is_dealer(self):
         """Return true if this `Pea` must act as a Dealer responding to a Router
         .. # noqa: DAR201
         """
@@ -233,17 +228,10 @@ class BasePea:
 
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
-        # wait 0.1s for the process/thread to end naturally, in this case no "cancel" is required this is required for
-        # the is case where in subprocess, runtime.setup() fails and _finally() is not yet executed, BUT close() in the
-        # main process is calling runtime.cancel(), which is completely unnecessary as runtime.run_forever() is not
-        # started yet.
-        self.join(0.1)
-
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
                 self._deactivate_runtime()
-                time.sleep(0.1)
                 self._cancel_runtime()
                 self.is_shutdown.wait()
             except Exception as ex:
@@ -262,7 +250,7 @@ class BasePea:
             # if it fails to start, the process will hang at `join`
             self.terminate()
 
-        self.logger.success(__stop_msg__)
+        self.logger.debug(__stop_msg__)
         self.logger.close()
 
     def _set_envs(self):

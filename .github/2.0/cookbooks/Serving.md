@@ -84,11 +84,11 @@ Flow in an explicit C/S style.
 
 Jina supports `grpc`, `websocket`, `http` three communication protocols between `Flow` and `Client`.
 
-| Protocol | Description | Performance on large data |
-| --- | --- | --- |
-| `grpc` | Default gRPC protocol, mainly for streaming data | Super |
-| `websocket` | WebSocket protocol, used in frontend language that supports websocket, mainly for streaming data | Super |
-| `http` | HTTP protocol, mainly for allow any client to have HTTP access | Good |
+| Protocol | Requirements | Description | Performance on large data |
+| --- | --- | --- | --- |
+| `grpc` | - |  Default gRPC protocol, mainly for streaming data | Super |
+| `websocket` | `pip install "jina[client,http]"` | WebSocket protocol, used in frontend language that supports websocket, mainly for streaming data | Super |
+| `http` |`pip install "jina[client,http]"` | HTTP protocol, mainly for allow any client to have HTTP access | Good |
 
 The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s constructor.
 

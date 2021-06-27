@@ -1,7 +1,7 @@
 import argparse
 from typing import List
 
-from ..grpc import AsyncPrefetchCall
+from ..prefetch import PrefetchCaller
 from ....zmq import AsyncZmqlet
 from .....importer import ImportExtensions
 from .....logging.logger import JinaLogger
@@ -36,7 +36,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     app = FastAPI()
 
     zmqlet = AsyncZmqlet(args, logger)
-    servicer = AsyncPrefetchCall(args, zmqlet)
+    servicer = PrefetchCaller(args, zmqlet)
 
     @app.on_event('shutdown')
     def _shutdown():
@@ -55,7 +55,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                 yield Request(data)
 
         try:
-            async for msg in servicer.Call(request_iterator=req_iter(), context=None):
+            async for msg in servicer.Call(request_iterator=req_iter()):
                 await websocket.send_bytes(msg.binary_str())
         except WebSocketDisconnect:
             manager.disconnect(websocket)

@@ -6,10 +6,10 @@ from typing import Optional, Dict, List, Union, Set
 from .. import BasePod
 from .. import Pea
 from .. import Pod
+from ..networking import get_connect_host
 from ... import helper
 from ...enums import PollingType, SocketType
 from ...helper import random_identity
-from ..networking import get_connect_host
 
 
 class CompoundPod(BasePod):

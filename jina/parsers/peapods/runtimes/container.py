@@ -7,19 +7,7 @@ def mixin_container_runtime_parser(parser):
     :param parser: the parser instance to which we add arguments
     """
     gp = add_arg_group(parser, title='ContainerRuntime')
-    from jina import __default_executor__
 
-    gp.add_argument(
-        '--uses-internal',
-        type=str,
-        default=__default_executor__,
-        help='''
-The config runs inside the Docker container. 
-
-Syntax and function are the same as `--uses`. This is designed when `--uses="docker://..."` this config is passed to 
-the Docker container.
-''',
-    )
     gp.add_argument(
         '--entrypoint',
         type=str,

@@ -2,13 +2,12 @@ import argparse
 import asyncio
 import copy
 import json
+import os
 from argparse import Namespace
 from contextlib import ExitStack
 from typing import Optional, Sequence, Dict
 
-import os
-
-from .... import __default_host__, __resources_path__
+from .... import __resources_path__
 from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
 from ....jaml.helper import complete_path
@@ -120,7 +119,7 @@ class DaemonClient:
                 f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}'
             )
         except asyncio.CancelledError:
-            self.logger.info(f'log streaming is cancelled')
+            self.logger.warning(f'log streaming is cancelled')
         finally:
             for l in all_remote_loggers.values():
                 l.close()
@@ -149,7 +148,7 @@ class DaemonClient:
                     pass
             return field
 
-        for f in ('uses', 'uses_after', 'uses_before', 'uses_internal', 'py_modules'):
+        for f in ('uses', 'uses_after', 'uses_before', 'py_modules'):
             attr = getattr(_args, f, None)
             if not attr:
                 continue
@@ -197,7 +196,7 @@ class PeaDaemonClient(DaemonClient):
                 timeout=self.timeout,
             )
             if r.status_code == requests.codes.not_found:
-                self.logger.info(f'couldn\'t find {id} in remote {self.kind} store')
+                self.logger.warning(f'couldn\'t find {id} in remote {self.kind} store')
             return r.json()
         except requests.exceptions.RequestException as ex:
             self.logger.error(f'can\'t get status of {self.kind}: {ex!r}')

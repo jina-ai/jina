@@ -9,9 +9,8 @@ from platform import uname
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from ....excepts import BadImageNameError
-from ....helper import ArgNamespace, is_valid_local_config_source, slugify
-from ....jaml.helper import complete_path
 from ...zmq import send_ctrl_message
+from ....helper import ArgNamespace, slugify
 
 
 class ContainerRuntime(ZMQRuntime):
@@ -135,21 +134,6 @@ class ContainerRuntime(ZMQRuntime):
             )
 
         _volumes = {}
-        if self.args.uses_internal:
-            full_path = None
-            try:
-                full_path = complete_path(self.args.uses_internal)
-            except FileNotFoundError:
-                pass
-            if full_path and os.path.exists(full_path):
-                # external YAML config, need to be volumed into the container
-                # uses takes value from uses_internal
-                non_defaults['uses'] = '/' + os.path.basename(full_path)
-                _volumes[full_path] = {'bind': non_defaults['uses'], 'mode': 'ro'}
-            elif not is_valid_local_config_source(self.args.uses_internal):
-                raise FileNotFoundError(
-                    f'"uses_internal" {self.args.uses_internal} is not like a path, please check it'
-                )
         if self.args.volumes:
             for p in self.args.volumes:
                 paths = p.split(':')

@@ -39,7 +39,6 @@ def test_convert_buffer_to_blob():
     array = rand_state.random([10, 10])
     doc = Document(content=array.tobytes())
     assert doc.content_type == 'buffer'
-    assert doc.mime_type == 'application/octet-stream'
     intialiazed_buffer = doc.buffer
 
     doc.convert_buffer_to_blob()

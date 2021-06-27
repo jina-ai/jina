@@ -89,40 +89,8 @@ def mixin_http_gateway_parser(parser=None):
         ''',
     )
 
-    gp.add_argument(
-        '--including-default-value-fields',
-        action='store_true',
-        default=False,
-        help='''
-        If set, singular primitive fields,
-        repeated fields, and map fields will always be serialized.  If
-        False, only serialize non-empty fields.  Singular message fields
-        and oneof fields are not affected by this option.
-        ''',
-    )
 
-    gp.add_argument(
-        '--sort-keys',
-        action='store_true',
-        default=False,
-        help='If True, then the output will be sorted by field names.',
-    )
-
-    gp.add_argument(
-        '--use-integers-for-enums',
-        action='store_true',
-        default=False,
-        help='If true, print integers instead of enum names.',
-    )
-
-    gp.add_argument(
-        '--float-precision',
-        type=int,
-        help='If set, use this to specify float field valid digits.',
-    )
-
-
-def mixin_prefetch_gateway_parser(parser=None):
+def mixin_prefetch_parser(parser=None):
     """Add the options for prefetching
     :param parser: the parser
     """

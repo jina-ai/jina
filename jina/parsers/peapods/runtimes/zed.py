@@ -1,10 +1,10 @@
 """Argparser module for ZED runtime"""
 import argparse
 
-from ...helper import add_arg_group, _SHOW_ALL_ARGS
+from ...helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 from .... import __default_host__
-from ....enums import OnErrorStrategy, SocketType
 from .... import helper
+from ....enums import OnErrorStrategy, SocketType
 
 
 def mixin_zed_runtime_parser(parser):
@@ -30,6 +30,24 @@ def mixin_zed_runtime_parser(parser):
         - a Python dict that represents the config
         - a text file stream has `.read()` interface
         ''',
+    )
+    gp.add_argument(
+        '--override-with',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+    Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
+    ''',
+    )
+    gp.add_argument(
+        '--override-metas',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+    Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
+    ''',
     )
     gp.add_argument(
         '--py-modules',

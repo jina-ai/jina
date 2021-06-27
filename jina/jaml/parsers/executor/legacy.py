@@ -84,8 +84,6 @@ class LegacyParser(VersionedYAMLParser):
                 f'class {cls.__name__}'
             )
 
-        default_logger.success(f'successfully built {cls.__name__} from a yaml config')
-
         if not _meta_config:
             default_logger.warning(
                 '"metas" config is not found in this yaml file, '

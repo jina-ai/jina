@@ -6,7 +6,6 @@ from typing import Optional
 
 from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
-from ..importer import ImportExtensions
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
@@ -241,11 +240,10 @@ class ProgressBar(TimeContext):
             self.num_docs += progress
 
         sys.stdout.write(
-            '{:>10} |{:<{}}| ⏳ {:6d} ⏱️ {:3.1f}s 🐎 {:3.0f} QPS'.format(
+            '⏳ {:>10} |{:<{}}| ⏱️ {:3.1f}s 🐎 {:3.1f} RPS'.format(
                 colored(self.task_name, 'cyan'),
                 colored('█' * num_bars, 'green'),
                 self.bar_len + 9,
-                self.num_reqs,
                 elapsed,
                 self.num_reqs / elapsed,
             )
@@ -267,5 +265,5 @@ class ProgressBar(TimeContext):
     def _exit_msg(self):
         speed = self.num_reqs / self.duration
         sys.stdout.write(
-            f'\t{colored(f"✅ done in ⏱ {self.readable_duration} 🐎 {speed:3.0f} QPS", "green")}\n'
+            f'{f"✅ {self.num_reqs} requests done in ⏱ {self.readable_duration} 🐎 {speed:3.1f} RPS"}\n'
         )

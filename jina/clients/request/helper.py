@@ -3,8 +3,8 @@ from typing import Tuple
 
 from ...enums import DataInputType
 from ...excepts import BadDocType, BadRequestType
-from ...types.request import Request
 from ...types.document import Document
+from ...types.request import Request
 
 
 def _new_data_request_from_batch(

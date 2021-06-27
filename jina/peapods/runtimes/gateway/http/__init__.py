@@ -1,14 +1,14 @@
 import os
 
 from .app import get_fastapi_app
-from ..base import AsyncNewLoopRuntime
+from ...zmq.asyncio import AsyncNewLoopRuntime
 from .....importer import ImportExtensions
 
-__all__ = ['WebSocketRuntime']
+__all__ = ['HTTPRuntime']
 
 
-class WebSocketRuntime(AsyncNewLoopRuntime):
-    """Runtime for Websocket interface."""
+class HTTPRuntime(AsyncNewLoopRuntime):
+    """Runtime for HTTP interface."""
 
     async def async_setup(self):
         """
@@ -53,14 +53,10 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
                 host=self.args.host,
                 port=self.args.port_expose,
-                ws_max_size=1024 * 1024 * 1024,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
             )
         )
         await self._server.setup()
-        self.logger.success(
-            f'{self.__class__.__name__} is listening at: {self.args.host}:{self.args.port_expose}'
-        )
 
     async def async_run_forever(self):
         """Running method of ther server."""

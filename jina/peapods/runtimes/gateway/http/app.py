@@ -4,8 +4,7 @@ from typing import Dict
 
 from google.protobuf.json_format import MessageToDict
 
-
-from ..grpc.async_call import AsyncPrefetchCall
+from ..prefetch import PrefetchCaller
 from ....zmq import AsyncZmqlet
 from ..... import __version__
 from .....clients.request import request_generator
@@ -31,6 +30,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             JinaRequestModel,
             JinaEndpointRequestModel,
             JinaResponseModel,
+            PROTO_TO_PYDANTIC_MODELS,
         )
 
     app = FastAPI(
@@ -54,7 +54,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         )
 
     zmqlet = AsyncZmqlet(args, logger)
-    servicer = AsyncPrefetchCall(args, zmqlet)
+    servicer = PrefetchCaller(args, zmqlet)
 
     @app.on_event('shutdown')
     def _shutdown():
@@ -94,6 +94,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         @app.post(
             path='/post',
             summary='Post a data request to some endpoint',
+            response_model=PROTO_TO_PYDANTIC_MODELS.RequestProto,
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
@@ -132,6 +133,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'response_model',
             JinaResponseModel,  # use standard response model by default
         )
+        kwargs['methods'] = kwargs.get('methods', ['POST'])
 
         @app.api_route(
             path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
@@ -177,13 +179,9 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param req_iter: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in servicer.Call(request_iterator=req_iter, context=None):
+        async for k in servicer.Call(request_iterator=req_iter):
             return MessageToDict(
-                k,
-                including_default_value_fields=args.including_default_value_fields,
-                preserving_proto_field_name=True,
-                use_integers_for_enums=args.use_integers_for_enums,
-                float_precision=args.float_precision,
-            )
+                k, including_default_value_fields=True, use_integers_for_enums=True
+            )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`
 
     return app

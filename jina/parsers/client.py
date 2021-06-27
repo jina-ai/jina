@@ -1,5 +1,4 @@
 """Module for argparse for Client"""
-from .helper import add_arg_group
 
 
 def mixin_comm_protocol_parser(parser):
@@ -24,7 +23,6 @@ def mixin_client_features_parser(parser):
 
     :param parser: the parser configure
     """
-    gp = add_arg_group(parser, title='Client Features')
 
     parser.add_argument(
         '--asyncio',

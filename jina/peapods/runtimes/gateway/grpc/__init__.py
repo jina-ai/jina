@@ -2,12 +2,24 @@ import os
 
 import grpc
 
-from .async_call import AsyncPrefetchCall
-from ..base import AsyncNewLoopRuntime
+from ..prefetch import PrefetchMixin
+from ...zmq.asyncio import AsyncNewLoopRuntime
 from ....zmq import AsyncZmqlet
+from .....logging.logger import JinaLogger
 from .....proto import jina_pb2_grpc
 
 __all__ = ['GRPCRuntime']
+
+
+class GRPCPrefetchCall(PrefetchMixin, jina_pb2_grpc.JinaRPCServicer):
+    """JinaRPCServicer """
+
+    def __init__(self, args, zmqlet):
+        super().__init__()
+        self.args = args
+        self.zmqlet = zmqlet
+        self.name = args.name or self.__class__.__name__
+        self.logger = JinaLogger(self.name, **vars(args))
 
 
 class GRPCRuntime(AsyncNewLoopRuntime):
@@ -22,6 +34,7 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         if not self.args.proxy and os.name != 'nt':
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
+
         self.server = grpc.aio.server(
             options=[
                 ('grpc.max_send_message_length', -1),
@@ -30,12 +43,11 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         )
         self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
         jina_pb2_grpc.add_JinaRPCServicer_to_server(
-            AsyncPrefetchCall(self.args, self.zmqlet), self.server
+            GRPCPrefetchCall(self.args, self.zmqlet), self.server
         )
         bind_addr = f'{self.args.host}:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
-        self.logger.success(f'{self.__class__.__name__} is listening at: {bind_addr}')
 
     async def async_cancel(self):
         """The async method to stop server."""

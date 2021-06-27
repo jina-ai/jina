@@ -75,7 +75,7 @@ def hello_world(args):
         except:
             pass  # intentional pass, browser support isn't cross-platform
         finally:
-            default_logger.success(
+            default_logger.info(
                 f'You should see a demo page opened in your browser, '
                 f'if not, you may open {url_html_path} manually'
             )

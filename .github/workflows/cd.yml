@@ -239,11 +239,14 @@ jobs:
       - name: Test
         id: test
         run: |
-          if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
+          if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
+            # Build daemon for all daemon/distributed tests
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
-            docker run --name jinad -v /var/run/docker.sock:/var/run/docker.sock --network=host -d jinaai/jina:test-daemon
-            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
-            docker rm -f jinad
+            if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
+              docker run --add-host host.docker.internal:host-gateway --name jinad -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
+            fi
+            pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
+            docker rm -f jinad || true
           else
             SUB='daemon'
             if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then

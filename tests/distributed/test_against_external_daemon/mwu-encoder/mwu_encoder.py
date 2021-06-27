@@ -11,18 +11,9 @@ class MWUEncoder(Executor):
         self._greetings = greetings
 
     @requests
-    def encode(self, **kwargs) -> Any:
-        pass
-
-
-class MWUUpdater(Executor):
-    def __init__(self, greetings: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._greetings = greetings
-
-    @requests
-    def encode(self, **kwargs) -> Any:
-        pass
+    def encode(self, docs, **kwargs) -> Any:
+        for doc in docs:
+            doc.tags['greetings'] = self._greetings
 
     def close(self) -> None:
         import pickle

@@ -128,7 +128,7 @@ def test_on_error_callback(mocker, protocol):
 
     def validate2(x, *args):
         x = x.routes
-        assert len(x) == 4  # gateway, r1, r3, gateway
+        assert len(x) == 3  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
         assert badones[0].pod == 'r3/ZEDRuntime'
 

@@ -59,10 +59,11 @@ def local_hub_executor(mocker, monkeypatch, tmpdir, test_envs):
             return {
                 'keywords': [],
                 'id': 'hello',
-                'currentVersion': 0,
+                'alias': 'alias_name',
+                'tag': 'v0',
                 'versions': [],
                 'visibility': 'public',
-                'pullPath': 'jinahub/hello:v0',
+                'image': 'jinahub/hello:v0',
                 'package': {
                     'download': 'http://hubbleapi.jina.ai/files/helloworld_v0.zip',
                     'md5': 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f',
@@ -79,7 +80,7 @@ def local_hub_executor(mocker, monkeypatch, tmpdir, test_envs):
 
     mock = mocker.Mock()
 
-    def _mock_get(url):
+    def _mock_get(url, headers=None):
         mock(url=url)
         return GetMockResponse(response_code=requests.codes.ok)
 

@@ -394,7 +394,7 @@ def random_port() -> Optional[int]:
                         pass
 
     _port = None
-    if 'JINA_RANDOM_PORTS' in os.environ:
+    if 'JINA_RANDOM_PORT_MIN' in os.environ or 'JINA_RANDOM_PORT_MAX' in os.environ:
         min_port = int(os.environ.get('JINA_RANDOM_PORT_MIN', '49153'))
         max_port = int(os.environ.get('JINA_RANDOM_PORT_MAX', '65535'))
         all_ports = list(range(min_port, max_port + 1))
@@ -404,7 +404,7 @@ def random_port() -> Optional[int]:
                 break
         else:
             raise OSError(
-                f'Couldn\'t find an available port in [{min_port}, {max_port}].'
+                f'can not find an available port between [{min_port}, {max_port}].'
             )
     else:
         _port = _get_port()
@@ -926,32 +926,36 @@ def get_internal_ip():
     return ip
 
 
-def get_public_ip():
+def get_public_ip(timeout: float = 0.3):
     """
     Return the public IP address of the gateway for connecting from other machine in the public network.
 
+    :param timeout: the seconds to wait until return None.
+
     :return: Public IP address.
+
+    .. warn::
+        Set :param:`timeout` to a large number will block the Flow.
+
     """
     import urllib.request
-
-    timeout = 0.25
 
     results = []
 
     def _get_ip(url):
         try:
-            metas, envs = get_full_version()
-            req = urllib.request.Request(
-                url, headers={'User-Agent': 'Mozilla/5.0', **metas, **envs}
-            )
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
             with urllib.request.urlopen(req, timeout=timeout) as fp:
-                # TODO: (deepankar) fix extra quote on the server side
-                results.append(fp.read().decode().replace('"', ''))
+                _ip = fp.read().decode()
+                results.append(_ip)
+
         except:
             pass  # intentionally ignored, public ip is not showed
 
     ip_server_list = [
-        'https://getip.jina.ai/ip',
+        'https://api.ipify.org',
+        'https://ident.me',
+        'https://checkip.amazonaws.com/',
     ]
 
     threads = []

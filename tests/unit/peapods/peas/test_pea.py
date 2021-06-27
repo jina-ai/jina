@@ -56,7 +56,7 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
 
     teardown_spy.assert_called()
     run_spy.assert_called()
-    cancel_spy.assert_not_called()
+    cancel_spy.assert_called()
 
 
 def test_base_pea_with_runtime_bad_teardown(mocker):

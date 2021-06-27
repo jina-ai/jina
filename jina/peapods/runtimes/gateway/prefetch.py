@@ -1,44 +1,32 @@
+import argparse
 import asyncio
+from abc import ABC
+from typing import AsyncGenerator
 
-from .....helper import random_identity, typename
-from .....logging.logger import JinaLogger
-from .....logging.profile import TimeContext
-from .....proto import jina_pb2_grpc
-from .....types.message import Message
-from .....types.request import Request
+from ....helper import typename
+from ....logging.logger import JinaLogger
+from ....types.message import Message
 
-__all__ = ['AsyncPrefetchCall']
+__all__ = ['PrefetchCaller', 'PrefetchMixin']
+
+if False:
+    from ...zmq import AsyncZmqlet
 
 
-class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
+class PrefetchMixin(ABC):
     """JinaRPCServicer """
 
-    def __init__(self, args, zmqlet):
-        super().__init__()
-        self.args = args
-        self.zmqlet = zmqlet
-        self.name = args.name or self.__class__.__name__
-        self.logger = JinaLogger(self.name, **vars(args))
-        self._id = random_identity()
-
-    async def Call(self, request_iterator, context):
+    async def Call(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
         """
-        Async gRPC call.
+        Async call to receive Requests and build them into Messages.
 
-        :param request_iterator: iterator of request.
-        :param context: gRPC context:
-        :yield: task
+        :param request_iterator: iterator of requests.
+        :param args: additional arguments
+        :yield: message
         """
-
-        def handle(msg: 'Message') -> 'Request':
-            """
-            Add route into the `message` and return response of the message.
-
-            :param msg: gRPC message.
-            :return: message with route added.
-            """
-            msg.add_route(self.name, self._id)
-            return msg.response
+        self.args: argparse.Namespace
+        self.zmqlet: 'AsyncZmqlet'
+        self.logger: JinaLogger
 
         async def prefetch_req(num_req, fetch_to):
             """
@@ -64,26 +52,23 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                         )
                     )
                     fetch_to.append(
-                        asyncio.create_task(self.zmqlet.recv_message(callback=handle))
+                        asyncio.create_task(
+                            self.zmqlet.recv_message(callback=lambda x: x.response)
+                        )
                     )
                 except (StopIteration, StopAsyncIteration):
                     return True
             return False
 
-        with TimeContext(f'prefetching {self.args.prefetch} requests', self.logger):
-            self.logger.warning(
-                'if this takes too long, you may want to take smaller "--prefetch" or '
-                'ask client to reduce `request_size`'
+        prefetch_task = []
+        is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
+        if is_req_empty and not prefetch_task:
+            self.logger.error(
+                'receive an empty stream from the client! '
+                'please check your client\'s inputs, '
+                'you can use "Client.check_input(inputs)"'
             )
-            prefetch_task = []
-            is_req_empty = await prefetch_req(self.args.prefetch, prefetch_task)
-            if is_req_empty and not prefetch_task:
-                self.logger.error(
-                    'receive an empty stream from the client! '
-                    'please check your client\'s inputs, '
-                    'you can use "Client.check_input(inputs)"'
-                )
-                return
+            return
 
         # the total num requests < self.args.prefetch
         if is_req_empty:
@@ -94,7 +79,7 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
             while prefetch_task:
-                self.logger.info(
+                self.logger.debug(
                     f'send: {self.zmqlet.msg_sent} '
                     f'recv: {self.zmqlet.msg_recv} '
                     f'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}'
@@ -110,3 +95,19 @@ class AsyncPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
                 # this list dries, clear it and feed it with on_recv_task
                 prefetch_task.clear()
                 prefetch_task = [j for j in onrecv_task]
+
+
+class PrefetchCaller(PrefetchMixin):
+    """An async zmq request sender to be used in the Gateway"""
+
+    def __init__(self, args: argparse.Namespace, zmqlet: 'AsyncZmqlet'):
+        """
+
+        :param args: args from CLI
+        :param zmqlet: zeromq object
+        """
+        super().__init__()
+        self.args = args
+        self.zmqlet = zmqlet
+        self.name = args.name or self.__class__.__name__
+        self.logger = JinaLogger(self.name, **vars(args))

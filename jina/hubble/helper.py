@@ -20,10 +20,10 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     parser = urlparse(uri_path)
     scheme = parser.scheme
     items = list(parser.netloc.split(':'))
-    uuid = items[0]
+    name = items[0]
     secret = items[1] if len(items) > 1 else None
     tag = parser.path.strip('/') if parser.path else None
-    return scheme, uuid, tag, secret
+    return scheme, name, tag, secret
 
 
 def md5file(file_path: 'Path') -> str:
@@ -66,8 +66,15 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
     with ImportExtensions(required=True):
         import pathspec
 
-    with open(os.path.join(__resources_path__, 'Python.gitignore')) as fp:
+    root_path = package_folder.resolve()
+
+    gitignore = root_path / '.gitignore'
+    if not gitignore.exists():
+        gitignore = Path(__resources_path__) / 'Python.gitignore'
+
+    with gitignore.open() as fp:
         ignored_spec = pathspec.PathSpec.from_lines('gitwildmatch', fp)
+        ignored_spec += pathspec.PathSpec.from_lines('gitwildmatch', ['.git'])
 
     zip_stream = io.BytesIO()
     try:
@@ -76,17 +83,14 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
         raise e
 
     def _zip(base_path, path, archive):
-        paths = os.listdir(path)
-        for p in paths:
+        for p in path.iterdir():
             if ignored_spec.match_file(p):
                 continue
-            p = os.path.join(path, p)
-            if os.path.isdir(p):
+            if p.is_dir():
                 _zip(base_path, p, archive)
             else:
-                archive.write(p, os.path.relpath(p, base_path))
+                archive.write(p, p.relative_to(base_path))
 
-    root_path = str(package_folder.resolve())
     _zip(root_path, root_path, zfile)
 
     zfile.close()

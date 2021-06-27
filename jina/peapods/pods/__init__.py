@@ -1,17 +1,14 @@
 import copy
 import sys
-import re
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
 from itertools import cycle
-from typing import Dict, Union, Set
-from typing import List, Optional
+from typing import Dict, Union, Set, List, Optional
 
 from ..networking import get_connect_host
 from ..peas import BasePea
-from ...jaml.helper import complete_path
-from ... import __default_host__, __default_executor__
+from ... import __default_executor__
 from ... import helper
 from ...enums import (
     SchedulerType,
@@ -21,6 +18,7 @@ from ...enums import (
     PollingType,
 )
 from ...helper import random_identity
+from ...jaml.helper import complete_path
 
 
 class ExitFIFO(ExitStack):
@@ -112,7 +110,7 @@ class BasePod(ExitFIFO):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-        raise NotImplemented()
+        raise NotImplementedError
 
     def close(self):
         """Stop all :class:`BasePea` in this BasePod.
@@ -134,7 +132,7 @@ class BasePod(ExitFIFO):
                 return False
 
         _upload_files = set()
-        for param in ['uses', 'uses_internal', 'uses_before', 'uses_after']:
+        for param in ['uses', 'uses_before', 'uses_after']:
             param_value = getattr(args, param, None)
             if param_value and valid_path(param_value):
                 _upload_files.add(param_value)
@@ -540,13 +538,6 @@ class Pod(BasePod):
         """
         return all(p.is_ready.is_set() for p in self.peas) and self._activated
 
-    def _set_after_to_pass(self, args):
-        # TODO: check if needed
-        # remark 1: i think it's related to route driver.
-        if hasattr(args, 'polling') and args.polling.is_push:
-            # ONLY reset when it is push
-            args.uses_after = __default_executor__
-
     @staticmethod
     def _set_peas_args(
         args: Namespace,
@@ -626,13 +617,13 @@ class Pod(BasePod):
             # use the executor existed in Jina Hub.
             from ...hubble.helper import parse_hub_uri
 
-            scheme, uuid, tag, secret = parse_hub_uri(self.args.uses)
+            scheme, name, tag, secret = parse_hub_uri(self.args.uses)
 
             if scheme.startswith('jinahub'):
                 from ...hubble.hubio import HubIO
                 from ...parsers.hubble import set_hub_pull_parser
 
-                if not uuid:
+                if not name:
                     raise ValueError(
                         f'The given executor URI {self.args.uses} is not valid, please double check it!'
                     )
@@ -640,11 +631,8 @@ class Pod(BasePod):
                 pull_args = set_hub_pull_parser().parse_args([self.args.uses])
                 hubio = HubIO(pull_args)
 
-                # # TODO: locate the local executor
-                # if not tag:
-                #     executor = hubio.fetch(id, tag)
-
-                executor = hubio.fetch(uuid, tag=tag, secret=secret)
+                executor = hubio.fetch(name, tag=tag, secret=secret)
+                uuid = executor.uuid
 
                 if scheme == 'jinahub+docker':
                     # use docker image
@@ -652,10 +640,10 @@ class Pod(BasePod):
                 elif scheme == 'jinahub':
                     from ...hubble.hubapi import resolve_local
 
-                    pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                    pkg_path = resolve_local(uuid, tag or executor.tag)
                     if not pkg_path:
                         hubio.pull()
-                        pkg_path = resolve_local(uuid, tag or executor.current_tag)
+                        pkg_path = resolve_local(uuid, tag or executor.tag)
                     args.uses = f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'Unknown schema: {scheme}')
