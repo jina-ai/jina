@@ -5,7 +5,7 @@ from typing import Optional
 
 from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ....enums import RemoteWorkspaceState
-from ..asyncio.base import AsyncZMQRuntime
+from ..zmq.asyncio import AsyncZMQRuntime
 from ...zmq import send_ctrl_message
 from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ....excepts import DaemonConnectivityError
