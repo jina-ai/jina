@@ -32,7 +32,8 @@ class DaemonWorker(Thread):
         )
         self.start()
 
-    @lru
+    @property
+    @lru_cache
     def arguments(self) -> WorkspaceArguments:
         """sets arguments in workspace store
 
