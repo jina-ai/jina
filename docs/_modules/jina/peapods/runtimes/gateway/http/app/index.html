@@ -515,6 +515,7 @@
             <span class="s1">'response_model'</span><span class="p">,</span>
             <span class="n">JinaResponseModel</span><span class="p">,</span>  <span class="c1"># use standard response model by default</span>
         <span class="p">)</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">'methods'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'methods'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'POST'</span><span class="p">])</span>
 
         <span class="nd">@app</span><span class="o">.</span><span class="n">api_route</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="n">http_path</span> <span class="ow">or</span> <span class="n">exec_endpoint</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">http_path</span> <span class="ow">or</span> <span class="n">exec_endpoint</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
