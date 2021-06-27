@@ -34,7 +34,7 @@ def test_flow_expose_endpoints():
         r = requests.get(f'http://localhost:{f1.port_expose}/foo')
         assert r.status_code == 404
 
-    f1.expose_endpoint('/foo', methods=['POST'])
+    f1.expose_endpoint('/foo')
     with f1:
         r = requests.post(
             f'http://localhost:{f1.port_expose}/foo',
