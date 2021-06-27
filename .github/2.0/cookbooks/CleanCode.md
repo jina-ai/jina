@@ -14,7 +14,7 @@ tips to help you write beautiful and efficient code.
 
 1. Use [Python generator](https://docs.python.org/3/glossary.html#term-generator) as the input to the Flow. Generator can lazily build `Document` one at a time, instead of building all at once. This can greatly speedup the overall performance and reduces the memory footprint.
 
-<table>
+   <table>
    <tr>
    <td>
    <b><center>✅ Do</center></b>
@@ -59,7 +59,7 @@ tips to help you write beautiful and efficient code.
 1. Set `request_size`. `request_size` decides how many Documents in each request. When combining with Generator, `request_size` determines how long will it take before sending the first request. You can change `request_size` to overlap the time of request generation and Flow computation.
 
 
-<table>
+   <table>
    <tr>
    <td>
    <b><center>✅ Do</center></b>
