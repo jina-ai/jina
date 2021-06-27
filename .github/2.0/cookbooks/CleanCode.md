@@ -263,7 +263,6 @@ tips to help you write beautiful and efficient code.
    </td>
    <td>
    
-   😔 Don't:
    ```python
    from jina import Executor, requests, DocumentArray, Document, Flow
    
