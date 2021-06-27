@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 from abc import ABC
 from typing import AsyncGenerator
@@ -7,6 +8,9 @@ from ....logging.logger import JinaLogger
 from ....types.message import Message
 
 __all__ = ['PrefetchCaller', 'PrefetchMixin']
+
+if False:
+    from ...zmq import AsyncZmqlet
 
 
 class PrefetchMixin(ABC):
@@ -20,6 +24,9 @@ class PrefetchMixin(ABC):
         :param args: additional arguments
         :yield: message
         """
+        self.args: argparse.Namespace
+        self.zmqlet: AsyncZmqlet
+        self.logger: JinaLogger
 
         async def prefetch_req(num_req, fetch_to):
             """
@@ -93,7 +100,7 @@ class PrefetchMixin(ABC):
 class PrefetchCaller(PrefetchMixin):
     """An async zmq request sender to be used in the Gateway"""
 
-    def __init__(self, args, zmqlet):
+    def __init__(self, args: argparse.Namespace, zmqlet: AsyncZmqlet):
         """
 
         :param args: args from CLI
