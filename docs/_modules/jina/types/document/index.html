@@ -406,7 +406,7 @@
 <span class="kn">from</span> <span class="nn">google.protobuf.field_mask_pb2</span> <span class="kn">import</span> <span class="n">FieldMask</span>
 <span class="kn">from</span> <span class="nn">..struct</span> <span class="kn">import</span> <span class="n">StructView</span>
 <span class="kn">from</span> <span class="nn">..score.map</span> <span class="kn">import</span> <span class="n">NamedScoreMapping</span>
-<span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">png_to_buffer</span><span class="p">,</span> <span class="n">to_datauri</span><span class="p">,</span> <span class="n">guess_mime</span><span class="p">,</span> <span class="n">to_image_blob</span>
+<span class="kn">from</span> <span class="nn">.converters</span> <span class="kn">import</span> <span class="n">png_to_buffer</span><span class="p">,</span> <span class="n">to_datauri</span><span class="p">,</span> <span class="n">to_image_blob</span>
 <span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
 <span class="kn">from</span> <span class="nn">..ndarray.generic</span> <span class="kn">import</span> <span class="n">NdArray</span><span class="p">,</span> <span class="n">BaseSparseNdArray</span>
 <span class="kn">from</span> <span class="nn">..score</span> <span class="kn">import</span> <span class="n">NamedScore</span>
@@ -1173,17 +1173,6 @@
 <span class="sd">        :param value: the bytes value to set the buffer</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">mime_type</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
-                <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">pkg_name</span><span class="o">=</span><span class="s1">'python-magic'</span><span class="p">,</span>
-                <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'can not sniff the MIME type '</span>
-                <span class="sa">f</span><span class="s1">'MIME sniffing requires brew install '</span>
-                <span class="sa">f</span><span class="s1">'libmagic (Mac)/ apt-get install libmagic1 (Linux)'</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="kn">import</span> <span class="nn">magic</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="n">magic</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">mime</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1223,7 +1212,9 @@
 <span class="sd">        :param value: acceptable URI/URL, raise ``ValueError`` when it is not a valid URI</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="n">guess_mime</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">mime_type</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">mime_type</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="n">mime_type</span>  <span class="c1"># Remote http/https contents mime_type will not be recognized.</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mime_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1765,7 +1756,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 26, 2021.
+            Last updated on Jun 27, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

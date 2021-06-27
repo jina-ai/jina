@@ -380,10 +380,7 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for jina.types.document.converters</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">mimetypes</span>
-<span class="kn">import</span> <span class="nn">struct</span>
-<span class="kn">import</span> <span class="nn">urllib.parse</span>
-<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span></span><span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">zlib</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -514,23 +511,6 @@
             <span class="n">encoded_data</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="n">parts</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">','</span><span class="p">,</span> <span class="n">encoded_data</span><span class="p">])</span>
     <span class="k">return</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="guess_mime"><a class="viewcode-back" href="../../../../../api/jina.types.document.converters/#jina.types.document.converters.guess_mime">[docs]</a><span class="k">def</span> <span class="nf">guess_mime</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Guess the type of a file based on its URL.</span>
-
-<span class="sd">    :param uri: Data URI.</span>
-<span class="sd">    :return: MIME type.</span>
-<span class="sd">    """</span>
-    <span class="c1"># guess when uri points to a local file</span>
-    <span class="n">m_type</span> <span class="o">=</span> <span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">uri</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># guess when uri points to a remote file</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">m_type</span> <span class="ow">and</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'http'</span><span class="p">,</span> <span class="s1">'https'</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">}:</span>
-        <span class="n">page</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">})</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">page</span><span class="p">)</span>
-        <span class="n">m_type</span> <span class="o">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">info</span><span class="p">()</span><span class="o">.</span><span class="n">get_content_type</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">m_type</span></div>
 </pre></div>
       </article>
       <footer>
@@ -543,7 +523,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 26, 2021.
+            Last updated on Jun 27, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
