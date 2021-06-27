@@ -24,7 +24,7 @@ def Client(
 ) -> Union[
     'AsyncWebSocketClient',
     'WebSocketClient',
-    'AsyncGRPCClient',
+    'AsyncClient',
     'GRPCClient',
     'HTTPClient',
     'AsyncHTTPClient',
