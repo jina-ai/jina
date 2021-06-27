@@ -138,7 +138,7 @@ f = Flow()
 
 ### Use a Flow
 
-To use `f`, always open it as a content manager, just like you open a file. This is considered the best practice in
+To use `f`, always open it as a context manager, just like you open a file. This is considered the best practice in
 Jina:
 
 ```python
