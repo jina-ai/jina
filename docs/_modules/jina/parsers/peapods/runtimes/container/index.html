@@ -389,19 +389,7 @@
 <span class="sd">    :param parser: the parser instance to which we add arguments</span>
 <span class="sd">    """</span>
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'ContainerRuntime'</span><span class="p">)</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
 
-    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--uses-internal'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">__default_executor__</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">The config runs inside the Docker container. </span>
-
-<span class="s1">Syntax and function are the same as `--uses`. This is designed when `--uses="docker://..."` this config is passed to </span>
-<span class="s1">the Docker container.</span>
-<span class="s1">'''</span><span class="p">,</span>
-    <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--entrypoint'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
