@@ -22,12 +22,13 @@ from typing import (
 import numpy as np
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
-from ..struct import StructView
-from ..score.map import NamedScoreMapping
+
 from .converters import png_to_buffer, to_datauri, to_image_blob
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
+from ..score.map import NamedScoreMapping
+from ..struct import StructView
 from ...excepts import BadDocType
 from ...helper import (
     typename,
@@ -71,7 +72,6 @@ if False:
         torch.sparse_coo_tensor,
         tf.SparseTensor,
     )
-
 
 __all__ = ['Document', 'DocumentContentType', 'DocumentSourceType']
 DIGEST_SIZE = 8
@@ -1194,10 +1194,10 @@ class Document(ProtoTypeMixin):
 
         mermaid_str = (
             """
-                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                        classDiagram
-                    
-                                """
+                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                            classDiagram
+                        
+                                    """
             + self.__mermaid_str__()
         )
 

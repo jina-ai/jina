@@ -4,8 +4,8 @@ import numpy as np
 
 from . import Document, DocumentSourceType
 from ..arrays import ChunkArray
-from ..struct import StructView
 from ..ndarray.sparse.scipy import SparseNdArray
+from ..struct import StructView
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
 
@@ -69,8 +69,6 @@ class GraphDocument(Document):
                 pkg_name='scipy',
                 help_text=f'GraphDocument requires scipy to be installed for sparse matrix support.',
             ):
-                import scipy
-
                 JINA_GLOBAL.scipy_installed = True
 
     def add_node(self, node: 'Document'):

@@ -3,7 +3,6 @@ import re
 from copy import copy
 from logging import Formatter
 
-
 from ..helper import colored
 
 if False:

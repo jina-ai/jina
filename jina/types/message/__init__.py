@@ -4,8 +4,8 @@ import traceback
 from typing import Union, List, Optional
 
 from ..request import Request
-from ..request.data import DataRequest
 from ..request.control import ControlRequest
+from ..request.data import DataRequest
 from ... import __version__, __proto_version__
 from ...enums import CompressAlgo
 from ...excepts import MismatchedVersion
@@ -16,7 +16,6 @@ from ...types.routing.table import RoutingTable
 
 if False:
     from ...executors import BaseExecutor
-
 
 __all__ = ['Message']
 

@@ -1,7 +1,7 @@
 from typing import List
 
-import torch
 import numpy as np
+import torch
 from torch.sparse import FloatTensor
 
 from . import BaseSparseNdArray
