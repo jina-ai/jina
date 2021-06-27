@@ -81,7 +81,7 @@ tips to help you write beautiful and efficient code.
 
    f = Flow().add(uses=...)  # heavy computation
    with f:
-      f.post('/', my_input, request_size=10000)
+      f.post('/', my_input, request_size=10)
    ```
 
 
@@ -98,7 +98,7 @@ tips to help you write beautiful and efficient code.
 
    f = Flow().add(uses=...)  # heavy computation
    with f:
-      f.post('/', my_input, request_size=10)
+      f.post('/', my_input, request_size=10000)
    ```
    
    </td>
