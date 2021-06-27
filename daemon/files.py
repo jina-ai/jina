@@ -171,7 +171,7 @@ class DaemonFile:
         self._ports = ports
 
     @property
-    @lru
+    @lru_cache
     def requirements(self) -> str:
         """pip packages mentioned in requirements.txt
 
