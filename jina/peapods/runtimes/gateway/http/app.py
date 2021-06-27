@@ -133,6 +133,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             'response_model',
             JinaResponseModel,  # use standard response model by default
         )
+        kwargs['methods'] = kwargs.get('methods', ['POST'])
 
         @app.api_route(
             path=http_path or exec_endpoint, name=http_path or exec_endpoint, **kwargs
