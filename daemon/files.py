@@ -2,10 +2,10 @@ import os
 import glob
 from pathlib import Path
 from itertools import chain
+from functools import lru_cache
 from typing import Dict, List
 
 from fastapi import UploadFile
-from jina.helper import cached_property
 from jina.logging.logger import JinaLogger
 
 from .models import DaemonID
@@ -170,7 +170,8 @@ class DaemonFile:
         """
         self._ports = ports
 
-    @cached_property
+    @property
+    @lru
     def requirements(self) -> str:
         """pip packages mentioned in requirements.txt
 
@@ -186,14 +187,16 @@ class DaemonFile:
         with open(_req) as f:
             return ' '.join(f.read().splitlines())
 
-    @cached_property
+    @property
+    @lru_cache
     def dockercontext(self) -> str:
         """directory for docker context during docker build
 
         :return: docker context directory"""
         return __rootdir__ if self.build == DaemonBuild.DEVEL else self._workdir
 
-    @cached_property
+    @property
+    @lru_cache
     def dockerfile(self) -> str:
         """location of dockerfile
 
@@ -201,7 +204,8 @@ class DaemonFile:
         """
         return f'{__dockerfiles__}/{self.build.value}.Dockerfile'
 
-    @cached_property
+    @property
+    @lru_cache
     def dockerargs(self) -> Dict:
         """dict of args to be passed during docker build
 

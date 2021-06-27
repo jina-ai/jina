@@ -1,9 +1,10 @@
 from typing import List, Optional
 from queue import Empty
 from threading import Thread
+from functools import lru_cache
 
 from fastapi import UploadFile
-from jina.helper import cached_property, colored
+from jina.helper import colored
 from jina.logging.logger import JinaLogger
 
 from . import __task_queue__, daemon_logger, jinad_args
@@ -31,7 +32,7 @@ class DaemonWorker(Thread):
         )
         self.start()
 
-    @cached_property
+    @lru
     def arguments(self) -> WorkspaceArguments:
         """sets arguments in workspace store
 
@@ -58,7 +59,8 @@ class DaemonWorker(Thread):
             )
         return _args
 
-    @cached_property
+    @property
+    @lru_cache
     def metadata(self) -> WorkspaceMetadata:
         """sets metadata in workspace store
 
@@ -78,7 +80,8 @@ class DaemonWorker(Thread):
             )
         return _metadata
 
-    @cached_property
+    @property
+    @lru_cache
     def workdir(self) -> str:
         """sets workdir for current worker thread
 
@@ -86,7 +89,8 @@ class DaemonWorker(Thread):
         """
         return get_workspace_path(self.id)
 
-    @cached_property
+    @property
+    @lru_cache
     def daemon_file(self) -> DaemonFile:
         """set daemonfile for current worker thread
 
@@ -94,7 +98,8 @@ class DaemonWorker(Thread):
         """
         return DaemonFile(workdir=self.workdir, logger=self._logger)
 
-    @cached_property
+    @property
+    @lru_cache
     def network_id(self) -> str:
         """create a docker network
 
@@ -111,7 +116,8 @@ class DaemonWorker(Thread):
             workspace_id=self.id, daemon_file=self.daemon_file, logger=self._logger
         )
 
-    @cached_property
+    @property
+    @lru_cache
     def container_id(self) -> Optional[str]:
         """creates a container if run command is passed in .jinad file
 

@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict, List, Optional
-from functools import cached_property
+from functools import lru_cache
 
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
@@ -46,7 +46,7 @@ class FlowDepends:
             )
 
     @property
-    @cached_property
+    @lru_cache
     def port_expose(self) -> str:
         """
         Sets `port_expose` for the Flow started in `mini-jinad`.
@@ -102,7 +102,8 @@ class PeaDepends:
             else self.params.host_in
         )
 
-    @cached_property
+    @property
+    @lru_cache
     def ports(self) -> Dict:
         """
         Determines ports to be mapped to dockerhost
