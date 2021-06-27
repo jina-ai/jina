@@ -25,7 +25,7 @@ class PrefetchMixin(ABC):
         :yield: message
         """
         self.args: argparse.Namespace
-        self.zmqlet: AsyncZmqlet
+        self.zmqlet: 'AsyncZmqlet'
         self.logger: JinaLogger
 
         async def prefetch_req(num_req, fetch_to):
@@ -100,7 +100,7 @@ class PrefetchMixin(ABC):
 class PrefetchCaller(PrefetchMixin):
     """An async zmq request sender to be used in the Gateway"""
 
-    def __init__(self, args: argparse.Namespace, zmqlet: AsyncZmqlet):
+    def __init__(self, args: argparse.Namespace, zmqlet: 'AsyncZmqlet'):
         """
 
         :param args: args from CLI
