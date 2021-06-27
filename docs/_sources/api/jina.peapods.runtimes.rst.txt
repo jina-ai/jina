@@ -7,8 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   jina.peapods.runtimes.asyncio
    jina.peapods.runtimes.container
+   jina.peapods.runtimes.gateway
    jina.peapods.runtimes.jinad
    jina.peapods.runtimes.zmq
 

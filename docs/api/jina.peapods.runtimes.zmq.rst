@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.peapods.runtimes.zmq.asyncio
    jina.peapods.runtimes.zmq.base
    jina.peapods.runtimes.zmq.zed
 
