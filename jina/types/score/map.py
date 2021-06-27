@@ -1,10 +1,10 @@
-from typing import Optional, Union
 from collections.abc import MutableMapping
+from typing import Optional, Union
 
 import numpy as np
 
-from ..score import NamedScore
 from ..mixin import ProtoTypeMixin
+from ..score import NamedScore
 from ...excepts import BadNamedScoreType
 from ...helper import typename
 from ...proto import jina_pb2
@@ -13,7 +13,6 @@ __all__ = ['NamedScoreMapping']
 
 
 class NamedScoreMapping(ProtoTypeMixin, MutableMapping):
-
     """
     :class:`NamedScoreMapping` is one of the **primitive data type** in Jina.
 

@@ -6,7 +6,6 @@ from typing import Optional
 
 from .logger import JinaLogger
 from ..helper import colored, get_readable_size, get_readable_time
-from ..importer import ImportExtensions
 
 
 def used_memory(unit: int = 1024 * 1024 * 1024) -> float:

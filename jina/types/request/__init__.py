@@ -2,13 +2,13 @@ from typing import Union, Optional, TypeVar, Dict
 
 from google.protobuf import json_format
 
-from ...types.struct import StructView
-from ..mixin import ProtoTypeMixin
 from .mixin import DocsPropertyMixin, GroundtruthPropertyMixin
+from ..mixin import ProtoTypeMixin
 from ...enums import CompressAlgo, RequestType
 from ...excepts import BadRequestType
 from ...helper import random_identity, typename
 from ...proto import jina_pb2
+from ...types.struct import StructView
 
 _body_type = set(str(v).lower() for v in RequestType)
 _trigger_body_fields = set(

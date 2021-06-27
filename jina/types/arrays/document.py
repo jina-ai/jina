@@ -17,8 +17,8 @@ from typing import (
 )
 
 from .traversable import TraversableSequence
-from ...helper import typename, cached_property
 from ..document import Document
+from ...helper import typename, cached_property
 from ...proto import jina_pb2
 
 try:

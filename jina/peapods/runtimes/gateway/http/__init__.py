@@ -1,7 +1,7 @@
 import os
 
 from .app import get_fastapi_app
-from ..base import AsyncNewLoopRuntime
+from ...zmq.asyncio import AsyncNewLoopRuntime
 from .....importer import ImportExtensions
 
 __all__ = ['HTTPRuntime']

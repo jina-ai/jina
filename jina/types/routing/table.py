@@ -1,6 +1,5 @@
-from typing import List, Optional, Union
-
 from collections import defaultdict
+from typing import List, Optional, Union
 
 from google.protobuf import json_format
 
@@ -207,7 +206,6 @@ class RoutingTable(ProtoTypeMixin):
             for second in self._get_out_edges(first):
 
                 if position_lookup[first] > position_lookup[second]:
-
                     return False
         return True
 

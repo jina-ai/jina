@@ -1,7 +1,6 @@
 """Module for helper functions in the parser"""
 import argparse
 import os
-import uuid
 from typing import Tuple
 
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
