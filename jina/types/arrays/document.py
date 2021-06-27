@@ -1,6 +1,7 @@
 import json
 import warnings
 from abc import abstractmethod
+from functools import cached_property
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -18,7 +19,7 @@ from typing import (
 
 from .traversable import TraversableSequence
 from ..document import Document
-from ...helper import typename, cached_property
+from ...helper import typename
 from ...proto import jina_pb2
 
 try:
@@ -46,7 +47,7 @@ if False:
 
 
 class DocumentArrayGetAttrMixin:
-    """A mixin that provides attributes getter in bulk """
+    """A mixin that provides attributes getter in bulk"""
 
     @abstractmethod
     def __iter__(self):
@@ -253,6 +254,7 @@ class DocumentArray(
             self._pb_body[i].CopyFrom(tmp)
             hi_idx -= 1
 
+    @property
     @cached_property
     def _id_to_index(self):
         """Returns a doc_id to index in list

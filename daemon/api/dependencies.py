@@ -1,12 +1,14 @@
 from pathlib import Path
 from typing import Dict, List, Optional
+from functools import cached_property
+
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
 from fastapi import HTTPException, UploadFile, File
 
-from jina import __default_host__, __docker_host__, Flow
+from jina import __docker_host__, Flow
 from jina.enums import PeaRoleType, SocketType
-from jina.helper import cached_property, random_port
+from jina.helper import random_port
 
 from ..helper import get_workspace_path
 from ..models.enums import WorkspaceState
@@ -43,6 +45,7 @@ class FlowDepends:
                 detail=f'File `{self.filename}` not found in workspace `{self.workspace_id}`',
             )
 
+    @property
     @cached_property
     def port_expose(self) -> str:
         """

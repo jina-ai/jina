@@ -2,12 +2,13 @@ import argparse
 import asyncio
 import time
 from typing import Optional
+from functools import cached_property
 
 from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ..zmq.asyncio import AsyncZMQRuntime
 from ....enums import RemoteWorkspaceState
 from ....excepts import DaemonConnectivityError
-from ....helper import cached_property, colored
+from ....helper import colored
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -111,6 +112,7 @@ class JinadRuntime(AsyncZMQRuntime):
             else:
                 raise RuntimeError(f'remote workspace creation failed')
 
+    @property
     @cached_property
     def _remote_id(self) -> Optional[str]:
         """Creates a workspace & a pea on remote
