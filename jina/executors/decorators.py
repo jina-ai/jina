@@ -13,8 +13,8 @@ from typing import (
 )
 
 from .metas import get_default_metas
-from ..types.arrays import DocumentArray
 from ..helper import convert_tuple_to_list
+from ..types.arrays import DocumentArray
 
 
 def wrap_func(cls, func_lst, wrapper):

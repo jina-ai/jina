@@ -1,7 +1,7 @@
-from typing import Union
 import multiprocessing
 import threading
 from functools import partial
+from typing import Union
 
 from ...enums import RuntimeBackendType
 

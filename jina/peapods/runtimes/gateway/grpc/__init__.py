@@ -2,8 +2,8 @@ import os
 
 import grpc
 
-from ..base import AsyncNewLoopRuntime
 from ..prefetch import PrefetchMixin
+from ...zmq.asyncio import AsyncNewLoopRuntime
 from ....zmq import AsyncZmqlet
 from .....logging.logger import JinaLogger
 from .....proto import jina_pb2_grpc

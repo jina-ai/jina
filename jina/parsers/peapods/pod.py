@@ -2,7 +2,7 @@
 import argparse
 
 from jina.enums import PollingType, SchedulerType, PodRoleType
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
+from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 
 
 def mixin_base_pod_parser(parser):

@@ -2,13 +2,12 @@ import argparse
 import asyncio
 import copy
 import json
+import os
 from argparse import Namespace
 from contextlib import ExitStack
 from typing import Optional, Sequence, Dict
 
-import os
-
-from .... import __default_host__, __resources_path__
+from .... import __resources_path__
 from ....enums import replace_enum_to_str
 from ....importer import ImportExtensions
 from ....jaml.helper import complete_path

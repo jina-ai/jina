@@ -8,8 +8,8 @@ from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pea_parser, set_gateway_parser
 from jina.peapods import Pea
 from jina.peapods.peas import BasePea
-from jina.peapods.runtimes.asyncio.grpc import GRPCRuntime
-from jina.peapods.runtimes.asyncio.websocket import WebSocketRuntime
+from jina.peapods.runtimes.gateway.grpc import GRPCRuntime
+from jina.peapods.runtimes.gateway.websocket import WebSocketRuntime
 from jina.peapods.runtimes.container import ContainerRuntime
 from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 
