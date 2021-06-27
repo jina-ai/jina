@@ -10,18 +10,18 @@ import zmq.asyncio
 from zmq.eventloop.zmqstream import ZMQStream
 from zmq.ssh import tunnel_connection
 
+from ..networking import get_connect_host
 from ... import __default_host__
 from ...enums import SocketType
 from ...helper import colored, random_identity, get_readable_size, get_or_reuse_loop
 from ...importer import ImportExtensions
-from ...logging.predefined import default_logger
 from ...logging.logger import JinaLogger
+from ...logging.predefined import default_logger
 from ...proto import jina_pb2
 from ...types.message import Message
 from ...types.message.common import ControlMessage
 from ...types.request import Request
 from ...types.routing.table import RoutingTable
-from ..networking import get_connect_host
 
 
 class Zmqlet:

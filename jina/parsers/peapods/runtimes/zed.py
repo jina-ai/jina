@@ -3,8 +3,8 @@ import argparse
 
 from ...helper import add_arg_group, _SHOW_ALL_ARGS, KVAppendAction
 from .... import __default_host__
-from ....enums import OnErrorStrategy, SocketType
 from .... import helper
+from ....enums import OnErrorStrategy, SocketType
 
 
 def mixin_zed_runtime_parser(parser):

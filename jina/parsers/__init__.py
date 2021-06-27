@@ -1,6 +1,7 @@
+import argparse
+
 from jina.parsers.client import mixin_comm_protocol_parser
 from .helper import _SHOW_ALL_ARGS
-import argparse
 
 
 def set_pea_parser(parser=None):

@@ -8,7 +8,7 @@ from ..base import BaseClient
 from ..helper import callback_exec
 from ..request import GeneratorSourceType
 from ...excepts import BadClient, BadClientInput
-from ...logging.profile import TimeContext, ProgressBar
+from ...logging.profile import ProgressBar
 from ...proto import jina_pb2_grpc
 from ...types.request import Response
 

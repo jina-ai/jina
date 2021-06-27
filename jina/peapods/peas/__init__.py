@@ -2,7 +2,6 @@ import argparse
 import multiprocessing
 import os
 import threading
-import time
 from typing import Any, Tuple
 
 from .helper import _get_event, ConditionalEvent

@@ -9,8 +9,7 @@ from platform import uname
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from ....excepts import BadImageNameError
-from ....helper import ArgNamespace, is_valid_local_config_source, slugify
-from ....jaml.helper import complete_path
+from ....helper import ArgNamespace, slugify
 
 
 class ContainerRuntime(ZMQRuntime):

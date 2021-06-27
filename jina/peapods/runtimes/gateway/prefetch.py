@@ -1,9 +1,9 @@
 import asyncio
 from abc import ABC
+from typing import AsyncGenerator
 
 from ....helper import typename
 from ....logging.logger import JinaLogger
-from ....logging.profile import TimeContext
 from ....types.message import Message
 
 __all__ = ['PrefetchCaller', 'PrefetchMixin']
@@ -12,13 +12,13 @@ __all__ = ['PrefetchCaller', 'PrefetchMixin']
 class PrefetchMixin(ABC):
     """JinaRPCServicer """
 
-    async def Call(self, request_iterator, context):
+    async def Call(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
         """
-        Async gRPC call.
+        Async call to receive Requests and build them into Messages.
 
-        :param request_iterator: iterator of request.
-        :param context: gRPC context:
-        :yield: task
+        :param request_iterator: iterator of requests.
+        :param args: additional arguments
+        :yield: message
         """
 
         async def prefetch_req(num_req, fetch_to):

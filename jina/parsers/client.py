@@ -1,5 +1,4 @@
 """Module for argparse for Client"""
-from .helper import add_arg_group
 
 
 def mixin_comm_protocol_parser(parser):

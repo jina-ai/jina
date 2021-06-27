@@ -6,7 +6,7 @@ from ..base import BaseClient, InputType
 from ..helper import callback_exec
 from ...excepts import BadClient
 from ...importer import ImportExtensions
-from ...logging.profile import TimeContext, ProgressBar
+from ...logging.profile import ProgressBar
 from ...types.request import Request
 
 
