@@ -255,7 +255,7 @@ class DocumentArray(
             hi_idx -= 1
 
     @property
-    @lru_cache
+    @lru_cache()
     def _id_to_index(self):
         """Returns a doc_id to index in list
 

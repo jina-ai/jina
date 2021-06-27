@@ -33,7 +33,7 @@ class DaemonWorker(Thread):
         self.start()
 
     @property
-    @lru_cache
+    @lru_cache()
     def arguments(self) -> WorkspaceArguments:
         """sets arguments in workspace store
 
@@ -61,7 +61,7 @@ class DaemonWorker(Thread):
         return _args
 
     @property
-    @lru_cache
+    @lru_cache()
     def metadata(self) -> WorkspaceMetadata:
         """sets metadata in workspace store
 
@@ -82,7 +82,7 @@ class DaemonWorker(Thread):
         return _metadata
 
     @property
-    @lru_cache
+    @lru_cache()
     def workdir(self) -> str:
         """sets workdir for current worker thread
 
@@ -91,7 +91,7 @@ class DaemonWorker(Thread):
         return get_workspace_path(self.id)
 
     @property
-    @lru_cache
+    @lru_cache()
     def daemon_file(self) -> DaemonFile:
         """set daemonfile for current worker thread
 
@@ -100,7 +100,7 @@ class DaemonWorker(Thread):
         return DaemonFile(workdir=self.workdir, logger=self._logger)
 
     @property
-    @lru_cache
+    @lru_cache()
     def network_id(self) -> str:
         """create a docker network
 
@@ -118,7 +118,7 @@ class DaemonWorker(Thread):
         )
 
     @property
-    @lru_cache
+    @lru_cache()
     def container_id(self) -> Optional[str]:
         """creates a container if run command is passed in .jinad file
 

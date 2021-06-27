@@ -171,7 +171,7 @@ class DaemonFile:
         self._ports = ports
 
     @property
-    @lru_cache
+    @lru_cache()
     def requirements(self) -> str:
         """pip packages mentioned in requirements.txt
 
@@ -188,7 +188,7 @@ class DaemonFile:
             return ' '.join(f.read().splitlines())
 
     @property
-    @lru_cache
+    @lru_cache()
     def dockercontext(self) -> str:
         """directory for docker context during docker build
 
@@ -196,7 +196,7 @@ class DaemonFile:
         return __rootdir__ if self.build == DaemonBuild.DEVEL else self._workdir
 
     @property
-    @lru_cache
+    @lru_cache()
     def dockerfile(self) -> str:
         """location of dockerfile
 
@@ -205,7 +205,7 @@ class DaemonFile:
         return f'{__dockerfiles__}/{self.build.value}.Dockerfile'
 
     @property
-    @lru_cache
+    @lru_cache()
     def dockerargs(self) -> Dict:
         """dict of args to be passed during docker build
 

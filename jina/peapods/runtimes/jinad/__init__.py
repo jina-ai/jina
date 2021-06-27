@@ -113,7 +113,7 @@ class JinadRuntime(AsyncZMQRuntime):
                 raise RuntimeError(f'remote workspace creation failed')
 
     @property
-    @lru_cache
+    @lru_cache()
     def _remote_id(self) -> Optional[str]:
         """Creates a workspace & a pea on remote
 

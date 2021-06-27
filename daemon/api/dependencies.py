@@ -46,7 +46,7 @@ class FlowDepends:
             )
 
     @property
-    @lru_cache
+    @lru_cache()
     def port_expose(self) -> str:
         """
         Sets `port_expose` for the Flow started in `mini-jinad`.
@@ -103,7 +103,7 @@ class PeaDepends:
         )
 
     @property
-    @lru_cache
+    @lru_cache()
     def ports(self) -> Dict:
         """
         Determines ports to be mapped to dockerhost
