@@ -24,7 +24,7 @@ from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 from ..struct import StructView
 from ..score.map import NamedScoreMapping
-from .converters import png_to_buffer, to_datauri, guess_mime, to_image_blob
+from .converters import png_to_buffer, to_datauri, to_image_blob
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
@@ -791,17 +791,6 @@ class Document(ProtoTypeMixin):
         :param value: the bytes value to set the buffer
         """
         self._pb_body.buffer = value
-        if value and not self._pb_body.mime_type:
-            with ImportExtensions(
-                required=False,
-                pkg_name='python-magic',
-                help_text=f'can not sniff the MIME type '
-                f'MIME sniffing requires brew install '
-                f'libmagic (Mac)/ apt-get install libmagic1 (Linux)',
-            ):
-                import magic
-
-                self._pb_body.mime_type = magic.from_buffer(value, mime=True)
 
     @property
     def text(self):
@@ -841,7 +830,9 @@ class Document(ProtoTypeMixin):
         :param value: acceptable URI/URL, raise ``ValueError`` when it is not a valid URI
         """
         self._pb_body.uri = value
-        self.mime_type = guess_mime(value)
+        mime_type = mimetypes.guess_type(value)[0]
+        if mime_type:
+            self.mime_type = mime_type  # Remote http/https contents mime_type will not be recognized.
 
     @property
     def mime_type(self) -> str:
