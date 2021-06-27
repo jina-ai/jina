@@ -1,7 +1,7 @@
 import json
 import warnings
 from abc import abstractmethod
-from functools import cached_property
+from functools import lru_cache
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -255,7 +255,7 @@ class DocumentArray(
             hi_idx -= 1
 
     @property
-    @cached_property
+    @lru_cache
     def _id_to_index(self):
         """Returns a doc_id to index in list
 
