@@ -22,7 +22,7 @@ def test_create_custom_container():
     workspace_id = create_workspace(
         filepaths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]
     )
-    wait_for_workspace(workspace_id)
+    assert wait_for_workspace(workspace_id)
 
     container_id = requests.get(
         f'http://{CLOUD_HOST}/workspaces/{workspace_id}'
@@ -32,9 +32,9 @@ def test_create_custom_container():
     assert container.name == workspace_id
 
     workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'custom_wokrspace_no_run')
+        dirpath=os.path.join(cur_dir, 'custom_workspace_no_run')
     )
-    wait_for_workspace(workspace_id)
+    assert wait_for_workspace(workspace_id)
     container_id = requests.get(
         f'http://{CLOUD_HOST}/workspaces/{workspace_id}'
     ).json()['metadata']['container_id']
@@ -48,7 +48,7 @@ def test_update_custom_container():
             os.path.join(cur_dir, 'flow_app_ws/requirements.txt'),
         ]
     )
-    wait_for_workspace(workspace_id)
+    assert wait_for_workspace(workspace_id)
 
     container_id, requirements, image_id = _container_info(workspace_id)
     assert container_id
@@ -69,7 +69,7 @@ def test_update_custom_container():
                 )
             ],
         )
-        wait_for_workspace(workspace_id)
+        assert wait_for_workspace(workspace_id)
         new_container_id, requirements, new_image_id = _container_info(workspace_id)
         assert new_container_id
         assert new_container_id != container_id
@@ -91,7 +91,7 @@ def test_delete_custom_container():
     workspace_id = create_workspace(
         dirpath=os.path.join(cur_dir, 'custom_workspace_blocking')
     )
-    wait_for_workspace(workspace_id)
+    assert wait_for_workspace(workspace_id)
 
     # check that container was created
     response = requests.get(f'http://{CLOUD_HOST}/workspaces/{workspace_id}')
