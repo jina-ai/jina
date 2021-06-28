@@ -1,27 +1,41 @@
 """Module for wrapping Jina Hub API calls."""
 
-
-import os
 import argparse
+import hashlib
+import json
+import os
+from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
-from collections import namedtuple
 from urllib.parse import urljoin, urlencode
-import hashlib
-from ..helper import colored, get_full_version, get_readable_size, random_identity
+from urllib.request import Request, urlopen
+
+from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
+from .helper import archive_package, download_with_resume, parse_hub_uri
+from .hubapi import install_local, exist_local
+from ..excepts import HubDownloadError
+from ..helper import colored, get_full_version, get_readable_size
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
-from ..excepts import HubDownloadError
-from .helper import archive_package, download_with_resume, parse_hub_uri
-from .hubapi import install_local, exist_local
-from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
 
-JINA_HUBBLE_REGISTRY = os.environ.get(
-    # 'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
-    'JINA_HUBBLE_REGISTRY',
-    'http://k8s-hubble-hubble-c0c205579b-915292866.us-east-1.elb.amazonaws.com',
-)
+
+def _get_hubble_url():
+    try:
+        req = Request(
+            'https://api.jina.ai/hub/hubble.json', headers={'User-Agent': 'Mozilla/5.0'}
+        )
+        with urlopen(
+            req, timeout=1
+        ) as resp:  # 'with' is important to close the resource after use
+            return json.load(resp)['url']
+    except:
+        # no network, two slow, api.jina.ai is down
+        pass
+
+
+JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', _get_hubble_url())
+
 JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
 HubExecutor = namedtuple(
