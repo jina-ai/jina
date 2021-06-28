@@ -3,12 +3,14 @@
 import io
 import os
 import hashlib
+from contextlib import nullcontext
 from typing import Tuple, Optional
 import zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 from .. import __resources_path__
 from ..importer import ImportExtensions
+from .progress_bar import ProgressBar
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
@@ -106,6 +108,7 @@ def download_with_resume(
     target_dir: 'Path',
     filename: Optional[str] = None,
     md5sum: Optional[str] = None,
+    show_progress: Optional[bool] = False,
 ) -> 'Path':
     """
     Download file from url to target_dir, and check md5sum.
@@ -116,16 +119,22 @@ def download_with_resume(
     :param target_dir: the target path for the file
     :param filename: the filename of the downloaded file
     :param md5sum: the MD5 checksum to match
+    :param show_progress: display progress bar
 
     :return: the filepath of the downloaded file
     """
     with ImportExtensions(required=True):
         import requests
 
-    def _download(url, target, resume_byte_pos: int = None):
+    def _download(
+        url, target, resume_byte_pos: int = None, progress_bar: 'ProgressBar' = None
+    ):
         resume_header = (
             {'Range': f'bytes={resume_byte_pos}-'} if resume_byte_pos else None
         )
+
+        if progress_bar and resume_byte_pos:
+            progress_bar.update(progress=resume_byte_pos)
 
         try:
             r = requests.get(url, stream=True, headers=resume_header)
@@ -138,21 +147,32 @@ def download_with_resume(
         with target.open(mode=mode) as f:
             for chunk in r.iter_content(32 * block_size):
                 f.write(chunk)
+                if progress_bar:
+                    progress_bar.update(progress=len(chunk))
 
     if filename is None:
         filename = url.split('/')[-1]
     filepath = target_dir / filename
 
+    head_info = requests.head(url)
+    file_size_online = int(head_info.headers.get('content-length', 0))
+
     _resume_byte_pos = None
     if filepath.exists():
         if md5sum and md5file(filepath) == md5sum:
             return filepath
-        head_info = requests.head(url)
-        file_size_online = int(head_info.headers.get('content-length', 0))
+
         file_size_offline = filepath.stat().st_size
         if file_size_online > file_size_offline:
             _resume_byte_pos = file_size_offline
-    _download(url, filepath, _resume_byte_pos)
+
+    ctx = (
+        ProgressBar('Downloading', total_steps=file_size_online)
+        if show_progress
+        else nullcontext()
+    )
+    with ctx as p_bar:
+        _download(url, filepath, _resume_byte_pos, progress_bar=p_bar)
 
     if md5sum and not md5file(filepath) == md5sum:
         raise RuntimeError('MD5 checksum failed.')
