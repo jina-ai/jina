@@ -31,7 +31,9 @@ def test_create_custom_container():
     container = docker.from_env().containers.get(container_id)
     assert container.name == workspace_id
 
-    workspace_id = create_workspace(filepaths=[os.path.join(cur_dir, 'no_run.jinad')])
+    workspace_id = create_workspace(
+        dirpath=[os.path.join(cur_dir, 'custom_wokrspace_no_run')]
+    )
     wait_for_workspace(workspace_id)
     container_id = requests.get(
         f'http://{CLOUD_HOST}/workspaces/{workspace_id}'
@@ -86,7 +88,9 @@ def _container_info(workspace_id):
 
 
 def test_delete_custom_container():
-    workspace_id = create_workspace(filepaths=[os.path.join(cur_dir, 'blocking.jinad')])
+    workspace_id = create_workspace(
+        dirpath=[os.path.join(cur_dir, 'custom_workspace_blocking')]
+    )
     wait_for_workspace(workspace_id)
 
     # check that container was created

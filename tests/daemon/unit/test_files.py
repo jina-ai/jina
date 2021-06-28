@@ -6,7 +6,6 @@ from daemon import daemon_logger
 from daemon.models import DaemonID
 from daemon.files import DaemonFile
 from daemon.files import workspace_files
-from daemon.excepts import Runtime400Exception
 
 import pytest
 
