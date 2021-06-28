@@ -1,15 +1,13 @@
 """Module wrapping interactions with the local executor packages."""
 
-
-import sys
-import subprocess
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 from typing import Tuple, Optional
 
-from .helper import unpack_package
-
 from . import JINA_HUB_ROOT
+from .helper import unpack_package
 
 
 def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
@@ -101,7 +99,7 @@ def list_local():
     return result
 
 
-def resolve_local(uuid: str, tag: Optional[str] = None) -> 'Path':
+def resolve_local(uuid: str, tag: Optional[str] = None) -> Optional['Path']:
     """Return the path of the executor if available.
 
     :param uuid: the UUID of executor
@@ -111,9 +109,9 @@ def resolve_local(uuid: str, tag: Optional[str] = None) -> 'Path':
     pkg_path = JINA_HUB_ROOT / uuid
     pkg_dist_path = JINA_HUB_ROOT / f'{uuid}-{tag}.dist-info'
     if not pkg_path.exists():
-        return None
+        return
     if tag and (not pkg_dist_path.exists()):
-        return None
+        return
     return pkg_path
 
 

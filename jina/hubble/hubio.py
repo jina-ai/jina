@@ -20,7 +20,7 @@ from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
 
 
-def _get_hubble_url():
+def _get_hubble_url() -> str:
     try:
         req = Request(
             'https://api.jina.ai/hub/hubble.json', headers={'User-Agent': 'Mozilla/5.0'}
@@ -71,12 +71,9 @@ class HubIO:
             help_text='missing "docker" dependency, please do pip install "jina[docker]"',
         ):
             import docker
-            from docker import APIClient, DockerClient
+            from docker import DockerClient
 
             self._client: DockerClient = docker.from_env()
-
-            # low-level client
-            self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
     def _get_request_header(self) -> Dict:
         """Return the header of request.
@@ -98,9 +95,7 @@ class HubIO:
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
-            self.logger.critical(
-                f'The folder "{self.args.path}" does not exist, can not push'
-            )
+            self.logger.critical(f'`{self.args.path}` is not a valid path!')
             exit(1)
 
         request_headers = self._get_request_header()
@@ -165,7 +160,7 @@ class HubIO:
                     f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
                 ]
                 self.logger.success(
-                    f'🎉 The executor at {pkg_path} is now published successfully!'
+                    f'🎉 Executor from `{pkg_path}` is uploaded successfully!'
                 )
                 self.logger.info('\n' + '\n'.join(info_table))
                 self.logger.info(

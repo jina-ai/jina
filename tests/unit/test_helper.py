@@ -4,7 +4,6 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-
 from cli import _is_latest_version
 from jina import Executor, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
@@ -20,6 +19,7 @@ from jina.helper import (
     dunder_get,
     get_ci_vendor,
 )
+from jina.hubble.hubio import _get_hubble_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
@@ -321,3 +321,7 @@ def test_find_request_binding():
 )
 def test_ci_vendor():
     assert get_ci_vendor() == 'GITHUB_ACTIONS'
+
+
+def test_get_hubble_url():
+    assert _get_hubble_url().startswith('http')

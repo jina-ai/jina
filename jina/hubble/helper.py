@@ -1,16 +1,16 @@
 """Module for helper functions for Hub API."""
 
-import io
-import os
 import hashlib
-from contextlib import nullcontext
-from typing import Tuple, Optional
+import io
 import zipfile
+from contextlib import nullcontext
 from pathlib import Path
+from typing import Tuple, Optional
 from urllib.parse import urlparse
+
+from .progress_bar import ProgressBar
 from .. import __resources_path__
 from ..importer import ImportExtensions
-from .progress_bar import ProgressBar
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:

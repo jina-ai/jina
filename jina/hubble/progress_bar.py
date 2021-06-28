@@ -1,8 +1,9 @@
 import sys
 import time
 from typing import Optional
+
+from ..helper import colored
 from ..logging.profile import TimeContext
-from ..helper import colored, get_readable_size, get_readable_time
 
 
 class ProgressBar(TimeContext):
