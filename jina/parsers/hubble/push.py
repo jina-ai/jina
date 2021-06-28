@@ -32,7 +32,7 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
     gp.add_argument(
         '--install',
         action='store_true',
-        default=True,
+        default=False,
         help='If set, install requirements.txt in the Hub Executor bundle to local system.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,

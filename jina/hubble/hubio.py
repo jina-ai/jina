@@ -7,13 +7,15 @@ from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
 
+from .envs import JINA_HUBBLE_PUSHPULL_URL, JINA_HUB_CACHE_DIR, JINA_HUB_ROOT
 from .helper import archive_package, download_with_resume, parse_hub_uri
 from .hubapi import install_local, exist_local
 from ..excepts import HubDownloadError
-from ..helper import colored, get_full_version, get_readable_size
+from ..helper import colored, get_full_version, get_readable_size, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
+from ..parsers.hubble import set_hub_parser
 
 HubExecutor = namedtuple(
     'HubExecutor',
@@ -37,9 +39,13 @@ class HubIO:
     :param args: arguments
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: Optional[argparse.Namespace] = None, **kwargs):
+        if args and isinstance(args, argparse.Namespace):
+            self.args = args
+        else:
+            self.args = ArgNamespace.kwargs2namespace(kwargs, set_hub_parser())
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
-        self.args = args
+
         self._load_docker_client()
 
     def _load_docker_client(self):
@@ -246,7 +252,12 @@ class HubIO:
             if self.args.install:
                 with TimeContext(f'installing {self.args.uri}', self.logger):
                     try:
-                        install_local(cached_zip_filepath, uuid, tag)
+                        install_local(
+                            cached_zip_filepath,
+                            uuid,
+                            tag,
+                            install_deps=self.args.install_deps,
+                        )
                     except Exception as ex:
                         raise HubDownloadError(str(ex))
 

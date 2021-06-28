@@ -13,10 +13,9 @@ from ...hubble.helper import is_valid_huburi, parse_hub_uri
 from ...hubble.hubapi import resolve_local
 from ...hubble.hubio import HubIO
 from ...logging.logger import JinaLogger
+from ...parsers.hubble import set_hub_pull_parser
 
 __all__ = ['BasePea']
-
-from ...parsers.hubble import set_hub_pull_parser
 
 
 class BasePea:
@@ -309,8 +308,9 @@ class BasePea:
             scheme, name, tag, secret = parse_hub_uri(self.args.uses)
             executor = HubIO.fetch(name, tag=tag, secret=secret)
             if scheme == 'jinahub':
-                pkg_path = resolve_local(executor.uuid, tag or executor.tag)
-                if not pkg_path:
+                try:
+                    pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                except FileNotFoundError:
                     HubIO(set_hub_pull_parser().parse_args([self.args.uses])).pull()
                     pkg_path = resolve_local(executor.uuid, tag or executor.tag)
                 self.args.uses = f'{pkg_path / "config.yml"}'

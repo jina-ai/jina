@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Tuple, Optional
 
+from .envs import JINA_HUB_ROOT
+
 from .helper import unpack_package
 
 
@@ -31,7 +33,11 @@ def _install_requirements(requirements_file: 'Path'):
 
 
 def install_local(
-    zip_package: 'Path', uuid: str, tag: str, force: Optional[bool] = False
+    zip_package: 'Path',
+    uuid: str,
+    tag: str,
+    force: Optional[bool] = False,
+    install_deps: Optional[bool] = False,
 ):
     """Install the package in zip format to the Jina Hub root.
 
@@ -39,6 +45,7 @@ def install_local(
     :param uuid: the UUID of the executor
     :param tag: the TAG of the executor
     :param force: if set, overwrites the package
+    :param install_deps: if set, install dependencies
     """
 
     pkg_path, pkg_dist_path = get_dist_path(uuid, tag)

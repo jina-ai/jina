@@ -61,3 +61,5 @@ def set_hub_parser(parser=None):
             formatter_class=_chf,
         )
     )
+
+    return parser

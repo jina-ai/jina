@@ -91,7 +91,6 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
 
     with gitignore.open() as fp:
         ignored_spec = pathspec.PathSpec.from_lines('gitwildmatch', fp)
-        ignored_spec += pathspec.PathSpec.from_lines('gitwildmatch', ['.git'])
 
     zip_stream = io.BytesIO()
     try:
