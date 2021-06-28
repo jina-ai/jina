@@ -2,13 +2,14 @@
 
 import argparse
 import hashlib
+import os
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
 
-from .envs import JINA_HUBBLE_PUSHPULL_URL, JINA_HUB_CACHE_DIR, JINA_HUB_ROOT
-from .helper import archive_package, download_with_resume, parse_hub_uri
+from .envs import JINA_HUB_CACHE_DIR, JINA_HUB_ROOT
+from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
 from .hubapi import install_local, exist_local
 from ..excepts import HubDownloadError
 from ..helper import colored, get_full_version, get_readable_size, ArgNamespace
@@ -74,6 +75,9 @@ class HubIO:
 
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
+        JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', get_hubble_url())
+        JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
+
         with ImportExtensions(required=True):
             import requests
 
@@ -172,6 +176,9 @@ class HubIO:
         :param secret: the access secret of the executor
         :return: meta of executor
         """
+        JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', get_hubble_url())
+        JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
+
         with ImportExtensions(required=True):
             import requests
 
@@ -232,13 +239,11 @@ class HubIO:
                     f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
                 )
                 return
-
             if exist_local(uuid, tag):
                 self.logger.warning(
                     f'The executor `{self.args.uri}` has already been downloaded in {JINA_HUB_ROOT}'
                 )
                 return
-
             # download the package
             with TimeContext(f'downloading {self.args.uri}', self.logger):
                 cached_zip_filename = f'{uuid}-{md5sum}.zip'
@@ -249,17 +254,16 @@ class HubIO:
                     md5sum=md5sum,
                 )
 
-            if self.args.install:
-                with TimeContext(f'installing {self.args.uri}', self.logger):
-                    try:
-                        install_local(
-                            cached_zip_filepath,
-                            uuid,
-                            tag,
-                            install_deps=self.args.install_deps,
-                        )
-                    except Exception as ex:
-                        raise HubDownloadError(str(ex))
+            with TimeContext(f'unpacking {self.args.uri}', self.logger):
+                try:
+                    install_local(
+                        cached_zip_filepath,
+                        uuid,
+                        tag,
+                        install_deps=self.args.install_requirements,
+                    )
+                except Exception as ex:
+                    raise HubDownloadError(str(ex))
 
         except Exception as e:
             self.logger.error(
@@ -268,4 +272,4 @@ class HubIO:
         finally:
             # delete downloaded zip package if existed
             if cached_zip_filepath is not None:
-                cached_zip_filepath.unlink(missing_ok=True)
+                cached_zip_filepath.unlink()

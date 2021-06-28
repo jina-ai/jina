@@ -13,8 +13,8 @@ def mixin_hub_pull_parser(parser):
         help='The URI of the executor to download (e.g., jinahub(+docker)://dummy_executor)',
     )
     gp.add_argument(
-        '--install-deps',
+        '--install-requirements',
         action='store_true',
         default=False,
-        help='If set, install the dependencies automatically',
+        help='If set, install requirements.txt in the Hub Executor bundle to local system.'
     )

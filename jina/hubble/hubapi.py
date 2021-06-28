@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Tuple, Optional
 
 from .envs import JINA_HUB_ROOT
-
 from .helper import unpack_package
 
 
@@ -49,6 +48,8 @@ def install_local(
     """
 
     pkg_path, pkg_dist_path = get_dist_path(uuid, tag)
+    print(pkg_path)
+    print(pkg_dist_path)
     if pkg_dist_path.exists() and not force:
         return
 
@@ -66,14 +67,16 @@ def install_local(
         pkg_dist_path.mkdir(parents=False, exist_ok=True)
 
         # install the dependencies included in requirements.txt
-        requirements_file = pkg_path / 'requirements.txt'
-        if requirements_file.exists():
-            _install_requirements(requirements_file)
-            shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
+        if install_deps:
+            requirements_file = pkg_path / 'requirements.txt'
+            if requirements_file.exists():
+                _install_requirements(requirements_file)
+                shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
         manifest_path = pkg_path / 'manifest.yml'
         if manifest_path.exists():
             shutil.copyfile(manifest_path, pkg_dist_path / 'manifest.yml')
+
     except Exception as ex:
         # clean pkg_path, pkg_dist_path
         shutil.rmtree(pkg_path)
@@ -127,5 +130,8 @@ def exist_local(uuid: str, tag: str = None) -> bool:
     :param tag: the TAG of the executor
     :return: True if existed, else False
     """
-
-    return resolve_local(uuid, tag=tag) is not None
+    try:
+        resolve_local(uuid, tag=tag)
+        return True
+    except FileNotFoundError:
+        return False
