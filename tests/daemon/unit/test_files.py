@@ -18,25 +18,18 @@ cur_filename = os.path.basename(__file__)
     'workdir, expected_response',
     [
         ('good_ws', ('devel', '3.7', 'echo Hello', [12345, 12344])),
-        ('good_ws_filename', ('gpu', '3.9', '', [12345, 123456])),
-        ('good_ws_nofile', ('devel', '3.8', '', [])),
+        ('good_ws_no_file', ('devel', '3.8', '', [])),
         ('good_ws_emptyfile', ('devel', '3.8', '', [])),
         ('good_ws_multiple_files', ('devel', '3.7', 'echo Hello', [12345, 123456])),
         ('good_ws_wrong_values', ('devel', '3.8', '', [])),
     ],
 )
-def test_jinad_good_ws(workdir, expected_response):
+def test_jinad_file_workspace(workdir, expected_response):
     d = DaemonFile(workdir=f'{cur_dir}/models/{workdir}')
     assert d.build == expected_response[0]
     assert d.python == expected_response[1]
     assert d.run == expected_response[2]
     assert d.ports == expected_response[3]
-
-
-@pytest.mark.parametrize('workdir', ['bad_ws_multiple_files'])
-def test_jinad_bad_ws(workdir):
-    with pytest.raises(Runtime400Exception):
-        DaemonFile(workdir=f'{cur_dir}/models/{workdir}')
 
 
 def _test_workspace_files():
