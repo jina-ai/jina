@@ -1,15 +1,11 @@
-# Hubble CLI Guildlines
-
-**WARNING**: The developing branch is `fix-hubble-test`, which is not production ready.  You should expect API changes, failures, etc.
-
-If you have any problems to work with `Hubble` cli, please raise this up in the `proj-hubble` channel
+# Hubble CLI Guidelines
 
 ## Prerequisites
 
-- Install [Docker](https://docs.docker.com/get-docker).
-- working on `fix-hubble-test` branch (_before stable Jina 2.0_)
+- [Docker](https://docs.docker.com/get-docker) Installed.
+- Working on `master` branch (_before stable Jina 2.0_)
     ```bash
-    $ git clone --branch fix-hubble-test https://github.com/jina-ai/jina.git
+    $ git clone --branch master https://github.com/jina-ai/jina.git
     $ cd jina && pip install -e ".[devel]"
     ```
 
@@ -32,7 +28,7 @@ MyExecutor/
 
 ```
 
-Link to the _**detailed guidlines**_ for creating an executor is [here](https://github.com/jina-ai/executor-template/blob/main/.github/GUIDELINES.md).
+Link to the _**detailed guidelines**_ for creating an executor is [here](https://github.com/jina-ai/executor-template/blob/main/.github/GUIDELINES.md).
 
 ## 2. Push and Pull CLI
 
