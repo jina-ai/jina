@@ -124,10 +124,10 @@ class HubIO:
 
             # upload the archived executor to Jina Hub
             with TimeContext(
-                f'uploading to {method.upper()} {JINA_HUBBLE_PUSHPULL_URL}', self.logger
+                f'Uploading to {JINA_HUBBLE_PUSHPULL_URL} ({method.upper()})',
+                self.logger,
             ):
-                request = getattr(requests, method)
-                resp = request(
+                resp = getattr(requests, method)(
                     JINA_HUBBLE_PUSHPULL_URL,
                     files={'file': content},
                     data=form_data,
