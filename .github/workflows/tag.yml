@@ -62,6 +62,7 @@ jobs:
           mkdir -p schema/rest/
           cp rest.html schema/rest/index.html
           cp rest.html schema/rest/${{env.JINA_VERSION}}.html
+          cp rest.html schema/rest/latest.html
           cp schema/gateway.json schema/rest/${{env.JINA_VERSION}}.json
           cp schema/gateway.json schema/rest/latest.json
           rm schema/gateway.json schema/gateway-with-code.json
