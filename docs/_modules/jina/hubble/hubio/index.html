@@ -652,7 +652,12 @@
 
             <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'installing </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">install_local</span><span class="p">(</span><span class="n">cached_zip_filepath</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+                    <span class="n">install_local</span><span class="p">(</span>
+                        <span class="n">cached_zip_filepath</span><span class="p">,</span>
+                        <span class="n">uuid</span><span class="p">,</span>
+                        <span class="n">tag</span><span class="p">,</span>
+                        <span class="n">install_deps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">install_deps</span><span class="p">,</span>
+                    <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">HubDownloadError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
 
