@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from typing import Tuple, Optional
 
-from . import JINA_HUB_ROOT
 from .helper import unpack_package
 
 
@@ -21,7 +20,7 @@ def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
     return pkg_path, pkg_dist_path
 
 
-def install_requirements(requirements_file: 'Path'):
+def _install_requirements(requirements_file: 'Path'):
     """Install modules included in requirments file
 
     :param requirements_file: the requirements.txt file
@@ -62,7 +61,7 @@ def install_local(
         # install the dependencies included in requirements.txt
         requirements_file = pkg_path / 'requirements.txt'
         if requirements_file.exists():
-            install_requirements(requirements_file)
+            _install_requirements(requirements_file)
             shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
         manifest_path = pkg_path / 'manifest.yml'
@@ -108,11 +107,10 @@ def resolve_local(uuid: str, tag: Optional[str] = None) -> Optional['Path']:
     """
     pkg_path = JINA_HUB_ROOT / uuid
     pkg_dist_path = JINA_HUB_ROOT / f'{uuid}-{tag}.dist-info'
-    if not pkg_path.exists():
-        return
-    if tag and (not pkg_dist_path.exists()):
-        return
-    return pkg_path
+    if not pkg_path.exists() or (tag and not pkg_dist_path.exists()):
+        raise FileNotFoundError(f'{pkg_path} doe not exist')
+    else:
+        return pkg_path
 
 
 def exist_local(uuid: str, tag: str = None) -> bool:

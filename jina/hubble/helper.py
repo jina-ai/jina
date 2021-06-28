@@ -20,11 +20,27 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     """
     parser = urlparse(uri_path)
     scheme = parser.scheme
+    if scheme not in {'jinahub', 'jinahub+docker'}:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
     items = list(parser.netloc.split(':'))
     name = items[0]
+
+    if not name:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
     secret = items[1] if len(items) > 1 else None
     tag = parser.path.strip('/') if parser.path else None
+
     return scheme, name, tag, secret
+
+
+def is_valid_huburi(uri: str) -> bool:
+    try:
+        parse_hub_uri(uri)
+        return True
+    except:
+        return False
 
 
 def md5file(file_path: 'Path') -> str:

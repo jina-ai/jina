@@ -2,7 +2,7 @@
 
 import argparse
 
-from ..helper import add_arg_group
+from ..helper import add_arg_group, _SHOW_ALL_ARGS
 
 
 def mixin_hub_push_parser(parser):
@@ -27,6 +27,15 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
         '--secret',
         type=str,
         help='The secret key of the identified Jina Hub executor',
+    )
+
+    gp.add_argument(
+        '--install',
+        action='store_true',
+        default=True,
+        help='If set, install requirements.txt in the Hub Executor bundle to local system.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
     )
 
     gp = add_arg_group(parser, title='Visibility')

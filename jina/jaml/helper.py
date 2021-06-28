@@ -11,9 +11,9 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
-from jina.excepts import BadConfigSource
-from jina.helper import is_yaml_filepath
-from jina.importer import PathImporter
+from ..excepts import BadConfigSource
+from ..helper import is_yaml_filepath
+from ..importer import PathImporter
 
 
 class JinaConstructor(FullConstructor):

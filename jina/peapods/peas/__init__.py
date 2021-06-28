@@ -9,9 +9,14 @@ from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart
 from ...helper import typename
+from ...hubble.helper import is_valid_huburi, parse_hub_uri
+from ...hubble.hubapi import resolve_local
+from ...hubble.hubio import HubIO
 from ...logging.logger import JinaLogger
 
 __all__ = ['BasePea']
+
+from ...parsers.hubble import set_hub_pull_parser
 
 
 class BasePea:
@@ -300,6 +305,18 @@ class BasePea:
             'docker://'
         ):
             self.args.runtime_cls = 'ContainerRuntime'
+        if self.args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(self.args.uses):
+            scheme, name, tag, secret = parse_hub_uri(self.args.uses)
+            executor = HubIO.fetch(name, tag=tag, secret=secret)
+            if scheme == 'jinahub':
+                pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                if not pkg_path:
+                    HubIO(set_hub_pull_parser().parse_args([self.args.uses])).pull()
+                    pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                self.args.uses = f'{pkg_path / "config.yml"}'
+            elif scheme == 'jinahub+docker':
+                self.args.uses = f'docker://{executor.image_name}'
+                self.args.runtime_cls = 'ContainerRuntime'
         if hasattr(self.args, 'protocol'):
             self.args.runtime_cls = {
                 GatewayProtocolType.GRPC: 'GRPCRuntime',
