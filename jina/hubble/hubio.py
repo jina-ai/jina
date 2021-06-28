@@ -17,6 +17,7 @@ from ..excepts import HubDownloadError
 from ..helper import colored, get_full_version, get_readable_size
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
+from ..logging.predefined import default_logger
 from ..logging.profile import TimeContext
 
 
@@ -25,13 +26,11 @@ def _get_hubble_url() -> str:
         req = Request(
             'https://api.jina.ai/hub/hubble.json', headers={'User-Agent': 'Mozilla/5.0'}
         )
-        with urlopen(
-            req, timeout=1
-        ) as resp:  # 'with' is important to close the resource after use
+        with urlopen(req) as resp:
             return json.load(resp)['url']
     except:
-        # no network, two slow, api.jina.ai is down
-        pass
+        default_logger.critical('Can not fetch the URL of Hubble from `api.jina.ai`')
+        exit(1)
 
 
 JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', _get_hubble_url())
