@@ -31,9 +31,9 @@ def from_ndarray(
 
     if shuffle:
         # shuffle for random query
-        array = np.take(array, np.random.permutation(array.shape[0]), axis=axis)
+        array = np.take(array, np.random.permutation(array.shape[axis]), axis=axis)
     d = 0
-    for r in array:
+    for r in np.moveaxis(array, axis, 0):
         yield Document(content=r)
         d += 1
         if size is not None and d >= size:
