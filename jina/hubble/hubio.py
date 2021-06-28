@@ -270,7 +270,12 @@ class HubIO:
 
             with TimeContext(f'installing {self.args.uri}', self.logger):
                 try:
-                    install_local(cached_zip_filepath, uuid, tag)
+                    install_local(
+                        cached_zip_filepath,
+                        uuid,
+                        tag,
+                        install_deps=self.args.install_deps,
+                    )
                 except Exception as ex:
                     raise HubDownloadError(str(ex))
 

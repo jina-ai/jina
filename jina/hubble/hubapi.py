@@ -32,7 +32,11 @@ def install_requirements(requirements_file: 'Path'):
 
 
 def install_local(
-    zip_package: 'Path', uuid: str, tag: str, force: Optional[bool] = False
+    zip_package: 'Path',
+    uuid: str,
+    tag: str,
+    force: Optional[bool] = False,
+    install_deps: Optional[bool] = False,
 ):
     """Install the package in zip format to the Jina Hub root.
 
@@ -40,6 +44,7 @@ def install_local(
     :param uuid: the UUID of the executor
     :param tag: the TAG of the executor
     :param force: if set, overwrites the package
+    :param install_deps: if set, install dependencies
     """
 
     pkg_path, pkg_dist_path = get_dist_path(uuid, tag)
@@ -62,7 +67,8 @@ def install_local(
         # install the dependencies included in requirements.txt
         requirements_file = pkg_path / 'requirements.txt'
         if requirements_file.exists():
-            install_requirements(requirements_file)
+            if install_deps:
+                install_requirements(requirements_file)
             shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
         manifest_path = pkg_path / 'manifest.yml'
