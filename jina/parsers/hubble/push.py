@@ -29,18 +29,20 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
         help='The secret key of the identified Jina Hub executor',
     )
 
-    mutually_exclusive_group = parser.add_mutually_exclusive_group()
+    gp = add_arg_group(parser, title='Visibility')
+
+    mutually_exclusive_group = gp.add_mutually_exclusive_group()
 
     mutually_exclusive_group.add_argument(
         '--public',
         action='store_true',
         default=argparse.SUPPRESS,
-        help='If set, the published executor is visible to public',
+        help='If set, the pushed executor is visible to public',
     )
 
     mutually_exclusive_group.add_argument(
         '--private',
         action='store_true',
         default=argparse.SUPPRESS,
-        help='If set, the published executor is invisible to public',
+        help='If set, the pushed executor is invisible to public',
     )
