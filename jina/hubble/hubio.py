@@ -1,27 +1,40 @@
 """Module for wrapping Jina Hub API calls."""
 
-
-import os
 import argparse
+import hashlib
+import json
+import os
+from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
-from collections import namedtuple
 from urllib.parse import urljoin, urlencode
-import hashlib
-from ..helper import colored, get_full_version, get_readable_size, random_identity
-from ..importer import ImportExtensions
-from ..logging.logger import JinaLogger
-from ..logging.profile import TimeContext
-from ..excepts import HubDownloadError
+from urllib.request import Request, urlopen
+
+from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
 from .helper import archive_package, download_with_resume, parse_hub_uri
 from .hubapi import install_local, exist_local
-from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
+from ..excepts import HubDownloadError
+from ..helper import colored, get_full_version, get_readable_size
+from ..importer import ImportExtensions
+from ..logging.logger import JinaLogger
+from ..logging.predefined import default_logger
+from ..logging.profile import TimeContext
 
-JINA_HUBBLE_REGISTRY = os.environ.get(
-    # 'JINA_HUBBLE_REGISTRY', 'https://apihubble.jina.ai'
-    'JINA_HUBBLE_REGISTRY',
-    'http://k8s-hubble-hubble-c0c205579b-915292866.us-east-1.elb.amazonaws.com',
-)
+
+def _get_hubble_url() -> str:
+    try:
+        req = Request(
+            'https://api.jina.ai/hub/hubble.json', headers={'User-Agent': 'Mozilla/5.0'}
+        )
+        with urlopen(req) as resp:
+            return json.load(resp)['url']
+    except:
+        default_logger.critical('Can not fetch the URL of Hubble from `api.jina.ai`')
+        exit(1)
+
+
+JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', _get_hubble_url())
+
 JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
 HubExecutor = namedtuple(
@@ -57,12 +70,9 @@ class HubIO:
             help_text='missing "docker" dependency, please do pip install "jina[docker]"',
         ):
             import docker
-            from docker import APIClient, DockerClient
+            from docker import DockerClient
 
             self._client: DockerClient = docker.from_env()
-
-            # low-level client
-            self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
     def _get_request_header(self) -> Dict:
         """Return the header of request.
@@ -84,9 +94,7 @@ class HubIO:
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
-            self.logger.critical(
-                f'The folder "{self.args.path}" does not exist, can not push'
-            )
+            self.logger.critical(f'`{self.args.path}` is not a valid path!')
             exit(1)
 
         request_headers = self._get_request_header()
@@ -151,7 +159,7 @@ class HubIO:
                     f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
                 ]
                 self.logger.success(
-                    f'🎉 The executor at {pkg_path} is now published successfully!'
+                    f'🎉 Executor from `{pkg_path}` is uploaded successfully!'
                 )
                 self.logger.info('\n' + '\n'.join(info_table))
                 self.logger.info(
