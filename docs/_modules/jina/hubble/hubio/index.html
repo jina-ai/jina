@@ -382,26 +382,41 @@
         <h1>Source code for jina.hubble.hubio</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module for wrapping Jina Hub API calls."""</span>
 
-
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span><span class="p">,</span> <span class="n">urlencode</span>
-<span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">random_identity</span>
-<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">HubDownloadError</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">JINA_HUB_ROOT</span><span class="p">,</span> <span class="n">JINA_HUB_CACHE_DIR</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">archive_package</span><span class="p">,</span> <span class="n">download_with_resume</span><span class="p">,</span> <span class="n">parse_hub_uri</span>
 <span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">exist_local</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">JINA_HUB_ROOT</span><span class="p">,</span> <span class="n">JINA_HUB_CACHE_DIR</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">HubDownloadError</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">get_readable_size</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">..logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
 
-<span class="n">JINA_HUBBLE_REGISTRY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-    <span class="s1">'JINA_HUBBLE_REGISTRY'</span><span class="p">,</span> <span class="s1">'https://apihubble.jina.ai'</span>
-<span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_get_hubble_url</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
+            <span class="s1">'https://api.jina.ai/hub/hubble.json'</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">resp</span><span class="p">)[</span><span class="s1">'url'</span><span class="p">]</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">default_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">'Can not fetch the URL of Hubble from `api.jina.ai`'</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">JINA_HUBBLE_REGISTRY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_HUBBLE_REGISTRY'</span><span class="p">,</span> <span class="n">_get_hubble_url</span><span class="p">())</span>
+
 <span class="n">JINA_HUBBLE_PUSHPULL_URL</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">JINA_HUBBLE_REGISTRY</span><span class="p">,</span> <span class="s1">'/v1/executors'</span><span class="p">)</span>
 
 <span class="n">HubExecutor</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
@@ -437,12 +452,9 @@
             <span class="n">help_text</span><span class="o">=</span><span class="s1">'missing "docker" dependency, please do pip install "jina[docker]"'</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="kn">import</span> <span class="nn">docker</span>
-            <span class="kn">from</span> <span class="nn">docker</span> <span class="kn">import</span> <span class="n">APIClient</span><span class="p">,</span> <span class="n">DockerClient</span>
+            <span class="kn">from</span> <span class="nn">docker</span> <span class="kn">import</span> <span class="n">DockerClient</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">DockerClient</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
-
-            <span class="c1"># low-level client</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_client</span> <span class="o">=</span> <span class="n">APIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s1">'unix://var/run/docker.sock'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_request_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""Return the header of request.</span>
@@ -464,9 +476,7 @@
 
         <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'The folder "</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">" does not exist, can not push'</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">` is not a valid path!'</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">request_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
@@ -496,10 +506,10 @@
 
             <span class="c1"># upload the archived executor to Jina Hub</span>
             <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'uploading to </span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">JINA_HUBBLE_PUSHPULL_URL</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+                <span class="sa">f</span><span class="s1">'Uploading to </span><span class="si">{</span><span class="n">JINA_HUBBLE_PUSHPULL_URL</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">)'</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="p">):</span>
-                <span class="n">request</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
-                <span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span>
+                <span class="n">resp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span>
                     <span class="n">JINA_HUBBLE_PUSHPULL_URL</span><span class="p">,</span>
                     <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
@@ -531,7 +541,7 @@
                     <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">👀 Visibility:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">visibility</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
                 <span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'🎉 The executor at </span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1"> is now published successfully!'</span>
+                    <span class="sa">f</span><span class="s1">'🎉 Executor from `</span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1">` is uploaded successfully!'</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_table</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>

@@ -382,15 +382,16 @@
         <h1>Source code for jina.hubble.helper</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Module for helper functions for Hub API."""</span>
 
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 
 
 <div class="viewcode-block" id="parse_hub_uri"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.parse_hub_uri">[docs]</a><span class="k">def</span> <span class="nf">parse_hub_uri</span><span class="p">(</span><span class="n">uri_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -465,13 +466,15 @@
         <span class="k">raise</span> <span class="n">e</span>
 
     <span class="k">def</span> <span class="nf">_zip</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">archive</span><span class="p">):</span>
+
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">ignored_spec</span><span class="o">.</span><span class="n">match_file</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="n">rel_path</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ignored_spec</span><span class="o">.</span><span class="n">match_file</span><span class="p">(</span><span class="n">rel_path</span><span class="p">):</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
                 <span class="n">_zip</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">archive</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">archive</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">base_path</span><span class="p">))</span>
+                <span class="n">archive</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
 
     <span class="n">_zip</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="n">root_path</span><span class="p">,</span> <span class="n">zfile</span><span class="p">)</span>
 
@@ -502,10 +505,15 @@
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">requests</span>
 
-    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">resume_byte_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">resume_byte_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pbar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ProgressBar</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
         <span class="n">resume_header</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">{</span><span class="s1">'Range'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'bytes=</span><span class="si">{</span><span class="n">resume_byte_pos</span><span class="si">}</span><span class="s1">-'</span><span class="p">}</span> <span class="k">if</span> <span class="n">resume_byte_pos</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pbar</span> <span class="ow">and</span> <span class="n">resume_byte_pos</span><span class="p">:</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">resume_byte_pos</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">resume_header</span><span class="p">)</span>
@@ -518,21 +526,27 @@
         <span class="k">with</span> <span class="n">target</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="mi">32</span> <span class="o">*</span> <span class="n">block_size</span><span class="p">):</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pbar</span><span class="p">:</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">progress</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">filepath</span> <span class="o">=</span> <span class="n">target_dir</span> <span class="o">/</span> <span class="n">filename</span>
 
+    <span class="n">head_info</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">file_size_online</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">head_info</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'content-length'</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
     <span class="n">_resume_byte_pos</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">md5sum</span> <span class="ow">and</span> <span class="n">md5file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">md5sum</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">filepath</span>
-        <span class="n">head_info</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="n">file_size_online</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">head_info</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'content-length'</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
         <span class="n">file_size_offline</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span>
         <span class="k">if</span> <span class="n">file_size_online</span> <span class="o">&gt;</span> <span class="n">file_size_offline</span><span class="p">:</span>
             <span class="n">_resume_byte_pos</span> <span class="o">=</span> <span class="n">file_size_offline</span>
-    <span class="n">_download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_resume_byte_pos</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="s1">'Pulling'</span><span class="p">)</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
+        <span class="n">_download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_resume_byte_pos</span><span class="p">,</span> <span class="n">p_bar</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">md5sum</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">md5file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">md5sum</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'MD5 checksum failed.'</span><span class="p">)</span>
