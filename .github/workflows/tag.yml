@@ -15,8 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-#        with:
-#          submodules: true
       - uses: actions/checkout@v2
         with:
           repository: jina-ai/api
@@ -58,33 +56,19 @@ jobs:
           cp jinad.html schema/daemon/index.html
           cp jinad.html schema/daemon/${{env.JINA_VERSION}}.html
           cp schema/daemon.json schema/daemon/${{env.JINA_VERSION}}.json
+          cp schema/daemon.json schema/daemon/latest.json
           rm schema/daemon.json schema/daemon-with-code.json
           rm -rf schema/jinad
           mkdir -p schema/rest/
           cp rest.html schema/rest/index.html
           cp rest.html schema/rest/${{env.JINA_VERSION}}.html
           cp schema/gateway.json schema/rest/${{env.JINA_VERSION}}.json
+          cp schema/gateway.json schema/rest/latest.json
           rm schema/gateway.json schema/gateway-with-code.json
           cd schema
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           git add . && git commit -m "update ${{env.JINA_VERSION}} due to ${{github.event_name}} on ${{github.repository}}" && git push
-
-  update-dashboard-version:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: |
-          JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
-          echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
-      - name: Dashboard version update
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: Sync version with Jina core
-          repo: jina-ai/dashboard
-          token: ${{ secrets.JINA_DEV_BOT }}
-          ref: refs/heads/master
-          inputs: '{ "version": "${{ env.JINA_VERSION }}" }'
 
   deploy-jinad-cloud-jina-ai:
     runs-on: ubuntu-latest
