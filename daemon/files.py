@@ -40,7 +40,7 @@ def workspace_files(
         with open(dest, 'wb+') as fp:
             content = f.file.read()
             fp.write(content)
-        logger.info(f'saved uploads to {dest}')
+        logger.debug(f'saved uploads to {dest}')
 
 
 def _merge_requirement_file(dest: str, f: UploadFile) -> None:
@@ -139,16 +139,16 @@ class DaemonFile:
             )
 
     @property
-    def jina_v(self):
+    def jinav(self):
         """Property representing python version
 
         :return: python version in the daemonfile
         """
         return self._jina
 
-    @jina_v.setter
-    def jina_v(self, jina_v: str):
-        self._jina = jina_v
+    @jinav.setter
+    def jinav(self, jinav: str):
+        self._jina = jinav
 
     @property
     def run(self) -> str:
@@ -223,12 +223,22 @@ class DaemonFile:
     def dockerargs(self) -> Dict:
         """dict of args to be passed during docker build
 
+        .. note::
+            For DEVEL, we expect an already built jina image to be available locally.
+            We only pass the pip requirements as arguments.
+            For DEFAULT (cpu), we pass the python version, jina version used to pull the
+            image from docker hub in addition to the requirements.
+
         :return: dict of args to be passed during docker build
         """
         return (
-            {'PY_VERSION': self.python.value, 'PIP_REQUIREMENTS': self.requirements}
+            {'PIP_REQUIREMENTS': self.requirements}
             if self.build == DaemonBuild.DEVEL
-            else {'PY_VERSION': self.python.name.lower()}
+            else {
+                'PIP_REQUIREMENTS': self.requirements,
+                'PY_VERSION': self.python.name.lower(),
+                'JINA_VERSION': self.jinav,
+            }
         )
 
     def process_file(self) -> None:
@@ -261,7 +271,7 @@ class DaemonFile:
 
     def __repr__(self) -> str:
         return (
-            f'DaemonFile(build={self.build}, python={self.python}, jina={self.jina_v}, '
+            f'DaemonFile(build={self.build}, python={self.python}, jina={self.jinav}, '
             f'run={self.run}, context={self.dockercontext}, args={self.dockerargs}), '
             f'ports={self.ports})'
         )
