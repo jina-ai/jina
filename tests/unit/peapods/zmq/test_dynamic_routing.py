@@ -259,7 +259,7 @@ def test_double_dynamic_routing_zmqstreamlet():
         for i in range(number_messages):
             z1.send_message(msg)
 
-        time.sleep(0.5)
+        time.sleep(5)
 
         assert z1.msg_sent == 2 * number_messages
         assert z1.msg_recv == 0

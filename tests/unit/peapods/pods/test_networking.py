@@ -99,6 +99,8 @@ def test_is_remote_local_connection():
     assert not is_remote_local_connection('1.2.3.4', '2.3.4.5')
     assert not is_remote_local_connection('127.0.0.1', 'localhost')
     assert not is_remote_local_connection('192.168.0.1', 'localhost')
+    assert not is_remote_local_connection('192.168.0.1', 'globalhost')
 
     assert is_remote_local_connection('1.2.3.4', 'localhost')
+    assert is_remote_local_connection('globalhost', 'localhost')
     assert is_remote_local_connection('1.2.3.4', '192.168.0.1')
