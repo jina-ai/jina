@@ -2,9 +2,8 @@ import os
 from pathlib import Path
 
 from daemon.helper import get_workspace_path
-from daemon.models.enums import WorkspaceState
 from daemon.models.workspaces import WorkspaceItem
-
+from jina.enums import RemoteWorkspaceState
 
 cur_dir = Path(__file__).parent
 
@@ -32,7 +31,7 @@ def test_upload(fastapi_client):
     response_json = response.json()
     workspace_id = next(iter(response_json))
     item = WorkspaceItem(**response_json[workspace_id])
-    assert item.state == WorkspaceState.PENDING
+    assert item.state == RemoteWorkspaceState.PENDING
     assert item.metadata is None
     assert item.arguments is None
 

@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from uvicorn import Config, Server
 
-from jina import __version__, __resources_path__, __docker_host__
+from jina import __version__, __resources_path__
 from jina.logging.logger import JinaLogger
 from .excepts import (
     RequestValidationError,

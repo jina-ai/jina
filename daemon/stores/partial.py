@@ -2,11 +2,10 @@ import os
 import signal
 from argparse import Namespace
 
-from jina.helper import colored
-from jina.peapods import Pea, Pod
 from jina import Flow, __docker_host__
+from jina.helper import colored
 from jina.logging.logger import JinaLogger
-
+from jina.peapods import Pea, Pod
 from .. import jinad_args
 from ..models.enums import UpdateOperation
 from ..models.partial import PartialFlowItem, PartialStoreItem

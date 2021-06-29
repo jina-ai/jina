@@ -22,7 +22,7 @@ class PostMockResponse:
                 {
                     'id': 'w7qckiqy',
                     'secret': 'f7386f9ef7ea238fd955f2de9fb254a0',
-                    'pullPath': 'jinahub/w7qckiqy:v3',
+                    'image': 'jinahub/w7qckiqy:v3',
                     'visibility': 'public',
                 }
             ],

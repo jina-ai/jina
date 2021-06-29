@@ -2,16 +2,10 @@ from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
 
+from jina import __docker_host__
 from jina.helper import colored
 from jina.logging.logger import JinaLogger
-from jina import __ready_msg__, __docker_host__
-
-from .models import DaemonID
-from .models.enums import IDLiterals
-from .helper import id_cleaner, classproperty, is_error_message
 from . import (
-    __rootdir__,
-    __dockerfiles__,
     __root_workspace__,
     jinad_args,
 )
@@ -21,6 +15,9 @@ from .excepts import (
     DockerNetworkException,
     DockerContainerException,
 )
+from .helper import id_cleaner, classproperty, is_error_message
+from .models import DaemonID
+from .models.enums import IDLiterals
 
 if TYPE_CHECKING:
     from .files import DaemonFile
@@ -107,7 +104,7 @@ class Dockerizer:
                 pool_configs=[
                     docker.types.IPAMPool(
                         subnet=f'{new_subnet_start}/{workspace_store.status.subnet_size}',
-                        gateway=f'{new_subnet_start+1}',
+                        gateway=f'{new_subnet_start + 1}',
                     )
                 ]
             )

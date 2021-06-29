@@ -2,40 +2,20 @@
 
 import argparse
 import hashlib
-import json
 import os
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
-from urllib.parse import urljoin, urlencode
-from urllib.request import Request, urlopen
+from urllib.parse import urlencode
 
-from . import JINA_HUB_ROOT, JINA_HUB_CACHE_DIR
-from .helper import archive_package, download_with_resume, parse_hub_uri
+from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
 from .hubapi import install_local, exist_local
 from ..excepts import HubDownloadError
-from ..helper import colored, get_full_version, get_readable_size
+from ..helper import colored, get_full_version, get_readable_size, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
-from ..logging.predefined import default_logger
 from ..logging.profile import TimeContext
-
-
-def _get_hubble_url() -> str:
-    try:
-        req = Request(
-            'https://api.jina.ai/hub/hubble.json', headers={'User-Agent': 'Mozilla/5.0'}
-        )
-        with urlopen(req) as resp:
-            return json.load(resp)['url']
-    except:
-        default_logger.critical('Can not fetch the URL of Hubble from `api.jina.ai`')
-        exit(1)
-
-
-JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', _get_hubble_url())
-
-JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
+from ..parsers.hubble import set_hub_parser
 
 HubExecutor = namedtuple(
     'HubExecutor',
@@ -59,9 +39,13 @@ class HubIO:
     :param args: arguments
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(self, args: Optional[argparse.Namespace] = None, **kwargs):
+        if args and isinstance(args, argparse.Namespace):
+            self.args = args
+        else:
+            self.args = ArgNamespace.kwargs2namespace(kwargs, set_hub_parser())
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
-        self.args = args
+
         self._load_docker_client()
 
     def _load_docker_client(self):
@@ -74,7 +58,8 @@ class HubIO:
 
             self._client: DockerClient = docker.from_env()
 
-    def _get_request_header(self) -> Dict:
+    @staticmethod
+    def _get_request_header() -> Dict:
         """Return the header of request.
 
         :return: request header
@@ -89,6 +74,7 @@ class HubIO:
 
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
+
         with ImportExtensions(required=True):
             import requests
 
@@ -122,13 +108,14 @@ class HubIO:
 
             method = 'put' if self.args.force else 'post'
 
+            hubble_url = get_hubble_url()
             # upload the archived executor to Jina Hub
             with TimeContext(
-                f'Uploading to {JINA_HUBBLE_PUSHPULL_URL} ({method.upper()})',
+                f'Uploading to {hubble_url} ({method.upper()})',
                 self.logger,
             ):
                 resp = getattr(requests, method)(
-                    JINA_HUBBLE_PUSHPULL_URL,
+                    hubble_url,
                     files={'file': content},
                     data=form_data,
                     headers=request_headers,
@@ -140,7 +127,7 @@ class HubIO:
 
                 uuid8 = image['id']
                 secret = image['secret']
-                docker_image = image['pullPath']
+                alias = image['alias']
                 visibility = image['visibility']
                 usage = (
                     f'jinahub://{uuid8}'
@@ -154,8 +141,12 @@ class HubIO:
                     + colored(
                         f'{secret}',
                         'cyan',
+                    )
+                    + colored(
+                        '(PLEASE KEEP IT CAREFULLY, OTHERWISE YOU WILL LOSE CONTROL OF YOUR EXECUTOR!)',
+                        'red',
                     ),
-                    f'\t🐳 Image:\t' + colored(f'{docker_image}', 'cyan'),
+                    f'\t📛 Alias:\t' + colored(f'{alias}', 'cyan') if alias else '/',
                     f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
                 ]
                 self.logger.success(
@@ -176,8 +167,8 @@ class HubIO:
                 f'Error when trying to push the executor at {self.args.path} with session_id = {request_headers["jinameta-session-id"]}: {e!r}'
             )
 
+    @staticmethod
     def fetch(
-        self,
         name: str,
         tag: Optional[str] = None,
         secret: Optional[str] = None,
@@ -188,17 +179,18 @@ class HubIO:
         :param secret: the access secret of the executor
         :return: meta of executor
         """
+
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{name}/?'
+        pull_url = get_hubble_url() + f'/{name}/?'
         path_params = {}
         if secret:
             path_params['secret'] = secret
         if tag:
             path_params['tag'] = tag
 
-        request_headers = self._get_request_header()
+        request_headers = HubIO._get_request_header()
 
         pull_url += urlencode(path_params)
         resp = requests.get(pull_url, headers=request_headers)
@@ -227,10 +219,7 @@ class HubIO:
         try:
             scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
-            if scheme not in ['jinahub', 'jinahub+docker']:
-                raise ValueError(f'Unkonwn schema: {scheme}')
-
-            executor = self.fetch(name, tag=tag, secret=secret)
+            executor = HubIO.fetch(name, tag=tag, secret=secret)
 
             if not tag:
                 tag = executor.tag
@@ -251,39 +240,43 @@ class HubIO:
                     f'🎉 pulled {image_tag} ({image.short_id}) uncompressed size: {get_readable_size(image.attrs["Size"])}'
                 )
                 return
-
             if exist_local(uuid, tag):
-                self.logger.warning(
-                    f'The executor {self.args.uri} has already been downloaded in {JINA_HUB_ROOT}'
+                self.logger.debug(
+                    f'The executor `{self.args.uri}` has already been downloaded.'
                 )
                 return
-
             # download the package
             with TimeContext(f'downloading {self.args.uri}', self.logger):
+                cache_dir = Path(
+                    os.environ.get(
+                        'JINA_HUB_CACHE_DIR', Path.home().joinpath('.cache', 'jina')
+                    )
+                )
+                cache_dir.mkdir(parents=True, exist_ok=True)
                 cached_zip_filename = f'{uuid}-{md5sum}.zip'
                 cached_zip_filepath = download_with_resume(
                     archive_url,
-                    JINA_HUB_CACHE_DIR,
+                    cache_dir,
                     cached_zip_filename,
                     md5sum=md5sum,
                 )
 
-            with TimeContext(f'installing {self.args.uri}', self.logger):
+            with TimeContext(f'unpacking {self.args.uri}', self.logger):
                 try:
                     install_local(
                         cached_zip_filepath,
                         uuid,
                         tag,
-                        install_deps=self.args.install_deps,
+                        install_deps=self.args.install_requirements,
                     )
                 except Exception as ex:
                     raise HubDownloadError(str(ex))
 
         except Exception as e:
             self.logger.error(
-                f'Error when trying to pull the executor: {self.args.uri}: {e!r}'
+                f'Error when pulling the executor `{self.args.uri}`: {e!r}'
             )
         finally:
             # delete downloaded zip package if existed
             if cached_zip_filepath is not None:
-                cached_zip_filepath.unlink(missing_ok=True)
+                cached_zip_filepath.unlink()

@@ -11,9 +11,9 @@ from yaml.reader import Reader
 from yaml.resolver import Resolver
 from yaml.scanner import Scanner
 
-from jina.excepts import BadConfigSource
-from jina.helper import is_yaml_filepath
-from jina.importer import PathImporter
+from ..excepts import BadConfigSource
+from ..helper import is_yaml_filepath
+from ..importer import PathImporter
 
 
 class JinaConstructor(FullConstructor):
@@ -177,12 +177,10 @@ def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) ->
     :param extra_search_paths: extra paths to conduct search
     :return: Completed file path.
     """
-    _p = None
-    if os.path.exists(path):
+    _p = _search_file_in_paths(path, extra_search_paths)
+    if _p is None and os.path.exists(path):
         # this checks both abs and relative paths already
         _p = path
-    else:
-        _p = _search_file_in_paths(path, extra_search_paths)
     if _p:
         return os.path.abspath(_p)
     else:
