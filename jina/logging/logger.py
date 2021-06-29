@@ -8,6 +8,7 @@ from typing import Optional
 from . import formatter
 from .. import __uptime__, __resources_path__
 from ..enums import LogVerbosity
+from ..helper import ColorContext
 from ..jaml import JAML
 
 
@@ -27,7 +28,6 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
         'WARNING': 'warning',
         'ERROR': 'error',
         'CRITICAL': 'critical',
-        'SUCCESS': 'notice',
     }
 
 
@@ -90,24 +90,58 @@ class JinaLogger:
 
         self.add_handlers(log_config, **context_vars)
 
-        # note logger.success isn't default there
-        success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
-        logging.addLevelName(success_level, 'SUCCESS')
-        setattr(self.logger, 'success', self.success)
-
-        self.info = self.logger.info
-        self.critical = self.logger.critical
-        self.debug = self.logger.debug
-        self.error = self.logger.error
-        self.warning = self.logger.warning
-
     def success(self, message):
         """
         Prints messages as success
 
         :param message: Message to log
         """
-        self.logger.log(LogVerbosity.SUCCESS.value, message)
+        with ColorContext(color='green'):
+            self.logger.info(message)
+
+    def info(self, message):
+        """
+        Prints messages as info
+
+        :param message: Message to log
+        """
+        self.logger.info(message)
+
+    def debug(self, message):
+        """
+        Prints messages as info
+
+        :param message: Message to log
+        """
+        with ColorContext(color='black', bold=True):  # dim white
+            self.logger.debug(message)
+
+    def warning(self, message):
+        """
+        Prints messages as info
+
+        :param message: Message to log
+        """
+        with ColorContext(color='yellow'):  # dim white
+            self.logger.warning(message)
+
+    def critical(self, message):
+        """
+        Prints messages as info
+
+        :param message: Message to log
+        """
+        with ColorContext(color='red', bold=True):  # dim white
+            self.logger.critical(message)
+
+    def error(self, message):
+        """
+        Prints messages as info
+
+        :param message: Message to log
+        """
+        with ColorContext(color='red'):  # red
+            self.logger.error(message)
 
     @property
     def handlers(self):

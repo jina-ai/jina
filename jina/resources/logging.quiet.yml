@@ -7,7 +7,6 @@ configs:
     formatter: JsonFormatter
   StreamHandler:
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
-    formatter: ColorFormatter
   SysLogHandler:
     ident: # this will be prepend to all messages
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
