@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import os
+import json
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
@@ -97,10 +98,8 @@ class HubIO:
 
             # upload the archived package
             form_data = {
-                'public': self.args.public if hasattr(self.args, 'public') else False,
-                'private': self.args.private
-                if hasattr(self.args, 'private')
-                else False,
+                'public': getattr(self.args, 'public', False),
+                'private': getattr(self.args, 'private', False),
                 'md5sum': md5_digest,
                 'force': self.args.force,
                 'secret': self.args.secret,
@@ -119,48 +118,72 @@ class HubIO:
                     files={'file': content},
                     data=form_data,
                     headers=request_headers,
+                    stream=True,
                 )
 
-            if 200 <= resp.status_code < 300:
-                # TODO: only support single executor now
-                image = resp.json()['executors'][0]
+                result = None
+                for stream_line in resp.iter_lines():
+                    stream_msg = json.loads(stream_line)
+                    if 'stream' in stream_msg:
+                        self.logger.info(stream_msg['stream'])
+                    elif 'result' in stream_msg:
+                        result = stream_msg['result']
+                        break
 
-                uuid8 = image['id']
-                secret = image['secret']
-                visibility = image['visibility']
+                if result is None:
+                    raise Exception('Unknown Error')
 
-                info_table = [
-                    f'\t🔑 ID:\t\t' + colored(f'{uuid8}', 'cyan'),
-                    f'\t🔒 Secret:\t'
-                    + colored(
-                        f'{secret}',
-                        'cyan',
+                if 200 <= result['statusCode'] < 300:
+                    # TODO: only support single executor now
+                    data = result.get('data', None)
+                    if not data:
+                        raise Exception(result.get('message', 'Unknown Error'))
+
+                    image = data['executors'][0]
+
+                    uuid8 = image['id']
+                    secret = image['secret']
+                    visibility = image['visibility']
+
+                    info_table = [
+                        f'\t🔑 ID:\t\t' + colored(f'{uuid8}', 'cyan'),
+                        f'\t🔒 Secret:\t'
+                        + colored(
+                            f'{secret}',
+                            'cyan',
+                        )
+                        + colored(
+                            ' (👈 Please store this secret carefully, it wont show up again)',
+                            'red',
+                        ),
+                        f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
+                    ]
+
+                    if 'alias' in image:
+                        info_table.append(
+                            f'\t📛 Alias:\t' + colored(image['alias'], 'cyan')
+                        )
+
+                    self.logger.success(
+                        f'🎉 Executor `{pkg_path}` is pushed successfully!'
                     )
-                    + colored(
-                        ' (👈 Please store this secret carefully, it wont show up again)',
-                        'red',
-                    ),
-                    f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
-                ]
+                    self.logger.info('\n' + '\n'.join(info_table))
 
-                if 'alias' in image:
-                    info_table.append(f'\t📛 Alias:\t' + colored(image['alias'], 'cyan'))
+                    usage = (
+                        f'jinahub://{uuid8}'
+                        if visibility == 'public'
+                        else f'jinahub://{uuid8}:{secret}'
+                    )
 
-                self.logger.success(f'🎉 Executor `{pkg_path}` is pushed successfully!')
-                self.logger.info('\n' + '\n'.join(info_table))
+                    self.logger.info(
+                        f'You can use it via `uses={usage}` in the Flow/CLI.'
+                    )
 
-                usage = (
-                    f'jinahub://{uuid8}'
-                    if visibility == 'public'
-                    else f'jinahub://{uuid8}:{secret}'
-                )
-
-                self.logger.info(f'You can use it via `uses={usage}` in the Flow/CLI.')
-            elif resp.text:
-                # NOTE: sometimes resp.text returns empty
-                raise Exception(resp.text)
-            else:
-                resp.raise_for_status()
+                elif resp.text:
+                    # NOTE: sometimes resp.text returns empty
+                    raise Exception(resp.text)
+                else:
+                    resp.raise_for_status()
         except Exception as e:  # IO related errors
             self.logger.error(
                 f'Error while pushing `{self.args.path}` with session_id={request_headers["jinameta-session-id"]}: '
