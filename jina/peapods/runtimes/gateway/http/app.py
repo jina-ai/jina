@@ -182,8 +182,6 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             import urllib.request
 
             swagger_url = 'https://api.jina.ai/swagger'
-            root_path = req.scope.get("root_path", "").rstrip("/")
-
             req = urllib.request.Request(
                 swagger_url, headers={'User-Agent': 'Mozilla/5.0'}
             )
