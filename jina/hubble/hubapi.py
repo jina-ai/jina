@@ -26,6 +26,14 @@ def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
     return pkg_path, pkg_dist_path
 
 
+def get_config_path(local_id: str) -> 'Path':
+    """Get the local configure file
+    :param local_id: the random local ID of the executor
+    :return: json config path
+    """
+    return _hub_root / f'{local_id}.json'
+
+
 def _install_requirements(requirements_file: 'Path'):
     """Install modules included in requirments file
 

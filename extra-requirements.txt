@@ -27,6 +27,7 @@ fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
 docker:                     devel, cicd, network, hub, daemon
 pathspec:                   devel, cicd, hub
 requests:                   http, devel, cicd, daemon, hub
+cryptography:               http, devel, cicd, daemon, hub
 torch>=1.1.0:               framework, cicd, chatbot, multimodal
 transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 tensorflow>=2.0:            framework, cicd

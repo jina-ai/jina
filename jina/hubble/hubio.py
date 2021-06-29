@@ -3,15 +3,22 @@
 import argparse
 import hashlib
 import os
+import json
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
 
 from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
-from .hubapi import install_local, exist_local
+from .hubapi import install_local, exist_local, get_config_path
 from ..excepts import HubDownloadError
-from ..helper import colored, get_full_version, get_readable_size, ArgNamespace
+from ..helper import (
+    colored,
+    get_full_version,
+    get_readable_size,
+    ArgNamespace,
+    random_identity,
+)
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..logging.profile import TimeContext
@@ -77,11 +84,32 @@ class HubIO:
 
         with ImportExtensions(required=True):
             import requests
+            from cryptography.fernet import Fernet
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
             self.logger.critical(f'`{self.args.path}` is not a valid path!')
             exit(1)
+
+        pkg_config_path = pkg_path / '.jina'
+        pkg_config_path.mkdir(parents=True, exist_ok=True)
+
+        local_id_file = pkg_config_path / 'secret.key'
+        local_id = None
+        uuid8 = None
+        secret = None
+        if local_id_file.exists():
+            with local_id_file.open() as f:
+                local_id, local_key = f.readline().strip().split('\t')
+                fernet = Fernet(local_key.encode())
+
+            local_config_file = get_config_path(local_id)
+            if local_config_file.exists():
+                with local_config_file.open() as f:
+                    local_config = json.load(f)
+                    uuid8 = local_config.get('uuid8', None)
+                    encrypted_secret = local_config.get('encrypted_secret', None)
+                    secret = fernet.decrypt(encrypted_secret.encode())
 
         request_headers = self._get_request_header()
 
@@ -102,11 +130,11 @@ class HubIO:
                 if hasattr(self.args, 'private')
                 else False,
                 'md5sum': md5_digest,
-                'force': self.args.force,
-                'secret': self.args.secret,
+                'force': self.args.force or uuid8,
+                'secret': self.args.secret or secret,
             }
 
-            method = 'put' if self.args.force else 'post'
+            method = 'put' if (uuid8 or self.args.force) else 'post'
 
             hubble_url = get_hubble_url()
             # upload the archived executor to Jina Hub
