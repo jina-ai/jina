@@ -184,6 +184,9 @@ class BasePod(ExitFIFO):
 
     @property
     def head_zmq_identity(self):
+        """Get the zmq_identity of the HeadPea of this pod
+        .. # noqa: DAR201
+        """
         return self.head_args.zmq_identity
 
     def __enter__(self) -> 'BasePod':

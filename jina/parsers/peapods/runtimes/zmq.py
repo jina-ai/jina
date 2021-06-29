@@ -14,7 +14,7 @@ def mixin_zmq_runtime_parser(parser):
     gp.add_argument(
         '--zmq-identity',
         type=str,
-        help='The port for controlling the runtime, default a random port between [49152, 65535]',
+        help='The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.',
     )
     gp.add_argument(
         '--port-ctrl',

@@ -77,6 +77,7 @@ class TargetPod(ProtoTypeMixin):
         """Adds an edge to the internal representation of the out_edges.
 
         :param to_pod: the name of the pod outtraffic should go to
+        :param send_as_bind: True, if the TailPea should send via its ROUTER_BIND socket.
         """
         edge = jina_pb2.RoutingEdgeProto(pod=to_pod, send_as_bind=send_as_bind)
         self.proto.out_edges.append(edge)
@@ -130,6 +131,7 @@ class RoutingTable(ProtoTypeMixin):
 
         :param from_pod: Pod from which traffic is send
         :param to_pod: Pod to which traffic is send
+        :param send_as_bind: True, if the TailPea of the from_pod should send via its ROUTER_BIND socket.
         """
         self._get_target_pod(from_pod).add_edge(to_pod, send_as_bind)
         self._get_target_pod(to_pod).expected_parts += 1
@@ -138,8 +140,7 @@ class RoutingTable(ProtoTypeMixin):
         """Adds a Pod vertex to the graph.
 
         :param pod_name: the name of the Pod. Should be unique to the graph.
-        :param host: the host of the Pod.
-        :param port: the port of the Pod.
+        :param pod: the Pod object to be added
         """
         if pod_name in self.pods:
             raise ValueError(

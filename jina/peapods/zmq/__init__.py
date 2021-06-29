@@ -219,7 +219,7 @@ class Zmqlet:
                             ssh_password=self.args.ssh_password,
                         )
                     else:
-                        connect_socket(
+                        _connect_socket(
                             in_connect,
                             address,
                             ssh_server=self.args.ssh_server,
@@ -848,7 +848,7 @@ def _init_socket(
 
         # note that ssh only takes effect on CONNECT, not BIND
         # that means control socket setup does not need ssh
-        connect_socket(sock, address, ssh_server, ssh_keyfile, ssh_password)
+        _connect_socket(sock, address, ssh_server, ssh_keyfile, ssh_password)
 
     if socket_type in {SocketType.SUB_CONNECT, SocketType.SUB_BIND}:
         # sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')
@@ -857,7 +857,7 @@ def _init_socket(
     return sock, sock.getsockopt_string(zmq.LAST_ENDPOINT)
 
 
-def connect_socket(
+def _connect_socket(
     sock,
     address,
     ssh_server: Optional[str] = None,

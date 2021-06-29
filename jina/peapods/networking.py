@@ -5,7 +5,14 @@ from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip
 
 
-def is_remote_local_connection(first, second):
+def is_remote_local_connection(first: str, second: str):
+    """
+    Decides, whether ``first`` is remote host and ``second`` is localhost
+
+    :param first: the ip or host name of the first runtime
+    :param second: the ip or host name of the second runtime
+    :return: True, if first is remote and second is local
+    """
     try:
         first_ip = ipaddress.ip_address(first)
         first_global = first_ip.is_global
