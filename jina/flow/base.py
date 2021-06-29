@@ -35,6 +35,7 @@ from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
 from ..peapods.pods.factory import PodFactory
 from ..types.routing.table import RoutingTable
+from ..peapods.networking import is_remote_local_connection
 
 __all__ = ['Flow']
 
@@ -766,21 +767,32 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
-                graph.add_pod(f'start-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
-                graph.add_pod(f'end-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
+                graph.add_pod(f'start-{GATEWAY_NAME}', pod)
+                graph.add_pod(f'end-{GATEWAY_NAME}', pod)
             else:
-                graph.add_pod(pod_id, pod.head_host, pod.head_port_in)
+                graph.add_pod(pod_id, pod)
 
         for end, pod in self._pod_nodes.items():
 
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
+            if pod.head_args.hosts_in_connect is None:
+                pod.head_args.hosts_in_connect = []
+
             for start in pod.needs:
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
 
-                graph.add_edge(start, end)
+                start_pod = graph._get_target_pod(start)
+                if is_remote_local_connection(start_pod.host, pod.head_host):
+                    pod.head_args.hosts_in_connect.append(
+                        graph._get_target_pod(start).full_address
+                    )
+
+                    graph.add_edge(start, end, True)
+                else:
+                    graph.add_edge(start, end)
 
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph

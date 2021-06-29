@@ -96,17 +96,13 @@ def test_two_flow_with_shared_external_pod(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
-        flow = Flow().add(
+        flow1 = Flow().add(
             **external_args,
             name='external_fake',
             external=True,
         )
 
-        with flow:
-            results = flow.index(inputs=input_docs, return_results=True)
-            validate_response(results[0])
-
-        flow = (
+        flow2 = (
             Flow()
             .add(name='foo')
             .add(
@@ -116,9 +112,12 @@ def test_two_flow_with_shared_external_pod(
                 needs=['gateway', 'foo'],
             )
         )
+        with flow1, flow2:
 
-        with flow:
-            flow.index(inputs=input_docs, return_results=True)
+            results = flow1.index(inputs=input_docs, return_results=True)
+            validate_response(results[0])
+
+            results = flow2.index(inputs=input_docs, return_results=True)
             validate_response(results[0])
 
 
