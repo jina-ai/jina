@@ -385,6 +385,7 @@
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
@@ -479,10 +480,8 @@
 
             <span class="c1"># upload the archived package</span>
             <span class="n">form_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">'public'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">public</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="s1">'private'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">private</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">)</span>
-                <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s1">'public'</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="s1">'private'</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
                 <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
                 <span class="s1">'force'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">,</span>
                 <span class="s1">'secret'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">,</span>
@@ -501,48 +500,72 @@
                     <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
                     <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">,</span>
+                    <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
 
-            <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
-                <span class="c1"># TODO: only support single executor now</span>
-                <span class="n">image</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'executors'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
+                    <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s1">'stream'</span> <span class="ow">in</span> <span class="n">stream_msg</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">stream_msg</span><span class="p">[</span><span class="s1">'stream'</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="s1">'result'</span> <span class="ow">in</span> <span class="n">stream_msg</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="p">[</span><span class="s1">'result'</span><span class="p">]</span>
+                        <span class="k">break</span>
 
-                <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>
-                <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span>
-                <span class="n">visibility</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Unknown Error'</span><span class="p">)</span>
 
-                <span class="n">info_table</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔑 ID:</span><span class="se">\t\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔒 Secret:</span><span class="se">\t</span><span class="s1">'</span>
-                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                        <span class="s1">'cyan'</span><span class="p">,</span>
+                <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">result</span><span class="p">[</span><span class="s1">'statusCode'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+                    <span class="c1"># TODO: only support single executor now</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="s1">'Unknown Error'</span><span class="p">))</span>
+
+                    <span class="n">image</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'executors'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>
+                    <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span>
+                    <span class="n">visibility</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">]</span>
+
+                    <span class="n">info_table</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔑 ID:</span><span class="se">\t\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔒 Secret:</span><span class="se">\t</span><span class="s1">'</span>
+                        <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                            <span class="s1">'cyan'</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
+                            <span class="s1">' (👈 Please store this secret carefully, it wont show up again)'</span><span class="p">,</span>
+                            <span class="s1">'red'</span><span class="p">,</span>
+                        <span class="p">),</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">👀 Visibility:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">visibility</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
+                    <span class="p">]</span>
+
+                    <span class="k">if</span> <span class="s1">'alias'</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
+                        <span class="n">info_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📛 Alias:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">],</span> <span class="s1">'cyan'</span><span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'🎉 Executor `</span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1">` is pushed successfully!'</span>
                     <span class="p">)</span>
-                    <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                        <span class="s1">' (👈 Please store this secret carefully, it wont show up again)'</span><span class="p">,</span>
-                        <span class="s1">'red'</span><span class="p">,</span>
-                    <span class="p">),</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">👀 Visibility:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">visibility</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
-                <span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_table</span><span class="p">))</span>
 
-                <span class="k">if</span> <span class="s1">'alias'</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
-                    <span class="n">info_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📛 Alias:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">],</span> <span class="s1">'cyan'</span><span class="p">))</span>
+                    <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span>
+                        <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="p">)</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'🎉 Executor `</span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1">` is pushed successfully!'</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_table</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'You can use it via `uses=</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">` in the Flow/CLI.'</span>
+                    <span class="p">)</span>
 
-                <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span>
-                    <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span>
-                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
-                <span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'You can use it via `uses=</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">` in the Flow/CLI.'</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
-                <span class="c1"># NOTE: sometimes resp.text returns empty</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                    <span class="c1"># NOTE: sometimes resp.text returns empty</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># IO related errors</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Error while pushing `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">` with session_id=</span><span class="si">{</span><span class="n">request_headers</span><span class="p">[</span><span class="s2">"jinameta-session-id"</span><span class="p">]</span><span class="si">}</span><span class="s1">: '</span>

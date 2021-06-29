@@ -435,8 +435,7 @@
 <span class="sd">    """</span>
 
     <span class="n">pkg_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">get_dist_path</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">pkg_path</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">pkg_dist_path</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">pkg_dist_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
         <span class="k">return</span>
 
