@@ -78,6 +78,11 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
         help='The port for output data, default a random port between [49152, 65535]',
     )
     gp.add_argument(
+        '--hosts-in-connect',
+        action='append',
+        help=f'The host address for input, by default it is {__default_host__}',
+    )
+    gp.add_argument(
         '--host-in',
         type=str,
         default=__default_host__,

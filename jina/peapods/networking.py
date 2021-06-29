@@ -1,7 +1,18 @@
 from argparse import Namespace
+import ipaddress
 
 from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip
+
+
+def is_remote_local_connection(first, second):
+    if first == 'localhost':
+        first = '127.0.0.1'
+    if second == 'localhost':
+        second = '127.0.0.1'
+    first_ip = ipaddress.ip_address(first)
+    second_ip = ipaddress.ip_address(second)
+    return first_ip.is_global and (second_ip.is_private or second_ip.is_loopback)
 
 
 def get_connect_host(

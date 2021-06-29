@@ -8,6 +8,9 @@ from ...excepts import BadRequestType
 from ...helper import typename
 from ...proto import jina_pb2
 
+if False:
+    from ...peapods import BasePod
+
 
 class TargetPod(ProtoTypeMixin):
     """
@@ -70,12 +73,13 @@ class TargetPod(ProtoTypeMixin):
         """
         return list(self.proto.out_edges)
 
-    def add_edge(self, to_pod: str) -> None:
+    def add_edge(self, to_pod: str, send_as_bind: bool) -> None:
         """Adds an edge to the internal representation of the out_edges.
 
         :param to_pod: the name of the pod outtraffic should go to
         """
-        self.proto.out_edges.append(to_pod)
+        edge = jina_pb2.RoutingEdgeProto(pod=to_pod, send_as_bind=send_as_bind)
+        self.proto.out_edges.append(edge)
 
 
 class RoutingTable(ProtoTypeMixin):
@@ -121,16 +125,16 @@ class RoutingTable(ProtoTypeMixin):
                 f'fail to construct a {self.__class__} object from {graph}'
             ) from ex
 
-    def add_edge(self, from_pod: str, to_pod: str) -> None:
+    def add_edge(self, from_pod: str, to_pod: str, send_as_bind: bool = False) -> None:
         """Adds an edge to the graph.
 
         :param from_pod: Pod from which traffic is send
         :param to_pod: Pod to which traffic is send
         """
-        self._get_target_pod(from_pod).add_edge(to_pod)
+        self._get_target_pod(from_pod).add_edge(to_pod, send_as_bind)
         self._get_target_pod(to_pod).expected_parts += 1
 
-    def add_pod(self, pod_name: str, host: str, port: int) -> None:
+    def add_pod(self, pod_name: str, pod: 'BasePod') -> None:
         """Adds a Pod vertex to the graph.
 
         :param pod_name: the name of the Pod. Should be unique to the graph.
@@ -142,8 +146,10 @@ class RoutingTable(ProtoTypeMixin):
                 f'Vertex with name {pod_name} already exists. Please check your configuration for unique Pod names.'
             )
         target = self.pods[pod_name]
-        target.host = host
-        target.port = port
+
+        target.host = pod.head_host
+        target.port = pod.head_port_in
+        target.target_identity = pod.head_zmq_identity
 
     def _get_target_pod(self, pod: str) -> TargetPod:
         return TargetPod(self.pods[pod])
@@ -187,10 +193,10 @@ class RoutingTable(ProtoTypeMixin):
         :return: new routing graphs with updated active Pods.
         """
         targets = []
-        for next_pod_index in self._get_out_edges(self.active_pod):
+        for edge in self._get_out_edges(self.active_pod):
             new_graph = RoutingTable(self, copy=True)
-            new_graph.active_pod = next_pod_index
-            targets.append(new_graph)
+            new_graph.active_pod = edge.pod
+            targets.append((new_graph, edge.send_as_bind))
         return targets
 
     def is_acyclic(self) -> bool:
@@ -203,9 +209,9 @@ class RoutingTable(ProtoTypeMixin):
         }
 
         for first in topological_sorting:
-            for second in self._get_out_edges(first):
+            for edge in self._get_out_edges(first):
 
-                if position_lookup[first] > position_lookup[second]:
+                if position_lookup[first] > position_lookup[edge.pod]:
                     return False
         return True
 
@@ -229,8 +235,8 @@ class RoutingTable(ProtoTypeMixin):
     def _topological_sort_pod(self, pod, visited, stack):
         visited[pod] = True
 
-        for out_pod in self._get_out_edges(pod):
-            if not visited[out_pod]:
-                self._topological_sort_pod(out_pod, visited, stack)
+        for edge in self._get_out_edges(pod):
+            if not visited[edge.pod]:
+                self._topological_sort_pod(edge.pod, visited, stack)
 
         stack.append(pod)

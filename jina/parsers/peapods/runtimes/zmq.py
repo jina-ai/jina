@@ -12,6 +12,12 @@ def mixin_zmq_runtime_parser(parser):
 
     gp = add_arg_group(parser, title='ZMQRuntime')
     gp.add_argument(
+        '--zmq-identity',
+        type=str,
+        default=helper.random_identity(),
+        help='The port for controlling the runtime, default a random port between [49152, 65535]',
+    )
+    gp.add_argument(
         '--port-ctrl',
         type=int,
         default=os.environ.get('JINA_CONTROL_PORT', helper.random_port()),

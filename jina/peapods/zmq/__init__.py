@@ -44,7 +44,11 @@ class Zmqlet:
         ctrl_addr: Optional[str] = None,
     ):
         self.args = args
-        self.identity = random_identity()
+
+        if args.zmq_identity:
+            self.identity = args.zmq_identity
+        else:
+            self.identity = random_identity()
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
@@ -63,17 +67,22 @@ class Zmqlet:
         self.is_closed = False
         self.is_polling_paused = False
         self.opened_socks = []  # this must be here for `close()`
-        self.ctx, self.in_sock, self.out_sock, self.ctrl_sock = self._init_sockets()
+        (
+            self.ctx,
+            self.in_sock,
+            self.out_sock,
+            self.ctrl_sock,
+            self.in_connect_sock,
+        ) = self._init_sockets()
+
         self.in_sock_type = self.in_sock.type
-        if self.out_sock is not None:
-            self.out_sock_type = self.out_sock.type
-        else:
-            self.out_sock_type = zmq.DEALER
+        self.out_sock_type = self.out_sock.type
         self.ctrl_sock_type = self.ctrl_sock.type
+
         self._register_pollin()
-        self.opened_socks.extend([self.in_sock, self.ctrl_sock])
-        if self.out_sock is not None:
-            self.opened_socks.append(self.out_sock)
+        self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
+        if self.in_connect_sock is not None:
+            self.opened_socks.append(self.in_connect_sock)
 
         self.out_sockets = {}
 
@@ -82,8 +91,10 @@ class Zmqlet:
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
-        if self.out_sock_type == zmq.ROUTER:
+        if self.out_sock_type == zmq.ROUTER and not self.args.dynamic_routing_out:
             self.poller.register(self.out_sock, zmq.POLLIN)
+        if self.in_connect_sock is not None:
+            self.poller.register(self.in_connect_sock, zmq.POLLIN)
 
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """
@@ -130,6 +141,8 @@ class Zmqlet:
             return self.out_sock  # for dealer return idle status to router
         elif socks.get(self.in_sock) == zmq.POLLIN:
             return self.in_sock
+        elif socks.get(self.in_connect_sock) == zmq.POLLIN:
+            return self.in_connect_sock
 
     def _close_sockets(self):
         """Close input, output and control sockets of this `Zmqlet`. """
@@ -178,22 +191,41 @@ class Zmqlet:
             self.logger.debug(
                 f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}'
             )
-            if not self.args.dynamic_routing_out:
-                out_sock, out_addr = _init_socket(
-                    ctx,
-                    self.args.host_out,
-                    self.args.port_out,
-                    self.args.socket_out,
-                    self.identity,
-                    ssh_server=self.args.ssh_server,
-                    ssh_keyfile=self.args.ssh_keyfile,
-                    ssh_password=self.args.ssh_password,
-                )
-                self.logger.debug(
-                    f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}'
-                )
-            else:
-                out_sock, out_addr = None, None
+            out_sock, out_addr = _init_socket(
+                ctx,
+                self.args.host_out,
+                self.args.port_out,
+                self.args.socket_out,
+                self.identity,
+                ssh_server=self.args.ssh_server,
+                ssh_keyfile=self.args.ssh_keyfile,
+                ssh_password=self.args.ssh_password,
+            )
+
+            in_connect = None
+            if self.args.hosts_in_connect:
+                for address in self.args.hosts_in_connect:
+                    if in_connect is None:
+                        host, port = address.split(':')
+
+                        in_connect, _ = _init_socket(
+                            ctx,
+                            host,
+                            port,
+                            SocketType.ROUTER_CONNECT,
+                            self.identity,
+                            ssh_server=self.args.ssh_server,
+                            ssh_keyfile=self.args.ssh_keyfile,
+                            ssh_password=self.args.ssh_password,
+                        )
+                    else:
+                        connect_socket(
+                            in_connect,
+                            address,
+                            ssh_server=self.args.ssh_server,
+                            ssh_keyfile=self.args.ssh_keyfile,
+                            ssh_password=self.args.ssh_password,
+                        )
 
             self.logger.debug(
                 f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) '
@@ -201,7 +233,7 @@ class Zmqlet:
                 f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})'
             )
 
-            return ctx, in_sock, out_sock, ctrl_sock
+            return ctx, in_sock, out_sock, ctrl_sock, in_connect
         except zmq.error.ZMQError as ex:
             self.close()
             raise ex
@@ -272,11 +304,16 @@ class Zmqlet:
         routing_table = RoutingTable(message.envelope.routing_table)
         next_targets = routing_table.get_next_targets()
         next_routes = []
-        for target in next_targets:
+        for target, send_as_bind in next_targets:
             pod_address = target.active_target_pod.full_address
-            out_socket = self.out_sockets.get(pod_address, None)
-            if out_socket is None:
-                out_socket = self._get_dynamic_out_socket(target.active_target_pod)
+
+            if send_as_bind:
+                out_socket = self.out_sock
+            else:
+                out_socket = self.out_sockets.get(pod_address, None)
+                if out_socket is None:
+                    out_socket = self._get_dynamic_out_socket(target.active_target_pod)
+
             next_routes.append((target, out_socket))
         return next_routes
 
@@ -287,6 +324,11 @@ class Zmqlet:
             new_envelope.CopyFrom(msg.envelope)
             new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
+
+            new_message.envelope.receiver_id = (
+                routing_table.active_target_pod.target_identity
+            )
+
             self._send_message_via(out_sock, new_message)
 
     def send_message(self, msg: 'Message'):
@@ -433,9 +475,10 @@ class ZmqStreamlet(Zmqlet):
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
-        if self.out_sock is not None:
-            self.out_sock = ZMQStream(self.out_sock, self.io_loop)
+        self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
+        if self.in_connect_sock is not None:
+            self.in_connect_sock = ZMQStream(self.in_connect_sock, self.io_loop)
         self.in_sock.stop_on_recv()
 
     def _get_dynamic_out_socket(self, target_pod):
@@ -477,6 +520,10 @@ class ZmqStreamlet(Zmqlet):
                         self.out_sock._handle_events = lambda *args, **kwargs: None
                     if hasattr(self.ctrl_sock, '_handle_events'):
                         self.ctrl_sock._handle_events = lambda *args, **kwargs: None
+                    if hasattr(self.in_connect_sock, '_handle_events'):
+                        self.in_connect_sock._handle_events = (
+                            lambda *args, **kwargs: None
+                        )
                 except AttributeError as e:
                     self.logger.error(f'failed to stop. {e!r}')
 
@@ -511,8 +558,12 @@ class ZmqStreamlet(Zmqlet):
         self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
         self.in_sock.on_recv(self._in_sock_callback)
         self.ctrl_sock.on_recv(lambda x: _callback(x, self.ctrl_sock_type))
-        if self.out_sock_type == zmq.ROUTER:
+        if self.out_sock_type == zmq.ROUTER and not self.args.dynamic_routing_out:
             self.out_sock.on_recv(lambda x: _callback(x, self.out_sock_type))
+        if self.in_connect_sock is not None:
+            self.in_connect_sock.on_recv(
+                lambda x: _callback(x, SocketType.ROUTER_CONNECT)
+            )
         self.io_loop.start()
         self.io_loop.clear_current()
         self.io_loop.close(all_fds=True)
@@ -759,10 +810,12 @@ def _init_socket(
         SocketType.PAIR_CONNECT: lambda: ctx.socket(zmq.PAIR),
         SocketType.ROUTER_BIND: lambda: ctx.socket(zmq.ROUTER),
         SocketType.DEALER_CONNECT: lambda: ctx.socket(zmq.DEALER),
+        SocketType.ROUTER_CONNECT: lambda: ctx.socket(zmq.ROUTER),
     }[socket_type]()
+
     sock.setsockopt(zmq.LINGER, 0)
 
-    if socket_type == SocketType.DEALER_CONNECT:
+    if identity is not None:
         sock.set_string(zmq.IDENTITY, identity)
 
     if socket_type.is_bind:
@@ -795,13 +848,23 @@ def _init_socket(
 
         # note that ssh only takes effect on CONNECT, not BIND
         # that means control socket setup does not need ssh
-        if ssh_server:
-            tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
-        else:
-            sock.connect(address)
+        connect_socket(sock, address, ssh_server, ssh_keyfile, ssh_password)
 
     if socket_type in {SocketType.SUB_CONNECT, SocketType.SUB_BIND}:
         # sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')
         sock.subscribe('')  # An empty shall subscribe to all incoming messages
 
     return sock, sock.getsockopt_string(zmq.LAST_ENDPOINT)
+
+
+def connect_socket(
+    sock,
+    address,
+    ssh_server: Optional[str] = None,
+    ssh_keyfile: Optional[str] = None,
+    ssh_password: Optional[str] = None,
+):
+    if ssh_server is not None:
+        tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
+    else:
+        sock.connect(address)
