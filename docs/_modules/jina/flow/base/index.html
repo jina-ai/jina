@@ -390,8 +390,6 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">base64</span>
-<span class="kn">import</span> <span class="nn">urllib</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overload</span><span class="p">,</span> <span class="n">Type</span>
@@ -409,7 +407,6 @@
     <span class="n">typename</span><span class="p">,</span>
     <span class="n">ArgNamespace</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
-    <span class="n">get_full_version</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -1357,8 +1354,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_show_success_message</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_telemetry</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -1952,27 +1947,7 @@
 
 <span class="sd">        :param kwargs: new network settings</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Flow.register"><a class="viewcode-back" href="../../../../api/jina.flow.base/#jina.Flow.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Register a Flow"""</span>
-
-        <span class="k">def</span> <span class="nf">_register</span><span class="p">():</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="s1">'https://telemetry.jina.ai/'</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">metas</span><span class="p">,</span> <span class="n">envs</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">urlsafe_b64encode</span><span class="p">(</span>
-                    <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="o">**</span><span class="n">metas</span><span class="p">,</span> <span class="o">**</span><span class="n">envs</span><span class="p">})</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span>
-                    <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">}</span>
-                <span class="p">)</span>
-                <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">pass</span>
-
-        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_register</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>
