@@ -6,13 +6,24 @@ from ..helper import get_public_ip, get_internal_ip
 
 
 def is_remote_local_connection(first, second):
-    if first == 'localhost':
-        first = '127.0.0.1'
-    if second == 'localhost':
-        second = '127.0.0.1'
-    first_ip = ipaddress.ip_address(first)
-    second_ip = ipaddress.ip_address(second)
-    return first_ip.is_global and (second_ip.is_private or second_ip.is_loopback)
+    try:
+        first_ip = ipaddress.ip_address(first)
+        first_global = first_ip.is_global
+    except ValueError:
+        if first == 'localhost':
+            first_global = False
+        else:
+            first_global = True
+    try:
+        second_ip = ipaddress.ip_address(second)
+        second_local = second_ip.is_private or second_ip.is_loopback
+    except ValueError:
+        if second == 'localhost':
+            second_local = True
+        else:
+            second_local = False
+
+    return first_global and second_local
 
 
 def get_connect_host(

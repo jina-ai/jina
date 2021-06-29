@@ -11,7 +11,7 @@ def test_index():
     with f:
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['loader']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -20,7 +20,7 @@ def test_index():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['flipper']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -29,7 +29,7 @@ def test_index():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['normalizer']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -38,7 +38,7 @@ def test_index():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['encoder']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -47,11 +47,11 @@ def test_index():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['chunk_indexer']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.head_args.socket_out == SocketType.ROUTER_BIND
         assert node.peas_args['peas'][0].socket_in == node.head_args.socket_in
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == node.head_args.socket_in
@@ -59,7 +59,7 @@ def test_index():
 
         node = f._pod_nodes['doc_indexer']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.head_args.socket_out == SocketType.ROUTER_BIND
         assert node.peas_args['peas'][0].socket_in == node.head_args.socket_in
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == node.head_args.socket_in
@@ -67,7 +67,7 @@ def test_index():
 
         node = f._pod_nodes['join_all']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.head_args.socket_out == SocketType.ROUTER_BIND
         assert node.peas_args['peas'][0].socket_in == node.head_args.socket_in
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == node.head_args.socket_in
@@ -79,7 +79,7 @@ def test_query():
     with f:
         node = f._pod_nodes['gateway']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['loader']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -88,7 +88,7 @@ def test_query():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['flipper']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -97,7 +97,7 @@ def test_query():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['normalizer']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -106,7 +106,7 @@ def test_query():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['encoder']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
@@ -115,11 +115,11 @@ def test_query():
             assert arg.socket_in == SocketType.DEALER_CONNECT
             assert arg.socket_out == SocketType.PUSH_CONNECT
         assert node.tail_args.socket_in == SocketType.PULL_BIND
-        assert node.tail_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.tail_args.socket_out == SocketType.ROUTER_BIND
 
         node = f._pod_nodes['chunk_indexer']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.head_args.socket_out == SocketType.ROUTER_BIND
         assert node.peas_args['peas'][0].socket_in == node.head_args.socket_in
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == node.head_args.socket_in
@@ -127,7 +127,7 @@ def test_query():
 
         node = f._pod_nodes['ranker']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.head_args.socket_out == SocketType.ROUTER_BIND
         assert node.peas_args['peas'][0].socket_in == node.head_args.socket_in
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == node.head_args.socket_in
@@ -135,7 +135,7 @@ def test_query():
 
         node = f._pod_nodes['doc_indexer']
         assert node.head_args.socket_in == SocketType.ROUTER_BIND
-        assert node.head_args.socket_out == SocketType.DEALER_CONNECT
+        assert node.head_args.socket_out == SocketType.ROUTER_BIND
         assert node.peas_args['peas'][0].socket_in == node.head_args.socket_in
         assert node.peas_args['peas'][0].socket_out == node.head_args.socket_out
         assert node.tail_args.socket_in == node.head_args.socket_in

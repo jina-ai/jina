@@ -59,7 +59,7 @@ def test_simple_dynamic_routing_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2'],
+                    'out_edges': [{'pod': 'pod2'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -108,7 +108,7 @@ def test_double_dynamic_routing_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -175,7 +175,7 @@ async def test_double_dynamic_routing_async_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -232,7 +232,7 @@ def test_double_dynamic_routing_zmqstreamlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',

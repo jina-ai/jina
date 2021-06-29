@@ -79,7 +79,8 @@ reverse order. That is, if `__init__.py` depends on `A.py`, which again depends 
     )
     gp.add_argument(
         '--hosts-in-connect',
-        action='append',
+        type=str,
+        nargs='*',
         help=f'The host address for input, by default it is {__default_host__}',
     )
     gp.add_argument(
