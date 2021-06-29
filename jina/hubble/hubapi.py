@@ -61,8 +61,6 @@ def install_local(
     """
 
     pkg_path, pkg_dist_path = get_dist_path(uuid, tag)
-    print(pkg_path)
-    print(pkg_dist_path)
     if pkg_dist_path.exists() and not force:
         return
 
