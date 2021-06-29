@@ -1,10 +1,11 @@
 from ipaddress import IPv4Address
 from typing import Dict, List, Optional, Set
+
 from pydantic import BaseModel, Field
 
-from .id import DaemonID
-from .enums import WorkspaceState
 from .base import StoreItem, StoreStatus
+from .enums import WorkspaceState
+from .id import DaemonID
 
 
 class WorkspaceArguments(BaseModel):

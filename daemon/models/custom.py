@@ -4,8 +4,8 @@ from typing import Iterable, Callable
 from pydantic import create_model, validator, Field, BaseConfig
 
 from cli.export import _export_parser_args
-from jina.helper import typename, random_identity
 from jina import helper
+from jina.helper import typename, random_identity
 
 
 def _get_validator(field: str, choices: Iterable):

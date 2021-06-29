@@ -1,22 +1,18 @@
-from typing import Union
 from pathlib import Path
 from shutil import rmtree
+from typing import Union
 
 from jina.helper import colored
-
 from .base import BaseStore
-from ..models import DaemonID
 from ..dockerize import Dockerizer
+from ..models import DaemonID
 from ..models.enums import WorkspaceState
-
 from ..models.workspaces import (
     WorkspaceArguments,
     WorkspaceItem,
     WorkspaceMetadata,
     WorkspaceStoreStatus,
 )
-
-from .. import __rootdir__, __dockerfiles__
 
 
 class WorkspaceStore(BaseStore):

@@ -213,7 +213,7 @@ class BasePea:
                 # return too early and the shutdown is set, means something fails!!
                 raise RuntimeFailToStart
             else:
-                self.logger.info(__ready_msg__)
+                self.logger.success(__ready_msg__)
         else:
             _timeout = _timeout or -1
             self.logger.warning(

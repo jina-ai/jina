@@ -1,20 +1,20 @@
-from typing import List, Optional
 from queue import Empty
 from threading import Thread
+from typing import List, Optional
 
 from fastapi import UploadFile
+
 from jina.helper import cached_property, colored
 from jina.logging.logger import JinaLogger
-
 from . import __task_queue__, daemon_logger, jinad_args
-from .models.id import DaemonID
 from .dockerize import Dockerizer
-from .models.enums import WorkspaceState
-from .stores import workspace_store as store
+from .excepts import DockerImageException, DockerNetworkException
 from .files import DaemonFile, workspace_files
 from .helper import id_cleaner, get_workspace_path
-from .excepts import DockerImageException, DockerNetworkException
+from .models.enums import WorkspaceState
+from .models.id import DaemonID
 from .models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata
+from .stores import workspace_store as store
 
 
 class DaemonWorker(Thread):

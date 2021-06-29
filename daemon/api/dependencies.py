@@ -1,17 +1,17 @@
 from pathlib import Path
 from typing import Dict, List, Optional
+
+from fastapi import HTTPException, UploadFile, File
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
-from fastapi import HTTPException, UploadFile, File
 
-from jina import __default_host__, __docker_host__, Flow
+from jina import __docker_host__, Flow
 from jina.enums import PeaRoleType, SocketType
 from jina.helper import cached_property, random_port
-
 from ..helper import get_workspace_path
+from ..models import DaemonID, FlowModel, PodModel, PeaModel
 from ..models.enums import WorkspaceState
 from ..stores import workspace_store as store
-from ..models import DaemonID, FlowModel, PodModel, PeaModel
 
 
 class FlowDepends:

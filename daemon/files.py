@@ -1,18 +1,18 @@
-import os
 import glob
-from pathlib import Path
+import os
 from itertools import chain
+from pathlib import Path
 from typing import Dict, List
 
 from fastapi import UploadFile
+
 from jina.helper import cached_property
 from jina.logging.logger import JinaLogger
-
-from .models import DaemonID
-from .helper import get_workspace_path
-from .excepts import Runtime400Exception
-from .models.enums import DaemonBuild, PythonVersion
 from . import __rootdir__, __dockerfiles__, jinad_args
+from .excepts import Runtime400Exception
+from .helper import get_workspace_path
+from .models import DaemonID
+from .models.enums import DaemonBuild, PythonVersion
 
 
 def workspace_files(
