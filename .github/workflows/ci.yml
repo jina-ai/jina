@@ -236,7 +236,7 @@ jobs:
         run: |
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all daemon/distributed tests
-            echo "JINA_DAEMON_BUILD=DEVEL" >> $GITHUB_ENV
+            export JINA_DAEMON_BUILD=DEVEL
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
               docker run --add-host host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
