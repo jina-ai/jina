@@ -189,9 +189,32 @@ class ProgressBar(TimeContext):
 
 
 class ChargingBar(ProgressBar):
-    '''Charging Bar'''
+    """Charging Bar"""
 
     bar_prefix = ' '
     bar_suffix = ' '
     empty_fill = '∙'
     fill = '█'
+
+
+class Spinner(ProgressBar):
+    """Spinner"""
+
+    phases = ('-', '\\', '|', '/')
+
+    def update(self):
+        """Update spinner"""
+        self.completed += 1
+        i = self.completed % len(self.phases)
+        sys.stdout.write('\r')
+        line = ' '.join(
+            ['⏳ {:>10}'.format(colored(self.task_name, 'cyan')), self.phases[i]]
+        )
+        sys.stdout.write(line)
+        sys.stdout.flush()
+
+
+class PieSpinner(Spinner):
+    """PieSpinner"""
+
+    phases = ['◷', '◶', '◵', '◴']
