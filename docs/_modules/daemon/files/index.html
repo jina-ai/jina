@@ -391,7 +391,6 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">cached_property</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__rootdir__</span><span class="p">,</span> <span class="n">__dockerfiles__</span><span class="p">,</span> <span class="n">jinad_args</span>
-<span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="n">Runtime400Exception</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">get_workspace_path</span>
 <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">.models.enums</span> <span class="kn">import</span> <span class="n">DaemonBuild</span><span class="p">,</span> <span class="n">PythonVersion</span>
@@ -423,7 +422,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">'wb+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'saved uploads to </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'saved uploads to </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_merge_requirement_file</span><span class="p">(</span><span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">UploadFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -472,6 +471,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="n">DaemonBuild</span><span class="o">.</span><span class="n">default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_python</span> <span class="o">=</span> <span class="n">PythonVersion</span><span class="o">.</span><span class="n">default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jina</span> <span class="o">=</span> <span class="s1">'latest'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run</span> <span class="o">=</span> <span class="s1">''</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ports</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process_file</span><span class="p">()</span>
@@ -521,6 +521,18 @@
             <span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">jinav</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Property representing python version</span>
+
+<span class="sd">        :return: python version in the daemonfile</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jina</span>
+
+    <span class="nd">@jinav</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">jinav</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jinav</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jina</span> <span class="o">=</span> <span class="n">jinav</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Property representing run command</span>
 
@@ -529,12 +541,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span>
 
     <span class="nd">@run</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Property setter for run command</span>
 
 <span class="sd">        :param run: command passed in .jinad file</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_run</span> <span class="o">=</span> <span class="n">run</span>
+        <span class="c1"># remove any leading/trailing spaces and quotes</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">run</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">run</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'</span><span class="se">\"</span><span class="s1">'</span> <span class="ow">and</span> <span class="n">run</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'</span><span class="se">\"</span><span class="s1">'</span><span class="p">:</span>
+            <span class="n">run</span> <span class="o">=</span> <span class="n">run</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">'</span><span class="se">\"</span><span class="s1">'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run</span> <span class="o">=</span> <span class="n">run</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
@@ -545,12 +560,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ports</span>
 
     <span class="nd">@ports</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ports</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ports</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">"""Property setter for ports command</span>
 
 <span class="sd">        :param ports: ports passed in .jinad file</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ports</span> <span class="o">=</span> <span class="n">ports</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ports</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ports</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">))))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'invalid value `</span><span class="si">{</span><span class="n">ports</span><span class="si">}</span><span class="s1">` passed for </span><span class="se">\'</span><span class="s1">ports</span><span class="se">\'</span><span class="s1">'</span><span class="p">)</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">requirements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -587,12 +605,22 @@
     <span class="k">def</span> <span class="nf">dockerargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""dict of args to be passed during docker build</span>
 
+<span class="sd">        .. note::</span>
+<span class="sd">            For DEVEL, we expect an already built jina image to be available locally.</span>
+<span class="sd">            We only pass the pip requirements as arguments.</span>
+<span class="sd">            For DEFAULT (cpu), we pass the python version, jina version used to pull the</span>
+<span class="sd">            image from docker hub in addition to the requirements.</span>
+
 <span class="sd">        :return: dict of args to be passed during docker build</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="p">{</span><span class="s1">'PY_VERSION'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">'PIP_REQUIREMENTS'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirements</span><span class="p">}</span>
+            <span class="p">{</span><span class="s1">'PIP_REQUIREMENTS'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirements</span><span class="p">}</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">build</span> <span class="o">==</span> <span class="n">DaemonBuild</span><span class="o">.</span><span class="n">DEVEL</span>
-            <span class="k">else</span> <span class="p">{</span><span class="s1">'PY_VERSION'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="s1">'PIP_REQUIREMENTS'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requirements</span><span class="p">,</span>
+                <span class="s1">'PY_VERSION'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                <span class="s1">'JINA_VERSION'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinav</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DaemonFile.process_file"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.DaemonFile.process_file">[docs]</a>    <span class="k">def</span> <span class="nf">process_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -600,22 +628,11 @@
         <span class="c1"># Checks if a file .jinad exists in the workspace</span>
         <span class="n">jinad_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span>
         <span class="k">if</span> <span class="n">jinad_file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'found .jinad file in path </span><span class="si">{</span><span class="n">jinad_file_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="n">jinad_file_path</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># TODO (deepankar): this logic isn't needed, only support .jinad</span>
-        <span class="c1"># Checks alls the .jinad files in the workspace</span>
-        <span class="n">_other_jinad_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_workdir</span><span class="p">)</span><span class="si">}</span><span class="s1">/*</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">_other_jinad_files</span><span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'please add a .jinad file to manage the docker image in the workspace'</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">_other_jinad_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_args</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">_other_jinad_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Multiple .jinad files found in workspace: '</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_other_jinad_files</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DaemonFile.set_args"><a class="viewcode-back" href="../../../api/daemon.files/#daemon.files.DaemonFile.set_args">[docs]</a>    <span class="k">def</span> <span class="nf">set_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -631,26 +648,13 @@
             <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">DEFAULTSECT</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'build'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">python</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'python'</span><span class="p">)</span>
-        <span class="c1"># remove any leading/trailing spaces and quotes</span>
-        <span class="n">stripped_run</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'run'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">len</span><span class="p">(</span><span class="n">stripped_run</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
-            <span class="ow">and</span> <span class="n">stripped_run</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'</span><span class="se">\"</span><span class="s1">'</span>
-            <span class="ow">and</span> <span class="n">stripped_run</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'</span><span class="se">\"</span><span class="s1">'</span>
-        <span class="p">):</span>
-            <span class="n">stripped_run</span> <span class="o">=</span> <span class="n">stripped_run</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">'</span><span class="se">\"</span><span class="s1">'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">stripped_run</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">ports_string</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'ports'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ports_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">))))</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'invalid value `</span><span class="si">{</span><span class="n">ports_string</span><span class="si">}</span><span class="s1">` passed for </span><span class="se">\'</span><span class="s1">ports</span><span class="se">\'</span><span class="s1">'</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="p">[]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'run'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'ports'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'DaemonFile(build=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="si">}</span><span class="s1">, python=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="si">}</span><span class="s1">, run=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="si">}</span><span class="s1">, '</span>
-            <span class="sa">f</span><span class="s1">'context=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dockercontext</span><span class="si">}</span><span class="s1">, args=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dockerargs</span><span class="si">}</span><span class="s1">), '</span>
+            <span class="sa">f</span><span class="s1">'DaemonFile(build=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="si">}</span><span class="s1">, python=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">python</span><span class="si">}</span><span class="s1">, jina=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">jinav</span><span class="si">}</span><span class="s1">, '</span>
+            <span class="sa">f</span><span class="s1">'run=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="si">}</span><span class="s1">, context=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dockercontext</span><span class="si">}</span><span class="s1">, args=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dockerargs</span><span class="si">}</span><span class="s1">), '</span>
             <span class="sa">f</span><span class="s1">'ports=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="si">}</span><span class="s1">)'</span>
         <span class="p">)</span></div>
 </pre></div>

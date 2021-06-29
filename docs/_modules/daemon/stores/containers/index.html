@@ -550,6 +550,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
         <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">workspace_store</span>
 
+        <span class="n">Dockerizer</span><span class="o">.</span><span class="n">rm_container</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
         <span class="n">workspace_store</span><span class="p">[</span><span class="n">workspace_id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">managed_objects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.'</span><span class="p">)</span></div>
 </pre></div>

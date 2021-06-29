@@ -436,53 +436,35 @@
 <dt id="daemon.dockerize.Dockerizer.network">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">network</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a docker bridge network with name <cite>workspace_id</cite> using a predefined ipam config.
-All containers under <cite>workspace_id</cite> would use this network.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>workspace_id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – workspace id</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="../daemon.excepts/#daemon.excepts.DockerNetworkException" title="daemon.excepts.DockerNetworkException"><strong>DockerNetworkException</strong></a> – if there are issues during network creation</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>id of the network</p>
-</dd>
-</dl>
+All containers under <cite>workspace_id</cite> would use this network.
+:type workspace_id: <a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>
+:param workspace_id: workspace id
+:raises DockerNetworkException: if there are issues during network creation
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:return: id of the network</p>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.build">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">build</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daemon_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.build" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build docker image using daemon file &amp; tag it with <cite>workspace_id</cite></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>workspace_id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><em>DaemonID</em></a>) – workspace id</p></li>
-<li><p><strong>daemon_file</strong> (<a class="reference internal" href="../daemon.files/#daemon.files.DaemonFile" title="daemon.files.DaemonFile"><em>DaemonFile</em></a>) – daemon file describing content inside the workdir</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – logger to be used</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference internal" href="../daemon.excepts/#daemon.excepts.DockerImageException" title="daemon.excepts.DockerImageException"><strong>DockerImageException</strong></a> – if there are issues during image building</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>id of the image</p>
-</dd>
-</dl>
+<dd><p>Build docker image using daemon file &amp; tag it with <cite>workspace_id</cite>
+:type workspace_id: DaemonID
+:param workspace_id: workspace id
+:type daemon_file: DaemonFile
+:param daemon_file: daemon file describing content inside the workdir
+:type logger: JinaLogger
+:param logger: logger to be used
+:raises DockerImageException: if there are issues during image building
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:return: id of the image</p>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.run_custom">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">run_custom</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daemon_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.run_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.run_custom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run a custom container during workspace creation.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This invalidates the default entrypint (mini-jinad) &amp; uses the entrypoint provided
-mentioned in the .jinad file (<cite>run</cite> section)</p>
+<dd><p>Run a custom container during workspace creation.
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This invalidates the default entrypint (mini-jinad) &amp; uses the entrypoint provided
+mentioned in the .jinad file (`run` section)
+</pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -503,10 +485,10 @@ mentioned in the .jinad file (<cite>run</cite> section)</p>
 <dt id="daemon.dockerize.Dockerizer.run">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">run</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">container_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ports</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrypoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a container using an existing image (tagged with <cite>workspace_id</cite>).
-Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <cite>container_id</cite></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This uses the default entrypoint (mini-jinad) &amp; appends <cite>command</cite> for execution.</p>
+Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <cite>container_id</cite>
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This uses the default entrypoint (mini-jinad) &amp; appends `command` for execution.
+</pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -535,11 +517,11 @@ Maps <cite>ports</cite> to local dockerhost &amp; tags the container with name <
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.volume">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">volume</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.volume" title="Permalink to this definition">¶</a></dt>
-<dd><p>Local volumes to be mounted inside the container during <cite>run</cite>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Local workspace should always be mounted to fefault WORKDIR for the container (/workspace).
-docker sock on dockerhost should also be mounted to make sure DIND works</p>
+<dd><p>Local volumes to be mounted inside the container during <cite>run</cite>.
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Local</span> <span class="n">workspace</span> <span class="n">should</span> <span class="n">always</span> <span class="n">be</span> <span class="n">mounted</span> <span class="n">to</span> <span class="n">fefault</span> <span class="n">WORKDIR</span> <span class="k">for</span> <span class="n">the</span> <span class="n">container</span> <span class="p">(</span><span class="o">/</span><span class="n">workspace</span><span class="p">)</span><span class="o">.</span>
+<span class="n">docker</span> <span class="n">sock</span> <span class="n">on</span> <span class="n">dockerhost</span> <span class="n">should</span> <span class="n">also</span> <span class="n">be</span> <span class="n">mounted</span> <span class="n">to</span> <span class="n">make</span> <span class="n">sure</span> <span class="n">DIND</span> <span class="n">works</span>
+</pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -556,89 +538,52 @@ docker sock on dockerhost should also be mounted to make sure DIND works</p>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.environment">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">environment</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.environment" title="Permalink to this definition">¶</a></dt>
-<dd><p>Environment variables to be set inside the container during <cite>run</cite></p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dict of env vars</p>
-</dd>
-</dl>
+<dd><p>Environment variables to be set inside the container during <cite>run</cite>
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:return: dict of env vars</p>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.remove">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">remove</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.remove" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines type of jinad object &amp; removes that from dockerd</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – <cite>DaemonID</cite> describing local docker object</p>
-</dd>
-</dl>
+<dd><p>Determines type of jinad object &amp; removes that from dockerd
+:type id: <a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>
+:param id: <cite>DaemonID</cite> describing local docker object</p>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.containers_in_network">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">containers_in_network</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.containers_in_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.containers_in_network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get all containers currently connected to network</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – network id</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>list of containers connected to network id</p>
-</dd>
-</dl>
+<dd><p>Get all containers currently connected to network
+:type id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param id: network id
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>
+:return: list of containers connected to network id</p>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.rm_network">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">rm_network</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.rm_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.rm_network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove network from local if no containers are connected</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – network id</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if deletion is successful else False</p>
-</dd>
-</dl>
+<dd><p>Remove network from local if no containers are connected
+:type id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param id: network id
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:return: True if deletion is successful else False</p>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.rm_image">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">rm_image</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.rm_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.rm_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove image from local</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – image id</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>KeyError</strong> – if image is not found on local</p></li>
-<li><p><a class="reference internal" href="../daemon.excepts/#daemon.excepts.DockerImageException" title="daemon.excepts.DockerImageException"><strong>DockerImageException</strong></a> – error during image removal</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Remove image from local
+:type id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param id: image id
+:raises KeyError: if image is not found on local
+:raises DockerImageException: error during image removal</p>
 </dd></dl>
 <dl class="py method">
 <dt id="daemon.dockerize.Dockerizer.rm_container">
 <em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">rm_container</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/dockerize/#Dockerizer.rm_container"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.dockerize.Dockerizer.rm_container" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove container from local</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – container id</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>KeyError</strong> – if container is not found on local</p></li>
-<li><p><a class="reference internal" href="../daemon.excepts/#daemon.excepts.DockerContainerException" title="daemon.excepts.DockerContainerException"><strong>DockerContainerException</strong></a> – error during container removal</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Remove container from local
+:type id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param id: container id
+:raises KeyError: if container is not found on local
+:raises DockerContainerException: error during container removal</p>
 </dd></dl>
 </dd></dl>
 </div>

@@ -467,7 +467,6 @@
         <span class="sd">"""</span>
 <span class="sd">        Create a docker bridge network with name `workspace_id` using a predefined ipam config.</span>
 <span class="sd">        All containers under `workspace_id` would use this network.</span>
-
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :raises DockerNetworkException: if there are issues during network creation</span>
 <span class="sd">        :return: id of the network</span>
@@ -511,7 +510,6 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Build docker image using daemon file &amp; tag it with `workspace_id`</span>
-
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :param daemon_file: daemon file describing content inside the workdir</span>
 <span class="sd">        :param logger: logger to be used</span>
@@ -559,11 +557,9 @@
         <span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">daemon_file</span><span class="p">:</span> <span class="s1">'DaemonFile'</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">'Container'</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">"""Run a custom container during workspace creation.</span>
-
 <span class="sd">        .. note::</span>
 <span class="sd">            This invalidates the default entrypint (mini-jinad) &amp; uses the entrypoint provided</span>
 <span class="sd">            mentioned in the .jinad file (`run` section)</span>
-
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :param daemon_file: daemon file describing content inside the workdir</span>
 <span class="sd">        :return: tuple of container object, network id &amp; ports</span>
@@ -588,10 +584,8 @@
         <span class="sd">"""</span>
 <span class="sd">        Runs a container using an existing image (tagged with `workspace_id`).</span>
 <span class="sd">        Maps `ports` to local dockerhost &amp; tags the container with name `container_id`</span>
-
 <span class="sd">        .. note::</span>
 <span class="sd">            This uses the default entrypoint (mini-jinad) &amp; appends `command` for execution.</span>
-
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :param container_id: name of the container</span>
 <span class="sd">        :param command: command to be appended to default entrypoint</span>
@@ -645,11 +639,9 @@
     <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Local volumes to be mounted inside the container during `run`.</span>
-
 <span class="sd">        .. note::</span>
 <span class="sd">            Local workspace should always be mounted to fefault WORKDIR for the container (/workspace).</span>
 <span class="sd">            docker sock on dockerhost should also be mounted to make sure DIND works</span>
-
 <span class="sd">        :param workspace_id: workspace id</span>
 <span class="sd">        :return: dict of volume mappings</span>
 <span class="sd">        """</span>
@@ -666,7 +658,6 @@
     <span class="k">def</span> <span class="nf">environment</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Environment variables to be set inside the container during `run`</span>
-
 <span class="sd">        :return: dict of env vars</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -678,7 +669,6 @@
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Determines type of jinad object &amp; removes that from dockerd</span>
-
 <span class="sd">        :param id: `DaemonID` describing local docker object</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">id</span><span class="o">.</span><span class="n">jtype</span> <span class="o">==</span> <span class="n">IDLiterals</span><span class="o">.</span><span class="n">JNETWORK</span><span class="p">:</span>
@@ -691,7 +681,6 @@
 <div class="viewcode-block" id="Dockerizer.containers_in_network"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.containers_in_network">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">containers_in_network</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
         <span class="sd">"""Get all containers currently connected to network</span>
-
 <span class="sd">        :param id: network id</span>
 <span class="sd">        :return: list of containers connected to network id</span>
 <span class="sd">        """</span>
@@ -706,7 +695,6 @@
     <span class="k">def</span> <span class="nf">rm_network</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Remove network from local if no containers are connected</span>
-
 <span class="sd">        :param id: network id</span>
 <span class="sd">        :return: True if deletion is successful else False</span>
 <span class="sd">        """</span>
@@ -736,7 +724,6 @@
     <span class="k">def</span> <span class="nf">rm_image</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Remove image from local</span>
-
 <span class="sd">        :param id: image id</span>
 <span class="sd">        :raises KeyError: if image is not found on local</span>
 <span class="sd">        :raises DockerImageException: error during image removal</span>
@@ -757,7 +744,6 @@
     <span class="k">def</span> <span class="nf">rm_container</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Remove container from local</span>
-
 <span class="sd">        :param id: container id</span>
 <span class="sd">        :raises KeyError: if container is not found on local</span>
 <span class="sd">        :raises DockerContainerException: error during container removal</span>

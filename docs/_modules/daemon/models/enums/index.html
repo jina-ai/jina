@@ -380,7 +380,8 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.models.enums</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">classproperty</span>
@@ -416,13 +417,15 @@
     <span class="n">CPU</span> <span class="o">=</span> <span class="s1">'default'</span>
     <span class="n">GPU</span> <span class="o">=</span> <span class="s1">'gpu'</span>
 
-    <span class="c1"># TODO (Deepankar): remove this once default becomes default</span>
 <div class="viewcode-block" id="DaemonBuild.default"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.default">[docs]</a>    <span class="nd">@classproperty</span>
     <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Get default value for DaemonBuild</span>
 
+<span class="sd">        .. note::</span>
+<span class="sd">            set env var `JINA_DAEMON_BUILD` to `DEVEL` if you're working on dev mode</span>
+
 <span class="sd">        :return: default value for DaemonBuild"""</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEVEL</span></div></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEVEL</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">'JINA_DAEMON_BUILD'</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'DEVEL'</span> <span class="k">else</span> <span class="bp">cls</span><span class="o">.</span><span class="n">DEFAULT</span></div></div>
 
 
 <div class="viewcode-block" id="PythonVersion"><a class="viewcode-back" href="../../../../api/daemon.models.enums/#daemon.models.enums.PythonVersion">[docs]</a><span class="k">class</span> <span class="nc">PythonVersion</span><span class="p">(</span><span class="n">DaemonEnum</span><span class="p">):</span>
