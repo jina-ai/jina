@@ -8,6 +8,7 @@ from jina import Flow, Client, Document, __default_host__
 from ..helpers import create_workspace, wait_for_workspace, delete_workspace
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 
 """
 Run below commands for local tests
@@ -119,3 +120,38 @@ def test_custom_project():
     assert res[0].data.docs[0].matches[0].tags.fields['first'].string_value == 's'
     assert res[0].data.docs[0].matches[0].tags.fields['second'].string_value == 't'
     delete_workspace(workspace_id, host=HOST)
+
+
+@pytest.fixture()
+def docker_compose(request):
+    os.system(f'docker network prune')
+    os.system(
+        f'docker-compose -f {request.param} --project-directory . up  --build -d --remove-orphans'
+    )
+    time.sleep(5)
+    yield
+    os.system(
+        f'docker-compose -f {request.param} --project-directory . down --remove-orphans'
+    )
+    os.system(f'docker network prune')
+
+
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
+    response_mock = mocker.Mock()
+    f = (
+        Flow()
+        .add()
+        .add(
+            uses='mwu_encoder.yml',
+            host='localhost:9000',
+            upload_files=['mwu_encoder.py'],
+        )
+        .add()
+    )
+    with f:
+        f.index(
+            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
+            on_done=response_mock,
+        )
+    response_mock.assert_called()

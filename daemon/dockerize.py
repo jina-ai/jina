@@ -1,3 +1,4 @@
+import socket
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
@@ -254,6 +255,16 @@ class Dockerizer:
         return container, network, ports
 
     @classmethod
+    def _get_volume_host_dir(cls):
+        volumes = cls.client.containers.get(socket.gethostname()).attrs['HostConfig'][
+            'Binds'
+        ]
+        for volume in volumes:
+            if volume.split(':')[1] == __root_workspace__:
+                return volume.split(':')[0]
+        return __root_workspace__
+
+    @classmethod
     def volume(cls, workspace_id: DaemonID) -> Dict[str, Dict]:
         """
         Local volumes to be mounted inside the container during `run`.
@@ -264,7 +275,7 @@ class Dockerizer:
         :return: dict of volume mappings
         """
         return {
-            f'{__root_workspace__}/{workspace_id}': {
+            f'{cls._get_volume_host_dir()}/{workspace_id}': {
                 'bind': '/workspace',
                 'mode': 'rw',
             },
