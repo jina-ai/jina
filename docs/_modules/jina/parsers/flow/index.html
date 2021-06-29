@@ -413,6 +413,13 @@
 
 <span class="s1">    If `REMOVE` is given then all inspect pods are removed when building the flow.</span>
 <span class="s1">    '''</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--no-telemetry'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, disable telemetry during the Flow creation.'</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
