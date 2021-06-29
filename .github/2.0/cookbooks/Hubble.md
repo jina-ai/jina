@@ -107,4 +107,15 @@ from jina import Flow
 f = Flow().add(uses='jinahub://<UUID8/Alias>[:<SECRET>]')
 ```
 
+### 3.2 Override Default Parameters
 
+It is possible that the default parameters of the published executor may not be ideal for your usecase.
+You can override any of these parameters by passing `override_with` and `override_metas` as parameters.
+
+```python
+from jina import Flow
+	
+f = Flow().add(uses='jinahub://<UUID8/Alias>[:<SECRET>]', override_with={'param1': 'new_value'}, override_metas={'name': 'new_name'})
+```
+
+This way, the executor will work with the overriden parameters.

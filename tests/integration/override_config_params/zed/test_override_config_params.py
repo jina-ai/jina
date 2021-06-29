@@ -9,17 +9,25 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 @pytest.fixture()
 def flow(request):
     flow_src = request.param
-    if flow_src == 'yml':
+    if flow_src == 'flow-yml':
         return Flow().load_config(os.path.join(cur_dir, 'flow.yml'))
-    elif flow_src == 'python':
+    elif flow_src == 'uses-yml':
         return Flow(return_results=True).add(
             uses=os.path.join(cur_dir, 'default_config.yml'),
             override_with={'param1': 50, 'param2': 30},
             override_metas={'workspace': 'different_workspace'},
         )
+    elif flow_src == 'class':
+        from .executor import Override
+
+        return Flow(return_results=True).add(
+            uses=Override,
+            override_with={'param1': 50, 'param2': 30, 'param3': 10},
+            override_metas={'workspace': 'different_workspace', 'name': 'name'},
+        )
 
 
-@pytest.mark.parametrize('flow', ['yml', 'python'], indirect=['flow'])
+@pytest.mark.parametrize('flow', ['flow-yml', 'uses-yml', 'class'], indirect=['flow'])
 def test_override_config_params(flow):
     with flow:
         resps = flow.search(inputs=[Document()], return_results=True)

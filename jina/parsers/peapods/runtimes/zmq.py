@@ -12,6 +12,11 @@ def mixin_zmq_runtime_parser(parser):
 
     gp = add_arg_group(parser, title='ZMQRuntime')
     gp.add_argument(
+        '--zmq-identity',
+        type=str,
+        help='The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.',
+    )
+    gp.add_argument(
         '--port-ctrl',
         type=int,
         default=os.environ.get('JINA_CONTROL_PORT', helper.random_port()),

@@ -8,8 +8,6 @@ import socket
 import threading
 import uuid
 import warnings
-import base64
-import urllib
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
@@ -27,7 +25,6 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
-    get_full_version,
 )
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
@@ -35,6 +32,7 @@ from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
 from ..peapods.pods.factory import PodFactory
 from ..types.routing.table import RoutingTable
+from ..peapods.networking import is_remote_local_connection
 
 __all__ = ['Flow']
 
@@ -766,21 +764,32 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
-                graph.add_pod(f'start-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
-                graph.add_pod(f'end-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
+                graph.add_pod(f'start-{GATEWAY_NAME}', pod)
+                graph.add_pod(f'end-{GATEWAY_NAME}', pod)
             else:
-                graph.add_pod(pod_id, pod.head_host, pod.head_port_in)
+                graph.add_pod(pod_id, pod)
 
         for end, pod in self._pod_nodes.items():
 
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
+            if pod.head_args.hosts_in_connect is None:
+                pod.head_args.hosts_in_connect = []
+
             for start in pod.needs:
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
 
-                graph.add_edge(start, end)
+                start_pod = graph._get_target_pod(start)
+                if is_remote_local_connection(start_pod.host, pod.head_host):
+                    pod.head_args.hosts_in_connect.append(
+                        graph._get_target_pod(start).full_address
+                    )
+
+                    graph.add_edge(start, end, True)
+                else:
+                    graph.add_edge(start, end)
 
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
@@ -963,8 +972,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.RUNNING
         self._show_success_message()
-        if not self.args.no_telemetry:
-            self.register()
 
         return self
 
@@ -1559,23 +1566,3 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: new network settings
         """
         self._common_kwargs.update(kwargs)
-
-    def register(self) -> None:
-        """Register a Flow"""
-
-        def _register():
-            url = 'https://telemetry.jina.ai/'
-            try:
-                metas, envs = get_full_version()
-                data = base64.urlsafe_b64encode(
-                    json.dumps({**metas, **envs}).encode('utf-8')
-                )
-                req = urllib.request.Request(
-                    url, data=data, headers={'User-Agent': 'Mozilla/5.0'}
-                )
-                urllib.request.urlopen(req)
-
-            except:
-                pass
-
-        threading.Thread(target=_register, daemon=True).start()
