@@ -24,6 +24,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     """
     with ImportExtensions(required=True):
         from fastapi import FastAPI
+        from starlette.requests import Request
+        from fastapi.responses import HTMLResponse
         from fastapi.middleware.cors import CORSMiddleware
         from .models import (
             JinaStatusModel,
@@ -33,12 +35,14 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             PROTO_TO_PYDANTIC_MODELS,
         )
 
+    docs_url = '/docs'
     app = FastAPI(
         title=args.title or 'My Jina Service',
         description=args.description
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
         'to customize this text.',
         version=__version__,
+        docs_url=None if args.custom_swaggerui else docs_url,
     )
 
     if args.cors:
@@ -171,6 +175,22 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         endpoints = json.loads(args.expose_endpoints)  # type: Dict[str, Dict]
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
+
+    if args.custom_swaggerui:
+
+        async def _render_custom_swagger_html(req: Request) -> HTMLResponse:
+            import urllib.request
+
+            swagger_url = 'https://api.jina.ai/swagger'
+            root_path = req.scope.get("root_path", "").rstrip("/")
+
+            req = urllib.request.Request(
+                swagger_url, headers={'User-Agent': 'Mozilla/5.0'}
+            )
+            with urllib.request.urlopen(req) as f:
+                return HTMLResponse(f.read().decode())
+
+        app.add_route(docs_url, _render_custom_swagger_html, include_in_schema=False)
 
     async def _get_singleton_result(req_iter) -> Dict:
         """
