@@ -175,5 +175,9 @@ entries = [
 ]
 
 if __name__ == '__main__':
+    all_changed_files = set()
     for d in entries:
         fill_overload(**d)
+        all_changed_files.add(d['filepath'])
+    for f in all_changed_files:
+        print(f)
