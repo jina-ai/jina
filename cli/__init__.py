@@ -70,7 +70,7 @@ def _is_latest_version(suppress_on_error=True):
             'https://api.jina.ai/latest', headers={'User-Agent': 'Mozilla/5.0'}
         )
         with urlopen(
-            req, timeout=1
+            req, timeout=5
         ) as resp:  # 'with' is important to close the resource after use
             latest_ver = json.load(resp)['version']
             from distutils.version import LooseVersion
@@ -78,8 +78,10 @@ def _is_latest_version(suppress_on_error=True):
             latest_ver = LooseVersion(latest_ver)
             cur_ver = LooseVersion(__version__)
             if cur_ver < latest_ver:
-                warnings.warn(
-                    f'WARNING: You are using Jina version {cur_ver}, however version {latest_ver} is available. '
+                from jina.logging.predefined import default_logger
+
+                default_logger.warning(
+                    f'You are using Jina version {cur_ver}, however version {latest_ver} is available. '
                     f'You should consider upgrading via the "pip install --upgrade jina" command.'
                 )
                 return False
@@ -93,8 +95,14 @@ def _is_latest_version(suppress_on_error=True):
 def main():
     """The main entrypoint of the CLI """
     _quick_ac_lookup()
+
     from . import api
 
     args = _get_run_args()
-    # _is_latest_version()
+
+    # checking version info in another thread
+    import threading
+
+    threading.Thread(target=_is_latest_version, daemon=True).start()
+
     getattr(api, args.cli.replace('-', '_'))(args)
