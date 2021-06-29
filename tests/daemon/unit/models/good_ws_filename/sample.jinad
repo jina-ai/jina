@@ -1,4 +1,0 @@
-build = gpu
-python = 3.9
-invalid_key = invalid_value
-ports = 12345,123456
