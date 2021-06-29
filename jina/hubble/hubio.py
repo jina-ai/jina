@@ -133,7 +133,7 @@ class HubIO:
                         break
 
                 if result is None:
-                    raise Exception(result.get('message', 'Unknown Error'))
+                    raise Exception('Unknown Error')
 
                 if 200 <= result['statusCode'] < 300:
                     # TODO: only support single executor now
