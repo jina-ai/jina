@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from fastapi import UploadFile
 
+from jina.enums import RemoteWorkspaceState
 from jina.helper import cached_property, colored
 from jina.logging.logger import JinaLogger
 from . import __task_queue__, daemon_logger, jinad_args
@@ -11,7 +12,6 @@ from .dockerize import Dockerizer
 from .excepts import DockerImageException, DockerNetworkException
 from .files import DaemonFile, workspace_files
 from .helper import id_cleaner, get_workspace_path
-from .models.enums import WorkspaceState
 from .models.id import DaemonID
 from .models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata
 from .stores import workspace_store as store
@@ -142,15 +142,15 @@ class DaemonWorker(Thread):
         try:
             store.update(
                 id=self.id,
-                value=WorkspaceState.UPDATING
+                value=RemoteWorkspaceState.UPDATING
                 if store[self.id].arguments
-                else WorkspaceState.CREATING,
+                else RemoteWorkspaceState.CREATING,
             )
             workspace_files(workspace_id=self.id, files=self.files, logger=self._logger)
             store.update(
                 id=self.id,
                 value=WorkspaceItem(
-                    state=WorkspaceState.UPDATING,
+                    state=RemoteWorkspaceState.UPDATING,
                     metadata=self.metadata,
                     arguments=self.arguments,
                 ),
@@ -167,21 +167,21 @@ class DaemonWorker(Thread):
 
             # Create a new container if necessary
             store[self.id].metadata.container_id = self.container_id
-            store[self.id].state = WorkspaceState.ACTIVE
+            store[self.id].state = RemoteWorkspaceState.ACTIVE
 
             self._logger.success(
                 f'workspace {colored(str(self.id), "cyan")} is updated'
             )
         except DockerNetworkException as e:
-            store.update(id=self.id, value=WorkspaceState.FAILED)
+            store.update(id=self.id, value=RemoteWorkspaceState.FAILED)
             self._logger.error(f'Error while creating the docker network: {e!r}')
         except DockerImageException as e:
-            store.update(id=self.id, value=WorkspaceState.FAILED)
+            store.update(id=self.id, value=RemoteWorkspaceState.FAILED)
             self._logger.error(f'Error while building the docker image: {e!r}')
         except Exception as e:
             # TODO: how to communicate errors to users? users track it via logs?
             # TODO: Handle cleanup in case of exception
-            store.update(id=self.id, value=WorkspaceState.FAILED)
+            store.update(id=self.id, value=RemoteWorkspaceState.FAILED)
             self._logger.error(f'{e!r}')
 
 

@@ -3,8 +3,8 @@ import os
 import pytest
 
 from daemon.models import DaemonID
-from daemon.models.enums import WorkspaceState
 from daemon.stores import WorkspaceStore
+from jina.enums import RemoteWorkspaceState
 
 
 @pytest.fixture(scope='function')
@@ -18,7 +18,7 @@ def filepath(tmpdir):
 def test_workspace_store(filepath):
     store = WorkspaceStore()
     id = DaemonID('jworkspace')
-    store.add(id=id, value=WorkspaceState('CREATING'))
+    store.add(id=id, value=RemoteWorkspaceState('CREATING'))
 
     assert len(store) == 1
     assert store.status.num_add == 1
