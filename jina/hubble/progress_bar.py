@@ -1,5 +1,9 @@
 import sys
 import time
+import math
+from collections import deque
+
+from datetime import timedelta
 from typing import Optional
 from ..logging.profile import TimeContext
 from ..helper import colored, get_readable_size, get_readable_time
@@ -22,11 +26,12 @@ class ProgressBar(TimeContext):
     :param logger: Jina logger
     """
 
-    suffix = "%(completed)d/%(total)d"
-    bar_prefix = " |"
-    bar_suffix = "| "
-    empty_fill = " "
-    fill = "#"
+    window_size = 5  # average window size
+    suffix = '%(percent).2f %% eta: %(eta_td)s'
+    bar_prefix = ' |'
+    bar_suffix = '| '
+    empty_fill = ' '
+    fill = '#'
 
     def __init__(
         self,
@@ -34,55 +39,124 @@ class ProgressBar(TimeContext):
         total: float = 100.0,
         bar_len: int = 32,
         logger=None,
+        **kwargs,
     ):
         super().__init__(task_name, logger)
         self.task_name = task_name
         self.total = total
         self.bar_len = bar_len
 
+        self.average = 0
+        self._avg_queue = deque(maxlen=self.window_size)
+
+        self._avg_update_ts = None
+        self._update_ts = None
+
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+
     def __getitem__(self, key):
-        if key.startswith("_"):
+        if key.startswith('_'):
             return None
         return getattr(self, key, None)
+
+    @property
+    def remaining(self):
+        """Return the remaining steps to be completed
+
+        :return: the remaining steps
+        """
+        return max(self.total - self.completed, 0)
+
+    @property
+    def elapsed(self):
+        """Return the elapsed time
+
+        :return: the elapsed seconds
+        """
+        return int(time.perf_counter() - self.start)
+
+    @property
+    def elapsed_td(self) -> 'timedelta':
+        """Return the timedelta of elapsed time
+
+        :return: the timedelta of elapsed seconds
+        """
+        return timedelta(seconds=self.elapsed)
+
+    @property
+    def eta(self):
+        """Return EAT (estimated time of arrival)
+
+        :return: return the seconds of ETA
+        """
+        return math.ceil(self.avg * self.remaining)
+
+    @property
+    def eta_td(self) -> 'timedelta':
+        """Return the timedelta of ETA
+
+        :return: the timedelta of ETA
+        """
+        return timedelta(seconds=self.eta)
 
     @property
     def percent(self) -> float:
         """Calculate percentage complete.
 
-        :return: the percentage of completed, [0.0, 1.0]
+        :return: the percentage of completed
         """
-        return self.completed / self.total
+        return self.completed / self.total * 100
+
+    def update_avg(self, steps: float, dt: float):
+        """Update the average of speed
+        :param steps: the completed steps
+        :param dt: the time seconds to use
+        """
+        if steps > 0:
+            win_len = len(self._avg_queue)
+            self._avg_queue.append(dt / steps)
+            now = time.perf_counter()
+
+            if win_len < self.window_size or now - self._avg_update_ts > 1:
+                self.avg = sum(self._avg_queue) / len(self._avg_queue)
+                self._avg_update_ts = now
 
     def update(
         self,
         steps: Optional[float] = 1.0,
-        progress: Optional[float] = None,
+        completed: Optional[float] = None,
         total: Optional[float] = None,
+        suffix_msg: Optional[str] = None,
     ):
         """Update progress with new values.
 
         :param steps: Number of incremental completed steps.
-        :param progress: : Number of completed steps.
-        :param total: Total number of steps, or ``None`` to not change. Defaults to None.
+        :param completed: : Number of completed steps.
+        :param total: Total number of steps, or `None` to not change. Defaults to None.
+        :param suffix_msg: the suffix message
         """
 
-        if progress is not None:
-            self.completed = progress
+        now = time.perf_counter()
+        if completed is not None:
+            steps = max(0, completed - self.completed)
+            self.completed = completed
         else:
             self.completed += steps
 
+        self.update_avg(steps, now - self._update_ts)
+        self._update_ts = now
+
         self.total = total if total is not None else self.total
 
-        sys.stdout.write("\r")
-        elapsed = time.perf_counter() - self.start
-
-        num_bars = int(max(1, self.percent * self.bar_len))
+        num_bars = int(max(1, self.percent / 100 * self.bar_len))
         num_bars = num_bars % self.bar_len
         num_bars = self.bar_len if not num_bars and self.completed else max(num_bars, 1)
 
-        suffix = self.suffix % self
-        # suffix = f'{self.completed}/{self.total}'
-        line = "".join(
+        sys.stdout.write('\r')
+
+        suffix = (suffix_msg or self.suffix) % self
+        line = ''.join(
             [
                 self.task_name,
                 self.bar_prefix,
@@ -93,22 +167,15 @@ class ProgressBar(TimeContext):
             ]
         )
         sys.stdout.write(line)
-
-        # sys.stdout.write(
-        #     '{:>10} |{:<{}}| ⏱️ {:3.1f}s'.format(
-        #         colored(self.task_name, 'cyan'),
-        #         colored('█' * num_bars, 'green'),
-        #         self.bar_len + 9,
-        #         elapsed,
-        #     )
-        # )
-        if num_bars == self.bar_len:
-            sys.stdout.write("\n")
+        # if num_bars == self.bar_len:
+        #     sys.stdout.write('\n')
         sys.stdout.flush()
 
     def __enter__(self):
         super().__enter__()
         self.completed = -1
+        self._update_ts = self.start
+        self._avg_update_ts = self.start
         self.update()
         return self
 
@@ -122,60 +189,9 @@ class ProgressBar(TimeContext):
 
 
 class ChargingBar(ProgressBar):
-    """Charging Bar"""
+    '''Charging Bar'''
 
-    bar_prefix = " "
-    bar_suffix = " "
-    empty_fill = "∙"
-    fill = "█"
-
-
-class Spinner(ProgressBar):
-    """Spinner"""
-
-    phases = ("-", "\\", "|", "/")
-    hide_cursor = True
-
-    def update(
-        self,
-        steps: Optional[float] = 1.0,
-        progress: Optional[float] = None,
-        total: Optional[float] = None,
-    ):
-        """Update progress with new values.
-
-        :param steps: Number of incremental completed steps.
-        :param progress: : Number of completed steps.
-        :param total: Total number of steps, or ``None`` to not change. Defaults to None.
-        """
-
-        if progress is not None:
-            self.completed = progress
-        else:
-            self.completed += steps
-
-        self.total = total if total is not None else self.total
-
-        i = int(self.completed) % len(self.phases)
-
-        sys.stdout.write("\r")
-        elapsed = time.perf_counter() - self.start
-
-        line = " ".join([self.task_name, self.phases[i]])
-        sys.stdout.write(line)
-
-        if self.percent >= 1.0:
-            sys.stdout.write("\n")
-        sys.stdout.flush()
-
-
-class PieSpinner(Spinner):
-    """PieSpinner"""
-
-    phases = ["◷", "◶", "◵", "◴"]
-
-
-class MoonSpinner(Spinner):
-    """MoonSpinner"""
-
-    phases = ["◑", "◒", "◐", "◓"]
+    bar_prefix = ' '
+    bar_suffix = ' '
+    empty_fill = '∙'
+    fill = '█'
