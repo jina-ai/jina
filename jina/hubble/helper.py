@@ -3,10 +3,12 @@
 import hashlib
 import io
 import json
+import os
 import zipfile
+from functools import lru_cache
 from pathlib import Path
 from typing import Tuple, Optional
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
 from .. import __resources_path__
@@ -15,16 +17,24 @@ from ..logging.predefined import default_logger
 from ..logging.profile import ProgressBar
 
 
+@lru_cache()
 def get_hubble_url() -> str:
-    try:
-        req = Request(
-            'https://api.jina.ai/hub/hubble.json', headers={'User-Agent': 'Mozilla/5.0'}
-        )
-        with urlopen(req) as resp:
-            return json.load(resp)['url']
-    except:
-        default_logger.critical('Can not fetch the URL of Hubble from `api.jina.ai`')
-        exit(1)
+    if 'JINA_HUBBLE_REGISTRY' in os.environ:
+        u = os.environ['JINA_HUBBLE_REGISTRY']
+    else:
+        try:
+            req = Request(
+                'https://api.jina.ai/hub/hubble.json',
+                headers={'User-Agent': 'Mozilla/5.0'},
+            )
+            with urlopen(req) as resp:
+                u = json.load(resp)['url']
+        except:
+            default_logger.critical(
+                'Can not fetch the URL of Hubble from `api.jina.ai`'
+            )
+            raise
+    return urljoin(u, '/v1/executors')
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
@@ -133,10 +143,10 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
 
 
 def download_with_resume(
-        url: str,
-        target_dir: 'Path',
-        filename: Optional[str] = None,
-        md5sum: Optional[str] = None,
+    url: str,
+    target_dir: 'Path',
+    filename: Optional[str] = None,
+    md5sum: Optional[str] = None,
 ) -> 'Path':
     """
     Download file from url to target_dir, and check md5sum.
@@ -154,7 +164,7 @@ def download_with_resume(
         import requests
 
     def _download(
-            url, target, resume_byte_pos: int = None, pbar: Optional[ProgressBar] = None
+        url, target, resume_byte_pos: int = None, pbar: Optional[ProgressBar] = None
     ):
         resume_header = (
             {'Range': f'bytes={resume_byte_pos}-'} if resume_byte_pos else None

@@ -2,11 +2,10 @@
 
 import argparse
 import hashlib
-import os
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode
 
 from .envs import JINA_HUB_CACHE_DIR, JINA_HUB_ROOT
 from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
@@ -75,8 +74,6 @@ class HubIO:
 
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
-        JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', get_hubble_url())
-        JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
         with ImportExtensions(required=True):
             import requests
@@ -111,13 +108,14 @@ class HubIO:
 
             method = 'put' if self.args.force else 'post'
 
+            hubble_url = get_hubble_url()
             # upload the archived executor to Jina Hub
             with TimeContext(
-                f'Uploading to {JINA_HUBBLE_PUSHPULL_URL} ({method.upper()})',
+                f'Uploading to {hubble_url} ({method.upper()})',
                 self.logger,
             ):
                 resp = getattr(requests, method)(
-                    JINA_HUBBLE_PUSHPULL_URL,
+                    hubble_url,
                     files={'file': content},
                     data=form_data,
                     headers=request_headers,
@@ -176,13 +174,11 @@ class HubIO:
         :param secret: the access secret of the executor
         :return: meta of executor
         """
-        JINA_HUBBLE_REGISTRY = os.environ.get('JINA_HUBBLE_REGISTRY', get_hubble_url())
-        JINA_HUBBLE_PUSHPULL_URL = urljoin(JINA_HUBBLE_REGISTRY, '/v1/executors')
 
         with ImportExtensions(required=True):
             import requests
 
-        pull_url = JINA_HUBBLE_PUSHPULL_URL + f'/{name}/?'
+        pull_url = get_hubble_url() + f'/{name}/?'
         path_params = {}
         if secret:
             path_params['secret'] = secret

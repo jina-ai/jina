@@ -178,11 +178,7 @@ def complete_path(path: str, extra_search_paths: Optional[Tuple[str]] = None) ->
     :return: Completed file path.
     """
     _p = None
-    if os.path.exists(path):
-        # this checks both abs and relative paths already
-        _p = path
-    else:
-        _p = _search_file_in_paths(path, extra_search_paths)
+    _p = _search_file_in_paths(path, extra_search_paths)
     if _p:
         return os.path.abspath(_p)
     else:
