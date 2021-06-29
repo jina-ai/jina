@@ -127,7 +127,7 @@ class HubIO:
 
                 uuid8 = image['id']
                 secret = image['secret']
-                alias = image['alias']
+                alias = image.get('alias', None)
                 visibility = image['visibility']
                 usage = (
                     f'jinahub://{uuid8}'
