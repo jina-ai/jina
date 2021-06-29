@@ -564,6 +564,13 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head_zmq_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get the zmq_identity of the HeadPea of this pod</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">zmq_identity</span>
+
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BasePod'</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
@@ -1041,12 +1048,13 @@
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_in</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">zmq_identity</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_dynamic_routing_out</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span></div>
+            <span class="n">args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span></div>
 </pre></div>
       </article>
       <footer>

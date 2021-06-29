@@ -390,6 +390,9 @@
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">...peapods</span> <span class="kn">import</span> <span class="n">BasePod</span>
+
 
 <div class="viewcode-block" id="TargetPod"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.TargetPod">[docs]</a><span class="k">class</span> <span class="nc">TargetPod</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">):</span>
     <span class="sd">"""</span>
@@ -452,12 +455,14 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">out_edges</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TargetPod.add_edge"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="TargetPod.add_edge"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.TargetPod.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">send_as_bind</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Adds an edge to the internal representation of the out_edges.</span>
 
 <span class="sd">        :param to_pod: the name of the pod outtraffic should go to</span>
+<span class="sd">        :param send_as_bind: True, if the TailPea should send via its ROUTER_BIND socket.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">out_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_pod</span><span class="p">)</span></div></div>
+        <span class="n">edge</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">RoutingEdgeProto</span><span class="p">(</span><span class="n">pod</span><span class="o">=</span><span class="n">to_pod</span><span class="p">,</span> <span class="n">send_as_bind</span><span class="o">=</span><span class="n">send_as_bind</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">out_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="RoutingTable"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable">[docs]</a><span class="k">class</span> <span class="nc">RoutingTable</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">):</span>
@@ -503,29 +508,31 @@
                 <span class="sa">f</span><span class="s1">'fail to construct a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s1"> object from </span><span class="si">{</span><span class="n">graph</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
 
-<div class="viewcode-block" id="RoutingTable.add_edge"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="RoutingTable.add_edge"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">send_as_bind</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Adds an edge to the graph.</span>
 
 <span class="sd">        :param from_pod: Pod from which traffic is send</span>
 <span class="sd">        :param to_pod: Pod to which traffic is send</span>
+<span class="sd">        :param send_as_bind: True, if the TailPea of the from_pod should send via its ROUTER_BIND socket.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">from_pod</span><span class="p">)</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">to_pod</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">from_pod</span><span class="p">)</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">to_pod</span><span class="p">,</span> <span class="n">send_as_bind</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">to_pod</span><span class="p">)</span><span class="o">.</span><span class="n">expected_parts</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="RoutingTable.add_pod"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.add_pod">[docs]</a>    <span class="k">def</span> <span class="nf">add_pod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="RoutingTable.add_pod"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.add_pod">[docs]</a>    <span class="k">def</span> <span class="nf">add_pod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pod</span><span class="p">:</span> <span class="s1">'BasePod'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Adds a Pod vertex to the graph.</span>
 
 <span class="sd">        :param pod_name: the name of the Pod. Should be unique to the graph.</span>
-<span class="sd">        :param host: the host of the Pod.</span>
-<span class="sd">        :param port: the port of the Pod.</span>
+<span class="sd">        :param pod: the Pod object to be added</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">pod_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pods</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Vertex with name </span><span class="si">{</span><span class="n">pod_name</span><span class="si">}</span><span class="s1"> already exists. Please check your configuration for unique Pod names.'</span>
             <span class="p">)</span>
         <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pods</span><span class="p">[</span><span class="n">pod_name</span><span class="p">]</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-        <span class="n">target</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
+
+        <span class="n">target</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_host</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_port_in</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">target_identity</span> <span class="o">=</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_zmq_identity</span></div>
 
     <span class="k">def</span> <span class="nf">_get_target_pod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TargetPod</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">TargetPod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pods</span><span class="p">[</span><span class="n">pod</span><span class="p">])</span>
@@ -569,10 +576,10 @@
 <span class="sd">        :return: new routing graphs with updated active Pods.</span>
 <span class="sd">        """</span>
         <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">next_pod_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_out_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_pod</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_out_edges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_pod</span><span class="p">):</span>
             <span class="n">new_graph</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">new_graph</span><span class="o">.</span><span class="n">active_pod</span> <span class="o">=</span> <span class="n">next_pod_index</span>
-            <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_graph</span><span class="p">)</span>
+            <span class="n">new_graph</span><span class="o">.</span><span class="n">active_pod</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">pod</span>
+            <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">new_graph</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">send_as_bind</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">targets</span></div>
 
 <div class="viewcode-block" id="RoutingTable.is_acyclic"><a class="viewcode-back" href="../../../../../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.is_acyclic">[docs]</a>    <span class="k">def</span> <span class="nf">is_acyclic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -585,9 +592,9 @@
         <span class="p">}</span>
 
         <span class="k">for</span> <span class="n">first</span> <span class="ow">in</span> <span class="n">topological_sorting</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">second</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_out_edges</span><span class="p">(</span><span class="n">first</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_out_edges</span><span class="p">(</span><span class="n">first</span><span class="p">):</span>
 
-                <span class="k">if</span> <span class="n">position_lookup</span><span class="p">[</span><span class="n">first</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">position_lookup</span><span class="p">[</span><span class="n">second</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">position_lookup</span><span class="p">[</span><span class="n">first</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">position_lookup</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">pod</span><span class="p">]:</span>
                     <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -611,9 +618,9 @@
     <span class="k">def</span> <span class="nf">_topological_sort_pod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
         <span class="n">visited</span><span class="p">[</span><span class="n">pod</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="k">for</span> <span class="n">out_pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_out_edges</span><span class="p">(</span><span class="n">pod</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">visited</span><span class="p">[</span><span class="n">out_pod</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_topological_sort_pod</span><span class="p">(</span><span class="n">out_pod</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">stack</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_out_edges</span><span class="p">(</span><span class="n">pod</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">visited</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">pod</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_topological_sort_pod</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">pod</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">stack</span><span class="p">)</span>
 
         <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span></div>
 </pre></div>

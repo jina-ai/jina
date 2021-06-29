@@ -394,6 +394,11 @@
 
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'ZMQRuntime'</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--zmq-identity'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--port-ctrl'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_CONTROL_PORT'</span><span class="p">,</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()),</span>

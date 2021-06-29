@@ -482,11 +482,14 @@
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.routing.table.TargetPod.add_edge">
-<code class="sig-name descname"><span class="pre">add_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/table/#TargetPod.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.table.TargetPod.add_edge" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send_as_bind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/table/#TargetPod.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.table.TargetPod.add_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds an edge to the internal representation of the out_edges.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>to_pod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the pod outtraffic should go to</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_pod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the pod outtraffic should go to</p></li>
+<li><p><strong>send_as_bind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, if the TailPea should send via its ROUTER_BIND socket.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -508,13 +511,14 @@
 </dl>
 <dl class="py method">
 <dt id="jina.types.routing.table.RoutingTable.add_edge">
-<code class="sig-name descname"><span class="pre">add_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/table/#RoutingTable.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.table.RoutingTable.add_edge" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_edge</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send_as_bind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/table/#RoutingTable.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.table.RoutingTable.add_edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds an edge to the graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>from_pod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Pod from which traffic is send</p></li>
 <li><p><strong>to_pod</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Pod to which traffic is send</p></li>
+<li><p><strong>send_as_bind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True, if the TailPea of the from_pod should send via its ROUTER_BIND socket.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -524,14 +528,13 @@
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.routing.table.RoutingTable.add_pod">
-<code class="sig-name descname"><span class="pre">add_pod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/table/#RoutingTable.add_pod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.table.RoutingTable.add_pod" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">add_pod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/routing/table/#RoutingTable.add_pod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.routing.table.RoutingTable.add_pod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a Pod vertex to the graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pod_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the name of the Pod. Should be unique to the graph.</p></li>
-<li><p><strong>host</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the host of the Pod.</p></li>
-<li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the port of the Pod.</p></li>
+<li><p><strong>pod</strong> (<a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><em>BasePod</em></a>) – the Pod object to be added</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>

@@ -426,7 +426,11 @@
         <span class="n">ctrl_addr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">identity</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">zmq_identity</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identity</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">zmq_identity</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identity</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_recv_kwargs</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -445,17 +449,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_polling_paused</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># this must be here for `close()`</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_sockets</span><span class="p">()</span>
+        <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_sockets</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="o">.</span><span class="n">type</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="o">.</span><span class="n">type</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="o">.</span><span class="n">type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="o">.</span><span class="n">type</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_register_pollin</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">])</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">out_sockets</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -464,8 +473,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">poller</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Poller</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">poller</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Zmqlet.pause_pollin"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.pause_pollin">[docs]</a>    <span class="k">def</span> <span class="nf">pause_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Remove :attr:`in_sock` from the poller """</span>
@@ -512,6 +523,8 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span>  <span class="c1"># for dealer return idle status to router</span>
         <span class="k">elif</span> <span class="n">socks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">)</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span>
+        <span class="k">elif</span> <span class="n">socks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">)</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">POLLIN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span>
 
     <span class="k">def</span> <span class="nf">_close_sockets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Close input, output and control sockets of this `Zmqlet`. """</span>
@@ -560,22 +573,41 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'input </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host_in</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span><span class="p">:</span>
-                <span class="n">out_sock</span><span class="p">,</span> <span class="n">out_addr</span> <span class="o">=</span> <span class="n">_init_socket</span><span class="p">(</span>
-                    <span class="n">ctx</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host_out</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_out</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_out</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
-                    <span class="n">ssh_server</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_server</span><span class="p">,</span>
-                    <span class="n">ssh_keyfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_keyfile</span><span class="p">,</span>
-                    <span class="n">ssh_password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_password</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'output </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host_out</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_out</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">out_sock</span><span class="p">,</span> <span class="n">out_addr</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">out_sock</span><span class="p">,</span> <span class="n">out_addr</span> <span class="o">=</span> <span class="n">_init_socket</span><span class="p">(</span>
+                <span class="n">ctx</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host_out</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_out</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_out</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                <span class="n">ssh_server</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_server</span><span class="p">,</span>
+                <span class="n">ssh_keyfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_keyfile</span><span class="p">,</span>
+                <span class="n">ssh_password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_password</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">in_connect</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">hosts_in_connect</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">hosts_in_connect</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">in_connect</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
+
+                        <span class="n">in_connect</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_init_socket</span><span class="p">(</span>
+                            <span class="n">ctx</span><span class="p">,</span>
+                            <span class="n">host</span><span class="p">,</span>
+                            <span class="n">port</span><span class="p">,</span>
+                            <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_CONNECT</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">identity</span><span class="p">,</span>
+                            <span class="n">ssh_server</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_server</span><span class="p">,</span>
+                            <span class="n">ssh_keyfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_keyfile</span><span class="p">,</span>
+                            <span class="n">ssh_password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_password</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">_connect_socket</span><span class="p">(</span>
+                            <span class="n">in_connect</span><span class="p">,</span>
+                            <span class="n">address</span><span class="p">,</span>
+                            <span class="n">ssh_server</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_server</span><span class="p">,</span>
+                            <span class="n">ssh_keyfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_keyfile</span><span class="p">,</span>
+                            <span class="n">ssh_password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssh_password</span><span class="p">,</span>
+                        <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'input </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">in_addr</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">) '</span>
@@ -583,7 +615,7 @@
                 <span class="sa">f</span><span class="s1">'control over </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s2">"yellow"</span><span class="p">)</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">SocketType</span><span class="o">.</span><span class="n">PAIR_BIND</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">)'</span>
             <span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">in_sock</span><span class="p">,</span> <span class="n">out_sock</span><span class="p">,</span> <span class="n">ctrl_sock</span>
+            <span class="k">return</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">in_sock</span><span class="p">,</span> <span class="n">out_sock</span><span class="p">,</span> <span class="n">ctrl_sock</span><span class="p">,</span> <span class="n">in_connect</span>
         <span class="k">except</span> <span class="n">zmq</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">ZMQError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">ex</span>
@@ -654,11 +686,16 @@
         <span class="n">routing_table</span> <span class="o">=</span> <span class="n">RoutingTable</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="p">)</span>
         <span class="n">next_targets</span> <span class="o">=</span> <span class="n">routing_table</span><span class="o">.</span><span class="n">get_next_targets</span><span class="p">()</span>
         <span class="n">next_routes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">next_targets</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="n">send_as_bind</span> <span class="ow">in</span> <span class="n">next_targets</span><span class="p">:</span>
             <span class="n">pod_address</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">full_address</span>
-            <span class="n">out_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sockets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pod_address</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">out_socket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">out_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_out_socket</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">active_target_pod</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">send_as_bind</span><span class="p">:</span>
+                <span class="n">out_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sockets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pod_address</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">out_socket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">out_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dynamic_out_socket</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">active_target_pod</span><span class="p">)</span>
+
             <span class="n">next_routes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">target</span><span class="p">,</span> <span class="n">out_socket</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">next_routes</span>
 
@@ -669,6 +706,11 @@
             <span class="n">new_envelope</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">envelope</span><span class="p">)</span>
             <span class="n">new_envelope</span><span class="o">.</span><span class="n">routing_table</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">routing_table</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
             <span class="n">new_message</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="p">,</span> <span class="n">envelope</span><span class="o">=</span><span class="n">new_envelope</span><span class="p">)</span>
+
+            <span class="n">new_message</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">routing_table</span><span class="o">.</span><span class="n">active_target_pod</span><span class="o">.</span><span class="n">target_identity</span>
+            <span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_send_message_via</span><span class="p">(</span><span class="n">out_sock</span><span class="p">,</span> <span class="n">new_message</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Zmqlet.send_message"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.send_message">[docs]</a>    <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
@@ -815,9 +857,10 @@
             <span class="n">get_or_reuse_loop</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="o">.</span><span class="n">stop_on_recv</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_dynamic_out_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_pod</span><span class="p">):</span>
@@ -859,6 +902,10 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="o">.</span><span class="n">_handle_events</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="kc">None</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">,</span> <span class="s1">'_handle_events'</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="o">.</span><span class="n">_handle_events</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="kc">None</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">,</span> <span class="s1">'_handle_events'</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="o">.</span><span class="n">_handle_events</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="kc">None</span>
+                        <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'failed to stop. </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div>
 
@@ -893,8 +940,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_in_sock_callback</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_callback</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="o">.</span><span class="n">on_recv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_in_sock_callback</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="o">.</span><span class="n">on_recv</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_callback</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock_type</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dynamic_routing_out</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="o">.</span><span class="n">on_recv</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_callback</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="o">.</span><span class="n">on_recv</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_callback</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_CONNECT</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="o">.</span><span class="n">clear_current</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">all_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
@@ -1141,10 +1192,12 @@
         <span class="n">SocketType</span><span class="o">.</span><span class="n">PAIR_CONNECT</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">PAIR</span><span class="p">),</span>
         <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_BIND</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span><span class="p">),</span>
         <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">),</span>
+        <span class="n">SocketType</span><span class="o">.</span><span class="n">ROUTER_CONNECT</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">ctx</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span><span class="p">),</span>
     <span class="p">}[</span><span class="n">socket_type</span><span class="p">]()</span>
+
     <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LINGER</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">socket_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">identity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">set_string</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="n">identity</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">socket_type</span><span class="o">.</span><span class="n">is_bind</span><span class="p">:</span>
@@ -1177,16 +1230,26 @@
 
         <span class="c1"># note that ssh only takes effect on CONNECT, not BIND</span>
         <span class="c1"># that means control socket setup does not need ssh</span>
-        <span class="k">if</span> <span class="n">ssh_server</span><span class="p">:</span>
-            <span class="n">tunnel_connection</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">ssh_server</span><span class="p">,</span> <span class="n">ssh_keyfile</span><span class="p">,</span> <span class="n">ssh_password</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="n">_connect_socket</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">ssh_server</span><span class="p">,</span> <span class="n">ssh_keyfile</span><span class="p">,</span> <span class="n">ssh_password</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">socket_type</span> <span class="ow">in</span> <span class="p">{</span><span class="n">SocketType</span><span class="o">.</span><span class="n">SUB_CONNECT</span><span class="p">,</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">SUB_BIND</span><span class="p">}:</span>
         <span class="c1"># sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>  <span class="c1"># An empty shall subscribe to all incoming messages</span>
 
     <span class="k">return</span> <span class="n">sock</span><span class="p">,</span> <span class="n">sock</span><span class="o">.</span><span class="n">getsockopt_string</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LAST_ENDPOINT</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_connect_socket</span><span class="p">(</span>
+    <span class="n">sock</span><span class="p">,</span>
+    <span class="n">address</span><span class="p">,</span>
+    <span class="n">ssh_server</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ssh_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ssh_password</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">ssh_server</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tunnel_connection</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">ssh_server</span><span class="p">,</span> <span class="n">ssh_keyfile</span><span class="p">,</span> <span class="n">ssh_password</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 </pre></div>
       </article>
       <footer>

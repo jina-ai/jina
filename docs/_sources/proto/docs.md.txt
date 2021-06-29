@@ -21,6 +21,7 @@
     - [RequestProto.ControlRequestProto](#jina.RequestProto.ControlRequestProto)
     - [RequestProto.DataRequestProto](#jina.RequestProto.DataRequestProto)
     - [RouteProto](#jina.RouteProto)
+    - [RoutingEdgeProto](#jina.RoutingEdgeProto)
     - [RoutingTableProto](#jina.RoutingTableProto)
     - [RoutingTableProto.PodsEntry](#jina.RoutingTableProto.PodsEntry)
     - [SparseNdArrayProto](#jina.SparseNdArrayProto)
@@ -369,6 +370,22 @@ Represents a the route paths of this message
 
 
 
+<a name="jina.RoutingEdgeProto"></a>
+
+### RoutingEdgeProto
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pod | [string](#string) |  |  |
+| send_as_bind | [bool](#bool) |  |  |
+
+
+
+
+
+
 <a name="jina.RoutingTableProto"></a>
 
 ### RoutingTableProto
@@ -464,7 +481,8 @@ Represents a Status
 | host | [string](#string) |  | the host HeadPea of the BasePod |
 | port | [uint32](#uint32) |  | the port HeadPea of the BasePod |
 | expected_parts | [uint32](#uint32) |  | the number of parts the pod should expect |
-| out_edges | [string](#string) | repeated | pod_name of Pods, the TailPea should send traffic to |
+| out_edges | [RoutingEdgeProto](#jina.RoutingEdgeProto) | repeated | pod_name of Pods, the TailPea should send traffic to |
+| target_identity | [string](#string) |  |  |
 
 
 

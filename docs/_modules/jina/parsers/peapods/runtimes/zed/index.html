@@ -460,6 +460,12 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'The port for output data, default a random port between [49152, 65535]'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--hosts-in-connect'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">'The host address for input, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--host-in'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>

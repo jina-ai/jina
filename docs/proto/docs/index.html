@@ -427,6 +427,7 @@
 <li><p><a class="reference external" href="#jina.RequestProto.ControlRequestProto">RequestProto.ControlRequestProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RequestProto.DataRequestProto">RequestProto.DataRequestProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RouteProto">RouteProto</a></p></li>
+<li><p><a class="reference external" href="#jina.RoutingEdgeProto">RoutingEdgeProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RoutingTableProto">RoutingTableProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RoutingTableProto.PodsEntry">RoutingTableProto.PodsEntry</a></p></li>
 <li><p><a class="reference external" href="#jina.SparseNdArrayProto">SparseNdArrayProto</a></p></li>
@@ -1212,6 +1213,33 @@
 <td>the status of the execution</td>
 </tr>
 </tbody>
+</table></div><p><a name="jina.RoutingEdgeProto"></a></p>
+</div>
+<div class="section" id="routingedgeproto">
+<h3>RoutingEdgeProto<a class="headerlink" href="#routingedgeproto" title="Permalink to this headline">¶</a></h3>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pod</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>send_as_bind</td>
+<td><a href="#bool">bool</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
 </table></div><p><a name="jina.RoutingTableProto"></a></p>
 </div>
 <div class="section" id="routingtableproto">
@@ -1407,9 +1435,15 @@
 </tr>
 <tr>
 <td>out_edges</td>
-<td><a href="#string">string</a></td>
+<td><a href="#jina.RoutingEdgeProto">RoutingEdgeProto</a></td>
 <td>repeated</td>
 <td>pod_name of Pods, the TailPea should send traffic to</td>
+</tr>
+<tr>
+<td>target_identity</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table></div><p><a name="jina.DenseNdArrayProto.QuantizationMode"></a></p>
@@ -1812,6 +1846,7 @@
 <li><a class="reference internal" href="#requestproto-controlrequestproto">RequestProto.ControlRequestProto</a></li>
 <li><a class="reference internal" href="#requestproto-datarequestproto">RequestProto.DataRequestProto</a></li>
 <li><a class="reference internal" href="#routeproto">RouteProto</a></li>
+<li><a class="reference internal" href="#routingedgeproto">RoutingEdgeProto</a></li>
 <li><a class="reference internal" href="#routingtableproto">RoutingTableProto</a></li>
 <li><a class="reference internal" href="#routingtableproto-podsentry">RoutingTableProto.PodsEntry</a></li>
 <li><a class="reference internal" href="#sparsendarrayproto">SparseNdArrayProto</a></li>

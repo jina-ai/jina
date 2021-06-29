@@ -464,7 +464,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “8d367813-0243-4cb7-82e3-bfec8d8e582f”</p>
+<p>Default: “700cc698-8bac-41af-ae3d-df4a18b8ed95”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -539,7 +539,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “60383910-2524-4b35-bf98-2089461dcb66”</p>
+<p>Default: “95ced794-0857-4fc8-9398-cc1ddb313517”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -572,7 +572,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “e69592eb-73d7-4284-9de2-5bde4f263227”</p>
+<p>Default: “277ce765-2712-4b24-b20c-7981cf3b2d49”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -605,15 +605,16 @@
 <h3>executor (pod)<a class="headerlink" href="#executor (pod)" title="Permalink to this headline">¶</a></h3>
 <p>Start an Executor. Executor is how Jina processes Document.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">executor</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">override</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">override</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">hosts</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">connect</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                      <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
                       <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
@@ -676,9 +677,12 @@
 <div class="section" id="ZMQRuntime arguments">
 <h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--zmq-identity</kbd></dt>
+<dd><p>The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.</p>
+</dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 45889</p>
+<p>Default: 43969</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -733,11 +737,14 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 57047</p>
+<p>Default: 51521</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 51593</p>
+<p>Default: 53177</p>
+</dd>
+<dt><kbd>--hosts-in-connect</kbd></dt>
+<dd><p>The host address for input, by default it is 0.0.0.0</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -748,12 +755,12 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 <p>Default: “0.0.0.0”</p>
 </dd>
 <dt><kbd>--socket-in</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
 <p>The socket type for input port</p>
 <p>Default: 0</p>
 </dd>
 <dt><kbd>--socket-out</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
 <p>The socket type for output port</p>
 <p>Default: 2</p>
 </dd>
@@ -820,7 +827,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 57963</p>
+<p>Default: 40651</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1042,15 +1049,15 @@ peas are running on host provided by the argument <code class="docutils literal 
 <h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this headline">¶</a></h3>
 <p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">override</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">override</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-                     <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">hosts</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">connect</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
                      <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
@@ -1115,9 +1122,12 @@ peas are running on host provided by the argument <code class="docutils literal 
 <div class="section" id="ZMQRuntime arguments_repeat1">
 <h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--zmq-identity</kbd></dt>
+<dd><p>The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.</p>
+</dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 44577</p>
+<p>Default: 50871</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1172,11 +1182,14 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 60319</p>
+<p>Default: 54565</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 43267</p>
+<p>Default: 46135</p>
+</dd>
+<dt><kbd>--hosts-in-connect</kbd></dt>
+<dd><p>The host address for input, by default it is 0.0.0.0</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1187,12 +1200,12 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 <p>Default: “0.0.0.0”</p>
 </dd>
 <dt><kbd>--socket-in</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
 <p>The socket type for input port</p>
 <p>Default: 1</p>
 </dd>
 <dt><kbd>--socket-out</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
 <p>The socket type for output port</p>
 <p>Default: 3</p>
 </dd>
@@ -1303,7 +1316,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 44777</p>
+<p>Default: 57173</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1429,15 +1442,15 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <h3>pea<a class="headerlink" href="#pea" title="Permalink to this headline">¶</a></h3>
 <p>Start a Pea. You should rarely use this directly unless you are doing low-level orchestration</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="n">pea</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">zmq</span><span class="o">-</span><span class="n">identity</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">ctrl</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">ipc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">server</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssh</span><span class="o">-</span><span class="n">password</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">override</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">override</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
-                 <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">hosts</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">connect</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="ow">in</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
+                 <span class="p">[</span><span class="o">--</span><span class="n">socket</span><span class="o">-</span><span class="n">out</span> <span class="p">{</span><span class="n">PULL_BIND</span><span class="p">,</span> <span class="n">PULL_CONNECT</span><span class="p">,</span> <span class="n">PUSH_BIND</span><span class="p">,</span> <span class="n">PUSH_CONNECT</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">memory</span><span class="o">-</span><span class="n">hwm</span><span class="p">]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">on</span><span class="o">-</span><span class="n">error</span><span class="o">-</span><span class="n">strategy</span> <span class="p">{</span><span class="n">IGNORE</span><span class="p">,</span> <span class="n">SKIP_HANDLE</span><span class="p">,</span> <span class="n">THROW_EARLY</span><span class="p">}]</span>
                  <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">part</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dynamic</span><span class="o">-</span><span class="n">routing</span><span class="o">-</span><span class="n">out</span><span class="p">]</span>
@@ -1494,9 +1507,12 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <div class="section" id="ZMQRuntime arguments_repeat2">
 <h4>ZMQRuntime arguments<a class="headerlink" href="#ZMQRuntime arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
+<dt><kbd>--zmq-identity</kbd></dt>
+<dd><p>The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.</p>
+</dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 52251</p>
+<p>Default: 51215</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1551,11 +1567,14 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 52245</p>
+<p>Default: 51075</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60757</p>
+<p>Default: 38475</p>
+</dd>
+<dt><kbd>--hosts-in-connect</kbd></dt>
+<dd><p>The host address for input, by default it is 0.0.0.0</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1566,12 +1585,12 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 <p>Default: “0.0.0.0”</p>
 </dd>
 <dt><kbd>--socket-in</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
 <p>The socket type for input port</p>
 <p>Default: 0</p>
 </dd>
 <dt><kbd>--socket-out</kbd></dt>
-<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT</p>
+<dd><p>Possible choices: PULL_BIND, PULL_CONNECT, PUSH_BIND, PUSH_CONNECT, SUB_BIND, SUB_CONNECT, PUB_BIND, PUB_CONNECT, PAIR_BIND, PAIR_CONNECT, ROUTER_BIND, DEALER_CONNECT, ROUTER_CONNECT</p>
 <p>The socket type for output port</p>
 <p>Default: 2</p>
 </dd>
@@ -1638,7 +1657,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 54107</p>
+<p>Default: 32883</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1742,7 +1761,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 50929</p>
+<p>Default: 59525</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>

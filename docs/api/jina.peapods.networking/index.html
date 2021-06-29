@@ -404,6 +404,22 @@
         <div class="section" id="module-jina.peapods.networking">
 <span id="jina-peapods-networking-module"></span><h1>jina.peapods.networking module<a class="headerlink" href="#module-jina.peapods.networking" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt id="jina.peapods.networking.is_remote_local_connection">
+<code class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></code><code class="sig-name descname"><span class="pre">is_remote_local_connection</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">first</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">second</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#is_remote_local_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.is_remote_local_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decides, whether <code class="docutils literal notranslate"><span class="pre">first</span></code> is remote host and <code class="docutils literal notranslate"><span class="pre">second</span></code> is localhost</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>first</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the ip or host name of the first runtime</p></li>
+<li><p><strong>second</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the ip or host name of the second runtime</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True, if first is remote and second is local</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt id="jina.peapods.networking.get_connect_host">
 <code class="sig-prename descclassname"><span class="pre">jina.peapods.networking.</span></code><code class="sig-name descname"><span class="pre">get_connect_host</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bind_host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bind_expose_public</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connect_args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/networking/#get_connect_host"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.networking.get_connect_host" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the host address for <code class="docutils literal notranslate"><span class="pre">connect_args</span></code></p>

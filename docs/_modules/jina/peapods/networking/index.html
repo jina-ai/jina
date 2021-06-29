@@ -381,9 +381,38 @@
         </label>
         <h1>Source code for jina.peapods.networking</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span class="kn">import</span> <span class="nn">ipaddress</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_public_ip</span><span class="p">,</span> <span class="n">get_internal_ip</span>
+
+
+<div class="viewcode-block" id="is_remote_local_connection"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.is_remote_local_connection">[docs]</a><span class="k">def</span> <span class="nf">is_remote_local_connection</span><span class="p">(</span><span class="n">first</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Decides, whether ``first`` is remote host and ``second`` is localhost</span>
+
+<span class="sd">    :param first: the ip or host name of the first runtime</span>
+<span class="sd">    :param second: the ip or host name of the second runtime</span>
+<span class="sd">    :return: True, if first is remote and second is local</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">first_ip</span> <span class="o">=</span> <span class="n">ipaddress</span><span class="o">.</span><span class="n">ip_address</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
+        <span class="n">first_global</span> <span class="o">=</span> <span class="n">first_ip</span><span class="o">.</span><span class="n">is_global</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">first</span> <span class="o">==</span> <span class="s1">'localhost'</span><span class="p">:</span>
+            <span class="n">first_global</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">first_global</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">second_ip</span> <span class="o">=</span> <span class="n">ipaddress</span><span class="o">.</span><span class="n">ip_address</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+        <span class="n">second_local</span> <span class="o">=</span> <span class="n">second_ip</span><span class="o">.</span><span class="n">is_private</span> <span class="ow">or</span> <span class="n">second_ip</span><span class="o">.</span><span class="n">is_loopback</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">second</span> <span class="o">==</span> <span class="s1">'localhost'</span><span class="p">:</span>
+            <span class="n">second_local</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">second_local</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">first_global</span> <span class="ow">and</span> <span class="n">second_local</span></div>
 
 
 <div class="viewcode-block" id="get_connect_host"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.get_connect_host">[docs]</a><span class="k">def</span> <span class="nf">get_connect_host</span><span class="p">(</span>
