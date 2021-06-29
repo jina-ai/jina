@@ -90,58 +90,58 @@ class JinaLogger:
 
         self.add_handlers(log_config, **context_vars)
 
-    def success(self, message):
+    def success(self, *args, **kwargs):
         """
         Prints messages as success
 
-        :param message: Message to log
+        .. #noqa: DAR101
         """
         with ColorContext(color='green'):
-            self.logger.info(message)
+            self.logger.info(*args, **kwargs)
 
-    def info(self, message):
+    def info(self, *args, **kwargs):
         """
         Prints messages as info
 
-        :param message: Message to log
+        .. #noqa: DAR101
         """
-        self.logger.info(message)
+        self.logger.info(*args, **kwargs)
 
-    def debug(self, message):
+    def debug(self, *args, **kwargs):
         """
-        Prints messages as info
+        Prints messages as debug
 
-        :param message: Message to log
+        .. #noqa: DAR101
         """
         with ColorContext(color='black', bold=True):  # dim white
-            self.logger.debug(message)
+            self.logger.debug(*args, **kwargs)
 
-    def warning(self, message):
+    def warning(self, *args, **kwargs):
         """
-        Prints messages as info
+        Prints messages as warn
 
-        :param message: Message to log
+        .. #noqa: DAR101
         """
         with ColorContext(color='yellow'):  # dim white
-            self.logger.warning(message)
+            self.logger.warning(*args, **kwargs)
 
-    def critical(self, message):
+    def critical(self, *args, **kwargs):
         """
-        Prints messages as info
+        Prints messages as critical
 
-        :param message: Message to log
+        .. #noqa: DAR101
         """
         with ColorContext(color='red', bold=True):  # dim white
-            self.logger.critical(message)
+            self.logger.critical(*args, **kwargs)
 
-    def error(self, message):
+    def error(self, *args, **kwargs):
         """
         Prints messages as info
 
-        :param message: Message to log
+        .. #noqa: DAR101
         """
         with ColorContext(color='red'):  # red
-            self.logger.error(message)
+            self.logger.error(*args, **kwargs)
 
     @property
     def handlers(self):
