@@ -38,9 +38,7 @@ def callback(msg):
 
 def test_simple_dynamic_routing_zmqlet():
     args1 = get_args()
-    args1.port_ctrl = 51337
     args2 = get_args()
-    args2.port_ctrl = 51338
 
     logger = logging.getLogger('zmq-test')
     with Zmqlet(args1, logger) as z1, Zmqlet(args2, logger) as z2:
