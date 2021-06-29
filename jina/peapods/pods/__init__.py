@@ -182,6 +182,13 @@ class BasePod(ExitFIFO):
         """
         return self.head_args.port_in
 
+    @property
+    def head_zmq_identity(self):
+        """Get the zmq_identity of the HeadPea of this pod
+        .. # noqa: DAR201
+        """
+        return self.head_args.zmq_identity
+
     def __enter__(self) -> 'BasePod':
         return self.start()
 
@@ -659,9 +666,10 @@ class Pod(BasePod):
         if args.dynamic_routing:
             args.dynamic_routing_in = True
             args.socket_in = SocketType.ROUTER_BIND
+            args.zmq_identity = random_identity()
 
     @staticmethod
     def _set_dynamic_routing_out(args):
         if args.dynamic_routing:
             args.dynamic_routing_out = True
-            args.socket_out = SocketType.DEALER_CONNECT
+            args.socket_out = SocketType.ROUTER_BIND
