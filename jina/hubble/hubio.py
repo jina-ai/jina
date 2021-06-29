@@ -127,7 +127,7 @@ class HubIO:
 
                 uuid8 = image['id']
                 secret = image['secret']
-                docker_image = image['pullPath']
+                alias = image['alias']
                 visibility = image['visibility']
                 usage = (
                     f'jinahub://{uuid8}'
@@ -141,7 +141,12 @@ class HubIO:
                     + colored(
                         f'{secret}',
                         'cyan',
+                    )
+                    + colored(
+                        '(PLEASE KEEP IT CAREFULLY, OTHERWISE YOU WILL LOSE CONTROL OF YOUR EXECUTOR!)',
+                        'red',
                     ),
+                    f'\t📛 Alias:\t' + colored(f'{alias}', 'cyan') if alias else '/',
                     f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
                 ]
                 self.logger.success(
