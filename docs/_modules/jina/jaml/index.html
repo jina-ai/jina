@@ -896,16 +896,17 @@
                     <span class="n">with_params</span> <span class="o">=</span> <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'with'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">with_params</span><span class="p">:</span>
                         <span class="n">with_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">override_with</span><span class="p">)</span>
+                        <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">with_params</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">with_params</span> <span class="o">=</span> <span class="n">override_with</span>
-                    <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">with_params</span><span class="p">)</span>
+                        <span class="n">no_tag_yml</span><span class="p">[</span><span class="s1">'with'</span><span class="p">]</span> <span class="o">=</span> <span class="n">override_with</span>
                 <span class="k">if</span> <span class="n">override_metas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">metas_params</span> <span class="o">=</span> <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'metas'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">metas_params</span><span class="p">:</span>
                         <span class="n">metas_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">override_metas</span><span class="p">)</span>
+                        <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">metas_params</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">metas_params</span> <span class="o">=</span> <span class="n">override_metas</span>
-                    <span class="n">no_tag_yml</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">metas_params</span><span class="p">)</span>
+                        <span class="n">no_tag_yml</span><span class="p">[</span><span class="s1">'metas'</span><span class="p">]</span> <span class="o">=</span> <span class="n">override_metas</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">BadConfigSource</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'can not construct </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s1"> from an empty </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">. nothing to read from there'</span>
