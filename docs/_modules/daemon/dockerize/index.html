@@ -669,7 +669,10 @@
 
 <span class="sd">        :return: dict of env vars</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">'JINA_LOG_WORKSPACE'</span><span class="p">:</span> <span class="s1">'/workspace/logs'</span><span class="p">,</span> <span class="s1">'JINA_RANDOM_PORTS'</span><span class="p">:</span> <span class="s1">'True'</span><span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">'JINA_LOG_WORKSPACE'</span><span class="p">:</span> <span class="s1">'/workspace/logs'</span><span class="p">,</span>
+            <span class="s1">'JINA_RANDOM_PORT_MIN'</span><span class="p">:</span> <span class="s1">'49153'</span><span class="p">,</span>
+        <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Dockerizer.remove"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.remove">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">):</span>
