@@ -178,7 +178,8 @@ class HubIO:
                     self.logger.info(
                         f'You can use it via `uses={usage}` in the Flow/CLI.'
                     )
-
+                elif result['message']:
+                    raise Exception(result['message'])
                 elif resp.text:
                     # NOTE: sometimes resp.text returns empty
                     raise Exception(resp.text)
