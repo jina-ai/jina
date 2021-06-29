@@ -124,7 +124,7 @@ def test_custom_project():
 
 @pytest.fixture()
 def docker_compose(request):
-    os.system(f'docker network prune')
+    os.system(f'docker network prune -f ')
     os.system(
         f'docker-compose -f {request.param} --project-directory . up  --build -d --remove-orphans'
     )
@@ -133,7 +133,7 @@ def docker_compose(request):
     os.system(
         f'docker-compose -f {request.param} --project-directory . down --remove-orphans'
     )
-    os.system(f'docker network prune')
+    os.system(f'docker network prune -f ')
 
 
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
