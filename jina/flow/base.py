@@ -8,8 +8,6 @@ import socket
 import threading
 import uuid
 import warnings
-import base64
-import urllib
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
@@ -27,7 +25,6 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
-    get_full_version,
 )
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
@@ -975,8 +972,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.RUNNING
         self._show_success_message()
-        if not self.args.no_telemetry:
-            self.register()
 
         return self
 
@@ -1571,23 +1566,3 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: new network settings
         """
         self._common_kwargs.update(kwargs)
-
-    def register(self) -> None:
-        """Register a Flow"""
-
-        def _register():
-            url = 'https://telemetry.jina.ai/'
-            try:
-                metas, envs = get_full_version()
-                data = base64.urlsafe_b64encode(
-                    json.dumps({**metas, **envs}).encode('utf-8')
-                )
-                req = urllib.request.Request(
-                    url, data=data, headers={'User-Agent': 'Mozilla/5.0'}
-                )
-                urllib.request.urlopen(req)
-
-            except:
-                pass
-
-        threading.Thread(target=_register, daemon=True).start()

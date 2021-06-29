@@ -33,13 +33,6 @@ def mixin_flow_features_parser(parser):
     ''',
     )
 
-    gp.add_argument(
-        '--no-telemetry',
-        action='store_true',
-        default=False,
-        help='If set, disable telemetry during the Flow creation.',
-    )
-
 
 def set_flow_parser(parser=None, with_identity=False):
     """Set the parser for the flow
