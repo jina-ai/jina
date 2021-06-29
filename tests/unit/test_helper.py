@@ -259,26 +259,24 @@ def test_yaml_filepath_validate_bad(val):
 
 @pytest.fixture
 def config():
-    os.environ['JINA_RANDOM_PORTS'] = "True"
+    os.environ['JINA_RANDOM_PORT_MIN'] = '49153'
     yield
-    del os.environ['JINA_RANDOM_PORTS']
+    del os.environ['JINA_RANDOM_PORT_MIN']
 
 
 def test_random_port(config):
-    assert os.environ['JINA_RANDOM_PORTS']
+    assert os.environ['JINA_RANDOM_PORT_MIN']
     port = random_port()
     assert 49153 <= port <= 65535
 
 
 @pytest.fixture
 def config_few_ports():
-    os.environ['JINA_RANDOM_PORTS'] = "True"
     os.environ['JINA_RANDOM_PORT_MIN'] = "49300"
     os.environ['JINA_RANDOM_PORT_MAX'] = "49301"
     yield
     del os.environ['JINA_RANDOM_PORT_MIN']
     del os.environ['JINA_RANDOM_PORT_MAX']
-    del os.environ['JINA_RANDOM_PORTS']
 
 
 def test_random_port_max_failures_for_tests_only(config_few_ports):
