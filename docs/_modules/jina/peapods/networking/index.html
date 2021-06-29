@@ -412,7 +412,10 @@
     <span class="c1"># it is a remote pea managed by jinad. (all remote peas are inside docker)</span>
     <span class="n">conn_docker</span> <span class="o">=</span> <span class="p">(</span>
         <span class="nb">getattr</span><span class="p">(</span><span class="n">connect_args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="ow">and</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
+        <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub+docker://'</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">conn_local</span>
 
     <span class="c1"># is BIND &amp; CONNECT all on the same remote?</span>
@@ -457,7 +460,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

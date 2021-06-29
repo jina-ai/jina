@@ -382,12 +382,12 @@
         <h1>Source code for daemon.stores</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">jinad_args</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseStore</span>
+<span class="kn">from</span> <span class="nn">.flows</span> <span class="kn">import</span> <span class="n">FlowStore</span>
 <span class="kn">from</span> <span class="nn">.peas</span> <span class="kn">import</span> <span class="n">PeaStore</span>
 <span class="kn">from</span> <span class="nn">.pods</span> <span class="kn">import</span> <span class="n">PodStore</span>
-<span class="kn">from</span> <span class="nn">.flows</span> <span class="kn">import</span> <span class="n">FlowStore</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseStore</span>
 <span class="kn">from</span> <span class="nn">.workspaces</span> <span class="kn">import</span> <span class="n">WorkspaceStore</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">jinad_args</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">IDLiterals</span>
 
@@ -472,7 +472,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

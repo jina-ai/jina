@@ -711,7 +711,7 @@
                 <span class="n">result</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">'red'</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">r</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR_CHAINED</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">+=</span> <span class="s1">'∅'</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">'grey'</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">'yellow'</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span>
 
         <span class="n">route_str</span> <span class="o">=</span> <span class="p">[</span><span class="n">_pod_str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">routes</span><span class="p">]</span>
@@ -893,7 +893,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

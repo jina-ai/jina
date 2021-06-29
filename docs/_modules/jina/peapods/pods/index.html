@@ -994,42 +994,6 @@
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">_parse_base_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="c1"># use the executor existed in Jina Hub.</span>
-            <span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">parse_hub_uri</span>
-
-            <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">scheme</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub'</span><span class="p">):</span>
-                <span class="kn">from</span> <span class="nn">...hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
-                <span class="kn">from</span> <span class="nn">...parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_pull_parser</span>
-
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'The given executor URI </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1"> is not valid, please double check it!'</span>
-                    <span class="p">)</span>
-
-                <span class="n">pull_args</span> <span class="o">=</span> <span class="n">set_hub_pull_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">])</span>
-                <span class="n">hubio</span> <span class="o">=</span> <span class="n">HubIO</span><span class="p">(</span><span class="n">pull_args</span><span class="p">)</span>
-
-                <span class="n">executor</span> <span class="o">=</span> <span class="n">hubio</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
-                <span class="n">uuid</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span>
-
-                <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
-                    <span class="c1"># use docker image</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
-                <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub'</span><span class="p">:</span>
-                    <span class="kn">from</span> <span class="nn">...hubble.hubapi</span> <span class="kn">import</span> <span class="n">resolve_local</span>
-
-                    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="p">:</span>
-                        <span class="n">hubio</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
-                        <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">"config.yml"</span><span class="si">}</span><span class="s1">'</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown schema: </span><span class="si">{</span><span class="n">scheme</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-
         <span class="n">parsed_args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'head'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'tail'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'peas'</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'parallel'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># reasons to separate head and tail from peas is that they</span>
@@ -1095,7 +1059,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -382,18 +382,17 @@
         <h1>Source code for daemon.api.dependencies</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">,</span> <span class="n">File</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">FilePath</span>
 <span class="kn">from</span> <span class="nn">pydantic.errors</span> <span class="kn">import</span> <span class="n">PathNotAFileError</span>
-<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">,</span> <span class="n">File</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">Flow</span>
-<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">SocketType</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">Flow</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">RemoteWorkspaceState</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">random_port</span>
-
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_workspace_path</span>
-<span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">WorkspaceState</span>
-<span class="kn">from</span> <span class="nn">..stores</span> <span class="kn">import</span> <span class="n">workspace_store</span> <span class="k">as</span> <span class="n">store</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">FlowModel</span><span class="p">,</span> <span class="n">PodModel</span><span class="p">,</span> <span class="n">PeaModel</span>
+<span class="kn">from</span> <span class="nn">..stores</span> <span class="kn">import</span> <span class="n">workspace_store</span> <span class="k">as</span> <span class="n">store</span>
 
 
 <div class="viewcode-block" id="FlowDepends"><a class="viewcode-back" href="../../../../api/daemon.api.dependencies/#daemon.api.dependencies.FlowDepends">[docs]</a><span class="k">class</span> <span class="nc">FlowDepends</span><span class="p">:</span>
@@ -581,12 +580,12 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">store</span><span class="p">:</span>
             <span class="c1"># when id doesn't exist in store, create it.</span>
-            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceState</span><span class="o">.</span><span class="n">PENDING</span><span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">PENDING</span><span class="p">)</span>
             <span class="n">__task_queue__</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">store</span> <span class="ow">and</span> <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">WorkspaceState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">store</span> <span class="ow">and</span> <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">ACTIVE</span><span class="p">:</span>
             <span class="c1"># when id exists in the store and is "active", update it.</span>
-            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceState</span><span class="o">.</span><span class="n">PENDING</span><span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">PENDING</span><span class="p">)</span>
             <span class="n">__task_queue__</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]}</span></div>
@@ -602,7 +601,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

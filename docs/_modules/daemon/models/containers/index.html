@@ -380,11 +380,12 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.models.containers</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
 
-<span class="kn">from</span> <span class="nn">.id</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">StoreItem</span><span class="p">,</span> <span class="n">StoreStatus</span>
+<span class="kn">from</span> <span class="nn">.id</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 
 
 <div class="viewcode-block" id="ContainerArguments"><a class="viewcode-back" href="../../../../api/daemon.models.containers/#daemon.models.containers.ContainerArguments">[docs]</a><span class="k">class</span> <span class="nc">ContainerArguments</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -429,7 +430,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

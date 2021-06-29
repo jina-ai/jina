@@ -415,6 +415,8 @@
 <div class="viewcode-block" id="set_hub_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">"""Set the parser for the hub</span>
 <span class="sd">    :param parser: the parser configure</span>
+
+<span class="sd">    :return: the parser</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
@@ -442,7 +444,9 @@
             <span class="n">description</span><span class="o">=</span><span class="s1">'Download an executor package/image from the Jina hub'</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span></div>
 </pre></div>
       </article>
       <footer>
@@ -455,7 +459,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -383,9 +383,9 @@
 <span></span><span class="kn">import</span> <span class="nn">traceback</span>
 
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">status</span>
-<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
 <span class="kn">from</span> <span class="nn">fastapi.encoders</span> <span class="kn">import</span> <span class="n">jsonable_encoder</span>
 <span class="kn">from</span> <span class="nn">fastapi.exceptions</span> <span class="kn">import</span> <span class="n">RequestValidationError</span>
+<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
 
 
 <div class="viewcode-block" id="DockerNotFoundException"><a class="viewcode-back" href="../../../api/daemon.excepts/#daemon.excepts.DockerNotFoundException">[docs]</a><span class="k">class</span> <span class="nc">DockerNotFoundException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -451,7 +451,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

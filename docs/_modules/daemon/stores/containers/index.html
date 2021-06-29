@@ -388,14 +388,13 @@
 
 <span class="kn">import</span> <span class="nn">requests</span>
 
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">random_port</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
-
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseStore</span>
-<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">id_cleaner</span>
 <span class="kn">from</span> <span class="nn">..dockerize</span> <span class="kn">import</span> <span class="n">Dockerizer</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">Runtime400Exception</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">id_cleaner</span>
+<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">..models.containers</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ContainerArguments</span><span class="p">,</span>
     <span class="n">ContainerItem</span><span class="p">,</span>
@@ -565,7 +564,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

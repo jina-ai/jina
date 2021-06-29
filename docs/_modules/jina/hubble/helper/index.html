@@ -384,14 +384,43 @@
 
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">urljoin</span>
+<span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
+<span class="kn">from</span> <span class="nn">..logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 <span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
+
+
+<div class="viewcode-block" id="get_hubble_url"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">get_hubble_url</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">"""Get the Hubble URL from api.jina.ai or os.environ</span>
+
+<span class="sd">    :return: the Hubble URL</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="s1">'JINA_HUBBLE_REGISTRY'</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'JINA_HUBBLE_REGISTRY'</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
+                <span class="s1">'https://api.jina.ai/hub/hubble.json'</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">resp</span><span class="p">)[</span><span class="s1">'url'</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                <span class="s1">'Can not fetch the URL of Hubble from `api.jina.ai`'</span>
+            <span class="p">)</span>
+            <span class="k">raise</span>
+    <span class="k">return</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="s1">'/v1/executors'</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="parse_hub_uri"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.parse_hub_uri">[docs]</a><span class="k">def</span> <span class="nf">parse_hub_uri</span><span class="p">(</span><span class="n">uri_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
@@ -402,11 +431,32 @@
 <span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">uri_path</span><span class="p">)</span>
     <span class="n">scheme</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">scheme</span>
+    <span class="k">if</span> <span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'jinahub'</span><span class="p">,</span> <span class="s1">'jinahub+docker'</span><span class="p">}:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri_path</span><span class="si">}</span><span class="s1"> is not a valid Hub URI.'</span><span class="p">)</span>
+
     <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">netloc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">))</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri_path</span><span class="si">}</span><span class="s1"> is not a valid Hub URI.'</span><span class="p">)</span>
+
     <span class="n">secret</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="n">tag</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span> <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">path</span> <span class="k">else</span> <span class="kc">None</span>
+
     <span class="k">return</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span></div>
+
+
+<div class="viewcode-block" id="is_valid_huburi"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.is_valid_huburi">[docs]</a><span class="k">def</span> <span class="nf">is_valid_huburi</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">"""Return True if it is a valid Hubble URI</span>
+
+<span class="sd">    :param uri: the uri to test</span>
+<span class="sd">    :return: True or False</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parse_hub_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="md5file"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.md5file">[docs]</a><span class="k">def</span> <span class="nf">md5file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -563,7 +613,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

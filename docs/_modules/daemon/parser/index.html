@@ -380,16 +380,15 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.parser</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
-<span class="kn">from</span> <span class="nn">jina.parsers.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.peapods.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.peapods.runtimes.remote</span> <span class="kn">import</span> <span class="n">mixin_remote_parser</span>
-
 <span class="kn">from</span> <span class="nn">.models.enums</span> <span class="kn">import</span> <span class="n">PartialDaemonModes</span>
 
 
@@ -496,7 +495,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

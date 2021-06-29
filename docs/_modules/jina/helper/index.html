@@ -921,7 +921,7 @@
 <span class="p">}</span>
 
 <span class="n">_COLORS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'grey'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s1">'black'</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
     <span class="s1">'red'</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
     <span class="s1">'green'</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
     <span class="s1">'yellow'</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
@@ -984,7 +984,6 @@
         <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[</span><span class="si">%d</span><span class="s1">m</span><span class="si">%s</span><span class="s1">'</span>
         <span class="k">if</span> <span class="n">color</span><span class="p">:</span>
             <span class="n">text</span> <span class="o">=</span> <span class="n">fmt_str</span> <span class="o">%</span> <span class="p">(</span><span class="n">_COLORS</span><span class="p">[</span><span class="n">color</span><span class="p">],</span> <span class="n">text</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">on_color</span><span class="p">:</span>
             <span class="n">text</span> <span class="o">=</span> <span class="n">fmt_str</span> <span class="o">%</span> <span class="p">(</span><span class="n">_HIGHLIGHTS</span><span class="p">[</span><span class="n">on_color</span><span class="p">],</span> <span class="n">text</span><span class="p">)</span>
 
@@ -996,6 +995,25 @@
                     <span class="n">text</span> <span class="o">=</span> <span class="n">fmt_str</span> <span class="o">%</span> <span class="p">(</span><span class="n">_ATTRIBUTES</span><span class="p">[</span><span class="n">attr</span><span class="p">],</span> <span class="n">text</span><span class="p">)</span>
         <span class="n">text</span> <span class="o">+=</span> <span class="n">_RESET</span>
     <span class="k">return</span> <span class="n">text</span></div>
+
+
+<span class="k">class</span> <span class="nc">ColorContext</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bold</span> <span class="o">=</span> <span class="n">bold</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bold</span><span class="p">:</span>
+            <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[1;</span><span class="si">%d</span><span class="s1">m'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fmt_str</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[0;</span><span class="si">%d</span><span class="s1">m'</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">fmt_str</span> <span class="o">%</span> <span class="p">(</span><span class="n">_COLORS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_color</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">_RESET</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ArgNamespace"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.ArgNamespace">[docs]</a><span class="k">class</span> <span class="nc">ArgNamespace</span><span class="p">:</span>
@@ -1615,7 +1633,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

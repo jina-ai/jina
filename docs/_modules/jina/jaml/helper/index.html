@@ -393,9 +393,9 @@
 <span class="kn">from</span> <span class="nn">yaml.resolver</span> <span class="kn">import</span> <span class="n">Resolver</span>
 <span class="kn">from</span> <span class="nn">yaml.scanner</span> <span class="kn">import</span> <span class="n">Scanner</span>
 
-<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadConfigSource</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">is_yaml_filepath</span>
-<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">PathImporter</span>
+<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">BadConfigSource</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">is_yaml_filepath</span>
+<span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">PathImporter</span>
 
 
 <div class="viewcode-block" id="JinaConstructor"><a class="viewcode-back" href="../../../../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor">[docs]</a><span class="k">class</span> <span class="nc">JinaConstructor</span><span class="p">(</span><span class="n">FullConstructor</span><span class="p">):</span>
@@ -559,12 +559,10 @@
 <span class="sd">    :param extra_search_paths: extra paths to conduct search</span>
 <span class="sd">    :return: Completed file path.</span>
 <span class="sd">    """</span>
-    <span class="n">_p</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">_p</span> <span class="o">=</span> <span class="n">_search_file_in_paths</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">_p</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="c1"># this checks both abs and relative paths already</span>
         <span class="n">_p</span> <span class="o">=</span> <span class="n">path</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">_p</span> <span class="o">=</span> <span class="n">_search_file_in_paths</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">extra_search_paths</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">_p</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -635,7 +633,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

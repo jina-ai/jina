@@ -448,7 +448,7 @@
 </dd></dl>
 <dl class="py class">
 <dt id="jina.hubble.hubio.HubIO">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.hubio.</span></code><code class="sig-name descname"><span class="pre">HubIO</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.hubio.</span></code><code class="sig-name descname"><span class="pre">HubIO</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p><a class="reference internal" href="#jina.hubble.hubio.HubIO" title="jina.hubble.hubio.HubIO"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubIO</span></code></a> provides the way to interact with Jina Hub registry.
 You can use it with CLI to package a directory into a Jina Hub and publish it to the world.
@@ -464,7 +464,7 @@ Examples:</p>
 <div></div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – arguments</p>
+<dd class="field-odd"><p><strong>args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>]) – arguments</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -479,7 +479,7 @@ Examples:</p>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.hubble.hubio.HubIO.fetch">
-<code class="sig-name descname"><span class="pre">fetch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.fetch" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">fetch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.fetch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch the executor meta info from Jina Hub.
 :type name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param name: the UUID/Alias of the executor
@@ -532,7 +532,7 @@ Examples:</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -380,23 +380,23 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.tasks</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Empty</span>
+<span></span><span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">Empty</span>
 <span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">UploadFile</span>
+
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">RemoteWorkspaceState</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__task_queue__</span><span class="p">,</span> <span class="n">daemon_logger</span><span class="p">,</span> <span class="n">jinad_args</span>
-<span class="kn">from</span> <span class="nn">.models.id</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">.dockerize</span> <span class="kn">import</span> <span class="n">Dockerizer</span>
-<span class="kn">from</span> <span class="nn">.models.enums</span> <span class="kn">import</span> <span class="n">WorkspaceState</span>
-<span class="kn">from</span> <span class="nn">.stores</span> <span class="kn">import</span> <span class="n">workspace_store</span> <span class="k">as</span> <span class="n">store</span>
+<span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="n">DockerImageException</span><span class="p">,</span> <span class="n">DockerNetworkException</span>
 <span class="kn">from</span> <span class="nn">.files</span> <span class="kn">import</span> <span class="n">DaemonFile</span><span class="p">,</span> <span class="n">workspace_files</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">id_cleaner</span><span class="p">,</span> <span class="n">get_workspace_path</span>
-<span class="kn">from</span> <span class="nn">.excepts</span> <span class="kn">import</span> <span class="n">DockerImageException</span><span class="p">,</span> <span class="n">DockerNetworkException</span>
+<span class="kn">from</span> <span class="nn">.models.id</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 <span class="kn">from</span> <span class="nn">.models.workspaces</span> <span class="kn">import</span> <span class="n">WorkspaceArguments</span><span class="p">,</span> <span class="n">WorkspaceItem</span><span class="p">,</span> <span class="n">WorkspaceMetadata</span>
+<span class="kn">from</span> <span class="nn">.stores</span> <span class="kn">import</span> <span class="n">workspace_store</span> <span class="k">as</span> <span class="n">store</span>
 
 
 <div class="viewcode-block" id="DaemonWorker"><a class="viewcode-back" href="../../../api/daemon.tasks/#daemon.tasks.DaemonWorker">[docs]</a><span class="k">class</span> <span class="nc">DaemonWorker</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
@@ -524,15 +524,15 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceState</span><span class="o">.</span><span class="n">UPDATING</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">UPDATING</span>
                 <span class="k">if</span> <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">arguments</span>
-                <span class="k">else</span> <span class="n">WorkspaceState</span><span class="o">.</span><span class="n">CREATING</span><span class="p">,</span>
+                <span class="k">else</span> <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">CREATING</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">workspace_files</span><span class="p">(</span><span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
             <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                 <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceItem</span><span class="p">(</span>
-                    <span class="n">state</span><span class="o">=</span><span class="n">WorkspaceState</span><span class="o">.</span><span class="n">UPDATING</span><span class="p">,</span>
+                    <span class="n">state</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">UPDATING</span><span class="p">,</span>
                     <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
                     <span class="n">arguments</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arguments</span><span class="p">,</span>
                 <span class="p">),</span>
@@ -549,21 +549,21 @@
 
             <span class="c1"># Create a new container if necessary</span>
             <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">container_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">container_id</span>
-            <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">WorkspaceState</span><span class="o">.</span><span class="n">ACTIVE</span>
+            <span class="n">store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">ACTIVE</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is updated'</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">DockerNetworkException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while creating the docker network: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">DockerImageException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while building the docker image: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># TODO: how to communicate errors to users? users track it via logs?</span>
             <span class="c1"># TODO: Handle cleanup in case of exception</span>
-            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">WorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">RemoteWorkspaceState</span><span class="o">.</span><span class="n">FAILED</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span></div></div>
 
 
@@ -609,7 +609,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

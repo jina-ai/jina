@@ -511,6 +511,7 @@
 
         <span class="c1"># reset the runtime to ZEDRuntime or ContainerRuntime</span>
         <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'JinadRuntime'</span><span class="p">:</span>
+            <span class="c1"># TODO: add jinahub:// and jinahub+docker:// scheme here</span>
             <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
             <span class="k">else</span><span class="p">:</span>
@@ -733,7 +734,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

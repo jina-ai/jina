@@ -391,7 +391,11 @@
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span>
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">is_valid_huburi</span><span class="p">,</span> <span class="n">parse_hub_uri</span>
+<span class="kn">from</span> <span class="nn">...hubble.hubapi</span> <span class="kn">import</span> <span class="n">resolve_local</span>
+<span class="kn">from</span> <span class="nn">...hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">...parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_pull_parser</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BasePea'</span><span class="p">]</span>
 
@@ -591,7 +595,7 @@
                 <span class="c1"># return too early and the shutdown is set, means something fails!!</span>
                 <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_timeout</span> <span class="o">=</span> <span class="n">_timeout</span> <span class="ow">or</span> <span class="o">-</span><span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
@@ -682,6 +686,19 @@
             <span class="s1">'docker://'</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span> <span class="ow">and</span> <span class="n">is_valid_huburi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">):</span>
+            <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">)</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub'</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="n">HubIO</span><span class="p">(</span><span class="n">set_hub_pull_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">]))</span><span class="o">.</span><span class="n">pull</span><span class="p">()</span>
+                    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">"config.yml"</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'protocol'</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">:</span> <span class="s1">'GRPCRuntime'</span><span class="p">,</span>
@@ -720,7 +737,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -390,6 +390,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">formatter</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__uptime__</span><span class="p">,</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">LogVerbosity</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">ColorContext</span>
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
 
 
@@ -409,7 +410,6 @@
         <span class="s1">'WARNING'</span><span class="p">:</span> <span class="s1">'warning'</span><span class="p">,</span>
         <span class="s1">'ERROR'</span><span class="p">:</span> <span class="s1">'error'</span><span class="p">,</span>
         <span class="s1">'CRITICAL'</span><span class="p">:</span> <span class="s1">'critical'</span><span class="p">,</span>
-        <span class="s1">'SUCCESS'</span><span class="p">:</span> <span class="s1">'notice'</span><span class="p">,</span>
     <span class="p">}</span></div>
 
 
@@ -472,24 +472,58 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">add_handlers</span><span class="p">(</span><span class="n">log_config</span><span class="p">,</span> <span class="o">**</span><span class="n">context_vars</span><span class="p">)</span>
 
-        <span class="c1"># note logger.success isn't default there</span>
-        <span class="n">success_level</span> <span class="o">=</span> <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">SUCCESS</span><span class="o">.</span><span class="n">value</span>  <span class="c1"># between WARNING and INFO</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">addLevelName</span><span class="p">(</span><span class="n">success_level</span><span class="p">,</span> <span class="s1">'SUCCESS'</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="s1">'success'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">success</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">critical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">warning</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span>
-
-<div class="viewcode-block" id="JinaLogger.success"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.success">[docs]</a>    <span class="k">def</span> <span class="nf">success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<div class="viewcode-block" id="JinaLogger.success"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.success">[docs]</a>    <span class="k">def</span> <span class="nf">success</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Prints messages as success</span>
 
-<span class="sd">        :param message: Message to log</span>
+<span class="sd">        .. #noqa: DAR101</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">LogVerbosity</span><span class="o">.</span><span class="n">SUCCESS</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="n">ColorContext</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JinaLogger.info"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Prints messages as info</span>
+
+<span class="sd">        .. #noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JinaLogger.debug"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.debug">[docs]</a>    <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Prints messages as debug</span>
+
+<span class="sd">        .. #noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ColorContext</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># dim white</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JinaLogger.warning"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.warning">[docs]</a>    <span class="k">def</span> <span class="nf">warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Prints messages as warn</span>
+
+<span class="sd">        .. #noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ColorContext</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'yellow'</span><span class="p">):</span>  <span class="c1"># dim white</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JinaLogger.critical"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.critical">[docs]</a>    <span class="k">def</span> <span class="nf">critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Prints messages as critical</span>
+
+<span class="sd">        .. #noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ColorContext</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">bold</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>  <span class="c1"># dim white</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="JinaLogger.error"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.JinaLogger.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Prints messages as info</span>
+
+<span class="sd">        .. #noqa: DAR101</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="n">ColorContext</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">):</span>  <span class="c1"># red</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">handlers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -596,7 +630,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -406,6 +406,19 @@
 <span id="jina-hubble-helper-module"></span><h1>jina.hubble.helper module<a class="headerlink" href="#module-jina.hubble.helper" title="Permalink to this headline">¶</a></h1>
 <p>Module for helper functions for Hub API.</p>
 <dl class="py function">
+<dt id="jina.hubble.helper.get_hubble_url">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">get_hubble_url</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_hubble_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_hubble_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Hubble URL from api.jina.ai or os.environ</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Hubble URL</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt id="jina.hubble.helper.parse_hub_uri">
 <code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">parse_hub_uri</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#parse_hub_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.parse_hub_uri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the uri of the Jina Hub executor.</p>
@@ -418,6 +431,22 @@
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a tuple of schema, id, tag, and secret</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.hubble.helper.is_valid_huburi">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">is_valid_huburi</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#is_valid_huburi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.is_valid_huburi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if it is a valid Hubble URI</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the uri to test</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True or False</p>
 </dd>
 </dl>
 </dd></dl>
@@ -513,7 +542,7 @@ The HTTP server must support byte ranges.</p>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 28, 2021.
+            Last updated on Jun 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
