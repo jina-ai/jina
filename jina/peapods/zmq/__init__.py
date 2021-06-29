@@ -195,7 +195,7 @@ class Zmqlet:
             else:
                 out_sock, out_addr = None, None
 
-            self.logger.debug(
+            self.logger.info(
                 f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) '
                 f'output {colored(out_addr, "yellow")} ({self.args.socket_out.name}) '
                 f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})'
