@@ -256,12 +256,16 @@ class Dockerizer:
 
     @classmethod
     def _get_volume_host_dir(cls):
-        volumes = cls.client.containers.get(socket.gethostname()).attrs['HostConfig'][
-            'Binds'
-        ]
-        for volume in volumes:
-            if volume.split(':')[1] == __root_workspace__:
-                return volume.split(':')[0]
+        try:
+            volumes = cls.client.containers.get(socket.gethostname()).attrs[
+                'HostConfig'
+            ]['Binds']
+            for volume in volumes:
+                if volume.split(':')[1] == __root_workspace__:
+                    return volume.split(':')[0]
+        except:
+            # above logic only works inside docker, if it does not work we dont need it
+            pass
         return __root_workspace__
 
     @classmethod
