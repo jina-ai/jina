@@ -2,12 +2,12 @@
 
 import argparse
 import hashlib
+import os
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
 
-from .envs import JINA_HUB_CACHE_DIR, JINA_HUB_ROOT
 from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
 from .hubapi import install_local, exist_local
 from ..excepts import HubDownloadError
@@ -236,16 +236,22 @@ class HubIO:
                 )
                 return
             if exist_local(uuid, tag):
-                self.logger.warning(
-                    f'The executor `{self.args.uri}` has already been downloaded in {JINA_HUB_ROOT}'
+                self.logger.debug(
+                    f'The executor `{self.args.uri}` has already been downloaded.'
                 )
                 return
             # download the package
             with TimeContext(f'downloading {self.args.uri}', self.logger):
+                cache_dir = Path(
+                    os.environ.get(
+                        'JINA_HUB_CACHE_DIR', Path.home().joinpath('.cache', 'jina')
+                    )
+                )
+                cache_dir.mkdir(parents=True, exist_ok=True)
                 cached_zip_filename = f'{uuid}-{md5sum}.zip'
                 cached_zip_filepath = download_with_resume(
                     archive_url,
-                    JINA_HUB_CACHE_DIR,
+                    cache_dir,
                     cached_zip_filename,
                     md5sum=md5sum,
                 )

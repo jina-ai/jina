@@ -1,13 +1,18 @@
 """Module wrapping interactions with the local executor packages."""
 
+import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 from typing import Tuple, Optional
 
-from .envs import JINA_HUB_ROOT
 from .helper import unpack_package
+
+_hub_root = Path(
+    os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina', 'hub-packages'))
+)
+_hub_root.mkdir(parents=True, exist_ok=True)
 
 
 def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
@@ -16,8 +21,8 @@ def get_dist_path(uuid: str, tag: str) -> Tuple['Path', 'Path']:
     :param tag: the TAG of the executor
     :return: package and its dist-info path
     """
-    pkg_path = JINA_HUB_ROOT / uuid
-    pkg_dist_path = JINA_HUB_ROOT / f'{uuid}-{tag}.dist-info'
+    pkg_path = _hub_root / uuid
+    pkg_dist_path = _hub_root / f'{uuid}-{tag}.dist-info'
     return pkg_path, pkg_dist_path
 
 
@@ -54,7 +59,7 @@ def install_local(
         return
 
     # clean existed dist-info
-    for dist in JINA_HUB_ROOT.glob(f'{uuid}-*.dist-info'):
+    for dist in _hub_root.glob(f'{uuid}-*.dist-info'):
         shutil.rmtree(dist)
     if pkg_path.exists():
         shutil.rmtree(pkg_path)
@@ -90,7 +95,7 @@ def uninstall_local(uuid: str):
     :param uuid: the UUID of the executor
     """
     pkg_path, _ = get_dist_path(uuid, None)
-    for dist in JINA_HUB_ROOT.glob(f'{uuid}-*.dist-info'):
+    for dist in _hub_root.glob(f'{uuid}-*.dist-info'):
         shutil.rmtree(dist)
     if pkg_path.exists():
         shutil.rmtree(pkg_path)
@@ -102,7 +107,7 @@ def list_local():
     :return: the list of local executors (if found)
     """
     result = []
-    for dist_name in JINA_HUB_ROOT.glob(r'*-v*.dist-info'):
+    for dist_name in _hub_root.glob(r'*-v*.dist-info'):
         result.append(dist_name)
 
     return result
@@ -115,8 +120,8 @@ def resolve_local(uuid: str, tag: Optional[str] = None) -> Optional['Path']:
     :param tag: the TAG of executor
     :return: the path of the executor package
     """
-    pkg_path = JINA_HUB_ROOT / uuid
-    pkg_dist_path = JINA_HUB_ROOT / f'{uuid}-{tag}.dist-info'
+    pkg_path = _hub_root / uuid
+    pkg_dist_path = _hub_root / f'{uuid}-{tag}.dist-info'
     if not pkg_path.exists() or (tag and not pkg_dist_path.exists()):
         raise FileNotFoundError(f'{pkg_path} doe not exist')
     else:
