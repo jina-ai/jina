@@ -177,7 +177,7 @@ class JinaLogger:
 
         for h in config['handlers']:
             cfg = config['configs'].get(h, None)
-            fmt = getattr(formatter, cfg.get('formatter', 'PlainFormatter'))
+            fmt = getattr(formatter, cfg.get('formatter', 'Formatter'))
 
             if h not in self.supported or not cfg:
                 raise ValueError(

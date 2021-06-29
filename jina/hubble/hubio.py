@@ -87,7 +87,7 @@ class HubIO:
 
         try:
             # archive the executor package
-            with TimeContext(f'archiving {self.args.path}', self.logger):
+            with TimeContext(f'Packaging {self.args.path}', self.logger):
                 md5_hash = hashlib.md5()
                 bytesio = archive_package(pkg_path)
                 content = bytesio.getvalue()
@@ -111,7 +111,7 @@ class HubIO:
             hubble_url = get_hubble_url()
             # upload the archived executor to Jina Hub
             with TimeContext(
-                f'Uploading to {hubble_url} ({method.upper()})',
+                f'Pushing to {hubble_url} ({method.upper()})',
                 self.logger,
             ):
                 resp = getattr(requests, method)(
@@ -127,13 +127,7 @@ class HubIO:
 
                 uuid8 = image['id']
                 secret = image['secret']
-                alias = image['alias']
                 visibility = image['visibility']
-                usage = (
-                    f'jinahub://{uuid8}'
-                    if visibility == 'public'
-                    else f'jinahub://{uuid8}:{secret}'
-                )
 
                 info_table = [
                     f'\t🔑 ID:\t\t' + colored(f'{uuid8}', 'cyan'),
@@ -143,20 +137,25 @@ class HubIO:
                         'cyan',
                     )
                     + colored(
-                        '(PLEASE KEEP IT CAREFULLY, OTHERWISE YOU WILL LOSE CONTROL OF YOUR EXECUTOR!)',
+                        ' (👈 Please store this secret carefully, it wont show up again)',
                         'red',
                     ),
-                    f'\t📛 Alias:\t' + colored(f'{alias}', 'cyan') if alias else '/',
                     f'\t👀 Visibility:\t' + colored(f'{visibility}', 'cyan'),
                 ]
-                self.logger.success(
-                    f'🎉 Executor from `{pkg_path}` is uploaded successfully!'
-                )
+
+                if 'alias' in image:
+                    info_table.append(f'\t📛 Alias:\t' + colored(image['alias'], 'cyan'))
+
+                self.logger.success(f'🎉 Executor `{pkg_path}` is pushed successfully!')
                 self.logger.info('\n' + '\n'.join(info_table))
-                self.logger.info(
-                    'You can use this Executor in the Flow via '
-                    + colored(usage, 'cyan', attrs='underline')
+
+                usage = (
+                    f'jinahub://{uuid8}'
+                    if visibility == 'public'
+                    else f'jinahub://{uuid8}:{secret}'
                 )
+
+                self.logger.info(f'You can use it via `uses={usage}` in the Flow/CLI.')
             elif resp.text:
                 # NOTE: sometimes resp.text returns empty
                 raise Exception(resp.text)
@@ -164,7 +163,8 @@ class HubIO:
                 resp.raise_for_status()
         except Exception as e:  # IO related errors
             self.logger.error(
-                f'Error when trying to push the executor at {self.args.path} with session_id = {request_headers["jinameta-session-id"]}: {e!r}'
+                f'Error while pushing `{self.args.path}` with session_id={request_headers["jinameta-session-id"]}: '
+                f'\n{e!r}'
             )
 
     @staticmethod
