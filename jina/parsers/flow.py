@@ -37,7 +37,7 @@ def mixin_flow_features_parser(parser):
         '--no-telemetry',
         action='store_true',
         default=False,
-        help='Set this to true to disable Telemetry during Flow creation',
+        help='If set, disable telemetry during the Flow creation.',
     )
 
 
