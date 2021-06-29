@@ -8,6 +8,7 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 
+from jina.enums import RemoteWorkspaceState
 from jina.excepts import NoAvailablePortError
 from jina.executors.metas import get_default_metas
 
@@ -131,7 +132,6 @@ def _create_workspace_directly(cur_dir):
     from daemon.dockerize import Dockerizer
     from daemon.stores import workspace_store
     from daemon.models import WorkspaceItem
-    from daemon.models.enums import WorkspaceState
     from daemon.models.workspaces import WorkspaceMetadata
     from daemon.models.workspaces import WorkspaceArguments
 
@@ -150,7 +150,7 @@ def _create_workspace_directly(cur_dir):
     network_id = Dockerizer.network(workspace_id=workspace_id)
 
     workspace_store[workspace_id] = WorkspaceItem(
-        state=WorkspaceState.ACTIVE,
+        state=RemoteWorkspaceState.ACTIVE,
         metadata=WorkspaceMetadata(
             image_id=image_id,
             image_name=workspace_id.tag,

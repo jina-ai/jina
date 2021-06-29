@@ -30,7 +30,10 @@ def get_connect_host(
     # it is a remote pea managed by jinad. (all remote peas are inside docker)
     conn_docker = (
         getattr(connect_args, 'uses', None) is not None
-        and connect_args.uses.startswith('docker://')
+        and (
+            connect_args.uses.startswith('docker://')
+            or connect_args.uses.startswith('jinahub+docker://')
+        )
     ) or not conn_local
 
     # is BIND & CONNECT all on the same remote?

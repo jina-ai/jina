@@ -129,6 +129,7 @@ class DaemonClient:
 
         # reset the runtime to ZEDRuntime or ContainerRuntime
         if _args.runtime_cls == 'JinadRuntime':
+            # TODO: add jinahub:// and jinahub+docker:// scheme here
             if _args.uses.startswith('docker://'):
                 _args.runtime_cls = 'ContainerRuntime'
             else:

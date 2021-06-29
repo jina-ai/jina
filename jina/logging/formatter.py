@@ -3,36 +3,8 @@ import re
 from copy import copy
 from logging import Formatter
 
-from ..helper import colored
-
 if False:
     from logging import LogRecord
-
-
-class ColorFormatter(Formatter):
-    """Format the log into colored logs based on the log-level."""
-
-    MAPPING = {
-        'DEBUG': dict(color='white', on_color=None),  # white
-        'INFO': dict(color='white', on_color=None),  # cyan
-        'WARNING': dict(color='yellow', on_color='on_grey'),  # yellow
-        'ERROR': dict(color='red', on_color=None),  # 31 for red
-        'CRITICAL': dict(color='white', on_color='on_red'),  # white on red bg
-        'SUCCESS': dict(color='green', on_color=None),  # white on red bg
-    }  #: log-level to color mapping
-
-    def format(self, record):
-        """
-        Format the LogRecord with corresponding colour.
-
-        :param record: A LogRecord object
-        :return:: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
-        """
-        cr = copy(record)
-        if cr.levelname != 'INFO':
-            seq = self.MAPPING.get(cr.levelname, self.MAPPING['INFO'])  # default white
-            cr.msg = colored(cr.msg, **seq)
-        return super().format(cr)
 
 
 class PlainFormatter(Formatter):

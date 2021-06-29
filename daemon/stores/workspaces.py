@@ -1,22 +1,18 @@
-from typing import Union
 from pathlib import Path
 from shutil import rmtree
+from typing import Union
 
+from jina.enums import RemoteWorkspaceState
 from jina.helper import colored
-
 from .base import BaseStore
-from ..models import DaemonID
 from ..dockerize import Dockerizer
-from ..models.enums import WorkspaceState
-
+from ..models import DaemonID
 from ..models.workspaces import (
     WorkspaceArguments,
     WorkspaceItem,
     WorkspaceMetadata,
     WorkspaceStoreStatus,
 )
-
-from .. import __rootdir__, __dockerfiles__
 
 
 class WorkspaceStore(BaseStore):
@@ -26,7 +22,7 @@ class WorkspaceStore(BaseStore):
     _status_model = WorkspaceStoreStatus
 
     @BaseStore.dump
-    def add(self, id: DaemonID, value: WorkspaceState, **kwargs):
+    def add(self, id: DaemonID, value: RemoteWorkspaceState, **kwargs):
         """Add a workspace to the store
 
         :param id: workspace id
@@ -34,7 +30,7 @@ class WorkspaceStore(BaseStore):
         :param kwargs: keyword args
         :return: workspace id
         """
-        if isinstance(value, WorkspaceState):
+        if isinstance(value, RemoteWorkspaceState):
             self[id] = WorkspaceItem(state=value)
         return id
 
@@ -43,7 +39,7 @@ class WorkspaceStore(BaseStore):
         self,
         id: DaemonID,
         value: Union[
-            WorkspaceItem, WorkspaceState, WorkspaceArguments, WorkspaceMetadata
+            WorkspaceItem, RemoteWorkspaceState, WorkspaceArguments, WorkspaceMetadata
         ],
         **kwargs,
     ) -> DaemonID:
@@ -64,7 +60,7 @@ class WorkspaceStore(BaseStore):
             self[id].arguments = value
         elif isinstance(value, WorkspaceMetadata):
             self[id].metadata = value
-        elif isinstance(value, WorkspaceState):
+        elif isinstance(value, RemoteWorkspaceState):
             self[id].state = value
         else:
             self._logger.error(f'invalid arguments for workspace: {value}')

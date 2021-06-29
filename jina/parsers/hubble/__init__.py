@@ -33,6 +33,8 @@ def set_hub_pull_parser(parser=None):
 def set_hub_parser(parser=None):
     """Set the parser for the hub
     :param parser: the parser configure
+
+    :return: the parser
     """
     if not parser:
         parser = set_base_parser()
@@ -61,3 +63,5 @@ def set_hub_parser(parser=None):
             formatter_class=_chf,
         )
     )
+
+    return parser

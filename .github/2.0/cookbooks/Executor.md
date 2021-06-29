@@ -39,6 +39,7 @@ Table of Contents
   - [Workspace](#workspace)
   - [Metas](#metas)
   - [`.metas` & `.runtime_args`](#metas--runtime_args)
+  - [Handle parameters](#handle-parameters)
 - [Migration in Practice](#migration-in-practice)
   - [Encoder in `jina hello fashion`](#encoder-in-jina-hello-fashion)
 - [Executors in Action](#executors-in-action)
@@ -450,8 +451,7 @@ means "Executor developer"):
     - do not add new members to the `Executor` object unless needed.
 - **Do not overpromise to the user**: do not promise features that we can hardly deliver. Trying to control the
   interface while delivering just loosely-implemented features is bad for scaling the core framework. For
-  example, `save`, `load`
-  , `on_gpu`, etc.
+  example, `save`, `load`, `on_gpu`, etc.
 
 We want to give programming freedom back to the user. If a user is a good Python programmer, they should pick
 up `Executor` in no time - not spend extra time learning the implicit boilerplate as in 1.x. Plus,
@@ -515,6 +515,61 @@ In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 - the YAML API will ignore `.runtime_args` during save and load as they are not statically stored
 - for any other parametrization of the Executor, you can still access its constructor arguments (defined in the class `__init__`) and the request `parameters`
 - `workspace` will be retrieved from either `metas` or `runtime_args`, in that order
+
+### Handle parameters
+Parameters are passed to executors via `request.parameters` with `Flow.post(..., parameters=)`. This way all the `executors` will receive 
+`parameters` as an argument to their `methods`. These `parameters` can be used to pass extra information or tune the `executor` behavior for a
+given request without updating the general configuration.
+
+```python
+from typing import Optional
+from jina import Executor, requests, DocumentArray, Flow
+
+class MyExecutor(Executor):
+    def __init__(self, default_param: int = 1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_param = default_param
+
+    @requests
+    def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
+        param = parameters.get('param', self.default_param)
+        # param may be overriden for this specific request
+        assert param == 5
+
+with Flow().add(uses=MyExecutor) as f:
+    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5})
+```
+
+However, this can be a problem when the user wants different executors to have different values of the same parameters. 
+In that case one can specify specific parameters for the specific `executor` by adding a `dictionary` inside parameters with 
+the `executor` name as `key`. Jina will then take all these specific parameters and copy to the root of the parameters dictionary before 
+calling the executor `method`.
+
+```python
+from typing import Optional
+from jina import Executor, requests, DocumentArray, Flow
+
+class MyExecutor(Executor):
+    def __init__(self, default_param: int = 1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_param = default_param
+
+    @requests
+    def foo(self, docs: Optional[DocumentArray], parameters: dict, **kwargs):
+        param = parameters.get('param', self.default_param)
+        # param may be overriden for this specific request. 
+        # The first instance will receive 10, and the second one will receive 5
+        if self.metas.name == 'my-executor-1':
+            assert param == 10
+        elif self.metas.name == 'my-executor-2':
+            assert param == 5
+
+
+with Flow().\
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-1'}}).\
+        add(uses={'jtype': 'MyExecutor', 'metas': {'name': 'my-executor-2'}}) as f:
+    f.post(on='/endpoint', inputs=DocumentArray([]), parameters={'param': 5, 'my-executor-1': {'param': 10}})
+```
 
 ---
 
