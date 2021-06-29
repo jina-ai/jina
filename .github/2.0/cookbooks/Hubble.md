@@ -108,7 +108,7 @@ from jina import Flow
 f = Flow().add(uses='jinahub://<UUID8/Alias>[:<SECRET>]')
 ```
 
-### 3.2 override default parameters
+### 3.2 Override Default Parameters
 
 It is possible that the default parameters of the published executor may not be ideal for your usecase.
 You can override any of these parameters by passing `override_with` and `override_metas` as parameters.
