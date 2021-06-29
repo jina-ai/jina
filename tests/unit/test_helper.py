@@ -19,7 +19,7 @@ from jina.helper import (
     dunder_get,
     get_ci_vendor,
 )
-from jina.hubble.hubio import _get_hubble_url
+from jina.hubble.helper import get_hubble_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
@@ -324,4 +324,5 @@ def test_ci_vendor():
 
 
 def test_get_hubble_url():
-    assert _get_hubble_url().startswith('http')
+    for j in range(2):
+        assert get_hubble_url().startswith('http')

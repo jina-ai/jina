@@ -2,14 +2,43 @@
 
 import hashlib
 import io
+import json
+import os
 import zipfile
+from functools import lru_cache
 from pathlib import Path
 from typing import Tuple, Optional
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
+from urllib.request import Request, urlopen
 
 from .. import __resources_path__
 from ..importer import ImportExtensions
+from ..logging.predefined import default_logger
 from ..logging.profile import ProgressBar
+
+
+@lru_cache()
+def get_hubble_url() -> str:
+    """Get the Hubble URL from api.jina.ai or os.environ
+
+    :return: the Hubble URL
+    """
+    if 'JINA_HUBBLE_REGISTRY' in os.environ:
+        u = os.environ['JINA_HUBBLE_REGISTRY']
+    else:
+        try:
+            req = Request(
+                'https://api.jina.ai/hub/hubble.json',
+                headers={'User-Agent': 'Mozilla/5.0'},
+            )
+            with urlopen(req) as resp:
+                u = json.load(resp)['url']
+        except:
+            default_logger.critical(
+                'Can not fetch the URL of Hubble from `api.jina.ai`'
+            )
+            raise
+    return urljoin(u, '/v1/executors')
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
@@ -20,11 +49,32 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     """
     parser = urlparse(uri_path)
     scheme = parser.scheme
+    if scheme not in {'jinahub', 'jinahub+docker'}:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
     items = list(parser.netloc.split(':'))
     name = items[0]
+
+    if not name:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
     secret = items[1] if len(items) > 1 else None
     tag = parser.path.strip('/') if parser.path else None
+
     return scheme, name, tag, secret
+
+
+def is_valid_huburi(uri: str) -> bool:
+    """Return True if it is a valid Hubble URI
+
+    :param uri: the uri to test
+    :return: True or False
+    """
+    try:
+        parse_hub_uri(uri)
+        return True
+    except:
+        return False
 
 
 def md5file(file_path: 'Path') -> str:

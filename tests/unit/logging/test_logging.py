@@ -12,7 +12,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def config():
-    os.environ['JINA_LOG_LEVEL'] = 'SUCCESS'
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
     yield
     del os.environ['JINA_LOG_LEVEL']
 
@@ -27,6 +27,16 @@ def log(logger):
     # super long log
     logger.info('x' * 65536)
     logger.error('x' * 65536)
+
+
+def test_color_log():
+    with JinaLogger('test_logger') as logger:
+        logger.debug('this is test debug message')
+        logger.info('this is test info message')
+        logger.success('this is test success message')
+        logger.warning('this is test warning message')
+        logger.error('this is test error message')
+        logger.critical('this is test critical message')
 
 
 def test_logging_syslog():
@@ -55,14 +65,6 @@ def test_logging_level_yaml():
     ) as logger:
         log(logger)
         assert logger.logger.level == LogVerbosity.from_string('INFO')
-
-
-def test_logging_level_os_environ_variable(config):
-    with JinaLogger(
-        'test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
-    ) as logger:
-        log(logger)
-        assert logger.logger.level == LogVerbosity.from_string('SUCCESS')
 
 
 def test_logging_file():

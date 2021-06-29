@@ -1,4 +1,5 @@
 from typing import Dict
+
 from pydantic import Field
 
 from .base import StoreItem, StoreStatus

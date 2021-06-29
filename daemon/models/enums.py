@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import List
 
-from jina.enums import RemoteWorkspaceState as WorkspaceState
 from ..helper import classproperty
 
 
