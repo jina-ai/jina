@@ -4,11 +4,11 @@ Table of Contents
 
 - [JinaD 2.0](#jinad-20)
   - [Concepts](#concepts)
-    - [1. Workspace](#1-workspace)
-    - [2. RESTful Flows](#2-restful-flows)
-    - [3. RESTful Pods/Peas](#3-restful-podspeas)
+    - [Workspace](#workspace)
+    - [RESTful Flows](#restful-flows)
+    - [RESTful Pods/Peas](#restful-podspeas)
     - [Example Usage](#example-usage)
-  - [Using JinaD](#using-jinad)
+  - [Development using JinaD](#development-using-jinad)
     - [Build](#build)
     - [Run](#run)
       - [Why?](#why)
@@ -22,7 +22,7 @@ JinaD is a daemon for deploying & managing Jina on remote via a RESTful interfac
 
 ## Concepts
 
-### 1. Workspace
+### Workspace
 
 Workspace is the entrypoint for all objects in JinaD. It primarily represents 3 things.
 
@@ -70,7 +70,7 @@ Use **POST /workspaces** to create a workspace. Special files:
 
 > NOTE: Since workspace creation takes time, `POST /workspaces` returns a `workspace_id` response in `PENDING` state. Use `GET /workspaces/{id}` to check the status of workspace creation & wait until it comes to `ACTIVE` state.
 
-### 2. RESTful Flows
+### RESTful Flows
 
 Use **POST /flows** to create a Flow. Accepts following query params:
 
@@ -80,7 +80,7 @@ Use **POST /flows** to create a Flow. Accepts following query params:
 
 This creates a new container using the base image & network defined by `workspace_id` & starts a Flow inside the container. Only the ports needed for external communication are mapped to DOCKERHOST. Update operations inside containers are also possible (mini JinaD)
 
-### 3. RESTful Pods/Peas
+### RESTful Pods/Peas
 
 Use **POST /pods** or **POST /peas** to create a Pod/Pea. Accepts following args:
 
@@ -101,17 +101,15 @@ with f:
 
 ### Example Usage
 
-- [Dependency management with remote Pods](https://github.com/jina-ai/jina/blob/daemon-2.0/tests/distributed/test_against_external_daemon/test_remote_workspaces.py#L49)
+- [Dependency management with remote Pods](https://github.com/jina-ai/jina/blob/master/tests/distributed/test_against_external_daemon/test_remote_workspaces.py#L49)
 
-- [Jina custom project](https://github.com/jina-ai/jina/blob/daemon-2.0/tests/distributed/test_against_external_daemon/test_remote_workspaces.py#L90)
+- [Jina custom project](https://github.com/jina-ai/jina/blob/master/tests/distributed/test_against_external_daemon/test_remote_workspaces.py#L90)
 
-## Using JinaD
+## Development using JinaD
 
 `JinaD` should always be deployed as a docker container.
 
 ### Build
-
-(checkout `daemon-2.0` branch)
 
 ```bash
 docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
@@ -121,8 +119,12 @@ docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
 
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
-    --name jinad -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad \
-    -p 8000:8000 -d jinaai/jina:test-daemon
+           --name jinad \
+           -e JINA_DAEMON_BUILD=DEVEL \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v /tmp/jinad:/tmp/jinad \
+           -p 8000:8000 \
+           -d jinaai/jina:test-daemon
 ```
 
 #### Why?
@@ -131,7 +133,11 @@ docker run --add-host host.docker.internal:host-gateway \
 
   All images created by JinaD during local tests use image with this name (hard-coded). Once 2.0 is released, it would be pulled from `docker hub` or a better naming would get used.
 
-- `--add-host`?
+- `--env JINA_DAEMON_BUILD=DEVEL` ?
+
+  This makes sure default build for JinaD is `DEVEL`. This must be passed during development, CICD etc
+
+- `--add-host` ?
 
   `DOCKERHOST = 'host.docker.internal'`
 
@@ -147,6 +153,6 @@ docker run --add-host host.docker.internal:host-gateway \
 
 ### Metaworks
 
-- Every restart of `jinad` can read from locally serialized store, enabling it not to be alive during whole lifecycle of flow (to be added: validation)
+- Every restart of `JinaD` can read from locally serialized store, enabling it not to be alive during whole lifecycle of flow (to be added: validation)
 
 - A custom id `DaemonID` to define jinad objects.

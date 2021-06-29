@@ -26,7 +26,7 @@ def mixin_daemon_parser(parser):
     gp.add_argument(
         '--store',
         action='store_true',
-        default=False,
+        default=True,
         help='''
     Load from local store (if any), while starting JinaD
     ''',
