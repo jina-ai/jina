@@ -14,7 +14,6 @@ def mixin_zmq_runtime_parser(parser):
     gp.add_argument(
         '--zmq-identity',
         type=str,
-        default=helper.random_identity(),
         help='The port for controlling the runtime, default a random port between [49152, 65535]',
     )
     gp.add_argument(

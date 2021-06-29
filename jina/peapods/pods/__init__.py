@@ -663,6 +663,7 @@ class Pod(BasePod):
         if args.dynamic_routing:
             args.dynamic_routing_in = True
             args.socket_in = SocketType.ROUTER_BIND
+            args.zmq_identity = random_identity()
 
     @staticmethod
     def _set_dynamic_routing_out(args):
