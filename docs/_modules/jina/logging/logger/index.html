@@ -559,7 +559,7 @@
 
         <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">'handlers'</span><span class="p">]:</span>
             <span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">'configs'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">fmt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">formatter</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'formatter'</span><span class="p">,</span> <span class="s1">'PlainFormatter'</span><span class="p">))</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">formatter</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'formatter'</span><span class="p">,</span> <span class="s1">'Formatter'</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">supported</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">cfg</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
