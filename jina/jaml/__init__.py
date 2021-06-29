@@ -514,16 +514,17 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                     with_params = no_tag_yml.get('with', None)
                     if with_params:
                         with_params.update(**override_with)
+                        no_tag_yml.update(with_params)
                     else:
-                        with_params = override_with
-                    no_tag_yml.update(with_params)
+                        no_tag_yml['with'] = override_with
                 if override_metas is not None:
                     metas_params = no_tag_yml.get('metas', None)
                     if metas_params:
                         metas_params.update(**override_metas)
+                        no_tag_yml.update(metas_params)
                     else:
-                        metas_params = override_metas
-                    no_tag_yml.update(metas_params)
+                        no_tag_yml['metas'] = override_metas
+
             else:
                 raise BadConfigSource(
                     f'can not construct {cls} from an empty {source}. nothing to read from there'
