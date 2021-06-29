@@ -1,4 +1,4 @@
-build = devel
+build = default
 jina = 2.0.0.rc2
 python = 3.7
 ports = 12345,12344
