@@ -194,7 +194,7 @@ def download_with_resume(
             for chunk in r.iter_content(32 * block_size):
                 f.write(chunk)
                 if pbar:
-                    pbar.update(progress=len(chunk))
+                    pbar.update(steps=len(chunk))
 
     if filename is None:
         filename = url.split('/')[-1]

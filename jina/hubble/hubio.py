@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 
 from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
 from .hubapi import install_local, exist_local
+from .progress_bar import ProgressBar
 from ..excepts import HubDownloadError
 from ..helper import colored, get_full_version, get_readable_size, ArgNamespace
 from ..importer import ImportExtensions
@@ -78,6 +79,7 @@ class HubIO:
 
         with ImportExtensions(required=True):
             import requests
+            import requests_toolbelt
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
@@ -93,13 +95,13 @@ class HubIO:
                 bytesio = archive_package(pkg_path)
                 content = bytesio.getvalue()
                 md5_hash.update(content)
-
                 md5_digest = md5_hash.hexdigest()
+                total_size = bytesio.getbuffer().nbytes
 
             # upload the archived package
             form_data = {
-                'public': getattr(self.args, 'public', False),
-                'private': getattr(self.args, 'private', False),
+                'public': '1' if getattr(self.args, 'public', None) else '0',
+                'private': '1' if getattr(self.args, 'private', None) else '0',
                 'md5sum': md5_digest,
                 'force': self.args.force,
                 'secret': self.args.secret,

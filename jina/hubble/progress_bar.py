@@ -158,9 +158,9 @@ class ProgressBar(TimeContext):
         suffix = (suffix_msg or self.suffix) % self
         line = ''.join(
             [
-                self.task_name,
+                '⏳ {:>10}'.format(colored(self.task_name, 'cyan')),
                 self.bar_prefix,
-                self.fill * num_bars,
+                colored(self.fill * num_bars, 'green'),
                 self.empty_fill * (self.bar_len - num_bars),
                 self.bar_suffix,
                 suffix,
