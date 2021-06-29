@@ -98,10 +98,8 @@ class HubIO:
 
             # upload the archived package
             form_data = {
-                'public': self.args.public if hasattr(self.args, 'public') else False,
-                'private': self.args.private
-                if hasattr(self.args, 'private')
-                else False,
+                'public': getattr(self.args, 'public', False),
+                'private': getattr(self.args, 'private', False),
                 'md5sum': md5_digest,
                 'force': self.args.force,
                 'secret': self.args.secret,
