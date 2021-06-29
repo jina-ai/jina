@@ -287,7 +287,10 @@ class Dockerizer:
 
         :return: dict of env vars
         """
-        return {'JINA_LOG_WORKSPACE': '/workspace/logs', 'JINA_RANDOM_PORTS': 'True'}
+        return {
+            'JINA_LOG_WORKSPACE': '/workspace/logs',
+            'JINA_RANDOM_PORT_MIN': '49153',
+        }
 
     @classmethod
     def remove(cls, id: DaemonID):
