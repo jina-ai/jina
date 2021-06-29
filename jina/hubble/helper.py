@@ -19,6 +19,10 @@ from ..logging.profile import ProgressBar
 
 @lru_cache()
 def get_hubble_url() -> str:
+    """Get the Hubble URL from api.jina.ai or os.environ
+
+    :return: the Hubble URL
+    """
     if 'JINA_HUBBLE_REGISTRY' in os.environ:
         u = os.environ['JINA_HUBBLE_REGISTRY']
     else:
@@ -61,6 +65,11 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
 
 
 def is_valid_huburi(uri: str) -> bool:
+    """Return True if it is a valid Hubble URI
+
+    :param uri: the uri to test
+    :return: True or False
+    """
     try:
         parse_hub_uri(uri)
         return True
