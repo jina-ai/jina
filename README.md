@@ -42,38 +42,17 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-<table>
-<tr>
-<th align="center">
-<img width="441" height="1">
-<p> 
-via PyPI
-</p>
-</th>
-<th align="center">
-<img width="441" height="1">
-<p>
-via Docker
-</p>
-</th>
-</tr>
-<td>
-
-```console
-$ pip install jina[devel]          
-$ jina -v
-2.0.0
-```
-</td>
-<td>
-
-```console
-$ docker run jinaai/jina:latest -v
-2.0.0
-```
-
-</td>
-</table>
+- via PyPI
+  ```console
+  $ pip install jina[devel]          
+  $ jina -v
+  2.0.0
+  ```
+- via Docker
+  ```console
+  $ docker run jinaai/jina:latest -v
+  2.0.0
+  ```
 
 <details>
 <summary>📦 More installation options</summary>
@@ -82,7 +61,7 @@ $ docker run jinaai/jina:latest -v
 | --- | --- | --- |
 | Standard | `pip install jina` | `docker run jinaai/jina:master` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:master-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:master-devel`</sub> |
+| <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:master-devel`</sub> |
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
