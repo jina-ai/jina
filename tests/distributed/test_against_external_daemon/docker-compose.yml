@@ -1,12 +1,9 @@
 version: "3.3"
 services:
   jinad:
-    image: test_upload_simple_non_standard_rootworkspace
+    image: jinaai/jina:test-daemon
     container_name: test_upload_simple_non_standard_rootworkspace
     command: --store
-    build:
-      context: .
-      dockerfile: Dockerfiles/debianx.Dockerfile
     ports:
       - "9000:8000"
       - "45678:45678"
