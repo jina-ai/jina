@@ -136,7 +136,7 @@ Here `@requests(on=something)` is our textual query, we want to find the lines m
 <img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results">
 </p>
 
-🆙 Not a GUI guy? Let's do it in Python then! Keep the above running and start a simple client:
+🆙 Not a GUI guy? Let's query it from Python then! Keep the above running and start a simple client:
 
 ```python
 from jina import Client, Document
