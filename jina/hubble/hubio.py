@@ -79,7 +79,6 @@ class HubIO:
 
         with ImportExtensions(required=True):
             import requests
-            import requests_toolbelt
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
@@ -99,12 +98,14 @@ class HubIO:
 
             # upload the archived package
             form_data = {
-                'public': '1' if getattr(self.args, 'public', None) else '0',
-                'private': '1' if getattr(self.args, 'private', None) else '0',
+                'public': 'True' if getattr(self.args, 'public', None) else 'False',
+                'private': 'True' if getattr(self.args, 'private', None) else 'False',
                 'md5sum': md5_digest,
-                # 'force': self.args.force,
-                # 'secret': self.args.secret,
             }
+            if self.args.force:
+                form_data['force'] = self.args.force
+            if self.args.secret:
+                form_data['secret'] = self.args.secret
 
             method = 'put' if self.args.force else 'post'
 
@@ -114,13 +115,6 @@ class HubIO:
                 f'Pushing to {hubble_url} ({method.upper()})',
                 self.logger,
             ):
-                # resp = getattr(requests, method)(
-                #     hubble_url,
-                #     files={'file': content},
-                #     data=form_data,
-                #     headers=request_headers,
-                #     stream=True,
-                # )
                 from .helper import upload_file
 
                 resp = upload_file(
