@@ -45,7 +45,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 - via PyPI
   ```console
-  $ pip install jina[devel]          
+  $ pip install "jina[devel]"          
   $ jina -v
   2.0.0
   ```
