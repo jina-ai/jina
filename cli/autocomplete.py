@@ -1,34 +1,3 @@
-def _update_autocomplete():
-    from jina.parsers import get_main_parser
-
-    def _gaa(key, parser):
-        _result = {}
-        _compl = []
-        for v in parser._actions:
-            if v.option_strings:
-                _compl.extend(v.option_strings)
-            elif v.choices:
-                _compl.extend(v.choices)
-                if isinstance(v.choices, dict):
-                    for kk, vv in v.choices.items():
-                        _result.update(_gaa(' '.join([key, kk]).strip(), vv))
-        # filer out single dash, as they serve as abbrev
-        _compl = [k for k in _compl if (not k.startswith('-') or k.startswith('--'))]
-        _result.update({key: _compl})
-        return _result
-
-    compl = _gaa('', get_main_parser())
-    cmd = compl.pop('')
-    compl = {'commands': cmd, 'completions': compl}
-
-    with open(__file__, 'a') as fp:
-        fp.write(f'\nac_table = {compl}\n')
-
-
-if __name__ == '__main__':
-    _update_autocomplete()
-
-
 ac_table = {
     'commands': [
         '--help',
@@ -86,6 +55,7 @@ ac_table = {
             '--quiet-error',
             '--identity',
             '--workspace-id',
+            '--zmq-identity',
             '--port-ctrl',
             '--ctrl-with-ipc',
             '--timeout-ctrl',
@@ -98,6 +68,7 @@ ac_table = {
             '--py-modules',
             '--port-in',
             '--port-out',
+            '--hosts-in-connect',
             '--host-in',
             '--host-out',
             '--socket-in',
@@ -148,6 +119,7 @@ ac_table = {
             '--quiet-error',
             '--identity',
             '--workspace-id',
+            '--zmq-identity',
             '--port-ctrl',
             '--ctrl-with-ipc',
             '--timeout-ctrl',
@@ -160,6 +132,7 @@ ac_table = {
             '--py-modules',
             '--port-in',
             '--port-out',
+            '--hosts-in-connect',
             '--host-in',
             '--host-out',
             '--socket-in',
@@ -223,6 +196,7 @@ ac_table = {
             '--quiet-error',
             '--identity',
             '--workspace-id',
+            '--zmq-identity',
             '--port-ctrl',
             '--ctrl-with-ipc',
             '--timeout-ctrl',
@@ -235,6 +209,7 @@ ac_table = {
             '--py-modules',
             '--port-in',
             '--port-out',
+            '--hosts-in-connect',
             '--host-in',
             '--host-out',
             '--socket-in',
@@ -250,6 +225,7 @@ ac_table = {
             '--title',
             '--description',
             '--cors',
+            '--default-swagger-ui',
             '--no-debug-endpoints',
             '--no-crud-endpoints',
             '--expose-endpoints',
@@ -273,7 +249,7 @@ ac_table = {
             '--routing-table',
         ],
         'hub push': ['--help', '--force', '--secret', '--public', '--private'],
-        'hub pull': ['--help'],
+        'hub pull': ['--help', '--install-requirements'],
         'hub': ['--help', 'push', 'pull'],
         'pea': [
             '--help',
@@ -284,6 +260,7 @@ ac_table = {
             '--quiet-error',
             '--identity',
             '--workspace-id',
+            '--zmq-identity',
             '--port-ctrl',
             '--ctrl-with-ipc',
             '--timeout-ctrl',
@@ -296,6 +273,7 @@ ac_table = {
             '--py-modules',
             '--port-in',
             '--port-out',
+            '--hosts-in-connect',
             '--host-in',
             '--host-out',
             '--socket-in',

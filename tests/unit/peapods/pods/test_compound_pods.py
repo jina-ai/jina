@@ -240,7 +240,7 @@ def test_sockets(polling, parallel, pea_scheduling, pea_socket_in, pea_socket_ou
         assert head.scheduling == SchedulerType.LOAD_BALANCE
         tail = compound_pod.tail_args
         assert tail.socket_in == SocketType.PULL_BIND
-        assert tail.socket_out == SocketType.DEALER_CONNECT
+        assert tail.socket_out == SocketType.ROUTER_BIND
         assert tail.scheduling == SchedulerType.LOAD_BALANCE
         replicas = compound_pod.replicas
         for replica in replicas:

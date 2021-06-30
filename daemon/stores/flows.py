@@ -1,9 +1,10 @@
-from typing import Dict, List
+from typing import Dict
+
 import requests
 
-from ..models import DaemonID
 from .containers import ContainerStore
 from ..excepts import Runtime400Exception
+from ..models import DaemonID
 from ..models.enums import UpdateOperation
 
 

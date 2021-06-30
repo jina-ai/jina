@@ -1,10 +1,11 @@
 from ipaddress import IPv4Address
 from typing import Dict, List, Optional, Set
+
 from pydantic import BaseModel, Field
 
-from .id import DaemonID
-from .enums import WorkspaceState
+from jina.enums import RemoteWorkspaceState
 from .base import StoreItem, StoreStatus
+from .id import DaemonID
 
 
 class WorkspaceArguments(BaseModel):
@@ -29,7 +30,7 @@ class WorkspaceMetadata(BaseModel):
 class WorkspaceItem(StoreItem):
     """Pydantic model for WorkspaceItem"""
 
-    state: WorkspaceState
+    state: RemoteWorkspaceState
     metadata: Optional[WorkspaceMetadata]
     arguments: Optional[WorkspaceArguments]
 

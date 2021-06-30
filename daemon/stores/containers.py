@@ -6,14 +6,13 @@ from typing import Dict, TYPE_CHECKING
 
 import requests
 
+from jina import __docker_host__
 from jina.helper import colored, random_port
-from jina import __default_host__, __docker_host__
-
 from .base import BaseStore
-from ..models import DaemonID
-from ..helper import id_cleaner
 from ..dockerize import Dockerizer
 from ..excepts import Runtime400Exception
+from ..helper import id_cleaner
+from ..models import DaemonID
 from ..models.containers import (
     ContainerArguments,
     ContainerItem,
@@ -169,5 +168,6 @@ class ContainerStore(BaseStore):
         del self[id]
         from . import workspace_store
 
+        Dockerizer.rm_container(id)
         workspace_store[workspace_id].metadata.managed_objects.remove(id)
         self._logger.success(f'{colored(id, "green")} is released from the store.')

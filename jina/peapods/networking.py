@@ -1,7 +1,36 @@
 from argparse import Namespace
+import ipaddress
 
 from .. import __default_host__, __docker_host__
 from ..helper import get_public_ip, get_internal_ip
+
+
+def is_remote_local_connection(first: str, second: str):
+    """
+    Decides, whether ``first`` is remote host and ``second`` is localhost
+
+    :param first: the ip or host name of the first runtime
+    :param second: the ip or host name of the second runtime
+    :return: True, if first is remote and second is local
+    """
+    try:
+        first_ip = ipaddress.ip_address(first)
+        first_global = first_ip.is_global
+    except ValueError:
+        if first == 'localhost':
+            first_global = False
+        else:
+            first_global = True
+    try:
+        second_ip = ipaddress.ip_address(second)
+        second_local = second_ip.is_private or second_ip.is_loopback
+    except ValueError:
+        if second == 'localhost':
+            second_local = True
+        else:
+            second_local = False
+
+    return first_global and second_local
 
 
 def get_connect_host(
@@ -30,7 +59,10 @@ def get_connect_host(
     # it is a remote pea managed by jinad. (all remote peas are inside docker)
     conn_docker = (
         getattr(connect_args, 'uses', None) is not None
-        and connect_args.uses.startswith('docker://')
+        and (
+            connect_args.uses.startswith('docker://')
+            or connect_args.uses.startswith('jinahub+docker://')
+        )
     ) or not conn_local
 
     # is BIND & CONNECT all on the same remote?

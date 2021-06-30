@@ -3,10 +3,10 @@ from fastapi import APIRouter
 from jina.helper import ArgNamespace
 from jina.parsers.flow import set_flow_parser
 from ....excepts import Runtime400Exception
+from ....models import FlowModel
 from ....models.enums import UpdateOperation
 from ....models.partial import PartialFlowItem
 from ....stores import partial_store as store
-from ....models import FlowModel
 
 router = APIRouter(prefix='/flow', tags=['flow'])
 

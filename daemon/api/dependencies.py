@@ -1,17 +1,16 @@
 from pathlib import Path
 from typing import Dict, List, Optional
+
+from fastapi import HTTPException, UploadFile, File
 from pydantic import FilePath
 from pydantic.errors import PathNotAFileError
-from fastapi import HTTPException, UploadFile, File
 
-from jina import __default_host__, __docker_host__, Flow
-from jina.enums import PeaRoleType, SocketType
+from jina import __docker_host__, Flow
+from jina.enums import PeaRoleType, SocketType, RemoteWorkspaceState
 from jina.helper import cached_property, random_port
-
 from ..helper import get_workspace_path
-from ..models.enums import WorkspaceState
-from ..stores import workspace_store as store
 from ..models import DaemonID, FlowModel, PodModel, PeaModel
+from ..stores import workspace_store as store
 
 
 class FlowDepends:
@@ -199,12 +198,12 @@ class WorkspaceDepends:
 
         if self.id not in store:
             # when id doesn't exist in store, create it.
-            store.add(id=self.id, value=WorkspaceState.PENDING)
+            store.add(id=self.id, value=RemoteWorkspaceState.PENDING)
             __task_queue__.put((self.id, self.files))
 
-        if self.id in store and store[self.id].state == WorkspaceState.ACTIVE:
+        if self.id in store and store[self.id].state == RemoteWorkspaceState.ACTIVE:
             # when id exists in the store and is "active", update it.
-            store.update(id=self.id, value=WorkspaceState.PENDING)
+            store.update(id=self.id, value=RemoteWorkspaceState.PENDING)
             __task_queue__.put((self.id, self.files))
 
-        self.j = {self.id: store[self.id]}
+        self.item = {self.id: store[self.id]}

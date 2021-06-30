@@ -1,5 +1,4 @@
 import requests
-
 from fastapi import Depends, APIRouter, HTTPException
 
 from ..dependencies import PodDepends

@@ -138,7 +138,6 @@ class LogVerbosity(BetterEnum):
 
     DEBUG = 10
     INFO = 20
-    SUCCESS = 25
     WARNING = 30
     ERROR = 40
     CRITICAL = 50
@@ -159,6 +158,7 @@ class SocketType(BetterEnum):
     PAIR_CONNECT = 9
     ROUTER_BIND = 10
     DEALER_CONNECT = 11
+    ROUTER_CONNECT = 13
 
     @property
     def is_bind(self) -> bool:

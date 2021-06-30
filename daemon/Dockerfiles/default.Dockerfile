@@ -1,13 +1,17 @@
+# This is the default dockerfile used for all containers created by JinaD
+
 ARG JINA_VERSION=latest
-ARG PY_VERSION=py37
+ARG PY_VERSION=py38
 
 FROM jinaai/jina:$JINA_VERSION-$PY_VERSION-daemon
 
-RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
-    gem install fluentd --no-doc
+ARG PIP_REQUIREMENTS
 
-RUN if [ -f requirements.txt ]; then \
-        pip install -r requirements.txt; \
+RUN if [ -n "$PIP_REQUIREMENTS" ]; then \
+        echo "Installing ${PIP_REQUIREMENTS}"; \
+        for package in ${PIP_REQUIREMENTS}; do \
+            pip install "${package}"; \
+        done; \
     fi
 
 STOPSIGNAL SIGINT

@@ -109,7 +109,7 @@ def test_gateway_remote():
     f = Flow().add(host=remote1).build()
 
     assert f['pod0'].args.socket_in.is_bind
-    assert not f['pod0'].args.socket_out.is_bind
+    assert f['pod0'].args.socket_out.is_bind
 
 
 def test_gateway_remote_local():
@@ -125,12 +125,12 @@ def test_gateway_remote_local():
     f = Flow().add(host=remote1).add().build()
 
     assert f['pod0'].args.socket_in == SocketType.ROUTER_BIND
-    assert f['pod0'].args.socket_out == SocketType.DEALER_CONNECT
+    assert f['pod0'].args.socket_out == SocketType.ROUTER_BIND
 
     assert f['pod1'].args.socket_in == SocketType.ROUTER_BIND
-    assert f['pod1'].args.socket_out == SocketType.DEALER_CONNECT
+    assert f['pod1'].args.socket_out == SocketType.ROUTER_BIND
     assert f['gateway'].args.socket_in == SocketType.ROUTER_BIND
-    assert f['gateway'].args.socket_out == SocketType.DEALER_CONNECT
+    assert f['gateway'].args.socket_out == SocketType.ROUTER_BIND
 
 
 def test_gateway_local_remote():
@@ -146,6 +146,6 @@ def test_gateway_local_remote():
     f = Flow().add().add(host=remote1).build()
 
     assert f['pod0'].args.socket_in.is_bind
-    assert not f['pod0'].args.socket_out.is_bind
+    assert f['pod0'].args.socket_out.is_bind
     assert f['pod1'].args.socket_in.is_bind
-    assert not f['pod1'].args.socket_out.is_bind
+    assert f['pod1'].args.socket_out.is_bind

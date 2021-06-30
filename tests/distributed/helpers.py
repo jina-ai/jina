@@ -5,9 +5,9 @@ from typing import List, Optional, Dict
 
 import requests
 
-from jina import __default_host__
 from daemon.models import DaemonID
-from daemon.models.enums import WorkspaceState
+from jina import __default_host__
+from jina.enums import RemoteWorkspaceState
 
 
 def assert_request(
@@ -99,17 +99,17 @@ def wait_for_workspace(
             print(f'KeyError: {e!r}')
             return False
         if state in [
-            WorkspaceState.PENDING,
-            WorkspaceState.CREATING,
-            WorkspaceState.UPDATING,
+            RemoteWorkspaceState.PENDING,
+            RemoteWorkspaceState.CREATING,
+            RemoteWorkspaceState.UPDATING,
         ]:
             print(f'workspace still {state}, sleeping for 2 secs')
             time.sleep(2)
             continue
-        elif state == WorkspaceState.ACTIVE:
+        elif state == RemoteWorkspaceState.ACTIVE:
             print(f'workspace got created successfully')
             return True
-        elif state == WorkspaceState.FAILED:
+        elif state == RemoteWorkspaceState.FAILED:
             print(f'workspace creation failed. please check logs')
             return False
 

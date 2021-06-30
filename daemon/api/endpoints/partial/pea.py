@@ -1,9 +1,9 @@
 from fastapi import APIRouter
+
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
-
-from ....models import PeaModel
 from ....excepts import Runtime400Exception
+from ....models import PeaModel
 from ....models.partial import PartialStoreItem
 from ....stores import partial_store as store
 
