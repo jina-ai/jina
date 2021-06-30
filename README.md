@@ -43,15 +43,20 @@ fragmented, multi-vendor, generic legacy tools.
 ## Install
 
 <table>
-<tr width=50%>
-<td>
-<center>via PyPI</center>
-</td>
-<td>
-<center>via Docker</center>
-</td>
+<tr>
+<th align="center">
+<img width="441" height="1">
+<p> 
+via PyPI
+</p>
+</th>
+<th align="center">
+<img width="441" height="1">
+<p>
+via Docker
+</p>
+</th>
 </tr>
-<tr width=50%>
 <td>
 
 ```console
@@ -68,7 +73,6 @@ $ docker run jinaai/jina:latest -v
 ```
 
 </td>
-</tr>
 </table>
 
 <details>
