@@ -62,7 +62,7 @@ fragmented, multi-vendor, generic legacy tools.
 | --- | --- | --- |
 | Standard | `pip install jina` | `docker run jinaai/jina:latest` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
+| <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
