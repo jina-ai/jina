@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px">
 </p>
 
 <p align="center">
@@ -42,29 +42,47 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-2.0 is in pre-release, **add `--pre`** to install it.
+<table>
+<tr>
+<th align="center">
+<img width="441" height="1">
+<p> 
+via PyPI
+</p>
+</th>
+<th align="center">
+<img width="441" height="1">
+<p>
+via Docker
+</p>
+</th>
+</tr>
+<td>
 
 ```console
-$ pip install --pre jina
+$ pip install jina[devel]          
 $ jina -v
-2.0.0rcN
+2.0.0
 ```
-
-#### via Docker
+</td>
+<td>
 
 ```console
-$ docker run jinaai/jina:master -v
-2.0.0rcN
+$ docker run jinaai/jina:latest -v
+2.0.0
 ```
+
+</td>
+</table>
 
 <details>
 <summary>📦 More installation options</summary>
 
 | <br><sub><sup>x86/64,arm64,v6,v7,Apple M1</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
-| Standard | `pip install --pre jina` | `docker run jinaai/jina:master` |
-| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install --pre "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:master-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install --pre "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:master-devel`</sub> |
+| Standard | `pip install jina` | `docker run jinaai/jina:master` |
+| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:master-daemon`</sub> |
+| <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:master-devel`</sub> |
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
@@ -81,11 +99,12 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 - [🔀 **Flow**](.github/2.0/cookbooks/Flow.md) is how Jina streamlines and distributes Executors.
 
 <a href="https://colab.research.google.com/github/jina-ai/jupyter-notebooks/blob/main/2.0-readme-38l.ipynb"><img align="right" src="https://colab.research.google.com/assets/colab-badge.svg?raw=true"/></a>
-Copy-paste the minimum example below and run it:
+
+1️⃣ Copy-paste the minimum example below and run it:
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="Get started system diagram">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="The architecture of a simple neural search system powered by Jina">
 
 ```python
 import numpy as np
@@ -118,13 +137,24 @@ class Indexer(Executor):
             query.matches = [Document(self._docs[int(idx)], copy=True, scores={'euclid': d}) for idx, d in enumerate(dist)]
             query.matches.sort(key=lambda m: m.scores['euclid'].value)  # sort matches by their values
 
-f = Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
+f = Flow(port_expose=12345, protocol='http').add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of this file
     f.block()  # block for listening request
 ```
 
-Keep the above running and start a simple client:
+2️⃣ Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input 
+
+```json
+{"data": [{"text": "@requests(on=something)"}]}
+```
+Here `@requests(on=something)` is our textual query, we want to find the lines most similar to `request(on=something)` from the above server code snippet.  Now click <kbd>Execute</kbd> button!
+
+<p align="center">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results">
+</p>
+
+🆙 Not a GUI guy? Let's query it from Python then! Keep the above running and start a simple client:
 
 ```python
 from jina import Client, Document
@@ -136,11 +166,11 @@ def print_matches(resp: Response):  # the callback function invoked when task is
         print(f'[{idx}]{d.scores["euclid"].value:2f}: "{d.text}"')
 
 
-c = Client(host='localhost', port_expose=12345)  # connect to localhost:12345
+c = Client(protocol='http', port_expose=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
-It finds the lines most similar to "`request(on=something)`" from the server code snippet and prints the following:  
+, which prints the following results:  
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
