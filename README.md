@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina banner" width="200px">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px">
 </p>
 
 <p align="center">
@@ -85,7 +85,7 @@ Copy-paste the minimum example below and run it:
 
 <sup>💡 Preliminaries: <a href="https://en.wikipedia.org/wiki/Word_embedding">character embedding</a>, <a href="https://computersciencewiki.org/index.php/Max-pooling_/_Pooling">pooling</a>, <a href="https://en.wikipedia.org/wiki/Euclidean_distance">Euclidean distance</a></sup>
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="Get started system diagram">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="The architecture of a simple neural search system powered by Jina">
 
 ```python
 import numpy as np
@@ -118,13 +118,24 @@ class Indexer(Executor):
             query.matches = [Document(self._docs[int(idx)], copy=True, scores={'euclid': d}) for idx, d in enumerate(dist)]
             query.matches.sort(key=lambda m: m.scores['euclid'].value)  # sort matches by their values
 
-f = Flow(port_expose=12345).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
+f = Flow(port_expose=12345, protocol='http').add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of this file
     f.block()  # block for listening request
 ```
 
-Keep the above running and start a simple client:
+Now open `http://localhost:12345/docs` (an extended Swagger UI), click <kbd>/search</kbd> tab and input 
+
+```json
+{"data": [{"text": "@requests(on=something)"}]}
+```
+Click <kbd>Execute</kbd> button!
+
+<p align="center">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results">
+</p>
+
+Not a GUI guy? Let's do it in Python then! Keep the above running and start a simple client:
 
 ```python
 from jina import Client, Document
@@ -136,7 +147,7 @@ def print_matches(resp: Response):  # the callback function invoked when task is
         print(f'[{idx}]{d.scores["euclid"].value:2f}: "{d.text}"')
 
 
-c = Client(host='localhost', port_expose=12345)  # connect to localhost:12345
+c = Client(protocol='http', port_expose=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
