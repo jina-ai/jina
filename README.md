@@ -36,9 +36,9 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Run Quick Demo
 
-- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `pip install --pre && jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install --pre "jina[chatbot]" && jina hello chatbot`
-- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install --pre "jina[multimodal]" && jina hello multimodal`
+- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
 ## Install
