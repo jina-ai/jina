@@ -131,7 +131,7 @@ with f:
 Here `@requests(on=something)` is our textual query, we want to find the lines most similar to `request(on=something)` from the above server code snippet.  Now click <kbd>Execute</kbd> button!
 
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint1.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results">
 </p>
 
 🆙 Not a GUI guy? Let's query it from Python then! Keep the above running and start a simple client:
