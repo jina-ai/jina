@@ -1,13 +1,10 @@
 version: "3.3"
 services:
   jinad:
-    image: test_remote_flow_dump_reload
+    image: jinaai/jina:test-daemon
     environment:
       JINA_DAEMON_BUILD: DEVEL
     container_name: test_remote_flow_dump_reload
-    build:
-      context: .
-      dockerfile: Dockerfiles/debianx.Dockerfile
     ports:
       - "8001:8000"
       - "45678:45678"
