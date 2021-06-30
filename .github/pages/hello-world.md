@@ -45,7 +45,7 @@ The whole process takes about 1 minute.
 For NLP engineers, we provide a simple chatbot demo for answering Covid-19 questions.
 To run that:
 ```bash
-pip install --pre "jina[chatbot]"
+pip install "jina[chatbot]"
 
 jina hello chatbot
 ```
@@ -66,7 +66,7 @@ A multimodal-document contains multiple data types, e.g. a PDF document often co
 Jina lets you build a multimodal search solution in just minutes.
 To run our minimum multimodal document search demo:
 ```bash
-pip install --pre "jina[multimodal]"
+pip install "jina[multimodal]"
 
 jina hello multimodal
 ```
