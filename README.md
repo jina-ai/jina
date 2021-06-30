@@ -9,10 +9,11 @@
 
 <p align=center>
 <a href="https://pypi.org/project/jina/"><img src="https://github.com/jina-ai/jina/blob/master/.github/badges/python-badge.svg?raw=true" alt="Python 3.7 3.8 3.9" title="Jina supports Python 3.7 and above"></a>
+<a href="https://pypi.org/project/jina/"><img src="https://img.shields.io/pypi/v/jina?color=%23099cec&amp;label=PyPI&amp;logo=pypi&amp;logoColor=white" alt="PyPI"></a>
 <a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver" alt="Docker Image Version (latest semver)"></a>
 <a href="https://pepy.tech/project/jina"><img src="https://pepy.tech/badge/jina/month"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img src="https://codecov.io/gh/jina-ai/jina/branch/master/graph/badge.svg" alt="codecov"></a>
-<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-600%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
+<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-700%2B-blueviolet?logo=slack&amp;logoColor=white"></a>
 </p>
 
 <!-- start elevator-pitch -->
@@ -35,54 +36,33 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Run Quick Demo
 
-- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `pip install --pre && jina hello fashion`
-- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install --pre "jina[chatbot]" && jina hello chatbot`
-- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install --pre "jina[multimodal]" && jina hello multimodal`
+- [👗 Fashion image search](./.github/pages/hello-world.md#-fashion-image-search): `jina hello fashion`
+- [🤖 QA chatbot](./.github/pages/hello-world.md#-covid-19-chatbot): `pip install "jina[chatbot]" && jina hello chatbot`
+- [📰 Multimodal search](./.github/pages/hello-world.md#-multimodal-document-search): `pip install "jina[multimodal]" && jina hello multimodal`
 - 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
 
 ## Install
 
-<table>
-<tr>
-<th align="center">
-<img width="441" height="1">
-<p> 
-via PyPI
-</p>
-</th>
-<th align="center">
-<img width="441" height="1">
-<p>
-via Docker
-</p>
-</th>
-</tr>
-<td>
-
-```console
-$ pip install jina[devel]          
-$ jina -v
-2.0.0
-```
-</td>
-<td>
-
-```console
-$ docker run jinaai/jina:latest -v
-2.0.0
-```
-
-</td>
-</table>
+- via PyPI
+  ```console
+  $ pip install "jina[devel]"          
+  $ jina -v
+  2.0.0
+  ```
+- via Docker
+  ```console
+  $ docker run jinaai/jina:latest -v
+  2.0.0
+  ```
 
 <details>
 <summary>📦 More installation options</summary>
 
 | <br><sub><sup>x86/64,arm64,v6,v7,Apple M1</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
-| Standard | `pip install jina` | `docker run jinaai/jina:master` |
-| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:master-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:master-devel`</sub> |
+| Standard | `pip install jina` | `docker run jinaai/jina:latest` |
+| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
+| <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
@@ -143,15 +123,15 @@ with f:
     f.block()  # block for listening request
 ```
 
-2️⃣ Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input 
+2️⃣ Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input:
 
 ```json
 {"data": [{"text": "@requests(on=something)"}]}
 ```
-Here `@requests(on=something)` is our textual query, we want to find the lines most similar to `request(on=something)` from the above server code snippet.  Now click <kbd>Execute</kbd> button!
+Here `@requests(on=something)` is our textual query, **we want to find the lines most similar to `request(on=something)` from the above server code snippet.**  Now click <kbd>Execute</kbd> button!
 
 <p align="center">
-<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results">
+<img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint1.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
 </p>
 
 🆙 Not a GUI guy? Let's query it from Python then! Keep the above running and start a simple client:
