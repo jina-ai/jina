@@ -96,15 +96,14 @@ class HubIO:
                 content = bytesio.getvalue()
                 md5_hash.update(content)
                 md5_digest = md5_hash.hexdigest()
-                total_size = bytesio.getbuffer().nbytes
 
             # upload the archived package
             form_data = {
                 'public': '1' if getattr(self.args, 'public', None) else '0',
                 'private': '1' if getattr(self.args, 'private', None) else '0',
                 'md5sum': md5_digest,
-                'force': self.args.force,
-                'secret': self.args.secret,
+                # 'force': self.args.force,
+                # 'secret': self.args.secret,
             }
 
             method = 'put' if self.args.force else 'post'
@@ -115,12 +114,23 @@ class HubIO:
                 f'Pushing to {hubble_url} ({method.upper()})',
                 self.logger,
             ):
-                resp = getattr(requests, method)(
+                # resp = getattr(requests, method)(
+                #     hubble_url,
+                #     files={'file': content},
+                #     data=form_data,
+                #     headers=request_headers,
+                #     stream=True,
+                # )
+                from .helper import upload_file
+
+                resp = upload_file(
                     hubble_url,
-                    files={'file': content},
-                    data=form_data,
+                    'filename',
+                    content,
+                    dict_data=form_data,
                     headers=request_headers,
                     stream=True,
+                    method=method,
                 )
 
                 result = None

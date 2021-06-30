@@ -7,7 +7,7 @@ import os
 import zipfile
 from functools import lru_cache
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
@@ -220,3 +220,60 @@ def download_with_resume(
         raise RuntimeError('MD5 checksum failed.')
 
     return filepath
+
+
+def upload_file(
+    url: str,
+    file_name: str,
+    buffer_data: bytes,
+    dict_data: Dict = {},
+    headers: Dict = {},
+    stream: bool = False,
+    method: str = 'post',
+):
+    """Upload file to target url
+
+    :param url: target url
+    :param file_name: the file name
+    :param buffer_data: the data to upload
+    :param dict_data: the dict-style data to upload
+    :param headers: the request header
+    :param stream: receive stream response
+    :param method: the request method
+    :return: the response of request
+    """
+    with ImportExtensions(required=True):
+        import requests
+
+    from .progress_bar import ProgressBar
+
+    class BufferReader(io.BytesIO):
+        def __init__(self, buf=b'', p_bar: Optional['ProgressBar'] = None):
+            self._len = len(buf)
+            self._p_bar = p_bar
+            io.BytesIO.__init__(self, buf)
+
+        def __len__(self):
+            return self._len
+
+        def read(self, n=-1):
+            chunk = io.BytesIO.read(self, n)
+            if self._p_bar:
+                self._p_bar.update(steps=len(chunk))
+            return chunk
+
+    dict_data.update({'file': (file_name, buffer_data)})
+
+    (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
+        dict_data
+    )
+
+    headers.update({"Content-Type": ctype})
+
+    with ProgressBar(task_name='Uploading', total=len(data)) as p_bar:
+        body = BufferReader(data, p_bar)
+        response = getattr(requests, method)(
+            url, data=body, headers=headers, stream=stream
+        )
+
+    return response
