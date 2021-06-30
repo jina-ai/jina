@@ -59,8 +59,15 @@ def mixin_http_gateway_parser(parser=None):
         action='store_true',
         default=False,
         help='''
-        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access. 
+        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         ''',
+    )
+
+    gp.add_argument(
+        '--default-swagger-ui',
+        action='store_true',
+        default=False,
+        help='If set, the default swagger ui is used for `/docs` endpoint. ',
     )
 
     gp.add_argument(
@@ -76,8 +83,8 @@ def mixin_http_gateway_parser(parser=None):
         default=False,
         help='''
         If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
-        
-        Any executor that has `@requests(on=...)` bind with those values will receive data requests. 
+
+        Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         ''',
     )
 
@@ -124,7 +131,7 @@ def mixin_compressor_parser(parser=None):
         help='''
     The compress algorithm used over the entire Flow.
 
-    Note that this is not necessarily effective, 
+    Note that this is not necessarily effective,
     it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`''',
     )
 
