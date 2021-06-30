@@ -45,6 +45,7 @@ Table of Contents
   - [Construct `DocumentArray`](#construct-documentarray)
   - [Persistence via `save()`/`load()`](#persistence-via-saveload)
   - [Access Element](#access-element)
+  - [Traverse Elements](#traverse-elements)
   - [Sort Elements](#sort-elements)
   - [Filter Elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
