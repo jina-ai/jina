@@ -441,8 +441,15 @@
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access. </span>
+<span class="s1">        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</span>
 <span class="s1">        '''</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--default-swagger-ui'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, the default swagger ui is used for `/docs` endpoint. '</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -458,8 +465,8 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
 <span class="s1">        If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.</span>
-<span class="s1">        </span>
-<span class="s1">        Any executor that has `@requests(on=...)` bind with those values will receive data requests. </span>
+
+<span class="s1">        Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
 <span class="s1">        '''</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -506,7 +513,7 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
 <span class="s1">    The compress algorithm used over the entire Flow.</span>
 
-<span class="s1">    Note that this is not necessarily effective, </span>
+<span class="s1">    Note that this is not necessarily effective,</span>
 <span class="s1">    it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`'''</span><span class="p">,</span>
     <span class="p">)</span>
 

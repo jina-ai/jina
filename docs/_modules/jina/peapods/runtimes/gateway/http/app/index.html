@@ -406,6 +406,8 @@
 <span class="sd">    """</span>
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+        <span class="kn">from</span> <span class="nn">starlette.requests</span> <span class="kn">import</span> <span class="n">Request</span>
+        <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">HTMLResponse</span>
         <span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
         <span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="p">(</span>
             <span class="n">JinaStatusModel</span><span class="p">,</span>
@@ -415,12 +417,14 @@
             <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="n">docs_url</span> <span class="o">=</span> <span class="s1">'/docs'</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="s1">'My Jina Service'</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">description</span>
         <span class="ow">or</span> <span class="s1">'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '</span>
         <span class="s1">'to customize this text.'</span><span class="p">,</span>
         <span class="n">version</span><span class="o">=</span><span class="n">__version__</span><span class="p">,</span>
+        <span class="n">docs_url</span><span class="o">=</span><span class="n">docs_url</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">default_swagger_ui</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">cors</span><span class="p">:</span>
@@ -553,6 +557,20 @@
         <span class="n">endpoints</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">expose_endpoints</span><span class="p">)</span>  <span class="c1"># type: Dict[str, Dict]</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">expose_executor_endpoint</span><span class="p">(</span><span class="n">exec_endpoint</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">default_swagger_ui</span><span class="p">:</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_render_custom_swagger_html</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTMLResponse</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">urllib.request</span>
+
+            <span class="n">swagger_url</span> <span class="o">=</span> <span class="s1">'https://api.jina.ai/swagger'</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span>
+                <span class="n">swagger_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">HTMLResponse</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="n">docs_url</span><span class="p">,</span> <span class="n">_render_custom_swagger_html</span><span class="p">,</span> <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_singleton_result</span><span class="p">(</span><span class="n">req_iter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""</span>
