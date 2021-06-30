@@ -125,12 +125,12 @@ with f:
     f.block()  # block for listening request
 ```
 
-2️⃣ Now open `http://localhost:12345/docs` (an extended Swagger UI), click <kbd>/search</kbd> tab and input 
+2️⃣ Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input 
 
 ```json
 {"data": [{"text": "@requests(on=something)"}]}
 ```
-Click <kbd>Execute</kbd> button!
+Here `@requests(on=something)` is our textual query, we want to find the lines most similar to `request(on=something)` from the above server code snippet.  Now click <kbd>Execute</kbd> button!
 
 <p align="center">
 <img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results">
@@ -152,7 +152,7 @@ c = Client(protocol='http', port_expose=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
-It finds the lines most similar to "`request(on=something)`" from the server code snippet and prints the following:  
+It prints the following results:  
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
