@@ -560,7 +560,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">'You can use it via `uses=</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">` in the Flow/CLI.'</span>
                     <span class="p">)</span>
-
+                <span class="k">elif</span> <span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">])</span>
                 <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
                     <span class="c1"># NOTE: sometimes resp.text returns empty</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
@@ -697,7 +698,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jun 29, 2021.
+            Last updated on Jun 30, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
