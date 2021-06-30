@@ -197,21 +197,52 @@ class ChargingBar(ProgressBar):
     fill = '█'
 
 
-class Spinner(ProgressBar):
+class Spinner(TimeContext):
     """Spinner"""
 
     phases = ('-', '\\', '|', '/')
 
-    def update(self):
-        """Update spinner"""
-        self.completed += 1
-        i = self.completed % len(self.phases)
-        sys.stdout.write('\r')
-        line = ' '.join(
-            ['⏳ {:>10}'.format(colored(self.task_name, 'cyan')), self.phases[i]]
+    def __enter__(self):
+        super().__enter__()
+        self.completed = -1
+        import threading
+
+        self._completed = threading.Event()
+
+        self._thread = threading.Thread(target=self.running, daemon=True)
+        self._thread.start()
+
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        super().__exit__(typ, value, traceback)
+        self._completed.set()
+        self._thread.join()
+
+    def running(self):
+        """daemon thread to output spinner"""
+        while not self._completed.is_set():
+            self.completed += 1
+            i = self.completed % len(self.phases)
+            sys.stdout.write('\r')
+            line = ' '.join(
+                ['⏳ {:>10}'.format(colored(self.task_name, 'cyan')), self.phases[i]]
+            )
+            sys.stdout.write(line)
+            sys.stdout.flush()
+            time.sleep(0.5)
+
+    def update(self, **kwargs):
+        """Update the progress bar
+
+        :param kwargs: parameters that can be accepted
+        """
+        pass
+
+    def _exit_msg(self):
+        sys.stdout.write(
+            f'\t{colored(f"✅ done in ⏱ {self.readable_duration}", "green")}\n'
         )
-        sys.stdout.write(line)
-        sys.stdout.flush()
 
 
 class PieSpinner(Spinner):

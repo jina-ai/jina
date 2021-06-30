@@ -14,8 +14,7 @@ from urllib.request import Request, urlopen
 from .. import __resources_path__
 from ..importer import ImportExtensions
 from ..logging.predefined import default_logger
-from ..logging.profile import ProgressBar
-from .progress_bar import Spinner
+from .progress_bar import ProgressBar, Spinner
 
 
 @lru_cache()
@@ -181,7 +180,7 @@ def download_with_resume(
         )
 
         if pbar and resume_byte_pos:
-            pbar.update()
+            pbar.update(steps=resume_byte_pos)
 
         try:
             r = requests.get(url, stream=True, headers=resume_header)
@@ -195,7 +194,7 @@ def download_with_resume(
             for chunk in r.iter_content(32 * block_size):
                 f.write(chunk)
                 if pbar:
-                    pbar.update()
+                    pbar.update(steps=len(chunk))
 
     if filename is None:
         filename = url.split('/')[-1]
@@ -213,7 +212,13 @@ def download_with_resume(
         if file_size_online > file_size_offline:
             _resume_byte_pos = file_size_offline
 
-    with Spinner(task_name='Pulling') as p_bar:
+    progress_bar = (
+        ProgressBar(task_name='Downloading', total=file_size_online)
+        if file_size_online > 0
+        else Spinner(task_name='Pulling')
+    )
+
+    with progress_bar as p_bar:
         _download(url, filepath, _resume_byte_pos, p_bar)
 
     if md5sum and not md5file(filepath) == md5sum:
