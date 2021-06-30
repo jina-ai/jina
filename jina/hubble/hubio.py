@@ -55,9 +55,11 @@ class HubIO:
             help_text='missing "docker" dependency, please do pip install "jina[docker]"',
         ):
             import docker
-            from docker import DockerClient
+            from docker import APIClient, DockerClient
 
             self._client: DockerClient = docker.from_env()
+            # low-level client
+            self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
     @staticmethod
     def _get_request_header() -> Dict:
@@ -255,8 +257,25 @@ class HubIO:
 
             if scheme == 'jinahub+docker':
                 # pull the Docker image
-                with TimeContext(f'pulling {image_name}', self.logger):
-                    image = self._client.images.pull(image_name)
+                # with TimeContext(f'pulling {image_name}', self.logger):
+                import sys
+
+                for log_data in self._raw_client.pull(
+                    image_name, stream=True, decode=True
+                ):
+                    # log_data = json.dumps(line, indent=4)
+                    status = log_data['status']
+
+                    if 'progress' in log_data:
+                        sys.stdout.write('\r')
+                        sys.stdout.write(status + ' ' + log_data['progress'])
+                    else:
+                        sys.stdout.write('\n')
+                        sys.stdout.write(status)
+                    sys.stdout.flush()
+                sys.stdout.write('\n')
+
+                image = self._client.images.pull(image_name)
                 if isinstance(image, list):
                     image = image[0]
                 image_tag = image.tags[0] if image.tags else ''
