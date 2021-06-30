@@ -64,10 +64,10 @@ def mixin_http_gateway_parser(parser=None):
     )
 
     gp.add_argument(
-        '--custom-swaggerui',
+        '--default-swagger-ui',
         action='store_true',
-        default=True,
-        help='If set, custom /docs endpoint is used for swaggerui. ',
+        default=False,
+        help='If set, the default swagger ui is used for `/docs` endpoint. ',
     )
 
     gp.add_argument(

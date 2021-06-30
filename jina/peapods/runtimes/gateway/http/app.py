@@ -42,7 +42,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
         'to customize this text.',
         version=__version__,
-        docs_url=None if args.custom_swaggerui else docs_url,
+        docs_url=docs_url if args.default_swagger_ui else None,
     )
 
     if args.cors:
@@ -176,7 +176,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 
-    if args.custom_swaggerui:
+    if not args.default_swagger_ui:
 
         async def _render_custom_swagger_html(req: Request) -> HTMLResponse:
             import urllib.request
