@@ -11,6 +11,7 @@ Table of Contents
   - [3. Use in Jina Flow](#3-use-in-jina-flow)
     - [3.2 using docker images](#32-using-docker-images)
     - [3.2 using source codes](#32-using-source-codes)
+    - [3.2 Override Default Parameters](#32-override-default-parameters)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
