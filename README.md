@@ -42,20 +42,34 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-2.0 is in pre-release, **add `--pre`** to install it.
+<table>
+<tr width=50%>
+<td>
+<center>via PyPI</center>
+</td>
+<td>
+<center>via Docker</center>
+</td>
+</tr>
+<tr width=50%>
+<td>
 
 ```console
-$ pip install --pre jina
+$ pip install jina[devel]          
 $ jina -v
-2.0.0rcN
+2.0.0
 ```
-
-#### via Docker
+</td>
+<td>
 
 ```console
-$ docker run jinaai/jina:master -v
-2.0.0rcN
+$ docker run jinaai/jina:latest -v
+2.0.0
 ```
+
+</td>
+</tr>
+</table>
 
 <details>
 <summary>📦 More installation options</summary>
@@ -152,7 +166,7 @@ c = Client(protocol='http', port_expose=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
 
-It prints the following results:  
+, which prints the following results:  
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
