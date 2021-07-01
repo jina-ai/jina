@@ -57,12 +57,16 @@ def get_connect_host(
     # check if `uses` has 'docker://' or,
     # it is a remote pea managed by jinad. (all remote peas are inside docker)
     conn_docker = (
-        getattr(connect_args, 'uses', None) is not None
-        and (
-            connect_args.uses.startswith('docker://')
-            or connect_args.uses.startswith('jinahub+docker://')
+        (
+            getattr(connect_args, 'uses', None) is not None
+            and (
+                connect_args.uses.startswith('docker://')
+                or connect_args.uses.startswith('jinahub+docker://')
+            )
         )
-    ) or not conn_local
+        or not conn_local
+        or is_running_in_docker()
+    )
 
     # is BIND & CONNECT all on the same remote?
     bind_conn_same_remote = (
@@ -86,3 +90,11 @@ def get_connect_host(
     else:
         # in this case we (at local) need to know about remote the BIND address
         return bind_host
+
+
+def is_running_in_docker():
+    import subprocess
+
+    result = subprocess.run(['cat', '/proc/self/cgroup'], capture_output=True)
+
+    return 'docker' in result.stdout.decode()
