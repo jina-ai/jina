@@ -173,6 +173,7 @@ class PeaDepends:
         self.params.host_out = self.host_out
         self.params.identity = self.id
         self.params.workspace_id = self.workspace_id
+        self.params.runs_in_docker = True
 
 
 class PodDepends(PeaDepends):
