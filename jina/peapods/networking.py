@@ -37,7 +37,6 @@ def get_connect_host(
     bind_host: str,
     bind_expose_public: bool,
     connect_args: Namespace,
-    runs_in_docker: bool = False,
 ) -> str:
     """
     Compute the host address for ``connect_args``
@@ -45,10 +44,9 @@ def get_connect_host(
     :param bind_host: the ip for binding
     :param bind_expose_public: True, if bind socket should be exposed publicly
     :param connect_args: configuration for the host ip connection
-    :param runs_in_docker: tells if process is running inside docker. Needed when this function is called inside a Pea.
     :return: host ip
     """
-
+    runs_in_docker = connect_args.runs_in_docker
     # by default __default_host__ is 0.0.0.0
 
     # is BIND at local
@@ -94,12 +92,3 @@ def get_connect_host(
     else:
         # in this case we (at local) need to know about remote the BIND address
         return bind_host
-
-
-def is_running_in_docker():
-    """Checks is current process is running inside docker."""
-    import subprocess
-
-    result = subprocess.run(['cat', '/proc/self/cgroup'], capture_output=True)
-
-    return 'docker' in result.stdout.decode()

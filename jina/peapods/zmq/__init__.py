@@ -290,9 +290,7 @@ class Zmqlet:
         return out_sock
 
     def _get_dynamic_out_socket(self, target_pod, as_streaming=False):
-        host = get_connect_host(
-            target_pod.host, False, self.args, is_running_in_docker()
-        )
+        host = get_connect_host(target_pod.host, False, self.args)
         out_sock = self._init_dynamic_out_socket(host, target_pod.port)
 
         if as_streaming:

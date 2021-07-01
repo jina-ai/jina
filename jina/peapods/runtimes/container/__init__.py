@@ -157,6 +157,7 @@ class ContainerRuntime(ZMQRuntime):
         ports = {f'{v}/tcp': v for v in _expose_port} if not self._net_mode else None
 
         docker_kwargs = self.args.docker_kwargs or {}
+        _args.runs_in_docker = True
         self._container = client.containers.run(
             uses_img,
             _args,
