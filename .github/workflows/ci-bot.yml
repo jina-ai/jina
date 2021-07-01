@@ -8,11 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Install
+      - name: Styling
         run: |
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
