@@ -65,9 +65,9 @@ class BasePea:
         # control address of runtime
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
-        self.set_ctrl_adrr()
+        self._set_ctrl_adrr()
 
-    def set_ctrl_adrr(self):
+    def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
