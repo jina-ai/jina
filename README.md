@@ -43,7 +43,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-- via PyPI: `pip install -U "jina[standard]"`
+- via PyPI: `pip install -U "jina[http]"`
 - via Docker: `docker run jinaai/jina:latest`
 
 <details>
