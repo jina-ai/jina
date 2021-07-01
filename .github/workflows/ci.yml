@@ -114,6 +114,7 @@ jobs:
         with:
           python-version: 3.7
       - name: Styling
+        id: styling
         run: |
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
@@ -125,11 +126,15 @@ jobs:
           else
             git add -u
             git commit -m "style: fix overload and cli autocomplete"
+            echo '::set-output name=IS_CHANGED::YES'
           fi
       - uses: ad-m/github-push-action@v0.6.0
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           branch: ${{ github.head_ref }}
+      - name: Fail this pipelint
+        if: ${{ steps.styling.outputs.IS_CHANGED == "YES" }}
+        run: exit(1)
 
   docker-image-test:
     needs: [commit-lint, code-injection]

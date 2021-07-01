@@ -19,7 +19,7 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
 ''',
     )
     gp.add_argument(
-        '--forces',
+        '--force',
         type=str,
         help='To overwrite the executor identified as UUID8',
     )
