@@ -34,7 +34,10 @@ def is_remote_local_connection(first: str, second: str):
 
 
 def get_connect_host(
-    bind_host: str, bind_expose_public: bool, connect_args: Namespace
+    bind_host: str,
+    bind_expose_public: bool,
+    connect_args: Namespace,
+    runs_in_docker: bool = False,
 ) -> str:
     """
     Compute the host address for ``connect_args``
@@ -65,7 +68,7 @@ def get_connect_host(
             )
         )
         or not conn_local
-        or is_running_in_docker()
+        or runs_in_docker
     )
 
     # is BIND & CONNECT all on the same remote?
