@@ -169,6 +169,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -389,14 +390,14 @@
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">urljoin</span>
 <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
-<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">.progress_bar</span> <span class="kn">import</span> <span class="n">ProgressBar</span><span class="p">,</span> <span class="n">Spinner</span>
 
 
 <div class="viewcode-block" id="get_hubble_url"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
@@ -555,14 +556,14 @@
         <span class="kn">import</span> <span class="nn">requests</span>
 
     <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span>
-        <span class="n">url</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">resume_byte_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pbar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ProgressBar</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">url</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">resume_byte_pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">pbar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Spinner</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="n">resume_header</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">{</span><span class="s1">'Range'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'bytes=</span><span class="si">{</span><span class="n">resume_byte_pos</span><span class="si">}</span><span class="s1">-'</span><span class="p">}</span> <span class="k">if</span> <span class="n">resume_byte_pos</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">pbar</span> <span class="ow">and</span> <span class="n">resume_byte_pos</span><span class="p">:</span>
-            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">resume_byte_pos</span><span class="p">)</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="n">resume_byte_pos</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">resume_header</span><span class="p">)</span>
@@ -576,7 +577,7 @@
             <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="mi">32</span> <span class="o">*</span> <span class="n">block_size</span><span class="p">):</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">pbar</span><span class="p">:</span>
-                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">progress</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
+                    <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -594,13 +595,76 @@
         <span class="k">if</span> <span class="n">file_size_online</span> <span class="o">&gt;</span> <span class="n">file_size_offline</span><span class="p">:</span>
             <span class="n">_resume_byte_pos</span> <span class="o">=</span> <span class="n">file_size_offline</span>
 
-    <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="s1">'Pulling'</span><span class="p">)</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
+    <span class="n">progress_bar</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="s1">'Downloading'</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">file_size_online</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">file_size_online</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">else</span> <span class="n">Spinner</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="s1">'Pulling'</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">progress_bar</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
         <span class="n">_download</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">_resume_byte_pos</span><span class="p">,</span> <span class="n">p_bar</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">md5sum</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">md5file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">md5sum</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'MD5 checksum failed.'</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">filepath</span></div>
+
+
+<div class="viewcode-block" id="upload_file"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.upload_file">[docs]</a><span class="k">def</span> <span class="nf">upload_file</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">buffer_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+    <span class="n">dict_data</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+    <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'post'</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">"""Upload file to target url</span>
+
+<span class="sd">    :param url: target url</span>
+<span class="sd">    :param file_name: the file name</span>
+<span class="sd">    :param buffer_data: the data to upload</span>
+<span class="sd">    :param dict_data: the dict-style data to upload</span>
+<span class="sd">    :param headers: the request header</span>
+<span class="sd">    :param stream: receive stream response</span>
+<span class="sd">    :param method: the request method</span>
+<span class="sd">    :return: the response of request</span>
+<span class="sd">    """</span>
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">requests</span>
+
+    <span class="kn">from</span> <span class="nn">.progress_bar</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
+
+    <span class="k">class</span> <span class="nc">BufferReader</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="o">=</span><span class="sa">b</span><span class="s1">''</span><span class="p">,</span> <span class="n">p_bar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'ProgressBar'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_p_bar</span> <span class="o">=</span> <span class="n">p_bar</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_len</span>
+
+        <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_p_bar</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">chunk</span>
+
+    <span class="n">dict_data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'file'</span><span class="p">:</span> <span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">buffer_data</span><span class="p">)})</span>
+
+    <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ctype</span><span class="p">)</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">filepost</span><span class="o">.</span><span class="n">encode_multipart_formdata</span><span class="p">(</span>
+        <span class="n">dict_data</span>
+    <span class="p">)</span>
+
+    <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"Content-Type"</span><span class="p">:</span> <span class="n">ctype</span><span class="p">})</span>
+
+    <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="n">task_name</span><span class="o">=</span><span class="s1">'Uploading'</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">BufferReader</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">p_bar</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span>
+            <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">response</span></div>
 </pre></div>
       </article>
       <footer>

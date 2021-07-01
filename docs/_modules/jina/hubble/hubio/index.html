@@ -169,6 +169,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -393,6 +394,7 @@
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">archive_package</span><span class="p">,</span> <span class="n">download_with_resume</span><span class="p">,</span> <span class="n">parse_hub_uri</span><span class="p">,</span> <span class="n">get_hubble_url</span>
 <span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">exist_local</span>
+<span class="kn">from</span> <span class="nn">.progress_bar</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">HubDownloadError</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
@@ -475,17 +477,18 @@
                 <span class="n">bytesio</span> <span class="o">=</span> <span class="n">archive_package</span><span class="p">(</span><span class="n">pkg_path</span><span class="p">)</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">bytesio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
                 <span class="n">md5_hash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-
                 <span class="n">md5_digest</span> <span class="o">=</span> <span class="n">md5_hash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
             <span class="c1"># upload the archived package</span>
             <span class="n">form_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">'public'</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
-                <span class="s1">'private'</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="s1">'public'</span><span class="p">:</span> <span class="s1">'True'</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
+                <span class="s1">'private'</span><span class="p">:</span> <span class="s1">'True'</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
                 <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
-                <span class="s1">'force'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">,</span>
-                <span class="s1">'secret'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">,</span>
             <span class="p">}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">:</span>
+                <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">:</span>
+                <span class="n">form_data</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span>
 
             <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="k">else</span> <span class="s1">'post'</span>
 
@@ -495,12 +498,16 @@
                 <span class="sa">f</span><span class="s1">'Pushing to </span><span class="si">{</span><span class="n">hubble_url</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">)'</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="p">):</span>
-                <span class="n">resp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span>
+                <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">upload_file</span>
+
+                <span class="n">resp</span> <span class="o">=</span> <span class="n">upload_file</span><span class="p">(</span>
                     <span class="n">hubble_url</span><span class="p">,</span>
-                    <span class="n">files</span><span class="o">=</span><span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="n">content</span><span class="p">},</span>
-                    <span class="n">data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
+                    <span class="s1">'filename'</span><span class="p">,</span>
+                    <span class="n">content</span><span class="p">,</span>
+                    <span class="n">dict_data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
                     <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">,</span>
                     <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
                 <span class="p">)</span>
 
                 <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>

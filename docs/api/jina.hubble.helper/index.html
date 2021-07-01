@@ -192,6 +192,7 @@
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -508,6 +509,27 @@ The HTTP server must support byte ranges.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the filepath of the downloaded file</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.hubble.helper.upload_file">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">upload_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'post'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#upload_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.upload_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload file to target url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – target url</p></li>
+<li><p><strong>file_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the file name</p></li>
+<li><p><strong>buffer_data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code>) – the data to upload</p></li>
+<li><p><strong>dict_data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – the dict-style data to upload</p></li>
+<li><p><strong>headers</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – the request header</p></li>
+<li><p><strong>stream</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – receive stream response</p></li>
+<li><p><strong>method</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the request method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the response of request</p>
 </dd>
 </dl>
 </dd></dl>

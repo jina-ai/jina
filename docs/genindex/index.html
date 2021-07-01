@@ -168,6 +168,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -623,6 +624,18 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.BadRequestType">BadRequestType</a>
 </li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ChargingBar.bar_prefix">bar_prefix (jina.hubble.progress_bar.ChargingBar attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.bar_prefix">(jina.hubble.progress_bar.ProgressBar attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ChargingBar.bar_suffix">bar_suffix (jina.hubble.progress_bar.ChargingBar attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.bar_suffix">(jina.hubble.progress_bar.ProgressBar attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient">BaseClient (class in jina.clients.base)</a>
 </li>
         <li><a href="../api/jina.types.ndarray.dense/#jina.types.ndarray.dense.BaseDenseNdArray">BaseDenseNdArray (class in jina.types.ndarray.dense)</a>
@@ -643,12 +656,12 @@
 </li>
         <li><a href="../api/jina.types.ndarray.sparse/#jina.types.ndarray.sparse.BaseSparseNdArray">BaseSparseNdArray (class in jina.types.ndarray.sparse)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.stores.base/#daemon.stores.base.BaseStore">BaseStore (class in daemon.stores.base)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.batch_iterator">batch_iterator() (in module jina.helper)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.optimizers/#jina.optimizers.ResultProcessor.best_parameters">best_parameters() (jina.optimizers.ResultProcessor property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BetterEnum">BetterEnum (class in jina.enums)</a>
@@ -724,6 +737,8 @@
         <li><a href="../api/jina.optimizers.parameters/#jina.optimizers.parameters.CategoricalParameter">CategoricalParameter (class in jina.optimizers.parameters)</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.ChainedPodException">ChainedPodException</a>
+</li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ChargingBar">ChargingBar (class in jina.hubble.progress_bar)</a>
 </li>
         <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient.check_input">check_input() (jina.clients.base.BaseClient static method)</a>
 </li>
@@ -849,10 +864,10 @@
 </li>
         <li><a href="../api/daemon.api.endpoints.logs/#daemon.api.endpoints.logs.ConnectionManager">ConnectionManager (class in daemon.api.endpoints.logs)</a>
 </li>
-        <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_mapping">construct_mapping() (jina.jaml.helper.JinaConstructor method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_mapping">construct_mapping() (jina.jaml.helper.JinaConstructor method)</a>
+</li>
         <li><a href="../api/daemon.tasks/#daemon.tasks.ConsumerThread">ConsumerThread (class in daemon.tasks)</a>
 </li>
         <li><a href="../api/daemon.models.containers/#daemon.models.containers.ContainerMetadata.container_id">container_id (daemon.models.containers.ContainerMetadata attribute)</a>
@@ -1436,6 +1451,10 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.document.graph/#jina.types.document.graph.GraphDocument.edge_features">edge_features() (jina.types.document.graph.GraphDocument property)</a>
 </li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.elapsed">elapsed() (jina.hubble.progress_bar.ProgressBar property)</a>
+</li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.elapsed_td">elapsed_td() (jina.hubble.progress_bar.ProgressBar property)</a>
+</li>
         <li><a href="../api/jina/#jina.Document.embedding">embedding() (jina.Document property)</a>
 
         <ul>
@@ -1446,6 +1465,12 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowBuildLevel.EMPTY">EMPTY (jina.enums.FlowBuildLevel attribute)</a>
 </li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ChargingBar.empty_fill">empty_fill (jina.hubble.progress_bar.ChargingBar attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.empty_fill">(jina.hubble.progress_bar.ProgressBar attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder.encode">encode() (jina.helloworld.fashion.my_executors.MyEncoder method)</a>
 </li>
         <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest.endpoint">endpoint() (jina.types.request.data.DataRequest property)</a>
@@ -1468,10 +1493,16 @@
 </li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.escape">escape() (jina.jaml.JAML static method)</a>
 </li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.eta">eta() (jina.hubble.progress_bar.ProgressBar property)</a>
+</li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.eta_td">eta_td() (jina.hubble.progress_bar.ProgressBar property)</a>
+</li>
         <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator.evaluate">evaluate() (jina.helloworld.fashion.my_executors.MyEvaluator method)</a>
 </li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.EvaluationCallback">EvaluationCallback (class in jina.optimizers)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Document.evaluations">evaluations() (jina.Document property)</a>
 
         <ul>
@@ -1480,8 +1511,6 @@
         </ul></li>
         <li><a href="../api/jina.peapods.runtimes.gateway.http.models/#jina.peapods.runtimes.gateway.http.models.JinaEndpointRequestModel.exec_endpoint">exec_endpoint (jina.peapods.runtimes.gateway.http.models.JinaEndpointRequestModel attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Executor">Executor (in module jina)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.EXECUTOR">EXECUTOR (jina.enums.BuildTestLevel attribute)</a>
@@ -1549,6 +1578,12 @@
 </li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceArguments.files">files (daemon.models.workspaces.WorkspaceArguments attribute)</a>
 </li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ChargingBar.fill">fill (jina.hubble.progress_bar.ChargingBar attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.fill">(jina.hubble.progress_bar.ProgressBar attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.first_pea_args">first_pea_args() (jina.peapods.pods.Pod property)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.flatten_to_dict">flatten_to_dict() (jina.helper.ArgNamespace static method)</a>
@@ -1575,10 +1610,10 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
 </li>
-        <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
+</li>
         <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
@@ -2299,6 +2334,13 @@
 
         <ul>
           <li><a href="../api/jina.hubble.hubio/#module-jina.hubble.hubio">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.hubble.progress_bar
+
+        <ul>
+          <li><a href="../api/jina.hubble.progress_bar/#module-jina.hubble.progress_bar">module</a>
 </li>
         </ul></li>
         <li>
@@ -3552,6 +3594,8 @@
 </li>
           <li><a href="../api/jina.hubble.hubio/#module-jina.hubble.hubio">jina.hubble.hubio</a>
 </li>
+          <li><a href="../api/jina.hubble.progress_bar/#module-jina.hubble.progress_bar">jina.hubble.progress_bar</a>
+</li>
           <li><a href="../api/jina.importer/#module-jina.importer">jina.importer</a>
 </li>
           <li><a href="../api/jina.jaml/#module-jina.jaml">jina.jaml</a>
@@ -4021,6 +4065,16 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.PENDING">PENDING (jina.enums.RemoteWorkspaceState attribute)</a>
 </li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.percent">percent() (jina.hubble.progress_bar.ProgressBar property)</a>
+</li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.PieSpinner.phases">phases (jina.hubble.progress_bar.PieSpinner attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.Spinner.phases">(jina.hubble.progress_bar.Spinner attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.PieSpinner">PieSpinner (class in jina.hubble.progress_bar)</a>
+</li>
         <li><a href="../api/cli.api/#cli.api.ping">ping() (in module cli.api)</a>
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.PlainFormatter">PlainFormatter (class in jina.logging.formatter)</a>
@@ -4055,12 +4109,12 @@
 </li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">PodDepends (class in daemon.api.dependencies)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.pods.factory/#jina.peapods.pods.factory.PodFactory">PodFactory (class in jina.peapods.pods.factory)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.PodRoleType">PodRoleType (class in jina.enums)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.pods">pods (daemon.models.DaemonStatus attribute)</a>
 </li>
         <li><a href="../api/jina.types.routing.table/#jina.types.routing.table.RoutingTable.pods">pods() (jina.types.routing.table.RoutingTable property)</a>
@@ -4135,8 +4189,12 @@
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.profiling">profiling() (in module jina.logging.profile)</a>
 </li>
-        <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar">ProgressBar (class in jina.logging.profile)</a>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar">ProgressBar (class in jina.hubble.progress_bar)</a>
+
+        <ul>
+          <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar">(class in jina.logging.profile)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.types.message/#jina.types.message.Message.proto">proto() (jina.types.message.Message property)</a>
 
         <ul>
@@ -4244,6 +4302,8 @@
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.registered_tags">registered_tags() (jina.jaml.JAML static method)</a>
 </li>
         <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap.reload">reload() (jina.types.arrays.memmap.DocumentArrayMemmap method)</a>
+</li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.remaining">remaining() (jina.hubble.progress_bar.ProgressBar property)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteAccessType">RemoteAccessType (class in jina.enums)</a>
 </li>
@@ -4417,6 +4477,8 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.FlowBuildLevel.RUNNING">RUNNING (jina.enums.FlowBuildLevel attribute)</a>
 </li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.Spinner.running">running() (jina.hubble.progress_bar.Spinner method)</a>
+</li>
         <li><a href="../api/daemon.excepts/#daemon.excepts.Runtime400Exception">Runtime400Exception</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RuntimeBackendType">RuntimeBackendType (class in jina.enums)</a>
@@ -4541,10 +4603,10 @@
 </li>
         <li><a href="../api/jina.parsers/#jina.parsers.set_pea_parser">set_pea_parser() (in module jina.parsers)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.parsers.ping/#jina.parsers.ping.set_ping_parser">set_ping_parser() (in module jina.parsers.ping)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.parsers/#jina.parsers.set_pod_parser">set_pod_parser() (in module jina.parsers)</a>
 </li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.SingleFlowRunner">SingleFlowRunner (class in jina.optimizers.flow_runner)</a>
@@ -4599,6 +4661,8 @@
           <li><a href="../api/jina.types.ndarray.sparse.tensorflow/#jina.types.ndarray.sparse.tensorflow.SparseNdArray">(class in jina.types.ndarray.sparse.tensorflow)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.Spinner">Spinner (class in jina.hubble.progress_bar)</a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteAccessType.SSH">SSH (jina.enums.RemoteAccessType attribute)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow.start">start() (jina.Flow method)</a>
@@ -4640,6 +4704,8 @@
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceStoreStatus.subnet_size">subnet_size (daemon.models.workspaces.WorkspaceStoreStatus attribute)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.success">success() (jina.logging.logger.JinaLogger method)</a>
+</li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.suffix">suffix (jina.hubble.progress_bar.ProgressBar attribute)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.supported">supported (jina.logging.logger.JinaLogger attribute)</a>
 </li>
@@ -4778,6 +4844,10 @@
 </li>
           <li><a href="../api/jina/#jina.Document.update">(jina.Document method)</a>
 </li>
+          <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.update">(jina.hubble.progress_bar.ProgressBar method)</a>
+</li>
+          <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.Spinner.update">(jina.hubble.progress_bar.Spinner method)</a>
+</li>
           <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar.update">(jina.logging.profile.ProgressBar method)</a>
 </li>
           <li><a href="../api/jina.types.document/#jina.types.document.Document.update">(jina.types.document.Document method)</a>
@@ -4785,6 +4855,10 @@
           <li><a href="../api/jina.types.struct/#jina.types.struct.StructView.update">(jina.types.struct.StructView method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.update_avg">update_avg() (jina.hubble.progress_bar.ProgressBar method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Document.update_content_hash">update_content_hash() (jina.Document method)</a>
 
         <ul>
@@ -4793,8 +4867,6 @@
           <li><a href="../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.update_content_hash">(jina.types.document.multimodal.MultimodalDocument method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Flow.update_network_interface">update_network_interface() (jina.Flow method)</a>
 
         <ul>
@@ -4816,6 +4888,8 @@
         <li><a href="../api/daemon.models/#daemon.models.UpdateOperationEnum">UpdateOperationEnum (class in daemon.models)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.RemoteWorkspaceState.UPDATING">UPDATING (jina.enums.RemoteWorkspaceState attribute)</a>
+</li>
+        <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.upload_file">upload_file() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina/#jina.Document.uri">uri() (jina.Document property)</a>
 
@@ -4931,6 +5005,8 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.weight">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.hubble.progress_bar/#jina.hubble.progress_bar.ProgressBar.window_size">window_size (jina.hubble.progress_bar.ProgressBar attribute)</a>
+</li>
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.workdir">workdir (daemon.models.workspaces.WorkspaceMetadata attribute)</a>
 
         <ul>
