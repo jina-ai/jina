@@ -207,7 +207,7 @@ jobs:
 
   core-test:
     needs: prep-testbed
-    runs-on: ubuntu-20.04
+    runs-on: [ubuntu-20.04, macos-10.15]
     strategy:
       fail-fast: false
       matrix:
