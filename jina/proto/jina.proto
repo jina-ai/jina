@@ -168,7 +168,13 @@ message TargetPodProto{
     string host = 1; // the host HeadPea of the BasePod
     uint32 port = 2; // the port HeadPea of the BasePod
     uint32 expected_parts = 3; // the number of parts the pod should expect
-    repeated string out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
+    repeated RoutingEdgeProto out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
+    string target_identity = 5;
+}
+
+message RoutingEdgeProto {
+    string pod = 1;
+    bool send_as_bind = 2;
 }
 
 message RoutingTableProto {

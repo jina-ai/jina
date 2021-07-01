@@ -1,12 +1,12 @@
 from enum import Enum
 from typing import Dict
+
 from pydantic import BaseModel
 
-from .id import DaemonID
-from .custom import build_pydantic_model
 from .containers import ContainerItem, ContainerStoreStatus
+from .custom import build_pydantic_model
+from .id import DaemonID
 from .workspaces import WorkspaceItem, WorkspaceStoreStatus
-
 
 FlowModel = build_pydantic_model(model_name='FlowModel', module='flow')
 PodModel = build_pydantic_model(model_name='PodModel', module='pod')

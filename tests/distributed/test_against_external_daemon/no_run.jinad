@@ -1,3 +1,0 @@
-build = devel
-python = 3.7
-ports = 12345,12344

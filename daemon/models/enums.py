@@ -1,7 +1,7 @@
+import os
 from enum import Enum
 from typing import List
 
-from jina.enums import RemoteWorkspaceState as WorkspaceState
 from ..helper import classproperty
 
 
@@ -35,13 +35,15 @@ class DaemonBuild(DaemonEnum):
     CPU = 'default'
     GPU = 'gpu'
 
-    # TODO (Deepankar): remove this once default becomes default
     @classproperty
     def default(cls) -> str:
         """Get default value for DaemonBuild
 
+        .. note::
+            set env var `JINA_DAEMON_BUILD` to `DEVEL` if you're working on dev mode
+
         :return: default value for DaemonBuild"""
-        return cls.DEVEL
+        return cls.DEVEL if os.getenv('JINA_DAEMON_BUILD') == 'DEVEL' else cls.DEFAULT
 
 
 class PythonVersion(DaemonEnum):

@@ -38,9 +38,7 @@ def callback(msg):
 
 def test_simple_dynamic_routing_zmqlet():
     args1 = get_args()
-    args1.port_ctrl = 51337
     args2 = get_args()
-    args2.port_ctrl = 51338
 
     logger = logging.getLogger('zmq-test')
     with Zmqlet(args1, logger) as z1, Zmqlet(args2, logger) as z2:
@@ -61,7 +59,7 @@ def test_simple_dynamic_routing_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2'],
+                    'out_edges': [{'pod': 'pod2'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -110,7 +108,7 @@ def test_double_dynamic_routing_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -177,7 +175,7 @@ async def test_double_dynamic_routing_async_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -234,7 +232,7 @@ def test_double_dynamic_routing_zmqstreamlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -261,7 +259,7 @@ def test_double_dynamic_routing_zmqstreamlet():
         for i in range(number_messages):
             z1.send_message(msg)
 
-        time.sleep(0.5)
+        time.sleep(5)
 
         assert z1.msg_sent == 2 * number_messages
         assert z1.msg_recv == 0

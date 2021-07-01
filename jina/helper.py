@@ -538,7 +538,7 @@ _HIGHLIGHTS = {
 }
 
 _COLORS = {
-    'grey': 30,
+    'black': 30,
     'red': 31,
     'green': 32,
     'yellow': 33,
@@ -601,7 +601,6 @@ def colored(
         fmt_str = '\033[%dm%s'
         if color:
             text = fmt_str % (_COLORS[color], text)
-
         if on_color:
             text = fmt_str % (_HIGHLIGHTS[on_color], text)
 
@@ -613,6 +612,25 @@ def colored(
                     text = fmt_str % (_ATTRIBUTES[attr], text)
         text += _RESET
     return text
+
+
+class ColorContext:
+    def __init__(self, color: str, bold: Optional[bool] = False):
+        self._color = color
+        self._bold = bold
+
+    def __enter__(self):
+        if self._bold:
+            fmt_str = '\033[1;%dm'
+        else:
+            fmt_str = '\033[0;%dm'
+
+        c = fmt_str % (_COLORS[self._color])
+        print(c, flush=True, end='')
+        return self
+
+    def __exit__(self, typ, value, traceback):
+        print(_RESET, flush=True, end='')
 
 
 class ArgNamespace:

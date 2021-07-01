@@ -12,7 +12,7 @@ on:
 
 
 jobs:
-  update-doc:
+  update-schema:
     if: |
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
@@ -87,8 +87,8 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
-  update-doc2:
-    needs: update-doc
+  update-doc:
+    needs: update-schema
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -125,12 +125,12 @@ jobs:
           git push origin gh-pages
 
   update-docker:
-    needs: update-doc
+    needs: [update-doc, update-schema]
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-        tag_stage: ["", "-devel", "-daemon"]
+        tag_stage: ["", "-standard", "-devel", "-daemon"]
         tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
@@ -155,6 +155,8 @@ jobs:
             echo "BUILD_ARG=jina_daemon" >> $GITHUB_ENV
           elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
             echo "BUILD_ARG=jina_devel" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_stage }}" == "-standard" ]]; then
+            echo "BUILD_ARG=jina_standard" >> $GITHUB_ENV
           else
             echo "BUILD_ARG=jina_base" >> $GITHUB_ENV
           fi
@@ -175,14 +177,14 @@ jobs:
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
-          platforms: linux/armhf,linux/amd64,linux/arm/v6,linux/arm64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: jinaai/jina:master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
           build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
           target: ${{env.BUILD_ARG}}
 
   prep-testbed:
-    needs: update-doc
+    needs: [update-doc, update-schema]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -241,9 +243,10 @@ jobs:
         run: |
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all daemon/distributed tests
+            echo "JINA_DAEMON_BUILD=DEVEL" >> $GITHUB_ENV
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
-              docker run --add-host host.docker.internal:host-gateway --name jinad -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
+              docker run --add-host host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
             fi
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
             docker rm -f jinad || true

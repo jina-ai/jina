@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from jina.logging.profile import used_memory_readable
-from jina.helper import get_public_ip, get_internal_ip, get_full_version
 
+from jina.helper import get_public_ip, get_internal_ip, get_full_version
+from jina.logging.profile import used_memory_readable
 from ...models import DaemonStatus
 from ...stores import workspace_store, pea_store, pod_store, flow_store
 

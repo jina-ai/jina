@@ -4,7 +4,6 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-
 from cli import _is_latest_version
 from jina import Executor, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
@@ -19,6 +18,7 @@ from jina.helper import (
     dunder_get,
     get_ci_vendor,
 )
+from jina.hubble.helper import get_hubble_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.logging.profile import TimeContext
@@ -224,26 +224,24 @@ def test_yaml_filepath_validate_bad(val):
 
 @pytest.fixture
 def config():
-    os.environ['JINA_RANDOM_PORTS'] = "True"
+    os.environ['JINA_RANDOM_PORT_MIN'] = '49153'
     yield
-    del os.environ['JINA_RANDOM_PORTS']
+    del os.environ['JINA_RANDOM_PORT_MIN']
 
 
 def test_random_port(config):
-    assert os.environ['JINA_RANDOM_PORTS']
+    assert os.environ['JINA_RANDOM_PORT_MIN']
     port = random_port()
     assert 49153 <= port <= 65535
 
 
 @pytest.fixture
 def config_few_ports():
-    os.environ['JINA_RANDOM_PORTS'] = "True"
     os.environ['JINA_RANDOM_PORT_MIN'] = "49300"
     os.environ['JINA_RANDOM_PORT_MAX'] = "49301"
     yield
     del os.environ['JINA_RANDOM_PORT_MIN']
     del os.environ['JINA_RANDOM_PORT_MAX']
-    del os.environ['JINA_RANDOM_PORTS']
 
 
 def test_random_port_max_failures_for_tests_only(config_few_ports):
@@ -286,3 +284,8 @@ def test_find_request_binding():
 )
 def test_ci_vendor():
     assert get_ci_vendor() == 'GITHUB_ACTIONS'
+
+
+def test_get_hubble_url():
+    for j in range(2):
+        assert get_hubble_url().startswith('http')

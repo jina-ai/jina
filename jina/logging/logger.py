@@ -8,6 +8,7 @@ from typing import Optional
 from . import formatter
 from .. import __uptime__, __resources_path__
 from ..enums import LogVerbosity
+from ..helper import ColorContext
 from ..jaml import JAML
 
 
@@ -27,7 +28,6 @@ class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
         'WARNING': 'warning',
         'ERROR': 'error',
         'CRITICAL': 'critical',
-        'SUCCESS': 'notice',
     }
 
 
@@ -90,24 +90,58 @@ class JinaLogger:
 
         self.add_handlers(log_config, **context_vars)
 
-        # note logger.success isn't default there
-        success_level = LogVerbosity.SUCCESS.value  # between WARNING and INFO
-        logging.addLevelName(success_level, 'SUCCESS')
-        setattr(self.logger, 'success', self.success)
-
-        self.info = self.logger.info
-        self.critical = self.logger.critical
-        self.debug = self.logger.debug
-        self.error = self.logger.error
-        self.warning = self.logger.warning
-
-    def success(self, message):
+    def success(self, *args, **kwargs):
         """
         Prints messages as success
 
-        :param message: Message to log
+        .. #noqa: DAR101
         """
-        self.logger.log(LogVerbosity.SUCCESS.value, message)
+        with ColorContext(color='green'):
+            self.logger.info(*args, **kwargs)
+
+    def info(self, *args, **kwargs):
+        """
+        Prints messages as info
+
+        .. #noqa: DAR101
+        """
+        self.logger.info(*args, **kwargs)
+
+    def debug(self, *args, **kwargs):
+        """
+        Prints messages as debug
+
+        .. #noqa: DAR101
+        """
+        with ColorContext(color='black', bold=True):  # dim white
+            self.logger.debug(*args, **kwargs)
+
+    def warning(self, *args, **kwargs):
+        """
+        Prints messages as warn
+
+        .. #noqa: DAR101
+        """
+        with ColorContext(color='yellow'):  # dim white
+            self.logger.warning(*args, **kwargs)
+
+    def critical(self, *args, **kwargs):
+        """
+        Prints messages as critical
+
+        .. #noqa: DAR101
+        """
+        with ColorContext(color='red', bold=True):  # dim white
+            self.logger.critical(*args, **kwargs)
+
+    def error(self, *args, **kwargs):
+        """
+        Prints messages as info
+
+        .. #noqa: DAR101
+        """
+        with ColorContext(color='red'):  # red
+            self.logger.error(*args, **kwargs)
 
     @property
     def handlers(self):
@@ -143,7 +177,7 @@ class JinaLogger:
 
         for h in config['handlers']:
             cfg = config['configs'].get(h, None)
-            fmt = getattr(formatter, cfg.get('formatter', 'PlainFormatter'))
+            fmt = getattr(formatter, cfg.get('formatter', 'Formatter'))
 
             if h not in self.supported or not cfg:
                 raise ValueError(

@@ -329,7 +329,7 @@ class Message:
                 result = colored(result, 'red')
             elif r.status.code == jina_pb2.StatusProto.ERROR_CHAINED:
                 result += '∅'
-                result = colored(result, 'grey')
+                result = colored(result, 'yellow')
             return result
 
         route_str = [_pod_str(r) for r in self.envelope.routes]

@@ -80,7 +80,7 @@ class ContainerRuntime(ZMQRuntime):
 
         if self.args.uses.startswith('docker://'):
             uses_img = self.args.uses.replace('docker://', '')
-            self.logger.info(f'will use Docker image: {uses_img}')
+            self.logger.debug(f'will use Docker image: {uses_img}')
         else:
             warnings.warn(
                 f'you are using legacy image format {self.args.uses}, this may create some ambiguity. '
