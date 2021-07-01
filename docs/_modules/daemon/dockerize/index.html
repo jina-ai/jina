@@ -381,7 +381,8 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.dockerize</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">docker</span>
 
@@ -636,6 +637,20 @@
         <span class="c1"># TODO: network &amp; ports return can be avoided?</span>
         <span class="k">return</span> <span class="n">container</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">ports</span></div>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_get_volume_host_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">volumes</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">())</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span>
+                <span class="s1">'HostConfig'</span>
+            <span class="p">][</span><span class="s1">'Binds'</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">volume</span> <span class="ow">in</span> <span class="n">volumes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">volume</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">__root_workspace__</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">volume</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># above logic only works inside docker, if it does not work we dont need it</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">__root_workspace__</span>
+
 <div class="viewcode-block" id="Dockerizer.volume"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.volume">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">"""</span>
@@ -647,7 +662,7 @@
 <span class="sd">        :return: dict of volume mappings</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">__root_workspace__</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">_get_volume_host_dir</span><span class="p">()</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s1">'bind'</span><span class="p">:</span> <span class="s1">'/workspace'</span><span class="p">,</span>
                 <span class="s1">'mode'</span><span class="p">:</span> <span class="s1">'rw'</span><span class="p">,</span>
             <span class="p">},</span>
