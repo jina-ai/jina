@@ -65,3 +65,4 @@ bs4:                        cicd
 aiostream:                  devel, cicd, async, client
 jsonschema:                 cicd
 dgl==0.6.1:                 cicd, graph
+black==20.8b1:              cicd

@@ -138,15 +138,17 @@ jobs:
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
           JINA_MINOR_VERSION=${JINA_VERSION%.*}
+          JINA_MAJOR_VERSION=${JINA_MINOR_VERSION%.*}
           echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
+          echo "JINA_MAJOR_VERSION=${JINA_MAJOR_VERSION}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
+            echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
             echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
