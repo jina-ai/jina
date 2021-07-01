@@ -180,7 +180,11 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: jinaai/jina:master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
-          build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
+          build-args: |
+            BUILD_DATE=${{env.BUILD_DATA}}
+            JINA_VERSION=${{env.JINA_VERSION}}
+            VCS_REF=${{env.VCS_REF}}
+            PY_VERSION=${{env.PY_VERSION}}
           target: ${{env.BUILD_ARG}}
 
   prep-testbed:

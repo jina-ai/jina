@@ -144,6 +144,7 @@ jobs:
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
+
             echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
             echo "PY_VERSION=3.9" >> $GITHUB_ENV
@@ -180,7 +181,11 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: jinaai/jina:latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
-          build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
+          build-args: |
+            BUILD_DATE=${{env.BUILD_DATA}}
+            JINA_VERSION=${{env.JINA_VERSION}}
+            VCS_REF=${{env.VCS_REF}}
+            PY_VERSION=${{env.PY_VERSION}}
           target: ${{env.BUILD_ARG}}
 
   create-release:
