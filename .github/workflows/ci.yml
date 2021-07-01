@@ -133,7 +133,7 @@ jobs:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           branch: ${{ github.head_ref }}
       - name: Fail this pipelint
-        if: ${{ steps.styling.outputs.IS_CHANGED == "YES" }}
+        if: steps.styling.outputs.IS_CHANGED == 'YES'
         run: exit(1)
 
   docker-image-test:
