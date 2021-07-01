@@ -65,3 +65,29 @@ def get_log_file_path(log_id: 'DaemonID') -> Tuple[str, 'DaemonID']:
         workspace_id = get_store_from_id(log_id)[log_id].workspace_id
         filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
     return filepath, workspace_id
+
+
+class cached_property:
+    """The decorator to cache property of a class."""
+
+    def __init__(self, func):
+        """
+        Create the :class:`cached_property`.
+        :param func: Cached function.
+        """
+        self.func = func
+
+    def __get__(self, obj, cls):
+        cached_value = obj.__dict__.get(f'CACHED_{self.func.__name__}', None)
+        if cached_value is not None:
+            return cached_value
+
+        value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
+        return value
+
+    def __delete__(self, obj):
+        cached_value = obj.__dict__.get(f'CACHED_{self.func.__name__}', None)
+        if cached_value is not None:
+            if hasattr(cached_value, 'close'):
+                cached_value.close()
+            del obj.__dict__[f'CACHED_{self.func.__name__}']

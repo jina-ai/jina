@@ -1,6 +1,5 @@
 import os
 from itertools import chain
-from functools import lru_cache
 from pathlib import Path
 from typing import Dict, List
 
@@ -8,7 +7,7 @@ from fastapi import UploadFile
 
 from jina.logging.logger import JinaLogger
 from . import __rootdir__, __dockerfiles__, jinad_args
-from .helper import get_workspace_path
+from .helper import get_workspace_path, cached_property
 from .models import DaemonID
 from .models.enums import DaemonBuild, PythonVersion
 
@@ -187,8 +186,7 @@ class DaemonFile:
         except ValueError:
             self._logger.warning(f'invalid value `{ports}` passed for \'ports\'')
 
-    @property
-    @lru_cache()
+    @cached_property
     def requirements(self) -> str:
         """pip packages mentioned in requirements.txt
 
@@ -204,16 +202,14 @@ class DaemonFile:
         with open(_req) as f:
             return ' '.join(f.read().splitlines())
 
-    @property
-    @lru_cache()
+    @cached_property
     def dockercontext(self) -> str:
         """directory for docker context during docker build
 
         :return: docker context directory"""
         return __rootdir__ if self.build == DaemonBuild.DEVEL else self._workdir
 
-    @property
-    @lru_cache()
+    @cached_property
     def dockerfile(self) -> str:
         """location of dockerfile
 
@@ -221,8 +217,7 @@ class DaemonFile:
         """
         return f'{__dockerfiles__}/{self.build.value}.Dockerfile'
 
-    @property
-    @lru_cache()
+    @cached_property
     def dockerargs(self) -> Dict:
         """dict of args to be passed during docker build
 

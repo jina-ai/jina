@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Dict, List, Optional
-from functools import lru_cache
 
 from fastapi import HTTPException, UploadFile, File
 from pydantic import FilePath
@@ -9,7 +8,7 @@ from pydantic.errors import PathNotAFileError
 from jina import __docker_host__, Flow
 from jina.enums import PeaRoleType, SocketType, RemoteWorkspaceState
 from jina.helper import random_port
-from ..helper import get_workspace_path
+from ..helper import get_workspace_path, cached_property
 from ..models import DaemonID, FlowModel, PodModel, PeaModel
 from ..stores import workspace_store as store
 
@@ -43,8 +42,7 @@ class FlowDepends:
                 detail=f'File `{self.filename}` not found in workspace `{self.workspace_id}`',
             )
 
-    @property
-    @lru_cache()
+    @cached_property
     def port_expose(self) -> str:
         """
         Sets `port_expose` for the Flow started in `mini-jinad`.
@@ -100,8 +98,7 @@ class PeaDepends:
             else self.params.host_in
         )
 
-    @property
-    @lru_cache()
+    @cached_property
     def ports(self) -> Dict:
         """
         Determines ports to be mapped to dockerhost

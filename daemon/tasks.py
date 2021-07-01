@@ -1,6 +1,5 @@
 from queue import Empty
 from threading import Thread
-from functools import lru_cache
 from typing import List, Optional
 
 from fastapi import UploadFile
@@ -12,7 +11,7 @@ from . import __task_queue__, daemon_logger, jinad_args
 from .dockerize import Dockerizer
 from .excepts import DockerImageException, DockerNetworkException
 from .files import DaemonFile, workspace_files
-from .helper import id_cleaner, get_workspace_path
+from .helper import id_cleaner, get_workspace_path, cached_property
 from .models.id import DaemonID
 from .models.workspaces import WorkspaceArguments, WorkspaceItem, WorkspaceMetadata
 from .stores import workspace_store as store
@@ -32,8 +31,7 @@ class DaemonWorker(Thread):
         )
         self.start()
 
-    @property
-    @lru_cache()
+    @cached_property
     def arguments(self) -> WorkspaceArguments:
         """sets arguments in workspace store
 
@@ -60,8 +58,7 @@ class DaemonWorker(Thread):
             )
         return _args
 
-    @property
-    @lru_cache()
+    @cached_property
     def metadata(self) -> WorkspaceMetadata:
         """sets metadata in workspace store
 
@@ -81,8 +78,7 @@ class DaemonWorker(Thread):
             )
         return _metadata
 
-    @property
-    @lru_cache()
+    @cached_property
     def workdir(self) -> str:
         """sets workdir for current worker thread
 
@@ -90,8 +86,7 @@ class DaemonWorker(Thread):
         """
         return get_workspace_path(self.id)
 
-    @property
-    @lru_cache()
+    @cached_property
     def daemon_file(self) -> DaemonFile:
         """set daemonfile for current worker thread
 
@@ -99,8 +94,7 @@ class DaemonWorker(Thread):
         """
         return DaemonFile(workdir=self.workdir, logger=self._logger)
 
-    @property
-    @lru_cache()
+    @cached_property
     def network_id(self) -> str:
         """create a docker network
 
@@ -117,8 +111,7 @@ class DaemonWorker(Thread):
             workspace_id=self.id, daemon_file=self.daemon_file, logger=self._logger
         )
 
-    @property
-    @lru_cache()
+    @cached_property
     def container_id(self) -> Optional[str]:
         """creates a container if run command is passed in .jinad file
 
