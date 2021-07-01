@@ -65,9 +65,9 @@ class BasePea:
         # control address of runtime
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
-        self._set_ctrl_adrr()
+        self.set_ctrl_adrr()
 
-    def _set_ctrl_adrr(self):
+    def set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
@@ -128,6 +128,8 @@ class BasePea:
         """
         if hasattr(self.worker, 'terminate'):
             self.worker.terminate()
+            # This sleep gives the process some time to terminate, otherwise we encountered hanging joins
+            time.sleep(0.1)
 
     def _build_runtime(self):
         """
@@ -259,6 +261,9 @@ class BasePea:
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
                 self.join()
+        else:
+            # if it fails to start, the process will hang at `join`
+            self.terminate()
 
         self.logger.debug(__stop_msg__)
         self.logger.close()
