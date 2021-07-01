@@ -112,13 +112,6 @@ class BasePod(ExitFIFO):
         """
         raise NotImplementedError
 
-    def close(self):
-        """Stop all :class:`BasePea` in this BasePod.
-
-        .. # noqa: DAR201
-        """
-        self.__exit__(None, None, None)
-
     @staticmethod
     def _set_upload_files(args):
         # sets args.upload_files at the pod level so that peas inherit from it.
