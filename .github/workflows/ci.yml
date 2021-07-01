@@ -118,7 +118,7 @@ jobs:
           git config --local user.email "dev-bot@jina.ai"
           git config --local user.name "Jina Dev Bot"
           pip install ".[devel,black]"
-          cd script && bash ./devbot.sh
+          cd scripts && bash ./devbot.sh && cd -
           if [[ -z $(git status -s) ]]
           then
             echo "tree is clean"

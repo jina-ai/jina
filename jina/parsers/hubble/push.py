@@ -19,7 +19,7 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
 ''',
     )
     gp.add_argument(
-        '--force',
+        '--forces',
         type=str,
         help='To overwrite the executor identified as UUID8',
     )
@@ -34,7 +34,7 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
     mutually_exclusive_group = gp.add_mutually_exclusive_group()
 
     mutually_exclusive_group.add_argument(
-        '--public1',
+        '--public',
         action='store_true',
         default=argparse.SUPPRESS,
         help='If set, the pushed executor is visible to public',
