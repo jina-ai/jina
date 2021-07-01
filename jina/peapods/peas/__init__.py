@@ -115,8 +115,7 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
-        if self.worker.is_alive():
-            self.worker.join(*args, **kwargs)
+        self.worker.join(*args, **kwargs)
 
     def terminate(self):
         """Terminate the Pea.
