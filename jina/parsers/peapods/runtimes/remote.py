@@ -127,7 +127,7 @@ def mixin_compressor_parser(parser=None):
         '--compress',
         type=CompressAlgo.from_string,
         choices=list(CompressAlgo),
-        default=CompressAlgo.LZ4,
+        default=CompressAlgo.NONE,
         help='''
     The compress algorithm used over the entire Flow.
 
