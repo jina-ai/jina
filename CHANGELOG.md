@@ -65,6 +65,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9319,4 +9320,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e3d6af24```](https://github.com/jina-ai/jina/commit/e3d6af24783eb2b37ea3c9e8a04b1f04cf67042a)] __-__ fix clean code (*Han Xiao*)
  - [[```685c81d1```](https://github.com/jina-ai/jina/commit/685c81d1f72418311d7916cdd80e612b10299dad)] __-__ update readm and cookbook (*Han Xiao*)
  - [[```eb22778f```](https://github.com/jina-ai/jina/commit/eb22778fcd445d2acddb64bf66e2586e915eb4d3)] __-__ __version__: the next version will be 2.0.0rc11 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-1></a>
+## Release Note (`2.0.1`)
+
+> Release time: 2021-07-01 14:56:08
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Maximilian Werk,  Tobias Jacobowitz,  Joan Fontanals,  felix-wang,  Jina Dev Bot,  Florian Hönicke,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```faebe06a```](https://github.com/jina-ai/jina/commit/faebe06a3871ddf057cbe607f08500e15e43a94a)] __-__ container runtime on mac (#2821) (*Maximilian Werk*)
+ - [[```74c73413```](https://github.com/jina-ai/jina/commit/74c73413b7aa74c0b8a9d87d1fb145e4eedffd13)] __-__ __daemon__: fix flexible root workspace mount in docker (#2799) (*Tobias Jacobowitz*)
+ - [[```e7b7c830```](https://github.com/jina-ai/jina/commit/e7b7c830bb5ddd3309665f5f7a28d04cde73777d)] __-__ __core__: prevent peas from hanging on close (#2824) (*Tobias Jacobowitz*)
+
+### 🚧 Code Refactoring
+
+ - [[```65e7ec18```](https://github.com/jina-ai/jina/commit/65e7ec1866ee98fbfc2ea3d59ed8e0e1393bc939)] __-__ remove unneeded func (#2819) (*Joan Fontanals*)
+ - [[```731d1e46```](https://github.com/jina-ai/jina/commit/731d1e469411c58db0a57372ccfc9536f3135e14)] __-__ add progress bar while push/pull (#2812) (*felix-wang*)
+
+### 📗 Documentation
+
+ - [[```6a872859```](https://github.com/jina-ai/jina/commit/6a87285979b17fef146bfb68f73b871d6d468f75)] __-__ traversal paths cookbook (#2810) (*Florian Hönicke*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```8bb1c9e6```](https://github.com/jina-ai/jina/commit/8bb1c9e60803a301866e4f6f286e10f7c8d77054)] __-__ disable armhf and armv6 docker build (*Han Xiao*)
+ - [[```6129905f```](https://github.com/jina-ai/jina/commit/6129905febbc12be23070cc2a3e44a2091f4c6a6)] __-__ ask devbot to do autocomplete and overload (#2817) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```887aaaf4```](https://github.com/jina-ai/jina/commit/887aaaf463775b9d240caa86236aecd8b67fd94d)] __-__ fix env passing in ci on docker build (*Han Xiao*)
+ - [[```109ad19b```](https://github.com/jina-ai/jina/commit/109ad19b5135f70a0d790e9ddcedc9b49fca3785)] __-__ disable armv6,v7 docker build (*Han Xiao*)
+ - [[```57ee1a11```](https://github.com/jina-ai/jina/commit/57ee1a11d2172d9fa4b8d7ea6dc7714ce910b249)] __-__ fix readme (*Han Xiao*)
+ - [[```b45861c7```](https://github.com/jina-ai/jina/commit/b45861c7d1464984513328502119d76ada846fbe)] __-__ remove gevent deps (#2818) (*Han Xiao*)
+ - [[```c4eca9ec```](https://github.com/jina-ai/jina/commit/c4eca9ecc8fde56698d13a4889d1b2cff5d6663c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```31aa8031```](https://github.com/jina-ai/jina/commit/31aa8031ab40dffe5a93837f81ce36e1e8514f2e)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```2e6515f0```](https://github.com/jina-ai/jina/commit/2e6515f0d1cdd28dfeb65daacb2bbe65f40b7f59)] __-__ fix minor style problem (*Han Xiao*)
+ - [[```330aee83```](https://github.com/jina-ai/jina/commit/330aee8395eeefa2421992a1e62ca7f7927c78e8)] __-__ __version__: the next version will be 2.0rc1 (*Jina Dev Bot*)
+ - [[```e21e02bf```](https://github.com/jina-ai/jina/commit/e21e02bf261b38257dd8b36b02a2f04edcedb6dc)] __-__ version bumping (*Han Xiao*)
 
