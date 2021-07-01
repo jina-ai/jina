@@ -172,7 +172,11 @@ jobs:
           push: true
           tags: localhost:5000/jina/multiarch:latest
           target: jina_devel
-          build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
+          build-args: |
+            BUILD_DATE=${{env.BUILD_DATA}}
+            JINA_VERSION=${{env.JINA_VERSION}}
+            VCS_REF=${{env.VCS_REF}}
+            PY_VERSION=${{env.PY_VERSION}}
       - run: |
           docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
