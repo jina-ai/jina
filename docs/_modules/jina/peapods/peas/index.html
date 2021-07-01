@@ -460,13 +460,17 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">ContainerRuntime</span><span class="p">:</span>
             <span class="c1"># Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.</span>
             <span class="c1"># If yes, set host_ctrl to __docker_host__, else keep it as __default_host__</span>
-            <span class="n">ctrl_host</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">__docker_host__</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
+            <span class="c1"># Reset extra_hosts as that's set by default in ContainerRuntime</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
                 <span class="ow">and</span> <span class="s1">'extra_hosts'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
                 <span class="ow">and</span> <span class="n">__docker_host__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="p">[</span><span class="s1">'extra_hosts'</span><span class="p">]</span>
-                <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span>
-            <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">ctrl_host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'extra_hosts'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ctrl_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span> <span class="o">=</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span>
                 <span class="n">ctrl_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ctrl_with_ipc</span>
             <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>

@@ -471,6 +471,15 @@
         <span class="s1">'`wait_start_success` at outer function for the postpone check.'</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--runs-in-docker'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Informs a Pea that runs in a container. Important to properly set networking information'</span>
+        <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
+        <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>

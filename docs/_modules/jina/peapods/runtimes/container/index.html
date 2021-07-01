@@ -391,6 +391,7 @@
 
 <span class="kn">from</span> <span class="nn">..zmq.base</span> <span class="kn">import</span> <span class="n">ZMQRuntime</span>
 <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
+<span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">BadImageNameError</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">slugify</span>
 
@@ -476,6 +477,7 @@
         <span class="c1"># this prevent setting containerPea twice</span>
         <span class="kn">from</span> <span class="nn">....parsers</span> <span class="kn">import</span> <span class="n">set_pea_parser</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">non_defaults</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">get_non_defaults_args</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
             <span class="n">set_pea_parser</span><span class="p">(),</span>
@@ -550,6 +552,7 @@
             <span class="n">volumes</span><span class="o">=</span><span class="n">_volumes</span><span class="p">,</span>
             <span class="n">network_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_net_mode</span><span class="p">,</span>
             <span class="n">entrypoint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">entrypoint</span><span class="p">,</span>
+            <span class="n">extra_hosts</span><span class="o">=</span><span class="p">{</span><span class="n">__docker_host__</span><span class="p">:</span> <span class="s1">'host-gateway'</span><span class="p">},</span>
             <span class="o">**</span><span class="n">docker_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 

@@ -417,7 +417,9 @@
 
 
 <div class="viewcode-block" id="get_connect_host"><a class="viewcode-back" href="../../../../api/jina.peapods.networking/#jina.peapods.networking.get_connect_host">[docs]</a><span class="k">def</span> <span class="nf">get_connect_host</span><span class="p">(</span>
-    <span class="n">bind_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bind_expose_public</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">connect_args</span><span class="p">:</span> <span class="n">Namespace</span>
+    <span class="n">bind_host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">bind_expose_public</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">connect_args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Compute the host address for ``connect_args``</span>
@@ -427,8 +429,7 @@
 <span class="sd">    :param connect_args: configuration for the host ip connection</span>
 <span class="sd">    :return: host ip</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">platform</span>
-
+    <span class="n">runs_in_docker</span> <span class="o">=</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">runs_in_docker</span>
     <span class="c1"># by default __default_host__ is 0.0.0.0</span>
 
     <span class="c1"># is BIND at local</span>
@@ -441,33 +442,29 @@
     <span class="c1"># check if `uses` has 'docker://' or,</span>
     <span class="c1"># it is a remote pea managed by jinad. (all remote peas are inside docker)</span>
     <span class="n">conn_docker</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="nb">getattr</span><span class="p">(</span><span class="n">connect_args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="ow">and</span> <span class="p">(</span>
-            <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub+docker://'</span><span class="p">)</span>
+        <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">connect_args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub+docker://'</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="p">)</span>
-    <span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">conn_local</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="n">conn_local</span>
+        <span class="ow">or</span> <span class="n">runs_in_docker</span>
+    <span class="p">)</span>
 
     <span class="c1"># is BIND &amp; CONNECT all on the same remote?</span>
     <span class="n">bind_conn_same_remote</span> <span class="o">=</span> <span class="p">(</span>
         <span class="ow">not</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conn_local</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bind_host</span> <span class="o">==</span> <span class="n">connect_args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="c1"># for remote peas managed by jinad, always set to __docker_host__</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">conn_local</span><span class="p">:</span>
-        <span class="n">local_host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
-    <span class="k">elif</span> <span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'linux2'</span><span class="p">):</span>
-        <span class="n">local_host</span> <span class="o">=</span> <span class="n">__default_host__</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">local_host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
-
     <span class="c1"># pod1 in local, pod2 in local (conn_docker if pod2 in docker)</span>
     <span class="k">if</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="n">conn_local</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">local_host</span> <span class="k">if</span> <span class="n">conn_docker</span> <span class="k">else</span> <span class="n">__default_host__</span>
+        <span class="k">return</span> <span class="n">__docker_host__</span> <span class="k">if</span> <span class="n">conn_docker</span> <span class="k">else</span> <span class="n">__default_host__</span>
 
     <span class="c1"># pod1 and pod2 are remote but they are in the same host (pod2 is local w.r.t pod1)</span>
     <span class="k">if</span> <span class="n">bind_conn_same_remote</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">local_host</span> <span class="k">if</span> <span class="n">conn_docker</span> <span class="k">else</span> <span class="n">__default_host__</span>
+        <span class="k">return</span> <span class="n">__docker_host__</span> <span class="k">if</span> <span class="n">conn_docker</span> <span class="k">else</span> <span class="n">__default_host__</span>
 
     <span class="k">if</span> <span class="n">bind_local</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conn_local</span><span class="p">:</span>
         <span class="c1"># in this case we are telling CONN (at remote) our local ip address</span>
