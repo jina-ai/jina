@@ -30,7 +30,6 @@ LABEL org.opencontainers.image.created=${BUILD_DATE} \
       org.opencontainers.image.description="Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep learning technology"
 
 ENV JINA_COMPILERS="gcc libc-dev make" \
-    JINA_BUILD_DEVEL_DEP="python3-gevent libmagic1" \
     PYTHONPATH=$PYTHONPATH:/usr/lib/python${PY_VERSION}/dist-packages:/usr/local/lib/python${PY_VERSION}/site-packages:/usr/lib/python3/dist-packages:/usr/local/lib/python3/site-packages \
     JINA_VERSION=${JINA_VERSION} \
     JINA_VCS_VERSION=${VCS_REF} \
@@ -58,7 +57,6 @@ FROM jina_base AS jina_devel
 COPY . /jina/
 
 RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
-    apt-get install --no-install-recommends -y ${JINA_BUILD_DEVEL_DEP} && \
     ln -s locale.h /usr/include/xlocale.h && cd /jina && \
     pip install .[devel] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
