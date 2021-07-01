@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 
 from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
 from .hubapi import install_local, exist_local
+from .progress_bar import ProgressBar
 from ..excepts import HubDownloadError
 from ..helper import colored, get_full_version, get_readable_size, ArgNamespace
 from ..importer import ImportExtensions
@@ -93,17 +94,18 @@ class HubIO:
                 bytesio = archive_package(pkg_path)
                 content = bytesio.getvalue()
                 md5_hash.update(content)
-
                 md5_digest = md5_hash.hexdigest()
 
             # upload the archived package
             form_data = {
-                'public': getattr(self.args, 'public', False),
-                'private': getattr(self.args, 'private', False),
+                'public': 'True' if getattr(self.args, 'public', None) else 'False',
+                'private': 'True' if getattr(self.args, 'private', None) else 'False',
                 'md5sum': md5_digest,
-                'force': self.args.force,
-                'secret': self.args.secret,
             }
+            if self.args.force:
+                form_data['force'] = self.args.force
+            if self.args.secret:
+                form_data['secret'] = self.args.secret
 
             method = 'put' if self.args.force else 'post'
 
@@ -113,12 +115,16 @@ class HubIO:
                 f'Pushing to {hubble_url} ({method.upper()})',
                 self.logger,
             ):
-                resp = getattr(requests, method)(
+                from .helper import upload_file
+
+                resp = upload_file(
                     hubble_url,
-                    files={'file': content},
-                    data=form_data,
+                    'filename',
+                    content,
+                    dict_data=form_data,
                     headers=request_headers,
                     stream=True,
+                    method=method,
                 )
 
                 result = None
