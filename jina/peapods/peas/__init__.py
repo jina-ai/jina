@@ -77,13 +77,17 @@ class BasePea:
         if self.runtime_cls == ContainerRuntime:
             # Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.
             # If yes, set host_ctrl to __docker_host__, else keep it as __default_host__
-            ctrl_host = (
-                __docker_host__
-                if self.args.docker_kwargs
+            # Reset extra_hosts as that's set by default in ContainerRuntime
+            if (
+                self.args.docker_kwargs
                 and 'extra_hosts' in self.args.docker_kwargs
                 and __docker_host__ in self.args.docker_kwargs['extra_hosts']
-                else self.args.host
-            )
+            ):
+                ctrl_host = __docker_host__
+                self.args.docker_kwargs.pop('extra_hosts')
+            else:
+                ctrl_host = self.args.host
+
             self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
                 ctrl_host, self.args.port_ctrl, self.args.ctrl_with_ipc
             )[0]

@@ -8,6 +8,7 @@ from platform import uname
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
+from .... import __docker_host__
 from ....excepts import BadImageNameError
 from ....helper import ArgNamespace, slugify
 
@@ -168,7 +169,7 @@ class ContainerRuntime(ZMQRuntime):
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
-            extra_hosts={'host.docker.internal': 'host-gateway'},
+            extra_hosts={__docker_host__: 'host-gateway'},
             **docker_kwargs,
         )
 
