@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag_stage: ["", "-devel", "-daemon"]
+        tag_stage: ["", "-standard", "-devel", "-daemon"]
         tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
@@ -155,6 +155,8 @@ jobs:
             echo "BUILD_ARG=jina_daemon" >> $GITHUB_ENV
           elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
             echo "BUILD_ARG=jina_devel" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_stage }}" == "-standard" ]]; then
+            echo "BUILD_ARG=jina_standard" >> $GITHUB_ENV
           else
             echo "BUILD_ARG=jina_base" >> $GITHUB_ENV
           fi

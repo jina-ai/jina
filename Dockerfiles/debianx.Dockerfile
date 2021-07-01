@@ -52,13 +52,33 @@ RUN ln -s locale.h /usr/include/xlocale.h && \
 
 ENTRYPOINT ["jina"]
 
-FROM jina_base AS jina_devel
+FROM jina_base AS jina_standard
 
 COPY . /jina/
 
-RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev build-essential && \
-    ln -s locale.h /usr/include/xlocale.h && cd /jina && \
+RUN ln -s locale.h /usr/include/xlocale.h && \
+    if [ "${TARGETPLATFORM}" = "linux/arm64" ] || [ "${TARGETPLATFORM}" = "linux/arm/v8" ]; then apt-get update && apt-get install --no-install-recommends -y ${JINA_COMPILERS}; fi && \
+    if [ "${TARGETPLATFORM}" = "linux/armhf" ] || [ "${TARGETPLATFORM}" = "linux/arm/v6" ] || [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then apt-get update && apt-get install --no-install-recommends -y libatlas-base-dev; fi && \
+    cd /jina && \
+    pip install .[standard] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
+    if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile --extra-index-url $PIP_EXTRA_INDEX_URL; fi && \
+    if [ "${TARGETPLATFORM}" = "linux/arm64" ] || [ "${TARGETPLATFORM}" = "linux/arm/v8" ]; then apt-get remove -y --auto-remove ${JINA_COMPILERS}; fi && \
+    apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
+
+ENTRYPOINT ["jina"]
+
+FROM jina_standard AS jina_devel
+
+COPY . /jina/
+
+RUN ln -s locale.h /usr/include/xlocale.h && \
+    if [ "${TARGETPLATFORM}" = "linux/arm64" ] || [ "${TARGETPLATFORM}" = "linux/arm/v8" ]; then apt-get update && apt-get install --no-install-recommends -y ${JINA_COMPILERS}; fi && \
+    if [ "${TARGETPLATFORM}" = "linux/armhf" ] || [ "${TARGETPLATFORM}" = "linux/arm/v6" ] || [ "${TARGETPLATFORM}" = "linux/arm/v7" ]; then apt-get update && apt-get install --no-install-recommends -y libatlas-base-dev; fi && \
+    cd /jina && \
     pip install .[devel] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
+    if [ -n "${PIP_TAG}" ]; then pip install ".[${PIP_TAG}]" --compile --extra-index-url $PIP_EXTRA_INDEX_URL; fi && \
+    if [ "${TARGETPLATFORM}" = "linux/arm64" ] || [ "${TARGETPLATFORM}" = "linux/arm/v8" ]; then apt-get remove -y --auto-remove ${JINA_COMPILERS}; fi && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
 
