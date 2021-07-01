@@ -45,6 +45,7 @@ def get_connect_host(
     :param bind_host: the ip for binding
     :param bind_expose_public: True, if bind socket should be exposed publicly
     :param connect_args: configuration for the host ip connection
+    :param runs_in_docker: tells if process is running inside docker. Needed when this function is called inside a Pea.
     :return: host ip
     """
 
@@ -96,6 +97,7 @@ def get_connect_host(
 
 
 def is_running_in_docker():
+    """Checks is current process is running inside docker."""
     import subprocess
 
     result = subprocess.run(['cat', '/proc/self/cgroup'], capture_output=True)
