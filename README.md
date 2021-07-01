@@ -43,7 +43,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-🐍 via PyPI: `pip install "jina[devel]`
+🐍 via PyPI: `pip install "jina[standard]`
 
 🐳 via Docker: `docker run jinaai/jina:latest`
 
@@ -52,7 +52,7 @@ fragmented, multi-vendor, generic legacy tools.
 
 | <br><sub><sup>x86/64,arm64,v6,v7,Apple M1</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
-| Standard | `pip install jina` | `docker run jinaai/jina:latest` |
+| Minimum <br><sub>(no HTTP, WebSocket & Docker support)</sub> | `pip install jina` | `docker run jinaai/jina:latest` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
 | <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 

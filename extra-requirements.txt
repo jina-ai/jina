@@ -32,8 +32,8 @@ transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 tensorflow>=2.0:            framework, cicd
 torchvision>=0.3.0:         framework, cv, multimodal, cicd
 Pillow:                     cv, cicd, multimodal
-lz4<3.1.2:                  devel, cicd, perf, network, standard
-uvloop:                     devel, cicd, perf
+lz4<3.1.2:                  devel, cicd, network, standard
+uvloop:                     devel, cicd, standard
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core

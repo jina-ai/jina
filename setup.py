@@ -146,7 +146,7 @@ setup(
     setup_requires=[
         'setuptools>=18.0',
     ],
-    install_requires=list(all_deps['core'].union(all_deps['perf'])),
+    install_requires=list(all_deps['core']),
     extras_require=all_deps,
     entry_points={
         'console_scripts': [
