@@ -43,16 +43,15 @@ fragmented, multi-vendor, generic legacy tools.
 
 ## Install
 
-🐍 via PyPI: `pip install "jina[standard]`
-
-🐳 via Docker: `docker run jinaai/jina:latest`
+- via PyPI: `pip install "jina[standard]`
+- via Docker: `docker run jinaai/jina:latest`
 
 <details>
-<summary>📦 More installation options</summary>
+<summary>More installation options</summary>
 
 | <br><sub><sup>x86/64,arm64,v6,v7,Apple M1</sup></sub> | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
-| Minimum <br><sub>(no HTTP, WebSocket & Docker support)</sub> | `pip install jina` | `docker run jinaai/jina:latest` |
+| Minimum <br><sub>(no HTTP, WebSocket, Docker support)</sub> | `pip install jina` | `docker run jinaai/jina:latest` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
 | <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
 
@@ -111,7 +110,7 @@ class Indexer(Executor):
 
 f = Flow(port_expose=12345, protocol='http').add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
-    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of this file
+    f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
     f.block()  # block for listening request
 ```
 
@@ -126,7 +125,7 @@ Here `@requests(on=something)` is our textual query, **we want to find the lines
 <img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint1.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
 </p>
 
-🆙 Not a GUI guy? Let's query it from Python then! Keep the above running and start a simple client:
+3️⃣ Not a GUI guy? Let's query it from Python then! Keep the above server running and start a simple client:
 
 ```python
 from jina import Client, Document
