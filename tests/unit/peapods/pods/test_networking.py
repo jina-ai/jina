@@ -21,7 +21,7 @@ docker_uses = 'docker://abc'
             __default_host__,
             __default_host__,
             docker_uses,
-            __default_host__,
+            __docker_host__,
         ),  # local bind & local connect, connect inside docker
         (
             '1.2.3.4',

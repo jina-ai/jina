@@ -251,7 +251,7 @@ jobs:
             # Build daemon for all daemon/distributed tests
             docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
             if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
-              docker run --add-host host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
+              docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon --store
             fi
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
             docker rm -f jinad || true
