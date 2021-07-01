@@ -10,6 +10,8 @@ on:
 jobs:
   commit-lint:
     runs-on: ubuntu-20.04
+    env:
+      JINA_DAEMON_BUILD: DEVEL
     steps:
       - name: find the prev warning if exist
         uses: peter-evans/find-comment@v1
