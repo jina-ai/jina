@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  hub-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Install
+        run: |
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          pip install ".[devel,black]"
+          cd script && bash ./devbot.sh
+          if [[ -z $(git status -s) ]]
+          then
+            echo "tree is clean"
+          else
+            git add -u
+            git commit -m "style: fix overload and cli autocomplete"
+          fi
+      - uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}

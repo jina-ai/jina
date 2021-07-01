@@ -46,13 +46,10 @@ fragmented, multi-vendor, generic legacy tools.
 - via PyPI
   ```console
   $ pip install "jina[devel]"          
-  $ jina -v
-  2.0.0
   ```
 - via Docker
   ```console
-  $ docker run jinaai/jina:latest -v
-  2.0.0
+  $ docker run jinaai/jina:latest
   ```
 
 <details>
