@@ -213,6 +213,8 @@ jobs:
   core-test:
     needs: prep-testbed
     runs-on: ubuntu-20.04
+    env:
+      JINA_DAEMON_BUILD: DEVEL
     strategy:
       fail-fast: false
       matrix:
