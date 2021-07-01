@@ -2,6 +2,7 @@ import argparse
 import multiprocessing
 import os
 import threading
+import time
 from typing import Any, Tuple
 
 from .helper import _get_event, ConditionalEvent
@@ -127,6 +128,8 @@ class BasePea:
         """
         if hasattr(self.worker, 'terminate'):
             self.worker.terminate()
+            # This sleep gives the process some time to terminate, otherwise we encountered hanging joins
+            time.sleep(0.1)
 
     def _build_runtime(self):
         """
