@@ -248,7 +248,7 @@ ac_table = {
             '--noblock-on-start',
             '--routing-table',
         ],
-        'hub push': ['--help', '--forces', '--secret', '--public', '--private'],
+        'hub push': ['--help', '--force', '--secret', '--public', '--private'],
         'hub pull': ['--help', '--install-requirements'],
         'hub': ['--help', 'push', 'pull'],
         'pea': [
