@@ -12,7 +12,7 @@ on:
 
 
 jobs:
-  update-doc:
+  update-schema:
     if: |
       !startsWith(github.event.head_commit.message, 'chore') &&
       !startsWith(github.event.head_commit.message, 'build: hotfix') &&
@@ -87,8 +87,8 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
           JINA_SLACK_WEBHOOK: ${{ secrets.JINA_SLACK_WEBHOOK }}
 
-  update-doc2:
-    needs: update-doc
+  update-doc:
+    needs: update-schema
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -125,7 +125,7 @@ jobs:
           git push origin gh-pages
 
   update-docker:
-    needs: update-doc
+    needs: [update-doc, update-schema]
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -184,7 +184,7 @@ jobs:
           target: ${{env.BUILD_ARG}}
 
   prep-testbed:
-    needs: update-doc
+    needs: [update-doc, update-schema]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
