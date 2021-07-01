@@ -21,20 +21,19 @@
 # 4. Tag `all` is reserved for representing all packages
 
 scipy>=1.6.1:               sparse, cicd, graph
-fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal
-uvicorn[standard]>=0.14.0:  devel, cicd, http, test, daemon, chatbot, multimodal
+fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal, standard
+uvicorn[standard]>=0.14.0:  devel, cicd, http, test, daemon, chatbot, multimodal, standard
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
-docker:                     devel, cicd, network, hub, daemon
-pathspec:                   devel, cicd, hub
-requests:                   http, devel, cicd, daemon, hub
+docker:                     devel, cicd, network, hub, daemon, standard
+pathspec:                   devel, cicd, hub, standard
+requests:                   http, devel, cicd, daemon, standard
 torch>=1.1.0:               framework, cicd, chatbot, multimodal
 transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 tensorflow>=2.0:            framework, cicd
 torchvision>=0.3.0:         framework, cv, multimodal, cicd
 Pillow:                     cv, cicd, multimodal
-lz4<3.1.2:                  devel, cicd, perf, network
-gevent:                     http, devel, cicd
-uvloop:                     devel, cicd, perf
+lz4<3.1.2:                  devel, cicd, network, standard
+uvloop:                     devel, cicd, standard
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
@@ -52,16 +51,16 @@ pytest-xprocess:            test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
-requests:                   http, devel, cicd, daemon
 prettytable:                devel, cicd
 optuna:                     cicd, optimizer
-websockets:                 http, devel, cicd, daemon, client
-pydantic:                   http, devel, cicd, daemon, chatbot, multimodal
-python-multipart:           http, devel, cicd, daemon
-aiofiles:                   devel, cicd, http, daemon
-aiohttp:                    devel, cicd, http, async, client
+websockets:                 http, devel, cicd, daemon, client, standard
+pydantic:                   http, devel, cicd, daemon, chatbot, multimodal, standard
+python-multipart:           http, devel, cicd, daemon, standard
+aiofiles:                   devel, cicd, http, daemon, standard
+aiohttp:                    devel, cicd, http, async, client, standard
 pytest-custom_exit_code:    test
 bs4:                        cicd
-aiostream:                  devel, cicd, async, client
+aiostream:                  devel, cicd, async, client, standard
 jsonschema:                 cicd
 dgl==0.6.1:                 cicd, graph
+black==20.8b1:              cicd
