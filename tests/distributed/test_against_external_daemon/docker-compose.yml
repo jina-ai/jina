@@ -2,16 +2,13 @@ version: "3.3"
 services:
   jinad:
     image: jinaai/jina:test-daemon
-    environment:
-      JINA_DAEMON_BUILD: DEVEL
-    container_name: test_remote_flow_dump_reload
+    container_name: test_upload_simple_non_standard_rootworkspace
     ports:
-      - "8001:8000"
-      - "45678:45678"
-    expose:
-      - 10000-60000
+      - "9000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /tmp/jinad:/tmp/jinad
+      - /tmp/other_jinad:/tmp/jinad
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      - JINA_DAEMON_BUILD=DEVEL

@@ -16,11 +16,11 @@ cur_filename = os.path.basename(__file__)
 @pytest.mark.parametrize(
     'workdir, expected_response',
     [
-        ('good_ws', ('devel', '3.7', 'echo Hello', [12345, 12344])),
-        ('good_ws_no_file', ('default', '3.8', '', [])),
-        ('good_ws_emptyfile', ('default', '3.8', '', [])),
+        ('good_ws', ('default', '3.7', 'echo Hello', [12345, 12344])),
+        ('good_ws_no_file', ('devel', '3.8', '', [])),
+        ('good_ws_emptyfile', ('devel', '3.8', '', [])),
         ('good_ws_multiple_files', ('devel', '3.7', 'echo Hello', [12345, 123456])),
-        ('good_ws_wrong_values', ('default', '3.8', '', [])),
+        ('good_ws_wrong_values', ('devel', '3.8', '', [])),
     ],
 )
 def test_jinad_file_workspace(workdir, expected_response):
