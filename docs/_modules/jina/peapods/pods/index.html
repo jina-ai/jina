@@ -495,13 +495,6 @@
 <span class="sd">        """</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="BasePod.close"><a class="viewcode-back" href="../../../../api/jina.peapods.pods/#jina.peapods.pods.BasePod.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Stop all :class:`BasePea` in this BasePod.</span>
-
-<span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_upload_files</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="c1"># sets args.upload_files at the pod level so that peas inherit from it.</span>
