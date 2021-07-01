@@ -86,7 +86,7 @@ COPY . /jina/
 RUN ln -s locale.h /usr/include/xlocale.h && \
     apt-get update && apt-get install --no-install-recommends -y ruby-dev ${JINA_COMPILERS} && \
     gem install fluentd --no-doc && \
-    ln -s locale.h /usr/include/xlocale.h && cd /jina && \
+    cd /jina && \
     pip install --default-timeout=1000 .[daemon] --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/* && rm -rf /jina && rm /usr/include/xlocale.h
