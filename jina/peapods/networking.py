@@ -44,7 +44,6 @@ def get_connect_host(
     :param connect_args: configuration for the host ip connection
     :return: host ip
     """
-    from sys import platform
 
     # by default __default_host__ is 0.0.0.0
 
@@ -70,21 +69,13 @@ def get_connect_host(
         not bind_local and not conn_local and (bind_host == connect_args.host)
     )
 
-    # for remote peas managed by jinad, always set to __docker_host__
-    if not conn_local:
-        local_host = __docker_host__
-    elif platform in ('linux', 'linux2'):
-        local_host = __default_host__
-    else:
-        local_host = __docker_host__
-
     # pod1 in local, pod2 in local (conn_docker if pod2 in docker)
     if bind_local and conn_local:
-        return local_host if conn_docker else __default_host__
+        return __docker_host__ if conn_docker else __default_host__
 
     # pod1 and pod2 are remote but they are in the same host (pod2 is local w.r.t pod1)
     if bind_conn_same_remote:
-        return local_host if conn_docker else __default_host__
+        return __docker_host__ if conn_docker else __default_host__
 
     if bind_local and not conn_local:
         # in this case we are telling CONN (at remote) our local ip address

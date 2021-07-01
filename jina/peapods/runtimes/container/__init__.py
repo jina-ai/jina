@@ -167,6 +167,7 @@ class ContainerRuntime(ZMQRuntime):
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
+            extra_hosts={'host.docker.internal': 'host-gateway'},
             **docker_kwargs,
         )
 
