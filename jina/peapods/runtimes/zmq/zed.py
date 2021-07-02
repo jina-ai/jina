@@ -32,13 +32,14 @@ from ....types.routing.table import RoutingTable
 class ZEDRuntime(ZMQRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
-    def __init__(self, args: argparse.Namespace, ctrl_addr: str):
+    def __init__(self, args: argparse.Namespace, ctrl_addr: str, **kwargs):
         """Initialize private parameters and execute private loading functions.
 
         :param args: args from CLI
         :param ctrl_addr: control port address
+        :param kwargs: extra keyword arguments
         """
-        super().__init__(args, ctrl_addr)
+        super().__init__(args, ctrl_addr, **kwargs)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
 

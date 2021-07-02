@@ -13,8 +13,8 @@ from ....helper import cached_property, colored
 class JinadRuntime(AsyncZMQRuntime):
     """Runtime procedure for Jinad."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
-        super().__init__(args, ctrl_addr)
+    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str, **kwargs):
+        super().__init__(args, ctrl_addr, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
         self.host = args.host

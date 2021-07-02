@@ -145,7 +145,9 @@ class BasePea:
             if self.runtime_cls == JinadRuntime
             else self._zed_runtime_ctrl_address
         )
-        return self.runtime_cls(self.args, ctrl_addr=ctrl_addr)
+        return self.runtime_cls(
+            self.args, ctrl_addr=ctrl_addr, ready_event=self.is_ready
+        )
 
     def run(self):
         """Method representing the :class:`BaseRuntime` activity.

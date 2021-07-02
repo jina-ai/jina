@@ -1,7 +1,12 @@
 import argparse
+from typing import Union
 
 from ...excepts import RuntimeTerminated
 from ...logging.logger import JinaLogger
+
+if False:
+    import multiprocessing
+    import threading
 
 
 class BaseRuntime:
@@ -18,7 +23,9 @@ class BaseRuntime:
         0. :meth:`__init__`
 
         1. :meth:`run_forever`. Note that this will block ``S``, step 3 won't be
-        reached until it is unblocked by :meth:`cancel`
+        reached until it is unblocked by :meth:`cancel`. This method is responsible
+        to set the `ready_event` to guarantee that the rest of the system knows when it is ready
+        to receive messages.
 
         2. :meth:`teardown` in ``S``. Note that ``S`` is blocked by
         :meth:`run_forever`, this step won't be reached until step 2 is unblocked by :meth:`cancel`
@@ -53,7 +60,12 @@ class BaseRuntime:
         :class:`BasePea` for managing a :class:`Runtime` object's lifecycle.
     """
 
-    def __init__(self, args: 'argparse.Namespace', **kwargs):
+    def __init__(
+        self,
+        args: 'argparse.Namespace',
+        ready_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
         super().__init__()
         self.args = args
         if args.name:
@@ -61,6 +73,7 @@ class BaseRuntime:
         else:
             self.name = self.__class__.__name__
         self.logger = JinaLogger(self.name, **vars(self.args))
+        self.is_ready = ready_event
 
     def run_forever(self):
         """Running the blocking procedure inside ``S``. Note, once this method is called,
