@@ -46,6 +46,8 @@ __all__ = [
     'run_async',
     'deprecated_alias',
     'countdown',
+    'CatchAllCleanupContextManager',
+    'download_mermaid_url',
 ]
 
 
@@ -857,6 +859,26 @@ def typename(obj):
         return f'{obj.__module__}.{obj.__name__}'
     except AttributeError:
         return str(obj)
+
+
+class CatchAllCleanupContextManager:
+    """
+    This context manager guarantees, that the :method:``__exit__`` of the
+    sub context is called, even when there is an Exception in the
+    :method:``__enter__``.
+
+    :param sub_context: The context, that should be taken care of.
+    """
+
+    def __init__(self, sub_context):
+        self.sub_context = sub_context
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            self.sub_context.__exit__(exc_type, exc_val, exc_tb)
 
 
 class cached_property:
