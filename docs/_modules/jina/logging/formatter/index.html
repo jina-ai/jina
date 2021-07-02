@@ -382,12 +382,46 @@
         </label>
         <h1>Source code for jina.logging.formatter</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Formatter</span>
 
+<span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">LogVerbosity</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span>
+
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">LogRecord</span>
+
+
+<div class="viewcode-block" id="ColorFormatter"><a class="viewcode-back" href="../../../../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter">[docs]</a><span class="k">class</span> <span class="nc">ColorFormatter</span><span class="p">(</span><span class="n">Formatter</span><span class="p">):</span>
+    <span class="sd">"""Format the log into colored logs based on the log-level."""</span>
+
+    <span class="n">MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'black'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'bold'</span><span class="p">]),</span>  <span class="c1"># grey</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">),</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'yellow'</span><span class="p">),</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">),</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">[</span><span class="s1">'bold'</span><span class="p">]),</span>
+    <span class="p">}</span>  <span class="c1">#: log-level to color mapping</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formatters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MAPPING</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="ColorFormatter.format"><a class="viewcode-back" href="../../../../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Format the LogRecord with corresponding colour.</span>
+
+<span class="sd">        :param record: A LogRecord object</span>
+<span class="sd">        :return:: Formatted LogRecord with level-colour MAPPING to add corresponding colour.</span>
+<span class="sd">        """</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">formatter</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="PlainFormatter"><a class="viewcode-back" href="../../../../api/jina.logging.formatter/#jina.logging.formatter.PlainFormatter">[docs]</a><span class="k">class</span> <span class="nc">PlainFormatter</span><span class="p">(</span><span class="n">Formatter</span><span class="p">):</span>
