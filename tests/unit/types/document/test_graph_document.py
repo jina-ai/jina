@@ -160,6 +160,7 @@ def test_remove_edges(graph):
     assert graph.num_edges == 0
 
 
+@pytest.mark.slow
 def test_to_dgl_graph(graph):
     dgl_graph = graph.to_dgl_graph()
     dgl_adj_coo = dgl_graph.adjacency_matrix(scipy_fmt='coo')

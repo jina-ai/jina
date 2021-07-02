@@ -76,6 +76,7 @@ def test_flow_with_jump():
         f.index(random_docs(10))
 
 
+@pytest.mark.slow
 def test_flow_with_parallel():
     f = Flow().add(name='r1').add(name='r2', parallel=3)
 
