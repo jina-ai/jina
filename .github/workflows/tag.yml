@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag_stage: ["", "-devel", "-daemon"]
+        tag_stage: ["", "-standard", "-devel", "-daemon"]
         tag_pyversion: ["-py37", "-py38", "-py39"]
     steps:
       - uses: actions/checkout@v2
@@ -138,21 +138,26 @@ jobs:
           echo "V_JINA_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           JINA_VERSION=${GITHUB_REF/refs\/tags\/v/}
           JINA_MINOR_VERSION=${JINA_VERSION%.*}
+          JINA_MAJOR_VERSION=${JINA_MINOR_VERSION%.*}
           echo "JINA_MINOR_VERSION=${JINA_MINOR_VERSION}" >> $GITHUB_ENV
+          echo "JINA_MAJOR_VERSION=${JINA_MAJOR_VERSION}" >> $GITHUB_ENV
 
           if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
+
+            echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
             echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=jinaai/jina:latest${{ matrix.tag_stage }}, jinaai/jina:$JINA_VERSION${{ matrix.tag_stage }}, jinaai/jina:$JINA_MINOR_VERSION${{ matrix.tag_stage }}" >> $GITHUB_ENV
           fi
 
           if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
             echo "BUILD_ARG=jina_daemon" >> $GITHUB_ENV
           elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
             echo "BUILD_ARG=jina_devel" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_stage }}" == "-standard" ]]; then
+            echo "BUILD_ARG=jina_standard" >> $GITHUB_ENV
           else
             echo "BUILD_ARG=jina_base" >> $GITHUB_ENV
           fi
@@ -173,10 +178,14 @@ jobs:
         with:
           context: .
           file: Dockerfiles/debianx.Dockerfile
-          platforms: linux/armhf,linux/amd64,linux/arm/v6,linux/arm64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: jinaai/jina:latest${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, jinaai/jina:${{env.JINA_MINOR_VERSION}}${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
-          build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
+          build-args: |
+            BUILD_DATE=${{env.BUILD_DATA}}
+            JINA_VERSION=${{env.JINA_VERSION}}
+            VCS_REF=${{env.VCS_REF}}
+            PY_VERSION=${{env.PY_VERSION}}
           target: ${{env.BUILD_ARG}}
 
   create-release:

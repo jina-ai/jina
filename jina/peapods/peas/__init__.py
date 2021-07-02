@@ -2,6 +2,7 @@ import argparse
 import multiprocessing
 import os
 import threading
+import time
 from typing import Any, Tuple
 
 from .helper import _get_event, ConditionalEvent
@@ -77,13 +78,17 @@ class BasePea:
         if self.runtime_cls == ContainerRuntime:
             # Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.
             # If yes, set host_ctrl to __docker_host__, else keep it as __default_host__
-            ctrl_host = (
-                __docker_host__
-                if self.args.docker_kwargs
+            # Reset extra_hosts as that's set by default in ContainerRuntime
+            if (
+                self.args.docker_kwargs
                 and 'extra_hosts' in self.args.docker_kwargs
                 and __docker_host__ in self.args.docker_kwargs['extra_hosts']
-                else self.args.host
-            )
+            ):
+                ctrl_host = __docker_host__
+                self.args.docker_kwargs.pop('extra_hosts')
+            else:
+                ctrl_host = self.args.host
+
             self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
                 ctrl_host, self.args.port_ctrl, self.args.ctrl_with_ipc
             )[0]
@@ -109,8 +114,7 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
-        if self.worker.is_alive():
-            self.worker.join(*args, **kwargs)
+        self.worker.join(*args, **kwargs)
 
     def terminate(self):
         """Terminate the Pea.
@@ -250,10 +254,14 @@ class BasePea:
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
                 self.join()
+        elif self.is_shutdown.is_set():
+            # here shutdown has been set already, therefore `run` will gracefully finish
+            pass
         else:
-            # if it fails to start, the process will hang at `join`
+            # terminate is needed because sometimes, we arrive to the close logic before the `is_ready` is even set.
+            # Observed with `gateway` when Pods fail to start
             self.terminate()
-
+            time.sleep(0.1)
         self.logger.debug(__stop_msg__)
         self.logger.close()
 

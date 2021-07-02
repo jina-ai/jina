@@ -17,7 +17,7 @@ from ...enums import (
     PeaRoleType,
     PollingType,
 )
-from ...helper import random_identity
+from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
 
 
@@ -112,13 +112,6 @@ class BasePod(ExitFIFO):
         """
         raise NotImplementedError
 
-    def close(self):
-        """Stop all :class:`BasePea` in this BasePod.
-
-        .. # noqa: DAR201
-        """
-        self.__exit__(None, None, None)
-
     @staticmethod
     def _set_upload_files(args):
         # sets args.upload_files at the pod level so that peas inherit from it.
@@ -190,7 +183,8 @@ class BasePod(ExitFIFO):
         return self.head_args.zmq_identity
 
     def __enter__(self) -> 'BasePod':
-        return self.start()
+        with CatchAllCleanupContextManager(self):
+            return self.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -489,18 +483,12 @@ class Pod(BasePod):
             for _args in self._fifo_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
-            # now rely on higher level to call `wait_start_success`
-            return self
         else:
-            try:
-                for _args in self._fifo_args:
-                    self._enter_pea(BasePea(_args))
+            for _args in self._fifo_args:
+                self._enter_pea(BasePea(_args))
 
-                self._activate()
-            except:
-                self.close()
-                raise
-            return self
+            self._activate()
+        return self
 
     def wait_start_success(self) -> None:
         """Block until all peas starts successfully.

@@ -7,14 +7,14 @@ import os
 import zipfile
 from functools import lru_cache
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
 from .. import __resources_path__
 from ..importer import ImportExtensions
 from ..logging.predefined import default_logger
-from ..logging.profile import ProgressBar
+from .progress_bar import ProgressBar, Spinner
 
 
 @lru_cache()
@@ -173,14 +173,14 @@ def download_with_resume(
         import requests
 
     def _download(
-        url, target, resume_byte_pos: int = None, pbar: Optional[ProgressBar] = None
+        url, target, resume_byte_pos: int = None, pbar: Optional[Spinner] = None
     ):
         resume_header = (
             {'Range': f'bytes={resume_byte_pos}-'} if resume_byte_pos else None
         )
 
         if pbar and resume_byte_pos:
-            pbar.update(resume_byte_pos)
+            pbar.update(steps=resume_byte_pos)
 
         try:
             r = requests.get(url, stream=True, headers=resume_header)
@@ -194,7 +194,7 @@ def download_with_resume(
             for chunk in r.iter_content(32 * block_size):
                 f.write(chunk)
                 if pbar:
-                    pbar.update(progress=len(chunk))
+                    pbar.update(steps=len(chunk))
 
     if filename is None:
         filename = url.split('/')[-1]
@@ -212,10 +212,73 @@ def download_with_resume(
         if file_size_online > file_size_offline:
             _resume_byte_pos = file_size_offline
 
-    with ProgressBar(task_name='Pulling') as p_bar:
+    progress_bar = (
+        ProgressBar(task_name='Downloading', total=file_size_online)
+        if file_size_online > 0
+        else Spinner(task_name='Pulling')
+    )
+
+    with progress_bar as p_bar:
         _download(url, filepath, _resume_byte_pos, p_bar)
 
     if md5sum and not md5file(filepath) == md5sum:
         raise RuntimeError('MD5 checksum failed.')
 
     return filepath
+
+
+def upload_file(
+    url: str,
+    file_name: str,
+    buffer_data: bytes,
+    dict_data: Dict = {},
+    headers: Dict = {},
+    stream: bool = False,
+    method: str = 'post',
+):
+    """Upload file to target url
+
+    :param url: target url
+    :param file_name: the file name
+    :param buffer_data: the data to upload
+    :param dict_data: the dict-style data to upload
+    :param headers: the request header
+    :param stream: receive stream response
+    :param method: the request method
+    :return: the response of request
+    """
+    with ImportExtensions(required=True):
+        import requests
+
+    from .progress_bar import ProgressBar
+
+    class BufferReader(io.BytesIO):
+        def __init__(self, buf=b'', p_bar: Optional['ProgressBar'] = None):
+            self._len = len(buf)
+            self._p_bar = p_bar
+            io.BytesIO.__init__(self, buf)
+
+        def __len__(self):
+            return self._len
+
+        def read(self, n=-1):
+            chunk = io.BytesIO.read(self, n)
+            if self._p_bar:
+                self._p_bar.update(steps=len(chunk))
+            return chunk
+
+    dict_data.update({'file': (file_name, buffer_data)})
+
+    (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
+        dict_data
+    )
+
+    headers.update({"Content-Type": ctype})
+
+    with ProgressBar(task_name='Uploading', total=len(data)) as p_bar:
+        body = BufferReader(data, p_bar)
+        response = getattr(requests, method)(
+            url, data=body, headers=headers, stream=stream
+        )
+
+    return response

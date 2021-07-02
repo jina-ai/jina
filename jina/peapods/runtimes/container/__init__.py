@@ -8,6 +8,7 @@ from platform import uname
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
+from .... import __docker_host__
 from ....excepts import BadImageNameError
 from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
@@ -94,6 +95,7 @@ class ContainerRuntime(ZMQRuntime):
         # this prevent setting containerPea twice
         from ....parsers import set_pea_parser
 
+        self.args.runs_in_docker = True
         non_defaults = ArgNamespace.get_non_defaults_args(
             self.args,
             set_pea_parser(),
@@ -168,6 +170,7 @@ class ContainerRuntime(ZMQRuntime):
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
+            extra_hosts={__docker_host__: 'host-gateway'},
             **docker_kwargs,
         )
 

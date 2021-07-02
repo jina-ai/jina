@@ -10,6 +10,7 @@ configs:
     formatter: JsonFormatter
   StreamHandler:
     format: '🐳 %(message)s'
+    formatter: ColorFormatter
   SysLogHandler:
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
     host: # when not given then record it locally
