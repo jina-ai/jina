@@ -41,6 +41,7 @@ class ContainerRuntime(ZMQRuntime):
 
     def run_forever(self):
         """Stream the logs while running."""
+        self.is_ready_event.set()
         self._stream_logs()
 
     def _set_network_for_dind_linux(self):
