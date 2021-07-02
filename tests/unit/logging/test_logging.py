@@ -5,6 +5,7 @@ import pytest
 
 from jina import __uptime__, Flow, Document
 from jina.enums import LogVerbosity
+from jina.helper import colored
 from jina.logging.logger import JinaLogger
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -33,6 +34,7 @@ def test_color_log():
     with JinaLogger('test_logger') as logger:
         logger.debug('this is test debug message')
         logger.info('this is test info message')
+        logger.info(f'this is test {colored("color", "red")} message')
         logger.success('this is test success message')
         logger.warning('this is test warning message')
         logger.error('this is test error message')
