@@ -24,12 +24,15 @@ if (3, 7, 0) <= sys.version_info < (3, 8, 0):
     try:
         import fastentrypoints
     except ImportError:
-        from setuptools.command import easy_install
-        import pkg_resources
+        try:
+            from setuptools.command import easy_install
+            import pkg_resources
 
-        easy_install.main(['fastentrypoints'])
-        pkg_resources.require('fastentrypoints')
-        import fastentrypoint
+            easy_install.main(['fastentrypoints'])
+            pkg_resources.require('fastentrypoints')
+            import fastentrypoint
+        except:
+            pass
 
 try:
     pkg_name = 'jina'

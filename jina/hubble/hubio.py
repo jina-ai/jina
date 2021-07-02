@@ -2,8 +2,8 @@
 
 import argparse
 import hashlib
-import os
 import json
+import os
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
@@ -11,7 +11,6 @@ from urllib.parse import urlencode
 
 from .helper import archive_package, download_with_resume, parse_hub_uri, get_hubble_url
 from .hubapi import install_local, exist_local
-from .progress_bar import ProgressBar
 from ..excepts import HubDownloadError
 from ..helper import colored, get_full_version, get_readable_size, ArgNamespace
 from ..importer import ImportExtensions
@@ -78,7 +77,7 @@ class HubIO:
         """Push the executor pacakge to Jina Hub."""
 
         with ImportExtensions(required=True):
-            import requests
+            pass
 
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
@@ -170,9 +169,6 @@ class HubIO:
                             f'\t📛 Alias:\t' + colored(image['alias'], 'cyan')
                         )
 
-                    self.logger.success(
-                        f'🎉 Executor `{pkg_path}` is pushed successfully!'
-                    )
                     self.logger.info('\n' + '\n'.join(info_table))
 
                     usage = (

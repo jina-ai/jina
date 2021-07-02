@@ -814,16 +814,16 @@ def format_full_version_info(info: Dict, env_info: Dict) -> str:
 
 
 def _use_uvloop():
-    from .importer import ImportExtensions
-
-    with ImportExtensions(
-        required=False,
-        help_text='Jina uses uvloop to manage events and sockets, '
-        'it often yields better performance than builtin asyncio',
-    ):
+    if 'JINA_DISABLE_UVLOOP' in os.environ:
+        return
+    try:
         import uvloop
 
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    except ModuleNotFoundError:
+        warnings.warn(
+            'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
+        )
 
 
 def get_or_reuse_loop():
@@ -837,8 +837,7 @@ def get_or_reuse_loop():
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        if 'JINA_DISABLE_UVLOOP' not in os.environ:
-            _use_uvloop()
+        _use_uvloop()
         # no running event loop
         # create a new loop
         loop = asyncio.new_event_loop()
