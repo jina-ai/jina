@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: jina-k8s
+  name: jina-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jina-k8s
+  template:
+    metadata:
+      labels:
+        app: jina-k8s
+    spec:
+      containers:
+      - image: longwuyuan/jina-k8s
+        name: jina-k8s
+        ports:
+        - containerPort: 12345
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jina-k8s
+  name: jina-k8s
+spec:
+  type: ClusterIP
+  ports:
+  - port: 12345
+    protocol: TCP
+    targetPort: 12345
+  selector:
+    app: jina-k8s
