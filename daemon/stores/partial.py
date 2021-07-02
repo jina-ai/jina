@@ -64,8 +64,9 @@ class PartialPeaStore(PartialStore):
             # and on linux machines, we can access dockerhost inside containers
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
-            self.object = self.peapod_cls(args).start()
+            self.object = self.peapod_cls(args).__enter__()
         except Exception as e:
+            self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
             raise
         else:
@@ -101,8 +102,9 @@ class PartialFlowStore(PartialStore):
             flow.workspace_id = jinad_args.workspace_id
             flow.port_expose = port_expose
             self.object = flow
-            self.object.start()
+            self.object = self.object.__enter__()
         except Exception as e:
+            self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
             raise
         else:

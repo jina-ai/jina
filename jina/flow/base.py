@@ -25,6 +25,7 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
+    CatchAllCleanupContextManager,
 )
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
@@ -903,25 +904,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return self.build(*args, **kwargs)
 
     def __enter__(self):
-        class CatchAllCleanupContextManager:
-            """
-            This context manager guarantees, that the :method:``__exit__`` of the
-            sub context is called, even when there is an Exception in the
-            :method:``__enter__``.
-
-            :param sub_context: The context, that should be taken care of.
-            """
-
-            def __init__(self, sub_context):
-                self.sub_context = sub_context
-
-            def __enter__(self):
-                pass
-
-            def __exit__(self, exc_type, exc_val, exc_tb):
-                if exc_type is not None:
-                    self.sub_context.__exit__(exc_type, exc_val, exc_tb)
-
         with CatchAllCleanupContextManager(self):
             return self.start()
 
