@@ -27,7 +27,7 @@ class BasePea:
     A :class:`BasePea` must be equipped with a proper :class:`Runtime` class to work.
     """
 
-    def __init__(self, args: 'argparse.Namespace', in_replica: bool = False):
+    def __init__(self, args: 'argparse.Namespace', is_head: bool = False):
         super().__init__()  #: required here to call process/thread __init__
         self.worker = {
             RuntimeBackendType.THREAD: threading.Thread,
@@ -67,7 +67,7 @@ class BasePea:
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
-        self._in_replica = in_replica
+        self._is_head = is_head
 
     def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
@@ -190,7 +190,8 @@ class BasePea:
 
     def _deactivate_runtime(self):
         """Send deactivate control message. """
-        if self._is_dealer and self._in_replica:
+        # deactivate should be done from replica head to compoundPod head
+        if self._is_dealer and self._is_head:
             # deactivating
             from ..zmq import send_ctrl_message
 
