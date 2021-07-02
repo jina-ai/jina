@@ -185,12 +185,14 @@ class ZEDRuntime(ZMQRuntime):
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def _handle(self, msg: 'Message') -> 'ZEDRuntime':
+    def _handle(self) -> 'ZEDRuntime':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
 
-        :param msg: the message received
+        .. note::
+            _handle does not handle explicitly a message because they are taken from `runtime` properties to handle message with multiple parts
+            in an easy way
         :return: ZEDRuntime procedure.
         """
 
@@ -272,7 +274,7 @@ class ZEDRuntime(ZMQRuntime):
 
     def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
-        self._pre_hook(msg)._handle(msg)._post_hook(msg)
+        self._pre_hook(msg)._handle()._post_hook(msg)
         self.is_post_hook_done = True
         return msg
 
