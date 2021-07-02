@@ -385,6 +385,7 @@
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">ConditionalEvent</span>
@@ -447,9 +448,9 @@
         <span class="c1"># control address of runtime</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_remote_controlled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runtime_cls</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_ctrl_adrr</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_ctrl_adrr</span><span class="p">()</span>
 
-<div class="viewcode-block" id="BasePea.set_ctrl_adrr"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.set_ctrl_adrr">[docs]</a>    <span class="k">def</span> <span class="nf">set_ctrl_adrr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_ctrl_adrr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Sets control address for different runtimes"""</span>
         <span class="c1"># This logic must be improved specially when it comes to naming. It is about relative local/remote position</span>
         <span class="c1"># between the runtime and the `ZEDRuntime` it may control</span>
@@ -483,7 +484,7 @@
             <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">JinadRuntime</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="BasePea.start"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Start the Pea.</span>
@@ -641,10 +642,14 @@
             <span class="c1"># if it is not daemon, block until the process/thread finish work</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">daemon</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="c1"># here shutdown has been set already, therefore `run` will gracefully finish</span>
+            <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># if it fails to start, the process will hang at `join`</span>
+            <span class="c1"># terminate is needed because sometimes, we arrive to the close logic before the `is_ready` is even set.</span>
+            <span class="c1"># Observed with `gateway` when Pods fail to start</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -741,7 +746,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 01, 2021.
+            Last updated on Jul 02, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
