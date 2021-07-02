@@ -171,6 +171,7 @@ def test_to_dgl_graph(graph):
     assert (graph.adjacency.col == dgl_adj_coo.col).all()
 
 
+@pytest.mark.slow
 def test_from_dgl_graph(graph):
     dgl_graph = graph.to_dgl_graph()
     jina_graph = GraphDocument.load_from_dgl_graph(dgl_graph)

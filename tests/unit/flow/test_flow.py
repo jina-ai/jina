@@ -393,6 +393,7 @@ def datauri_workspace(tmpdir):
     del os.environ['TEST_DATAURIINDEX_WORKSPACE']
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_with_publish_driver(mocker, protocol):
     from jina import Executor, requests
@@ -508,6 +509,7 @@ def test_flow_with_pod_envs():
         pass
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_return_results_sync_flow(return_results, protocol):

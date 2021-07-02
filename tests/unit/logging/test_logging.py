@@ -1,4 +1,5 @@
 import os
+import glob
 from datetime import datetime
 
 import pytest
@@ -25,9 +26,6 @@ def log(logger):
     logger.warning('this is test warning message')
     logger.error('this is test error message')
     logger.critical('this is test critical message')
-    # super long log
-    logger.info('x' * 65536)
-    logger.error('x' * 65536)
 
 
 def test_color_log():
@@ -62,25 +60,28 @@ def test_logging_default():
 
 
 def test_logging_level_yaml():
+    fn = os.path.join(cur_dir, f'jina-{__uptime__}.log')
     with JinaLogger(
         'test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
-    ) as logger:
-        log(logger)
-        assert logger.logger.level == LogVerbosity.from_string('INFO')
+    ) as yaml_logger:
+        log(yaml_logger)
+        assert yaml_logger.logger.level == LogVerbosity.from_string('INFO')
+        if os.path.exists(fn):
+            os.remove(fn)
 
 
-def test_logging_file():
-    fn = f'jina-{__uptime__}.log'
-    if os.path.exists(fn):
-        os.remove(fn)
+def test_logging_file(tmpdir):
+    fn = os.path.join(cur_dir, f'jina-{__uptime__}.log')
     with JinaLogger(
         'test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
-    ) as logger:
-        log(logger)
+    ) as file_logger:
+        log(file_logger)
     assert os.path.exists(fn)
     with open(fn) as fp:
-        assert len(fp.readlines()) == 7
+        assert len(fp.readlines()) == 5
     os.remove(fn)
+    if os.path.exists(fn):
+        os.remove(fn)
 
 
 @pytest.mark.parametrize('log_config', [os.path.join(cur_dir, 'yaml/fluent.yml'), None])

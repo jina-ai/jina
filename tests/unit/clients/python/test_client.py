@@ -119,6 +119,7 @@ def test_client_ndjson(protocol, mocker, func_name):
         mock.assert_called_once()
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('func_name', ['index', 'search'])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_client_csv(protocol, mocker, func_name):

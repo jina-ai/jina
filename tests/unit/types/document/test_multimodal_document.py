@@ -77,7 +77,7 @@ def modality_content_mapping():
     return {'visual': 'content visual', 'textual': 'content textual'}
 
 
-@pytest.yield_fixture(scope='function')
+@pytest.fixture(scope='function')
 def multimodal_document(chunk_1, chunk_2):
     with MultimodalDocument() as md:
         md.tags['id'] = 1

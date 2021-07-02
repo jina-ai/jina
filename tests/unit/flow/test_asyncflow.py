@@ -58,6 +58,7 @@ async def async_input_function2():
         await asyncio.sleep(0.1)
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     'inputs',
