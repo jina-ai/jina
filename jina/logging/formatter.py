@@ -16,7 +16,7 @@ class ColorFormatter(Formatter):
 
     MAPPING = {
         LogVerbosity.DEBUG: dict(color='black', attrs=['bold']),  # grey
-        LogVerbosity.INFO: dict(color='white'),
+        LogVerbosity.INFO: dict(),
         LogVerbosity.SUCCESS: dict(color='green'),
         LogVerbosity.WARNING: dict(color='yellow'),
         LogVerbosity.ERROR: dict(color='red'),
