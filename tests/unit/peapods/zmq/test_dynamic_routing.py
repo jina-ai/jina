@@ -84,6 +84,7 @@ def test_simple_dynamic_routing_zmqlet():
         assert z2.msg_recv == 1
 
 
+@pytest.mark.slow
 def test_double_dynamic_routing_zmqlet():
     args1 = get_args()
     args2 = get_args()
@@ -207,6 +208,7 @@ async def test_double_dynamic_routing_async_zmqlet():
         assert z3.msg_recv == 1
 
 
+@pytest.mark.slow
 def test_double_dynamic_routing_zmqstreamlet():
     args1 = get_args()
     args2 = get_args()

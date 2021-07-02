@@ -108,6 +108,7 @@ def test_logging_fluentd(monkeypatch, log_config):
         logger.info('logging progress')
 
 
+@pytest.mark.slow
 def test_logging_quiet(caplog):
     # no way to capture logs in multiprocessing
     # see discussion here: https://github.com/pytest-dev/pytest/issues/3037#issuecomment-745050393

@@ -18,6 +18,7 @@ from tests import random_docs, validate_callback
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
+@pytest.mark.slow
 def test_flow_with_jump(tmpdir):
     def _validate(f):
         node = f._pod_nodes['gateway']
@@ -77,6 +78,7 @@ def test_flow_with_jump(tmpdir):
         _validate(f)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_simple_flow(protocol):
     bytes_gen = (Document() for _ in range(10))
@@ -112,6 +114,7 @@ def test_simple_flow(protocol):
         assert node.peas_args['peas'][0] == node.tail_args
 
 
+@pytest.mark.slow
 def test_flow_identical(tmpdir):
     with open(os.path.join(cur_dir, '../yaml/test-flow.yml')) as fp:
         a = Flow.load_config(fp)
@@ -182,6 +185,7 @@ def docpb_workspace(tmpdir):
     del os.environ['TEST_DOCSHARD_WORKSPACE']
 
 
+@pytest.mark.slow
 def test_py_client():
     f = (
         Flow()
@@ -351,6 +355,7 @@ def test_refactor_num_part_proxy():
             assert node.peas_args['peas'][0] == node.tail_args
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_refactor_num_part_proxy_2(protocol):
     f = (
@@ -365,6 +370,7 @@ def test_refactor_num_part_proxy_2(protocol):
         f.index([Document(text='abbcs'), Document(text='efgh')])
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_refactor_num_part_2(protocol):
     f = Flow(protocol=protocol).add(
@@ -418,6 +424,7 @@ def test_flow_with_publish_driver(mocker, protocol):
     validate_callback(response_mock, validate)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_arbitrary_needs(protocol):
     f = (
@@ -437,6 +444,7 @@ def test_flow_arbitrary_needs(protocol):
         f.index([Document(text='abbcs'), Document(text='efgh')])
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_needs_all(protocol):
     f = Flow(protocol=protocol).add(name='p1', needs='gateway').needs_all(name='r1')
@@ -566,6 +574,7 @@ def test_flow_identity():
     assert list(f.identity.values())[0] == new_id
 
 
+@pytest.mark.slow
 def test_flow_identity_override():
     f = Flow().add().add(parallel=2).add(parallel=2)
 
@@ -597,6 +606,7 @@ pods:
                 assert p.name == 'gateway'
 
 
+@pytest.mark.slow
 def test_bad_pod_graceful_termination():
     def asset_bad_flow(f):
         with pytest.raises(RuntimeFailToStart):
@@ -691,6 +701,7 @@ def test_flow_add_class():
         pass
 
 
+@pytest.mark.slow
 def test_flow_allinone_yaml():
     from jina import Executor
 

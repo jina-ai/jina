@@ -37,6 +37,7 @@ def test_base_pea_with_runtime_bad_init(mocker):
     cancel_spy.assert_not_called()
 
 
+@pytest.mark.slow
 def test_base_pea_with_runtime_bad_run_forever(mocker):
     class Pea1(Pea):
         def __init__(self, args):
@@ -59,6 +60,7 @@ def test_base_pea_with_runtime_bad_run_forever(mocker):
     cancel_spy.assert_called()
 
 
+@pytest.mark.slow
 def test_base_pea_with_runtime_bad_teardown(mocker):
     class Pea1(Pea):
         def __init__(self, args):

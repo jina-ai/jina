@@ -29,6 +29,7 @@ def get_output(req):
     print(f'reconstruction error: {err / num_docs:.6f}')
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('quant', ['fp32', 'fp16', 'uint8'])
 def test_quant_f1(quant):
     np.random.seed(rseed)
