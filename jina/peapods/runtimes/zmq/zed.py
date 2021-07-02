@@ -248,6 +248,7 @@ class ZEDRuntime(ZMQRuntime):
         # migrated from previous ControlDriver logic
         if self.request.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
+            self.logger.debug(' raise RuntimeTerminated')
             raise RuntimeTerminated
         elif self.request.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
@@ -289,8 +290,10 @@ class ZEDRuntime(ZMQRuntime):
             self._zmqlet.send_message(self._callback(msg))
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
+            self.logger.debug('Sending message out after Runtime terminated')
             self._zmqlet.send_message(msg)
             self._zmqlet.close()
+            self.logger.debug('zmqlet closed')
         except KeyboardInterrupt as kbex:
             # save executor
             self.logger.debug(f'{kbex!r} causes the breaking from the event loop')

@@ -1,4 +1,5 @@
 import functools
+import os
 import time
 from threading import Thread
 
@@ -13,7 +14,6 @@ from tests import random_docs
 
 @pytest.mark.parametrize('compress_algo', list(CompressAlgo))
 def test_compression(compress_algo, mocker):
-
     response_mock = mocker.Mock()
 
     f = (
@@ -29,8 +29,16 @@ def test_compression(compress_algo, mocker):
     response_mock.assert_called()
 
 
+@pytest.fixture()
+def debug_log():
+    os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
+    yield
+    os.unsetenv('JINA_LOG_LEVEL')
+
+
+@pytest.mark.repeat(5)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_grpc_gateway_concurrency(protocol):
+def test_grpc_gateway_concurrency(protocol, debug_log):
     def _validate(req, start, status_codes, durations, index):
         end = time.time()
         durations[index] = end - start
