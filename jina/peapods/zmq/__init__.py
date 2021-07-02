@@ -23,6 +23,10 @@ from ...types.message.common import ControlMessage
 from ...types.request import Request
 from ...types.routing.table import RoutingTable
 
+if False:
+    import multiprocessing
+    import threading
+
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
@@ -87,7 +91,8 @@ class Zmqlet:
         self.out_sockets = {}
 
     def _register_pollin(self):
-        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)
+        in poller."""
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
@@ -467,6 +472,15 @@ class ZmqStreamlet(Zmqlet):
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
+    def __init__(
+        self,
+        ready_event: Union['multiprocessing.Event', 'threading.Event'],
+        *args,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.is_ready_event = ready_event
+
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
@@ -474,6 +488,7 @@ class ZmqStreamlet(Zmqlet):
 
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
+        self.io_loop.add_callback(callback=lambda: self.is_ready_event.set())
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
