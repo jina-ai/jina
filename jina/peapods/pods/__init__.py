@@ -307,7 +307,10 @@ class Pod(BasePod):
     """
 
     def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
+        self,
+        args: Union['Namespace', Dict],
+        needs: Optional[Set[str]] = None,
+        is_replica_pod: bool = False,
     ):
         super().__init__(args, needs)
         self.peas = []  # type: List['BasePea']
@@ -317,6 +320,7 @@ class Pod(BasePod):
         else:
             self.peas_args = self._parse_args(args)
         self._activated = False
+        self._is_replica_pod = is_replica_pod
 
     @property
     def is_singleton(self) -> bool:
@@ -482,10 +486,10 @@ class Pod(BasePod):
         if getattr(self.args, 'noblock_on_start', False):
             for _args in self._fifo_args:
                 _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args))
+                self._enter_pea(BasePea(_args, in_replica=self._is_replica_pod))
         else:
             for _args in self._fifo_args:
-                self._enter_pea(BasePea(_args))
+                self._enter_pea(BasePea(_args, in_replica=self._is_replica_pod))
 
             self._activate()
         return self
