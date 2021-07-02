@@ -12,43 +12,44 @@ from jina import Client, Document
 class MyExecutor(Executor):
     @requests(on='/ping')
     def ping(self, docs: DocumentArray, **kwargs):
-        time.sleep(3 * random.random())
+        time.sleep(1 * random.random())
 
 
 @pytest.mark.parametrize('protocal', ['http', 'grpc'])
 @pytest.mark.parametrize('parallel', [10])
 @pytest.mark.parametrize('polling', ['ANY', 'ALL'])
-@pytest.mark.parametrize('prefetch', [10])
-@pytest.mark.parametrize('concurrent', [25])
+@pytest.mark.parametrize('prefetch', [1, 10])
+@pytest.mark.parametrize('concurrent', [10])
 def test_concurrent_clients(concurrent, protocal, parallel, polling, prefetch):
     # def pong(peer_hash, resp: Response):
     #     for d in resp.docs:
     #         print(f'{d.text} vs {peer_hash}')
     #         assert d.text == peer_hash
 
-    tasks = queue.Queue()
+    failed_tasks = queue.Queue()
 
     def peer_client(port, protocal, peer_hash):
         c = Client(protocol=protocal, port_expose=port)
-        for _ in range(10):
-            tasks.put(peer_hash)
+        for _ in range(100):
             resps = c.post('/ping', Document(text=peer_hash), return_results=True)
             for r in resps:
                 for d in r.docs:
                     if d.text != peer_hash:
+                        failed_tasks.put(peer_hash)
                         return
-            tasks.task_done()
+
+    f = Flow(protocol=protocal, prefetch=prefetch).add(
+        uses=MyExecutor, parallel=parallel, polling=polling
+    )
+    port_expose = f.gateway_args.port_expose
 
     thread_pool = []
     for peer_id in range(concurrent):
         t = threading.Thread(
-            target=partial(peer_client, '12345', protocal, str(peer_id)), daemon=True
+            target=partial(peer_client, port_expose, protocal, str(peer_id)),
+            daemon=True,
         )
         thread_pool.append(t)
-
-    f = Flow(protocol=protocal, port_expose='12345', prefetch=prefetch).add(
-        uses=MyExecutor, parallel=parallel, polling=polling
-    )
 
     with f:
         for t in thread_pool:
@@ -56,4 +57,5 @@ def test_concurrent_clients(concurrent, protocal, parallel, polling, prefetch):
 
         for t in thread_pool:
             t.join()
-    assert tasks.empty()
+
+    assert failed_tasks.empty()
