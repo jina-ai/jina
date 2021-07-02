@@ -2,6 +2,7 @@ import copy
 from argparse import Namespace
 from itertools import cycle
 from typing import Optional, Dict, List, Union, Set
+from contextlib import ExitStack
 
 from .. import BasePod
 from .. import Pea
@@ -12,7 +13,7 @@ from ...enums import PollingType, SocketType
 from ...helper import random_identity
 
 
-class CompoundPod(BasePod):
+class CompoundPod(BasePod, ExitStack):
     """A CompoundPod is a immutable set of pods, which run in parallel.
     A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as replicas.
 
@@ -28,7 +29,12 @@ class CompoundPod(BasePod):
     def __init__(
         self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
     ):
-        super().__init__(args, needs)
+        super().__init__()
+        args.upload_files = BasePod._set_upload_files(args)
+        self.args = args
+        self.needs = (
+            needs or set()
+        )  #: used in the :class:`jina.flow.Flow` to build the graph
         self.replicas = []  # type: List['Pod']
         # we will see how to have `CompoundPods` in remote later when we add tests for it
         self.is_head_router = True
@@ -39,6 +45,10 @@ class CompoundPod(BasePod):
         self.replicas_args = self._set_replica_args(
             cargs, self.head_args, self.tail_args
         )
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        super().__exit__(exc_type, exc_val, exc_tb)
+        self.join()
 
     @property
     def port_expose(self) -> int:
@@ -96,7 +106,7 @@ class CompoundPod(BasePod):
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
                 _args.polling = PollingType.ALL
-                self._enter_replica(Pod(_args, is_replica_pod=True))
+                self._enter_replica(Pod(_args))
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
             self.tail_pea = Pea(tail_args)
@@ -110,7 +120,7 @@ class CompoundPod(BasePod):
                 self._enter_pea(self.head_pea)
                 for _args in self.replicas_args:
                     _args.polling = PollingType.ALL
-                    self._enter_replica(Pod(_args, is_replica_pod=True))
+                    self._enter_replica(Pod(_args))
                 tail_args = self.tail_args
                 self.tail_pea = Pea(tail_args)
                 self._enter_pea(self.tail_pea)
