@@ -56,6 +56,7 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         Streams log messages using websocket from remote server
         """
+        self.is_ready_event.set()
         self._logging_task = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs

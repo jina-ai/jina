@@ -26,7 +26,7 @@ class AsyncZMQRuntime(ZMQRuntime):
         cancel_event: Union['multiprocessing.Event', 'threading.Event'],
         **kwargs
     ):
-        super().__init__(args, ctrl_addr)
+        super().__init__(args, ctrl_addr, **kwargs)
         self.is_cancel = cancel_event
 
     def run_forever(self):

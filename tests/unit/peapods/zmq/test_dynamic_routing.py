@@ -3,6 +3,7 @@ import threading
 import time
 
 import pytest
+import multiprocessing
 from google.protobuf import json_format
 
 from jina.helper import random_identity
@@ -213,9 +214,13 @@ def test_double_dynamic_routing_zmqstreamlet():
     args3 = get_args()
 
     logger = logging.getLogger('zmq-test')
-    with ZmqStreamlet(args1, logger) as z1, ZmqStreamlet(
-        args2, logger
-    ) as z2, ZmqStreamlet(args3, logger) as z3:
+    with ZmqStreamlet(
+        args=args1, ready_event=multiprocessing.Event(), logger=logger
+    ) as z1, ZmqStreamlet(
+        args=args2, ready_event=multiprocessing.Event(), logger=logger
+    ) as z2, ZmqStreamlet(
+        args=args3, ready_event=multiprocessing.Event(), logger=logger
+    ) as z3:
         assert z1.msg_sent == 0
         assert z2.msg_sent == 0
         assert z3.msg_sent == 0

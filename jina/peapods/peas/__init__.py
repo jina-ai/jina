@@ -8,7 +8,7 @@ from typing import Any, Tuple
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
-from ...excepts import RuntimeFailToStart
+from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
 from ...hubble.helper import is_valid_huburi, parse_hub_uri
 from ...hubble.hubapi import resolve_local
@@ -42,6 +42,7 @@ class BasePea:
         self.is_ready = _get_event(self.worker)
         self.is_shutdown = _get_event(self.worker)
         self.cancel_event = _get_event(self.worker)
+        self.is_started = _get_event(self.worker)
         self.ready_or_shutdown = ConditionalEvent(
             getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
             events_list=[self.is_ready, self.is_shutdown],
@@ -132,6 +133,7 @@ class BasePea:
         return self.runtime_cls(
             args=self.args,
             ctrl_addr=self._zed_runtime_ctrl_address,
+            ready_event=self.is_ready,
             cancel_event=self.cancel_event,
             timeout_ctrl=self._timeout_ctrl,
         )
@@ -157,12 +159,11 @@ class BasePea:
                 exc_info=not self.args.quiet_error,
             )
         else:
-            self.is_ready.set()
+            self.is_started.set()
             with runtime:
                 runtime.run_forever()
         finally:
             self.is_shutdown.set()
-            self.is_ready.clear()
             self._unset_envs()
 
     def activate_runtime(self):
@@ -210,7 +211,10 @@ class BasePea:
         if self.ready_or_shutdown.event.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
-                raise RuntimeFailToStart
+                if not self.is_started.is_set():
+                    raise RuntimeFailToStart
+                else:
+                    raise RuntimeRunForeverEarlyError
             else:
                 self.logger.success(__ready_msg__)
         else:
@@ -258,10 +262,21 @@ class BasePea:
             # here shutdown has been set already, therefore `run` will gracefully finish
             pass
         else:
-            # terminate is needed because sometimes, we arrive to the close logic before the `is_ready` is even set.
+            # sometimes, we arrive to the close logic before the `is_ready` is even set.
             # Observed with `gateway` when Pods fail to start
-            self.terminate()
-            time.sleep(0.1)
+            self.logger.warning(
+                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod'
+                'failed to start'
+            )
+            if self.is_ready.wait(timeout=0.1):
+                self._cancel_runtime()
+            else:
+                self.logger.warning(
+                    'Terminating process after waiting for readiness signal for graceful shutdown'
+                )
+                # Just last resource, terminate it
+                self.terminate()
+                time.sleep(0.1)
         self.logger.debug(__stop_msg__)
         self.logger.close()
 
