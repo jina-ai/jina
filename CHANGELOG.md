@@ -66,6 +66,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9364,4 +9365,32 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```2e6515f0```](https://github.com/jina-ai/jina/commit/2e6515f0d1cdd28dfeb65daacb2bbe65f40b7f59)] __-__ fix minor style problem (*Han Xiao*)
  - [[```330aee83```](https://github.com/jina-ai/jina/commit/330aee8395eeefa2421992a1e62ca7f7927c78e8)] __-__ __version__: the next version will be 2.0rc1 (*Jina Dev Bot*)
  - [[```e21e02bf```](https://github.com/jina-ai/jina/commit/e21e02bf261b38257dd8b36b02a2f04edcedb6dc)] __-__ version bumping (*Han Xiao*)
+
+<a name=release-note-2-0-2></a>
+## Release Note (`2.0.2`)
+
+> Release time: 2021-07-02 04:20:58
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Han Xiao,  Tobias Jacobowitz,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```2e48837e```](https://github.com/jina-ai/jina/commit/2e48837e1ca35f44eebacaf0085c3737dd52793d)] __-__ __logger__: fix color log formatter (#2831) (*Han Xiao*)
+ - [[```caeefa48```](https://github.com/jina-ai/jina/commit/caeefa48176f7b904f989dc1dc2a96d5ea1e26dc)] __-__ __core__: add sleep after terminate (#2828) (*Tobias Jacobowitz*)
+ - [[```85550872```](https://github.com/jina-ai/jina/commit/855508721a68514907dc20a7201aff4c8bef19bb)] __-__ __ci__: add env vars for docker test to ci (#2830) (*Tobias Jacobowitz*)
+
+### 🚧 Code Refactoring
+
+ - [[```f769a5a6```](https://github.com/jina-ai/jina/commit/f769a5a67ad92c948a82fa84498f6fcdcab35caa)] __-__ close from start error (#2825) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```0ae001dd```](https://github.com/jina-ai/jina/commit/0ae001dd436b687df876b84fe793f5c58b527d50)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```4e1860e4```](https://github.com/jina-ai/jina/commit/4e1860e463c6ab22065124223a84f8b6f9b76df6)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```2819e1e4```](https://github.com/jina-ai/jina/commit/2819e1e42a0b9a4c53615c51e9342b58e7700dfc)] __-__ fix dockerfile (*Han Xiao*)
+ - [[```4b359d32```](https://github.com/jina-ai/jina/commit/4b359d32f11e4aa82cda4e140f790c4bee239198)] __-__ __version__: the next version will be 2.0.2 (*Jina Dev Bot*)
 
