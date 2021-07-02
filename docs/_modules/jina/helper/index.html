@@ -429,6 +429,8 @@
     <span class="s1">'run_async'</span><span class="p">,</span>
     <span class="s1">'deprecated_alias'</span><span class="p">,</span>
     <span class="s1">'countdown'</span><span class="p">,</span>
+    <span class="s1">'CatchAllCleanupContextManager'</span><span class="p">,</span>
+    <span class="s1">'download_mermaid_url'</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -1242,6 +1244,26 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="CatchAllCleanupContextManager"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.CatchAllCleanupContextManager">[docs]</a><span class="k">class</span> <span class="nc">CatchAllCleanupContextManager</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    This context manager guarantees, that the :method:``__exit__`` of the</span>
+<span class="sd">    sub context is called, even when there is an Exception in the</span>
+<span class="sd">    :method:``__enter__``.</span>
+
+<span class="sd">    :param sub_context: The context, that should be taken care of.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_context</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_context</span> <span class="o">=</span> <span class="n">sub_context</span>
+
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sub_context</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="cached_property"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.cached_property">[docs]</a><span class="k">class</span> <span class="nc">cached_property</span><span class="p">:</span>
     <span class="sd">"""The decorator to cache property of a class."""</span>
 
@@ -1485,7 +1507,7 @@
     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">val</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">download_mermaid_url</span><span class="p">(</span><span class="n">mermaid_url</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="download_mermaid_url"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.download_mermaid_url">[docs]</a><span class="k">def</span> <span class="nf">download_mermaid_url</span><span class="p">(</span><span class="n">mermaid_url</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">"""</span>
 <span class="sd">    Download the jpg image from mermaid_url.</span>
 
@@ -1503,7 +1525,7 @@
 
         <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="s1">'can not download image, please check your graph and the network connections'</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">find_request_binding</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>

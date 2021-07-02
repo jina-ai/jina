@@ -408,6 +408,7 @@
     <span class="n">typename</span><span class="p">,</span>
     <span class="n">ArgNamespace</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
+    <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -1286,25 +1287,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">class</span> <span class="nc">CatchAllCleanupContextManager</span><span class="p">:</span>
-            <span class="sd">"""</span>
-<span class="sd">            This context manager guarantees, that the :method:``__exit__`` of the</span>
-<span class="sd">            sub context is called, even when there is an Exception in the</span>
-<span class="sd">            :method:``__enter__``.</span>
-
-<span class="sd">            :param sub_context: The context, that should be taken care of.</span>
-<span class="sd">            """</span>
-
-            <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_context</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sub_context</span> <span class="o">=</span> <span class="n">sub_context</span>
-
-            <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="k">pass</span>
-
-            <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">exc_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">sub_context</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
-
         <span class="k">with</span> <span class="n">CatchAllCleanupContextManager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 

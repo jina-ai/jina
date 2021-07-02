@@ -785,6 +785,35 @@ is running in the same thread.</p>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py class">
+<dt id="jina.helper.CatchAllCleanupContextManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.helper.</span></code><code class="sig-name descname"><span class="pre">CatchAllCleanupContextManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#CatchAllCleanupContextManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.CatchAllCleanupContextManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This context manager guarantees, that the :method:<code class="docutils literal notranslate"><span class="pre">__exit__</span></code> of the
+sub context is called, even when there is an Exception in the
+:method:<code class="docutils literal notranslate"><span class="pre">__enter__</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sub_context</strong> – The context, that should be taken care of.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.helper.download_mermaid_url">
+<code class="sig-prename descclassname"><span class="pre">jina.helper.</span></code><code class="sig-name descname"><span class="pre">download_mermaid_url</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mermaid_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#download_mermaid_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.download_mermaid_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the jpg image from mermaid_url.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mermaid_url</strong> – The URL of the image.</p></li>
+<li><p><strong>output</strong> – A filename specifying the name of the image to be created, the suffix svg/jpg determines the file type of the output image.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>
