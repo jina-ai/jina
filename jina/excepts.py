@@ -118,3 +118,7 @@ class SocketTypeError(Exception):
 
 class RoutingTableCyclicError(Exception):
     """Raised when the routing graph has cycles."""
+
+
+class RuntimeRunForeverEarlyError(Exception):
+    """Raised when an error occurs when starting the run_forever of Runtime"""

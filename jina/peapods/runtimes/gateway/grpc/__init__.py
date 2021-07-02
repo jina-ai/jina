@@ -55,5 +55,6 @@ class GRPCRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """The async running of server."""
+        self.is_ready_event.set()
         await self.server.wait_for_termination()
         self.zmqlet.close()
