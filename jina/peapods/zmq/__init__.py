@@ -23,6 +23,10 @@ from ...types.message.common import ControlMessage
 from ...types.request import Request
 from ...types.routing.table import RoutingTable
 
+if False:
+    import multiprocessing
+    import threading
+
 
 class Zmqlet:
     """A `Zmqlet` object can send/receive data to/from ZeroMQ socket and invoke callback function. It
@@ -87,7 +91,8 @@ class Zmqlet:
         self.out_sockets = {}
 
     def _register_pollin(self):
-        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER) in poller."""
+        """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)
+        in poller."""
         self.poller = zmq.Poller()
         self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
@@ -331,28 +336,42 @@ class Zmqlet:
 
             self._send_message_via(out_sock, new_message)
 
-    def send_message(self, msg: 'Message'):
+    def send_message(self, msg: 'Message', log: bool = False):
         """Send a message via the output socket
 
         :param msg: the protobuf message to send
         """
         # choose output sock
+        if log:
+            self.logger.warning(' SENDING MESSAGE')
         if msg.is_data_request:
+            if log:
+                self.logger.warning(' SENDING MESSAGE IS DATA (SHOULD NOT BE)')
             if self.args.dynamic_routing_out:
                 self._send_message_dynamic(msg)
                 return
             out_sock = self.out_sock
         else:
+            if log:
+                self.logger.warning(' SENDING MESSAGE IS NOT DATA (SEND TO CTRL)')
             out_sock = self.ctrl_sock
 
-        self._send_message_via(out_sock, msg)
+        self._send_message_via(out_sock, msg, log=log)
 
-    def _send_message_via(self, socket, msg):
+    def _send_message_via(self, socket, msg, log=False):
+        if log:
+            self.logger.warning(
+                f'send message {msg} to sockert {socket} with args {self.send_recv_kwargs}'
+            )
         self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
+        if log:
+            self.logger.warning(f'AFTER SEND {self.bytes_sent}')
         self.msg_sent += 1
 
         if socket == self.out_sock and self.in_sock_type == zmq.DEALER:
             self._send_idle_to_router()
+        if log:
+            self.logger.warning(f'_send_message_via FINISHED')
 
     def _send_control_to_router(self, command, raise_exception=False):
         msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
@@ -467,6 +486,15 @@ class ZmqStreamlet(Zmqlet):
         It requires :mod:`tornado` and :mod:`uvloop` to be installed.
     """
 
+    def __init__(
+        self,
+        ready_event: Union['multiprocessing.Event', 'threading.Event'],
+        *args,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.is_ready_event = ready_event
+
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
         with ImportExtensions(required=True):
@@ -474,6 +502,7 @@ class ZmqStreamlet(Zmqlet):
 
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
+        self.io_loop.add_callback(callback=lambda: self.is_ready_event.set())
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)

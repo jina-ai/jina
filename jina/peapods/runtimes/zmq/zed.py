@@ -32,13 +32,14 @@ from ....types.routing.table import RoutingTable
 class ZEDRuntime(ZMQRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
-    def __init__(self, args: argparse.Namespace, ctrl_addr: str):
+    def __init__(self, args: argparse.Namespace, ctrl_addr: str, **kwargs):
         """Initialize private parameters and execute private loading functions.
 
         :param args: args from CLI
         :param ctrl_addr: control port address
+        :param kwargs: extra keyword arguments
         """
-        super().__init__(args, ctrl_addr)
+        super().__init__(args, ctrl_addr, **kwargs)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
 
@@ -53,28 +54,31 @@ class ZEDRuntime(ZMQRuntime):
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
 
-        self._load_zmqlet()
+        self._load_zmqstreamlet()
         self._load_plugins()
         self._load_executor()
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
-        self._zmqlet.start(self._msg_callback)
+        self._zmqstreamlet.start(self._msg_callback)
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
-        self._zmqlet.close()
+        self._zmqstreamlet.close()
         self._executor.close()
         super().teardown()
 
     #: Private methods required by :meth:`setup`
 
-    def _load_zmqlet(self):
+    def _load_zmqstreamlet(self):
         """Load ZMQStreamlet to this runtime."""
         # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
         # process/thread
-        self._zmqlet = ZmqStreamlet(
-            self.args, logger=self.logger, ctrl_addr=self.ctrl_addr
+        self._zmqstreamlet = ZmqStreamlet(
+            args=self.args,
+            logger=self.logger,
+            ctrl_addr=self.ctrl_addr,
+            ready_event=self.is_ready_event,
         )
 
     def _load_executor(self):
@@ -107,7 +111,6 @@ class ZEDRuntime(ZMQRuntime):
             PathImporter.add_modules(*self.args.py_modules)
 
     #: Private methods required by :meth:`teardown`
-
     def _check_memory_watermark(self):
         """Check the memory watermark."""
         if used_memory() > self.args.memory_hwm > 0:
@@ -185,12 +188,13 @@ class ZEDRuntime(ZMQRuntime):
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def _handle(self, msg: 'Message') -> 'ZEDRuntime':
+    def _handle(self) -> 'ZEDRuntime':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
 
-        :param msg: the message received
+        .. note::
+            Handle does not handle explicitly message because it may wait for different messages when different parts are expected
         :return: ZEDRuntime procedure.
         """
 
@@ -207,7 +211,7 @@ class ZEDRuntime(ZMQRuntime):
 
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
-                self._zmqlet.pause_pollin()
+                self._zmqstreamlet.pause_pollin()
 
         if (
             self.envelope.header.exec_endpoint not in self._executor.requests
@@ -255,7 +259,7 @@ class ZEDRuntime(ZMQRuntime):
             self.request.parameters = vars(self.args)
         elif self.request.command == 'IDLE':
             self._idle_dealer_ids.add(self.envelope.receiver_id)
-            self._zmqlet.resume_pollin()
+            self._zmqstreamlet.resume_pollin()
             self.logger.debug(
                 f'{self.envelope.receiver_id} is idle, now I know these idle peas {self._idle_dealer_ids}'
             )
@@ -263,9 +267,9 @@ class ZEDRuntime(ZMQRuntime):
             if self.envelope.receiver_id in self._idle_dealer_ids:
                 self._idle_dealer_ids.remove(self.envelope.receiver_id)
         elif self.request.command == 'ACTIVATE':
-            self._zmqlet._send_idle_to_router()
+            self._zmqstreamlet._send_idle_to_router()
         elif self.request.command == 'DEACTIVATE':
-            self._zmqlet._send_cancel_to_router()
+            self._zmqstreamlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {self.request.command}'
@@ -273,7 +277,7 @@ class ZEDRuntime(ZMQRuntime):
 
     def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
-        self._pre_hook(msg)._handle(msg)._post_hook(msg)
+        self._pre_hook(msg)._handle()._post_hook(msg)
         self.is_post_hook_done = True
         return msg
 
@@ -287,23 +291,24 @@ class ZEDRuntime(ZMQRuntime):
         try:
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
-            self._zmqlet.send_message(self._callback(msg))
+            self._zmqstreamlet.send_message(self._callback(msg))
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
             self.logger.debug('Sending message out after Runtime terminated')
-            self._zmqlet.send_message(msg)
-            self._zmqlet.close()
+            self._zmqstreamlet.send_message(msg, log=True)
+            self.logger.debug('Message sent out after Runtime terminated')
+            self._zmqstreamlet.close()
             self.logger.debug('zmqlet closed')
         except KeyboardInterrupt as kbex:
             # save executor
             self.logger.debug(f'{kbex!r} causes the breaking from the event loop')
-            self._zmqlet.send_message(msg)
-            self._zmqlet.close(flush=False)
+            self._zmqstreamlet.send_message(msg)
+            self._zmqstreamlet.close(flush=False)
         except (SystemError, zmq.error.ZMQError) as ex:
             # save executor
             self.logger.debug(f'{ex!r} causes the breaking from the event loop')
-            self._zmqlet.send_message(msg)
-            self._zmqlet.close()
+            self._zmqstreamlet.send_message(msg)
+            self._zmqstreamlet.close()
         except MemoryOverHighWatermark:
             self.logger.critical(
                 f'memory usage {used_memory()} GB is above the high-watermark: {self.args.memory_hwm} GB'
@@ -335,7 +340,7 @@ class ZEDRuntime(ZMQRuntime):
                     exc_info=not self.args.quiet_error,
                 )
 
-            self._zmqlet.send_message(msg)
+            self._zmqstreamlet.send_message(msg)
 
     #: Some class-specific properties
 
