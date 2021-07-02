@@ -23,8 +23,8 @@
 scipy>=1.6.1:               sparse, cicd, graph
 fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal, standard
 uvicorn[standard]>=0.14.0:  devel, cicd, http, test, daemon, chatbot, multimodal, standard
-fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
-docker:                     devel, cicd, network, hub, daemon, standard
+fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon, test
+docker:                     devel, cicd, network, hub, daemon, standard, test
 pathspec:                   devel, cicd, hub, standard
 requests:                   http, devel, cicd, daemon, standard
 torch>=1.1.0:               framework, cicd, chatbot, multimodal
@@ -50,15 +50,15 @@ pytest-reraise:             test
 flaky:                      test
 mock:                       test
 prettytable:                devel, cicd
-optuna:                     cicd, optimizer
+optuna:                     cicd, optimizer, test
 websockets:                 http, devel, cicd, daemon, client, standard
 pydantic:                   http, devel, cicd, daemon, chatbot, multimodal, standard
 python-multipart:           http, devel, cicd, daemon, standard
 aiofiles:                   devel, cicd, http, daemon, standard
-aiohttp:                    devel, cicd, http, async, client, standard
+aiohttp:                    devel, cicd, http, async, client, standard, test
 pytest-custom_exit_code:    test
 bs4:                        cicd
 aiostream:                  devel, cicd, async, client, standard
-jsonschema:                 cicd
+jsonschema:                 cicd, test
 dgl==0.6.1:                 cicd, graph
 black==20.8b1:              cicd
