@@ -814,6 +814,32 @@ sub context is called, even when there is an Exception in the
 </dd>
 </dl>
 </dd></dl>
+<dl class="py function">
+<dt id="jina.helper.get_readable_size">
+<code class="sig-prename descclassname"><span class="pre">jina.helper.</span></code><code class="sig-name descname"><span class="pre">get_readable_size</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_bytes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_readable_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_readable_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>num_bytes</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Number of bytes.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Human readable string representation.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.helper.get_or_reuse_loop">
+<code class="sig-prename descclassname"><span class="pre">jina.helper.</span></code><code class="sig-name descname"><span class="pre">get_or_reuse_loop</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_or_reuse_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_or_reuse_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a new eventloop or reuse the current opened eventloop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A new eventloop or reuse the current opened eventloop.</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>

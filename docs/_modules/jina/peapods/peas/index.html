@@ -391,7 +391,7 @@
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">ConditionalEvent</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span>
+<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">is_valid_huburi</span><span class="p">,</span> <span class="n">parse_hub_uri</span>
 <span class="kn">from</span> <span class="nn">...hubble.hubapi</span> <span class="kn">import</span> <span class="n">resolve_local</span>
@@ -424,6 +424,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ready_or_shutdown</span> <span class="o">=</span> <span class="n">ConditionalEvent</span><span class="p">(</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'runtime_backend'</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">),</span>
             <span class="n">events_list</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">],</span>
@@ -528,7 +529,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">JinadRuntime</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="o">=</span><span class="n">ctrl_addr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="o">=</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="n">ready_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="BasePea.run"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Method representing the :class:`BaseRuntime` activity.</span>
@@ -551,12 +554,11 @@
                 <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
             <span class="k">with</span> <span class="n">runtime</span><span class="p">:</span>
                 <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_unset_envs</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BasePea.activate_runtime"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.activate_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">activate_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -598,7 +600,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ready_or_shutdown</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">_timeout</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="c1"># return too early and the shutdown is set, means something fails!!</span>
-                <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">RuntimeRunForeverEarlyError</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__ready_msg__</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -646,10 +651,21 @@
             <span class="c1"># here shutdown has been set already, therefore `run` will gracefully finish</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># terminate is needed because sometimes, we arrive to the close logic before the `is_ready` is even set.</span>
+            <span class="c1"># sometimes, we arrive to the close logic before the `is_ready` is even set.</span>
             <span class="c1"># Observed with `gateway` when Pods fail to start</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod'</span>
+                <span class="s1">'failed to start'</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cancel_runtime</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s1">'Terminating process after waiting for readiness signal for graceful shutdown'</span>
+                <span class="p">)</span>
+                <span class="c1"># Just last resource, terminate it</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 

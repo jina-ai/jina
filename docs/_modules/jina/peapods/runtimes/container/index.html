@@ -399,8 +399,8 @@
 <div class="viewcode-block" id="ContainerRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime">[docs]</a><span class="k">class</span> <span class="nc">ContainerRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure for container."""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_network_for_dind_linux</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docker_run</span><span class="p">()</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_container_alive</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">:</span>
@@ -424,6 +424,7 @@
 
 <div class="viewcode-block" id="ContainerRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.container/#jina.peapods.runtimes.container.ContainerRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Stream the logs while running."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stream_logs</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_set_network_for_dind_linux</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

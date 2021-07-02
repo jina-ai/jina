@@ -415,13 +415,14 @@
 <div class="viewcode-block" id="ZEDRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime">[docs]</a><span class="k">class</span> <span class="nc">ZEDRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Initialize private parameters and execute private loading functions.</span>
 
 <span class="sd">        :param args: args from CLI</span>
 <span class="sd">        :param ctrl_addr: control port address</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_active_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
 
@@ -436,28 +437,31 @@
         <span class="c1"># idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_zmqlet</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_zmqstreamlet</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_plugins</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_executor</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ZEDRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Start the `ZmqStreamlet`."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_callback</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg_callback</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ZEDRuntime.teardown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Close the `ZmqStreamlet` and `Executor`."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
 
     <span class="c1">#: Private methods required by :meth:`setup`</span>
 
-    <span class="k">def</span> <span class="nf">_load_zmqlet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_load_zmqstreamlet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Load ZMQStreamlet to this runtime."""</span>
         <span class="c1"># important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main</span>
         <span class="c1"># process/thread</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span> <span class="o">=</span> <span class="n">ZmqStreamlet</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span> <span class="o">=</span> <span class="n">ZmqStreamlet</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+            <span class="n">ctrl_addr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span>
+            <span class="n">ready_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_load_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -490,7 +494,6 @@
             <span class="n">PathImporter</span><span class="o">.</span><span class="n">add_modules</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">)</span>
 
     <span class="c1">#: Private methods required by :meth:`teardown`</span>
-
     <span class="k">def</span> <span class="nf">_check_memory_watermark</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Check the memory watermark."""</span>
         <span class="k">if</span> <span class="n">used_memory</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">memory_hwm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -568,12 +571,13 @@
             <span class="n">parsed_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">specific_parameters</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parsed_params</span>
 
-    <span class="k">def</span> <span class="nf">_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ZEDRuntime'</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'ZEDRuntime'</span><span class="p">:</span>
         <span class="sd">"""Register the current message to this pea, so that all message-related properties are up-to-date, including</span>
 <span class="sd">        :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle</span>
 <span class="sd">        this message if its envelope's  status is not ERROR, else skip handling of message.</span>
 
-<span class="sd">        :param msg: the message received</span>
+<span class="sd">        .. note::</span>
+<span class="sd">            Handle does not handle explicitly message because it may wait for different messages when different parts are expected</span>
 <span class="sd">        :return: ZEDRuntime procedure.</span>
 <span class="sd">        """</span>
 
@@ -590,7 +594,7 @@
 
             <span class="c1"># when no available dealer, pause the pollin from upstream</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">pause_pollin</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">pause_pollin</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span>
@@ -637,7 +641,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">'IDLE'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">resume_pollin</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">resume_pollin</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span><span class="si">}</span><span class="s1"> is idle, now I know these idle peas </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
@@ -645,9 +649,9 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">'ACTIVATE'</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">_send_idle_to_router</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">_send_idle_to_router</span><span class="p">()</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">'DEACTIVATE'</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">_send_cancel_to_router</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">_send_cancel_to_router</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnknownControlCommand</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'don</span><span class="se">\'</span><span class="s1">t know how to handle </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s1">'</span>
@@ -655,7 +659,7 @@
 
     <span class="k">def</span> <span class="nf">_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="s1">'Message'</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_post_hook_done</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1">#: if the post_hook is called</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">_handle</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pre_hook</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">_handle</span><span class="p">()</span><span class="o">.</span><span class="n">_post_hook</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_post_hook_done</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">msg</span>
 
@@ -669,21 +673,21 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># notice how executor related exceptions are handled here</span>
             <span class="c1"># generally unless executor throws an OSError, the exception are caught and solved inplace</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
         <span class="k">except</span> <span class="n">RuntimeTerminated</span><span class="p">:</span>
             <span class="c1"># this is the proper way to end when a terminate signal is sent</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span> <span class="k">as</span> <span class="n">kbex</span><span class="p">:</span>
             <span class="c1"># save executor</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">kbex</span><span class="si">!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">flush</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">flush</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">SystemError</span><span class="p">,</span> <span class="n">zmq</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">ZMQError</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="c1"># save executor</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> causes the breaking from the event loop'</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">MemoryOverHighWatermark</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'memory usage </span><span class="si">{</span><span class="n">used_memory</span><span class="p">()</span><span class="si">}</span><span class="s1"> GB is above the high-watermark: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">memory_hwm</span><span class="si">}</span><span class="s1"> GB'</span>
@@ -715,7 +719,7 @@
                     <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
                 <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1">#: Some class-specific properties</span>
 

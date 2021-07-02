@@ -382,9 +382,14 @@
         </label>
         <h1>Source code for jina.peapods.runtimes.base</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeTerminated</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">multiprocessing</span>
+    <span class="kn">import</span> <span class="nn">threading</span>
 
 
 <div class="viewcode-block" id="BaseRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime">[docs]</a><span class="k">class</span> <span class="nc">BaseRuntime</span><span class="p">:</span>
@@ -401,7 +406,9 @@
 <span class="sd">        0. :meth:`__init__`</span>
 
 <span class="sd">        1. :meth:`run_forever`. Note that this will block ``S``, step 3 won't be</span>
-<span class="sd">        reached until it is unblocked by :meth:`cancel`</span>
+<span class="sd">        reached until it is unblocked by :meth:`cancel`. This method is responsible</span>
+<span class="sd">        to set the `ready_event` to guarantee that the rest of the system knows when it is ready</span>
+<span class="sd">        to receive messages.</span>
 
 <span class="sd">        2. :meth:`teardown` in ``S``. Note that ``S`` is blocked by</span>
 <span class="sd">        :meth:`run_forever`, this step won't be reached until step 2 is unblocked by :meth:`cancel`</span>
@@ -436,7 +443,12 @@
 <span class="sd">        :class:`BasePea` for managing a :class:`Runtime` object's lifecycle.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
+        <span class="n">ready_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
@@ -444,6 +456,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span> <span class="o">=</span> <span class="n">ready_event</span>
 
 <div class="viewcode-block" id="BaseRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Running the blocking procedure inside ``S``. Note, once this method is called,</span>
@@ -463,7 +476,8 @@
         <span class="sd">"""Method called immediately after :meth:`run_forever` is unblocked.</span>
 <span class="sd">        You can tidy up things here.  Optional in subclasses. The default implementation does nothing.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
