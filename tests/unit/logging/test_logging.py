@@ -52,7 +52,8 @@ def test_logging_default():
             assert len(logger.handlers) == 2
 
 
-def test_logging_level_yaml():
+def test_logging_level_yaml(monkeypatch):
+    monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
     fn = os.path.join(cur_dir, f'jina-{__uptime__}.log')
     with JinaLogger(
         'test_file_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
@@ -65,7 +66,8 @@ def test_logging_level_yaml():
             os.remove(f)
 
 
-def test_logging_file():
+def test_logging_file(monkeypatch):
+    monkeypatch.delenv('JINA_LOG_LEVEL', raising=True)  # ignore global env
     fn = os.path.join(cur_dir, f'jina-{__uptime__}.log')
     with JinaLogger(
         'test_file_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
