@@ -41,13 +41,11 @@ grpcio>=1.33.1:             core
 pyyaml>=5.3.1:              core
 tornado>=5.1.0:             core
 pytest:                     test
-pytest-xdist==1.34.0:       test
 pytest-timeout:             test
 pytest-mock:                test
 pytest-cov:                 test
 pytest-repeat:              test
 pytest-asyncio:             test
-pytest-xprocess:            test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
