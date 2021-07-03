@@ -76,7 +76,7 @@ jobs:
                             jinaai/jina:${JINA_MAJOR_VERSION}${PY_TAG}${PIP_TAG}" \
                             >> $GITHUB_ENV
 
-          elif [[ "${{ github.event.inputs.triggered_by }}" == "CD" ]]; then
+          elif [[ "${{ github.event.inputs.triggered_by }}" == "MANUAL" ]]; then
 
             # on every manual release
             echo "TAG_ALIAS=\
