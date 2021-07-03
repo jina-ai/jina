@@ -3,12 +3,16 @@ name: Manual Docker Build
 on:
   workflow_dispatch:
     inputs:
-      git_tag:
-        description: 'Leave empty to release master, otherwise give git tag version in vx.y.z, note that "v" is required!'
-        required: false
       release_token:
         description: 'Your release token'
         required: true
+      triggered_by:
+        description: 'CD | TAG | MANUAL'
+        required: false
+        default: MANUAL
+      git_tag:
+        description: 'Leave empty to release master, otherwise give git tag version in vx.y.z, note that "v" is required!'
+        required: false
 
 jobs:
   token-check:
@@ -25,10 +29,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        pip_tag: [ "", "perf", "standard", "devel", "daemon" ]  # default core
-        py_version: [ "", "3.8", "3.9" ]  # default 3.7
+        pip_tag: [ "", "perf", "standard", "devel", "daemon" ]  # default: "" = core
+        py_version: [ "", "3.8", "3.9" ]  # default "" = 3.7
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: "${{ github.event.inputs.git_tag }}"
       - name: Set envs and versions
         run: |
           echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -54,24 +60,32 @@ jobs:
               PIP_TAG=-${PIP_TAG}
           fi
 
+          if [[ "${{ github.event.inputs.triggered_by }}" == "CD" ]]; then
 
-          # on every CD
-          echo "TAG_ALIAS=\
-                          jinaai/jina:master${PY_TAG}${PIP_TAG}" \
-                          >> $GITHUB_ENV
+            # on every CD
+            echo "TAG_ALIAS=\
+                            jinaai/jina:master${PY_TAG}${PIP_TAG}" \
+                            >> $GITHUB_ENV
+          elif [[ "${{ github.event.inputs.triggered_by }}" == "TAG" ]]; then
 
-          # on every release tag
-          echo "TAG_ALIAS=\
-                          jinaai/jina:latest${PY_TAG}${PIP_TAG} \
-                          jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
-                          jinaai/jina:${JINA_MINOR_VERSION}${PY_TAG}${PIP_TAG} \
-                          jinaai/jina:${JINA_MAJOR_VERSION}${PY_TAG}${PIP_TAG}" \
-                          >> $GITHUB_ENV
+            # on every tag release
+            echo "TAG_ALIAS=\
+                            jinaai/jina:latest${PY_TAG}${PIP_TAG} \
+                            jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
+                            jinaai/jina:${JINA_MINOR_VERSION}${PY_TAG}${PIP_TAG} \
+                            jinaai/jina:${JINA_MAJOR_VERSION}${PY_TAG}${PIP_TAG}" \
+                            >> $GITHUB_ENV
 
-          # on every force release
-          echo "TAG_ALIAS=\
-                          jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
-                          >> $GITHUB_ENV
+          elif [[ "${{ github.event.inputs.triggered_by }}" == "CD" ]]; then
+
+            # on every manual release
+            echo "TAG_ALIAS=\
+                            jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
+                            >> $GITHUB_ENV
+          else
+            echo "Bad triggered_by: ${{ github.event.inputs.triggered_by }}!"
+            exit(1)
+          fi
 
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
 
