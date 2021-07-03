@@ -76,9 +76,6 @@ class HubIO:
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
 
-        with ImportExtensions(required=True):
-            pass
-
         pkg_path = Path(self.args.path)
         if not pkg_path.exists():
             self.logger.critical(f'`{self.args.path}` is not a valid path!')
