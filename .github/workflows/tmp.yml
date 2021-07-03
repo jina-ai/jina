@@ -46,7 +46,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
       - run: |
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          # https://github.com/docker/buildx/issues/464#issuecomment-741507760
+          # https://github.com/kubernetes-sigs/azuredisk-csi-driver/pull/808/files
+          docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
+          docker run --rm --privileged tonistiigi/binfmt --install all
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
