@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  update-docker:
+    needs: [update-doc, update-schema]
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        pip_tag: ["", "perf", "standard", "devel", "daemon"]
+        tag_pyversion: ["py37", "py38", "py39"]
+    steps:
+      - uses: actions/checkout@v2
+#        with:
+#          submodules: true  # this job build devel image, devel image includes hub submodule
+      - name: Set envs and versions
+        run: |
+          echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+          echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master" >> $GITHUB_ENV
+
+          if [[ "${{ matrix.tag_pyversion }}" == "py38" ]]; then
+            echo "PY_VERSION=3.8" >> $GITHUB_ENV
+          elif [[ "${{ matrix.tag_pyversion }}" == "py39" ]]; then
+            echo "PY_VERSION=3.9" >> $GITHUB_ENV
+          else
+            echo "PY_VERSION=3.7" >> $GITHUB_ENV
+            echo "TAG_ALIAS=jinaai/jina:master-${{ matrix.pip_tag }}" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ matrix.pip_tag }}" == "daemon" ]]; then
+            echo "BUILD_TARGET=jina_daemon" >> $GITHUB_ENV
+          else
+            echo "BUILD_TARGET=jina" >> $GITHUB_ENV
+          fi
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          install: true
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
+          password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
+      - run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfiles/debianx.Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: jinaai/jina:master-${{ matrix.tag_pyversion }}-${{ matrix.pip_tag }}, ${{env.TAG_ALIAS}}
+          build-args: |
+            BUILD_DATE=${{env.BUILD_DATA}}
+            JINA_VERSION=${{env.JINA_VERSION}}
+            VCS_REF=${{env.VCS_REF}}
+            PY_VERSION=${{env.PY_VERSION}}
+            PIP_TAG=${{matrix.pip_tag}}
+          target: ${{env.BUILD_TARGET}}

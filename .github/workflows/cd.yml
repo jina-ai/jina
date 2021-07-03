@@ -130,8 +130,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag_stage: ["", "-standard", "-devel", "-daemon"]
-        tag_pyversion: ["-py37", "-py38", "-py39"]
+        pip_tag: ["", "perf", "standard", "devel", "daemon"]
+        tag_pyversion: ["py37", "py38", "py39"]
     steps:
       - uses: actions/checkout@v2
 #        with:
@@ -142,23 +142,19 @@ jobs:
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
           echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master" >> $GITHUB_ENV
 
-          if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
+          if [[ "${{ matrix.tag_pyversion }}" == "py38" ]]; then
             echo "PY_VERSION=3.8" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
+          elif [[ "${{ matrix.tag_pyversion }}" == "py39" ]]; then
             echo "PY_VERSION=3.9" >> $GITHUB_ENV
           else
             echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=jinaai/jina:master${{ matrix.tag_stage }}" >> $GITHUB_ENV
+            echo "TAG_ALIAS=jinaai/jina:master-${{ matrix.pip_tag }}" >> $GITHUB_ENV
           fi
 
-          if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
-            echo "BUILD_ARG=jina_daemon" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
-            echo "BUILD_ARG=jina_devel" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_stage }}" == "-standard" ]]; then
-            echo "BUILD_ARG=jina_standard" >> $GITHUB_ENV
+          if [[ "${{ matrix.pip_tag }}" == "daemon" ]]; then
+            echo "BUILD_TARGET=jina_daemon" >> $GITHUB_ENV
           else
-            echo "BUILD_ARG=jina_base" >> $GITHUB_ENV
+            echo "BUILD_TARGET=jina" >> $GITHUB_ENV
           fi
       - name: Set up Docker Buildx
         id: buildx
@@ -179,13 +175,14 @@ jobs:
           file: Dockerfiles/debianx.Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: jinaai/jina:master${{ matrix.tag_pyversion }}${{ matrix.tag_stage }}, ${{env.TAG_ALIAS}}
+          tags: jinaai/jina:master-${{ matrix.tag_pyversion }}-${{ matrix.pip_tag }}, ${{env.TAG_ALIAS}}
           build-args: |
             BUILD_DATE=${{env.BUILD_DATA}}
             JINA_VERSION=${{env.JINA_VERSION}}
             VCS_REF=${{env.VCS_REF}}
             PY_VERSION=${{env.PY_VERSION}}
-          target: ${{env.BUILD_ARG}}
+            PIP_TAG=${{matrix.pip_tag}}
+          target: ${{env.BUILD_TARGET}}
 
   prep-testbed:
     needs: [update-doc, update-schema]

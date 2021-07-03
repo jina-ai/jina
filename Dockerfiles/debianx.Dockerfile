@@ -4,15 +4,19 @@ ARG PY_VERSION=3.7
 FROM python:${PY_VERSION}-slim AS jina_dep
 
 # a "cache miss" occurs upon its first usage, not its definition.
+
+# given by builder
+ARG PIP_TAG
+# something like "gcc libc-dev make libatlas-base-dev ruby-dev"
+ARG APT_PACKAGES
+
+# given by builder's env
 ARG VCS_REF
 ARG PY_VERSION
 ARG BUILD_DATE
 ARG JINA_VERSION
-ARG PIP_TAG
-ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 ARG TARGETPLATFORM
-# something like "gcc libc-dev make libatlas-base-dev ruby-dev"
-ARG APT_PACKAGES
+ARG PIP_EXTRA_INDEX_URL="https://www.piwheels.org/simple"
 
 # constant, wont invalidate cache
 LABEL org.opencontainers.image.vendor="Jina AI Limited" \

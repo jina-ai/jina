@@ -1,12 +1,16 @@
 name: CI
 
-on:
-  pull_request:
-#    paths-ignore:
-#      - 'README.md'
-#      - '.all-contributorsrc'
-#      - 'docs/*'
+#on:
+#  pull_request:
+##    paths-ignore:
+##      - 'README.md'
+##      - '.all-contributorsrc'
+##      - 'docs/*'
 
+on:
+  push:
+    branches-ignore:
+      - '**'  # temporally ignore all
 jobs:
   commit-lint:
     runs-on: ubuntu-20.04
