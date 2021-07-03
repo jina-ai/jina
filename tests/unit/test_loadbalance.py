@@ -6,8 +6,6 @@ from jina import Flow, Executor, requests
 from jina.enums import SchedulerType
 from tests import random_docs
 
-os.environ['JINA_LOG_LEVEL'] = 'DEBUG'
-
 
 class SlowWorker(Executor):
     def __init__(self, *args, **kwargs):

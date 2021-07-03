@@ -12,13 +12,6 @@ from jina.logging.logger import JinaLogger
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.fixture
-def config():
-    os.environ['JINA_LOG_LEVEL'] = 'INFO'
-    yield
-    del os.environ['JINA_LOG_LEVEL']
-
-
 def log(logger):
     logger.debug('this is test debug message')
     logger.info('this is test info message')
@@ -62,26 +55,27 @@ def test_logging_default():
 def test_logging_level_yaml():
     fn = os.path.join(cur_dir, f'jina-{__uptime__}.log')
     with JinaLogger(
-        'test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
-    ) as yaml_logger:
-        log(yaml_logger)
-        assert yaml_logger.logger.level == LogVerbosity.from_string('INFO')
+        'test_file_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
+    ) as file_logger:
         if os.path.exists(fn):
             os.remove(fn)
+        log(file_logger)
+        assert file_logger.logger.level == LogVerbosity.from_string('INFO')
+        for f in glob.glob(cur_dir + '/*.log'):
+            os.remove(f)
 
 
-def test_logging_file(tmpdir):
+def test_logging_file():
     fn = os.path.join(cur_dir, f'jina-{__uptime__}.log')
     with JinaLogger(
-        'test_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
+        'test_file_logger', log_config=os.path.join(cur_dir, 'yaml/file.yml')
     ) as file_logger:
         log(file_logger)
-    assert os.path.exists(fn)
-    with open(fn) as fp:
-        assert len(fp.readlines()) == 5
-    os.remove(fn)
-    if os.path.exists(fn):
-        os.remove(fn)
+        assert os.path.exists(fn)
+        with open(fn) as fp:
+            assert len(fp.readlines()) == 5
+    for f in glob.glob(cur_dir + '/*.log'):
+        os.remove(f)
 
 
 @pytest.mark.parametrize('log_config', [os.path.join(cur_dir, 'yaml/fluent.yml'), None])
