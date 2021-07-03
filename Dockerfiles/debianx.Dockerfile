@@ -8,7 +8,7 @@ FROM python:${PY_VERSION}-slim AS jina_dep
 # given by builder
 ARG PIP_TAG
 # something like "gcc libc-dev make libatlas-base-dev ruby-dev"
-ARG APT_PACKAGES="gcc"
+ARG APT_PACKAGES="gcc libc-dev"
 
 # given by builder's env
 ARG VCS_REF
