@@ -1,5 +1,7 @@
 import pytest
 
+import multiprocessing
+
 from jina.peapods.runtimes.zmq.base import ZMQRuntime
 from jina.peapods.zmq import Zmqlet
 from jina.parsers import set_pod_parser
@@ -35,7 +37,9 @@ def zmq_args_dict(zmq_args_argparse):
 
 @pytest.fixture
 def runtime(zmq_args_argparse):
-    return ZMQRuntime(args=zmq_args_argparse, ctrl_addr='')
+    return ZMQRuntime(
+        args=zmq_args_argparse, ctrl_addr='', ready_event=multiprocessing.Event()
+    )
 
 
 @pytest.fixture
@@ -47,7 +51,9 @@ def ctrl_messages():
 
 @pytest.fixture(params=['zmq_args_dict', 'zmq_args_argparse'])
 def test_init(request):
-    runtime = ZMQRuntime(args=request.param, ctrl_addr='')
+    runtime = ZMQRuntime(
+        args=request.param, ctrl_addr='', ready_event=multiprocessing.Event()
+    )
     assert runtime.host == '0.0.0.0'
     assert runtime.port_expose == 45678
 
