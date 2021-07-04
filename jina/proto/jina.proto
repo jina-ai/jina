@@ -144,13 +144,13 @@ message DocumentProto {
     NdArrayProto embedding = 19;
 
     // Scores performed on the document, each element corresponds to a metric
-    NamedScoreMappingProto scores = 28;
+    map<string, NamedScoreProto> scores = 28;
 
     // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
     string modality = 21;
 
     // Evaluations performed on the document, each element corresponds to a metric
-    NamedScoreMappingProto evaluations = 29;
+    map<string, NamedScoreProto> evaluations = 29;
 }
 
 /**
