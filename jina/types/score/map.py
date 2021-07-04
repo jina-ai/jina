@@ -2,13 +2,15 @@ from collections.abc import MutableMapping
 from typing import Optional, Union
 
 import numpy as np
-from google.protobuf.pyext._message import MessageMapContainer
 
 from ..score import NamedScore
 from ...helper import typename
 from ...proto import jina_pb2
 
 __all__ = ['NamedScoreMapping']
+
+if False:
+    from google.protobuf.pyext._message import MessageMapContainer
 
 
 class NamedScoreMapping(MutableMapping):
