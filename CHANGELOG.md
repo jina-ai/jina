@@ -67,6 +67,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -261,6 +262,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.0.0rc10`)](#release-note-200rc10)
 - [Release Note (`2.0.0`)](#release-note-200)
 - [Release Note (`2.0.1`)](#release-note-201)
+- [Release Note (`2.0.2`)](#release-note-202)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -9393,4 +9395,36 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```4e1860e4```](https://github.com/jina-ai/jina/commit/4e1860e463c6ab22065124223a84f8b6f9b76df6)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```2819e1e4```](https://github.com/jina-ai/jina/commit/2819e1e42a0b9a4c53615c51e9342b58e7700dfc)] __-__ fix dockerfile (*Han Xiao*)
  - [[```4b359d32```](https://github.com/jina-ai/jina/commit/4b359d32f11e4aa82cda4e140f790c4bee239198)] __-__ __version__: the next version will be 2.0.2 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-3></a>
+## Release Note (`2.0.3`)
+
+> Release time: 2021-07-04 15:37:51
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```634662a4```](https://github.com/jina-ai/jina/commit/634662a4874e38c43bf04481bf6d207cb1944b24)] __-__ add readme snippet to CI (#2847) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```dc5ab2b9```](https://github.com/jina-ai/jina/commit/dc5ab2b96b69d53b480b54fcd5ee00adc9560df2)] __-__ refactor is ready (#2833) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```9eba4feb```](https://github.com/jina-ai/jina/commit/9eba4feb3afa2e49c779b46f77c5022bdcb944aa)] __-__ remove extra pytest (#2835) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```1df5472d```](https://github.com/jina-ai/jina/commit/1df5472d7b7c0cc5a8dae960a5753c5ec89b25b1)] __-__ uncomment cd (*Han Xiao*)
+ - [[```6105197d```](https://github.com/jina-ai/jina/commit/6105197df701f2c21976ffc14ceb645c9aff7fee)] __-__ optimize dockerfile layers (*Han Xiao*)
+ - [[```4d18b7cc```](https://github.com/jina-ai/jina/commit/4d18b7cc1334b4ea175cce75c410fc143dac323a)] __-__ optimize dockerfile layer cache (#2845) (*Han Xiao*)
+ - [[```b39d6d3f```](https://github.com/jina-ai/jina/commit/b39d6d3fab45400488bb6fd8108b1b1a620f54af)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```392ae388```](https://github.com/jina-ai/jina/commit/392ae388d8eb12f19dfb6bd3e57e36c20f3010fc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```6bca2c1a```](https://github.com/jina-ai/jina/commit/6bca2c1a3c28fb4e1b156e194997c768eb90f519)] __-__ __version__: the next version will be 2.0.3 (*Jina Dev Bot*)
 

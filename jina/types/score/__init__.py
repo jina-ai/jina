@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from ..mixin import ProtoTypeMixin
 from ...excepts import BadNamedScoreType
@@ -49,7 +49,7 @@ class NamedScore(ProtoTypeMixin):
 
     def __init__(
         self,
-        score: Optional[jina_pb2.NamedScoreProto] = None,
+        score: Optional[Union[jina_pb2.NamedScoreProto, 'NamedScore']] = None,
         copy: bool = False,
         **kwargs,
     ):
@@ -60,6 +60,11 @@ class NamedScore(ProtoTypeMixin):
                     self._pb_body.CopyFrom(score)
                 else:
                     self._pb_body = score
+            elif isinstance(score, NamedScore):
+                if copy:
+                    self._pb_body.CopyFrom(score._pb_body)
+                else:
+                    self._pb_body = score._pb_body
             elif score is not None:
                 # note ``None`` is not considered as a bad type
                 raise ValueError(f'{typename(score)} is not recognizable')

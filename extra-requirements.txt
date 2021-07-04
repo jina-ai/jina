@@ -32,8 +32,8 @@ transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 tensorflow>=2.0:            framework, cicd
 torchvision>=0.3.0:         framework, cv, multimodal, cicd
 Pillow:                     cv, cicd, multimodal
-lz4<3.1.2:                  devel, cicd, network, standard
-uvloop:                     devel, cicd, standard
+lz4<3.1.2:                  devel, cicd, network, standard, perf
+uvloop:                     devel, cicd, standard, perf
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
@@ -41,13 +41,11 @@ grpcio>=1.33.1:             core
 pyyaml>=5.3.1:              core
 tornado>=5.1.0:             core
 pytest:                     test
-pytest-xdist==1.34.0:       test
 pytest-timeout:             test
 pytest-mock:                test
 pytest-cov:                 test
 pytest-repeat:              test
 pytest-asyncio:             test
-pytest-xprocess:            test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
