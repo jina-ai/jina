@@ -385,8 +385,8 @@
 
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
@@ -394,7 +394,6 @@
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">archive_package</span><span class="p">,</span> <span class="n">download_with_resume</span><span class="p">,</span> <span class="n">parse_hub_uri</span><span class="p">,</span> <span class="n">get_hubble_url</span>
 <span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">exist_local</span>
-<span class="kn">from</span> <span class="nn">.progress_bar</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">HubDownloadError</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
@@ -459,9 +458,6 @@
 
 <div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Push the executor pacakge to Jina Hub."""</span>
-
-        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">import</span> <span class="nn">requests</span>
 
         <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -553,9 +549,6 @@
                             <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📛 Alias:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">],</span> <span class="s1">'cyan'</span><span class="p">)</span>
                         <span class="p">)</span>
 
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'🎉 Executor `</span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1">` is pushed successfully!'</span>
-                    <span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_table</span><span class="p">))</span>
 
                     <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
@@ -705,7 +698,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 02, 2021.
+            Last updated on Jul 04, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

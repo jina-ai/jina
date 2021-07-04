@@ -1199,16 +1199,16 @@
 
 
 <span class="k">def</span> <span class="nf">_use_uvloop</span><span class="p">():</span>
-    <span class="kn">from</span> <span class="nn">.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-
-    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
-        <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help_text</span><span class="o">=</span><span class="s1">'Jina uses uvloop to manage events and sockets, '</span>
-        <span class="s1">'it often yields better performance than builtin asyncio'</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="s1">'JINA_DISABLE_UVLOOP'</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">uvloop</span>
 
         <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop_policy</span><span class="p">(</span><span class="n">uvloop</span><span class="o">.</span><span class="n">EventLoopPolicy</span><span class="p">())</span>
+    <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s1">'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'</span>
+        <span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_or_reuse_loop"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_or_reuse_loop">[docs]</a><span class="k">def</span> <span class="nf">get_or_reuse_loop</span><span class="p">():</span>
@@ -1222,8 +1222,7 @@
         <span class="k">if</span> <span class="n">loop</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">'JINA_DISABLE_UVLOOP'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-            <span class="n">_use_uvloop</span><span class="p">()</span>
+        <span class="n">_use_uvloop</span><span class="p">()</span>
         <span class="c1"># no running event loop</span>
         <span class="c1"># create a new loop</span>
         <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
@@ -1658,7 +1657,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 02, 2021.
+            Last updated on Jul 04, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

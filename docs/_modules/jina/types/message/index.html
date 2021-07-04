@@ -691,7 +691,7 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="s1">'NONE'</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'compression=</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">ctag</span><span class="p">)</span><span class="si">}</span><span class="s1"> failed, fallback to compression="NONE". reason: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">compression</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="s1">'NONE'</span>
@@ -894,7 +894,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 02, 2021.
+            Last updated on Jul 04, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
