@@ -146,13 +146,11 @@ def protobuf_to_pydantic_model(
     if model_name in vars(PROTO_TO_PYDANTIC_MODELS):
         return PROTO_TO_PYDANTIC_MODELS.__getattribute__(model_name)
 
-    print(list(protobuf_fields))
     for f in protobuf_fields:
         field_name = f.name
         camel_case_fields[field_name] = {'alias': f.camelcase_name}
 
         field_type = PROTOBUF_TO_PYTHON_TYPE[f.type]
-        print(f'ff {f.name}: {field_type} {f.message_type}')
         default_value = f.default_value
 
         if f.containing_oneof:
@@ -168,7 +166,6 @@ def protobuf_to_pydantic_model(
             field_type = Enum(f.enum_type.name, enum_dict)
 
         if f.message_type:
-            print('mesg', f.message_type.name)
             if f.message_type.name == 'Struct':
                 # Proto Field Type: google.protobuf.Struct
                 field_type = Dict
@@ -191,13 +188,14 @@ def protobuf_to_pydantic_model(
             field_type = List[field_type]
 
         all_fields[field_name] = (field_type, Field(default=default_value))
+
+        # some fixes on Doc.scores and Doc.evaluations
         if field_name in ('scores', 'evaluations'):
             all_fields[field_name] = (
                 Dict[str, PROTO_TO_PYDANTIC_MODELS.NamedScoreProto],
                 Field(default={}),
             )
 
-    print(all_fields)
     # Post-processing (Handle oneof fields)
     for oneof_k, oneof_v_list in oneof_fields.items():
         oneof_field_validators[f'oneof_validator_{oneof_k}'] = _get_oneof_validator(
@@ -211,7 +209,6 @@ def protobuf_to_pydantic_model(
         oneof_field_validators['tags_validator'] = _get_tags_updater()
 
     CustomConfig.fields = camel_case_fields
-    print('all', all_fields)
     model = create_model(
         model_name,
         **all_fields,
