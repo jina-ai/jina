@@ -87,7 +87,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def __init__(
         self,
-        compress: Optional[str] = 'NONE',
+        compress: Optional[str] = 'LZ4',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
         cors: Optional[bool] = False,
