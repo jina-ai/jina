@@ -386,16 +386,17 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">..mixin</span> <span class="kn">import</span> <span class="n">ProtoTypeMixin</span>
 <span class="kn">from</span> <span class="nn">..score</span> <span class="kn">import</span> <span class="n">NamedScore</span>
-<span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">BadNamedScoreType</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'NamedScoreMapping'</span><span class="p">]</span>
 
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">google.protobuf.pyext._message</span> <span class="kn">import</span> <span class="n">MessageMapContainer</span>
 
-<div class="viewcode-block" id="NamedScoreMapping"><a class="viewcode-back" href="../../../../../api/jina.types.score.map/#jina.types.score.map.NamedScoreMapping">[docs]</a><span class="k">class</span> <span class="nc">NamedScoreMapping</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NamedScoreMapping"><a class="viewcode-back" href="../../../../../api/jina.types.score.map/#jina.types.score.map.NamedScoreMapping">[docs]</a><span class="k">class</span> <span class="nc">NamedScoreMapping</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    :class:`NamedScoreMapping` is one of the **primitive data type** in Jina.</span>
 
@@ -427,24 +428,9 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">scores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreMappingProto</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">scores</span><span class="p">:</span> <span class="s1">'MessageMapContainer'</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreMappingProto</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreMappingProto</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">scores</span>
-            <span class="k">elif</span> <span class="n">scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># note ``None`` is not considered as a bad type</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span><span class="si">}</span><span class="s1"> is not recognizable'</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">BadNamedScoreType</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'fail to construct a NamedScoreMapping from </span><span class="si">{</span><span class="n">scores</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span> <span class="o">=</span> <span class="n">scores</span>
 
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -452,13 +438,13 @@
         <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">,</span> <span class="n">NamedScore</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">],</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">NamedScore</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">generic</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'score is in unsupported type </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
@@ -466,23 +452,23 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">return</span> <span class="n">NamedScore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">NamedScore</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">key</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span></div>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

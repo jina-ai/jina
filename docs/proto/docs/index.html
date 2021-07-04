@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/proto/docs.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Table of Contents: jina.proto- DenseNdArrayProto, DocumentArrayProto, DocumentProto, EnvelopeProto, EnvelopeProto.CompressConfigProto, EnvelopeProto.VersionProto, GraphProto, HeaderProto, MessageProto, NamedScoreMappingProto, NamedScoreMappingProto.ValuesEntry, NamedScoreProto, NdArrayProto, Requ..." />
+  <meta property="og:description" content="Table of Contents: jina.proto- DenseNdArrayProto, DocumentArrayProto, DocumentProto, DocumentProto.EvaluationsEntry, DocumentProto.ScoresEntry, EnvelopeProto, EnvelopeProto.CompressConfigProto, EnvelopeProto.VersionProto, GraphProto, HeaderProto, MessageProto, NamedScoreProto, NdArrayProto, Reque..." />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -414,14 +414,14 @@
 <li><p><a class="reference external" href="#jina.DenseNdArrayProto">DenseNdArrayProto</a></p></li>
 <li><p><a class="reference external" href="#jina.DocumentArrayProto">DocumentArrayProto</a></p></li>
 <li><p><a class="reference external" href="#jina.DocumentProto">DocumentProto</a></p></li>
+<li><p><a class="reference external" href="#jina.DocumentProto.EvaluationsEntry">DocumentProto.EvaluationsEntry</a></p></li>
+<li><p><a class="reference external" href="#jina.DocumentProto.ScoresEntry">DocumentProto.ScoresEntry</a></p></li>
 <li><p><a class="reference external" href="#jina.EnvelopeProto">EnvelopeProto</a></p></li>
 <li><p><a class="reference external" href="#jina.EnvelopeProto.CompressConfigProto">EnvelopeProto.CompressConfigProto</a></p></li>
 <li><p><a class="reference external" href="#jina.EnvelopeProto.VersionProto">EnvelopeProto.VersionProto</a></p></li>
 <li><p><a class="reference external" href="#jina.GraphProto">GraphProto</a></p></li>
 <li><p><a class="reference external" href="#jina.HeaderProto">HeaderProto</a></p></li>
 <li><p><a class="reference external" href="#jina.MessageProto">MessageProto</a></p></li>
-<li><p><a class="reference external" href="#jina.NamedScoreMappingProto">NamedScoreMappingProto</a></p></li>
-<li><p><a class="reference external" href="#jina.NamedScoreMappingProto.ValuesEntry">NamedScoreMappingProto.ValuesEntry</a></p></li>
 <li><p><a class="reference external" href="#jina.NamedScoreProto">NamedScoreProto</a></p></li>
 <li><p><a class="reference external" href="#jina.NdArrayProto">NdArrayProto</a></p></li>
 <li><p><a class="reference external" href="#jina.RequestProto">RequestProto</a></p></li>
@@ -656,8 +656,8 @@
 </tr>
 <tr>
 <td>scores</td>
-<td><a href="#jina.NamedScoreMappingProto">NamedScoreMappingProto</a></td>
-<td></td>
+<td><a href="#jina.DocumentProto.ScoresEntry">DocumentProto.ScoresEntry</a></td>
+<td>repeated</td>
 <td>Scores performed on the document, each element corresponds to a metric</td>
 </tr>
 <tr>
@@ -668,9 +668,63 @@
 </tr>
 <tr>
 <td>evaluations</td>
-<td><a href="#jina.NamedScoreMappingProto">NamedScoreMappingProto</a></td>
-<td></td>
+<td><a href="#jina.DocumentProto.EvaluationsEntry">DocumentProto.EvaluationsEntry</a></td>
+<td>repeated</td>
 <td>Evaluations performed on the document, each element corresponds to a metric</td>
+</tr>
+</tbody>
+</table></div><p><a name="jina.DocumentProto.EvaluationsEntry"></a></p>
+</div>
+<div class="section" id="documentproto-evaluationsentry">
+<h3>DocumentProto.EvaluationsEntry<a class="headerlink" href="#documentproto-evaluationsentry" title="Permalink to this headline">¶</a></h3>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#jina.NamedScoreProto">NamedScoreProto</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div><p><a name="jina.DocumentProto.ScoresEntry"></a></p>
+</div>
+<div class="section" id="documentproto-scoresentry">
+<h3>DocumentProto.ScoresEntry<a class="headerlink" href="#documentproto-scoresentry" title="Permalink to this headline">¶</a></h3>
+<div class="table-wrapper"><table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#jina.NamedScoreProto">NamedScoreProto</a></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table></div><p><a name="jina.EnvelopeProto"></a></p>
@@ -935,55 +989,6 @@
 <td><a href="#jina.RequestProto">RequestProto</a></td>
 <td></td>
 <td>the request body</td>
-</tr>
-</tbody>
-</table></div><p><a name="jina.NamedScoreMappingProto"></a></p>
-</div>
-<div class="section" id="namedscoremappingproto">
-<h3>NamedScoreMappingProto<a class="headerlink" href="#namedscoremappingproto" title="Permalink to this headline">¶</a></h3>
-<p>Represents the mapping of score by keys</p>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>values</td>
-<td><a href="#jina.NamedScoreMappingProto.ValuesEntry">NamedScoreMappingProto.ValuesEntry</a></td>
-<td>repeated</td>
-<td></td>
-</tr>
-</tbody>
-</table></div><p><a name="jina.NamedScoreMappingProto.ValuesEntry"></a></p>
-</div>
-<div class="section" id="namedscoremappingproto-valuesentry">
-<h3>NamedScoreMappingProto.ValuesEntry<a class="headerlink" href="#namedscoremappingproto-valuesentry" title="Permalink to this headline">¶</a></h3>
-<div class="table-wrapper"><table border="1" class="docutils">
-<thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>key</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>value</td>
-<td><a href="#jina.NamedScoreProto">NamedScoreProto</a></td>
-<td></td>
-<td></td>
 </tr>
 </tbody>
 </table></div><p><a name="jina.NamedScoreProto"></a></p>
@@ -1833,14 +1838,14 @@
 <li><a class="reference internal" href="#densendarrayproto">DenseNdArrayProto</a></li>
 <li><a class="reference internal" href="#documentarrayproto">DocumentArrayProto</a></li>
 <li><a class="reference internal" href="#documentproto">DocumentProto</a></li>
+<li><a class="reference internal" href="#documentproto-evaluationsentry">DocumentProto.EvaluationsEntry</a></li>
+<li><a class="reference internal" href="#documentproto-scoresentry">DocumentProto.ScoresEntry</a></li>
 <li><a class="reference internal" href="#envelopeproto">EnvelopeProto</a></li>
 <li><a class="reference internal" href="#envelopeproto-compressconfigproto">EnvelopeProto.CompressConfigProto</a></li>
 <li><a class="reference internal" href="#envelopeproto-versionproto">EnvelopeProto.VersionProto</a></li>
 <li><a class="reference internal" href="#graphproto">GraphProto</a></li>
 <li><a class="reference internal" href="#headerproto">HeaderProto</a></li>
 <li><a class="reference internal" href="#messageproto">MessageProto</a></li>
-<li><a class="reference internal" href="#namedscoremappingproto">NamedScoreMappingProto</a></li>
-<li><a class="reference internal" href="#namedscoremappingproto-valuesentry">NamedScoreMappingProto.ValuesEntry</a></li>
 <li><a class="reference internal" href="#namedscoreproto">NamedScoreProto</a></li>
 <li><a class="reference internal" href="#ndarrayproto">NdArrayProto</a></li>
 <li><a class="reference internal" href="#requestproto">RequestProto</a></li>

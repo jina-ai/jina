@@ -7,14 +7,14 @@
     - [DenseNdArrayProto](#jina.DenseNdArrayProto)
     - [DocumentArrayProto](#jina.DocumentArrayProto)
     - [DocumentProto](#jina.DocumentProto)
+    - [DocumentProto.EvaluationsEntry](#jina.DocumentProto.EvaluationsEntry)
+    - [DocumentProto.ScoresEntry](#jina.DocumentProto.ScoresEntry)
     - [EnvelopeProto](#jina.EnvelopeProto)
     - [EnvelopeProto.CompressConfigProto](#jina.EnvelopeProto.CompressConfigProto)
     - [EnvelopeProto.VersionProto](#jina.EnvelopeProto.VersionProto)
     - [GraphProto](#jina.GraphProto)
     - [HeaderProto](#jina.HeaderProto)
     - [MessageProto](#jina.MessageProto)
-    - [NamedScoreMappingProto](#jina.NamedScoreMappingProto)
-    - [NamedScoreMappingProto.ValuesEntry](#jina.NamedScoreMappingProto.ValuesEntry)
     - [NamedScoreProto](#jina.NamedScoreProto)
     - [NdArrayProto](#jina.NdArrayProto)
     - [RequestProto](#jina.RequestProto)
@@ -109,9 +109,41 @@ Represents a Document
 | location | [uint32](#uint32) | repeated | the position of the doc, could be start and end index of a string; could be x,y (top, left) coordinate of an image crop; could be timestamp of an audio clip |
 | offset | [uint32](#uint32) |  | the offset of this doc in the previous granularity document |
 | embedding | [NdArrayProto](#jina.NdArrayProto) |  | the embedding `ndarray` of this document |
-| scores | [NamedScoreMappingProto](#jina.NamedScoreMappingProto) |  | Scores performed on the document, each element corresponds to a metric |
+| scores | [DocumentProto.ScoresEntry](#jina.DocumentProto.ScoresEntry) | repeated | Scores performed on the document, each element corresponds to a metric |
 | modality | [string](#string) |  | modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search |
-| evaluations | [NamedScoreMappingProto](#jina.NamedScoreMappingProto) |  | Evaluations performed on the document, each element corresponds to a metric |
+| evaluations | [DocumentProto.EvaluationsEntry](#jina.DocumentProto.EvaluationsEntry) | repeated | Evaluations performed on the document, each element corresponds to a metric |
+
+
+
+
+
+
+<a name="jina.DocumentProto.EvaluationsEntry"></a>
+
+### DocumentProto.EvaluationsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [NamedScoreProto](#jina.NamedScoreProto) |  |  |
+
+
+
+
+
+
+<a name="jina.DocumentProto.ScoresEntry"></a>
+
+### DocumentProto.ScoresEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [NamedScoreProto](#jina.NamedScoreProto) |  |  |
 
 
 
@@ -227,37 +259,6 @@ Represents a Message
 | ----- | ---- | ----- | ----------- |
 | envelope | [EnvelopeProto](#jina.EnvelopeProto) |  | the envelope of the message, used internally in jina, dropped when returning to client |
 | request | [RequestProto](#jina.RequestProto) |  | the request body |
-
-
-
-
-
-
-<a name="jina.NamedScoreMappingProto"></a>
-
-### NamedScoreMappingProto
-Represents the mapping of score by keys
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| values | [NamedScoreMappingProto.ValuesEntry](#jina.NamedScoreMappingProto.ValuesEntry) | repeated |  |
-
-
-
-
-
-
-<a name="jina.NamedScoreMappingProto.ValuesEntry"></a>
-
-### NamedScoreMappingProto.ValuesEntry
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [NamedScoreProto](#jina.NamedScoreProto) |  |  |
 
 
 

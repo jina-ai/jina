@@ -443,6 +443,7 @@
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">cm1</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/post'</span>
 
                 <span class="k">with</span> <span class="n">cm1</span> <span class="k">as</span> <span class="n">p_bar</span><span class="p">:</span>
                     <span class="n">all_responses</span> <span class="o">=</span> <span class="p">[]</span>
@@ -456,7 +457,7 @@
                             <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_get_http_response</span><span class="p">(</span>
                                     <span class="n">session</span><span class="p">,</span>
-                                    <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_expose</span><span class="si">}</span><span class="s1">/post'</span><span class="p">,</span>
+                                    <span class="n">url</span><span class="p">,</span>
                                     <span class="n">req_dict</span><span class="p">,</span>
                                 <span class="p">)</span>
                             <span class="p">)</span>
@@ -465,7 +466,7 @@
                     <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">all_responses</span><span class="p">):</span>
                         <span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resp</span>
                         <span class="k">if</span> <span class="n">r_status</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="s1">'no such endpoint on the server'</span><span class="p">)</span>
+                            <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="sa">f</span><span class="s1">'no such endpoint </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                         <span class="k">elif</span> <span class="n">r_status</span> <span class="o">&lt;</span> <span class="mi">200</span> <span class="ow">or</span> <span class="n">r_status</span> <span class="o">&gt;</span> <span class="mi">300</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
 

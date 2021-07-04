@@ -438,7 +438,7 @@
 
 <span class="k">def</span> <span class="nf">_get_oneof_validator</span><span class="p">(</span><span class="n">oneof_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">oneof_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
     <span class="sd">"""</span>
-<span class="sd">    Pydantic root validator (pre) classmethod generator to confirm only one oneof field is passed</span>
+<span class="sd">    Pydantic root validator (pre) classmethod generator to confirm only one oneof field is passed</span>
 
 <span class="sd">    :param oneof_fields: list of field names for oneof</span>
 <span class="sd">    :type oneof_fields: List</span>
@@ -460,7 +460,7 @@
 
 <span class="k">def</span> <span class="nf">_get_oneof_setter</span><span class="p">(</span><span class="n">oneof_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">oneof_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
     <span class="sd">"""</span>
-<span class="sd">    Pydantic root validator (post) classmethod generator to set the oneof key</span>
+<span class="sd">    Pydantic root validator (post) classmethod generator to set the oneof key</span>
 
 <span class="sd">    :param oneof_fields: list of field names for oneof</span>
 <span class="sd">    :type oneof_fields: List</span>
@@ -484,7 +484,7 @@
 
 <span class="k">def</span> <span class="nf">_get_tags_updater</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
     <span class="sd">"""</span>
-<span class="sd">    Pydantic root validator (pre) classmethod generator to update tags</span>
+<span class="sd">    Pydantic root validator (pre) classmethod generator to update tags</span>
 
 <span class="sd">    :return: classmethod for updating tags in DocumentProto Pydantic model</span>
 <span class="sd">    """</span>
@@ -549,17 +549,14 @@
             <span class="n">field_type</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">enum_type</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">enum_dict</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">message_type</span><span class="p">:</span>
-
             <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">message_type</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'Struct'</span><span class="p">:</span>
                 <span class="c1"># Proto Field Type: google.protobuf.Struct</span>
                 <span class="n">field_type</span> <span class="o">=</span> <span class="n">Dict</span>
                 <span class="n">default_value</span> <span class="o">=</span> <span class="p">{}</span>
-
             <span class="k">elif</span> <span class="n">f</span><span class="o">.</span><span class="n">message_type</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'Timestamp'</span><span class="p">:</span>
                 <span class="c1"># Proto Field Type: google.protobuf.Timestamp</span>
                 <span class="n">field_type</span> <span class="o">=</span> <span class="n">datetime</span>
                 <span class="n">default_value</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Proto field type: Proto message defined in jina.proto</span>
                 <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">message_type</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">model_name</span><span class="p">:</span>
@@ -568,12 +565,19 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># This field_type itself a Pydantic model</span>
                     <span class="n">field_type</span> <span class="o">=</span> <span class="n">protobuf_to_pydantic_model</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">message_type</span><span class="p">)</span>
-                    <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">field_type</span><span class="p">)</span>
+                    <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">field_type</span>
 
         <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="n">FieldDescriptor</span><span class="o">.</span><span class="n">LABEL_REPEATED</span><span class="p">:</span>
             <span class="n">field_type</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">field_type</span><span class="p">]</span>
 
         <span class="n">all_fields</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default_value</span><span class="p">))</span>
+
+        <span class="c1"># some fixes on Doc.scores and Doc.evaluations</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'scores'</span><span class="p">,</span> <span class="s1">'evaluations'</span><span class="p">):</span>
+            <span class="n">all_fields</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">NamedScoreProto</span><span class="p">],</span>
+                <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">{}),</span>
+            <span class="p">)</span>
 
     <span class="c1"># Post-processing (Handle oneof fields)</span>
     <span class="k">for</span> <span class="n">oneof_k</span><span class="p">,</span> <span class="n">oneof_v_list</span> <span class="ow">in</span> <span class="n">oneof_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -600,10 +604,10 @@
 
 
 <span class="k">for</span> <span class="n">proto</span> <span class="ow">in</span> <span class="p">(</span>
+    <span class="n">NamedScoreProto</span><span class="p">,</span>
     <span class="n">DenseNdArrayProto</span><span class="p">,</span>
     <span class="n">NdArrayProto</span><span class="p">,</span>
     <span class="n">SparseNdArrayProto</span><span class="p">,</span>
-    <span class="n">NamedScoreProto</span><span class="p">,</span>
     <span class="n">DocumentProto</span><span class="p">,</span>
     <span class="n">RouteProto</span><span class="p">,</span>
     <span class="n">EnvelopeProto</span><span class="p">,</span>
