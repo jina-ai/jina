@@ -2,6 +2,7 @@ from collections.abc import MutableMapping
 from typing import Optional, Union
 
 import numpy as np
+from google.protobuf.pyext._message import MessageMapContainer
 
 from ..score import NamedScore
 from ...helper import typename
@@ -42,7 +43,7 @@ class NamedScoreMapping(MutableMapping):
 
     def __init__(
         self,
-        scores,
+        scores: 'MessageMapContainer',
     ):
         self._pb_body = scores
 
