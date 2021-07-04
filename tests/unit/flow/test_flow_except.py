@@ -46,6 +46,7 @@ def test_bad_flow(mocker, protocol):
     validate_callback(on_error_mock, validate)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_bad_flow_customized(mocker, protocol):
     def validate(req):
@@ -76,6 +77,7 @@ def test_bad_flow_customized(mocker, protocol):
     validate_callback(on_error_mock, validate)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_except_with_parallel(mocker, protocol):
     from jina import Executor, Flow, requests

@@ -1,5 +1,7 @@
 import logging
 
+import pytest
+
 from jina import Flow
 from jina.parsers import set_pea_parser
 from jina.peapods.peas import BasePea
@@ -55,6 +57,7 @@ def test_simple_zmqlet():
         z.send_message(msg)
 
 
+@pytest.mark.slow
 def test_flow_with_jump():
     f = (
         Flow()
@@ -73,6 +76,7 @@ def test_flow_with_jump():
         f.index(random_docs(10))
 
 
+@pytest.mark.slow
 def test_flow_with_parallel():
     f = Flow().add(name='r1').add(name='r2', parallel=3)
 

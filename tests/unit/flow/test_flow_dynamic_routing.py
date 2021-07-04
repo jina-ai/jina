@@ -1,14 +1,14 @@
 from jina import Document, Executor, Flow, requests
 
 
-class MyExecutor(Executor):
+class SimplExecutor(Executor):
     @requests
     def add_text(self, docs, **kwargs):
         docs[0].text = 'Hello World!'
 
 
 def test_simple_routing():
-    f = Flow().add(uses=MyExecutor)
+    f = Flow().add(uses=SimplExecutor)
     with f:
         results = f.post(on='/index', inputs=[Document()], return_results=True)
         assert results[0].docs[0].text == 'Hello World!'
@@ -24,7 +24,7 @@ class MergeExecutor(Executor):
 def test_expected_messages_routing():
     f = (
         Flow()
-        .add(name='foo', uses=MyExecutor)
+        .add(name='foo', uses=SimplExecutor)
         .add(name='bar', uses=MergeExecutor, needs=['foo', 'gateway'])
     )
 
