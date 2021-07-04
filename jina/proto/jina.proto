@@ -67,12 +67,6 @@ message NamedScoreProto {
     string ref_id = 5; // the score is computed between doc `id` and `ref_id`
 }
 
-/**
- * Represents the mapping of score by keys
- */
-message NamedScoreMappingProto {
-    map<string, NamedScoreProto> values = 1;
-}
 
 /**
  * Represents a Graph
