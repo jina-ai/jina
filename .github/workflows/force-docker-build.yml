@@ -32,6 +32,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set envs and versions
         run: |
+          DEFAULT_PY_VERSION="3.7"
           VCS_REF=${{ github.ref }}
           echo "VCS_REF=$VCS_REF" >> $GITHUB_ENV
           echo "Will build $VCS_REF"
@@ -59,12 +60,12 @@ jobs:
 
           if [[ "${{ github.event.inputs.triggered_by }}" == "CD" ]]; then
 
-            if [[ "${{ matrix.py_version }}" == "3.7" ]]; then
+            if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
               echo "TAG_ALIAS=\
                               jinaai/jina:master${PY_TAG}${PIP_TAG}, \
                               jinaai/jina:master${PIP_TAG}" \
                               >> $GITHUB_ENV
-            else:
+            else
               # on every CD
               echo "TAG_ALIAS=\
                               jinaai/jina:master${PY_TAG}${PIP_TAG}" \
@@ -74,7 +75,7 @@ jobs:
           elif [[ "${{ github.event.inputs.triggered_by }}" == "TAG" ]]; then
             # on every tag release
 
-            if [[ "${{ matrix.py_version }}" == "3.7" ]]; then
+            if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
               echo "TAG_ALIAS=\
                               jinaai/jina:latest${PY_TAG}${PIP_TAG}, \
                               jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG}, \
@@ -85,7 +86,7 @@ jobs:
                               jinaai/jina:${JINA_MINOR_VERSION}${PIP_TAG}, \
                               jinaai/jina:${JINA_MAJOR_VERSION}${PIP_TAG} \
                               " >> $GITHUB_ENV
-            else:
+            else
               echo "TAG_ALIAS=\
                               jinaai/jina:latest${PY_TAG}${PIP_TAG}, \
                               jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG}, \
@@ -95,12 +96,12 @@ jobs:
             fi
           elif [[ "${{ github.event.inputs.triggered_by }}" == "MANUAL" ]]; then
             # on every manual release
-            if [[ "${{ matrix.py_version }}" == "3.7" ]]; then
+            if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
               echo "TAG_ALIAS=\
                               jinaai/jina:${JINA_VERSION}${PIP_TAG}, \
                               jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
                               " >> $GITHUB_ENV
-            else:
+            else
               echo "TAG_ALIAS=\
                               jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
                               " >> $GITHUB_ENV
