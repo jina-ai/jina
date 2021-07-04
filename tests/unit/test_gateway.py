@@ -11,6 +11,7 @@ from jina import Flow
 from tests import random_docs
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('compress_algo', list(CompressAlgo))
 def test_compression(compress_algo, mocker):
 
@@ -29,6 +30,7 @@ def test_compression(compress_algo, mocker):
     response_mock.assert_called()
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_grpc_gateway_concurrency(protocol):
     def _validate(req, start, status_codes, durations, index):

@@ -110,7 +110,6 @@ def test_topological_sorting():
     assert topological_sorting[2] in ['pod1', 'pod2', 'pod3']
     assert topological_sorting[3] in ['pod2', 'pod3']
     assert topological_sorting[4] == 'pod4'
-    assert topological_sorting == ['pod0', 'pod2', 'pod1', 'pod3', 'pod4']
 
 
 def test_cycle():

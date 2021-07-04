@@ -5,6 +5,7 @@ from jina.enums import GatewayProtocolType
 from tests import random_docs
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 @pytest.mark.parametrize('changeto_protocol', ['grpc', 'http', 'websocket'])
 def test_change_gateway(protocol, changeto_protocol, mocker):

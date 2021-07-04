@@ -93,6 +93,7 @@ def test_tail_args_get_set(pod_args, pod_args_singleton):
         assert pod.peas_args['peas'][0] == pod_args
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('parallel', [1, 2, 4])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_pod_context_parallel(runtime, parallel):
@@ -109,6 +110,7 @@ def test_pod_context_parallel(runtime, parallel):
     Pod(args).start().close()
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(
     'GITHUB_WORKFLOW' in os.environ,
     reason='for unknown reason, this test is flaky on Github action, '

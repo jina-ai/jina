@@ -218,6 +218,7 @@ def test_doc_array_from_generator():
     assert len(doc_array) == NUM_DOCS
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('method', ['json', 'binary'])
 def test_document_save_load(method, tmp_path):
     da1 = DocumentArray(random_docs(1000))

@@ -1,11 +1,14 @@
 import os
 
+import pytest
+
 from jina.enums import SocketType
 from jina import Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
+@pytest.mark.slow
 def test_index():
     f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faiss/flow-index.yml'))
     with f:

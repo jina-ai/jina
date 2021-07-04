@@ -30,6 +30,7 @@ def test_zed_runtime(runtime, ctrl_ipc):
             assert isinstance(p.worker, multiprocessing.Process)
 
 
+@pytest.mark.slow
 @pytest.mark.skipif(
     'GITHUB_WORKFLOW' in os.environ,
     reason='for unknown reason, this test is flaky on Github action, '
