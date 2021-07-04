@@ -60,6 +60,7 @@ class HTTPBaseClient(BaseClient):
 
             try:
                 cm1 = ProgressBar() if self.show_progress else nullcontext()
+                url = f'http://{self.args.host}:{self.args.port_expose}{kwargs["exec_endpoint"]}'
 
                 with cm1 as p_bar:
                     all_responses = []
@@ -73,7 +74,7 @@ class HTTPBaseClient(BaseClient):
                             asyncio.create_task(
                                 self._get_http_response(
                                     session,
-                                    f'http://{self.args.host}:{self.args.port_expose}/post',
+                                    url,
                                     req_dict,
                                 )
                             )
