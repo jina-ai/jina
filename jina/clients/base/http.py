@@ -60,6 +60,7 @@ class HTTPBaseClient(BaseClient):
 
             try:
                 cm1 = ProgressBar() if self.show_progress else nullcontext()
+                url = f'http://{self.args.host}:{self.args.port_expose}/post'
 
                 with cm1 as p_bar:
                     all_responses = []
@@ -73,7 +74,7 @@ class HTTPBaseClient(BaseClient):
                             asyncio.create_task(
                                 self._get_http_response(
                                     session,
-                                    f'http://{self.args.host}:{self.args.port_expose}/post',
+                                    url,
                                     req_dict,
                                 )
                             )
@@ -82,7 +83,7 @@ class HTTPBaseClient(BaseClient):
                     for resp in asyncio.as_completed(all_responses):
                         r_status, r_str = await resp
                         if r_status == 404:
-                            raise BadClient('no such endpoint on the server')
+                            raise BadClient(f'no such endpoint {url}')
                         elif r_status < 200 or r_status > 300:
                             raise ValueError(r_str)
 
