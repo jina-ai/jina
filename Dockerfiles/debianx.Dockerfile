@@ -23,7 +23,7 @@ LABEL org.opencontainers.image.vendor="Jina AI Limited" \
       org.opencontainers.image.licenses="Apache 2.0" \
       org.opencontainers.image.title="Jina" \
       org.opencontainers.image.description="Cloud-native neural search framework for any kind of data" \
-      org.opencontainers.image.authors="dev-team@jina.ai" \
+      org.opencontainers.image.authors="hello@jina.ai" \
       org.opencontainers.image.url="https://github.com/jina-ai/jina" \
       org.opencontainers.image.documentation="https://docs.jina.ai"
 
@@ -69,8 +69,11 @@ ENTRYPOINT ["jina"]
 
 FROM jina AS jina_daemon
 
-RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev ${JINA_COMPILERS} && \
+ARG APT_PACKAGES="ruby-dev gcc libc-dev make"
+
+RUN apt-get update && apt-get install --no-install-recommends -y ${APT_PACKAGES} && \
     gem install fluentd --no-doc && \
+    apt-get remove -y --auto-remove ${APT_PACKAGES} && \
     apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["jinad"]
