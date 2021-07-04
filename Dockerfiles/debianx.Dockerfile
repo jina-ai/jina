@@ -40,7 +40,8 @@ RUN cd /tmp/ && \
     if [ -n "${PIP_TAG}" ]; then pip install --default-timeout=1000 --compile --extra-index-url $PIP_EXTRA_INDEX_URL ".[${PIP_TAG}]" ; fi && \
     pip install --default-timeout=1000 --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} . && \
     # now remove apt packages
-    if [ -n "${APT_PACKAGES}" ]; then apt-get remove -y --auto-remove ${APT_PACKAGES} && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*; fi
+    if [ -n "${APT_PACKAGES}" ]; then apt-get remove -y --auto-remove ${APT_PACKAGES} && apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*; fi && \
+    rm -rf /tmp/* && rm -rf /jina
 
 
 FROM jina_dep AS jina
@@ -67,6 +68,10 @@ RUN cd /jina && \
 ENTRYPOINT ["jina"]
 
 FROM jina AS jina_daemon
+
+RUN apt-get update && apt-get install --no-install-recommends -y ruby-dev ${JINA_COMPILERS} && \
+    gem install fluentd --no-doc && \
+    apt-get autoremove && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["jinad"]
 

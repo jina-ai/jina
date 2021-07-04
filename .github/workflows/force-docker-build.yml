@@ -10,9 +10,6 @@ on:
         description: 'CD | TAG | MANUAL'
         required: false
         default: MANUAL
-      git_tag:
-        description: 'Leave empty to release master, otherwise give git tag version in vx.y.z, note that "v" is required!'
-        required: false
 
 jobs:
   token-check:
@@ -33,11 +30,11 @@ jobs:
         py_version: [ "", "3.8", "3.9" ]  # default "" = 3.7
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: "${{ github.event.inputs.git_tag }}"
       - name: Set envs and versions
         run: |
-          echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          VCS_REF=$(git rev-parse --short HEAD)
+          echo "VCS_REF=$VCS_REF" >> $GITHUB_ENV
+          echo "Will build $VCS_REF"
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
           if [[ "${{ matrix.pip_tag }}" == "daemon" ]]; then
             echo "BUILD_TARGET=jina_daemon" >> $GITHUB_ENV
