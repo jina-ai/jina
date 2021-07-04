@@ -27,12 +27,13 @@ jobs:
       fail-fast: false
       matrix:
         pip_tag: [ "", "perf", "standard", "devel", "daemon" ]  # default: "" = core
-        py_version: [ "", "3.8", "3.9" ]  # default "" = 3.7
+        py_version: [ "3.7", "3.8", "3.9" ]  # default "" = 3.7
     steps:
       - uses: actions/checkout@v2
       - name: Set envs and versions
         run: |
-          VCS_REF=${{ env.GITHUB_SHA }}
+          DEFAULT_PY_VERSION="3.7"
+          VCS_REF=${{ github.ref }}
           echo "VCS_REF=$VCS_REF" >> $GITHUB_ENV
           echo "Will build $VCS_REF"
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
@@ -59,29 +60,55 @@ jobs:
 
           if [[ "${{ github.event.inputs.triggered_by }}" == "CD" ]]; then
 
-            # on every CD
-            echo "TAG_ALIAS=\
-                            jinaai/jina:master${PY_TAG}${PIP_TAG}" \
-                            >> $GITHUB_ENV
+            if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
+              echo "TAG_ALIAS=\
+                              jinaai/jina:master${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:master${PIP_TAG}" \
+                              >> $GITHUB_ENV
+            else
+              # on every CD
+              echo "TAG_ALIAS=\
+                              jinaai/jina:master${PY_TAG}${PIP_TAG}" \
+                              >> $GITHUB_ENV
+            fi
+
           elif [[ "${{ github.event.inputs.triggered_by }}" == "TAG" ]]; then
-
             # on every tag release
-            echo "TAG_ALIAS=\
-                            jinaai/jina:latest${PY_TAG}${PIP_TAG} \
-                            jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
-                            jinaai/jina:${JINA_MINOR_VERSION}${PY_TAG}${PIP_TAG} \
-                            jinaai/jina:${JINA_MAJOR_VERSION}${PY_TAG}${PIP_TAG}" \
-                            >> $GITHUB_ENV
 
+            if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
+              echo "TAG_ALIAS=\
+                              jinaai/jina:latest${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:${JINA_MINOR_VERSION}${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:${JINA_MAJOR_VERSION}${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:latest${PIP_TAG}, \
+                              jinaai/jina:${JINA_VERSION}${PIP_TAG}, \
+                              jinaai/jina:${JINA_MINOR_VERSION}${PIP_TAG}, \
+                              jinaai/jina:${JINA_MAJOR_VERSION}${PIP_TAG} \
+                              " >> $GITHUB_ENV
+            else
+              echo "TAG_ALIAS=\
+                              jinaai/jina:latest${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:${JINA_MINOR_VERSION}${PY_TAG}${PIP_TAG}, \
+                              jinaai/jina:${JINA_MAJOR_VERSION}${PY_TAG}${PIP_TAG} \
+                              " >> $GITHUB_ENV
+            fi
           elif [[ "${{ github.event.inputs.triggered_by }}" == "MANUAL" ]]; then
-
             # on every manual release
-            echo "TAG_ALIAS=\
-                            jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
-                            >> $GITHUB_ENV
+            if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
+              echo "TAG_ALIAS=\
+                              jinaai/jina:${JINA_VERSION}${PIP_TAG}, \
+                              jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
+                              " >> $GITHUB_ENV
+            else
+              echo "TAG_ALIAS=\
+                              jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
+                              " >> $GITHUB_ENV
+            fi
           else
             echo "Bad triggered_by: ${{ github.event.inputs.triggered_by }}!"
-            exit(1)
+            exit 1
           fi
 
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV

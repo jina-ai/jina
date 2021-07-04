@@ -77,6 +77,7 @@ Document, Executor, and Flow are the three fundamental concepts in Jina.
 
 <img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/simple-arch.svg" alt="The architecture of a simple neural search system powered by Jina">
 
+<!-- README-SERVER-START -->
 ```python
 import numpy as np
 from jina import Document, DocumentArray, Executor, Flow, requests
@@ -113,6 +114,7 @@ with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
     f.block()  # block for listening request
 ```
+<!-- README-SERVER-END -->
 
 2️⃣ Open `http://localhost:12345/docs` (an extended Swagger UI) in your browser, click <kbd>/search</kbd> tab and input:
 
@@ -127,6 +129,8 @@ Here `@requests(on=something)` is our textual query, **we want to find the lines
 
 3️⃣ Not a GUI guy? Let's query it from Python then! Keep the above server running and start a simple client:
 
+
+<!-- README-CLIENT-START -->
 ```python
 from jina import Client, Document
 from jina.types.request import Response
@@ -140,6 +144,8 @@ def print_matches(resp: Response):  # the callback function invoked when task is
 c = Client(protocol='http', port_expose=12345)  # connect to localhost:12345
 c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 ```
+
+<!-- README-CLIENT-END -->
 
 , which prints the following results:  
 

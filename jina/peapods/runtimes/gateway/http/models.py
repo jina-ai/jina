@@ -55,7 +55,7 @@ class CustomConfig(BaseConfig):
 
 def _get_oneof_validator(oneof_fields: List, oneof_key: str) -> Callable:
     """
-    Pydantic root validator (pre) classmethod generator to confirm only one oneof field is passed
+    Pydantic root validator (pre) classmethod generator to confirm only one oneof field is passed
 
     :param oneof_fields: list of field names for oneof
     :type oneof_fields: List
@@ -77,7 +77,7 @@ def _get_oneof_validator(oneof_fields: List, oneof_key: str) -> Callable:
 
 def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
     """
-    Pydantic root validator (post) classmethod generator to set the oneof key
+    Pydantic root validator (post) classmethod generator to set the oneof key
 
     :param oneof_fields: list of field names for oneof
     :type oneof_fields: List
@@ -101,7 +101,7 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
 
 def _get_tags_updater() -> Callable:
     """
-    Pydantic root validator (pre) classmethod generator to update tags
+    Pydantic root validator (pre) classmethod generator to update tags
 
     :return: classmethod for updating tags in DocumentProto Pydantic model
     """
@@ -166,17 +166,14 @@ def protobuf_to_pydantic_model(
             field_type = Enum(f.enum_type.name, enum_dict)
 
         if f.message_type:
-
             if f.message_type.name == 'Struct':
                 # Proto Field Type: google.protobuf.Struct
                 field_type = Dict
                 default_value = {}
-
             elif f.message_type.name == 'Timestamp':
                 # Proto Field Type: google.protobuf.Timestamp
                 field_type = datetime
                 default_value = datetime.now()
-
             else:
                 # Proto field type: Proto message defined in jina.proto
                 if f.message_type.name == model_name:
@@ -185,12 +182,19 @@ def protobuf_to_pydantic_model(
                 else:
                     # This field_type itself a Pydantic model
                     field_type = protobuf_to_pydantic_model(f.message_type)
-                    PROTO_TO_PYDANTIC_MODELS.__setattr__(model_name, field_type)
+                    PROTO_TO_PYDANTIC_MODELS.model_name = field_type
 
         if f.label == FieldDescriptor.LABEL_REPEATED:
             field_type = List[field_type]
 
         all_fields[field_name] = (field_type, Field(default=default_value))
+
+        # some fixes on Doc.scores and Doc.evaluations
+        if field_name in ('scores', 'evaluations'):
+            all_fields[field_name] = (
+                Dict[str, PROTO_TO_PYDANTIC_MODELS.NamedScoreProto],
+                Field(default={}),
+            )
 
     # Post-processing (Handle oneof fields)
     for oneof_k, oneof_v_list in oneof_fields.items():
@@ -217,10 +221,10 @@ def protobuf_to_pydantic_model(
 
 
 for proto in (
+    NamedScoreProto,
     DenseNdArrayProto,
     NdArrayProto,
     SparseNdArrayProto,
-    NamedScoreProto,
     DocumentProto,
     RouteProto,
     EnvelopeProto,
