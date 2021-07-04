@@ -67,9 +67,9 @@ jobs:
 
             # on every tag release
             echo "TAG_ALIAS=\
-                            jinaai/jina:latest${PY_TAG}${PIP_TAG} \
-                            jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
-                            jinaai/jina:${JINA_MINOR_VERSION}${PY_TAG}${PIP_TAG} \
+                            jinaai/jina:latest${PY_TAG}${PIP_TAG}, \
+                            jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG}, \
+                            jinaai/jina:${JINA_MINOR_VERSION}${PY_TAG}${PIP_TAG}, \
                             jinaai/jina:${JINA_MAJOR_VERSION}${PY_TAG}${PIP_TAG}" \
                             >> $GITHUB_ENV
 
@@ -78,7 +78,7 @@ jobs:
             # on every manual release
             echo "TAG_ALIAS=\
                             jinaai/jina:${JINA_VERSION}${PY_TAG}${PIP_TAG} \
-                            >> $GITHUB_ENV
+                            >> $GITHUB_ENV"
           else
             echo "Bad triggered_by: ${{ github.event.inputs.triggered_by }}!"
             exit(1)
