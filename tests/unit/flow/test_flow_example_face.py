@@ -1,11 +1,14 @@
 import os
 
+import pytest
+
 from jina.enums import SocketType
 from jina import Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
+@pytest.mark.slow
 def test_index():
     f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-index.yml'))
     with f:
@@ -74,6 +77,7 @@ def test_index():
         assert node.tail_args.socket_out == node.head_args.socket_out
 
 
+@pytest.mark.slow
 def test_query():
     f = Flow.load_config(os.path.join(cur_dir, '../yaml/examples/faces/flow-query.yml'))
     with f:

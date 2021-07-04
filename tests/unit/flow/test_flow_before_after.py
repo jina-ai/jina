@@ -17,6 +17,7 @@ def test_flow(protocol):
         assert f.num_peas == 2
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_before(protocol):
     class MyExec(Executor):
@@ -34,6 +35,7 @@ def test_flow_before(protocol):
         assert f.num_peas == 3
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_after(protocol):
     class MyExec(Executor):
@@ -51,6 +53,7 @@ def test_flow_after(protocol):
         assert f.num_peas == 3
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_default_before_after_is_ignored(protocol):
     docs = random_docs(10)
@@ -65,6 +68,7 @@ def test_flow_default_before_after_is_ignored(protocol):
         assert f.num_peas == 2
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_flow_before_after(protocol):
     class MyExec(Executor):

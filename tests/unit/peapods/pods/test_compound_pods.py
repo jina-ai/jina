@@ -68,6 +68,7 @@ def test_equal(pod_args, pod_args_singleton):
     pod2.close()
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize('parallel', [1, 4])
 @pytest.mark.parametrize('replicas', [3])
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
