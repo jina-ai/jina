@@ -2,12 +2,14 @@ import pytest
 
 import numpy as np
 
-from jina.types.score.map import NamedScoreMapping
+from jina import Document
+
 from jina.types.score import NamedScore
+from jina.types.score.map import NamedScoreMapping
 
 
 def test_mapped_named_score():
-    scores = NamedScoreMapping()
+    scores = Document().scores
 
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
@@ -21,8 +23,8 @@ def test_mapped_named_score():
 
     assert len(scores) == 2
 
-    assert 'operation' in scores._pb_body.values
-    assert 'operation2' in scores._pb_body.values
+    assert 'operation' in scores._pb_body
+    assert 'operation2' in scores._pb_body
     assert 'operation' in scores
     assert 'operation2' in scores
 
@@ -38,7 +40,8 @@ def test_mapped_named_score():
 
 
 def test_mapped_named_score_from_proto():
-    scores = NamedScoreMapping()
+    scores = Document().scores
+
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
     scores['operation'].ref_id = '10' * 16
@@ -49,15 +52,15 @@ def test_mapped_named_score_from_proto():
     scores['operation2'].ref_id = '20' * 16
     scores['operation2'].description = 'score2 description'
 
-    assert 'operation' in scores._pb_body.values
-    assert 'operation2' in scores._pb_body.values
+    assert 'operation' in scores._pb_body
+    assert 'operation2' in scores._pb_body
     assert 'operation' in scores
     assert 'operation2' in scores
 
-    scores2 = NamedScoreMapping(scores.proto)
+    scores2 = NamedScoreMapping(scores)
 
-    assert 'operation' in scores2._pb_body.values
-    assert 'operation2' in scores2._pb_body.values
+    assert 'operation' in scores2._pb_body
+    assert 'operation2' in scores2._pb_body
     assert 'operation' in scores2
     assert 'operation2' in scores2
     assert scores2['operation'].op_name == 'operation'
@@ -76,7 +79,7 @@ def test_mapped_named_score_from_proto():
     [5, 5.0, np.int(5), np.float(5.0), NamedScore(value=5), NamedScore(value=5).proto],
 )
 def test_mapped_set_item(value):
-    scores = NamedScoreMapping()
+    scores = Document().scores
     scores['operation'] = value
     assert scores['operation'].value == 5
 
@@ -89,7 +92,7 @@ def test_mapped_set_item(value):
     ],
 )
 def test_mapped_set_item_from_named_score(value):
-    scores = NamedScoreMapping()
+    scores = Document().scores
     scores['operation'] = value
     assert scores['operation'].value == 5
     assert scores['operation'].op_name == 'op'
@@ -97,7 +100,7 @@ def test_mapped_set_item_from_named_score(value):
 
 
 def test_mapped_named_score_delete():
-    scores = NamedScoreMapping()
+    scores = Document().scores
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
     scores['operation'].ref_id = '10' * 16
@@ -109,26 +112,26 @@ def test_mapped_named_score_delete():
     scores['operation2'].description = 'score2 description'
     assert len(scores) == 2
 
-    assert 'operation' in scores._pb_body.values
-    assert 'operation2' in scores._pb_body.values
+    assert 'operation' in scores._pb_body
+    assert 'operation2' in scores._pb_body
     assert 'operation' in scores
     assert 'operation2' in scores
     del scores['operation']
     assert len(scores) == 1
-    assert 'operation' not in scores._pb_body.values
-    assert 'operation2' in scores._pb_body.values
+    assert 'operation' not in scores._pb_body
+    assert 'operation2' in scores._pb_body
     assert 'operation' not in scores
     assert 'operation2' in scores
     del scores['operation2']
     assert len(scores) == 0
-    assert 'operation2' not in scores._pb_body.values
+    assert 'operation2' not in scores._pb_body
     assert 'operation2' not in scores
     with pytest.raises(KeyError):
         del scores['operation']
 
 
 def test_mapped_named_score_iterate():
-    scores = NamedScoreMapping()
+    scores = Document().scores
     scores['operation'].op_name = 'operation'
     scores['operation'].value = 10.0
     scores['operation'].ref_id = '10' * 16

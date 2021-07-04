@@ -3,16 +3,17 @@ from typing import Optional, Union
 
 import numpy as np
 
-from ..mixin import ProtoTypeMixin
 from ..score import NamedScore
-from ...excepts import BadNamedScoreType
 from ...helper import typename
 from ...proto import jina_pb2
 
 __all__ = ['NamedScoreMapping']
 
+if False:
+    from google.protobuf.pyext._message import MessageMapContainer
 
-class NamedScoreMapping(ProtoTypeMixin, MutableMapping):
+
+class NamedScoreMapping(MutableMapping):
     """
     :class:`NamedScoreMapping` is one of the **primitive data type** in Jina.
 
@@ -44,24 +45,9 @@ class NamedScoreMapping(ProtoTypeMixin, MutableMapping):
 
     def __init__(
         self,
-        scores: Optional[jina_pb2.NamedScoreMappingProto] = None,
-        copy: bool = False,
-        **kwargs,
+        scores: 'MessageMapContainer',
     ):
-        self._pb_body = jina_pb2.NamedScoreMappingProto()
-        try:
-            if isinstance(scores, jina_pb2.NamedScoreMappingProto):
-                if copy:
-                    self._pb_body.CopyFrom(scores)
-                else:
-                    self._pb_body = scores
-            elif scores is not None:
-                # note ``None`` is not considered as a bad type
-                raise ValueError(f'{typename(scores)} is not recognizable')
-        except Exception as ex:
-            raise BadNamedScoreType(
-                f'fail to construct a NamedScoreMapping from {scores}'
-            ) from ex
+        self._pb_body = scores
 
     def __setitem__(
         self,
@@ -69,13 +55,13 @@ class NamedScoreMapping(ProtoTypeMixin, MutableMapping):
         value: Union[jina_pb2.NamedScoreProto, NamedScore, float, np.generic],
     ):
         if isinstance(value, jina_pb2.NamedScoreProto):
-            self._pb_body.values[key].CopyFrom(value)
+            self._pb_body[key].CopyFrom(value)
         elif isinstance(value, NamedScore):
-            self._pb_body.values[key].CopyFrom(value._pb_body)
+            self._pb_body[key].CopyFrom(value._pb_body)
         elif isinstance(value, (float, int)):
-            self._pb_body.values[key].value = value
+            self._pb_body[key].value = value
         elif isinstance(value, np.generic):
-            self._pb_body.values[key].value = value.item()
+            self._pb_body[key].value = value.item()
         else:
             raise TypeError(f'score is in unsupported type {typename(value)}')
 
@@ -83,20 +69,20 @@ class NamedScoreMapping(ProtoTypeMixin, MutableMapping):
         self,
         key: str,
     ):
-        return NamedScore(self._pb_body.values[key])
+        return NamedScore(self._pb_body[key])
 
     def __delitem__(
         self,
         key: str,
     ):
-        del self._pb_body.values[key]
+        del self._pb_body[key]
 
     def __contains__(self, key: str):
-        return key in list(self._pb_body.values.keys())
+        return key in self._pb_body
 
     def __iter__(self):
-        for key in self._pb_body.values.keys():
+        for key in self._pb_body:
             yield key
 
     def __len__(self):
-        return len(list(self._pb_body.values.values()))
+        return len(self._pb_body)
