@@ -2,14 +2,14 @@ name: CI
 
 on:
   pull_request:
-#    paths-ignore:
-#      - 'README.md'
-#      - '.all-contributorsrc'
-#      - 'docs/*'
 
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally ignore all
 jobs:
   commit-lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: find the prev warning if exist
         uses: peter-evans/find-comment@v1
@@ -53,7 +53,7 @@ jobs:
           reaction-type: "eyes"
 
   lint-flake-8:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
@@ -69,7 +69,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
   check-docstring:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -86,7 +86,7 @@ jobs:
           CHANGED_FILES: ${{ steps.file_changes.outputs.added_modified }}
 
   check-black:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -138,7 +138,7 @@ jobs:
 
   docker-image-test:
     needs: [commit-lint, code-injection]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     services:
       registry:
         image: registry:2
@@ -150,30 +150,6 @@ jobs:
         test-arch: ["linux/amd64", "linux/arm64"]
     steps:
       - uses: actions/checkout@v2
-      - name: Set envs and versions
-        run: |
-          echo "VCS_REF=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-          echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
-          echo "JINA_VERSION=$(sed -n '/^__version__/p' ./jina/__init__.py | cut -d \' -f2)-master" >> $GITHUB_ENV
-
-          if [[ "${{ matrix.tag_pyversion }}" == "-py38" ]]; then
-            echo "PY_VERSION=3.8" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_pyversion }}" == "-py39" ]]; then
-            echo "PY_VERSION=3.9" >> $GITHUB_ENV
-          else
-            echo "PY_VERSION=3.7" >> $GITHUB_ENV
-            echo "TAG_ALIAS=jinaai/jina:master${{ matrix.tag_stage }}" >> $GITHUB_ENV
-          fi
-
-          if [[ "${{ matrix.tag_stage }}" == "-daemon" ]]; then
-            echo "BUILD_ARG=jina_daemon" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_stage }}" == "-devel" ]]; then
-            echo "BUILD_ARG=jina_devel" >> $GITHUB_ENV
-          elif [[ "${{ matrix.tag_stage }}" == "-standard" ]]; then
-            echo "BUILD_ARG=jina_standard" >> $GITHUB_ENV
-          else
-            echo "BUILD_ARG=jina_base" >> $GITHUB_ENV
-          fi
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -186,7 +162,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
       - run: |
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
+          docker run --rm --privileged tonistiigi/binfmt --install all
       - name: Build and test
         uses: docker/build-push-action@v2
         with:
@@ -195,12 +172,7 @@ jobs:
           platforms: ${{ matrix.test-arch }}
           push: true
           tags: localhost:5000/jina/multiarch:latest
-          target: jina_devel
-          build-args: |
-            BUILD_DATE=${{env.BUILD_DATA}}
-            JINA_VERSION=${{env.JINA_VERSION}}
-            VCS_REF=${{env.VCS_REF}}
-            PY_VERSION=${{env.PY_VERSION}}
+          target: jina
       - run: |
           docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
@@ -266,7 +238,7 @@ jobs:
         run: |
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all daemon/distributed tests
-            docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
+            docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
             if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
               docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon --store
             fi
