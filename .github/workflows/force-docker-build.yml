@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set envs and versions
         run: |
-          VCS_REF=${{ env.GITHUB_SHA }}
+          VCS_REF=${{ github.ref }}
           echo "VCS_REF=$VCS_REF" >> $GITHUB_ENV
           echo "Will build $VCS_REF"
           echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
