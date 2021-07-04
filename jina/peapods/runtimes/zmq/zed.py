@@ -74,6 +74,7 @@ class ZEDRuntime(ZMQRuntime):
         """Load ZMQStreamlet to this runtime."""
         # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
         # process/thread
+        # maybe here we need to pass the `identity` as coming from some argument from the Pea
         self._zmqstreamlet = ZmqStreamlet(
             args=self.args,
             logger=self.logger,
@@ -250,6 +251,16 @@ class ZEDRuntime(ZMQRuntime):
 
     def _handle_control_req(self):
         # migrated from previous ControlDriver logic
+        if self.request.command == 'TERMINATE_WORKER':
+            # The Pea sending this message should make sure to be able to populate properly the `envelope`.
+            # This means the `zmqlet` identity must be known by the Pea
+            if self.envelope.receiver_id in self._idle_dealer_ids:
+                self._idle_dealer_ids.remove(self.envelope.receiver_id)
+            from ..zmq import send_ctrl_message
+
+            control_dealer_address = 'Get it from somewhere'
+            timeout_ctrl = 100  # TODO: Get it from somewhere
+            send_ctrl_message(control_dealer_address, 'TERMINATE', timeout=timeout_ctrl)
         if self.request.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated
