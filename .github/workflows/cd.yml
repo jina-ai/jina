@@ -131,7 +131,7 @@ jobs:
       - uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: Manual Docker Build
-          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"'
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "CD"}'
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 
