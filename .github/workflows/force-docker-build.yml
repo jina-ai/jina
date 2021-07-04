@@ -81,7 +81,7 @@ jobs:
                             >> $GITHUB_ENV"
           else
             echo "Bad triggered_by: ${{ github.event.inputs.triggered_by }}!"
-            exit(1)
+            exit 1
           fi
 
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
