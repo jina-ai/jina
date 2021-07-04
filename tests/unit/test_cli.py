@@ -54,6 +54,7 @@ def test_shards_parallel_synonym():
         a.shards
 
 
+@pytest.mark.slow
 def test_ping():
     a1 = set_pea_parser().parse_args([])
     a2 = set_ping_parser().parse_args(

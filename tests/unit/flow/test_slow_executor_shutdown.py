@@ -1,6 +1,8 @@
 import os
 import time
 
+import pytest
+
 from jina import Flow, Executor
 
 
@@ -11,6 +13,7 @@ class SlowExecutor(Executor):
             f.write('x')
 
 
+@pytest.mark.slow
 def test_slow_executor_close(tmpdir):
     with Flow().add(
         uses={'jtype': 'SlowExecutor', 'with': {}, 'metas': {'workspace': str(tmpdir)}}

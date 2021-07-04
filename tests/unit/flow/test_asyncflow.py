@@ -32,6 +32,7 @@ def documents(start_index, end_index):
         yield doc
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 @pytest.mark.parametrize('flow_cls', [Flow, AsyncFlow])
@@ -57,6 +58,7 @@ async def async_input_function2():
         await asyncio.sleep(0.1)
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     'inputs',
@@ -111,6 +113,7 @@ async def sequential_main(protocol):
     await sleep_print()
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 async def test_run_async_flow_other_task_sequential(protocol):
@@ -120,6 +123,7 @@ async def test_run_async_flow_other_task_sequential(protocol):
     assert t.duration >= 10
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 async def test_run_async_flow_other_task_concurrent(protocol):
@@ -130,6 +134,7 @@ async def test_run_async_flow_other_task_concurrent(protocol):
     assert t.duration < 10
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize('return_results', [False])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -142,6 +147,7 @@ async def test_return_results_async_flow(return_results, protocol, flow_cls):
             assert isinstance(r, Response)
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize('return_results', [False, True])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
