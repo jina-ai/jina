@@ -912,11 +912,11 @@ class cached_property:
 class _cache_invalidate(object):
     def __init__(self, func, func_to_invalidate: str):
         self.func = func
-        self.func_name = func_to_invalidate
+        self.func_to_invalidate = func_to_invalidate
 
     def __call__(self, *args, **kwargs):
         obj = args[0]
-        cached_key = f'CACHED_{self.func_name}'
+        cached_key = f'CACHED_{self.func_to_invalidate}'
         if cached_key in obj.__dict__:
             del obj.__dict__[cached_key]  # invalidate
         self.func(*args, **kwargs)
