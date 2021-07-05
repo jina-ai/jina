@@ -3,7 +3,7 @@ import asyncio
 from asyncio import Future
 from typing import AsyncGenerator, Dict
 
-from ....helper import typename
+from ....helper import typename, get_or_reuse_loop
 from ....logging.logger import JinaLogger
 from ....types.message import Message
 
@@ -28,7 +28,7 @@ class PrefetchCaller:
         self.logger = JinaLogger(self.name, **vars(args))
         self._message_buffer: Dict[str, Future[Message]] = dict()
         self._is_running = True
-        self._receive_task = asyncio.create_task(self._receive())
+        self._receive_task = get_or_reuse_loop().create_task(self._receive())
 
     async def _receive(self):
         try:
