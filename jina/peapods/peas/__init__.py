@@ -10,8 +10,7 @@ from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename, random_identity
-from ...hubble.helper import is_valid_huburi, parse_hub_uri
-from ...hubble.hubapi import resolve_local
+from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
 from ...logging.logger import JinaLogger
 from ...parsers.hubble import set_hub_pull_parser
