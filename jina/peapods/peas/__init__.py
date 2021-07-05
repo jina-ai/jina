@@ -47,6 +47,7 @@ class BasePea:
         self.name = self.args.name or self.__class__.__name__
         self.is_ready = _get_event(self.worker)
         self.is_shutdown = _get_event(self.worker)
+        self.cancel_event = _get_event(self.worker)
         self.is_started = _get_event(self.worker)
         self.ready_or_shutdown = ConditionalEvent(
             getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
@@ -86,7 +87,6 @@ class BasePea:
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
         from ..zmq import Zmqlet
-        from ..runtimes.jinad import JinadRuntime
         from ..runtimes.container import ContainerRuntime
 
         if self.runtime_cls == ContainerRuntime:
@@ -110,12 +110,6 @@ class BasePea:
             self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
                 self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
             )[0]
-
-        self._local_runtime_ctrl_address = (
-            Zmqlet.get_ctrl_address(None, None, True)[0]
-            if self.runtime_cls == JinadRuntime
-            else self._zed_runtime_ctrl_address
-        )
 
     def start(self):
         """Start the Pea.
@@ -149,18 +143,12 @@ class BasePea:
 
         :return: the runtime object
         """
-        # This is due to the fact that JinadRuntime instantiates a Zmq server at local_ctrl_addr that will itself
-        # send ctrl command
-        # (TODO: Joan) Fix that in _wait_for_cancel from async runtime
-        from ..runtimes.jinad import JinadRuntime
-
-        ctrl_addr = (
-            self._local_runtime_ctrl_address
-            if self.runtime_cls == JinadRuntime
-            else self._zed_runtime_ctrl_address
-        )
         return self.runtime_cls(
-            self.args, ctrl_addr=ctrl_addr, ready_event=self.is_ready
+            args=self.args,
+            ctrl_addr=self._zed_runtime_ctrl_address,
+            ready_event=self.is_ready,
+            cancel_event=self.cancel_event,
+            timeout_ctrl=self._timeout_ctrl,
         )
 
     def run(self):
@@ -211,11 +199,17 @@ class BasePea:
 
     def _cancel_runtime(self):
         """Send terminate control message."""
-        from ..zmq import send_ctrl_message
+        from ..runtimes.zmq.zed import ZEDRuntime
+        from ..runtimes.container import ContainerRuntime
 
-        send_ctrl_message(
-            self._local_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
-        )
+        if self.runtime_cls == ZEDRuntime or self.runtime_cls == ContainerRuntime:
+            from ..zmq import send_ctrl_message
+
+            send_ctrl_message(
+                self._zed_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
+            )
+        else:
+            self.cancel_event.set()
 
     def wait_start_success(self):
         """Block until all peas starts successfully.

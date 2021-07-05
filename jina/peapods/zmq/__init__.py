@@ -3,7 +3,7 @@ import asyncio
 import os
 import tempfile
 import time
-from typing import List, Callable, Union, Tuple, Optional
+from typing import List, Callable, Union, Tuple, Optional, Dict
 
 import zmq
 import zmq.asyncio

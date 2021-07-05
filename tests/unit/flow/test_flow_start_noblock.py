@@ -13,6 +13,7 @@ class SlowExecutor(BaseExecutor):
         time.sleep(4)
 
 
+@pytest.mark.slow
 def test_flow_slow_executor_intra():
     f = Flow().add(uses='SlowExecutor', parallel=2)
 
@@ -20,6 +21,7 @@ def test_flow_slow_executor_intra():
         assert tc.now() < 8
 
 
+@pytest.mark.slow
 def test_flow_slow_executor_inter():
     f = Flow().add(uses='SlowExecutor', parallel=3).add(uses='SlowExecutor', parallel=3)
 
@@ -27,6 +29,7 @@ def test_flow_slow_executor_inter():
         assert tc.now() < 8
 
 
+@pytest.mark.slow
 def test_flow_slow_executor_bad_fail_early():
     f = (
         Flow()
