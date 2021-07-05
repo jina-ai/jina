@@ -1,7 +1,11 @@
 from abc import abstractmethod
-from typing import Optional
+from typing import Optional, Union
 
 from ..zmq import send_ctrl_message
+
+if False:
+    import multiprocessing
+    import threading
 
 
 class RuntimeClose:
@@ -48,24 +52,47 @@ class DealerRuntimeClose(RuntimeClose):
         )
 
 
+class EventRuntimeClose(RuntimeClose):
+    def __init__(
+        self,
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+        *args,
+        **kwargs
+    ):
+        self._cancel_event = cancel_event
+
+    def cancel_runtime(self):
+        self._cancel_event.set()
+
+
 class RuntimeCloseFactory:
     @staticmethod
     def build_runtime_close(
         is_dealer: bool,
         zed_runtime_ctrl: str,
         timeout_ctrl: int,
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'],
         zmq_identity: Optional[str],
         router_ctrl_address: Optional[str],
+        runtime_cls,
     ) -> RuntimeClose:
         """Build an implementation of a `BasePod` interface
 
         :param is_dealer: flag indicating if the runtime to close is from a dealer Pea
         :param zed_runtime_ctrl: the runtime control address
         :param timeout_ctrl: the timeout control time for control port communication
+        :param cancel_event: the multiprocessing event communication needed to close specific runtimes
+        :param zmq_identity: the zmqlet identity of the ZedRuntime it wants to close
         :param router_ctrl_address: if a dealer, a router control address is required for proper closing
+        :param runtime_cls: The type of runtime class to close
         :return: the created BasePod
         """
-        if is_dealer:
+        from ..runtimes.zmq.zed import ZEDRuntime
+        from ..runtimes.container import ContainerRuntime
+
+        if runtime_cls != ZEDRuntime and runtime_cls != ContainerRuntime:
+            return EventRuntimeClose(cancel_event=cancel_event)
+        elif is_dealer:
             assert (
                 router_ctrl_address
             ), 'To properly close a `dealer\'s` pea runtime, it needs to know its router control address'

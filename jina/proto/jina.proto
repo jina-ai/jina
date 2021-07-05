@@ -337,7 +337,7 @@ message RequestProto {
             CANCEL = 3; // used in ROUTER-DEALER pattern, tells the router that the dealer is busy (or closed)
             SCALE = 4; // scale up/down a Pod
             ACTIVATE = 5; // used in ROUTER-DEALER pattern, Indicate a Pea that it can activate itself and send the IDLE command to their router
-            DEACTIVATE = 6; // used in ROUTER-DEALER pattern, Indicate a Pea that it can deactivate itself and send the CANCEL command to their router
+            TERMINATE_WORKER = 6; // used in ROUTER-DEALER pattern, Indicate a HeadPea to unsubscribe a dealer and terminate it
         }
         Command command = 1; // the control command
     }

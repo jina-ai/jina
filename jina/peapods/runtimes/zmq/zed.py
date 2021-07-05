@@ -258,12 +258,12 @@ class ZEDRuntime(ZMQRuntime):
             dealer_ctrl_address = self.request.parameters['dealer_ctrl_address']
             if dealer_id in self._idle_dealer_ids:
                 self._idle_dealer_ids.remove(dealer_id)
-            from ..zmq import send_ctrl_message
+            from ...zmq import send_ctrl_message
 
             control_dealer_address = dealer_ctrl_address
             timeout_ctrl = 100  # TODO: Get it from somewhere
             send_ctrl_message(control_dealer_address, 'TERMINATE', timeout=timeout_ctrl)
-        if self.request.command == 'TERMINATE':
+        elif self.request.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated
         elif self.request.command == 'STATUS':

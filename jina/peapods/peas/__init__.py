@@ -17,7 +17,6 @@ from ...logging.logger import JinaLogger
 from ...parsers.hubble import set_hub_pull_parser
 from .closing import RuntimeCloseFactory
 
-
 __all__ = ['BasePea']
 
 
@@ -80,6 +79,8 @@ class BasePea:
             timeout_ctrl=self._timeout_ctrl,
             zmq_identity=self.args.zmq_identity,
             router_ctrl_address=router_ctrl_address,
+            cancel_event=self.cancel_event,
+            runtime_cls=self.runtime_cls,
         )
 
     def _set_ctrl_adrr(self):
@@ -188,28 +189,9 @@ class BasePea:
                 self._zed_runtime_ctrl_address, 'ACTIVATE', timeout=self._timeout_ctrl
             )
 
-    def _deactivate_runtime(self):
-        """Send deactivate control message. """
-        if self._is_dealer:
-            from ..zmq import send_ctrl_message
-
-            send_ctrl_message(
-                self._zed_runtime_ctrl_address, 'DEACTIVATE', timeout=self._timeout_ctrl
-            )
-
     def _cancel_runtime(self):
         """Send terminate control message."""
-        from ..runtimes.zmq.zed import ZEDRuntime
-        from ..runtimes.container import ContainerRuntime
-
-        if self.runtime_cls == ZEDRuntime or self.runtime_cls == ContainerRuntime:
-            from ..zmq import send_ctrl_message
-
-            send_ctrl_message(
-                self._zed_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
-            )
-        else:
-            self.cancel_event.set()
+        self.closure.cancel_runtime()
 
     def wait_start_success(self):
         """Block until all peas starts successfully.
@@ -256,12 +238,11 @@ class BasePea:
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                self._deactivate_runtime()
                 self._cancel_runtime()
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(
-                    f'{ex!r} during {self._deactivate_runtime!r}'
+                    f'{ex!r} during {self._cancel_runtime!r}'
                     + f'\n add "--quiet-error" to suppress the exception details'
                     if not self.args.quiet_error
                     else '',
