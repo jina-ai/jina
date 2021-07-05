@@ -49,7 +49,7 @@ class PrefetchCaller:
         Stop receiving messages
         """
         self._is_running = False
-        self._receive().cancel()
+        self._receive_task.cancel()
 
     async def send(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
         """

@@ -46,4 +46,4 @@ async def test_concurrent_requests():
     async for r in response:
         assert r == request
 
-    servicer.close()
+    await servicer.close()
