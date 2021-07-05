@@ -73,6 +73,7 @@ def test_segmenter(segmenter_doc_array, tmpdir):
         f.index(inputs=segmenter_doc_array, on_done=validate)
 
 
+@pytest.mark.slow
 def test_text_encoder(encoder_doc_array, tmpdir):
     """In this test, we input one ``DocumentArray`` with one ``Document``,
     and the `encode` method in the ``TextEncoder`` returns chunks.
