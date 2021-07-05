@@ -393,6 +393,7 @@
 <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
 <span class="kn">from</span> <span class="nn">....</span> <span class="kn">import</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">BadImageNameError</span>
+<span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">slugify</span>
 
 
@@ -565,6 +566,27 @@
         <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Send get status control message.</span>
+
+<span class="sd">        :return: control message.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">send_ctrl_message</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'STATUS'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Check if status is ready.</span>
+
+<span class="sd">        :return: True if status is ready else False.</span>
+<span class="sd">        """</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span>
+        <span class="k">return</span> <span class="n">status</span> <span class="ow">and</span> <span class="n">status</span><span class="o">.</span><span class="n">is_ready</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_is_container_alive</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">docker.errors</span>
 
@@ -585,7 +607,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 04, 2021.
+            Last updated on Jul 05, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

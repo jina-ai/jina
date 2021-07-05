@@ -387,8 +387,10 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">PeaDaemonClient</span><span class="p">,</span> <span class="n">WorkspaceDaemonClient</span>
-<span class="kn">from</span> <span class="nn">..zmq.asyncio</span> <span class="kn">import</span> <span class="n">AsyncZMQRuntime</span>
 <span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">RemoteWorkspaceState</span>
+<span class="kn">from</span> <span class="nn">..zmq.asyncio</span> <span class="kn">import</span> <span class="n">AsyncZMQRuntime</span>
+<span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
+<span class="kn">from</span> <span class="nn">.client</span> <span class="kn">import</span> <span class="n">PeaDaemonClient</span><span class="p">,</span> <span class="n">WorkspaceDaemonClient</span>
 <span class="kn">from</span> <span class="nn">....excepts</span> <span class="kn">import</span> <span class="n">DaemonConnectivityError</span>
 <span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">colored</span>
 
@@ -396,10 +398,13 @@
 <div class="viewcode-block" id="JinadRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime">[docs]</a><span class="k">class</span> <span class="nc">JinadRuntime</span><span class="p">(</span><span class="n">AsyncZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure for Jinad."""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`</span>
         <span class="c1"># process.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span> <span class="o">=</span> <span class="n">timeout_ctrl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_expose</span>
         <span class="c1"># NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,</span>
@@ -419,6 +424,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'created a remote </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pea_api</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remote_id</span><span class="p">,</span> <span class="s2">"cyan"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Do NOT override this method when inheriting from :class:`GatewayPea`"""</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
+                <span class="n">send_ctrl_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
 <div class="viewcode-block" id="JinadRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -522,7 +537,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 04, 2021.
+            Last updated on Jul 05, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -409,29 +409,6 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.zmq.base.</span></code><code class="sig-name descname"><span class="pre">ZMQRuntime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_addr</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/base/#ZMQRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQRuntime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.base/#jina.peapods.runtimes.base.BaseRuntime" title="jina.peapods.runtimes.base.BaseRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.base.BaseRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Runtime procedure leveraging ZMQ.</p>
-<dl class="py method">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQRuntime.status">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">status</span></code><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQRuntime.status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send get status control message.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>control message.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.peapods.runtimes.zmq.base.ZMQRuntime.is_ready">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_ready</span></code><a class="headerlink" href="#jina.peapods.runtimes.zmq.base.ZMQRuntime.is_ready" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if status is ready.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if status is ready else False.</p>
-</dd>
-</dl>
-</dd></dl>
 </dd></dl>
 </div>
 
@@ -464,7 +441,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 04, 2021.
+            Last updated on Jul 05, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

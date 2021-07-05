@@ -422,6 +422,29 @@
 <code class="sig-name descname"><span class="pre">run_forever</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/container/#ContainerRuntime.run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.container.ContainerRuntime.run_forever" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stream the logs while running.</p>
 </dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.container.ContainerRuntime.status">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">status</span></code><a class="headerlink" href="#jina.peapods.runtimes.container.ContainerRuntime.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send get status control message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>control message.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.container.ContainerRuntime.is_ready">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_ready</span></code><a class="headerlink" href="#jina.peapods.runtimes.container.ContainerRuntime.is_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if status is ready.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if status is ready else False.</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </div>
 </div>
@@ -455,7 +478,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 04, 2021.
+            Last updated on Jul 05, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
