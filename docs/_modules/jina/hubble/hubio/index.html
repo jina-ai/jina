@@ -566,7 +566,7 @@
 
         <span class="n">usage</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">hide_usage</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_usage</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_prettyprint_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">):</span>
@@ -748,7 +748,7 @@
                 <span class="k">if</span> <span class="n">cached_zip_filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">cached_zip_filepath</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">hide_usage</span> <span class="ow">and</span> <span class="n">usage</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_usage</span> <span class="ow">and</span> <span class="n">usage</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
