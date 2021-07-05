@@ -251,7 +251,13 @@ class CompoundPod(BasePod):
                 _args.noblock_on_start = False
                 # TODO better way to pass args to the new Pod
                 _args.dump_path = dump_path
-                new_replica = Pod(_args)
+                new_replica = Pod(
+                    _args,
+                    router_ctrl_address=self.head_pea._zed_runtime_ctrl_address,
+                )
+                import time
+
+                time.sleep(2)
                 self.enter_context(new_replica)
                 self.replicas[i] = new_replica
                 # TODO might be required in order to allow time for the Replica to come online

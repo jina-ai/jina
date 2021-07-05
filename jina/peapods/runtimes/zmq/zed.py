@@ -75,6 +75,7 @@ class ZEDRuntime(ZMQRuntime):
         # important: fix zmqstreamlet ctrl address to replace the the ctrl address generated in the main
         # process/thread
         # maybe here we need to pass the `identity` as coming from some argument from the Pea
+        self.logger.warning(f'ZMQ_IDENTITY RUNTIME {self.args.zmq_identity}')
         self._zmqstreamlet = ZmqStreamlet(
             args=self.args,
             logger=self.logger,
@@ -280,8 +281,6 @@ class ZEDRuntime(ZMQRuntime):
                 self._idle_dealer_ids.remove(self.envelope.receiver_id)
         elif self.request.command == 'ACTIVATE':
             self._zmqstreamlet._send_idle_to_router()
-        elif self.request.command == 'DEACTIVATE':
-            self._zmqstreamlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {self.request.command}'

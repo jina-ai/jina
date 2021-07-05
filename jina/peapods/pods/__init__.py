@@ -423,9 +423,9 @@ class Pod(BasePod):
             are properly closed.
         """
 
-        def _get_router_ctrl_address():
-            if self._router_ctrl_address is not None and len(self.peas) == 0:
-                return self._router_ctrl_address
+        def _get_router_ctrl_address(_router_ctrl_address):
+            if _router_ctrl_address is not None and len(self.peas) == 0:
+                return _router_ctrl_address
             elif len(self.peas) > 0:
                 return self.peas[0]._zed_runtime_ctrl_address
             else:
@@ -435,12 +435,22 @@ class Pod(BasePod):
             for _args in self._fifo_args:
                 _args.noblock_on_start = True
                 self._enter_pea(
-                    BasePea(_args, router_ctrl_address=_get_router_ctrl_address())
+                    BasePea(
+                        _args,
+                        router_ctrl_address=_get_router_ctrl_address(
+                            self._router_ctrl_address
+                        ),
+                    )
                 )
         else:
             for _args in self._fifo_args:
                 self._enter_pea(
-                    BasePea(_args, router_ctrl_address=_get_router_ctrl_address())
+                    BasePea(
+                        _args,
+                        router_ctrl_address=_get_router_ctrl_address(
+                            self._router_ctrl_address
+                        ),
+                    )
                 )
 
             self._activate()
