@@ -26,6 +26,7 @@ from typing import (
     Set,
     Sequence,
     Iterable,
+    Callable,
 )
 
 __all__ = [
@@ -899,6 +900,9 @@ class cached_property:
             return cached_value
 
         value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
+        print("=======")
+        print(obj.__dict__)
+        print("=======")
         return value
 
     def __delete__(self, obj):
@@ -907,6 +911,31 @@ class cached_property:
             if hasattr(cached_value, 'close'):
                 cached_value.close()
             del obj.__dict__[f'CACHED_{self.func.__name__}']
+
+
+class _cache_invalidate(object):
+    def __init__(self, func, func_to_invalidate: str):
+        self.func = func
+        self.func_name = func_to_invalidate
+
+    def __call__(self, *args, **kwargs):
+        obj = args[0]
+        key = f'CACHED_{args[1]}'
+        if key in obj.__dict__:
+            del obj.__dict__[key]  # invalidate
+        self.func(*args, **kwargs)
+
+    def __get__(self, instance, owner):
+        from functools import partial
+
+        return partial(self.__call__, instance, self.func_to_invalidate)
+
+
+def cache_invalidate(func_to_invalidate: str):
+    def _wrap(func):
+        return _cache_invalidate(func, func_to_invalidate)
+
+    return _wrap
 
 
 def get_now_timestamp():

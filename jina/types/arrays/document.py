@@ -18,7 +18,7 @@ from typing import (
 
 from .traversable import TraversableSequence
 from ..document import Document
-from ...helper import typename, cached_property
+from ...helper import typename, cached_property, cache_invalidate
 from ...proto import jina_pb2
 
 try:
@@ -157,6 +157,7 @@ class DocumentArray(
         """
         self._pb_body.insert(index, doc.proto)
 
+    @cache_invalidate
     def __setitem__(self, key, value: 'Document'):
         if isinstance(key, int):
             self[key].CopyFrom(value)
@@ -165,6 +166,7 @@ class DocumentArray(
         else:
             raise IndexError(f'do not support this index {key}')
 
+    @cache_invalidate
     def __delitem__(self, index: Union[int, str, slice]):
         if isinstance(index, int):
             del self._pb_body[index]
