@@ -22,9 +22,8 @@ CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 NUM_DOCS = 100
 
 
-@pytest.mark.parametrize('silent_log', [False])
 @pytest.mark.parametrize('parallels', [1])
-def test_upload_simple(silent_log, parallels, mocker):
+def test_upload_simple(parallels, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
@@ -34,7 +33,6 @@ def test_upload_simple(silent_log, parallels, mocker):
             host=CLOUD_HOST,
             parallel=parallels,
             upload_files=['mwu_encoder.py'],
-            quiet_remote_logs=silent_log,
         )
         .add()
     )

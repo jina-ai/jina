@@ -112,7 +112,7 @@ with f:
 ### Build
 
 ```bash
-docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
+docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
 ```
 
 ### Run

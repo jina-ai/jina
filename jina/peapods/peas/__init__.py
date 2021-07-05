@@ -41,6 +41,7 @@ class BasePea:
         self.name = self.args.name or self.__class__.__name__
         self.is_ready = _get_event(self.worker)
         self.is_shutdown = _get_event(self.worker)
+        self.cancel_event = _get_event(self.worker)
         self.is_started = _get_event(self.worker)
         self.ready_or_shutdown = ConditionalEvent(
             getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
@@ -64,7 +65,7 @@ class BasePea:
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
         # control address of runtime
-        self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
+        self.runtime_cls = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
 
@@ -73,7 +74,6 @@ class BasePea:
         # This logic must be improved specially when it comes to naming. It is about relative local/remote position
         # between the runtime and the `ZEDRuntime` it may control
         from ..zmq import Zmqlet
-        from ..runtimes.jinad import JinadRuntime
         from ..runtimes.container import ContainerRuntime
 
         if self.runtime_cls == ContainerRuntime:
@@ -97,12 +97,6 @@ class BasePea:
             self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
                 self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
             )[0]
-
-        self._local_runtime_ctrl_address = (
-            Zmqlet.get_ctrl_address(None, None, True)[0]
-            if self.runtime_cls == JinadRuntime
-            else self._zed_runtime_ctrl_address
-        )
 
     def start(self):
         """Start the Pea.
@@ -136,18 +130,12 @@ class BasePea:
 
         :return: the runtime object
         """
-        # This is due to the fact that JinadRuntime instantiates a Zmq server at local_ctrl_addr that will itself
-        # send ctrl command
-        # (TODO: Joan) Fix that in _wait_for_cancel from async runtime
-        from ..runtimes.jinad import JinadRuntime
-
-        ctrl_addr = (
-            self._local_runtime_ctrl_address
-            if self.runtime_cls == JinadRuntime
-            else self._zed_runtime_ctrl_address
-        )
         return self.runtime_cls(
-            self.args, ctrl_addr=ctrl_addr, ready_event=self.is_ready
+            args=self.args,
+            ctrl_addr=self._zed_runtime_ctrl_address,
+            ready_event=self.is_ready,
+            cancel_event=self.cancel_event,
+            timeout_ctrl=self._timeout_ctrl,
         )
 
     def run(self):
@@ -198,11 +186,17 @@ class BasePea:
 
     def _cancel_runtime(self):
         """Send terminate control message."""
-        from ..zmq import send_ctrl_message
+        from ..runtimes.zmq.zed import ZEDRuntime
+        from ..runtimes.container import ContainerRuntime
 
-        send_ctrl_message(
-            self._local_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
-        )
+        if self.runtime_cls == ZEDRuntime or self.runtime_cls == ContainerRuntime:
+            from ..zmq import send_ctrl_message
+
+            send_ctrl_message(
+                self._zed_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
+            )
+        else:
+            self.cancel_event.set()
 
     def wait_start_success(self):
         """Block until all peas starts successfully.
@@ -317,13 +311,20 @@ class BasePea:
         self.close()
 
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
-        is_remote_controlled = False
-        if self.args.host != __default_host__ and not self.args.disable_remote:
+        gateway_runtime_dict = {
+            GatewayProtocolType.GRPC: 'GRPCRuntime',
+            GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
+            GatewayProtocolType.HTTP: 'HTTPRuntime',
+        }
+        if (
+            self.args.runtime_cls not in gateway_runtime_dict.values()
+            and self.args.host != __default_host__
+            and not self.args.disable_remote
+        ):
             self.args.runtime_cls = 'JinadRuntime'
             # NOTE: remote pea would also create a remote workspace which might take alot of time.
             # setting it to -1 so that wait_start_success doesn't fail
             self.args.timeout_ready = -1
-            is_remote_controlled = True
         if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
             'docker://'
         ):
@@ -335,15 +336,10 @@ class BasePea:
             if self.args.uses.startswith('docker://'):
                 self.args.runtime_cls = 'ContainerRuntime'
         if hasattr(self.args, 'protocol'):
-            self.args.runtime_cls = {
-                GatewayProtocolType.GRPC: 'GRPCRuntime',
-                GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-                GatewayProtocolType.HTTP: 'HTTPRuntime',
-            }[self.args.protocol]
+            self.args.runtime_cls = gateway_runtime_dict[self.args.protocol]
         from ..runtimes import get_runtime
 
-        v = get_runtime(self.args.runtime_cls)
-        return v, is_remote_controlled
+        return get_runtime(self.args.runtime_cls)
 
     @property
     def role(self) -> 'PeaRoleType':

@@ -1,12 +1,15 @@
+import argparse
 import asyncio
 from abc import ABC
 
-import zmq.asyncio
+from typing import Union
 
 from ..zmq.base import ZMQRuntime
-from ...zmq import _init_socket, recv_message_async, send_message_async
-from ....enums import SocketType
-from ....proto import jina_pb2
+
+
+if False:
+    import multiprocessing
+    import threading
 
 
 class AsyncZMQRuntime(ZMQRuntime):
@@ -15,6 +18,16 @@ class AsyncZMQRuntime(ZMQRuntime):
 
     Base class of :class:`AsyncNewLoopRuntime`.
     """
+
+    def __init__(
+        self,
+        args: 'argparse.Namespace',
+        ctrl_addr: str,
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs
+    ):
+        super().__init__(args, ctrl_addr, **kwargs)
+        self.is_cancel = cancel_event
 
     def run_forever(self):
         """Running method to block the main thread."""
@@ -30,14 +43,12 @@ class AsyncZMQRuntime(ZMQRuntime):
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        with zmq.asyncio.Context() as ctx, _init_socket(
-            ctx, self.ctrl_addr, None, SocketType.PAIR_BIND, use_ipc=True
-        )[0] as sock:
-            msg = await recv_message_async(sock)
-            if msg.request.command == 'TERMINATE':
-                msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
+        while True:
+            if self.is_cancel.is_set():
                 await self.async_cancel()
-                await send_message_async(sock, msg)
+                return
+            else:
+                await asyncio.sleep(0.1)
 
     async def _loop_body(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""

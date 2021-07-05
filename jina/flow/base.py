@@ -1088,12 +1088,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._pod_nodes.items():
             ed_str = str(v.head_args.socket_in).split('_')[0]
             for need in sorted(v.needs):
-                edge_str = ''
                 if need in self._pod_nodes:
                     st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[
                         0
                     ]
-                    edge_str = f'|{st_str}-{ed_str}|'
 
                 _s = start_repl.get(need, (need, f'({need})'))
                 _e = end_repl.get(node, (node, f'({node})'))
@@ -1113,7 +1111,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     line_st = '-.->'
 
                 mermaid_graph.append(
-                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}'
+                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {_e[0]}{_e[1]}:::{str(_e_role)}'
                 )
         mermaid_graph.append(
             f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999'
