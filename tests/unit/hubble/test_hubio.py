@@ -94,7 +94,7 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_get)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor = HubIO(args).fetch('dummy_mwu_encoder')
+    executor = HubIO(args)._fetch_meta('dummy_mwu_encoder')
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.alias == 'alias_dummy'
