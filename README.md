@@ -121,13 +121,14 @@ with f:
 ```json
 {"data": [{"text": "@requests(on=something)"}]}
 ```
-Here `@requests(on=something)` is our textual query, **we want to find the lines most similar to `request(on=something)` from the above server code snippet.**  Now click <kbd>Execute</kbd> button!
+
+That means, **we want to find lines from the above code snippet that are most similar to `@request(on=something)`.**  Now click <kbd>Execute</kbd> button!
 
 <p align="center">
 <img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint1.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
 </p>
 
-3️⃣ Not a GUI guy? Let's query it from Python then! Keep the above server running and start a simple client:
+3️⃣ Not a GUI guy? Let's do it in Python then! Keep the above server running and start a simple client:
 
 
 <!-- README-CLIENT-START -->
