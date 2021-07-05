@@ -65,7 +65,7 @@ class BasePea:
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
         # or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows
         # control address of runtime
-        self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
+        self.runtime_cls = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
 
@@ -311,13 +311,20 @@ class BasePea:
         self.close()
 
     def _get_runtime_cls(self) -> Tuple[Any, bool]:
-        is_remote_controlled = False
-        if self.args.host != __default_host__ and not self.args.disable_remote:
+        gateway_runtime_dict = {
+            GatewayProtocolType.GRPC: 'GRPCRuntime',
+            GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
+            GatewayProtocolType.HTTP: 'HTTPRuntime',
+        }
+        if (
+            self.args.runtime_cls not in gateway_runtime_dict.values()
+            and self.args.host != __default_host__
+            and not self.args.disable_remote
+        ):
             self.args.runtime_cls = 'JinadRuntime'
             # NOTE: remote pea would also create a remote workspace which might take alot of time.
             # setting it to -1 so that wait_start_success doesn't fail
             self.args.timeout_ready = -1
-            is_remote_controlled = True
         if self.args.runtime_cls == 'ZEDRuntime' and self.args.uses.startswith(
             'docker://'
         ):
@@ -336,15 +343,10 @@ class BasePea:
                 self.args.uses = f'docker://{executor.image_name}'
                 self.args.runtime_cls = 'ContainerRuntime'
         if hasattr(self.args, 'protocol'):
-            self.args.runtime_cls = {
-                GatewayProtocolType.GRPC: 'GRPCRuntime',
-                GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
-                GatewayProtocolType.HTTP: 'HTTPRuntime',
-            }[self.args.protocol]
+            self.args.runtime_cls = gateway_runtime_dict[self.args.protocol]
         from ..runtimes import get_runtime
 
-        v = get_runtime(self.args.runtime_cls)
-        return v, is_remote_controlled
+        return get_runtime(self.args.runtime_cls)
 
     @property
     def role(self) -> 'PeaRoleType':

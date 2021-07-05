@@ -5,7 +5,7 @@ import pytest
 
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.executors import BaseExecutor
-from jina.parsers import set_pea_parser
+from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods import Pea
 from jina.peapods.runtimes.base import BaseRuntime
 
@@ -219,3 +219,26 @@ def test_pea_runtime_env_setting_in_thread(fake_env):
     assert 'key_parent' in os.environ
 
     os.unsetenv('key_parent')
+
+
+@pytest.mark.parametrize(
+    'protocol, expected',
+    [
+        ('grpc', 'GRPCRuntime'),
+        ('websocket', 'WebSocketRuntime'),
+        ('http', 'HTTPRuntime'),
+    ],
+)
+def test_gateway_args(protocol, expected):
+    args = set_gateway_parser().parse_args(
+        [
+            '--host',
+            'jina-custom-gateway',
+            '--port-expose',
+            '23456',
+            '--protocol',
+            protocol,
+        ]
+    )
+    p = Pea(args)
+    assert p.runtime_cls.__name__ == expected
