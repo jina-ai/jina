@@ -206,6 +206,7 @@ class ZEDRuntime(ZMQRuntime):
             return self
 
         # migrated from the previously RouteDriver logic
+        self.logger.debug(f' I have the following idle dealers {self._idle_dealer_ids}')
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
             self.envelope.receiver_id = dealer_id
@@ -254,8 +255,13 @@ class ZEDRuntime(ZMQRuntime):
         if self.request.command == 'TERMINATE_WORKER':
             # The Pea sending this message should make sure to be able to populate properly the `envelope`.
             # This means the `zmqlet` identity must be known by the Pea
+
+            # THING THAT HAS BEEN OBSERVED. This TERMINATE SIGNAL MAY ARRIVE TO THE DEALER BEFORE A SEARCH REQUEST AND THEN
+            # A SEARCH REQUEST MAY BE LOST. THIS MESSAGE NEEDS TO BE SENT THROUGH THE OUT_SOCK. SECOND ALTERNATIVE IS TO HAVE A SMALL SLEEP BUT
+            # WOULD BE VERY FRAGILE
             dealer_id = self.request.parameters['dealer_identity']
             dealer_ctrl_address = self.request.parameters['dealer_ctrl_address']
+            self.logger.debug(f'Received signal to terminate dealer id {dealer_id}')
             if dealer_id in self._idle_dealer_ids:
                 self._idle_dealer_ids.remove(dealer_id)
             from ...zmq import send_ctrl_message
