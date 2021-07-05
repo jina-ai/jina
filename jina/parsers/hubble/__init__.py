@@ -7,10 +7,10 @@ def mixin_hub_usage_parser(parser):
     :param parser: the parser configure
     """
     parser.add_argument(
-        '--hide-usage',
+        '--no-usage',
         action='store_true',
         default=False,
-        help='If set, Hub executor usage will be printed',
+        help='If set, Hub executor usage will not be printed.',
     )
 
 
