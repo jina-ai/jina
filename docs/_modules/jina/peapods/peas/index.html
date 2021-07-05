@@ -448,7 +448,7 @@
         <span class="c1"># arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process</span>
         <span class="c1"># or thread. Control address from Zmqlet has some randomness and therefore we need to make sure Pea knows</span>
         <span class="c1"># control address of runtime</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_remote_controlled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runtime_cls</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runtime_cls</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_ctrl_adrr</span><span class="p">()</span>
 
@@ -694,13 +694,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_runtime_cls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
-        <span class="n">is_remote_controlled</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">!=</span> <span class="n">__default_host__</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">disable_remote</span><span class="p">:</span>
+        <span class="n">gateway_runtime_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">:</span> <span class="s1">'GRPCRuntime'</span><span class="p">,</span>
+            <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">:</span> <span class="s1">'WebSocketRuntime'</span><span class="p">,</span>
+            <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span> <span class="s1">'HTTPRuntime'</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gateway_runtime_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span> <span class="o">!=</span> <span class="n">__default_host__</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">disable_remote</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'JinadRuntime'</span>
             <span class="c1"># NOTE: remote pea would also create a remote workspace which might take alot of time.</span>
             <span class="c1"># setting it to -1 so that wait_start_success doesn't fail</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ready</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="n">is_remote_controlled</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ZEDRuntime'</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
             <span class="s1">'docker://'</span>
         <span class="p">):</span>
@@ -719,15 +726,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'ContainerRuntime'</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'protocol'</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">:</span> <span class="s1">'GRPCRuntime'</span><span class="p">,</span>
-                <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">:</span> <span class="s1">'WebSocketRuntime'</span><span class="p">,</span>
-                <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span> <span class="s1">'HTTPRuntime'</span><span class="p">,</span>
-            <span class="p">}[</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span>
         <span class="kn">from</span> <span class="nn">..runtimes</span> <span class="kn">import</span> <span class="n">get_runtime</span>
 
-        <span class="n">v</span> <span class="o">=</span> <span class="n">get_runtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">is_remote_controlled</span>
+        <span class="k">return</span> <span class="n">get_runtime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'PeaRoleType'</span><span class="p">:</span>

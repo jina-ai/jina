@@ -411,13 +411,13 @@
     <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">'workspace'</span><span class="p">:</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="n">WorkspaceStore</span>
 
-    <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">store</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">no_store</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
 
 
 <span class="k">def</span> <span class="nf">_get_partial_store</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'PartialStore'</span><span class="p">]:</span>

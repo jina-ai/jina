@@ -407,11 +407,11 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">'do not start fluentd, no log streaming'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--store'</span><span class="p">,</span>
+        <span class="s1">'--no-store'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">    Load from local store (if any), while starting JinaD</span>
+<span class="s1">    Disable loading from local store (if any), while starting JinaD</span>
 <span class="s1">    '''</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
