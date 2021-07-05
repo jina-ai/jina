@@ -585,13 +585,17 @@ class ZmqStreamlet(Zmqlet):
 
 
 def send_ctrl_message(
-    address: str, cmd: Union[str, Message], timeout: int
+    address: str,
+    cmd: Union[str, Message],
+    timeout: int,
+    parameters: Optional[Dict] = None,
 ) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
     :param cmd: the control command to send
     :param timeout: the waiting time (in ms) for the response
+    :param parameters: parameters to add to the control message
     :return: received message
     """
     if isinstance(cmd, str):
@@ -599,6 +603,9 @@ def send_ctrl_message(
         msg = ControlMessage(cmd)
     else:
         msg = cmd
+
+    if parameters is not None:
+        msg.request.parameters = parameters
 
     # control message is short, set a timeout and ask for quick response
     with zmq.Context() as ctx:

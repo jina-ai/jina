@@ -3,18 +3,20 @@ import multiprocessing
 import os
 import threading
 import time
-from typing import Any, Tuple
+from typing import Any, Tuple, Optional
 
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
-from ...helper import typename
+from ...helper import typename, random_identity
 from ...hubble.helper import is_valid_huburi, parse_hub_uri
 from ...hubble.hubapi import resolve_local
 from ...hubble.hubio import HubIO
 from ...logging.logger import JinaLogger
 from ...parsers.hubble import set_hub_pull_parser
+from .closing import RuntimeCloseFactory
+
 
 __all__ = ['BasePea']
 
@@ -27,7 +29,9 @@ class BasePea:
     A :class:`BasePea` must be equipped with a proper :class:`Runtime` class to work.
     """
 
-    def __init__(self, args: 'argparse.Namespace'):
+    def __init__(
+        self, args: 'argparse.Namespace', router_ctrl_address: Optional[str] = None
+    ):
         super().__init__()  #: required here to call process/thread __init__
         self.worker = {
             RuntimeBackendType.THREAD: threading.Thread,
@@ -36,6 +40,8 @@ class BasePea:
             target=self.run
         )
         self.args = args
+        if self.args.zmq_identity is None:
+            self.args.zmq_identity = random_identity()
         self.daemon = args.daemon  #: required here to set process/thread daemon
 
         self.name = self.args.name or self.__class__.__name__
@@ -67,6 +73,13 @@ class BasePea:
         self.runtime_cls, self._is_remote_controlled = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
+        self.closure = RuntimeCloseFactory.build_runtime_close(
+            is_dealer=self._is_dealer,
+            zed_runtime_ctrl=self._zed_runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+            zmq_identity=self.args.zmq_identity,
+            router_ctrl_address=router_ctrl_address,
+        )
 
     def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""

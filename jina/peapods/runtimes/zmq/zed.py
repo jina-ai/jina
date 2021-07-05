@@ -254,11 +254,13 @@ class ZEDRuntime(ZMQRuntime):
         if self.request.command == 'TERMINATE_WORKER':
             # The Pea sending this message should make sure to be able to populate properly the `envelope`.
             # This means the `zmqlet` identity must be known by the Pea
-            if self.envelope.receiver_id in self._idle_dealer_ids:
-                self._idle_dealer_ids.remove(self.envelope.receiver_id)
+            dealer_id = self.request.parameters['dealer_identity']
+            dealer_ctrl_address = self.request.parameters['dealer_ctrl_address']
+            if dealer_id in self._idle_dealer_ids:
+                self._idle_dealer_ids.remove(dealer_id)
             from ..zmq import send_ctrl_message
 
-            control_dealer_address = 'Get it from somewhere'
+            control_dealer_address = dealer_ctrl_address
             timeout_ctrl = 100  # TODO: Get it from somewhere
             send_ctrl_message(control_dealer_address, 'TERMINATE', timeout=timeout_ctrl)
         if self.request.command == 'TERMINATE':

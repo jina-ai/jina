@@ -96,7 +96,12 @@ class CompoundPod(BasePod):
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
                 _args.polling = PollingType.ALL
-                self._enter_replica(Pod(_args))
+                self._enter_replica(
+                    Pod(
+                        _args,
+                        router_ctrl_address=self.head_pea._zed_runtime_ctrl_address,
+                    )
+                )
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
             self.tail_pea = Pea(tail_args)
@@ -110,7 +115,12 @@ class CompoundPod(BasePod):
                 self._enter_pea(self.head_pea)
                 for _args in self.replicas_args:
                     _args.polling = PollingType.ALL
-                    self._enter_replica(Pod(_args))
+                    self._enter_replica(
+                        Pod(
+                            _args,
+                            router_ctrl_address=self.head_pea._zed_runtime_ctrl_address,
+                        )
+                    )
                 tail_args = self.tail_args
                 self.tail_pea = Pea(tail_args)
                 self._enter_pea(self.tail_pea)
