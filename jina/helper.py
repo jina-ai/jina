@@ -915,8 +915,8 @@ class _cache_invalidate(object):
         self.func_name = func_to_invalidate
 
     def __call__(self, *args, **kwargs):
-        obj, cached_key = args
-        cached_key = f'CACHED_{cached_key}'
+        obj = args[0]
+        cached_key = f'CACHED_{self.func_name}'
         if cached_key in obj.__dict__:
             del obj.__dict__[cached_key]  # invalidate
         self.func(*args, **kwargs)
@@ -924,7 +924,7 @@ class _cache_invalidate(object):
     def __get__(self, obj, cls):
         from functools import partial
 
-        return partial(self.__call__, obj, self.func_to_invalidate)
+        return partial(self.__call__, obj)
 
 
 def cache_invalidate(func_to_invalidate: str):
