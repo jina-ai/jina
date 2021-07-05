@@ -50,7 +50,7 @@ class GRPCRuntime(AsyncNewLoopRuntime):
     async def async_cancel(self):
         """The async method to stop server."""
         await self.server.stop(0)
-        await self._prefetcher.servicer.close()
+        await self._prefetcher.close()
 
     async def async_run_forever(self):
         """The async running of server."""

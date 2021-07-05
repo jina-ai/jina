@@ -27,22 +27,28 @@ class PrefetchCaller:
 
         self.logger = JinaLogger(self.name, **vars(args))
         self._message_buffer: Dict[str, Future[Message]] = dict()
-        self._is_running = True
         self._receive_task = get_or_reuse_loop().create_task(self._receive())
+        self._is_running = True
 
     async def _receive(self):
         try:
             while self._is_running:
                 message = await self.zmqlet.recv_message(callback=lambda x: x.response)
                 if message.request_id in self._message_buffer:
-                    self._message_buffer[message.request_id].set_result(message)
-                    del self._message_buffer[message.request_id]
+                    future = self._message_buffer.pop(message.request_id)
+                    future.set_result(message)
                 else:
                     self.logger.warning(
                         f'Discarding unexpected message with request id {message.request_id}'
                     )
         except asyncio.CancelledError:
             pass
+        finally:
+            for future in self._message_buffer.values():
+                future.cancel(
+                    'PrefetchCaller closed, all outstanding requests canceled'
+                )
+            self._message_buffer.clear()
 
     async def close(self):
         """
@@ -63,6 +69,9 @@ class PrefetchCaller:
         self.zmqlet: 'AsyncZmqlet'
         self.logger: JinaLogger
 
+        if not self._is_running:
+            raise RuntimeError('PrefetchCaller not running, can not send messages')
+
         async def prefetch_req(num_req, fetch_to):
             """
             Fetch and send request.
@@ -82,7 +91,7 @@ class PrefetchCaller:
                             f'{typename(request_iterator)} does not have `__anext__` or `__next__`'
                         )
 
-                    future = Future()
+                    future = get_or_reuse_loop().create_future()
                     self._message_buffer[next_request.request_id] = future
                     asyncio.create_task(
                         self.zmqlet.send_message(
