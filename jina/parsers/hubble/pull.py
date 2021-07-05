@@ -6,10 +6,17 @@ def mixin_hub_pull_parser(parser):
     """Add the arguments for hub pull to the parser
     :param parser: the parser configure
     """
+
+    def hub_uri(uri: str) -> str:
+        from ...hubble.helper import parse_hub_uri
+
+        parse_hub_uri(uri)
+        return uri
+
     gp = add_arg_group(parser, title='Pull')
     gp.add_argument(
         'uri',
-        type=str,
+        type=hub_uri,
         help='The URI of the executor to download (e.g., jinahub[+docker]://UUID8)',
     )
     gp.add_argument(
