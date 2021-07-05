@@ -2,6 +2,18 @@ from ..base import set_base_parser
 from ..helper import _chf
 
 
+def mixin_hub_usage_parser(parser):
+    """Add the arguments for hub pull to the parser
+    :param parser: the parser configure
+    """
+    parser.add_argument(
+        '--hide-usage',
+        action='store_true',
+        default=False,
+        help='If set, Hub executor usage will be printed',
+    )
+
+
 def set_hub_push_parser(parser=None):
     """Set the parser for the hub push
     :param parser: an optional existing parser to build upon
@@ -12,6 +24,7 @@ def set_hub_push_parser(parser=None):
 
     from .push import mixin_hub_push_parser
 
+    mixin_hub_usage_parser(parser)
     mixin_hub_push_parser(parser)
     return parser
 
@@ -26,6 +39,7 @@ def set_hub_pull_parser(parser=None):
 
     from .pull import mixin_hub_pull_parser
 
+    mixin_hub_usage_parser(parser)
     mixin_hub_pull_parser(parser)
     return parser
 

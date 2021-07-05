@@ -50,14 +50,15 @@ class HubIO:
         else:
             self.args = ArgNamespace.kwargs2namespace(kwargs, set_hub_parser())
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
-
         self._load_docker_client()
 
+        with ImportExtensions(required=True):
+            import rich
+
+            assert rich  #: prevent pycharm auto remove the above line
+
     def _load_docker_client(self):
-        with ImportExtensions(
-            required=True,
-            help_text='missing "docker" dependency, please do pip install "jina[docker]"',
-        ):
+        with ImportExtensions(required=True):
             import docker
             from docker import DockerClient
 
@@ -169,22 +170,23 @@ class HubIO:
         table.add_column('Key', no_wrap=True)
         table.add_column('Value', style='cyan', no_wrap=True)
         table.add_row(':key: ID', uuid8)
+        if 'alias' in image:
+            table.add_row(':name_badge: Alias' + image['alias'])
         table.add_row(':lock: Secret', secret)
         table.add_row(
             '',
             ':point_up:️ [bold red]Please keep this token in a safe place!',
         )
         table.add_row(':eyes: Visibility', visibility)
-        if 'alias' in image:
-            table.add_row(':name_badge: Alias' + image['alias'])
         table.add_row(':whale: DockerHub', f'https://hub.docker.com/r/jinahub/{uuid8}/')
+        console.print(table)
 
         usage = f'{uuid8}' if visibility == 'public' else f'{uuid8}:{secret}'
-        ps = self._get_prettyprint_usage(usage)
 
-        console.print(table, *ps)
+        if not self.args.hide_usage:
+            self._get_prettyprint_usage(console, usage)
 
-    def _get_prettyprint_usage(self, usage):
+    def _get_prettyprint_usage(self, console, usage):
         from rich.panel import Panel
         from rich.syntax import Syntax
 
@@ -248,7 +250,7 @@ with f:
             expand=False,
         )
 
-        return p1, p2, p3, p4
+        console.print(p1, p2, p3, p4)
 
     @staticmethod
     def _fetch_meta(
@@ -302,6 +304,7 @@ with f:
 
         console = Console()
         cached_zip_filepath = None
+        usage = None
 
         with console.status(f'Pulling {self.args.uri}...') as st:
             try:
@@ -309,6 +312,11 @@ with f:
 
                 st.update('Fetching meta data...')
                 executor = HubIO._fetch_meta(name, tag=tag, secret=secret)
+                usage = (
+                    f'{executor.uuid}'
+                    if executor.visibility == 'public'
+                    else f'{executor.uuid}:{secret}'
+                )
 
                 if scheme == 'jinahub+docker':
                     st.update(f'Pulling {executor.image_name}...')
@@ -356,3 +364,6 @@ with f:
                 # delete downloaded zip package if existed
                 if cached_zip_filepath is not None:
                     cached_zip_filepath.unlink()
+
+                if not self.args.hide_usage and usage:
+                    self._get_prettyprint_usage(console, usage)
