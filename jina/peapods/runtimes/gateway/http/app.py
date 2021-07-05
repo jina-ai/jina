@@ -62,6 +62,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     @app.on_event('shutdown')
     def _shutdown():
+        servicer.close()
         zmqlet.close()
 
     openapi_tags = []
@@ -197,7 +198,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param req_iter: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in servicer.Call(request_iterator=req_iter):
+        async for k in servicer.send(request_iterator=req_iter):
             return MessageToDict(
                 k, including_default_value_fields=True, use_integers_for_enums=True
             )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`

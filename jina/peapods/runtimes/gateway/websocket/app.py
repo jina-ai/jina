@@ -40,6 +40,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
 
     @app.on_event('shutdown')
     def _shutdown():
+        servicer.close()
         zmqlet.close()
 
     @app.websocket('/')
@@ -55,7 +56,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
                 yield Request(data)
 
         try:
-            async for msg in servicer.Call(request_iterator=req_iter()):
+            async for msg in servicer.send(request_iterator=req_iter()):
                 await websocket.send_bytes(msg.binary_str())
         except WebSocketDisconnect:
             manager.disconnect(websocket)
