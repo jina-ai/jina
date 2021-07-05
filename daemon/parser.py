@@ -24,11 +24,11 @@ def mixin_daemon_parser(parser):
         help='do not start fluentd, no log streaming',
     )
     gp.add_argument(
-        '--store',
+        '--no-store',
         action='store_true',
-        default=True,
+        default=False,
         help='''
-    Load from local store (if any), while starting JinaD
+    Disable loading from local store (if any), while starting JinaD
     ''',
     )
     gp.add_argument(
