@@ -28,13 +28,13 @@ def _get_store(kind: str):
     elif kind == 'workspace':
         cls = WorkspaceStore
 
-    if jinad_args.store:
+    if jinad_args.no_store:
+        return cls()
+    else:
         try:
             return cls.load()
         except Exception:
             return cls()
-    else:
-        return cls()
 
 
 def _get_partial_store() -> Optional['PartialStore']:
