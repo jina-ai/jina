@@ -385,6 +385,18 @@
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">_chf</span>
 
 
+<div class="viewcode-block" id="mixin_hub_usage_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hubble/#jina.parsers.hubble.mixin_hub_usage_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_hub_usage_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add the arguments for hub pull to the parser</span>
+<span class="sd">    :param parser: the parser configure</span>
+<span class="sd">    """</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--no-usage'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, Hub executor usage will not be printed.'</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="set_hub_push_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_push_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_push_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">"""Set the parser for the hub push</span>
 <span class="sd">    :param parser: an optional existing parser to build upon</span>
@@ -395,6 +407,7 @@
 
     <span class="kn">from</span> <span class="nn">.push</span> <span class="kn">import</span> <span class="n">mixin_hub_push_parser</span>
 
+    <span class="n">mixin_hub_usage_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_hub_push_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span></div>
 
@@ -409,6 +422,7 @@
 
     <span class="kn">from</span> <span class="nn">.pull</span> <span class="kn">import</span> <span class="n">mixin_hub_pull_parser</span>
 
+    <span class="n">mixin_hub_usage_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">mixin_hub_pull_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span></div>
 

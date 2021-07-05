@@ -465,7 +465,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “d95ef4ed-b39b-4d6c-81b8-a1c9d7d57712”</p>
+<p>Default: “fc9d83b2-1a72-4a1d-bee1-4c40d4c36ffb”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -540,7 +540,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “03bf13ab-b627-4528-9850-267f779b35a8”</p>
+<p>Default: “23402790-66a7-4d80-b639-a4d1d014d345”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -573,7 +573,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “57aecb53-f5f6-491f-91a7-d18728333db9”</p>
+<p>Default: “0724faf9-20e2-4d59-a78c-00ca78a39210”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -680,7 +680,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 55273</p>
+<p>Default: 60415</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -735,11 +735,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 53663</p>
+<p>Default: 43231</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 45727</p>
+<p>Default: 54763</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -825,7 +825,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 35801</p>
+<p>Default: 48677</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1123,7 +1123,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 49289</p>
+<p>Default: 45007</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1178,11 +1178,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 42253</p>
+<p>Default: 51481</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 37073</p>
+<p>Default: 53029</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1316,7 +1316,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 49875</p>
+<p>Default: 33479</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1391,8 +1391,18 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <div class="section" id="push">
 <h5>push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h5>
 <p>Push an executor package to the Jina hub</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">secret</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">public</span> <span class="o">|</span> <span class="o">--</span><span class="n">private</span><span class="p">]</span> <span class="n">path</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">secret</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">public</span> <span class="o">|</span> <span class="o">--</span><span class="n">private</span><span class="p">]</span>
+              <span class="n">path</span>
 </pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat6">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>--no-usage</kbd></dt>
+<dd><p>If set, Hub executor usage will not be printed.</p>
+<p>Default: False</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="Push arguments">
 <h6>Push arguments<a class="headerlink" href="#Push arguments" title="Permalink to this headline">¶</a></h6>
@@ -1424,14 +1434,23 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <div class="section" id="pull">
 <h5>pull<a class="headerlink" href="#pull" title="Permalink to this headline">¶</a></h5>
 <p>Download an executor package/image from the Jina hub</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="n">uri</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="n">uri</span>
 </pre></div>
+</div>
+<div class="section" id="Named Arguments_repeat7">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>--no-usage</kbd></dt>
+<dd><p>If set, Hub executor usage will not be printed.</p>
+<p>Default: False</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="Pull arguments">
 <h6>Pull arguments<a class="headerlink" href="#Pull arguments" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>uri</kbd></dt>
-<dd><p>The URI of the executor to download (e.g., jinahub[+docker]://UUID8)</p>
+<dd><p>The URI of the executor to pull (e.g., jinahub[+docker]://UUID8)</p>
 </dd>
 <dt><kbd>--install-requirements</kbd></dt>
 <dd><p>If set, install <cite>requirements.txt</cite> in the Hub Executor bundle to the local system</p>
@@ -1467,8 +1486,8 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
          <span class="p">[</span><span class="o">--</span><span class="n">runs</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">docker</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat6">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat8">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--dynamic-routing</kbd></dt>
 <dd><p>The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.</p>
@@ -1513,7 +1532,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 60971</p>
+<p>Default: 33957</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1568,11 +1587,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 54445</p>
+<p>Default: 37721</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 60771</p>
+<p>Default: 37731</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1658,7 +1677,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 57855</p>
+<p>Default: 49617</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1743,8 +1762,8 @@ Python files, data files.</p>
             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -1766,7 +1785,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 45533</p>
+<p>Default: 46843</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1783,8 +1802,8 @@ Python files, data files.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
 </pre></div>
 </div>
-<div class="section" id="Named Arguments_repeat8">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="Named Arguments_repeat10">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--yaml-path</kbd></dt>
 <dd><p>The YAML file path for storing the exported API</p>
@@ -1921,11 +1940,13 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#subcommands_repeat2">subcommands</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#push">push</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 <li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pull">pull</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 <li><a class="reference internal" href="#Pull arguments">Pull arguments</a></li>
 </ul>
 </li>
@@ -1934,7 +1955,7 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#pea">pea</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat3">Essential arguments</a></li>
 <li><a class="reference internal" href="#ZMQRuntime arguments_repeat2">ZMQRuntime arguments</a></li>
 <li><a class="reference internal" href="#ZEDRuntime arguments_repeat2">ZEDRuntime arguments</a></li>
@@ -1945,12 +1966,12 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
 <li><a class="reference internal" href="#Expose arguments_repeat3">Expose arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#export-api">export-api</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
 </ul>
 </li>
 </ul>

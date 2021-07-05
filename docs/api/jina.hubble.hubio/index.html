@@ -479,25 +479,15 @@ Examples:</p>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.hubble.hubio.HubIO.fetch">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">fetch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.fetch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.fetch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetch the executor meta info from Jina Hub.
-:type name: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param name: the UUID/Alias of the executor
-:type tag: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param tag: the version tag of the executor
-:type secret: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:param secret: the access secret of the executor
-:rtype: <a class="reference internal" href="#jina.hubble.hubio.HubExecutor" title="jina.hubble.hubio.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a>
-:return: meta of executor</p>
-</dd></dl>
-<dl class="py method">
 <dt id="jina.hubble.hubio.HubIO.pull">
 <code class="sig-name descname"><span class="pre">pull</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubio/#HubIO.pull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubio.HubIO.pull" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pull the executor package from Jina Hub.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the <cite>uses</cite> string</p>
 </dd>
 </dl>
 </dd></dl>

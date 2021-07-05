@@ -389,11 +389,18 @@
     <span class="sd">"""Add the arguments for hub pull to the parser</span>
 <span class="sd">    :param parser: the parser configure</span>
 <span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">hub_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">parse_hub_uri</span>
+
+        <span class="n">parse_hub_uri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">uri</span>
+
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Pull'</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'uri'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The URI of the executor to download (e.g., jinahub[+docker]://UUID8)'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">hub_uri</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'The URI of the executor to pull (e.g., jinahub[+docker]://UUID8)'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--install-requirements'</span><span class="p">,</span>

@@ -392,13 +392,17 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">archive_package</span><span class="p">,</span> <span class="n">download_with_resume</span><span class="p">,</span> <span class="n">parse_hub_uri</span><span class="p">,</span> <span class="n">get_hubble_url</span>
-<span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">exist_local</span>
-<span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">HubDownloadError</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">get_readable_size</span><span class="p">,</span> <span class="n">ArgNamespace</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">archive_package</span><span class="p">,</span>
+    <span class="n">download_with_resume</span><span class="p">,</span>
+    <span class="n">parse_hub_uri</span><span class="p">,</span>
+    <span class="n">get_hubble_url</span><span class="p">,</span>
+    <span class="n">upload_file</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">resolve_local</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">..logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
 <span class="kn">from</span> <span class="nn">..parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_parser</span>
 
 <span class="n">HubExecutor</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
@@ -429,14 +433,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_hub_parser</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_docker_client</span><span class="p">()</span>
 
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="kn">import</span> <span class="nn">rich</span>
+
+            <span class="k">assert</span> <span class="n">rich</span>  <span class="c1">#: prevent pycharm auto remove the above line</span>
+
     <span class="k">def</span> <span class="nf">_load_docker_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
-            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">help_text</span><span class="o">=</span><span class="s1">'missing "docker" dependency, please do pip install "jina[docker]"'</span><span class="p">,</span>
-        <span class="p">):</span>
+        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">docker</span>
             <span class="kn">from</span> <span class="nn">docker</span> <span class="kn">import</span> <span class="n">DockerClient</span>
 
@@ -459,49 +464,47 @@
 <div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Push the executor pacakge to Jina Hub."""</span>
 
-        <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">'`</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">` is not a valid path!'</span><span class="p">)</span>
-            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
 
-        <span class="n">request_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
+        <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># archive the executor package</span>
-            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Packaging </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pushing `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">`...'</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
+
+            <span class="n">req_header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Packaging </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
                 <span class="n">md5_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
-                <span class="n">bytesio</span> <span class="o">=</span> <span class="n">archive_package</span><span class="p">(</span><span class="n">pkg_path</span><span class="p">)</span>
+                <span class="n">bytesio</span> <span class="o">=</span> <span class="n">archive_package</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">bytesio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
                 <span class="n">md5_hash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
                 <span class="n">md5_digest</span> <span class="o">=</span> <span class="n">md5_hash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
-            <span class="c1"># upload the archived package</span>
-            <span class="n">form_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">'public'</span><span class="p">:</span> <span class="s1">'True'</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
-                <span class="s1">'private'</span><span class="p">:</span> <span class="s1">'True'</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
-                <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">:</span>
-                <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">:</span>
-                <span class="n">form_data</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span>
+                <span class="c1"># upload the archived package</span>
+                <span class="n">form_data</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">'public'</span><span class="p">:</span> <span class="s1">'True'</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'public'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
+                    <span class="s1">'private'</span><span class="p">:</span> <span class="s1">'True'</span>
+                    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'private'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
+                    <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">:</span>
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">:</span>
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span>
 
-            <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="k">else</span> <span class="s1">'post'</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="k">else</span> <span class="s1">'post'</span>
 
-            <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">get_hubble_url</span><span class="p">()</span>
-            <span class="c1"># upload the archived executor to Jina Hub</span>
-            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Pushing to </span><span class="si">{</span><span class="n">hubble_url</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s1">)'</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-            <span class="p">):</span>
-                <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">upload_file</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Connecting Hubble...'</span><span class="p">)</span>
+                <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">get_hubble_url</span><span class="p">()</span>
+                <span class="c1"># upload the archived executor to Jina Hub</span>
 
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Uploading...'</span><span class="p">)</span>
                 <span class="n">resp</span> <span class="o">=</span> <span class="n">upload_file</span><span class="p">(</span>
                     <span class="n">hubble_url</span><span class="p">,</span>
                     <span class="s1">'filename'</span><span class="p">,</span>
                     <span class="n">content</span><span class="p">,</span>
                     <span class="n">dict_data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
-                    <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">,</span>
+                    <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">,</span>
                     <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -510,56 +513,17 @@
                 <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
                     <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
                     <span class="k">if</span> <span class="s1">'stream'</span> <span class="ow">in</span> <span class="n">stream_msg</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">stream_msg</span><span class="p">[</span><span class="s1">'stream'</span><span class="p">])</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">stream_msg</span><span class="p">[</span><span class="s1">'stream'</span><span class="p">])</span>
                     <span class="k">elif</span> <span class="s1">'result'</span> <span class="ow">in</span> <span class="n">stream_msg</span><span class="p">:</span>
                         <span class="n">result</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="p">[</span><span class="s1">'result'</span><span class="p">]</span>
                         <span class="k">break</span>
 
                 <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Unknown Error'</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">result</span><span class="p">[</span><span class="s1">'statusCode'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
-                    <span class="c1"># TODO: only support single executor now</span>
-                    <span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="s1">'Unknown Error'</span><span class="p">))</span>
-
-                    <span class="n">image</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'executors'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-                    <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>
-                    <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span>
-                    <span class="n">visibility</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">]</span>
-
-                    <span class="n">info_table</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔑 ID:</span><span class="se">\t\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">🔒 Secret:</span><span class="se">\t</span><span class="s1">'</span>
-                        <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                            <span class="s1">'cyan'</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="o">+</span> <span class="n">colored</span><span class="p">(</span>
-                            <span class="s1">' (👈 Please store this secret carefully, it wont show up again)'</span><span class="p">,</span>
-                            <span class="s1">'red'</span><span class="p">,</span>
-                        <span class="p">),</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">👀 Visibility:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">visibility</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'cyan'</span><span class="p">),</span>
-                    <span class="p">]</span>
-
-                    <span class="k">if</span> <span class="s1">'alias'</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
-                        <span class="n">info_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="se">\t</span><span class="s1">📛 Alias:</span><span class="se">\t</span><span class="s1">'</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">],</span> <span class="s1">'cyan'</span><span class="p">)</span>
-                        <span class="p">)</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">info_table</span><span class="p">))</span>
-
-                    <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span>
-                        <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span>
-                        <span class="k">else</span> <span class="sa">f</span><span class="s1">'jinahub://</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
-                    <span class="p">)</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'You can use it via `uses=</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">` in the Flow/CLI.'</span>
-                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="s1">'Unknown Error'</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">result</span><span class="p">[</span><span class="s1">'statusCode'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">]:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">])</span>
                 <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
@@ -567,14 +531,112 @@
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># IO related errors</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Error while pushing `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">` with session_id=</span><span class="si">{</span><span class="n">request_headers</span><span class="p">[</span><span class="s2">"jinameta-session-id"</span><span class="p">]</span><span class="si">}</span><span class="s1">: '</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
-            <span class="p">)</span></div>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># IO related errors</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Error while pushing session_id=</span><span class="si">{</span><span class="n">req_header</span><span class="p">[</span><span class="s2">"jinameta-session-id"</span><span class="p">]</span><span class="si">}</span><span class="s1">: '</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
+                <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HubIO.fetch"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_prettyprint_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="c1"># TODO: only support single executor now</span>
+
+        <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+        <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'executors'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span>
+        <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span>
+        <span class="n">visibility</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">'visibility'</span><span class="p">]</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Key'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Value'</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':key: ID'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">'alias'</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':name_badge: Alias'</span> <span class="o">+</span> <span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">])</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':lock: Secret'</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="s1">''</span><span class="p">,</span>
+            <span class="s1">':point_up:️ [bold red]Please keep this token in a safe place!'</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':eyes: Visibility'</span><span class="p">,</span> <span class="n">visibility</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':whale: DockerHub'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'https://hub.docker.com/r/jinahub/</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">/'</span><span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+        <span class="n">usage</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">'</span> <span class="k">if</span> <span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid8</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">hide_usage</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_prettyprint_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
+        <span class="kn">from</span> <span class="nn">rich.syntax</span> <span class="kn">import</span> <span class="n">Syntax</span>
+
+        <span class="n">flow_plain</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'''from jina import Flow</span>
+
+<span class="s1">f = Flow().add(uses='jinahub://</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">')</span>
+
+<span class="s1">with f:</span>
+<span class="s1">    ...'''</span>
+
+        <span class="n">flow_docker</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'''from jina import Flow</span>
+
+<span class="s1">f = Flow().add(uses='jinahub+docker://</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">')</span>
+
+<span class="s1">with f:</span>
+<span class="s1">    ...'''</span>
+
+        <span class="n">cli_plain</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'jina executor --uses jinahub://</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">'</span>
+
+        <span class="n">cli_docker</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'jina executor --uses jinahub+docker://</span><span class="si">{</span><span class="n">usage</span><span class="si">}</span><span class="s1">'</span>
+
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span>
+                <span class="n">flow_plain</span><span class="p">,</span> <span class="s1">'python'</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">'monokai'</span><span class="p">,</span> <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">'Flow usage'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span>
+                <span class="n">flow_docker</span><span class="p">,</span>
+                <span class="s1">'python'</span><span class="p">,</span>
+                <span class="n">theme</span><span class="o">=</span><span class="s1">'monokai'</span><span class="p">,</span>
+                <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">'Flow usage via Docker'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">p3</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span>
+                <span class="n">cli_plain</span><span class="p">,</span> <span class="s1">'console'</span><span class="p">,</span> <span class="n">theme</span><span class="o">=</span><span class="s1">'monokai'</span><span class="p">,</span> <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">'CLI usage'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">p4</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span>
+                <span class="n">cli_docker</span><span class="p">,</span>
+                <span class="s1">'console'</span><span class="p">,</span>
+                <span class="n">theme</span><span class="o">=</span><span class="s1">'monokai'</span><span class="p">,</span>
+                <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">'CLI usage via Docker'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">,</span> <span class="n">p4</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_fetch_meta</span><span class="p">(</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -595,11 +657,10 @@
             <span class="n">path_params</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="n">secret</span>
         <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
             <span class="n">path_params</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
+        <span class="k">if</span> <span class="n">path_params</span><span class="p">:</span>
+            <span class="n">pull_url</span> <span class="o">+=</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">path_params</span><span class="p">)</span>
 
-        <span class="n">request_headers</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
-
-        <span class="n">pull_url</span> <span class="o">+=</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">path_params</span><span class="p">)</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pull_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">request_headers</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pull_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">HubIO</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
@@ -607,7 +668,7 @@
 
         <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="n">HubExecutor</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">HubExecutor</span><span class="p">(</span>
             <span class="n">resp</span><span class="p">[</span><span class="s1">'id'</span><span class="p">],</span>
             <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'alias'</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="n">resp</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">],</span>
@@ -617,75 +678,78 @@
             <span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">][</span><span class="s1">'md5'</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">result</span></div>
+<div class="viewcode-block" id="HubIO.pull"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Pull the executor package from Jina Hub.</span>
 
-<div class="viewcode-block" id="HubIO.pull"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.pull">[docs]</a>    <span class="k">def</span> <span class="nf">pull</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Pull the executor package from Jina Hub."""</span>
+<span class="sd">        :return: the `uses` string</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
+
+        <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
         <span class="n">cached_zip_filepath</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+        <span class="n">usage</span> <span class="o">=</span> <span class="kc">None</span>
 
-            <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pulling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">tag</span><span class="p">:</span>
-                <span class="n">tag</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span>
-
-            <span class="n">uuid</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span>
-            <span class="n">image_name</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">image_name</span>
-            <span class="n">archive_url</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">archive_url</span>
-            <span class="n">md5sum</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">md5sum</span>
-
-            <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
-                <span class="c1"># pull the Docker image</span>
-                <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'pulling </span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
-                    <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="n">image_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">image_tag</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">tags</span> <span class="k">else</span> <span class="s1">''</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'🎉 pulled </span><span class="si">{</span><span class="n">image_tag</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">image</span><span class="o">.</span><span class="n">short_id</span><span class="si">}</span><span class="s1">) uncompressed size: </span><span class="si">{</span><span class="n">get_readable_size</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"Size"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Fetching meta data...'</span><span class="p">)</span>
+                <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">_fetch_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
+                <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">visibility</span> <span class="o">==</span> <span class="s1">'public'</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">secret</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
-                <span class="k">return</span>
-            <span class="k">if</span> <span class="n">exist_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'The executor `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">` has already been downloaded.'</span>
-                <span class="p">)</span>
-                <span class="k">return</span>
-            <span class="c1"># download the package</span>
-            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'downloading </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
-                <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                        <span class="s1">'JINA_HUB_CACHE_DIR'</span><span class="p">,</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">,</span> <span class="s1">'jina'</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pulling </span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub'</span><span class="p">:</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">"config.yml"</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                        <span class="k">pass</span>  <span class="c1"># have not been downloaded yet, download for the first time</span>
+
+                    <span class="c1"># download the package</span>
+                    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                            <span class="s1">'JINA_HUB_CACHE_DIR'</span><span class="p">,</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'.cache'</span><span class="p">,</span> <span class="s1">'jina'</span><span class="p">)</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">cache_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">cached_zip_filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">md5sum</span><span class="si">}</span><span class="s1">.zip'</span>
-                <span class="n">cached_zip_filepath</span> <span class="o">=</span> <span class="n">download_with_resume</span><span class="p">(</span>
-                    <span class="n">archive_url</span><span class="p">,</span>
-                    <span class="n">cache_dir</span><span class="p">,</span>
-                    <span class="n">cached_zip_filename</span><span class="p">,</span>
-                    <span class="n">md5sum</span><span class="o">=</span><span class="n">md5sum</span><span class="p">,</span>
-                <span class="p">)</span>
+                    <span class="n">cache_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span><span class="sa">f</span><span class="s1">'unpacking </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Downloading...'</span><span class="p">)</span>
+                    <span class="n">cached_zip_filepath</span> <span class="o">=</span> <span class="n">download_with_resume</span><span class="p">(</span>
+                        <span class="n">executor</span><span class="o">.</span><span class="n">archive_url</span><span class="p">,</span>
+                        <span class="n">cache_dir</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">md5sum</span><span class="si">}</span><span class="s1">.zip'</span><span class="p">,</span>
+                        <span class="n">md5sum</span><span class="o">=</span><span class="n">executor</span><span class="o">.</span><span class="n">md5sum</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unpacking...'</span><span class="p">)</span>
                     <span class="n">install_local</span><span class="p">(</span>
                         <span class="n">cached_zip_filepath</span><span class="p">,</span>
-                        <span class="n">uuid</span><span class="p">,</span>
-                        <span class="n">tag</span><span class="p">,</span>
+                        <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                        <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>
                         <span class="n">install_deps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">install_requirements</span><span class="p">,</span>
                     <span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">HubDownloadError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">))</span>
 
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Error when pulling the executor `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1">`: </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
-            <span class="p">)</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="c1"># delete downloaded zip package if existed</span>
-            <span class="k">if</span> <span class="n">cached_zip_filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">cached_zip_filepath</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span></div></div>
+                    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">resolve_local</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">or</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span> <span class="o">/</span> <span class="s2">"config.yml"</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a valid scheme'</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="c1"># delete downloaded zip package if existed</span>
+                <span class="k">if</span> <span class="n">cached_zip_filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">cached_zip_filepath</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">hide_usage</span> <span class="ow">and</span> <span class="n">usage</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

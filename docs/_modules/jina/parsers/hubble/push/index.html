@@ -384,6 +384,7 @@
 <span></span><span class="sd">"""Argparser module for hub push"""</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span>
 
@@ -392,10 +393,17 @@
     <span class="sd">"""Add the arguments for hub push to the parser</span>
 <span class="sd">    :param parser: the parser configure</span>
 <span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">dir_path</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">string</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotADirectoryError</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Push'</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'path'</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
 <span class="s1">The content source to be shipped into a Jina Hub executor. It can one of the followings:</span>
 <span class="s1">- a directory containing Dockerfile, manifest.yml, README.md, zero or more yaml config, zero or more Python file.</span>
