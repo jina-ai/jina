@@ -93,9 +93,10 @@ class RuntimeCloseFactory:
         if runtime_cls != ZEDRuntime and runtime_cls != ContainerRuntime:
             return EventRuntimeClose(cancel_event=cancel_event)
         elif is_dealer:
-            assert (
-                router_ctrl_address
-            ), 'To properly close a `dealer\'s` pea runtime, it needs to know its router control address'
+            if not router_ctrl_address:
+                raise AssertionError(
+                    'To properly close a `dealer\'s` pea runtime, it needs to know its router control address'
+                )
             return DealerRuntimeClose(
                 router_ctrl_address=router_ctrl_address,
                 zed_runtime_ctrl_address=zed_runtime_ctrl,

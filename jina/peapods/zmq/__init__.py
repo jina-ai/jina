@@ -509,7 +509,12 @@ class ZmqStreamlet(Zmqlet):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        if not self.is_closed and self.in_sock_type == zmq.DEALER:
+        # if Address already in use `self.in_sock_type` is not set
+        if (
+            not self.is_closed
+            and hasattr(self, 'in_sock_type')
+            and self.in_sock_type == zmq.DEALER
+        ):
             try:
                 self._send_cancel_to_router(raise_exception=True)
             except zmq.error.ZMQError:

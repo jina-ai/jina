@@ -21,26 +21,70 @@ from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
 
 
-class BasePod(ExitStack):
+class ExitFIFO(ExitStack):
+    """
+    ExitFIFO changes the exiting order of exitStack to turn it into FIFO.
+    .. note::
+    The `__exit__` method is copied literally from `ExitStack` and changed the call:
+    `is_sync, cb = self._exit_callbacks.pop()` to `is_sync, cb = self._exit_callbacks.popleft()`
+    """
+
+    def __exit__(self, *exc_details):
+        received_exc = exc_details[0] is not None
+
+        # We manipulate the exception state so it behaves as though
+        # we were actually nesting multiple with statements
+        frame_exc = sys.exc_info()[1]
+
+        def _fix_exception_context(new_exc, old_exc):
+            # Context may not be correct, so find the end of the chain
+            while 1:
+                exc_context = new_exc.__context__
+                if exc_context is old_exc:
+                    # Context is already set correctly (see issue 20317)
+                    return
+                if exc_context is None or exc_context is frame_exc:
+                    break
+                new_exc = exc_context
+            # Change the end of the chain to point to the exception
+            # we expect it to reference
+            new_exc.__context__ = old_exc
+
+        # Callbacks are invoked in LIFO order to match the behaviour of
+        # nested context managers
+        suppressed_exc = False
+        pending_raise = False
+        while self._exit_callbacks:
+            is_sync, cb = self._exit_callbacks.popleft()
+            assert is_sync
+            try:
+                if cb(*exc_details):
+                    suppressed_exc = True
+                    pending_raise = False
+                    exc_details = (None, None, None)
+            except:
+                new_exc_details = sys.exc_info()
+                # simulate the stack of exceptions by setting the context
+                _fix_exception_context(new_exc_details[1], exc_details[1])
+                pending_raise = True
+                exc_details = new_exc_details
+        if pending_raise:
+            try:
+                # bare "raise exc_details[1]" replaces our carefully
+                # set-up context
+                fixed_ctx = exc_details[1].__context__
+                raise exc_details[1]
+            except BaseException:
+                exc_details[1].__context__ = fixed_ctx
+                raise
+        return received_exc and suppressed_exc
+
+
+class BasePod:
     """A BasePod is an immutable set of peas. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend.
     They can be also run in their own containers on remote machines.
     """
-
-    def __init__(
-        self, args: Union['Namespace', Dict], needs: Optional[Set[str]] = None
-    ):
-        super().__init__()
-        args.upload_files = BasePod._set_upload_files(args)
-        self.args = args
-        self.needs = (
-            needs if needs else set()
-        )  #: used in the :class:`jina.flow.Flow` to build the graph
-
-        self.is_head_router = False
-        self.is_tail_router = False
-        self.deducted_head = None
-        self.deducted_tail = None
 
     def start(self) -> 'BasePod':
         """Start to run all :class:`BasePea` in this BasePod.
@@ -238,7 +282,7 @@ class BasePod(ExitStack):
         ...
 
 
-class Pod(BasePod):
+class Pod(BasePod, ExitFIFO):
     """A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
     Internally, the peas can run with the process/thread backend. They can be also run in their own containers
     :param args: arguments parsed from the CLI
@@ -251,7 +295,17 @@ class Pod(BasePod):
         needs: Optional[Set[str]] = None,
         router_ctrl_address: Optional[str] = None,
     ):
-        super().__init__(args, needs)
+        super().__init__()
+        args.upload_files = BasePod._set_upload_files(args)
+        self.args = args
+        self.needs = (
+            needs or set()
+        )  #: used in the :class:`jina.flow.Flow` to build the graph
+
+        self.is_head_router = False
+        self.is_tail_router = False
+        self.deducted_head = None
+        self.deducted_tail = None
         self.peas = []  # type: List['BasePea']
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
@@ -423,9 +477,9 @@ class Pod(BasePod):
             are properly closed.
         """
 
-        def _get_router_ctrl_address():
-            if self._router_ctrl_address is not None and len(self.peas) == 0:
-                return self._router_ctrl_address
+        def _get_router_ctrl_address(_router_ctrl_address):
+            if _router_ctrl_address is not None and len(self.peas) == 0:
+                return _router_ctrl_address
             elif len(self.peas) > 0:
                 return self.peas[0]._zed_runtime_ctrl_address
             else:
@@ -435,12 +489,22 @@ class Pod(BasePod):
             for _args in self._fifo_args:
                 _args.noblock_on_start = True
                 self._enter_pea(
-                    BasePea(_args, router_ctrl_address=_get_router_ctrl_address())
+                    BasePea(
+                        _args,
+                        router_ctrl_address=_get_router_ctrl_address(
+                            self._router_ctrl_address
+                        ),
+                    )
                 )
         else:
             for _args in self._fifo_args:
                 self._enter_pea(
-                    BasePea(_args, router_ctrl_address=_get_router_ctrl_address())
+                    BasePea(
+                        _args,
+                        router_ctrl_address=_get_router_ctrl_address(
+                            self._router_ctrl_address
+                        ),
+                    )
                 )
 
             self._activate()

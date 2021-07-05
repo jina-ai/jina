@@ -280,8 +280,6 @@ class ZEDRuntime(ZMQRuntime):
                 self._idle_dealer_ids.remove(self.envelope.receiver_id)
         elif self.request.command == 'ACTIVATE':
             self._zmqstreamlet._send_idle_to_router()
-        elif self.request.command == 'DEACTIVATE':
-            self._zmqstreamlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {self.request.command}'
