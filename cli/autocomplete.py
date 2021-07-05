@@ -253,13 +253,13 @@ ac_table = {
         ],
         'hub push': [
             '--help',
-            '--hide-usage',
+            '--no-usage',
             '--force',
             '--secret',
             '--public',
             '--private',
         ],
-        'hub pull': ['--help', '--hide-usage', '--install-requirements'],
+        'hub pull': ['--help', '--no-usage', '--install-requirements'],
         'hub': ['--help', 'push', 'pull'],
         'pea': [
             '--help',
