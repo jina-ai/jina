@@ -26,7 +26,6 @@ from typing import (
     Set,
     Sequence,
     Iterable,
-    Callable,
 )
 
 __all__ = [
@@ -900,9 +899,6 @@ class cached_property:
             return cached_value
 
         value = obj.__dict__[f'CACHED_{self.func.__name__}'] = self.func(obj)
-        print("=======")
-        print(obj.__dict__)
-        print("=======")
         return value
 
     def __delete__(self, obj):
