@@ -921,10 +921,10 @@ class _cache_invalidate(object):
             del obj.__dict__[cached_key]  # invalidate
         self.func(*args, **kwargs)
 
-    def __get__(self, instance, owner):
+    def __get__(self, obj, cls):
         from functools import partial
 
-        return partial(self.__call__, instance, self.func_to_invalidate)
+        return partial(self.__call__, obj, self.func_to_invalidate)
 
 
 def cache_invalidate(func_to_invalidate: str):
