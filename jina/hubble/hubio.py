@@ -183,7 +183,7 @@ class HubIO:
 
         usage = f'{uuid8}' if visibility == 'public' else f'{uuid8}:{secret}'
 
-        if not self.args.hide_usage:
+        if not self.args.no_usage:
             self._get_prettyprint_usage(console, usage)
 
     def _get_prettyprint_usage(self, console, usage):
@@ -365,5 +365,5 @@ with f:
                 if cached_zip_filepath is not None:
                     cached_zip_filepath.unlink()
 
-                if not self.args.hide_usage and usage:
+                if not self.args.no_usage and usage:
                     self._get_prettyprint_usage(console, usage)
