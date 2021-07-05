@@ -330,17 +330,10 @@ class BasePea:
         ):
             self.args.runtime_cls = 'ContainerRuntime'
         if self.args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(self.args.uses):
-            scheme, name, tag, secret = parse_hub_uri(self.args.uses)
-            executor = HubIO.fetch(name, tag=tag, secret=secret)
-            if scheme == 'jinahub':
-                try:
-                    pkg_path = resolve_local(executor.uuid, tag or executor.tag)
-                except FileNotFoundError:
-                    HubIO(set_hub_pull_parser().parse_args([self.args.uses])).pull()
-                    pkg_path = resolve_local(executor.uuid, tag or executor.tag)
-                self.args.uses = f'{pkg_path / "config.yml"}'
-            elif scheme == 'jinahub+docker':
-                self.args.uses = f'docker://{executor.image_name}'
+            self.args.uses = HubIO(
+                set_hub_pull_parser().parse_args([self.args.uses, '--hide-usage'])
+            ).pull()
+            if self.args.uses.startswith('docker://'):
                 self.args.runtime_cls = 'ContainerRuntime'
         if hasattr(self.args, 'protocol'):
             self.args.runtime_cls = gateway_runtime_dict[self.args.protocol]

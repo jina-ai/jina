@@ -14,7 +14,6 @@ from urllib.request import Request, urlopen
 from .. import __resources_path__
 from ..importer import ImportExtensions
 from ..logging.predefined import default_logger
-from .progress_bar import ProgressBar, Spinner
 
 
 @lru_cache()
@@ -104,7 +103,7 @@ def unpack_package(filepath: 'Path', target_dir: 'Path'):
         with zipfile.open(filepath) as tar:
             tar.extractall(target_dir)
     else:
-        raise ValueError("File format is not supported for unpacking.")
+        raise ValueError('File format is not supported for unpacking.')
 
 
 def archive_package(package_folder: 'Path') -> 'io.BytesIO':
@@ -172,15 +171,10 @@ def download_with_resume(
     with ImportExtensions(required=True):
         import requests
 
-    def _download(
-        url, target, resume_byte_pos: int = None, pbar: Optional[Spinner] = None
-    ):
+    def _download(url, target, resume_byte_pos: int = None):
         resume_header = (
             {'Range': f'bytes={resume_byte_pos}-'} if resume_byte_pos else None
         )
-
-        if pbar and resume_byte_pos:
-            pbar.update(steps=resume_byte_pos)
 
         try:
             r = requests.get(url, stream=True, headers=resume_header)
@@ -193,8 +187,6 @@ def download_with_resume(
         with target.open(mode=mode) as f:
             for chunk in r.iter_content(32 * block_size):
                 f.write(chunk)
-                if pbar:
-                    pbar.update(steps=len(chunk))
 
     if filename is None:
         filename = url.split('/')[-1]
@@ -212,14 +204,7 @@ def download_with_resume(
         if file_size_online > file_size_offline:
             _resume_byte_pos = file_size_offline
 
-    progress_bar = (
-        ProgressBar(task_name='Downloading', total=file_size_online)
-        if file_size_online > 0
-        else Spinner(task_name='Pulling')
-    )
-
-    with progress_bar as p_bar:
-        _download(url, filepath, _resume_byte_pos, p_bar)
+    _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
         raise RuntimeError('MD5 checksum failed.')
@@ -231,8 +216,8 @@ def upload_file(
     url: str,
     file_name: str,
     buffer_data: bytes,
-    dict_data: Dict = {},
-    headers: Dict = {},
+    dict_data: Dict,
+    headers: Dict,
     stream: bool = False,
     method: str = 'post',
 ):
@@ -250,35 +235,14 @@ def upload_file(
     with ImportExtensions(required=True):
         import requests
 
-    from .progress_bar import ProgressBar
-
-    class BufferReader(io.BytesIO):
-        def __init__(self, buf=b'', p_bar: Optional['ProgressBar'] = None):
-            self._len = len(buf)
-            self._p_bar = p_bar
-            io.BytesIO.__init__(self, buf)
-
-        def __len__(self):
-            return self._len
-
-        def read(self, n=-1):
-            chunk = io.BytesIO.read(self, n)
-            if self._p_bar:
-                self._p_bar.update(steps=len(chunk))
-            return chunk
-
     dict_data.update({'file': (file_name, buffer_data)})
 
     (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
         dict_data
     )
 
-    headers.update({"Content-Type": ctype})
+    headers.update({'Content-Type': ctype})
 
-    with ProgressBar(task_name='Uploading', total=len(data)) as p_bar:
-        body = BufferReader(data, p_bar)
-        response = getattr(requests, method)(
-            url, data=body, headers=headers, stream=stream
-        )
+    response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
 
     return response
