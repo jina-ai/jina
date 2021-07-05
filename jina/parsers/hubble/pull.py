@@ -17,7 +17,7 @@ def mixin_hub_pull_parser(parser):
     gp.add_argument(
         'uri',
         type=hub_uri,
-        help='The URI of the executor to download (e.g., jinahub[+docker]://UUID8)',
+        help='The URI of the executor to pull (e.g., jinahub[+docker]://UUID8)',
     )
     gp.add_argument(
         '--install-requirements',

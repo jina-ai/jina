@@ -16,7 +16,7 @@ from .helper import (
     get_hubble_url,
     upload_file,
 )
-from .hubapi import install_local
+from .hubapi import install_local, resolve_local
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
@@ -251,7 +251,7 @@ with f:
         return p1, p2, p3, p4
 
     @staticmethod
-    def fetch(
+    def _fetch_meta(
         name: str,
         tag: Optional[str] = None,
         secret: Optional[str] = None,
@@ -293,12 +293,14 @@ with f:
             resp['package']['md5'],
         )
 
-    def pull(self) -> None:
-        """Pull the executor package from Jina Hub."""
+    def pull(self) -> str:
+        """Pull the executor package from Jina Hub.
+
+        :return: the `uses` string
+        """
         from rich.console import Console
 
         console = Console()
-
         cached_zip_filepath = None
 
         with console.status(f'Pulling {self.args.uri}...') as st:
@@ -306,12 +308,20 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update('Fetching meta data...')
-                executor = HubIO.fetch(name, tag=tag, secret=secret)
+                executor = HubIO._fetch_meta(name, tag=tag, secret=secret)
 
                 if scheme == 'jinahub+docker':
                     st.update(f'Pulling {executor.image_name}...')
                     self._client.images.pull(executor.image_name)
+                    return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
+
+                    try:
+                        pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                        return f'{pkg_path / "config.yml"}'
+                    except FileNotFoundError:
+                        pass  # have not been downloaded yet, download for the first time
+
                     # download the package
                     cache_dir = Path(
                         os.environ.get(
@@ -335,6 +345,9 @@ with f:
                         tag or executor.tag,
                         install_deps=self.args.install_requirements,
                     )
+
+                    pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                    return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
             except Exception as e:
