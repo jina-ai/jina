@@ -73,7 +73,7 @@ class BasePea:
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
         self.closure = RuntimeCloseFactory.build_runtime_close(
-            is_dealer=self._is_dealer,
+            is_dealer=self.is_dealer,
             zed_runtime_ctrl=self._zed_runtime_ctrl_address,
             timeout_ctrl=self._timeout_ctrl,
             zmq_identity=self.args.zmq_identity,
@@ -182,7 +182,7 @@ class BasePea:
 
     def activate_runtime(self):
         """ Send activate control message. """
-        if self._is_dealer:
+        if self.is_dealer:
             from ..zmq import send_ctrl_message
 
             send_ctrl_message(
@@ -224,13 +224,10 @@ class BasePea:
             )
 
     @property
-    def _is_dealer(self):
+    def is_dealer(self):
         """Return true if this `Pea` must act as a Dealer responding to a Router
         .. # noqa: DAR201
         """
-        self.logger.warning(
-            f' I am dealer {self.args.socket_in == SocketType.DEALER_CONNECT} and {self.args.socket_in}'
-        )
         return self.args.socket_in == SocketType.DEALER_CONNECT
 
     def close(self) -> None:

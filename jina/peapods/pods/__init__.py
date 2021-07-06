@@ -306,7 +306,7 @@ class Pod(BasePod, ExitFIFO):
         self.is_tail_router = False
         self.deducted_head = None
         self.deducted_tail = None
-        self.peas = []  # type: List['BasePea']
+        self.peas = []
         if isinstance(args, Dict):
             # This is used when a Pod is created in a remote context, where peas & their connections are already given.
             self.peas_args = args
@@ -314,6 +314,8 @@ class Pod(BasePod, ExitFIFO):
             self.peas_args = self._parse_args(args)
         self._activated = False
         self._router_ctrl_address = router_ctrl_address
+        self.head_pea = None
+        self.tail_pea = None
 
     @property
     def is_singleton(self) -> bool:
@@ -420,29 +422,45 @@ class Pod(BasePod, ExitFIFO):
             raise ValueError('ambiguous tail node, maybe it is deducted already?')
 
     @property
-    def all_args(self) -> List[Namespace]:
-        """Get all arguments of all Peas in this BasePod.
-
-        .. # noqa: DAR201
-        """
-        return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
-            + self.peas_args['peas']
-        )
-
-    @property
-    def _fifo_args(self) -> List[Namespace]:
+    def _starting_peas(self) -> List[BasePea]:
         """Get all arguments of all Peas in this BasePod.
         .. # noqa: DAR201
         """
-        # For some reason, it seems that using `stack` and having `Head` started after the rest of Peas do not work and
-        # some messages are not received by the inner peas. That's why ExitFIFO is needed
-        return (
-            ([self.peas_args['head']] if self.peas_args['head'] else [])
-            + self.peas_args['peas']
-            + ([self.peas_args['tail']] if self.peas_args['tail'] else [])
-        )
+        if self.peas_args['head']:
+            _args = self.peas_args['head']
+            _args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+            self.head_pea = BasePea(
+                _args, router_ctrl_address=self._router_ctrl_address
+            )
+        for pea_args in self.peas_args['peas']:
+            pea_args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+            self.peas.append(
+                BasePea(
+                    pea_args,
+                    router_ctrl_address=self.head_pea._zed_runtime_ctrl_address
+                    if self.head_pea
+                    else self._router_ctrl_address,
+                )
+            )
+        if self.peas_args['tail']:
+            _args = self.peas_args['tail']
+            _args.noblock_on_start = getattr(self.args, 'noblock_on_start', False)
+            self.tail_pea = BasePea(_args)
+
+        ordered_peas = []
+        if self.peas[0].is_dealer:
+            ordered_peas.extend(self.peas)
+            if self.head_pea:
+                ordered_peas.append(self.head_pea)
+            if self.tail_pea:
+                ordered_peas.append(self.tail_pea)
+        else:
+            if self.head_pea:
+                ordered_peas.append(self.head_pea)
+            ordered_peas.extend(self.peas)
+            if self.tail_pea:
+                ordered_peas.append(self.tail_pea)
+        return ordered_peas
 
     @property
     def num_peas(self) -> int:
@@ -450,19 +468,24 @@ class Pod(BasePod, ExitFIFO):
 
         .. # noqa: DAR201
         """
-        return len(self.peas)
+        num_peas = len(self.peas)
+        if self.head_pea is not None:
+            num_peas += 1
+        if self.tail_pea is not None:
+            num_peas += 1
+        return num_peas
 
     def __eq__(self, other: 'BasePod'):
         return self.num_peas == other.num_peas and self.name == other.name
 
-    def _enter_pea(self, pea: 'BasePea') -> None:
-        self.peas.append(pea)
-        self.enter_context(pea)
-
     def _activate(self):
         # order is good. Activate from tail to head
-        for pea in reversed(self.peas):
+        if self.tail_pea:
+            self.tail_pea.activate_runtime()
+        for pea in self.peas:
             pea.activate_runtime()
+        if self.head_pea:
+            self.head_pea.activate_runtime()
 
         self._activated = True
 
@@ -476,37 +499,9 @@ class Pod(BasePod, ExitFIFO):
             If one of the :class:`BasePea` fails to start, make sure that all of them
             are properly closed.
         """
-
-        def _get_router_ctrl_address(_router_ctrl_address):
-            if _router_ctrl_address is not None and len(self.peas) == 0:
-                return _router_ctrl_address
-            elif len(self.peas) > 0:
-                return self.peas[0]._zed_runtime_ctrl_address
-            else:
-                return None
-
-        if getattr(self.args, 'noblock_on_start', False):
-            for _args in self._fifo_args:
-                _args.noblock_on_start = True
-                self._enter_pea(
-                    BasePea(
-                        _args,
-                        router_ctrl_address=_get_router_ctrl_address(
-                            self._router_ctrl_address
-                        ),
-                    )
-                )
-        else:
-            for _args in self._fifo_args:
-                self._enter_pea(
-                    BasePea(
-                        _args,
-                        router_ctrl_address=_get_router_ctrl_address(
-                            self._router_ctrl_address
-                        ),
-                    )
-                )
-
+        for pea in self._starting_peas:
+            self.enter_context(pea)
+        if not getattr(self.args, 'noblock_on_start', False):
             self._activate()
         return self
 
@@ -532,13 +527,15 @@ class Pod(BasePod, ExitFIFO):
     def join(self):
         """Wait until all peas exit"""
         try:
-            for p in self.peas:
+            for p in reversed(self.peas):
                 p.join()
                 self._activated = False
         except KeyboardInterrupt:
             pass
         finally:
             self.peas.clear()
+            self.head_pea = None
+            self.tail_pea = None
             self._activated = False
 
     @property

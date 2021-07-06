@@ -43,7 +43,7 @@ class SingletonRuntimeClose(RuntimeClose):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger.warning(f' SingletonRuntimeClose CLOSE')
+        self.logger.warning(f' Instantiating a `SingletonRuntimeClose`')
 
     def cancel_runtime(self):
         """Send terminate control message."""
@@ -64,7 +64,7 @@ class DealerRuntimeClose(RuntimeClose):
 
     def __init__(self, router_ctrl_address: str, zmq_identity: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.logger.warning(f' DEALER RUNTIME CLOSE')
+        self.logger.warning(f' Instantiating a `DealerRuntimeClose`')
         self._router_ctrl_address = router_ctrl_address
         self._zmq_identity = zmq_identity
 
@@ -97,9 +97,11 @@ class EventRuntimeClose(RuntimeClose):
     def __init__(
         self,
         cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+        logger: JinaLogger,
         *args,
         **kwargs,
     ):
+        logger.warning(f' Instantiating a `EventRuntimeClose`')
         self._cancel_event = cancel_event
 
     def cancel_runtime(self):

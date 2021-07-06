@@ -130,8 +130,8 @@ def test_gateway_pod(runtime, protocol, runtime_cls):
         ['--runtime-backend', runtime, '--protocol', protocol]
     )
     with Pod(args) as p:
-        assert len(p.all_args) == 1
-        assert p.all_args[0].runtime_cls == runtime_cls
+        assert len(p.peas) == 1
+        assert p.peas[0].runtime_cls == runtime_cls
 
     Pod(args).start().close()
 
@@ -142,10 +142,10 @@ def test_pod_naming_with_parallel_any(runtime):
         ['--name', 'pod', '--parallel', '2', '--runtime-backend', runtime]
     )
     with Pod(args) as bp:
-        assert bp.peas[0].name == 'pod/head'
-        assert bp.peas[1].name == 'pod/pea-0'
-        assert bp.peas[2].name == 'pod/pea-1'
-        assert bp.peas[3].name == 'pod/tail'
+        assert bp.head_pea.name == 'pod/head'
+        assert bp.peas[0].name == 'pod/pea-0'
+        assert bp.peas[1].name == 'pod/pea-1'
+        assert bp.tail_pea.name == 'pod/tail'
 
 
 @pytest.mark.parametrize('runtime', ['process', 'thread'])
@@ -163,10 +163,10 @@ def test_pod_naming_with_parallel_all(runtime):
         ]
     )
     with Pod(args) as bp:
-        assert bp.peas[0].name == 'pod/head'
-        assert bp.peas[1].name == 'pod/pea-0'
-        assert bp.peas[2].name == 'pod/pea-1'
-        assert bp.peas[3].name == 'pod/tail'
+        assert bp.head_pea.name == 'pod/head'
+        assert bp.peas[0].name == 'pod/pea-0'
+        assert bp.peas[1].name == 'pod/pea-1'
+        assert bp.tail_pea.name == 'pod/tail'
 
 
 def test_pod_args_remove_uses_ba():
