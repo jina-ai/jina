@@ -13,12 +13,14 @@ __all__ = ['GRPCRuntime']
 from .....types.message import Message
 
 
-class GRPCPrefetchCall(PrefetchCaller, jina_pb2_grpc.JinaRPCServicer):
+class GRPCPrefetchCall(jina_pb2_grpc.JinaRPCServicer):
     """JinaRPCServicer """
 
     def __init__(self, args, zmqlet):
-        super().__init__(args, zmqlet)
-        self.Call = self.send
+        super().__init__()
+        self._servicer = PrefetchCaller(args, zmqlet)
+        self.Call = self._servicer.send
+        self.close = self._servicer.close
 
 
 class GRPCRuntime(AsyncNewLoopRuntime):
