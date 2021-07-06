@@ -206,10 +206,10 @@ class ZEDRuntime(ZMQRuntime):
             return self
 
         # migrated from the previously RouteDriver logic
-        self.logger.debug(f' I have the following idle dealers {self._idle_dealer_ids}')
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
             self.envelope.receiver_id = dealer_id
+            self.logger.debug(f' Send to dealer {dealer_id}')
 
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
@@ -256,20 +256,23 @@ class ZEDRuntime(ZMQRuntime):
             # The Pea sending this message should make sure to be able to populate properly the `envelope`.
             # This means the `zmqlet` identity must be known by the Pea
 
-            # THING THAT HAS BEEN OBSERVED. This TERMINATE SIGNAL MAY ARRIVE TO THE DEALER BEFORE A SEARCH REQUEST
-            # AND THEN A SEARCH REQUEST MAY BE LOST. THIS MESSAGE NEEDS TO BE SENT THROUGH THE OUT_SOCK. SECOND
-            # ALTERNATIVE IS TO HAVE A SMALL SLEEP BUT WOULD BE VERY FRAGILE
             dealer_id = self.request.parameters['dealer_identity']
             dealer_ctrl_address = self.request.parameters['dealer_ctrl_address']
-            timeout_ctrl = int(
-                self.request.parameters['timeout_ctrl']
-            )  # TODO: Get it from somewhere
+            timeout_ctrl = int(self.request.parameters['timeout_ctrl'])
             self.logger.debug(f'Received signal to terminate dealer id {dealer_id}')
             if dealer_id in self._idle_dealer_ids:
                 self._idle_dealer_ids.remove(dealer_id)
             from ...zmq import send_ctrl_message
 
+            # THING THAT HAS BEEN OBSERVED. This TERMINATE SIGNAL MAY ARRIVE TO THE DEALER BEFORE A SEARCH REQUEST
+            # AND THEN A SEARCH REQUEST MAY BE LOST. THIS MESSAGE NEEDS TO BE SENT THROUGH THE OUT_SOCK. SECOND
+            # ALTERNATIVE IS TO HAVE A SMALL SLEEP BUT WOULD BE VERY FRAGILE. (Sending through the OUT_SOCK breaks the req-response)
+            import time
+
+            time.sleep(0.1)
+            self.logger.debug(f' Send TERMINATE signal to dealer {dealer_id}')
             send_ctrl_message(dealer_ctrl_address, 'TERMINATE', timeout=timeout_ctrl)
+            self.logger.debug(f' Returned from terminating {dealer_id}')
         elif self.request.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated

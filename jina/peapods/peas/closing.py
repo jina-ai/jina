@@ -47,6 +47,8 @@ class SingletonRuntimeClose(RuntimeClose):
 
     def cancel_runtime(self):
         """Send terminate control message."""
+        self.logger.debug(f'Send terminate signal at {self._zed_runtime_ctrl_address}')
+
         send_ctrl_message(
             self._zed_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
         )
@@ -77,6 +79,9 @@ class DealerRuntimeClose(RuntimeClose):
             'dealer_identity': self._zmq_identity,
             'timeout_ctrl': self._timeout_ctrl,
         }
+        self.logger.debug(
+            f'Send terminate worker to router at {self._router_ctrl_address}'
+        )
         send_ctrl_message(
             self._router_ctrl_address,
             'TERMINATE_WORKER',

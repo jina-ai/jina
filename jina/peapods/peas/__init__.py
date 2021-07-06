@@ -236,6 +236,7 @@ class BasePea:
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
+        self.logger.debug(f' Pea being closed')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
                 self._cancel_runtime()
