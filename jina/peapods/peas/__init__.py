@@ -324,7 +324,7 @@ class BasePea:
             self.args.runtime_cls = 'ContainerRuntime'
         if self.args.runtime_cls == 'ZEDRuntime' and is_valid_huburi(self.args.uses):
             self.args.uses = HubIO(
-                set_hub_pull_parser().parse_args([self.args.uses, '--hide-usage'])
+                set_hub_pull_parser().parse_args([self.args.uses, '--no-usage'])
             ).pull()
             if self.args.uses.startswith('docker://'):
                 self.args.runtime_cls = 'ContainerRuntime'
