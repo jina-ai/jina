@@ -171,7 +171,7 @@ class HubIO:
         table.add_column('Value', style='cyan', no_wrap=True)
         table.add_row(':key: ID', uuid8)
         if 'alias' in image:
-            table.add_row(':name_badge: Alias' + image['alias'])
+            table.add_row(':name_badge: Alias', image['alias'])
         table.add_row(':lock: Secret', secret)
         table.add_row(
             '',
