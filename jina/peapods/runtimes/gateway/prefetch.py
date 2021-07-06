@@ -28,11 +28,10 @@ class PrefetchCaller:
         self.logger = JinaLogger(self.name, **vars(args))
         self._message_buffer: Dict[str, Future[Message]] = dict()
         self._receive_task = get_or_reuse_loop().create_task(self._receive())
-        self._is_running = True
 
     async def _receive(self):
         try:
-            while self._is_running:
+            while True:
                 message = await self.zmqlet.recv_message(callback=lambda x: x.response)
                 if message.request_id in self._message_buffer:
                     future = self._message_buffer.pop(message.request_id)
@@ -54,7 +53,6 @@ class PrefetchCaller:
         """
         Stop receiving messages
         """
-        self._is_running = False
         self._receive_task.cancel()
 
     async def send(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
@@ -69,8 +67,10 @@ class PrefetchCaller:
         self.zmqlet: 'AsyncZmqlet'
         self.logger: JinaLogger
 
-        if not self._is_running:
-            raise RuntimeError('PrefetchCaller not running, can not send messages')
+        if self._receive_task.done():
+            raise RuntimeError(
+                'PrefetchCaller receive task not running, can not send messages'
+            )
 
         async def prefetch_req(num_req, fetch_to):
             """
