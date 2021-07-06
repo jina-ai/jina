@@ -70,6 +70,9 @@ class Zmqlet:
         self.msg_sent = 0
         self.is_closed = False
         self.is_polling_paused = False
+        self.in_sock_type = None
+        self.out_sock_type = None
+        self.ctrl_sock_type = None
         self.opened_socks = []  # this must be here for `close()`
         (
             self.ctx,
