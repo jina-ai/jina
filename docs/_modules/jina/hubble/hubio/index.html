@@ -554,7 +554,7 @@
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Value'</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':key: ID'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">'alias'</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
-            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':name_badge: Alias'</span> <span class="o">+</span> <span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">])</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':name_badge: Alias'</span><span class="p">,</span> <span class="n">image</span><span class="p">[</span><span class="s1">'alias'</span><span class="p">])</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':lock: Secret'</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="s1">''</span><span class="p">,</span>
@@ -762,7 +762,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 05, 2021.
+            Last updated on Jul 06, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
