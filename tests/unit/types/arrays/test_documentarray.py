@@ -347,7 +347,7 @@ def test_traversal_path():
 
 
 def test_cache_invalidation_clear(docarray_for_cache):
-    assert 1 in docarray_for_cache
+    assert '1' in docarray_for_cache
     assert '2' in docarray_for_cache
     docarray_for_cache.clear()
     assert '1' not in docarray_for_cache
