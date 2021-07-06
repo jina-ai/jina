@@ -80,6 +80,7 @@ class BasePea:
             router_ctrl_address=router_ctrl_address,
             cancel_event=self.cancel_event,
             runtime_cls=self.runtime_cls,
+            logger=self.logger,
         )
 
     def _set_ctrl_adrr(self):
@@ -227,6 +228,9 @@ class BasePea:
         """Return true if this `Pea` must act as a Dealer responding to a Router
         .. # noqa: DAR201
         """
+        self.logger.warning(
+            f' I am dealer {self.args.socket_in == SocketType.DEALER_CONNECT} and {self.args.socket_in}'
+        )
         return self.args.socket_in == SocketType.DEALER_CONNECT
 
     def close(self) -> None:

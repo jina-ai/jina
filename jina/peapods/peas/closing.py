@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Optional, Union
 
 from ..zmq import send_ctrl_message
+from ...logging.logger import JinaLogger
 
 if False:
     import multiprocessing
@@ -17,11 +18,17 @@ class RuntimeClose:
     """
 
     def __init__(
-        self, zed_runtime_ctrl_address: str, timeout_ctrl: int, *args, **kwargs
+        self,
+        zed_runtime_ctrl_address: str,
+        timeout_ctrl: int,
+        logger: JinaLogger,
+        *args,
+        **kwargs,
     ):
         super().__init__()
         self._zed_runtime_ctrl_address = zed_runtime_ctrl_address
         self._timeout_ctrl = timeout_ctrl
+        self.logger = logger
 
     @abstractmethod
     def cancel_runtime(self):
@@ -33,6 +40,10 @@ class SingletonRuntimeClose(RuntimeClose):
     """
     :class:`SingletonRuntimeClose` is a class encapsulating the logic to close a `SingleTonRuntime` (simply sending a TERMINATE signal)
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.logger.warning(f' SingletonRuntimeClose CLOSE')
 
     def cancel_runtime(self):
         """Send terminate control message."""
@@ -53,6 +64,7 @@ class DealerRuntimeClose(RuntimeClose):
 
     def __init__(self, router_ctrl_address: str, zmq_identity: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.logger.warning(f' DEALER RUNTIME CLOSE')
         self._router_ctrl_address = router_ctrl_address
         self._zmq_identity = zmq_identity
 
@@ -63,6 +75,7 @@ class DealerRuntimeClose(RuntimeClose):
         parameters = {
             'dealer_ctrl_address': self._zed_runtime_ctrl_address,
             'dealer_identity': self._zmq_identity,
+            'timeout_ctrl': self._timeout_ctrl,
         }
         send_ctrl_message(
             self._router_ctrl_address,
@@ -85,7 +98,7 @@ class EventRuntimeClose(RuntimeClose):
         self,
         cancel_event: Union['multiprocessing.Event', 'threading.Event'],
         *args,
-        **kwargs
+        **kwargs,
     ):
         self._cancel_event = cancel_event
 
@@ -108,6 +121,7 @@ class RuntimeCloseFactory:
         zmq_identity: Optional[str],
         router_ctrl_address: Optional[str],
         runtime_cls,
+        logger: JinaLogger,
     ) -> RuntimeClose:
         """Build an implementation of a `BasePod` interface
 
@@ -118,13 +132,14 @@ class RuntimeCloseFactory:
         :param zmq_identity: the zmqlet identity of the ZedRuntime it wants to close
         :param router_ctrl_address: if a dealer, a router control address is required for proper closing
         :param runtime_cls: The type of runtime class to close
+        :param logger: The logger of the closing from the Pea
         :return: the created BasePod
         """
         from ..runtimes.zmq.zed import ZEDRuntime
         from ..runtimes.container import ContainerRuntime
 
         if runtime_cls != ZEDRuntime and runtime_cls != ContainerRuntime:
-            return EventRuntimeClose(cancel_event=cancel_event)
+            return EventRuntimeClose(cancel_event=cancel_event, logger=logger)
         elif is_dealer:
             if not router_ctrl_address:
                 raise AssertionError(
@@ -135,8 +150,11 @@ class RuntimeCloseFactory:
                 zed_runtime_ctrl_address=zed_runtime_ctrl,
                 timeout_ctrl=timeout_ctrl,
                 zmq_identity=zmq_identity,
+                logger=logger,
             )
         else:
             return SingletonRuntimeClose(
-                zed_runtime_ctrl_address=zed_runtime_ctrl, timeout_ctrl=timeout_ctrl
+                zed_runtime_ctrl_address=zed_runtime_ctrl,
+                timeout_ctrl=timeout_ctrl,
+                logger=logger,
             )
