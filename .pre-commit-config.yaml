@@ -26,3 +26,8 @@ repos:
     exclude: ^(jina/proto/jina_pb2.py|docs/)
     args:
       - -S
+- repo: https://github.com/pre-commit/mirrors-isort
+  rev: v4.3.20
+  hooks:
+    - id: isort
+    exclude: jina/helloworld/, docs/
