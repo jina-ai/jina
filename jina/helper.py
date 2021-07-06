@@ -913,19 +913,19 @@ class _cache_invalidate(object):
     """Class for cache invalidation, remove strategy.
 
     :param func: func to wrap as a decorator.
-    :param func_to_invalidate: String as the function name to invalidate cached
+    :param attribute: String as the function name to invalidate cached
         data. E.g. in :class:`cached_property` we cache data inside the class obj
         with the `key`: `CACHED_{func.__name__}`, the func name in `cached_property`
         is the name to invalidate.
     """
 
-    def __init__(self, func, func_to_invalidate: str):
+    def __init__(self, func, attribute: str):
         self.func = func
-        self.func_to_invalidate = func_to_invalidate
+        self.attribute = attribute
 
     def __call__(self, *args, **kwargs):
         obj = args[0]
-        cached_key = f'CACHED_{self.func_to_invalidate}'
+        cached_key = f'CACHED_{self.attribute}'
         if cached_key in obj.__dict__:
             del obj.__dict__[cached_key]  # invalidate
         self.func(*args, **kwargs)
@@ -936,17 +936,17 @@ class _cache_invalidate(object):
         return partial(self.__call__, obj)
 
 
-def cache_invalidate(func_to_invalidate: str):
+def cache_invalidate(attribute: str):
     """The cache invalidator decorator to wrap the method call.
 
     Check the implementation in :class:`_cache_invalidate`.
 
-    :param func_to_invalidate: The func name as was stored in the obj to invalidate.
+    :param attribute: The func name as was stored in the obj to invalidate.
     :return: wrapped method.
     """
 
     def _wrap(func):
-        return _cache_invalidate(func, func_to_invalidate)
+        return _cache_invalidate(func, attribute)
 
     return _wrap
 
