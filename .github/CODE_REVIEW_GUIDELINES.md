@@ -24,7 +24,6 @@
 ## TLDR for pyguide  
 
 - Variables names need to be informative. No k, v or x.
-- Use standard import [order](https://stackoverflow.com/questions/20762662/whats-the-correct-way-to-sort-python-import-x-and-from-x-import-y-statement)
 - Define global variables in CAPS
 - Use appropriate underscore for variable naming (leading, lagging, single, double)
 - Add docstrings
