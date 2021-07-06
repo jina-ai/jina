@@ -910,6 +910,15 @@ class cached_property:
 
 
 class _cache_invalidate(object):
+    """Class for cache invalidation, remove strategy.
+
+    :param func: func to wrap as a decorator.
+    :param func_to_invalidate: String as the function name to invalidate cached
+        data. E.g. in :class:`cached_property` we cache data inside the class obj
+        with the `key`: `CACHED_{func.__name__}`, the func name in `cached_property`
+        is the name to invalidate.
+    """
+
     def __init__(self, func, func_to_invalidate: str):
         self.func = func
         self.func_to_invalidate = func_to_invalidate
@@ -928,6 +937,14 @@ class _cache_invalidate(object):
 
 
 def cache_invalidate(func_to_invalidate: str):
+    """The cache invalidator decorator to wrap the method call.
+
+    Check the implementation in :class:`_cache_invalidate`.
+
+    :param func_to_invalidate: The func name as was stored in the obj to invalidate.
+    :return: wrapped method.
+    """
+
     def _wrap(func):
         return _cache_invalidate(func, func_to_invalidate)
 

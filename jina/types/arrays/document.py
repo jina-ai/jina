@@ -148,6 +148,7 @@ class DocumentArray(
                         f'DocumentArray got an unexpected input {type(docs)}'
                     )
 
+    @cache_invalidate(func_to_invalidate='_id_to_index')
     def insert(self, index: int, doc: 'Document') -> None:
         """
         Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentArray` .
@@ -222,6 +223,7 @@ class DocumentArray(
             self.append(doc)
         return self
 
+    @cache_invalidate(func_to_invalidate='_id_to_index')
     def append(self, doc: 'Document'):
         """
         Append :param:`doc` in :class:`DocumentArray`.
@@ -239,6 +241,7 @@ class DocumentArray(
         for doc in iterable:
             self.append(doc)
 
+    @cache_invalidate(func_to_invalidate='_id_to_index')
     def clear(self):
         """Clear the data of :class:`DocumentArray`"""
         while len(self._pb_body) > 0:

@@ -8,7 +8,6 @@ from scipy.sparse import coo_matrix
 
 from jina import Document, DocumentArray
 from jina.logging.profile import TimeContext
-from jina.types.document.graph import GraphDocument
 from tests import random_docs
 
 DOCUMENTS_PER_LEVEL = 1
@@ -52,6 +51,15 @@ def docarray_with_scipy_sparse_embedding(docs):
     for doc in docs:
         doc.embedding = embedding
     return DocumentArray(docs)
+
+
+@pytest.fixture
+def docarray_for_cache():
+    da = DocumentArray()
+    d1 = Document(id=1)
+    d2 = Document(id='2')
+    da.extend([d1, d2])
+    return da
 
 
 def test_length(docarray, docs):
@@ -336,3 +344,56 @@ def test_traversal_path():
     with pytest.raises(ValueError):
         for _ in da.traverse('r'):
             pass
+
+
+def test_cache_invalidation_clear(docarray_for_cache):
+    assert 1 in docarray_for_cache
+    assert '2' in docarray_for_cache
+    docarray_for_cache.clear()
+    assert '1' not in docarray_for_cache
+    assert '2' not in docarray_for_cache
+
+
+def test_cache_invalidation_append(docarray_for_cache):
+    """Test add related functions includes
+
+    `append`, `extend`, `__add__`, `__iadd__`.
+    """
+    assert 'test_id' not in docarray_for_cache
+    doc1 = Document(id='test_id')
+    docarray_for_cache.append(doc1)
+    assert 'test_id' in docarray_for_cache
+    doc2 = Document(id='test_id2')
+    doc3 = Document(id=4)
+    docarray_for_cache.extend([doc2, doc3])
+    assert len(docarray_for_cache) == 5
+    assert 'test_id2' in docarray_for_cache
+    assert '4' in docarray_for_cache
+    docarray_for_cache = docarray_for_cache + DocumentArray([Document(id='test_id3')])
+    assert 'test_id3' in docarray_for_cache
+    docarray_for_cache += DocumentArray([Document(id='test_id4')])
+    assert 'test_id4' in docarray_for_cache
+
+
+def test_cache_invalidation_insert(docarray_for_cache):
+    """Test insert doc at certain idx."""
+    docarray_for_cache.insert(0, Document(id='test_id'))
+    assert 'test_id' in docarray_for_cache
+    assert docarray_for_cache[0].id == 'test_id'
+
+
+def test_cache_invalidation_set_del(docarray_for_cache):
+    docarray_for_cache[0] = Document(id='test_id')
+    docarray_for_cache[1] = Document(id='test_id2')
+    assert 'test_id' in docarray_for_cache
+    assert 'test_id2' in docarray_for_cache
+    del docarray_for_cache['test_id']
+    assert 'test_id' not in docarray_for_cache
+
+
+def test_cache_invalidation_sort_reverse(docarray_for_cache):
+    assert docarray_for_cache[0].id == '1'
+    assert docarray_for_cache[1].id == '2'
+    docarray_for_cache.reverse()
+    assert docarray_for_cache[0].id == '2'
+    assert docarray_for_cache[1].id == '1'
