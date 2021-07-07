@@ -399,7 +399,7 @@
     <span class="n">get_hubble_url</span><span class="p">,</span>
     <span class="n">upload_file</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">resolve_local</span>
+<span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">resolve_local</span><span class="p">,</span> <span class="n">load_secret</span><span class="p">,</span> <span class="n">dump_secret</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -436,8 +436,10 @@
 
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">rich</span>
+            <span class="kn">import</span> <span class="nn">cryptography</span>
 
             <span class="k">assert</span> <span class="n">rich</span>  <span class="c1">#: prevent pycharm auto remove the above line</span>
+            <span class="k">assert</span> <span class="n">cryptography</span>
 
     <span class="k">def</span> <span class="nf">_load_docker_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -466,9 +468,7 @@
         <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
 
         <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
-
         <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pushing `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">`...'</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
-
             <span class="n">req_header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Packaging </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
@@ -486,12 +486,13 @@
                     <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
                     <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
                 <span class="p">}</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span><span class="p">:</span>
-                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span><span class="p">:</span>
-                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span>
+                <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="ow">or</span> <span class="n">uuid8</span><span class="p">:</span>
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="ow">or</span> <span class="n">uuid8</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span> <span class="ow">or</span> <span class="n">secret</span><span class="p">:</span>
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'secret'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span> <span class="ow">or</span> <span class="n">secret</span>
 
-                <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="k">else</span> <span class="s1">'post'</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="s1">'put'</span> <span class="k">if</span> <span class="p">(</span><span class="s1">'force'</span> <span class="ow">in</span> <span class="n">form_data</span><span class="p">)</span> <span class="k">else</span> <span class="s1">'post'</span>
 
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Connecting Hubble...'</span><span class="p">)</span>
                 <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">get_hubble_url</span><span class="p">()</span>
@@ -522,7 +523,9 @@
                 <span class="k">elif</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="s1">'Unknown Error'</span><span class="p">))</span>
                 <span class="k">elif</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">result</span><span class="p">[</span><span class="s1">'statusCode'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+                    <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span><span class="p">:</span>
+                        <span class="n">dump_secret</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">]:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">])</span>
                 <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
@@ -530,6 +533,7 @@
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># IO related errors</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Error while pushing session_id=</span><span class="si">{</span><span class="n">req_header</span><span class="p">[</span><span class="s2">"jinameta-session-id"</span><span class="p">]</span><span class="si">}</span><span class="s1">: '</span>
@@ -567,6 +571,8 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_usage</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_prettyprint_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span>
 
     <span class="k">def</span> <span class="nf">_get_prettyprint_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">usage</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>

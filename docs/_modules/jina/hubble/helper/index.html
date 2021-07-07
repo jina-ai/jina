@@ -506,7 +506,11 @@
         <span class="n">gitignore</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">)</span> <span class="o">/</span> <span class="s1">'Python.gitignore'</span>
 
     <span class="k">with</span> <span class="n">gitignore</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-        <span class="n">ignored_spec</span> <span class="o">=</span> <span class="n">pathspec</span><span class="o">.</span><span class="n">PathSpec</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="s1">'gitwildmatch'</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+        <span class="n">ignore_lines</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'#'</span><span class="p">))</span>
+        <span class="p">]</span>
+        <span class="n">ignore_lines</span> <span class="o">+=</span> <span class="p">[</span><span class="s1">'.git'</span><span class="p">,</span> <span class="s1">'.jina'</span><span class="p">]</span>
+        <span class="n">ignored_spec</span> <span class="o">=</span> <span class="n">pathspec</span><span class="o">.</span><span class="n">PathSpec</span><span class="o">.</span><span class="n">from_lines</span><span class="p">(</span><span class="s1">'gitwildmatch'</span><span class="p">,</span> <span class="n">ignore_lines</span><span class="p">)</span>
 
     <span class="n">zip_stream</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>

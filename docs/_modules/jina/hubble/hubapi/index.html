@@ -387,10 +387,12 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">unpack_package</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 
 <span class="n">_hub_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_HUB_ROOT'</span><span class="p">,</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'.jina'</span><span class="p">,</span> <span class="s1">'hub-packages'</span><span class="p">))</span>
@@ -407,6 +409,83 @@
     <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="n">uuid</span>
     <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">.dist-info'</span>
     <span class="k">return</span> <span class="n">pkg_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span></div>
+
+
+<div class="viewcode-block" id="get_config_path"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_config_path">[docs]</a><span class="k">def</span> <span class="nf">get_config_path</span><span class="p">(</span><span class="n">local_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Path'</span><span class="p">:</span>
+    <span class="sd">"""Get the local configure file</span>
+<span class="sd">    :param local_id: the random local ID of the executor</span>
+<span class="sd">    :return: json config path</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">local_id</span><span class="si">}</span><span class="s1">.json'</span></div>
+
+
+<div class="viewcode-block" id="load_secret"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.load_secret">[docs]</a><span class="k">def</span> <span class="nf">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""Get the UUID and Secret from local</span>
+
+<span class="sd">    :param work_path: the local package directory</span>
+<span class="sd">    :return: the UUID and secret</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">work_path</span> <span class="o">/</span> <span class="s1">'.jina'</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">local_id_file</span> <span class="o">=</span> <span class="n">config</span> <span class="o">/</span> <span class="s1">'secret.key'</span>
+    <span class="n">uuid8</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">secret</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">local_id_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">with</span> <span class="n">local_id_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">local_id</span><span class="p">,</span> <span class="n">local_key</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">local_key</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+
+        <span class="n">local_config_file</span> <span class="o">=</span> <span class="n">get_config_path</span><span class="p">(</span><span class="n">local_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">local_config_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">with</span> <span class="n">local_config_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">local_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">uuid8</span> <span class="o">=</span> <span class="n">local_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'uuid8'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">encrypted_secret</span> <span class="o">=</span> <span class="n">local_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'encrypted_secret'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">encrypted_secret</span><span class="p">:</span>
+                    <span class="n">secret</span> <span class="o">=</span> <span class="n">fernet</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted_secret</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span></div>
+
+
+<div class="viewcode-block" id="dump_secret"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.dump_secret">[docs]</a><span class="k">def</span> <span class="nf">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">"""Dump the UUID and Secret into local file</span>
+
+<span class="sd">    :param work_path: the local package directory</span>
+<span class="sd">    :param uuid8: the ID of the executor</span>
+<span class="sd">    :param secret: the access secret</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">work_path</span> <span class="o">/</span> <span class="s1">'.jina'</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">local_id_file</span> <span class="o">=</span> <span class="n">config</span> <span class="o">/</span> <span class="s1">'secret.key'</span>
+    <span class="n">local_id</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fernet</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">local_id_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">local_id_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">local_id</span><span class="p">,</span> <span class="n">local_key</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\t</span><span class="s1">'</span><span class="p">)</span>
+                <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">local_key</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">local_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">random_identity</span><span class="p">())</span>
+        <span class="k">with</span> <span class="n">local_id_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">local_key</span> <span class="o">=</span> <span class="n">Fernet</span><span class="o">.</span><span class="n">generate_key</span><span class="p">()</span>
+            <span class="n">fernet</span> <span class="o">=</span> <span class="n">Fernet</span><span class="p">(</span><span class="n">local_key</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">local_id</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">local_key</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="n">local_config_file</span> <span class="o">=</span> <span class="n">get_config_path</span><span class="p">(</span><span class="n">local_id</span><span class="p">)</span>
+    <span class="n">secret_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'uuid8'</span><span class="p">:</span> <span class="n">uuid8</span><span class="p">,</span>
+        <span class="s1">'encrypted_secret'</span><span class="p">:</span> <span class="n">fernet</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">secret</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
+    <span class="p">}</span>
+    <span class="k">with</span> <span class="n">local_config_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">secret_data</span><span class="p">))</span></div>
 
 
 <span class="k">def</span> <span class="nf">_install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">):</span>
@@ -436,7 +515,6 @@
 <span class="sd">    """</span>
 
     <span class="n">pkg_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">get_dist_path</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">pkg_dist_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
         <span class="k">return</span>
 
