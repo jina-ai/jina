@@ -1,7 +1,6 @@
 name: Latency Tracking
 
 on:
-  - push
   - pull_request
 
 jobs:
@@ -54,7 +53,6 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
           reaction-type: "eyes"
-
       - name: Update comment
         if: ${{ steps.fc.outputs.comment-id != 0 }}
         uses: peter-evans/create-or-update-comment@v1
