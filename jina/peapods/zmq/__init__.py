@@ -383,10 +383,8 @@ class Zmqlet:
 
         :param raise_exception: if true: raise an exception which might occur during send, if false: log error
         """
-        self.logger.warning(' send cancel to router')
         self._active = False
         self._send_control_to_router('CANCEL', raise_exception)
-        self.logger.warning(' after send cancel to router')
 
     def recv_message(
         self, callback: Optional[Callable[['Message'], 'Message']] = None
