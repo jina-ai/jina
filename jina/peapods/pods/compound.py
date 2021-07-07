@@ -11,6 +11,7 @@ from ..networking import get_connect_host
 from ... import helper
 from ...enums import PollingType, SocketType
 from ...helper import random_identity
+from ...logging.predefined import default_logger
 
 
 class CompoundPod(BasePod, ExitStack):
@@ -244,6 +245,7 @@ class CompoundPod(BasePod, ExitStack):
         :param dump_path: the dump from which to read the data
         """
         try:
+            default_logger.debug(f' Rolling update {self.name}')
             for i in range(len(self.replicas)):
                 replica = self.replicas[i]
                 replica.close()
@@ -255,6 +257,7 @@ class CompoundPod(BasePod, ExitStack):
                 self.enter_context(new_replica)
                 self.replicas[i] = new_replica
                 # TODO might be required in order to allow time for the Replica to come online
+                default_logger.debug(f' Replica {i} reloaded')
                 # before taking down the next
         except:
             raise
