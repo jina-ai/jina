@@ -15,7 +15,7 @@ class ColorFormatter(Formatter):
     """Format the log into colored logs based on the log-level."""
 
     MAPPING = {
-        LogVerbosity.DEBUG: dict(color='black', attrs=['bold']),  # grey
+        LogVerbosity.DEBUG: dict(color='magenta'),  # grey
         LogVerbosity.INFO: dict(),
         LogVerbosity.SUCCESS: dict(color='green'),
         LogVerbosity.WARNING: dict(color='yellow'),
