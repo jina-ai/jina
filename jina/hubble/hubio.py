@@ -156,6 +156,7 @@ class HubIO:
                     f'Error while pushing session_id={req_header["jinameta-session-id"]}: '
                     f'\n{e!r}'
                 )
+                exit(1)
 
     def _prettyprint_result(self, console, result):
         # TODO: only support single executor now
@@ -366,6 +367,7 @@ with f:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
             except Exception as e:
                 self.logger.error(f'{e!r}')
+                exit(2)
             finally:
                 # delete downloaded zip package if existed
                 if cached_zip_filepath is not None:
