@@ -69,13 +69,6 @@ class ModelCheckpointNotExist(FileNotFoundError):
     """Exception to raise for executors depending on pretrained model files when they do not exist."""
 
 
-class PretrainedModelFileDoesNotExist(ModelCheckpointNotExist):
-    """Depreciated, used in the hub executors.
-
-    TODO: to be removed after hub executors uses ModelCheckpointNotExist
-    """
-
-
 class HubDownloadError(Exception):
     """Exception to raise when :command:`jina hub pull` fails to download package."""
 
