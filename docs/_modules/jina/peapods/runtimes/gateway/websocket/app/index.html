@@ -422,7 +422,8 @@
     <span class="n">servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">)</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'shutdown'</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
+        <span class="k">await</span> <span class="n">servicer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>
@@ -438,7 +439,7 @@
                 <span class="k">yield</span> <span class="n">Request</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">servicer</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">()):</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">servicer</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">()):</span>
                 <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">binary_str</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
             <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>

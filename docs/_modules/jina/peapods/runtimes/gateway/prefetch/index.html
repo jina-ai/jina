@@ -383,23 +383,66 @@
         <h1>Source code for jina.peapods.runtimes.gateway.prefetch</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Future</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">typename</span>
+<span class="kn">from</span> <span class="nn">....helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span>
 <span class="kn">from</span> <span class="nn">....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">....types.message</span> <span class="kn">import</span> <span class="n">Message</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'PrefetchCaller'</span><span class="p">,</span> <span class="s1">'PrefetchMixin'</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'PrefetchCaller'</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">AsyncZmqlet</span>
 
 
-<div class="viewcode-block" id="PrefetchMixin"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.prefetch/#jina.peapods.runtimes.gateway.prefetch.PrefetchMixin">[docs]</a><span class="k">class</span> <span class="nc">PrefetchMixin</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">"""JinaRPCServicer """</span>
+<div class="viewcode-block" id="PrefetchCaller"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.prefetch/#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller">[docs]</a><span class="k">class</span> <span class="nc">PrefetchCaller</span><span class="p">:</span>
+    <span class="sd">"""An async zmq request sender to be used in the Gateway"""</span>
 
-<div class="viewcode-block" id="PrefetchMixin.Call"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.prefetch/#jina.peapods.runtimes.gateway.prefetch.PrefetchMixin.Call">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">Call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Message</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">:</span> <span class="s1">'AsyncZmqlet'</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        :param args: args from CLI</span>
+<span class="sd">        :param zmqlet: zeromq object</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span> <span class="o">=</span> <span class="n">zmqlet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_message_buffer</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Future</span><span class="p">[</span><span class="n">Message</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_receive_task</span> <span class="o">=</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_receive</span><span class="p">())</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">recv_message</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">response</span><span class="p">)</span>
+                <span class="c1"># during shutdown the socket will return None</span>
+                <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">request_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message_buffer</span><span class="p">:</span>
+                    <span class="n">future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message_buffer</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">request_id</span><span class="p">)</span>
+                    <span class="n">future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'Discarding unexpected message with request id </span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">request_id</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="p">)</span>
+        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message_buffer</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">future</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span>
+                    <span class="s1">'PrefetchCaller closed, all outstanding requests canceled'</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_message_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+<div class="viewcode-block" id="PrefetchCaller.close"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.prefetch/#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Stop receiving messages</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_receive_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PrefetchCaller.send"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.prefetch/#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller.send">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Message</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        Async call to receive Requests and build them into Messages.</span>
 
@@ -410,6 +453,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="p">:</span> <span class="s1">'AsyncZmqlet'</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span> <span class="n">JinaLogger</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receive_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">'PrefetchCaller receive task not running, can not send messages'</span>
+            <span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">prefetch_req</span><span class="p">(</span><span class="n">num_req</span><span class="p">,</span> <span class="n">fetch_to</span><span class="p">):</span>
             <span class="sd">"""</span>
@@ -429,16 +477,16 @@
                         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span><span class="si">}</span><span class="s1"> does not have `__anext__` or `__next__`'</span>
                         <span class="p">)</span>
+
+                    <span class="n">future</span> <span class="o">=</span> <span class="n">get_or_reuse_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_message_buffer</span><span class="p">[</span><span class="n">next_request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">future</span>
                     <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
                             <span class="n">Message</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">next_request</span><span class="p">,</span> <span class="s1">'gateway'</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                    <span class="n">fetch_to</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span><span class="o">.</span><span class="n">recv_message</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">response</span><span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
+
+                    <span class="n">fetch_to</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
                 <span class="k">except</span> <span class="p">(</span><span class="ne">StopIteration</span><span class="p">,</span> <span class="ne">StopAsyncIteration</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -478,22 +526,6 @@
                 <span class="c1"># this list dries, clear it and feed it with on_recv_task</span>
                 <span class="n">prefetch_task</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
                 <span class="n">prefetch_task</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">onrecv_task</span><span class="p">]</span></div></div>
-
-
-<div class="viewcode-block" id="PrefetchCaller"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.prefetch/#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller">[docs]</a><span class="k">class</span> <span class="nc">PrefetchCaller</span><span class="p">(</span><span class="n">PrefetchMixin</span><span class="p">):</span>
-    <span class="sd">"""An async zmq request sender to be used in the Gateway"""</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">:</span> <span class="s1">'AsyncZmqlet'</span><span class="p">):</span>
-        <span class="sd">"""</span>
-
-<span class="sd">        :param args: args from CLI</span>
-<span class="sd">        :param zmqlet: zeromq object</span>
-<span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">zmqlet</span> <span class="o">=</span> <span class="n">zmqlet</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span></div>
 </pre></div>
       </article>
       <footer>

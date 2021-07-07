@@ -444,7 +444,8 @@
     <span class="n">servicer</span> <span class="o">=</span> <span class="n">PrefetchCaller</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">zmqlet</span><span class="p">)</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'shutdown'</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
+        <span class="k">await</span> <span class="n">servicer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">zmqlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="n">openapi_tags</span> <span class="o">=</span> <span class="p">[]</span>
@@ -580,7 +581,7 @@
 <span class="sd">        :param req_iter: request iterator, with length of 1</span>
 <span class="sd">        :return: the first result from the request iterator</span>
 <span class="sd">        """</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">servicer</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">servicer</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iter</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span>
                 <span class="n">k</span><span class="p">,</span> <span class="n">including_default_value_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_integers_for_enums</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>  <span class="c1"># DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`</span>

@@ -407,7 +407,7 @@
 <dl class="py class">
 <dt id="jina.peapods.runtimes.gateway.prefetch.PrefetchCaller">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.gateway.prefetch.</span></code><code class="sig-name descname"><span class="pre">PrefetchCaller</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmqlet</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/prefetch/#PrefetchCaller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.runtimes.gateway.prefetch.PrefetchMixin" title="jina.peapods.runtimes.gateway.prefetch.PrefetchMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.gateway.prefetch.PrefetchMixin</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>An async zmq request sender to be used in the Gateway</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -417,15 +417,14 @@
 </ul>
 </dd>
 </dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.peapods.runtimes.gateway.prefetch.PrefetchMixin">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.gateway.prefetch.</span></code><code class="sig-name descname"><span class="pre">PrefetchMixin</span></code><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/prefetch/#PrefetchMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.prefetch.PrefetchMixin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
-<p>JinaRPCServicer</p>
 <dl class="py method">
-<dt id="jina.peapods.runtimes.gateway.prefetch.PrefetchMixin.Call">
-<code class="sig-name descname"><span class="pre">Call</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_iterator</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/prefetch/#PrefetchMixin.Call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.prefetch.PrefetchMixin.Call" title="Permalink to this definition">¶</a></dt>
+<dt id="jina.peapods.runtimes.gateway.prefetch.PrefetchCaller.close">
+<em class="property"><span class="pre">async</span> </em><code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/prefetch/#PrefetchCaller.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop receiving messages</p>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.gateway.prefetch.PrefetchCaller.send">
+<code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request_iterator</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/gateway/prefetch/#PrefetchCaller.send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.gateway.prefetch.PrefetchCaller.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Async call to receive Requests and build them into Messages.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
