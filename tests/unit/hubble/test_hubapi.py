@@ -46,3 +46,15 @@ def test_install_local(test_envs, executor_zip_file, name, tag):
 def test_uninstall_locall(test_envs, local_hub_executor):
     hubapi.uninstall_local('hello')
     assert not hubapi.exist_local('hello', None)
+
+
+def test_load_dump_secret(test_envs):
+    import tempfile
+
+    uuid8 = 'hello'
+    secret = 'world'
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        hubapi.dump_secret(Path(tmpdirname), uuid8, secret)
+        new_uuid8, new_secret = hubapi.load_secret(Path(tmpdirname))
+    assert new_uuid8 == uuid8
+    assert new_secret == secret
