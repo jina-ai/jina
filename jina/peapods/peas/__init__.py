@@ -263,8 +263,10 @@ class BasePea:
                         raise_exception=True,
                     )
                     break
-                finally:
-                    pass
+                except Exception as ex:
+                    self.logger.warning(f'{ex!r}')
+                    if i == 2:
+                        raise ex
         else:
             self.cancel_event.set()
 
