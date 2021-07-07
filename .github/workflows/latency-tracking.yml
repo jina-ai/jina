@@ -10,8 +10,6 @@ jobs:
       NUM_LAST_RELEASE: 1
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
       - name: Test docker install
         run: |
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
