@@ -433,7 +433,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2namespace</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="n">set_hub_parser</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_docker_client</span><span class="p">()</span>
 
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">rich</span>
@@ -702,6 +701,7 @@
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'jinahub+docker'</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_load_docker_client</span><span class="p">()</span>
                     <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pulling </span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="p">)</span>
                     <span class="k">return</span> <span class="sa">f</span><span class="s1">'docker://</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">image_name</span><span class="si">}</span><span class="s1">'</span>
