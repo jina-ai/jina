@@ -50,7 +50,6 @@ class HubIO:
         else:
             self.args = ArgNamespace.kwargs2namespace(kwargs, set_hub_parser())
         self.logger = JinaLogger(self.__class__.__name__, **vars(args))
-        self._load_docker_client()
 
         with ImportExtensions(required=True):
             import rich
@@ -319,6 +318,7 @@ with f:
                 )
 
                 if scheme == 'jinahub+docker':
+                    self._load_docker_client()
                     st.update(f'Pulling {executor.image_name}...')
                     self._client.images.pull(executor.image_name)
                     return f'docker://{executor.image_name}'
