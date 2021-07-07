@@ -1,13 +1,8 @@
-name: CI
+name: Latency Tracking
 
-# on:
-#  pull_request_target:
-# on:
-#   push:
-#     branches-ignore:
-#       - '**'  # temporally ignore all
 on:
-  workflow_dispatch:
+  - push
+  - pull_request
 
 jobs:
   latency-tracking:
@@ -16,8 +11,8 @@ jobs:
       NUM_LAST_RELEASE: 1
     steps:
       - uses: actions/checkout@v2
-#        with:
-#          submodules: true
+        with:
+          submodules: true
       - name: Test docker install
         run: |
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
