@@ -385,21 +385,18 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Formatter</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Formatter</span><span class="p">,</span> <span class="n">LogRecord</span>
 
 <span class="kn">from</span> <span class="nn">..enums</span> <span class="kn">import</span> <span class="n">LogVerbosity</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">colored</span>
-
-<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">LogRecord</span>
 
 
 <div class="viewcode-block" id="ColorFormatter"><a class="viewcode-back" href="../../../../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter">[docs]</a><span class="k">class</span> <span class="nc">ColorFormatter</span><span class="p">(</span><span class="n">Formatter</span><span class="p">):</span>
     <span class="sd">"""Format the log into colored logs based on the log-level."""</span>
 
     <span class="n">MAPPING</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'magenta'</span><span class="p">),</span>  <span class="c1"># grey</span>
-        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'magenta'</span><span class="p">),</span>
+        <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(),</span>  <span class="c1"># plain</span>
         <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'green'</span><span class="p">),</span>
         <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'yellow'</span><span class="p">),</span>
         <span class="n">LogVerbosity</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">),</span>
