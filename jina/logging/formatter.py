@@ -2,21 +2,18 @@ import json
 import logging
 import re
 from copy import copy
-from logging import Formatter
+from logging import Formatter, LogRecord
 
 from ..enums import LogVerbosity
 from ..helper import colored
-
-if False:
-    from logging import LogRecord
 
 
 class ColorFormatter(Formatter):
     """Format the log into colored logs based on the log-level."""
 
     MAPPING = {
-        LogVerbosity.DEBUG: dict(color='black', attrs=['bold']),  # grey
-        LogVerbosity.INFO: dict(),
+        LogVerbosity.DEBUG: dict(color='magenta'),
+        LogVerbosity.INFO: dict(),  # plain
         LogVerbosity.SUCCESS: dict(color='green'),
         LogVerbosity.WARNING: dict(color='yellow'),
         LogVerbosity.ERROR: dict(color='red'),

@@ -10,6 +10,7 @@ from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
 from ....excepts import BadImageNameError
+from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
 
 
@@ -180,6 +181,27 @@ class ContainerRuntime(ZMQRuntime):
             self._stream_logs()
 
         client.close()
+
+    @property
+    def status(self):
+        """
+        Send get status control message.
+
+        :return: control message.
+        """
+        return send_ctrl_message(
+            self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl
+        )
+
+    @property
+    def is_ready(self) -> bool:
+        """
+        Check if status is ready.
+
+        :return: True if status is ready else False.
+        """
+        status = self.status
+        return status and status.is_ready
 
     @property
     def _is_container_alive(self) -> bool:
