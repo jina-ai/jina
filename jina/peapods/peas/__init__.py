@@ -321,7 +321,12 @@ class BasePea:
                 self.logger.warning(f' Cancel runtime')
                 self._cancel_runtime()
                 self.logger.warning(f' Wait for shutdown')
-                self.is_shutdown.wait()
+                if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                    self.terminate()
+                    time.sleep(0.1)
+                    raise Exception(
+                        f'Shutdown signal was not received for {self._timeout_ctrl}'
+                    )
             except Exception as ex:
                 self.logger.error(
                     f'{ex!r} during {self._deactivate_runtime!r}'

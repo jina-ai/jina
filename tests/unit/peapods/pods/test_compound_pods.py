@@ -71,7 +71,7 @@ def test_equal(pod_args, pod_args_singleton):
 @pytest.mark.slow
 @pytest.mark.parametrize('parallel', [1, 4])
 @pytest.mark.parametrize('replicas', [3])
-@pytest.mark.parametrize('runtime', ['process'])
+@pytest.mark.parametrize('runtime', ['process', 'thread'])
 def test_pod_context_parallel(runtime, parallel, replicas):
     args = set_pod_parser().parse_args(
         [

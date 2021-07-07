@@ -123,7 +123,11 @@ def archive_package(package_folder: 'Path') -> 'io.BytesIO':
         gitignore = Path(__resources_path__) / 'Python.gitignore'
 
     with gitignore.open() as fp:
-        ignored_spec = pathspec.PathSpec.from_lines('gitwildmatch', fp)
+        ignore_lines = [
+            line.strip() for line in fp if line.strip() and (not line.startswith('#'))
+        ]
+        ignore_lines += ['.git', '.jina']
+        ignored_spec = pathspec.PathSpec.from_lines('gitwildmatch', ignore_lines)
 
     zip_stream = io.BytesIO()
     try:

@@ -16,7 +16,7 @@ from .helper import (
     get_hubble_url,
     upload_file,
 )
-from .hubapi import install_local, resolve_local
+from .hubapi import install_local, resolve_local, load_secret, dump_secret
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
@@ -53,8 +53,10 @@ class HubIO:
 
         with ImportExtensions(required=True):
             import rich
+            import cryptography
 
             assert rich  #: prevent pycharm auto remove the above line
+            assert cryptography
 
     def _load_docker_client(self):
         with ImportExtensions(required=True):
@@ -83,9 +85,7 @@ class HubIO:
         from rich.console import Console
 
         console = Console()
-
         with console.status(f'Pushing `{self.args.path}`...') as st:
-
             req_header = self._get_request_header()
             try:
                 st.update(f'Packaging {self.args.path}...')
@@ -103,12 +103,13 @@ class HubIO:
                     else 'False',
                     'md5sum': md5_digest,
                 }
-                if self.args.force:
-                    form_data['force'] = self.args.force
-                if self.args.secret:
-                    form_data['secret'] = self.args.secret
+                uuid8, secret = load_secret(Path(self.args.path))
+                if self.args.force or uuid8:
+                    form_data['force'] = self.args.force or uuid8
+                if self.args.secret or secret:
+                    form_data['secret'] = self.args.secret or secret
 
-                method = 'put' if self.args.force else 'post'
+                method = 'put' if ('force' in form_data) else 'post'
 
                 st.update(f'Connecting Hubble...')
                 hubble_url = get_hubble_url()
@@ -139,7 +140,9 @@ class HubIO:
                 elif not result.get('data', None):
                     raise Exception(result.get('message', 'Unknown Error'))
                 elif 200 <= result['statusCode'] < 300:
-                    self._prettyprint_result(console, result)
+                    new_uuid8, new_secret = self._prettyprint_result(console, result)
+                    if new_uuid8 != uuid8 or new_secret != secret:
+                        dump_secret(Path(self.args.path), new_uuid8, new_secret)
                 elif result['message']:
                     raise Exception(result['message'])
                 elif resp.text:
@@ -147,6 +150,7 @@ class HubIO:
                     raise Exception(resp.text)
                 else:
                     resp.raise_for_status()
+
             except Exception as e:  # IO related errors
                 self.logger.error(
                     f'Error while pushing session_id={req_header["jinameta-session-id"]}: '
@@ -184,6 +188,8 @@ class HubIO:
 
         if not self.args.no_usage:
             self._get_prettyprint_usage(console, usage)
+
+        return uuid8, secret
 
     def _get_prettyprint_usage(self, console, usage):
         from rich.panel import Panel

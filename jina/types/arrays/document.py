@@ -18,7 +18,7 @@ from typing import (
 
 from .traversable import TraversableSequence
 from ..document import Document
-from ...helper import typename, cached_property
+from ...helper import typename, cached_property, cache_invalidate
 from ...proto import jina_pb2
 
 try:
@@ -148,6 +148,7 @@ class DocumentArray(
                         f'DocumentArray got an unexpected input {type(docs)}'
                     )
 
+    @cache_invalidate(attribute='_id_to_index')
     def insert(self, index: int, doc: 'Document') -> None:
         """
         Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentArray` .
@@ -157,6 +158,7 @@ class DocumentArray(
         """
         self._pb_body.insert(index, doc.proto)
 
+    @cache_invalidate(attribute='_id_to_index')
     def __setitem__(self, key, value: 'Document'):
         if isinstance(key, int):
             self[key].CopyFrom(value)
@@ -165,6 +167,7 @@ class DocumentArray(
         else:
             raise IndexError(f'do not support this index {key}')
 
+    @cache_invalidate(attribute='_id_to_index')
     def __delitem__(self, index: Union[int, str, slice]):
         if isinstance(index, int):
             del self._pb_body[index]
@@ -220,6 +223,7 @@ class DocumentArray(
             self.append(doc)
         return self
 
+    @cache_invalidate(attribute='_id_to_index')
     def append(self, doc: 'Document'):
         """
         Append :param:`doc` in :class:`DocumentArray`.
@@ -237,6 +241,7 @@ class DocumentArray(
         for doc in iterable:
             self.append(doc)
 
+    @cache_invalidate(attribute='_id_to_index')
     def clear(self):
         """Clear the data of :class:`DocumentArray`"""
         while len(self._pb_body) > 0:
