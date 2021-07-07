@@ -1,3 +1,4 @@
+import socket
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
@@ -85,7 +86,6 @@ class Dockerizer:
         """
         Create a docker bridge network with name `workspace_id` using a predefined ipam config.
         All containers under `workspace_id` would use this network.
-
         :param workspace_id: workspace id
         :raises DockerNetworkException: if there are issues during network creation
         :return: id of the network
@@ -129,7 +129,6 @@ class Dockerizer:
     ) -> str:
         """
         Build docker image using daemon file & tag it with `workspace_id`
-
         :param workspace_id: workspace id
         :param daemon_file: daemon file describing content inside the workdir
         :param logger: logger to be used
@@ -177,11 +176,9 @@ class Dockerizer:
         cls, workspace_id: DaemonID, daemon_file: 'DaemonFile'
     ) -> Tuple['Container', str, Dict]:
         """Run a custom container during workspace creation.
-
         .. note::
             This invalidates the default entrypint (mini-jinad) & uses the entrypoint provided
             mentioned in the .jinad file (`run` section)
-
         :param workspace_id: workspace id
         :param daemon_file: daemon file describing content inside the workdir
         :return: tuple of container object, network id & ports
@@ -206,10 +203,8 @@ class Dockerizer:
         """
         Runs a container using an existing image (tagged with `workspace_id`).
         Maps `ports` to local dockerhost & tags the container with name `container_id`
-
         .. note::
             This uses the default entrypoint (mini-jinad) & appends `command` for execution.
-
         :param workspace_id: workspace id
         :param container_id: name of the container
         :param command: command to be appended to default entrypoint
@@ -260,19 +255,31 @@ class Dockerizer:
         return container, network, ports
 
     @classmethod
+    def _get_volume_host_dir(cls):
+        try:
+            volumes = cls.client.containers.get(socket.gethostname()).attrs[
+                'HostConfig'
+            ]['Binds']
+            for volume in volumes:
+                if volume.split(':')[1] == __root_workspace__:
+                    return volume.split(':')[0]
+        except:
+            # above logic only works inside docker, if it does not work we dont need it
+            pass
+        return __root_workspace__
+
+    @classmethod
     def volume(cls, workspace_id: DaemonID) -> Dict[str, Dict]:
         """
         Local volumes to be mounted inside the container during `run`.
-
         .. note::
             Local workspace should always be mounted to fefault WORKDIR for the container (/workspace).
             docker sock on dockerhost should also be mounted to make sure DIND works
-
         :param workspace_id: workspace id
         :return: dict of volume mappings
         """
         return {
-            f'{__root_workspace__}/{workspace_id}': {
+            f'{cls._get_volume_host_dir()}/{workspace_id}': {
                 'bind': '/workspace',
                 'mode': 'rw',
             },
@@ -284,7 +291,6 @@ class Dockerizer:
     def environment(cls) -> Dict[str, str]:
         """
         Environment variables to be set inside the container during `run`
-
         :return: dict of env vars
         """
         return {
@@ -296,7 +302,6 @@ class Dockerizer:
     def remove(cls, id: DaemonID):
         """
         Determines type of jinad object & removes that from dockerd
-
         :param id: `DaemonID` describing local docker object
         """
         if id.jtype == IDLiterals.JNETWORK:
@@ -309,7 +314,6 @@ class Dockerizer:
     @classmethod
     def containers_in_network(cls, id: str) -> List:
         """Get all containers currently connected to network
-
         :param id: network id
         :return: list of containers connected to network id
         """
@@ -324,7 +328,6 @@ class Dockerizer:
     def rm_network(cls, id: str) -> bool:
         """
         Remove network from local if no containers are connected
-
         :param id: network id
         :return: True if deletion is successful else False
         """
@@ -354,7 +357,6 @@ class Dockerizer:
     def rm_image(cls, id: str):
         """
         Remove image from local
-
         :param id: image id
         :raises KeyError: if image is not found on local
         :raises DockerImageException: error during image removal
@@ -375,7 +377,6 @@ class Dockerizer:
     def rm_container(cls, id: str):
         """
         Remove container from local
-
         :param id: container id
         :raises KeyError: if container is not found on local
         :raises DockerContainerException: error during container removal

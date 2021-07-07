@@ -8,8 +8,6 @@ import socket
 import threading
 import uuid
 import warnings
-import base64
-import urllib
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import Optional, Union, Tuple, List, Set, Dict, overload, Type
@@ -27,7 +25,7 @@ from ..helper import (
     typename,
     ArgNamespace,
     download_mermaid_url,
-    get_full_version,
+    CatchAllCleanupContextManager,
 )
 from ..jaml import JAMLCompatible
 from ..logging.logger import JinaLogger
@@ -35,6 +33,7 @@ from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
 from ..peapods.pods.factory import PodFactory
 from ..types.routing.table import RoutingTable
+from ..peapods.networking import is_remote_local_connection
 
 __all__ = ['Flow']
 
@@ -88,12 +87,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def __init__(
         self,
-        compress: Optional[str] = 'LZ4',
+        compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
         cors: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = True,
         daemon: Optional[bool] = False,
+        default_swagger_ui: Optional[bool] = False,
         description: Optional[str] = None,
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
@@ -101,6 +101,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
+        hosts_in_connect: Optional[List[str]] = None,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = 'gateway',
@@ -132,6 +133,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         workspace: Optional[str] = None,
+        zmq_identity: Optional[str] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
@@ -145,6 +147,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
+        :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
@@ -152,6 +155,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
+        :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -213,6 +217,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+        :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -435,6 +440,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         host_out: Optional[str] = '0.0.0.0',
+        hosts_in_connect: Optional[List[str]] = None,
         log_config: Optional[str] = None,
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
@@ -471,6 +477,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
+        zmq_identity: Optional[str] = None,
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
@@ -488,6 +495,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
+        :param hosts_in_connect: The host address for input, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param memory_hwm: The memory high watermark of this pod in Gigabytes, pod will restart when this is reached. -1 means no restriction
         :param name: The name of this object.
@@ -569,6 +577,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
           - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
+        :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
         :return: a (new) Flow object with modification
 
         .. # noqa: DAR202
@@ -766,21 +775,32 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
-                graph.add_pod(f'start-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
-                graph.add_pod(f'end-{GATEWAY_NAME}', pod.head_host, pod.head_port_in)
+                graph.add_pod(f'start-{GATEWAY_NAME}', pod)
+                graph.add_pod(f'end-{GATEWAY_NAME}', pod)
             else:
-                graph.add_pod(pod_id, pod.head_host, pod.head_port_in)
+                graph.add_pod(pod_id, pod)
 
         for end, pod in self._pod_nodes.items():
 
             if end == GATEWAY_NAME:
                 end = f'end-{GATEWAY_NAME}'
 
+            if pod.head_args.hosts_in_connect is None:
+                pod.head_args.hosts_in_connect = []
+
             for start in pod.needs:
                 if start == GATEWAY_NAME:
                     start = f'start-{GATEWAY_NAME}'
 
-                graph.add_edge(start, end)
+                start_pod = graph._get_target_pod(start)
+                if is_remote_local_connection(start_pod.host, pod.head_host):
+                    pod.head_args.hosts_in_connect.append(
+                        graph._get_target_pod(start).full_address
+                    )
+
+                    graph.add_edge(start, end, True)
+                else:
+                    graph.add_edge(start, end)
 
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
@@ -884,25 +904,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return self.build(*args, **kwargs)
 
     def __enter__(self):
-        class CatchAllCleanupContextManager:
-            """
-            This context manager guarantees, that the :method:``__exit__`` of the
-            sub context is called, even when there is an Exception in the
-            :method:``__enter__``.
-
-            :param sub_context: The context, that should be taken care of.
-            """
-
-            def __init__(self, sub_context):
-                self.sub_context = sub_context
-
-            def __enter__(self):
-                pass
-
-            def __exit__(self, exc_type, exc_val, exc_tb):
-                if exc_type is not None:
-                    self.sub_context.__exit__(exc_type, exc_val, exc_tb)
-
         with CatchAllCleanupContextManager(self):
             return self.start()
 
@@ -963,8 +964,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.RUNNING
         self._show_success_message()
-        if not self.args.no_telemetry:
-            self.register()
 
         return self
 
@@ -1089,12 +1088,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._pod_nodes.items():
             ed_str = str(v.head_args.socket_in).split('_')[0]
             for need in sorted(v.needs):
-                edge_str = ''
                 if need in self._pod_nodes:
                     st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[
                         0
                     ]
-                    edge_str = f'|{st_str}-{ed_str}|'
 
                 _s = start_repl.get(need, (need, f'({need})'))
                 _e = end_repl.get(node, (node, f'({node})'))
@@ -1114,7 +1111,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     line_st = '-.->'
 
                 mermaid_graph.append(
-                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {edge_str}{_e[0]}{_e[1]}:::{str(_e_role)}'
+                    f'{_s[0]}{_s[1]}:::{str(_s_role)} {line_st} {_e[0]}{_e[1]}:::{str(_e_role)}'
                 )
         mermaid_graph.append(
             f'classDef {str(PodRoleType.POD)} fill:#32C8CD,stroke:#009999'
@@ -1559,23 +1556,3 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: new network settings
         """
         self._common_kwargs.update(kwargs)
-
-    def register(self) -> None:
-        """Register a Flow"""
-
-        def _register():
-            url = 'https://telemetry.jina.ai/'
-            try:
-                metas, envs = get_full_version()
-                data = base64.urlsafe_b64encode(
-                    json.dumps({**metas, **envs}).encode('utf-8')
-                )
-                req = urllib.request.Request(
-                    url, data=data, headers={'User-Agent': 'Mozilla/5.0'}
-                )
-                urllib.request.urlopen(req)
-
-            except:
-                pass
-
-        threading.Thread(target=_register, daemon=True).start()

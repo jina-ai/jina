@@ -2,14 +2,14 @@ name: CI
 
 on:
   pull_request:
-#    paths-ignore:
-#      - 'README.md'
-#      - '.all-contributorsrc'
-#      - 'docs/*'
 
+#on:
+#  push:
+#    branches-ignore:
+#      - '**'  # temporally ignore all
 jobs:
   commit-lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: find the prev warning if exist
         uses: peter-evans/find-comment@v1
@@ -53,8 +53,7 @@ jobs:
           reaction-type: "eyes"
 
   lint-flake-8:
-    needs: commit-lint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
@@ -70,7 +69,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
 
   check-docstring:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -87,7 +86,7 @@ jobs:
           CHANGED_FILES: ${{ steps.file_changes.outputs.added_modified }}
 
   check-black:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -103,20 +102,43 @@ jobs:
         env:
           CHANGED_FILES: ${{ steps.file_changes.outputs.added_modified }}
 
-  prep-testbed:
-    runs-on: ubuntu-20.04
+  code-injection:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - id: set-matrix
+        with:
+          token: ${{ secrets.JINA_DEV_BOT }}
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Styling
+        id: styling
         run: |
-          sudo apt-get install jq
-          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+          git config --local user.email "dev-bot@jina.ai"
+          git config --local user.name "Jina Dev Bot"
+          pip install ".[devel,black]"
+          cd scripts && bash ./devbot.sh && cd -
+          if [[ -z $(git status -s) ]]
+          then
+            echo "tree is clean"
+          else
+            git add -u
+            git commit -m "style: fix overload and cli autocomplete"
+            echo '::set-output name=IS_CHANGED::YES'
+          fi
+      - uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.JINA_DEV_BOT }}
+          branch: ${{ github.head_ref }}
+      - name: Fail this pipelint
+        if: steps.styling.outputs.IS_CHANGED == 'YES'
+        run: exit(1)
 
   docker-image-test:
-    needs: commit-lint
-    runs-on: ubuntu-20.04
+    needs: [commit-lint, code-injection]
+    runs-on: ubuntu-latest
     services:
       registry:
         image: registry:2
@@ -140,7 +162,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
           password: ${{ secrets.DOCKERHUB_DEVBOT_TOKEN }}
       - run: |
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker run --privileged --rm tonistiigi/binfmt --uninstall qemu-aarch64
+          docker run --rm --privileged tonistiigi/binfmt --install all
       - name: Build and test
         uses: docker/build-push-action@v2
         with:
@@ -149,14 +172,44 @@ jobs:
           platforms: ${{ matrix.test-arch }}
           push: true
           tags: localhost:5000/jina/multiarch:latest
-          target: jina_devel
-          build-args: BUILD_DATE, JINA_VERSION, VCS_REF, PY_VERSION
+          target: jina
       - run: |
           docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
-  core-test:
-    needs: [prep-testbed, commit-lint, lint-flake-8]
+  hub-test:
+    runs-on: ubuntu-latest
+    needs: [commit-lint, lint-flake-8, code-injection]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Test hubapp with hubpods
+        run: |
+          ./tests/jinahub/test_integration.sh
+        timeout-minutes: 30
+        env:
+          JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
+          JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
+
+  prep-testbed:
     runs-on: ubuntu-20.04
+    needs: [commit-lint, lint-flake-8, code-injection]
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  core-test:
+    needs: prep-testbed
+    runs-on: ubuntu-20.04
+    env:
+      JINA_DAEMON_BUILD: DEVEL
     strategy:
       fail-fast: false
       matrix:
@@ -185,9 +238,9 @@ jobs:
         run: |
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all daemon/distributed tests
-            docker build -f Dockerfiles/debianx.Dockerfile -t jinaai/jina:test-daemon .
-            if [[ "${{ matrix.test-path }}" == "tests/distributed/test_against_external_daemon/" ]]; then
-              docker run --add-host host.docker.internal:host-gateway --name jinad -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
+            docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
+            if [[ "${{ matrix.test-path }}" =~ ^(tests/distributed/test_topologies/|tests/distributed/test_topologies_docker/|tests/distributed/test_workspaces/)$ ]]; then
+              docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
             fi
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
             docker rm -f jinad || true
@@ -228,7 +281,7 @@ jobs:
 
   # just for blocking the merge until all parallel core-test are successful
   success-all-test:
-    needs: [core-test, docker-image-test, check-docstring, check-black]
+    needs: [core-test, hub-test, docker-image-test, check-docstring, check-black, code-injection]
     if: always()
     runs-on: ubuntu-20.04
     steps:

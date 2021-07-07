@@ -1,7 +1,6 @@
 from typing import Dict
 
 from jina import Flow, DocumentArray, Document, Executor, requests
-from tests import validate_callback
 
 ORIGINAL_PARAMS = {'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}}
 OVERRIDEN_POD1_PARAMS = {

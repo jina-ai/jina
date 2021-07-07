@@ -4,8 +4,10 @@ import time
 from typing import Optional
 
 from .client import PeaDaemonClient, WorkspaceDaemonClient
-from ..zmq.asyncio import AsyncZMQRuntime
 from ....enums import RemoteWorkspaceState
+from ..zmq.asyncio import AsyncZMQRuntime
+from ...zmq import send_ctrl_message
+from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored
 
@@ -13,10 +15,13 @@ from ....helper import cached_property, colored
 class JinadRuntime(AsyncZMQRuntime):
     """Runtime procedure for Jinad."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
-        super().__init__(args, ctrl_addr)
+    def __init__(
+        self, args: 'argparse.Namespace', ctrl_addr: str, timeout_ctrl: int, **kwargs
+    ):
+        super().__init__(args, ctrl_addr, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
+        self.timeout_ctrl = timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
         # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
@@ -37,10 +42,21 @@ class JinadRuntime(AsyncZMQRuntime):
                 f'created a remote {self.pea_api.kind}: {colored(self._remote_id, "cyan")}'
             )
 
+    async def _wait_for_cancel(self):
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        while True:
+            if self.is_cancel.is_set():
+                await self.async_cancel()
+                send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
+                return
+            else:
+                await asyncio.sleep(0.1)
+
     async def async_run_forever(self):
         """
         Streams log messages using websocket from remote server
         """
+        self.is_ready_event.set()
         self._logging_task = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs

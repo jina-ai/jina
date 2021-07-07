@@ -8,15 +8,17 @@ from platform import uname
 
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
+from .... import __docker_host__
 from ....excepts import BadImageNameError
+from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
 
 
 class ContainerRuntime(ZMQRuntime):
     """Runtime procedure for container."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str):
-        super().__init__(args, ctrl_addr)
+    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str, **kwargs):
+        super().__init__(args, ctrl_addr, **kwargs)
         self._set_network_for_dind_linux()
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
@@ -40,6 +42,7 @@ class ContainerRuntime(ZMQRuntime):
 
     def run_forever(self):
         """Stream the logs while running."""
+        self.is_ready_event.set()
         self._stream_logs()
 
     def _set_network_for_dind_linux(self):
@@ -93,6 +96,7 @@ class ContainerRuntime(ZMQRuntime):
         # this prevent setting containerPea twice
         from ....parsers import set_pea_parser
 
+        self.args.runs_in_docker = True
         non_defaults = ArgNamespace.get_non_defaults_args(
             self.args,
             set_pea_parser(),
@@ -167,6 +171,7 @@ class ContainerRuntime(ZMQRuntime):
             volumes=_volumes,
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
+            extra_hosts={__docker_host__: 'host-gateway'},
             **docker_kwargs,
         )
 
@@ -176,6 +181,27 @@ class ContainerRuntime(ZMQRuntime):
             self._stream_logs()
 
         client.close()
+
+    @property
+    def status(self):
+        """
+        Send get status control message.
+
+        :return: control message.
+        """
+        return send_ctrl_message(
+            self.ctrl_addr, 'STATUS', timeout=self.args.timeout_ctrl
+        )
+
+    @property
+    def is_ready(self) -> bool:
+        """
+        Check if status is ready.
+
+        :return: True if status is ready else False.
+        """
+        status = self.status
+        return status and status.is_ready
 
     @property
     def _is_container_alive(self) -> bool:

@@ -6,30 +6,23 @@ from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
-PY37 = 'py37'
-PY38 = 'py38'
-PY39 = 'py39'
-
 if sys.version_info >= (3, 10, 0) or sys.version_info < (3, 7, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {sys.version}')
-elif sys.version_info >= (3, 9, 0):
-    py_tag = PY39
-elif sys.version_info >= (3, 8, 0):
-    py_tag = PY38
-elif sys.version_info >= (3, 7, 0):
-    py_tag = PY37
 
 if (3, 7, 0) <= sys.version_info < (3, 8, 0):
     # https://github.com/pypa/setuptools/issues/926#issuecomment-294369342
     try:
         import fastentrypoints
     except ImportError:
-        from setuptools.command import easy_install
-        import pkg_resources
+        try:
+            from setuptools.command import easy_install
+            import pkg_resources
 
-        easy_install.main(['fastentrypoints'])
-        pkg_resources.require('fastentrypoints')
-        import fastentrypoint
+            easy_install.main(['fastentrypoints'])
+            pkg_resources.require('fastentrypoints')
+            import fastentrypoint
+        except:
+            pass
 
 try:
     pkg_name = 'jina'
@@ -47,37 +40,6 @@ try:
         _long_description = fp.read()
 except FileNotFoundError:
     _long_description = ''
-
-
-def get_extra_requires(path, add_all=True):
-    import re
-    from collections import defaultdict
-
-    try:
-        with open(path) as fp:
-            extra_deps = defaultdict(set)
-            for k in fp:
-                if k.strip() and not k.startswith('#'):
-                    tags = set()
-                    if ':' in k:
-                        k, v = k.split(':')
-                        tags.update(vv.strip() for vv in v.split(','))
-                    tags.add(re.split('[<=>]', k)[0])
-                    for t in tags:
-                        extra_deps[t].add(k)
-                    if PY37 not in tags and PY38 not in tags:
-                        # no specific python version required
-                        extra_deps[PY37].add(k)
-                        extra_deps[PY38].add(k)
-
-            # add tag `all` at the end
-            if add_all:
-                extra_deps['all'] = set(vv for v in extra_deps.values() for vv in v)
-                extra_deps['match-py-ver'] = extra_deps[py_tag]
-
-        return extra_deps
-    except FileNotFoundError:
-        return {}
 
 
 def register_ac():
@@ -127,6 +89,32 @@ class PostInstallCommand(install):
         register_ac()
 
 
+def get_extra_requires(path, add_all=True):
+    import re
+    from collections import defaultdict
+
+    try:
+        with open(path) as fp:
+            extra_deps = defaultdict(set)
+            for k in fp:
+                if k.strip() and not k.startswith('#'):
+                    tags = set()
+                    if ':' in k:
+                        k, v = k.split(':')
+                        tags.update(vv.strip() for vv in v.split(','))
+                    tags.add(re.split('[<=>]', k)[0])
+                    for t in tags:
+                        extra_deps[t].add(k)
+
+            # add tag `all` at the end
+            if add_all:
+                extra_deps['all'] = set(vv for v in extra_deps.values() for vv in v)
+
+        return extra_deps
+    except FileNotFoundError:
+        return {}
+
+
 all_deps = get_extra_requires('extra-requirements.txt')
 
 setup(
@@ -134,9 +122,9 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Jina is geared towards building search-as-a-service systems for any kind of data in just minutes.',
-    author='Jina Dev Team',
-    author_email='dev-team@jina.ai',
+    description='Jina is the cloud-native neural search framework for any kind of data',
+    author='Jina AI',
+    author_email='hello@jina.ai',
     license='Apache 2.0',
     url='https://github.com/jina-ai/jina/',
     download_url='https://github.com/jina-ai/jina/tags',
@@ -146,7 +134,7 @@ setup(
     setup_requires=[
         'setuptools>=18.0',
     ],
-    install_requires=list(all_deps['core'].union(all_deps['perf'])),
+    install_requires=list(all_deps['core']),
     extras_require=all_deps,
     entry_points={
         'console_scripts': [

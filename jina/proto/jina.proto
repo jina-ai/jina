@@ -67,12 +67,6 @@ message NamedScoreProto {
     string ref_id = 5; // the score is computed between doc `id` and `ref_id`
 }
 
-/**
- * Represents the mapping of score by keys
- */
-message NamedScoreMappingProto {
-    map<string, NamedScoreProto> values = 1;
-}
 
 /**
  * Represents a Graph
@@ -144,13 +138,13 @@ message DocumentProto {
     NdArrayProto embedding = 19;
 
     // Scores performed on the document, each element corresponds to a metric
-    NamedScoreMappingProto scores = 28;
+    map<string, NamedScoreProto> scores = 28;
 
     // modality, an identifier to the modality this document belongs to. In the scope of multi/cross modal search
     string modality = 21;
 
     // Evaluations performed on the document, each element corresponds to a metric
-    NamedScoreMappingProto evaluations = 29;
+    map<string, NamedScoreProto> evaluations = 29;
 }
 
 /**
@@ -168,7 +162,13 @@ message TargetPodProto{
     string host = 1; // the host HeadPea of the BasePod
     uint32 port = 2; // the port HeadPea of the BasePod
     uint32 expected_parts = 3; // the number of parts the pod should expect
-    repeated string out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
+    repeated RoutingEdgeProto out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
+    string target_identity = 5;
+}
+
+message RoutingEdgeProto {
+    string pod = 1;
+    bool send_as_bind = 2;
 }
 
 message RoutingTableProto {

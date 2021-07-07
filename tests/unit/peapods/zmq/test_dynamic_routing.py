@@ -3,6 +3,7 @@ import threading
 import time
 
 import pytest
+import multiprocessing
 from google.protobuf import json_format
 
 from jina.helper import random_identity
@@ -59,7 +60,7 @@ def test_simple_dynamic_routing_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2'],
+                    'out_edges': [{'pod': 'pod2'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -84,6 +85,7 @@ def test_simple_dynamic_routing_zmqlet():
         assert z2.msg_recv == 1
 
 
+@pytest.mark.slow
 def test_double_dynamic_routing_zmqlet():
     args1 = get_args()
     args2 = get_args()
@@ -108,7 +110,7 @@ def test_double_dynamic_routing_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -175,7 +177,7 @@ async def test_double_dynamic_routing_async_zmqlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -207,15 +209,20 @@ async def test_double_dynamic_routing_async_zmqlet():
         assert z3.msg_recv == 1
 
 
+@pytest.mark.slow
 def test_double_dynamic_routing_zmqstreamlet():
     args1 = get_args()
     args2 = get_args()
     args3 = get_args()
 
     logger = logging.getLogger('zmq-test')
-    with ZmqStreamlet(args1, logger) as z1, ZmqStreamlet(
-        args2, logger
-    ) as z2, ZmqStreamlet(args3, logger) as z3:
+    with ZmqStreamlet(
+        args=args1, ready_event=multiprocessing.Event(), logger=logger
+    ) as z1, ZmqStreamlet(
+        args=args2, ready_event=multiprocessing.Event(), logger=logger
+    ) as z2, ZmqStreamlet(
+        args=args3, ready_event=multiprocessing.Event(), logger=logger
+    ) as z3:
         assert z1.msg_sent == 0
         assert z2.msg_sent == 0
         assert z3.msg_sent == 0
@@ -232,7 +239,7 @@ def test_double_dynamic_routing_zmqstreamlet():
                     'host': '0.0.0.0',
                     'port': args1.port_in,
                     'expected_parts': 0,
-                    'out_edges': ['pod2', 'pod3'],
+                    'out_edges': [{'pod': 'pod2'}, {'pod': 'pod3'}],
                 },
                 'pod2': {
                     'host': '0.0.0.0',
@@ -259,7 +266,7 @@ def test_double_dynamic_routing_zmqstreamlet():
         for i in range(number_messages):
             z1.send_message(msg)
 
-        time.sleep(0.5)
+        time.sleep(5)
 
         assert z1.msg_sent == 2 * number_messages
         assert z1.msg_recv == 0

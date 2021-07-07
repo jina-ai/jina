@@ -1,6 +1,6 @@
 from jina.helper import get_internal_ip
 from jina import __default_host__, __docker_host__
-from jina.peapods.networking import get_connect_host
+from jina.peapods.networking import get_connect_host, is_remote_local_connection
 from jina.parsers import set_pea_parser
 
 import pytest
@@ -21,7 +21,7 @@ docker_uses = 'docker://abc'
             __default_host__,
             __default_host__,
             docker_uses,
-            __default_host__,
+            __docker_host__,
         ),  # local bind & local connect, connect inside docker
         (
             '1.2.3.4',
@@ -90,3 +90,17 @@ def test_get_connect_host(connect_host, bind_host, connect_uses, expected_connec
         connect_args=connect_args,
     )
     assert connect_host == expected_connect_host
+
+
+def test_is_remote_local_connection():
+    assert not is_remote_local_connection('0.0.0.0', '0.0.0.0')
+    assert not is_remote_local_connection('localhost', 'localhost')
+    assert not is_remote_local_connection('localhost', '1.2.3.4')
+    assert not is_remote_local_connection('1.2.3.4', '2.3.4.5')
+    assert not is_remote_local_connection('127.0.0.1', 'localhost')
+    assert not is_remote_local_connection('192.168.0.1', 'localhost')
+    assert not is_remote_local_connection('192.168.0.1', 'globalhost')
+
+    assert is_remote_local_connection('1.2.3.4', 'localhost')
+    assert is_remote_local_connection('globalhost', 'localhost')
+    assert is_remote_local_connection('1.2.3.4', '192.168.0.1')

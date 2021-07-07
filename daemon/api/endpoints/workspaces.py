@@ -56,12 +56,11 @@ async def _delete(
     path='',
     summary='Create a workspace & upload files',
     description='Return a DaemonID to the workspace, which can be used later when create Pea/Pod/Flow',
-    # response_model=WorkspaceStoreStatus.items,
     status_code=201,
 )
 async def _create(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
     try:
-        return workspace.j
+        return workspace.item
     except Exception as ex:
         raise Runtime400Exception from ex
 

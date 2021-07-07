@@ -1,6 +1,7 @@
 import os
 import time
 from sys import platform
+import multiprocessing
 
 import pytest
 
@@ -217,7 +218,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
 
     mock = mocker.Mock()
     mocker.patch(
-        'jina.peapods.runtimes.zmq.base.ZMQRuntime.is_ready',
+        'jina.peapods.runtimes.container.ContainerRuntime.is_ready',
         return_value=True,
     )
 
@@ -272,7 +273,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             'environment: ["VAR1=BAR", "VAR2=FOO"]',
         ]
     )
-    _ = ContainerRuntime(args, ctrl_addr='')
+    _ = ContainerRuntime(args, ctrl_addr='', ready_event=multiprocessing.Event())
     expected_args = {'hello': 0, 'ports': None, 'environment': ['VAR1=BAR', 'VAR2=FOO']}
     mock.assert_called_with(**expected_args)
 

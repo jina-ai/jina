@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfiles/debianx.Dockerfile
+      args:
+        PIP_TAG: daemon
     extra_hosts:
       host.docker.internal: host-gateway
     ports:

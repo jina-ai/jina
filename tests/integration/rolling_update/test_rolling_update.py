@@ -235,7 +235,8 @@ def test_port_configuration(replicas_and_parallel):
             parallel=parallel,
             port_in=f'51{i}00',
             # info: needs to be set in this test since the test is asserting pod args with pod tail args
-            port_out=f'51{i + 1}00',  # outside this test, it don't have to be set
+            port_out=f'51{i + 1}10',
+            # outside this test, it don't have to be set. Due to dynamic routing, it is irrelevant.
             copy_flow=False,
         )
 

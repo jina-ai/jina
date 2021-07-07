@@ -168,5 +168,6 @@ class ContainerStore(BaseStore):
         del self[id]
         from . import workspace_store
 
+        Dockerizer.rm_container(id)
         workspace_store[workspace_id].metadata.managed_objects.remove(id)
         self._logger.success(f'{colored(id, "green")} is released from the store.')

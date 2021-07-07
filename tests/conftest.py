@@ -82,7 +82,7 @@ def docker_compose(request):
     os.system(
         f"docker-compose -f {request.param} --project-directory . up  --build -d --remove-orphans"
     )
-    time.sleep(5)
+    time.sleep(10)
     yield
     os.system(
         f"docker-compose -f {request.param} --project-directory . down --remove-orphans"
@@ -171,3 +171,8 @@ def test_envs(tmpdir):
     yield None
     del os.environ['JINA_HUB_ROOT']
     del os.environ['JINA_HUB_CACHE_DIR']
+
+
+@pytest.fixture(autouse=True)
+def test_log_level(monkeypatch):
+    monkeypatch.setenv('JINA_LOG_LEVEL', 'DEBUG')

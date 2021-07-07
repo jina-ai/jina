@@ -1,10 +1,41 @@
 import json
+import logging
 import re
 from copy import copy
-from logging import Formatter
+from logging import Formatter, LogRecord
 
-if False:
-    from logging import LogRecord
+from ..enums import LogVerbosity
+from ..helper import colored
+
+
+class ColorFormatter(Formatter):
+    """Format the log into colored logs based on the log-level."""
+
+    MAPPING = {
+        LogVerbosity.DEBUG: dict(color='magenta'),
+        LogVerbosity.INFO: dict(),  # plain
+        LogVerbosity.SUCCESS: dict(color='green'),
+        LogVerbosity.WARNING: dict(color='yellow'),
+        LogVerbosity.ERROR: dict(color='red'),
+        LogVerbosity.CRITICAL: dict(color='red', attrs=['bold']),
+    }  #: log-level to color mapping
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.formatters = {
+            k: logging.Formatter(colored(self._fmt, **v))
+            for k, v in self.MAPPING.items()
+        }
+
+    def format(self, record):
+        """
+        Format the LogRecord with corresponding colour.
+
+        :param record: A LogRecord object
+        :return:: Formatted LogRecord with level-colour MAPPING to add corresponding colour.
+        """
+        formatter = self.formatters.get(record.levelno)
+        return formatter.format(record)
 
 
 class PlainFormatter(Formatter):

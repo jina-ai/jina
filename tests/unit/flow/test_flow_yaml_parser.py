@@ -38,6 +38,7 @@ def test_load_legacy_and_v1():
         Flow.load_config('yaml/flow-v99-syntax.yml')
 
 
+@pytest.mark.slow
 def test_add_needs_inspect(tmpdir):
     f1 = (
         Flow()

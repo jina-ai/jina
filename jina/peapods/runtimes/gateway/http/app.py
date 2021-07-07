@@ -24,6 +24,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     """
     with ImportExtensions(required=True):
         from fastapi import FastAPI
+        from starlette.requests import Request
+        from fastapi.responses import HTMLResponse
         from fastapi.middleware.cors import CORSMiddleware
         from .models import (
             JinaStatusModel,
@@ -33,12 +35,14 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
             PROTO_TO_PYDANTIC_MODELS,
         )
 
+    docs_url = '/docs'
     app = FastAPI(
         title=args.title or 'My Jina Service',
         description=args.description
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
         'to customize this text.',
         version=__version__,
+        docs_url=docs_url if args.default_swagger_ui else None,
     )
 
     if args.cors:
@@ -57,7 +61,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     servicer = PrefetchCaller(args, zmqlet)
 
     @app.on_event('shutdown')
-    def _shutdown():
+    async def _shutdown():
+        await servicer.close()
         zmqlet.close()
 
     openapi_tags = []
@@ -172,6 +177,20 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 
+    if not args.default_swagger_ui:
+
+        async def _render_custom_swagger_html(req: Request) -> HTMLResponse:
+            import urllib.request
+
+            swagger_url = 'https://api.jina.ai/swagger'
+            req = urllib.request.Request(
+                swagger_url, headers={'User-Agent': 'Mozilla/5.0'}
+            )
+            with urllib.request.urlopen(req) as f:
+                return HTMLResponse(f.read().decode())
+
+        app.add_route(docs_url, _render_custom_swagger_html, include_in_schema=False)
+
     async def _get_singleton_result(req_iter) -> Dict:
         """
         Streams results from AsyncPrefetchCall as a dict
@@ -179,7 +198,7 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
         :param req_iter: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in servicer.Call(request_iterator=req_iter):
+        async for k in servicer.send(request_iterator=req_iter):
             return MessageToDict(
                 k, including_default_value_fields=True, use_integers_for_enums=True
             )  # DO NOT customize other serialization here. Scheme is handled by Pydantic in `models.py`

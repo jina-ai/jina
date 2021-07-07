@@ -45,6 +45,7 @@ Table of Contents
   - [Construct `DocumentArray`](#construct-documentarray)
   - [Persistence via `save()`/`load()`](#persistence-via-saveload)
   - [Access Element](#access-element)
+  - [Traverse Elements](#traverse-elements)
   - [Sort Elements](#sort-elements)
   - [Filter Elements](#filter-elements)
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
@@ -703,6 +704,78 @@ da['world']
 da[1:2]
 # <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
+
+### Traverse Elements
+The following graphic illustrates the recursive `Document` structure. 
+Every `Document` can have multiple `Chunks` and `Matches`.
+`Chunks` and `Matches` are `Documents` as well.
+
+<img src="https://hanxiao.io/2020/08/28/What-s-New-in-Jina-v0-5/blog-post-v050-protobuf-documents.jpg">
+
+In most of the cases, you want to iterate through a certain level of documents. 
+`DocumentArray.traverse` can be used for that by providing custom paths.
+As return value you get a generator which generates `DocumentArrays` matching the provided traversal paths.
+Let's assume you have the following `Document` structure:
+```python
+from jina import DocumentArray, Document
+
+da = DocumentArray([
+    Document(id='r1', chunks=[
+        Document(id='c1', matches=[
+                Document(id='c1c1m1'),
+        ]),
+        Document(id='c2', chunks=[
+            Document(id='c2c1', matches=[
+                Document(id='c2c1m1'),
+                Document(id='c2c1m2')
+            ]),
+            Document(id='c2c2'),
+        ]),
+        Document(id='c3')
+    ]),
+    Document(id='r2')
+])
+```
+When calling `da.traverse(['cm', 'ccm'])` you get a generator over two `DocumentArrays`. 
+The first `DocumentArray` contains the `Matches` of the `Chunks` and the second `DocumentArray` contains the `Matches` of the `Chunks` of the `Chunks`.
+The following `DocumentArrays` are emitted from the generator:
+```python
+from jina import Document
+from jina.types.arrays import MatchArray
+
+MatchArray([Document(id='c1c1m1', adjacency=1)], reference_doc=da['r1'].chunks['c1'])
+MatchArray([], reference_doc=da['r1'].chunks['c2'])
+MatchArray([], reference_doc=da['r1'].chunks['c3'])
+MatchArray([Document(id='c2c1m1', adjacency=1),Document(id='c2c1m2', adjacency=1)], reference_doc=da['r1'].chunks['c2'].chunks['c2c1'])
+MatchArray([], reference_doc=da['r1'].chunks['c2'].chunks['c2c2'])
+```
+
+`DocumentArray.traverse_flat` is doing the same but flattens all `DocumentArrays` in the generator. 
+When calling `da.traverse_flat(['cm', 'ccm'])` the result in our example will be the following:
+
+```python
+from jina import Document, DocumentArray
+assert da.traverse_flat(['cm', 'ccm']) == DocumentArray([
+    Document(id='c1c1m1', adjacency=1),
+    Document(id='c2c1m1', adjacency=1),
+    Document(id='c2c1m2', adjacency=1)
+])
+```
+
+`DocumentArray.traverse_flat_per_path` is a further method for `Document` traversal.
+It works like `DocumentArray.traverse_flat` but groups the `Documents` into `DocumentArrays` based on the traversal path.
+When calling `da.traverse_flat_per_path(['cm', 'ccm'])`, the resulting generator emits the following `DocumentArrays`:
+```python
+from jina import Document, DocumentArray
+DocumentArray([
+    Document(id='c1c1m1', adjacency=1),
+])
+DocumentArray([
+    Document(id='c2c1m1', adjacency=1),
+    Document(id='c2c1m2', adjacency=1)
+])
+```
+
 
 ### Sort Elements
 

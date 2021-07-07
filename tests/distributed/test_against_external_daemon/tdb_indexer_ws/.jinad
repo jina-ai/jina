@@ -1,4 +1,0 @@
-build = devel
-python = 3.7
-ports = 23087
-; run = "python -m http.server 23087"

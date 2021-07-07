@@ -7,14 +7,13 @@ import os
 import zipfile
 from functools import lru_cache
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
 from .. import __resources_path__
 from ..importer import ImportExtensions
 from ..logging.predefined import default_logger
-from ..logging.profile import ProgressBar
 
 
 @lru_cache()
@@ -104,7 +103,7 @@ def unpack_package(filepath: 'Path', target_dir: 'Path'):
         with zipfile.open(filepath) as tar:
             tar.extractall(target_dir)
     else:
-        raise ValueError("File format is not supported for unpacking.")
+        raise ValueError('File format is not supported for unpacking.')
 
 
 def archive_package(package_folder: 'Path') -> 'io.BytesIO':
@@ -176,15 +175,10 @@ def download_with_resume(
     with ImportExtensions(required=True):
         import requests
 
-    def _download(
-        url, target, resume_byte_pos: int = None, pbar: Optional[ProgressBar] = None
-    ):
+    def _download(url, target, resume_byte_pos: int = None):
         resume_header = (
             {'Range': f'bytes={resume_byte_pos}-'} if resume_byte_pos else None
         )
-
-        if pbar and resume_byte_pos:
-            pbar.update(resume_byte_pos)
 
         try:
             r = requests.get(url, stream=True, headers=resume_header)
@@ -197,8 +191,6 @@ def download_with_resume(
         with target.open(mode=mode) as f:
             for chunk in r.iter_content(32 * block_size):
                 f.write(chunk)
-                if pbar:
-                    pbar.update(progress=len(chunk))
 
     if filename is None:
         filename = url.split('/')[-1]
@@ -216,10 +208,45 @@ def download_with_resume(
         if file_size_online > file_size_offline:
             _resume_byte_pos = file_size_offline
 
-    with ProgressBar(task_name='Pulling') as p_bar:
-        _download(url, filepath, _resume_byte_pos, p_bar)
+    _download(url, filepath, _resume_byte_pos)
 
     if md5sum and not md5file(filepath) == md5sum:
         raise RuntimeError('MD5 checksum failed.')
 
     return filepath
+
+
+def upload_file(
+    url: str,
+    file_name: str,
+    buffer_data: bytes,
+    dict_data: Dict,
+    headers: Dict,
+    stream: bool = False,
+    method: str = 'post',
+):
+    """Upload file to target url
+
+    :param url: target url
+    :param file_name: the file name
+    :param buffer_data: the data to upload
+    :param dict_data: the dict-style data to upload
+    :param headers: the request header
+    :param stream: receive stream response
+    :param method: the request method
+    :return: the response of request
+    """
+    with ImportExtensions(required=True):
+        import requests
+
+    dict_data.update({'file': (file_name, buffer_data)})
+
+    (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
+        dict_data
+    )
+
+    headers.update({'Content-Type': ctype})
+
+    response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
+
+    return response

@@ -61,6 +61,7 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """Running method of ther server."""
+        self.is_ready_event.set()
         await self._server.serve()
 
     async def async_cancel(self):
