@@ -24,17 +24,11 @@ scipy>=1.6.1:               sparse, cicd, graph
 fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal, standard
 uvicorn[standard]>=0.14.0:  devel, cicd, http, test, daemon, chatbot, multimodal, standard
 fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
-<<<<<<< HEAD
-docker:                     devel, cicd, network, hub, daemon
-pathspec:                   devel, cicd, hub
-requests:                   http, devel, cicd, daemon, hub
-cryptography:               http, devel, cicd, daemon, hub
-=======
 docker:                     devel, cicd, network, hub, daemon, standard
 pathspec:                   devel, cicd, hub, standard
 rich:                       devel, standard, hub, cicd
+cryptography:               devel, cicd, hub, standard
 requests:                   http, devel, cicd, daemon, standard
->>>>>>> master
 torch>=1.1.0:               framework, cicd, chatbot, multimodal
 transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 tensorflow>=2.0:            framework, cicd
