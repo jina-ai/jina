@@ -909,7 +909,7 @@ class cached_property:
             del obj.__dict__[f'CACHED_{self.func.__name__}']
 
 
-class _cache_invalidate(object):
+class _cache_invalidate:
     """Class for cache invalidation, remove strategy.
 
     :param func: func to wrap as a decorator.
