@@ -58,6 +58,7 @@ def run(
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
     """
+    print(f' Process run starting', flush=True)
     logger = JinaLogger(name)
 
     def _unset_envs():
@@ -205,7 +206,6 @@ class BasePea:
         self.logger.warning(f' Pea starting, let\'s start process')
         self.worker.start()
         if not self.args.noblock_on_start:
-            self.logger.warning(f' Pea starting, let\'s wait for successfull start')
             self.wait_start_success()
         return self
 
@@ -267,6 +267,7 @@ class BasePea:
             _timeout = None
         else:
             _timeout /= 1e3
+        self.logger.warning('waiting for ready or shutdown signal from runtime')
         if self.ready_or_shutdown.event.wait(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
