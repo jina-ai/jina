@@ -19,7 +19,6 @@ from ...enums import (
 )
 from ...helper import random_identity, CatchAllCleanupContextManager
 from ...jaml.helper import complete_path
-from ...logging.predefined import default_logger
 
 
 class ExitFIFO(ExitStack):
@@ -313,7 +312,6 @@ class Pod(BasePod, ExitFIFO):
         self._activated = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
-        default_logger.debug(f' Exiting {self.name}')
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
 

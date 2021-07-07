@@ -3,20 +3,103 @@ import multiprocessing
 import os
 import threading
 import time
-from typing import Any, Tuple
+from typing import Any, Tuple, Union, Dict
 
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
-from ...hubble.helper import is_valid_huburi, parse_hub_uri
-from ...hubble.hubapi import resolve_local
+from ...hubble.helper import is_valid_huburi
 from ...hubble.hubio import HubIO
 from ...logging.logger import JinaLogger
 from ...parsers.hubble import set_hub_pull_parser
 
+
 __all__ = ['BasePea']
+
+
+def run(
+    args: 'argparse.Namespace',
+    name: str,
+    runtime_cls,
+    envs: Dict[str, str],
+    timeout_ctrl: int,
+    zed_runtime_ctrl_address: str,
+    is_started: Union['multiprocessing.Event', 'threading.Event'],
+    is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
+    is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+):
+    """Method representing the :class:`BaseRuntime` activity.
+
+    This method is the target for the Pea's `thread` or `process`
+
+    .. note::
+        :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
+        Hence, please do not raise any exception here.
+
+    .. note::
+        Please note that env variables are process-specific. Subprocess inherits envs from
+        the main process. But Subprocess's envs do NOT affect the main process. It does NOT
+        mess up user local system envs.
+
+    .. warning::
+        If you are using ``thread`` as backend, envs setting will likely be overidden by others
+
+    :param args: namespace args from the Pea
+    :param name: name of the Pea to have proper logging
+    :param runtime_cls: the runtime class to instantiate
+    :param envs: a dictionary of environment variables to be set in the new Process
+    :param timeout_ctrl: timeout time for the control port communication
+    :param zed_runtime_ctrl_address: the control address of the `ZEDRuntime` that is supported by the Pea or `ContainerRuntime` or `JinadRuntime`.
+    :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
+    :param is_shutdown: concurrency event to communicate runtime is terminated
+    :param is_ready: concurrency event to communicate runtime is ready to receive messages
+    :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
+    """
+    logger = JinaLogger(name)
+
+    def _unset_envs():
+        if envs and args.runtime_backend != RuntimeBackendType.THREAD:
+            for k in envs.keys():
+                os.unsetenv(k)
+
+    def _set_envs():
+        if args.env:
+            if args.runtime_backend == RuntimeBackendType.THREAD:
+                logger.warning(
+                    'environment variables should not be set when runtime="thread".'
+                )
+            else:
+                os.environ.update({k: str(v) for k, v in envs.items()})
+
+    logger.warning(f' Pea process started')
+
+    try:
+        _set_envs()
+        runtime = runtime_cls(
+            args=args,
+            ctrl_addr=zed_runtime_ctrl_address,
+            ready_event=is_ready,
+            cancel_event=cancel_event,
+            timeout_ctrl=timeout_ctrl,
+        )
+    except Exception as ex:
+        logger.error(
+            f'{ex!r} during {runtime_cls!r} initialization'
+            + f'\n add "--quiet-error" to suppress the exception details'
+            if not args.quiet_error
+            else '',
+            exc_info=not args.quiet_error,
+        )
+    else:
+        is_started.set()
+        with runtime:
+            runtime.run_forever()
+    finally:
+        _unset_envs()
+        is_shutdown.set()
 
 
 class BasePea:
@@ -29,24 +112,9 @@ class BasePea:
 
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__()  #: required here to call process/thread __init__
-        self.worker = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
-            target=self.run
-        )
         self.args = args
-        self.daemon = args.daemon  #: required here to set process/thread daemon
-
         self.name = self.args.name or self.__class__.__name__
-        self.is_ready = _get_event(self.worker)
-        self.is_shutdown = _get_event(self.worker)
-        self.cancel_event = _get_event(self.worker)
-        self.is_started = _get_event(self.worker)
-        self.ready_or_shutdown = ConditionalEvent(
-            getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
-            events_list=[self.is_ready, self.is_shutdown],
-        )
+
         self.logger = JinaLogger(self.name, **vars(self.args))
 
         if self.args.runtime_backend == RuntimeBackendType.THREAD:
@@ -68,6 +136,37 @@ class BasePea:
         self.runtime_cls = self._get_runtime_cls()
         self._timeout_ctrl = self.args.timeout_ctrl
         self._set_ctrl_adrr()
+        test_worker = {
+            RuntimeBackendType.THREAD: threading.Thread,
+            RuntimeBackendType.PROCESS: multiprocessing.Process,
+        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))()
+        self.is_ready = _get_event(test_worker)
+        self.is_shutdown = _get_event(test_worker)
+        self.cancel_event = _get_event(test_worker)
+        self.is_started = _get_event(test_worker)
+        self.ready_or_shutdown = ConditionalEvent(
+            getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
+            events_list=[self.is_ready, self.is_shutdown],
+        )
+        self.worker = {
+            RuntimeBackendType.THREAD: threading.Thread,
+            RuntimeBackendType.PROCESS: multiprocessing.Process,
+        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
+            target=run,
+            kwargs={
+                'args': args,
+                'name': self.name,
+                'envs': self._envs,
+                'is_started': self.is_started,
+                'is_shutdown': self.is_shutdown,
+                'is_ready': self.is_ready,
+                'cancel_event': self.cancel_event,
+                'timeout_ctrl': self._timeout_ctrl,
+                'zed_runtime_ctrl_address': self._zed_runtime_ctrl_address,
+                'runtime_cls': self.runtime_cls,
+            },
+        )
+        self.daemon = self.args.daemon  #: required here to set process/thread daemon
 
     def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
@@ -103,8 +202,10 @@ class BasePea:
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
+        self.logger.warning(f' Pea starting, let\'s start process')
         self.worker.start()
         if not self.args.noblock_on_start:
+            self.logger.warning(f' Pea starting, let\'s wait for successfull start')
             self.wait_start_success()
         return self
 
@@ -124,48 +225,6 @@ class BasePea:
         if hasattr(self.worker, 'terminate'):
             self.worker.terminate()
 
-    def _build_runtime(self):
-        """
-        Instantiates the runtime object
-
-        :return: the runtime object
-        """
-        return self.runtime_cls(
-            args=self.args,
-            ctrl_addr=self._zed_runtime_ctrl_address,
-            ready_event=self.is_ready,
-            cancel_event=self.cancel_event,
-            timeout_ctrl=self._timeout_ctrl,
-        )
-
-    def run(self):
-        """Method representing the :class:`BaseRuntime` activity.
-
-        This method overrides :meth:`run` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
-
-        .. note::
-            :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.
-            Hence, please do not raise any exception here.
-        """
-        try:
-            self._set_envs()
-            runtime = self._build_runtime()
-        except Exception as ex:
-            self.logger.error(
-                f'{ex!r} during {self.runtime_cls!r} initialization'
-                + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
-        else:
-            self.is_started.set()
-            with runtime:
-                runtime.run_forever()
-        finally:
-            self.is_shutdown.set()
-            self._unset_envs()
-
     def activate_runtime(self):
         """ Send activate control message. """
         if self._is_dealer:
@@ -177,9 +236,7 @@ class BasePea:
 
     def _deactivate_runtime(self):
         """Send deactivate control message. """
-        # deactivate should be done from replica head to compoundPod head
         if self._is_dealer:
-            # deactivating
             from ..zmq import send_ctrl_message
 
             send_ctrl_message(
@@ -281,30 +338,6 @@ class BasePea:
                 time.sleep(0.1)
         self.logger.debug(__stop_msg__)
         self.logger.close()
-
-    def _set_envs(self):
-        """Set environment variable to this pea
-
-        .. note::
-            Please note that env variables are process-specific. Subprocess inherits envs from
-            the main process. But Subprocess's envs do NOT affect the main process. It does NOT
-            mess up user local system envs.
-
-        .. warning::
-            If you are using ``thread`` as backend, envs setting will likely be overidden by others
-        """
-        if self.args.env:
-            if self.args.runtime_backend == RuntimeBackendType.THREAD:
-                self.logger.warning(
-                    'environment variables should not be set when runtime="thread".'
-                )
-            else:
-                os.environ.update({k: str(v) for k, v in self._envs.items()})
-
-    def _unset_envs(self):
-        if self._envs and self.args.runtime_backend != RuntimeBackendType.THREAD:
-            for k in self._envs.keys():
-                os.unsetenv(k)
 
     def __enter__(self):
         return self.start()
