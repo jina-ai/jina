@@ -62,7 +62,7 @@ def load_secret(work_path: 'Path') -> Tuple[str, str]:
                 uuid8 = local_config.get('uuid8', None)
                 encrypted_secret = local_config.get('encrypted_secret', None)
                 if encrypted_secret:
-                    secret = fernet.decrypt(encrypted_secret.encode())
+                    secret = fernet.decrypt(encrypted_secret.encode()).decode()
     return uuid8, secret
 
 

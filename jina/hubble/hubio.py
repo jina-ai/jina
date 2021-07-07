@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 import os
-import json
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
