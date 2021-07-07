@@ -54,6 +54,7 @@ class PrefetchCaller:
         Stop receiving messages
         """
         self._receive_task.cancel()
+        await self._receive_task
 
     async def send(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
         """

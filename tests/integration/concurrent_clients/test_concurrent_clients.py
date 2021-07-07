@@ -21,8 +21,8 @@ class MyExecutor(Executor):
 @pytest.mark.parametrize('concurrent', [15])
 def test_concurrent_clients(concurrent, protocal, parallel, polling, prefetch, reraise):
     def pong(peer_hash, resp: Response):
-        for d in resp.docs:
-            with reraise:
+        with reraise:
+            for d in resp.docs:
                 assert d.text == peer_hash
 
     def peer_client(port, protocal, peer_hash):
