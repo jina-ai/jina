@@ -41,7 +41,7 @@ class PrefetchCaller:
                         f'Discarding unexpected message with request id {message.request_id}'
                     )
         except asyncio.CancelledError:
-            pass
+            raise
         finally:
             for future in self._message_buffer.values():
                 future.cancel(
