@@ -61,8 +61,8 @@ def get_fastapi_app(args: 'argparse.Namespace', logger: 'JinaLogger'):
     servicer = PrefetchCaller(args, zmqlet)
 
     @app.on_event('shutdown')
-    def _shutdown():
-        servicer.close()
+    async def _shutdown():
+        await servicer.close()
         zmqlet.close()
 
     openapi_tags = []

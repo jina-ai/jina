@@ -33,6 +33,10 @@ class PrefetchCaller:
         try:
             while True:
                 message = await self.zmqlet.recv_message(callback=lambda x: x.response)
+                # during shutdown the socket will return None
+                if message is None:
+                    break
+
                 if message.request_id in self._message_buffer:
                     future = self._message_buffer.pop(message.request_id)
                     future.set_result(message)
