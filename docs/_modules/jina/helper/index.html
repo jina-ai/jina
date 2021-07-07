@@ -1292,6 +1292,48 @@
             <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="sa">f</span><span class="s1">'CACHED_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span></div>
 
 
+<span class="k">class</span> <span class="nc">_cache_invalidate</span><span class="p">:</span>
+    <span class="sd">"""Class for cache invalidation, remove strategy.</span>
+
+<span class="sd">    :param func: func to wrap as a decorator.</span>
+<span class="sd">    :param attribute: String as the function name to invalidate cached</span>
+<span class="sd">        data. E.g. in :class:`cached_property` we cache data inside the class obj</span>
+<span class="sd">        with the `key`: `CACHED_{func.__name__}`, the func name in `cached_property`</span>
+<span class="sd">        is the name to invalidate.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attribute</span> <span class="o">=</span> <span class="n">attribute</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cached_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'CACHED_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">attribute</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">if</span> <span class="n">cached_key</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">cached_key</span><span class="p">]</span>  <span class="c1"># invalidate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">cache_invalidate</span><span class="p">(</span><span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">"""The cache invalidator decorator to wrap the method call.</span>
+
+<span class="sd">    Check the implementation in :class:`_cache_invalidate`.</span>
+
+<span class="sd">    :param attribute: The func name as was stored in the obj to invalidate.</span>
+<span class="sd">    :return: wrapped method.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">_wrap</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_cache_invalidate</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_wrap</span>
+
+
 <span class="k">def</span> <span class="nf">get_now_timestamp</span><span class="p">():</span>
     <span class="sd">"""</span>
 <span class="sd">    Get the datetime.</span>

@@ -401,7 +401,7 @@
 
 <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
 <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">cached_property</span>
+<span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">cache_invalidate</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -531,15 +531,17 @@
                         <span class="sa">f</span><span class="s1">'DocumentArray got an unexpected input </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
 
-<div class="viewcode-block" id="DocumentArray.insert"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nd">@cache_invalidate</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="s1">'_id_to_index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Insert :param:`doc.proto` at :param:`index` into the list of `:class:`DocumentArray` .</span>
 
 <span class="sd">        :param index: Position of the insertion.</span>
 <span class="sd">        :param doc: The doc needs to be inserted.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
 
+    <span class="nd">@cache_invalidate</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="s1">'_id_to_index'</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">CopyFrom</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
@@ -548,6 +550,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'do not support this index </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
+    <span class="nd">@cache_invalidate</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="s1">'_id_to_index'</span><span class="p">)</span>
     <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
@@ -603,13 +606,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="DocumentArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
+    <span class="nd">@cache_invalidate</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="s1">'_id_to_index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">):</span>
         <span class="sd">"""</span>
 <span class="sd">        Append :param:`doc` in :class:`DocumentArray`.</span>
 
 <span class="sd">        :param doc: The doc needs to be appended.</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">proto</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DocumentArray.extend"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s1">'Document'</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
@@ -620,10 +624,11 @@
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DocumentArray.clear"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@cache_invalidate</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="s1">'_id_to_index'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Clear the data of :class:`DocumentArray`"""</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DocumentArray.reverse"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""In-place reverse the sequence."""</span>
