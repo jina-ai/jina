@@ -89,6 +89,7 @@ class Zmqlet:
             self.opened_socks.append(self.in_connect_sock)
 
         self.out_sockets = {}
+        self._active = True
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)
@@ -262,6 +263,9 @@ class Zmqlet:
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
+        self._active = (
+            False  # Important to avoid sending idle back while flushing in socket
+        )
         if not self.is_closed:
             self.is_closed = True
             self._close_sockets()
@@ -356,7 +360,7 @@ class Zmqlet:
         self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
-        if socket == self.out_sock and self.in_sock_type == zmq.DEALER:
+        if self._active and socket == self.out_sock and self.in_sock_type == zmq.DEALER:
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
@@ -509,6 +513,9 @@ class ZmqStreamlet(Zmqlet):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
+        self._active = (
+            False  # Important to avoid sending idle back while flushing in socket
+        )
         # if Address already in use `self.in_sock_type` is not set
         if (
             not self.is_closed

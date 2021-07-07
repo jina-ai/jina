@@ -478,14 +478,12 @@ class Pod(BasePod, ExitFIFO):
         """
         if getattr(self.args, 'noblock_on_start', False):
             for i, _args in enumerate(self._fifo_args):
-                # this should be handled by an argument in argparse, but this would mean a breaking change too early after 2.0
-                is_head = i == 0 and len(self._fifo_args) > 1
                 _args.noblock_on_start = True
-                self._enter_pea(BasePea(_args, is_head=is_head))
+                self._enter_pea(BasePea(_args))
         else:
             for i, _args in enumerate(self._fifo_args):
                 is_head = i == 0 and len(self._fifo_args) > 1
-                self._enter_pea(BasePea(_args, is_head=is_head))
+                self._enter_pea(BasePea(_args))
 
             self._activate()
         return self
