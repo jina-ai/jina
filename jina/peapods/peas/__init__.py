@@ -59,7 +59,7 @@ def run(
     :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
     """
     print(f' Process run starting', flush=True)
-    logger = JinaLogger(name)
+    logger = JinaLogger(name, **vars(args))
 
     def _unset_envs():
         if envs and args.runtime_backend != RuntimeBackendType.THREAD:
@@ -251,9 +251,20 @@ class BasePea:
         if self.runtime_cls == ZEDRuntime or self.runtime_cls == ContainerRuntime:
             from ..zmq import send_ctrl_message
 
-            send_ctrl_message(
-                self._zed_runtime_ctrl_address, 'TERMINATE', timeout=self._timeout_ctrl
-            )
+            self.logger.warning(f' SEND TERMINATE TO {self._zed_runtime_ctrl_address}')
+
+            for i in range(3):
+                self.logger.warning(f'Sending terminate for the {i}th time')
+                try:
+                    send_ctrl_message(
+                        self._zed_runtime_ctrl_address,
+                        'TERMINATE',
+                        timeout=self._timeout_ctrl,
+                        raise_exception=True,
+                    )
+                    break
+                finally:
+                    pass
         else:
             self.cancel_event.set()
 
@@ -303,8 +314,11 @@ class BasePea:
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                self.logger.warning(f' Deactivate runtime')
                 self._deactivate_runtime()
+                self.logger.warning(f' Cancel runtime')
                 self._cancel_runtime()
+                self.logger.warning(f' Wait for shutdown')
                 self.is_shutdown.wait()
             except Exception as ex:
                 self.logger.error(

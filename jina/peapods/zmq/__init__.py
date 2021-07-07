@@ -383,7 +383,10 @@ class Zmqlet:
 
         :param raise_exception: if true: raise an exception which might occur during send, if false: log error
         """
+        self.logger.warning(' send cancel to router')
+        self._active = False
         self._send_control_to_router('CANCEL', raise_exception)
+        self.logger.warning(' after send cancel to router')
 
     def recv_message(
         self, callback: Optional[Callable[['Message'], 'Message']] = None
@@ -513,9 +516,7 @@ class ZmqStreamlet(Zmqlet):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        self._active = (
-            False  # Important to avoid sending idle back while flushing in socket
-        )
+
         # if Address already in use `self.in_sock_type` is not set
         if (
             not self.is_closed
@@ -523,12 +524,16 @@ class ZmqStreamlet(Zmqlet):
             and self.in_sock_type == zmq.DEALER
         ):
             try:
-                self._send_cancel_to_router(raise_exception=True)
+                if self._active:
+                    self._send_cancel_to_router(raise_exception=True)
             except zmq.error.ZMQError:
                 self.logger.debug(
                     f'The dealer {self.name} can not unsubscribe from the router. '
                     f'In case the router is down this is expected.'
                 )
+        self._active = (
+            False  # Important to avoid sending idle back while flushing in socket
+        )
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
@@ -597,13 +602,14 @@ class ZmqStreamlet(Zmqlet):
 
 
 def send_ctrl_message(
-    address: str, cmd: Union[str, Message], timeout: int
+    address: str, cmd: Union[str, Message], timeout: int, raise_exception: bool = False
 ) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
     :param cmd: the control command to send
     :param timeout: the waiting time (in ms) for the response
+    :param raise_exception: raise exception when exception found
     :return: received message
     """
     if isinstance(cmd, str):
@@ -620,8 +626,11 @@ def send_ctrl_message(
         r = None
         try:
             r = recv_message(sock, timeout)
-        except TimeoutError:
-            pass
+        except Exception as ex:
+            if raise_exception:
+                raise ex
+            else:
+                pass
         finally:
             sock.close()
         return r
