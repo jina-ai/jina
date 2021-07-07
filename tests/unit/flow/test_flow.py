@@ -1,4 +1,6 @@
+import datetime
 import inspect
+import json
 import os
 
 import numpy as np
@@ -747,3 +749,71 @@ def test_flow_common_kwargs():
 def test_flow_set_asyncio_switch_post(is_async):
     f = Flow(asyncio=is_async)
     assert inspect.isasyncgenfunction(f.post) == is_async
+
+
+async def delayed_send_message_via(self, socket, msg):
+    try:
+        if self.msg_sent > 0:
+            import asyncio
+
+            await asyncio.sleep(1)
+        from jina.peapods.zmq import send_message_async
+
+        num_bytes = await send_message_async(socket, msg, **self.send_recv_kwargs)
+        self.bytes_sent += num_bytes
+        self.msg_sent += 1
+    except (asyncio.CancelledError, TypeError) as ex:
+        self.logger.error(f'sending message error: {ex!r}, gateway cancelled?')
+
+
+def test_flow_routes_list(monkeypatch):
+    def _time(time: str):
+        return datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+    with Flow().add(name='pod1') as simple_flow:
+
+        def validate_routes(x):
+            gateway_entry, pod1_entry = json.loads(x.json())['routes']
+            assert gateway_entry['pod'] == 'gateway'
+            assert pod1_entry['pod'].startswith('pod1')
+            assert (
+                _time(gateway_entry['end_time'])
+                > _time(pod1_entry['end_time'])
+                > _time(pod1_entry['start_time'])
+                > _time(gateway_entry['start_time'])
+            )
+
+        simple_flow.index(inputs=Document(), on_done=validate_routes)
+
+    from jina.peapods.zmq import AsyncZmqlet
+
+    # we are adding an artificial delay after message is sent to a1, so that the a branch completed before b1 starts
+    monkeypatch.setattr(AsyncZmqlet, '_send_message_via', delayed_send_message_via)
+
+    with Flow().add(name='a1').add(name='a2').add(name='b1', needs='gateway').add(
+        name='merge', needs=['a2', 'b1']
+    ) as parallel_flow:
+
+        def validate_routes(x):
+            gateway_entry, a1_entry, a2_entry, b1_entry, merge_entry = json.loads(
+                x.json()
+            )['routes']
+            assert gateway_entry['pod'] == 'gateway'
+            assert a1_entry['pod'].startswith('a1')
+            assert a2_entry['pod'].startswith('a2')
+            assert b1_entry['pod'].startswith('b1')
+            assert merge_entry['pod'].startswith('merge')
+            assert (
+                _time(gateway_entry['end_time'])
+                > _time(merge_entry['end_time'])
+                > _time(merge_entry['start_time'])
+                > _time(b1_entry['end_time'])
+                > _time(b1_entry['start_time'])
+                > _time(a2_entry['end_time'])
+                > _time(a2_entry['start_time'])
+                > _time(a1_entry['end_time'])
+                > _time(a1_entry['start_time'])
+                > _time(gateway_entry['start_time'])
+            )
+
+        parallel_flow.index(inputs=Document(), on_done=validate_routes)
