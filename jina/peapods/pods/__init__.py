@@ -479,12 +479,11 @@ class Pod(BasePod, ExitFIFO):
             are properly closed.
         """
         if getattr(self.args, 'noblock_on_start', False):
-            for i, _args in enumerate(self._fifo_args):
+            for _args in self._fifo_args:
                 _args.noblock_on_start = True
                 self._enter_pea(BasePea(_args))
         else:
-            for i, _args in enumerate(self._fifo_args):
-                is_head = i == 0 and len(self._fifo_args) > 1
+            for _args in self._fifo_args:
                 self._enter_pea(BasePea(_args))
 
             self._activate()
