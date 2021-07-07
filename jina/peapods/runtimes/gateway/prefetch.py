@@ -1,22 +1,65 @@
 import argparse
 import asyncio
-from abc import ABC
-from typing import AsyncGenerator
+from asyncio import Future
+from typing import AsyncGenerator, Dict
 
-from ....helper import typename
+from ....helper import typename, get_or_reuse_loop
 from ....logging.logger import JinaLogger
 from ....types.message import Message
 
-__all__ = ['PrefetchCaller', 'PrefetchMixin']
+__all__ = ['PrefetchCaller']
 
 if False:
     from ...zmq import AsyncZmqlet
 
 
-class PrefetchMixin(ABC):
-    """JinaRPCServicer """
+class PrefetchCaller:
+    """An async zmq request sender to be used in the Gateway"""
 
-    async def Call(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
+    def __init__(self, args: argparse.Namespace, zmqlet: 'AsyncZmqlet'):
+        """
+        :param args: args from CLI
+        :param zmqlet: zeromq object
+        """
+        self.args = args
+        self.zmqlet = zmqlet
+        self.name = args.name or self.__class__.__name__
+
+        self.logger = JinaLogger(self.name, **vars(args))
+        self._message_buffer: Dict[str, Future[Message]] = dict()
+        self._receive_task = get_or_reuse_loop().create_task(self._receive())
+
+    async def _receive(self):
+        try:
+            while True:
+                message = await self.zmqlet.recv_message(callback=lambda x: x.response)
+                # during shutdown the socket will return None
+                if message is None:
+                    break
+
+                if message.request_id in self._message_buffer:
+                    future = self._message_buffer.pop(message.request_id)
+                    future.set_result(message)
+                else:
+                    self.logger.warning(
+                        f'Discarding unexpected message with request id {message.request_id}'
+                    )
+        except asyncio.CancelledError:
+            raise
+        finally:
+            for future in self._message_buffer.values():
+                future.cancel(
+                    'PrefetchCaller closed, all outstanding requests canceled'
+                )
+            self._message_buffer.clear()
+
+    async def close(self):
+        """
+        Stop receiving messages
+        """
+        self._receive_task.cancel()
+
+    async def send(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
         """
         Async call to receive Requests and build them into Messages.
 
@@ -27,6 +70,11 @@ class PrefetchMixin(ABC):
         self.args: argparse.Namespace
         self.zmqlet: 'AsyncZmqlet'
         self.logger: JinaLogger
+
+        if self._receive_task.done():
+            raise RuntimeError(
+                'PrefetchCaller receive task not running, can not send messages'
+            )
 
         async def prefetch_req(num_req, fetch_to):
             """
@@ -46,16 +94,16 @@ class PrefetchMixin(ABC):
                         raise TypeError(
                             f'{typename(request_iterator)} does not have `__anext__` or `__next__`'
                         )
+
+                    future = get_or_reuse_loop().create_future()
+                    self._message_buffer[next_request.request_id] = future
                     asyncio.create_task(
                         self.zmqlet.send_message(
                             Message(None, next_request, 'gateway', **vars(self.args))
                         )
                     )
-                    fetch_to.append(
-                        asyncio.create_task(
-                            self.zmqlet.recv_message(callback=lambda x: x.response)
-                        )
-                    )
+
+                    fetch_to.append(future)
                 except (StopIteration, StopAsyncIteration):
                     return True
             return False
@@ -95,19 +143,3 @@ class PrefetchMixin(ABC):
                 # this list dries, clear it and feed it with on_recv_task
                 prefetch_task.clear()
                 prefetch_task = [j for j in onrecv_task]
-
-
-class PrefetchCaller(PrefetchMixin):
-    """An async zmq request sender to be used in the Gateway"""
-
-    def __init__(self, args: argparse.Namespace, zmqlet: 'AsyncZmqlet'):
-        """
-
-        :param args: args from CLI
-        :param zmqlet: zeromq object
-        """
-        super().__init__()
-        self.args = args
-        self.zmqlet = zmqlet
-        self.name = args.name or self.__class__.__name__
-        self.logger = JinaLogger(self.name, **vars(args))
