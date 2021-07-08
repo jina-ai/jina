@@ -138,7 +138,7 @@ class ZEDRuntime(ZMQRuntime):
 
         info_msg = f'recv {msg.envelope.request_type} '
         if self.request_type == 'DataRequest':
-            info_msg += f'({self.envelope.header.exec_endpoint}) '
+            info_msg += f'({self.envelope.header.exec_endpoint}) - ({self.envelope.request_id}) '
         elif self.request_type == 'ControlRequest':
             info_msg += f'({self.request.command}) '
         info_msg += f'{part_str} from {msg.colored_route}'

@@ -182,31 +182,6 @@ def test_workspace(config, tmpdir, docs):
     ),
 )
 def test_port_configuration(replicas_and_parallel):
-    def extract_pod_args(pod):
-        if 'replicas' not in pod.args or int(pod.args.replicas) == 1:
-            head_args = pod.peas_args['head']
-            tail_args = pod.peas_args['tail']
-            middle_args = pod.peas_args['peas']
-        else:
-            head_args = pod.head_args
-            tail_args = pod.tail_args
-            middle_args = pod.replicas_args
-        return pod, head_args, tail_args, middle_args
-
-    def get_outer_ports(pod, head_args, tail_args, middle_args):
-
-        if not 'replicas' in pod.args or int(pod.args.replicas) == 1:
-            if not 'parallel' in pod.args or int(pod.args.parallel) == 1:
-                assert tail_args is None
-                assert head_args is None
-                replica = middle_args[0]  # there is only one
-                return replica.port_in, replica.port_out
-            else:
-                return pod.head_args.port_in, pod.tail_args.port_out
-        else:
-            assert pod.args.replicas == len(middle_args)
-            return pod.head_args.port_in, pod.tail_args.port_out
-
     def validate_ports_replica(replica, replica_port_in, replica_port_out, parallel):
         assert replica_port_in == replica.args.port_in
         assert replica.args.port_out == replica_port_out
