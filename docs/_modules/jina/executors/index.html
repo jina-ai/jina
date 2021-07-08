@@ -460,12 +460,14 @@
         <span class="n">metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""`metas` and `requests` are always auto-filled with values from YAML config.</span>
 
 <span class="sd">        :param metas: a dict of metas fields</span>
 <span class="sd">        :param requests: a dict of endpoint-function mapping</span>
 <span class="sd">        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime</span>
+<span class="sd">        :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_metas</span><span class="p">(</span><span class="n">metas</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
