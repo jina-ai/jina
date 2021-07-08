@@ -1,36 +1,54 @@
 jtype: Flow
 version: '1'
-with:
-  workspace: $HW_WORKDIR
-  py_modules:
-    - my_executors.py
 executors:
   - name: segment
     uses:
       jtype: Segmenter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
   - name: encodeText
-    uses:
-      jtype: TextEncoder
+    uses: jinahub+docker://TransformerTorchEncoder
+    override_with:
+      default_traversal_paths: ['c']
   - name: textChunkIndexer
     uses:
       jtype: DocVectorIndexer
       with:
         index_file_name: "text.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
   - name: craftImage
     uses:
       jtype: ImageCrafter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
     needs: segment
   - name: encodeImage
-    uses:
-      jtype: ImageEncoder
+    uses: jinahub+docker://ImageTorchEncoder
+    override_with:
+      default_traversal_paths: ['c']
   - name: imageChunkIndexer
     uses:
       jtype: DocVectorIndexer
       with:
         index_file_name: "image.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
   - name: keyValueIndexer
     uses:
       jtype: KeyValueIndexer
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
     needs: segment
   - name: joinAll
     needs: [ textChunkIndexer, imageChunkIndexer, keyValueIndexer ]
