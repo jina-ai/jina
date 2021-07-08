@@ -7,6 +7,7 @@ from jina import Document, DocumentArray, Flow
 from jina.helloworld.multimodal.my_executors import (
     Segmenter,
     TextEncoder,
+    TextCrafter,
     ImageCrafter,
     ImageEncoder,
 )
@@ -73,6 +74,19 @@ def test_segmenter(segmenter_doc_array, tmpdir):
         f.index(inputs=segmenter_doc_array, on_done=validate)
 
 
+def test_text_crafter(encoder_doc_array, tmpdir):
+    def validate(resp):
+        assert len(resp.data.docs) == 1
+        doc = resp.data.docs[0]
+        assert doc.mime_type == 'text/plain'
+        assert doc.text
+        assert doc.uri == ''
+
+    create_test_img(path=str(tmpdir), file_name='1.png')
+    with Flow().add(uses=TextCrafter) as f:
+        f.index(inputs=encoder_doc_array, on_done=validate)
+
+
 @pytest.mark.slow
 def test_text_encoder(encoder_doc_array, tmpdir):
     """In this test, we input one ``DocumentArray`` with one ``Document``,
@@ -84,12 +98,12 @@ def test_text_encoder(encoder_doc_array, tmpdir):
 
     def validate(resp):
         assert len(resp.data.docs) == 1
-        chunk = resp.data.docs[0]
-        assert chunk.mime_type == 'text/plain'
-        assert chunk.embedding
+        doc = resp.data.docs[0]
+        assert doc.mime_type == 'text/plain'
+        assert doc.embedding
 
     create_test_img(path=str(tmpdir), file_name='1.png')
-    with Flow().add(uses=TextEncoder) as f:
+    with Flow().add(uses=TextCrafter).add(uses=TextEncoder) as f:
         f.index(inputs=encoder_doc_array, on_done=validate)
 
 
@@ -104,10 +118,10 @@ def test_image_crafter_index(encoder_doc_array, tmpdir):
 
     def validate(resp):
         assert len(resp.data.docs) == 1
-        chunk = resp.data.docs[0]
-        assert chunk.mime_type == 'image/jpeg'
-        assert chunk.blob
-        assert chunk.uri == ''
+        doc = resp.data.docs[0]
+        assert doc.mime_type == 'image/jpeg'
+        assert doc.blob
+        assert doc.uri == ''
 
     create_test_img(path=str(tmpdir), file_name='1.png')
     with Flow().add(uses=ImageCrafter) as f:
