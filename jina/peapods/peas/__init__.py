@@ -223,7 +223,9 @@ class BasePea:
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
         if hasattr(self.worker, 'terminate'):
+            print(f'{self.name} terminate', flush=True)
             self.worker.terminate()
+            print(f'{self.name} terminated', flush=True)
 
     def _retry_control_message(self, command: str, num_retry: int = 3):
         from ..zmq import send_ctrl_message
@@ -316,6 +318,7 @@ class BasePea:
                 self._cancel_runtime()
                 self.logger.info(f'{self.name} waiting for shutdown event')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                    print(f'{self.name} got shutdown event', flush=True)
                     self.logger.info(f'{self.name} got shutdown event')
                     self.terminate()
                     time.sleep(0.1)
@@ -333,9 +336,12 @@ class BasePea:
 
             # if it is not daemon, block until the process/thread finish work
             if not self.args.daemon:
+                print(f'{self.name} wait for join', flush=True)
                 self.join()
+                print(f'{self.name} joined', flush=True)
         elif self.is_shutdown.is_set():
             # here shutdown has been set already, therefore `run` will gracefully finish
+            print(f'{self.name} shutdown is set', flush=True)
             pass
         else:
             # sometimes, we arrive to the close logic before the `is_ready` is even set.
@@ -353,6 +359,7 @@ class BasePea:
                 # Just last resource, terminate it
                 self.terminate()
                 time.sleep(0.1)
+        print(f'{self.name} got stop message', flush=True)
         self.logger.debug(__stop_msg__)
         self.logger.close()
 
