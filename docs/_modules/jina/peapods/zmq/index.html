@@ -453,6 +453,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_polling_paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_sock_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_sock_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock_type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># this must be here for `close()`</span>
         <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
@@ -1168,7 +1171,8 @@
         <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s1">' '</span><span class="p">]</span> <span class="o">+</span> <span class="n">frames</span>
     <span class="k">elif</span> <span class="n">sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">ROUTER</span><span class="p">:</span>
         <span class="c1"># the router appends dealer id when receive it, we need to remove it</span>
-        <span class="n">frames</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">frames</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">Message</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">frames</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
@@ -1278,7 +1282,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 07, 2021.
+            Last updated on Jul 08, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
