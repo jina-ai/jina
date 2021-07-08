@@ -122,7 +122,7 @@ Examples:
 | On `x.y.z` release | `jinaai/jina:x.y.z{python_version}{extra}` | `jinaai/jina:latest{python_version}{extra}`, `jinaai/jina:x.y{python_version}{extra}` |
 
 Six images are built, i.e. taking the combination of:
-  - `{python_version} = ["-py37", "-py38"]`
+  - `{python_version} = ["-py37", "-py38", "-py39"]`
   - `{extra} = ["", "-devel", "-daemon", "-standard"]`
 
 
@@ -135,19 +135,25 @@ Six images are built, i.e. taking the combination of:
 |![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py39?label=jinaai%2Fjina%3Alatest-py39&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/latest-devel?label=jinaai%2Fjina%3Alatest-devel&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/latest-daemon?label=jinaai%2Fjina%3Alatest-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest-standard?label=jinaai%2Fjina%3Alatest-standard&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py38-devel?label=jinaai%2Fjina%3Alatest-py38-devel&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py38-daemon?label=jinaai%2Fjina%3Alatest-py38-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py38-standard?label=jinaai%2Fjina%3Alatest-py38-standard&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py39-devel?label=jinaai%2Fjina%3Alatest-py39-devel&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py39-daemon?label=jinaai%2Fjina%3Alatest-py39-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/latest-py39-standard?label=jinaai%2Fjina%3Alatest-py39-standard&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master?label=jinaai%2Fjina%3Amaster&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38?label=jinaai%2Fjina%3Amaster-py38&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py39?label=jinaai%2Fjina%3Amaster-py39&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-devel?label=jinaai%2Fjina%3Amaster-devel&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-daemon?label=jinaai%2Fjina%3Amaster-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master-standard?label=jinaai%2Fjina%3Amaster-standard&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38-devel?label=jinaai%2Fjina%3Amaster-py38-devel&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38-daemon?label=jinaai%2Fjina%3Amaster-py38-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master-py38-standard?label=jinaai%2Fjina%3Amaster-py38-standard&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py39-devel?label=jinaai%2Fjina%3Amaster-py39-devel&logo=docker)|
 |![](https://img.shields.io/docker/image-size/jinaai/jina/master-py39-daemon?label=jinaai%2Fjina%3Amaster-py39-daemon&logo=docker)|
+|![](https://img.shields.io/docker/image-size/jinaai/jina/master-py39-standard?label=jinaai%2Fjina%3Amaster-py39-standard&logo=docker)|
 
 ---
 
