@@ -2,13 +2,11 @@
 
 import os
 import shutil
-import subprocess
-import sys
 import json
 from pathlib import Path
 from typing import Tuple, Optional
 
-from .helper import unpack_package
+from .helper import unpack_package, install_requirements
 from ..helper import random_identity
 
 _hub_root = Path(
@@ -105,16 +103,6 @@ def dump_secret(work_path: 'Path', uuid8: str, secret: str):
         f.write(json.dumps(secret_data))
 
 
-def _install_requirements(requirements_file: 'Path'):
-    """Install modules included in requirments file
-
-    :param requirements_file: the requirements.txt file
-    """
-    subprocess.check_call(
-        [sys.executable, '-m', 'pip', 'install', '-r', f'{requirements_file}']
-    )
-
-
 def install_local(
     zip_package: 'Path',
     uuid: str,
@@ -152,7 +140,7 @@ def install_local(
         if install_deps:
             requirements_file = pkg_path / 'requirements.txt'
             if requirements_file.exists():
-                _install_requirements(requirements_file)
+                install_requirements(requirements_file, excludes=['jina'])
                 shutil.copyfile(requirements_file, pkg_dist_path / 'requirements.txt')
 
         manifest_path = pkg_path / 'manifest.yml'

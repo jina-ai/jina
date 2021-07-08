@@ -4,10 +4,13 @@ import hashlib
 import io
 import json
 import os
+import sys
+import subprocess
 import zipfile
+import pkg_resources
 from functools import lru_cache
 from pathlib import Path
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, List
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
@@ -250,3 +253,33 @@ def upload_file(
     response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
 
     return response
+
+
+def install_requirements(
+    requirements_file: 'Path', timeout: int = 1000, excludes: List[str] = []
+):
+    """Install modules included in requirments file
+
+    :param requirements_file: the requirements.txt file
+    :param timeout: the socket timeout (default = 1000s)
+    :param excludes: the excluded module dependencies
+    """
+
+    with requirements_file.open() as requirements_txt:
+        install_reqs = [
+            str(req)
+            for req in pkg_resources.parse_requirements(requirements_txt)
+            if req.project_name not in excludes or len(req.extras) > 0
+        ]
+
+    subprocess.check_call(
+        [
+            sys.executable,
+            '-m',
+            'pip',
+            'install',
+            '--disable-pip-version-check',
+            f'--default-timeout={timeout}',
+        ]
+        + install_reqs
+    )
