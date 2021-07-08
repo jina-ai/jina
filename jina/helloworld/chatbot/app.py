@@ -20,7 +20,13 @@ def _get_flow(args):
     """Ensure the same flow is used in hello world example and system test."""
     return (
         Flow(cors=True)
-        .add(uses=MyTransformer, parallel=args.parallel)
+        .add(
+            uses='jinahub+docker://TransformerTorchEncoder',
+            parallel=args.parallel,
+            override_with={
+                'pretrained_model_name_or_path': 'sentence-transformers/paraphrase-mpnet-base-v2'
+            },
+        )
         .add(uses=MyIndexer, workspace=args.workdir)
     )
 
