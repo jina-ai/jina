@@ -1,13 +1,7 @@
-name: CI
+name: Latency Tracking
 
-# on:
-#  pull_request_target:
-# on:
-#   push:
-#     branches-ignore:
-#       - '**'  # temporally ignore all
 on:
-  workflow_dispatch:
+  - pull_request
 
 jobs:
   latency-tracking:
@@ -16,8 +10,6 @@ jobs:
       NUM_LAST_RELEASE: 1
     steps:
       - uses: actions/checkout@v2
-#        with:
-#          submodules: true
       - name: Test docker install
         run: |
           docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
@@ -59,7 +51,6 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
           reaction-type: "eyes"
-
       - name: Update comment
         if: ${{ steps.fc.outputs.comment-id != 0 }}
         uses: peter-evans/create-or-update-comment@v1
