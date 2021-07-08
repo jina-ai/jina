@@ -11,7 +11,11 @@ executors:
         py_modules:
           - my_executors.py
   - name: encodeText
-    uses: jinahub+docker://TransformerTorchEncoder
+    uses:
+      jtype: TextEncoder
+      metas:
+        py_modules:
+          - my_executors.py
   - name: textIndexer
     uses:
       jtype: DocVectorIndexer
@@ -30,9 +34,11 @@ executors:
           - my_executors.py
     needs: gateway
   - name: encodeImage
-    uses: jinahub+docker://ImageTorchEncoder
-    override_with:
-      use_default_preprocessing: False
+    uses:
+      jtype: ImageEncoder
+      metas:
+        py_modules:
+          - my_executors.py
   - name: imageIndexer
     uses:
       jtype: DocVectorIndexer
