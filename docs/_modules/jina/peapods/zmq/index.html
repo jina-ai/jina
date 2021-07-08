@@ -475,6 +475,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">out_sockets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">_register_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)</span>
@@ -648,6 +649,9 @@
 <span class="sd">        :param args: Extra positional arguments</span>
 <span class="sd">        :param kwargs: Extra key-value arguments</span>
 <span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">False</span>  <span class="c1"># Important to avoid sending idle back while flushing in socket</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_close_sockets</span><span class="p">()</span>
@@ -742,7 +746,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bytes_sent</span> <span class="o">+=</span> <span class="n">send_message</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">send_recv_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_sent</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="k">if</span> <span class="n">socket</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="ow">and</span> <span class="n">socket</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_send_idle_to_router</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_send_control_to_router</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -765,6 +769,7 @@
 
 <span class="sd">        :param raise_exception: if true: raise an exception which might occur during send, if false: log error</span>
 <span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_control_to_router</span><span class="p">(</span><span class="s1">'CANCEL'</span><span class="p">,</span> <span class="n">raise_exception</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Zmqlet.recv_message"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.Zmqlet.recv_message">[docs]</a>    <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span>
@@ -895,14 +900,24 @@
 <span class="sd">        :param args: Extra positional arguments</span>
 <span class="sd">        :param kwargs: Extra key-value arguments</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span><span class="p">:</span>
+
+        <span class="c1"># if Address already in use `self.in_sock_type` is not set</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'in_sock_type'</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock_type</span> <span class="o">==</span> <span class="n">zmq</span><span class="o">.</span><span class="n">DEALER</span>
+        <span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_send_cancel_to_router</span><span class="p">(</span><span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_cancel_to_router</span><span class="p">(</span><span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">zmq</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">ZMQError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'The dealer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> can not unsubscribe from the router. '</span>
                     <span class="sa">f</span><span class="s1">'In case the router is down this is expected.'</span>
                 <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">False</span>  <span class="c1"># Important to avoid sending idle back while flushing in socket</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
             <span class="c1"># wait until the close signal is received</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
@@ -971,13 +986,14 @@
 
 
 <div class="viewcode-block" id="send_ctrl_message"><a class="viewcode-back" href="../../../../api/jina.peapods.zmq/#jina.peapods.zmq.send_ctrl_message">[docs]</a><span class="k">def</span> <span class="nf">send_ctrl_message</span><span class="p">(</span>
-    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cmd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Message</span><span class="p">],</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cmd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Message</span><span class="p">],</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">raise_exception</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Message'</span><span class="p">:</span>
     <span class="sd">"""Send a control message to a specific address and wait for the response</span>
 
 <span class="sd">    :param address: the socket address to send</span>
 <span class="sd">    :param cmd: the control command to send</span>
 <span class="sd">    :param timeout: the waiting time (in ms) for the response</span>
+<span class="sd">    :param raise_exception: raise exception when exception found</span>
 <span class="sd">    :return: received message</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -994,8 +1010,11 @@
         <span class="n">r</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">recv_message</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">raise_exception</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ex</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">r</span></div>

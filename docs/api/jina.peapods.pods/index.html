@@ -426,16 +426,11 @@
 </dd></dl>
 <dl class="py class">
 <dt id="jina.peapods.pods.BasePod">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.pods.</span></code><code class="sig-name descname"><span class="pre">BasePod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.pods.ExitFIFO" title="jina.peapods.pods.ExitFIFO"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.ExitFIFO</span></code></a></p>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.pods.</span></code><code class="sig-name descname"><span class="pre">BasePod</span></code><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A BasePod is an immutable set of peas. They share the same input and output socket.
 Internally, the peas can run with the process/thread backend.
 They can be also run in their own containers on remote machines.</p>
-<dl class="py attribute">
-<dt id="jina.peapods.pods.BasePod.needs">
-<code class="sig-name descname"><span class="pre">needs</span></code><a class="headerlink" href="#jina.peapods.pods.BasePod.needs" title="Permalink to this definition">¶</a></dt>
-<dd><p>used in the <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.Flow</span></code> to build the graph</p>
-</dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.BasePod.start">
 <code class="sig-name descname"><span class="pre">start</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#BasePod.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.BasePod.start" title="Permalink to this definition">¶</a></dt>
@@ -533,13 +528,18 @@ are properly closed.</p>
 <dl class="py class">
 <dt id="jina.peapods.pods.Pod">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.pods.</span></code><code class="sig-name descname"><span class="pre">Pod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/#Pod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.Pod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.BasePod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.BasePod</span></code></a>, <a class="reference internal" href="#jina.peapods.pods.ExitFIFO" title="jina.peapods.pods.ExitFIFO"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.ExitFIFO</span></code></a></p>
 <p>A BasePod is an immutable set of peas, which run in parallel. They share the same input and output socket.
 Internally, the peas can run with the process/thread backend. They can be also run in their own containers
 :type args: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]
 :param args: arguments parsed from the CLI
 :type needs: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]
 :param needs: pod names of preceding pods, the output of these pods are going into the input of this pod</p>
+<dl class="py attribute">
+<dt id="jina.peapods.pods.Pod.needs">
+<code class="sig-name descname"><span class="pre">needs</span></code><a class="headerlink" href="#jina.peapods.pods.Pod.needs" title="Permalink to this definition">¶</a></dt>
+<dd><p>used in the <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.Flow</span></code> to build the graph</p>
+</dd></dl>
 <dl class="py method">
 <dt id="jina.peapods.pods.Pod.is_singleton">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">is_singleton</span></code><a class="headerlink" href="#jina.peapods.pods.Pod.is_singleton" title="Permalink to this definition">¶</a></dt>

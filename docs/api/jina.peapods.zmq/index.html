@@ -599,7 +599,7 @@ It requires <code class="xref py py-mod docutils literal notranslate"><span clas
 </dd></dl>
 <dl class="py function">
 <dt id="jina.peapods.zmq.send_ctrl_message">
-<code class="sig-prename descclassname"><span class="pre">jina.peapods.zmq.</span></code><code class="sig-name descname"><span class="pre">send_ctrl_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/zmq/#send_ctrl_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.zmq.send_ctrl_message" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.peapods.zmq.</span></code><code class="sig-name descname"><span class="pre">send_ctrl_message</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_exception</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/zmq/#send_ctrl_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.zmq.send_ctrl_message" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send a control message to a specific address and wait for the response</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -607,6 +607,7 @@ It requires <code class="xref py py-mod docutils literal notranslate"><span clas
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the socket address to send</p></li>
 <li><p><strong>cmd</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="../jina.types.message/#jina.types.message.Message" title="jina.types.message.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>]) – the control command to send</p></li>
 <li><p><strong>timeout</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the waiting time (in ms) for the response</p></li>
+<li><p><strong>raise_exception</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – raise exception when exception found</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>

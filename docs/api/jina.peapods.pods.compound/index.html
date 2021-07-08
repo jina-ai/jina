@@ -407,7 +407,7 @@
 <dl class="py class">
 <dt id="jina.peapods.pods.compound.CompoundPod">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.pods.compound.</span></code><code class="sig-name descname"><span class="pre">CompoundPod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/pods/compound/#CompoundPod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.BasePod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.peapods.pods/#jina.peapods.pods.BasePod" title="jina.peapods.pods.BasePod"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.pods.BasePod</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">contextlib.ExitStack</span></code></p>
 <p>A CompoundPod is a immutable set of pods, which run in parallel.
 A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as replicas.</p>
 <p>CompoundPod will make sure to add a <cite>HeadPea</cite> and a <cite>TailPea</cite> to serve as routing/merging pattern for the different Pod replicas</p>
@@ -419,6 +419,11 @@ A CompoundPod is an abstraction using a composable pattern to abstract the usage
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt id="jina.peapods.pods.compound.CompoundPod.needs">
+<code class="sig-name descname"><span class="pre">needs</span></code><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.needs" title="Permalink to this definition">¶</a></dt>
+<dd><p>used in the <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.Flow</span></code> to build the graph</p>
+</dd></dl>
 <dl class="py attribute">
 <dt id="jina.peapods.pods.compound.CompoundPod.head_args">
 <code class="sig-name descname"><span class="pre">head_args</span></code><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.peapods.pods.compound.CompoundPod.head_args" title="Permalink to this definition">¶</a></dt>

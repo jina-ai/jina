@@ -386,20 +386,100 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">_get_event</span><span class="p">,</span> <span class="n">ConditionalEvent</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">__stop_msg__</span><span class="p">,</span> <span class="n">__ready_msg__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">...enums</span> <span class="kn">import</span> <span class="n">PeaRoleType</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="p">,</span> <span class="n">SocketType</span><span class="p">,</span> <span class="n">GatewayProtocolType</span>
 <span class="kn">from</span> <span class="nn">...excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">is_valid_huburi</span><span class="p">,</span> <span class="n">parse_hub_uri</span>
-<span class="kn">from</span> <span class="nn">...hubble.hubapi</span> <span class="kn">import</span> <span class="n">resolve_local</span>
+<span class="kn">from</span> <span class="nn">...hubble.helper</span> <span class="kn">import</span> <span class="n">is_valid_huburi</span>
 <span class="kn">from</span> <span class="nn">...hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 <span class="kn">from</span> <span class="nn">...logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">...parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_pull_parser</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BasePea'</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+    <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">runtime_cls</span><span class="p">,</span>
+    <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">zed_runtime_ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">is_started</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+    <span class="n">is_shutdown</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+    <span class="n">is_ready</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+    <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+<span class="p">):</span>
+    <span class="sd">"""Method representing the :class:`BaseRuntime` activity.</span>
+
+<span class="sd">    This method is the target for the Pea's `thread` or `process`</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.</span>
+<span class="sd">        Hence, please do not raise any exception here.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Please note that env variables are process-specific. Subprocess inherits envs from</span>
+<span class="sd">        the main process. But Subprocess's envs do NOT affect the main process. It does NOT</span>
+<span class="sd">        mess up user local system envs.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        If you are using ``thread`` as backend, envs setting will likely be overidden by others</span>
+
+<span class="sd">    :param args: namespace args from the Pea</span>
+<span class="sd">    :param name: name of the Pea to have proper logging</span>
+<span class="sd">    :param runtime_cls: the runtime class to instantiate</span>
+<span class="sd">    :param envs: a dictionary of environment variables to be set in the new Process</span>
+<span class="sd">    :param timeout_ctrl: timeout time for the control port communication</span>
+<span class="sd">    :param zed_runtime_ctrl_address: the control address of the `ZEDRuntime` that is supported by the Pea or `ContainerRuntime` or `JinadRuntime`.</span>
+<span class="sd">    :param is_started: concurrency event to communicate runtime is properly started. Used for better logging</span>
+<span class="sd">    :param is_shutdown: concurrency event to communicate runtime is terminated</span>
+<span class="sd">    :param is_ready: concurrency event to communicate runtime is ready to receive messages</span>
+<span class="sd">    :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes</span>
+<span class="sd">    """</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_unset_envs</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">envs</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_backend</span> <span class="o">!=</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">envs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_envs</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_backend</span> <span class="o">==</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s1">'environment variables should not be set when runtime="thread".'</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">envs</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_set_envs</span><span class="p">()</span>
+        <span class="n">runtime</span> <span class="o">=</span> <span class="n">runtime_cls</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">ctrl_addr</span><span class="o">=</span><span class="n">zed_runtime_ctrl_address</span><span class="p">,</span>
+            <span class="n">ready_event</span><span class="o">=</span><span class="n">is_ready</span><span class="p">,</span>
+            <span class="n">cancel_event</span><span class="o">=</span><span class="n">cancel_event</span><span class="p">,</span>
+            <span class="n">timeout_ctrl</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="n">runtime_cls</span><span class="si">!r}</span><span class="s1"> initialization'</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
+            <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
+            <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">is_started</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">runtime</span><span class="p">:</span>
+            <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">_unset_envs</span><span class="p">()</span>
+        <span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="BasePea"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea">[docs]</a><span class="k">class</span> <span class="nc">BasePea</span><span class="p">:</span>
@@ -412,24 +492,9 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>  <span class="c1">#: required here to call process/thread __init__</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">,</span>
-            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">PROCESS</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">,</span>
-        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'runtime_backend'</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">))(</span>
-            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run</span>
-        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">daemon</span>  <span class="c1">#: required here to set process/thread daemon</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_event</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ready_or_shutdown</span> <span class="o">=</span> <span class="n">ConditionalEvent</span><span class="p">(</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'runtime_backend'</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">),</span>
-            <span class="n">events_list</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">],</span>
-        <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_backend</span> <span class="o">==</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span>
@@ -451,6 +516,37 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_runtime_cls</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_ctrl_adrr</span><span class="p">()</span>
+        <span class="n">test_worker</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">,</span>
+            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">PROCESS</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'runtime_backend'</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">))()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="n">test_worker</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="n">test_worker</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel_event</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="n">test_worker</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span> <span class="o">=</span> <span class="n">_get_event</span><span class="p">(</span><span class="n">test_worker</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ready_or_shutdown</span> <span class="o">=</span> <span class="n">ConditionalEvent</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'runtime_backend'</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">),</span>
+            <span class="n">events_list</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">,</span>
+            <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">PROCESS</span><span class="p">:</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">,</span>
+        <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'runtime_backend'</span><span class="p">,</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">))(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">'args'</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">'envs'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">,</span>
+                <span class="s1">'is_started'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="p">,</span>
+                <span class="s1">'is_shutdown'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">,</span>
+                <span class="s1">'is_ready'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span>
+                <span class="s1">'cancel_event'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cancel_event</span><span class="p">,</span>
+                <span class="s1">'timeout_ctrl'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">,</span>
+                <span class="s1">'zed_runtime_ctrl_address'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span>
+                <span class="s1">'runtime_cls'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">daemon</span>  <span class="c1">#: required here to set process/thread daemon</span>
 
     <span class="k">def</span> <span class="nf">_set_ctrl_adrr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Sets control address for different runtimes"""</span>
@@ -507,65 +603,33 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">,</span> <span class="s1">'terminate'</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">_build_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Instantiates the runtime object</span>
+    <span class="k">def</span> <span class="nf">_retry_control_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_retry</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
 
-<span class="sd">        :return: the runtime object</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">(</span>
-            <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-            <span class="n">ctrl_addr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span>
-            <span class="n">ready_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span>
-            <span class="n">cancel_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cancel_event</span><span class="p">,</span>
-            <span class="n">timeout_ctrl</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">,</span>
-        <span class="p">)</span>
-
-<div class="viewcode-block" id="BasePea.run"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Method representing the :class:`BaseRuntime` activity.</span>
-
-<span class="sd">        This method overrides :meth:`run` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.</span>
-<span class="sd">            Hence, please do not raise any exception here.</span>
-<span class="sd">        """</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_envs</span><span class="p">()</span>
-            <span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_runtime</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span><span class="si">!r}</span><span class="s1"> initialization'</span>
-                <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
-                <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
-                <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="k">with</span> <span class="n">runtime</span><span class="p">:</span>
-                <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_unset_envs</span><span class="p">()</span></div>
+        <span class="k">for</span> <span class="n">retry</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_retry</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sending </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> command for the </span><span class="si">{</span><span class="n">retry</span><span class="si">}</span><span class="s1">th time'</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">send_ctrl_message</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span>
+                    <span class="n">command</span><span class="p">,</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">,</span>
+                    <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="n">num_retry</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ex</span>
 
 <div class="viewcode-block" id="BasePea.activate_runtime"><a class="viewcode-back" href="../../../../api/jina.peapods.peas/#jina.peapods.peas.BasePea.activate_runtime">[docs]</a>    <span class="k">def</span> <span class="nf">activate_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">""" Send activate control message. """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_dealer</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
-
-            <span class="n">send_ctrl_message</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span> <span class="s1">'ACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span>
-            <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_retry_control_message</span><span class="p">(</span><span class="s1">'ACTIVATE'</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_deactivate_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Send deactivate control message. """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_dealer</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
-
-            <span class="n">send_ctrl_message</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span> <span class="s1">'DEACTIVATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_retry_control_message</span><span class="p">(</span><span class="s1">'DEACTIVATE'</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_cancel_runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Send terminate control message."""</span>
@@ -573,11 +637,7 @@
         <span class="kn">from</span> <span class="nn">..runtimes.container</span> <span class="kn">import</span> <span class="n">ContainerRuntime</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">ZEDRuntime</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="n">ContainerRuntime</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">..zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
-
-            <span class="n">send_ctrl_message</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_zed_runtime_ctrl_address</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_retry_control_message</span><span class="p">(</span><span class="s1">'TERMINATE'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cancel_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
@@ -591,6 +651,7 @@
             <span class="n">_timeout</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_timeout</span> <span class="o">/=</span> <span class="mf">1e3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'waiting for ready or shutdown signal from runtime'</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ready_or_shutdown</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">_timeout</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="c1"># return too early and the shutdown is set, means something fails!!</span>
@@ -628,10 +689,15 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_deactivate_runtime</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cancel_runtime</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'Shutdown signal was not received for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_ctrl</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_deactivate_runtime</span><span class="si">!r}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1"> during </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="si">!r}</span><span class="s1">'</span>
                     <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
                     <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
@@ -662,30 +728,6 @@
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
-
-    <span class="k">def</span> <span class="nf">_set_envs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Set environment variable to this pea</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            Please note that env variables are process-specific. Subprocess inherits envs from</span>
-<span class="sd">            the main process. But Subprocess's envs do NOT affect the main process. It does NOT</span>
-<span class="sd">            mess up user local system envs.</span>
-
-<span class="sd">        .. warning::</span>
-<span class="sd">            If you are using ``thread`` as backend, envs setting will likely be overidden by others</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_backend</span> <span class="o">==</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s1">'environment variables should not be set when runtime="thread".'</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
-
-    <span class="k">def</span> <span class="nf">_unset_envs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">runtime_backend</span> <span class="o">!=</span> <span class="n">RuntimeBackendType</span><span class="o">.</span><span class="n">THREAD</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>

@@ -385,6 +385,7 @@
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
 
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">BasePod</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">Pea</span>
@@ -395,7 +396,7 @@
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 
 
-<div class="viewcode-block" id="CompoundPod"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">[docs]</a><span class="k">class</span> <span class="nc">CompoundPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
+<div class="viewcode-block" id="CompoundPod"><a class="viewcode-back" href="../../../../../api/jina.peapods.pods.compound/#jina.peapods.pods.compound.CompoundPod">[docs]</a><span class="k">class</span> <span class="nc">CompoundPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">):</span>
     <span class="sd">"""A CompoundPod is a immutable set of pods, which run in parallel.</span>
 <span class="sd">    A CompoundPod is an abstraction using a composable pattern to abstract the usage of parallel Pods that act as replicas.</span>
 
@@ -411,7 +412,12 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">upload_files</span> <span class="o">=</span> <span class="n">BasePod</span><span class="o">.</span><span class="n">_set_upload_files</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">needs</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="p">)</span>  <span class="c1">#: used in the :class:`jina.flow.Flow` to build the graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List['Pod']</span>
         <span class="c1"># we will see how to have `CompoundPods` in remote later when we add tests for it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_head_router</span> <span class="o">=</span> <span class="kc">True</span>
@@ -422,6 +428,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_replica_args</span><span class="p">(</span>
             <span class="n">cargs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span>
         <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">port_expose</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -622,13 +632,10 @@
                 <span class="n">replica</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">replicas_args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="c1"># TODO better way to pass args to the new Pod</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">dump_path</span> <span class="o">=</span> <span class="n">dump_path</span>
                 <span class="n">new_replica</span> <span class="o">=</span> <span class="n">Pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">new_replica</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">replicas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_replica</span>
-                <span class="c1"># TODO might be required in order to allow time for the Replica to come online</span>
-                <span class="c1"># before taking down the next</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span></div>
 
