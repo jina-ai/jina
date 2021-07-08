@@ -37,3 +37,20 @@ def test_override_config_params(flow):
     assert doc.tags['param3'] == 10  # not overriden
     assert doc.tags['name'] == 'name'  # not override
     assert doc.tags['workspace'] == 'different_workspace'
+
+
+def test_override_config_params_parallel():
+    flow = Flow(return_results=True).add(
+        uses=os.path.join(cur_dir, 'default_config.yml'),
+        override_with={'param1': 50, 'param2': 30},
+        override_metas={'workspace': 'different_workspace'},
+        parallel=2,
+    )
+    with flow:
+        resps = flow.search(inputs=[Document()], return_results=True)
+    doc = resps[0].docs[0]
+    assert doc.tags['param1'] == 50
+    assert doc.tags['param2'] == 30
+    assert doc.tags['param3'] == 10  # not overriden
+    assert doc.tags['name'] == 'name'  # not override
+    assert doc.tags['workspace'] == 'different_workspace'
