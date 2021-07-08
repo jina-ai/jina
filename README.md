@@ -18,18 +18,18 @@
 
 <!-- start elevator-pitch -->
 
-Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> allows you to build deep learning-powered search-as-a-service in just minutes.
+Jina<sup><a href=".github/pronounce-jina.mp3">`🔊`</a></sup> allows you to build search-as-a-service powered by deep learning in just minutes.
 
 <!-- end elevator-pitch -->
 
-🌌 **All data type** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
+🌌 **All data types** - Large-scale indexing and querying of any kind of unstructured data: video, image, long/short text, music, source code, PDF, etc.
 
 🌩️ **Fast & cloud-native** - Distributed architecture from day one, scalable & cloud-native by design: enjoy
 containerizing, streaming, paralleling, sharding, async scheduling, HTTP/gRPC/WebSocket protocol.
 
 ⏱️ **Save time** - *The* design pattern of neural search systems, from zero to a production-ready system in minutes.
 
-🍱 **Own your stack** - Keep an end-to-end stack ownership of your solution, avoid integration pitfalls with
+🍱 **Own your stack** - Keep end-to-end stack ownership of your solution, avoid integration pitfalls you get with
 fragmented, multi-vendor, generic legacy tools.
 
 
@@ -49,7 +49,7 @@ fragmented, multi-vendor, generic legacy tools.
 <details>
 <summary>More installation options</summary>
 
-| x86/64,arm64,v6,v7 | On Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
+| x86/64, arm64, v6, v7 | Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
 | --- | --- | --- |
 | Minimum <br><sub>(no HTTP, WebSocket, Docker support)</sub> | `pip install jina` | `docker run jinaai/jina:latest` |
 | <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
@@ -178,7 +178,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     - [Minimum Working Example](.github/2.0/cookbooks/Serving.md#minimum-working-example)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
     - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#extend-http-interface)
-- 📓 [Developer References](https://docs.jina.ai)
+- 📓 [Developer Reference](https://docs.jina.ai)
 - 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
 - 😎 [3 Reasons to Use Jina 2.0](.github/2.0/1vs2.md)
 
@@ -191,7 +191,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     - **Where?**
       Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
       and [live stream on YouTube](https://youtube.com/c/jina-ai)
-- Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai).
+- Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
 
 ## Join Us
 
@@ -204,7 +204,7 @@ We welcome all kinds of contributions from the open-source community, individual
 your active involvement.
 
 - [Contributing guidelines](CONTRIBUTING.md)
-- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md) - play nicely with the Jina
+- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md)
   community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
