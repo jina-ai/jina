@@ -11,7 +11,6 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 class FilterText(Executor):
-
     def __init__(self, traversal_paths: Optional[List[str]] = None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.traversal_paths = traversal_paths or ['r']
@@ -19,7 +18,9 @@ class FilterText(Executor):
     @requests()
     def filter(self, docs: DocumentArray, **kwargs):
         chunks = DocumentArray(
-            d for d in docs.traverse_flat(self.traversal_paths) if d.mime_type == 'text/plain'
+            d
+            for d in docs.traverse_flat(self.traversal_paths)
+            if d.mime_type == 'text/plain'
         )
         return chunks
 
@@ -35,30 +36,28 @@ class Segmenter(Executor):
             doc.chunks = [chunk_text, chunk_uri]
             doc.uri = uri
             doc.convert_uri_to_datauri()
-        return DocumentArray(
-            d for d in docs.traverse_flat(['c'])
-        )
+        return DocumentArray(d for d in docs.traverse_flat(['c']))
 
 
 class TextEncoder(Executor):
     """Transformer executor class"""
 
     def __init__(
-            self,
-            pretrained_model_name_or_path: str = 'sentence-transformers/paraphrase-mpnet-base-v2',
-            base_tokenizer_model: Optional[str] = None,
-            pooling_strategy: str = 'mean',
-            layer_index: int = -1,
-            max_length: Optional[int] = None,
-            acceleration: Optional[str] = None,
-            embedding_fn_name: str = '__call__',
-            *args,
-            **kwargs,
+        self,
+        pretrained_model_name_or_path: str = 'sentence-transformers/paraphrase-mpnet-base-v2',
+        base_tokenizer_model: Optional[str] = None,
+        pooling_strategy: str = 'mean',
+        layer_index: int = -1,
+        max_length: Optional[int] = None,
+        acceleration: Optional[str] = None,
+        embedding_fn_name: str = '__call__',
+        *args,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.pretrained_model_name_or_path = pretrained_model_name_or_path
         self.base_tokenizer_model = (
-                base_tokenizer_model or pretrained_model_name_or_path
+            base_tokenizer_model or pretrained_model_name_or_path
         )
         self.pooling_strategy = pooling_strategy
         self.layer_index = layer_index
@@ -124,16 +123,16 @@ class TextEncoder(Executor):
 
 class ImageCrafter(Executor):
     def __init__(
-            self,
-            target_size: Union[Iterable[int], int] = 224,
-            img_mean: Tuple[float] = (0, 0, 0),
-            img_std: Tuple[float] = (1, 1, 1),
-            resize_dim: int = 256,
-            channel_axis: int = -1,
-            target_channel_axis: int = 0,
-            traversal_paths: Optional[List[str]] = None,
-            *args,
-            **kwargs,
+        self,
+        target_size: Union[Iterable[int], int] = 224,
+        img_mean: Tuple[float] = (0, 0, 0),
+        img_std: Tuple[float] = (1, 1, 1),
+        resize_dim: int = 256,
+        channel_axis: int = -1,
+        target_channel_axis: int = 0,
+        traversal_paths: Optional[List[str]] = None,
+        *args,
+        **kwargs,
     ):
         """Set Constructor."""
         super().__init__(*args, **kwargs)
@@ -147,7 +146,9 @@ class ImageCrafter(Executor):
 
     def craft(self, docs: DocumentArray, fn):
         filtered_docs = DocumentArray(
-            d for d in docs.traverse_flat(self.traversal_paths) if d.mime_type == 'image/jpeg'
+            d
+            for d in docs.traverse_flat(self.traversal_paths)
+            if d.mime_type == 'image/jpeg'
         )
         for doc in filtered_docs:
             getattr(doc, fn)()
@@ -178,12 +179,12 @@ class ImageCrafter(Executor):
 
 class ImageEncoder(Executor):
     def __init__(
-            self,
-            model_name: str = 'mobilenet_v2',
-            pool_strategy: str = 'mean',
-            channel_axis: int = -1,
-            *args,
-            **kwargs,
+        self,
+        model_name: str = 'mobilenet_v2',
+        pool_strategy: str = 'mean',
+        channel_axis: int = -1,
+        *args,
+        **kwargs,
     ):
 
         super().__init__(*args, **kwargs)
@@ -241,7 +242,7 @@ class DocVectorIndexer(Executor):
 
     @staticmethod
     def _get_sorted_top_k(
-            dist: 'np.array', top_k: int
+        dist: 'np.array', top_k: int
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
@@ -276,7 +277,7 @@ class KeyValueIndexer(Executor):
 class WeightedRanker(Executor):
     @requests(on='/search')
     def rank(
-            self, docs_matrix: List['DocumentArray'], parameters: Dict, **kwargs
+        self, docs_matrix: List['DocumentArray'], parameters: Dict, **kwargs
     ) -> 'DocumentArray':
         """
         :param docs_matrix: list of :class:`DocumentArray` on multiple requests to
@@ -298,10 +299,10 @@ class WeightedRanker(Executor):
             for m in d_mod2.matches:
                 if m.parent_id in final_matches:
                     final_matches[m.parent_id].scores['relevance'] = final_matches[
-                                                                         m.parent_id
-                                                                     ].scores['relevance'].value + (
-                                                                             m.scores['cosine'].value * d_mod2.weight
-                                                                     )
+                        m.parent_id
+                    ].scores['relevance'].value + (
+                        m.scores['cosine'].value * d_mod2.weight
+                    )
                 else:
                     m.scores['relevance'] = m.scores['cosine'].value * d_mod2.weight
                     final_matches[m.parent_id] = Document(m, copy=True)
@@ -320,8 +321,8 @@ def _get_ones(x, y):
 def _ext_A(A):
     nA, dim = A.shape
     A_ext = _get_ones(nA, dim * 3)
-    A_ext[:, dim: 2 * dim] = A
-    A_ext[:, 2 * dim:] = A ** 2
+    A_ext[:, dim : 2 * dim] = A
+    A_ext[:, 2 * dim :] = A ** 2
     return A_ext
 
 
@@ -329,7 +330,7 @@ def _ext_B(B):
     nB, dim = B.shape
     B_ext = _get_ones(dim * 3, nB)
     B_ext[:dim] = (B ** 2).T
-    B_ext[dim: 2 * dim] = -2.0 * B.T
+    B_ext[dim : 2 * dim] = -2.0 * B.T
     del B
     return B_ext
 
@@ -348,7 +349,7 @@ def _cosine(A_norm_ext, B_norm_ext):
 
 
 def _move_channel_axis(
-        img: 'np.ndarray', channel_axis_to_move: int, target_channel_axis: int = -1
+    img: 'np.ndarray', channel_axis_to_move: int, target_channel_axis: int = -1
 ) -> 'np.ndarray':
     """
     Ensure the color channel axis is the default axis.
@@ -370,11 +371,11 @@ def _load_image(blob: 'np.ndarray', channel_axis: int):
 
 
 def _crop_image(
-        img,
-        target_size: Union[Tuple[int, int], int],
-        top: int = None,
-        left: int = None,
-        how: str = 'precise',
+    img,
+    target_size: Union[Tuple[int, int], int],
+    top: int = None,
+    left: int = None,
+    how: str = 'precise',
 ):
     """
     Crop the input :py:mod:`PIL` image.
@@ -415,10 +416,10 @@ def _crop_image(
     elif how == 'precise':
         assert w_beg is not None and h_beg is not None
         assert (
-                0 <= w_beg <= (img_w - target_w)
+            0 <= w_beg <= (img_w - target_w)
         ), f'left must be within [0, {img_w - target_w}]: {w_beg}'
         assert (
-                0 <= h_beg <= (img_h - target_h)
+            0 <= h_beg <= (img_h - target_h)
         ), f'top must be within [0, {img_h - target_h}]: {h_beg}'
     else:
         raise ValueError(f'unknown input how: {how}')
