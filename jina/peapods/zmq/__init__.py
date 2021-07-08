@@ -296,9 +296,7 @@ class Zmqlet:
             ssh_keyfile=self.args.ssh_keyfile,
             ssh_password=self.args.ssh_password,
         )
-        self.logger.debug(
-            f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}'
-        )
+        self.logger.debug(f'output {host_out}:{colored(port_out, "yellow")}')
         return out_sock
 
     def _get_dynamic_out_socket(self, target_pod, as_streaming=False):
