@@ -251,24 +251,33 @@ class ZEDRuntime(ZMQRuntime):
     def _handle_control_req(self):
         # migrated from previous ControlDriver logic
         if self.request.command == 'TERMINATE':
+            self.logger.info('DO TERMINATE')
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated
         elif self.request.command == 'STATUS':
             self.envelope.status.code = jina_pb2.StatusProto.READY
             self.request.parameters = vars(self.args)
         elif self.request.command == 'IDLE':
+            self.logger.info('DO IDLE')
             self._idle_dealer_ids.add(self.envelope.receiver_id)
             self._zmqstreamlet.resume_pollin()
             self.logger.debug(
                 f'{self.envelope.receiver_id} is idle, now I know these idle peas {self._idle_dealer_ids}'
             )
+            self.logger.info('DONE IDLE')
         elif self.request.command == 'CANCEL':
+            self.logger.info('DO CANCEL')
             if self.envelope.receiver_id in self._idle_dealer_ids:
                 self._idle_dealer_ids.remove(self.envelope.receiver_id)
+            self.logger.info('DONE CANCEL')
         elif self.request.command == 'ACTIVATE':
+            self.logger.info('DO ACTIVATE')
             self._zmqstreamlet._send_idle_to_router()
+            self.logger.info('DONE ACTIVATE')
         elif self.request.command == 'DEACTIVATE':
+            self.logger.info('DO DEACTIVATE')
             self._zmqstreamlet._send_cancel_to_router()
+            self.logger.info('DONE DEACTIVATE')
         else:
             raise UnknownControlCommand(
                 f'don\'t know how to handle {self.request.command}'

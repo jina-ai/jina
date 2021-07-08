@@ -57,7 +57,9 @@ def run(
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
     :param cancel_event: concurrency event to receive cancelling signal from the Pea. Needed by some runtimes
     """
+    print(f'running pea {name}', flush=True)
     logger = JinaLogger(name, **vars(args))
+    logger.info('logger created')
 
     def _unset_envs():
         if envs and args.runtime_backend != RuntimeBackendType.THREAD:
@@ -96,6 +98,7 @@ def run(
             runtime.run_forever()
     finally:
         _unset_envs()
+        logger.info(f'{name} set shutdown')
         is_shutdown.set()
 
 
@@ -199,7 +202,9 @@ class BasePea:
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
+        self.logger.warning(f'going to start pea {self.name}')
         self.worker.start()
+        self.logger.warning(f'started pea {self.name}')
         if not self.args.noblock_on_start:
             self.wait_start_success()
         return self
@@ -302,11 +307,16 @@ class BasePea:
         This method makes sure that the `Process/thread` is properly finished and its resources properly released
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
+        self.logger.info(f'close pea {self.name}')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
+                self.logger.info(f'_deactivate_runtime pea {self.name}')
                 self._deactivate_runtime()
+                self.logger.info(f'_cancel_runtime pea {self.name}')
                 self._cancel_runtime()
+                self.logger.info(f'{self.name} waiting for shutdown event')
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                    self.logger.info(f'{self.name} got shutdown event')
                     self.terminate()
                     time.sleep(0.1)
                     raise Exception(
