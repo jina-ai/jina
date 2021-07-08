@@ -5,9 +5,10 @@ with:
   expose_crud_endpoints: True
 executors:
   - name: encodeText
-    uses: jinahub+docker://TransformerTorchEncoder
-    override_with:
-      default_traversal_paths: ['c']
+    uses:
+      jtype: TextEncoder
+      py_modules:
+        - my_executors.py
   - name: textChunkIndexer
     uses:
       jtype: DocVectorIndexer
@@ -21,14 +22,14 @@ executors:
     uses:
       jtype: ImageCrafter
       metas:
-        workspace: $HW_WORKDIR
         py_modules:
           - my_executors.py
     needs: gateway
   - name: encodeImage
-    uses: jinahub+docker://ImageTorchEncoder
-    override_with:
-      default_traversal_paths: ['c']
+    uses:
+      jtype: ImageEncoder
+      py_modules:
+        - my_executors.py
   - name: imageChunkIndexer
     uses:
       jtype: DocVectorIndexer
@@ -42,7 +43,6 @@ executors:
     uses:
       jtype: WeightedRanker
       metas:
-        workspace: $HW_WORKDIR
         py_modules:
           - my_executors.py
     needs: [ textChunkIndexer, imageChunkIndexer ]

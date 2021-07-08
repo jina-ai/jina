@@ -5,13 +5,13 @@ executors:
     uses:
       jtype: Segmenter
       metas:
-        workspace: $HW_WORKDIR
         py_modules:
           - my_executors.py
   - name: encodeText
-    uses: jinahub+docker://TransformerTorchEncoder
-    override_with:
-      default_traversal_paths: ['c']
+    uses:
+      jtype: TextEncoder
+      py_modules:
+        - my_executors.py
   - name: textChunkIndexer
     uses:
       jtype: DocVectorIndexer
@@ -30,9 +30,10 @@ executors:
           - my_executors.py
     needs: segment
   - name: encodeImage
-    uses: jinahub+docker://ImageTorchEncoder
-    override_with:
-      default_traversal_paths: ['c']
+    uses:
+      jtype: ImageEncoder
+      py_modules:
+        - my_executors.py
   - name: imageChunkIndexer
     uses:
       jtype: DocVectorIndexer
