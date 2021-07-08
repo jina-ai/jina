@@ -70,6 +70,9 @@ class Zmqlet:
         self.msg_sent = 0
         self.is_closed = False
         self.is_polling_paused = False
+        self.in_sock_type = None
+        self.out_sock_type = None
+        self.ctrl_sock_type = None
         self.opened_socks = []  # this must be here for `close()`
         (
             self.ctx,
@@ -785,7 +788,8 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
         frames = [b' '] + frames
     elif sock_type == zmq.ROUTER:
         # the router appends dealer id when receive it, we need to remove it
-        frames.pop(0)
+        if len(frames) == 4:
+            frames.pop(0)
 
     return Message(frames[1], frames[2])
 
