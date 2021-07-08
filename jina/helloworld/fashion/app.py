@@ -12,7 +12,7 @@ if __name__ == '__main__':
         index_generator,
         query_generator,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator, MyEncoder2
+    from my_executors import MyEncoder, MyIndexer, MyEvaluator, Converter
 else:
     from .helper import (
         print_result,
@@ -21,7 +21,7 @@ else:
         index_generator,
         query_generator,
     )
-    from .my_executors import MyEncoder, MyIndexer, MyEvaluator, MyEncoder2
+    from .my_executors import MyEncoder, MyIndexer, MyEvaluator, Converter
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -73,7 +73,13 @@ def hello_world(args):
     # load index flow from a YAML file
     f = (
         Flow()
-        .add(uses=MyEncoder2, parallel=2)
+        # .add(uses=MyEncoder, parallel=1)
+        .add(
+            uses='jinahub+docker://ImageTorchEncoder',
+            override_with={'model_name': 'alexnet'},
+            parallel=1,
+        )
+        .add(uses=Converter)
         .add(uses=MyIndexer, workspace=args.workdir)
         .add(uses=MyEvaluator)
     )
