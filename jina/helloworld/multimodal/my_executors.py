@@ -10,21 +10,6 @@ from jina import Executor, DocumentArray, requests, Document
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
-class FilterText(Executor):
-    def __init__(self, traversal_paths: Optional[List[str]] = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.traversal_paths = traversal_paths or ['r']
-
-    @requests()
-    def filter(self, docs: DocumentArray, **kwargs):
-        chunks = DocumentArray(
-            d
-            for d in docs.traverse_flat(self.traversal_paths)
-            if d.mime_type == 'text/plain'
-        )
-        return chunks
-
-
 class Segmenter(Executor):
     @requests
     def segment(self, docs: DocumentArray, **kwargs):
@@ -36,7 +21,6 @@ class Segmenter(Executor):
             doc.chunks = [chunk_text, chunk_uri]
             doc.uri = uri
             doc.convert_uri_to_datauri()
-        return DocumentArray(d for d in docs.traverse_flat(['c']))
 
 
 class TextEncoder(Executor):
@@ -50,6 +34,7 @@ class TextEncoder(Executor):
         layer_index: int = -1,
         max_length: Optional[int] = None,
         acceleration: Optional[str] = None,
+        traversal_paths: Optional[List[str]] = None,
         embedding_fn_name: str = '__call__',
         *args,
         **kwargs,
@@ -85,12 +70,7 @@ class TextEncoder(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', *args, **kwargs):
-
-        chunks = DocumentArray(
-            d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
-        )
-
-        texts = chunks.get_attributes('text')
+        texts = docs.get_attributes('text')
 
         with torch.no_grad():
 
@@ -115,10 +95,23 @@ class TextEncoder(Executor):
             hidden_states = outputs.hidden_states
 
             embeds = self._compute_embedding(hidden_states, input_tokens)
-            for doc, embed in zip(chunks, embeds):
+            for doc, embed in zip(docs, embeds):
                 doc.embedding = embed
 
-        return chunks
+
+class TextCrafter(Executor):
+    def __init__(self, traversal_paths: Optional[List[str]] = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.traversal_paths = traversal_paths or ['c']
+
+    @requests()
+    def filter(self, docs: DocumentArray, **kwargs):
+        filtered_docs = DocumentArray(
+            d
+            for d in docs.traverse_flat(self.traversal_paths)
+            if d.mime_type == 'text/plain'
+        )
+        return filtered_docs
 
 
 class ImageCrafter(Executor):
@@ -142,7 +135,7 @@ class ImageCrafter(Executor):
         self.img_std = np.array(img_std).reshape((1, 1, 3))
         self.channel_axis = channel_axis
         self.target_channel_axis = target_channel_axis
-        self.traversal_paths = traversal_paths or ['r']
+        self.traversal_paths = traversal_paths or ['c']
 
     def craft(self, docs: DocumentArray, fn):
         filtered_docs = DocumentArray(

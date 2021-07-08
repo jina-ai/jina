@@ -4,17 +4,15 @@ with:
   cors: True
   expose_crud_endpoints: True
 executors:
-  - name: filterText
+  - name: craftText
     uses:
-      jtype: FilterText
-      with:
-        traversal_paths: ['c']
+      jtype: TextCrafter
       metas:
         py_modules:
           - my_executors.py
   - name: encodeText
     uses: jinahub+docker://TransformerTorchEncoder
-  - name: textChunkIndexer
+  - name: textIndexer
     uses:
       jtype: DocVectorIndexer
       with:
@@ -26,8 +24,6 @@ executors:
   - name: craftImage
     uses:
       jtype: ImageCrafter
-      with:
-        traversal_paths: ['c']
       metas:
         workspace: $HW_WORKDIR
         py_modules:
@@ -37,7 +33,7 @@ executors:
     uses: jinahub+docker://ImageTorchEncoder
     override_with:
       use_default_preprocessing: False
-  - name: imageChunkIndexer
+  - name: imageIndexer
     uses:
       jtype: DocVectorIndexer
       with:
@@ -53,7 +49,7 @@ executors:
         workspace: $HW_WORKDIR
         py_modules:
           - my_executors.py
-    needs: [ textChunkIndexer, imageChunkIndexer ]
+    needs: [ textIndexer, imageIndexer ]
   - name: keyvalueIndexer
     uses:
       jtype: KeyValueIndexer
