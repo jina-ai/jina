@@ -5,7 +5,14 @@ import numpy as np
 import pytest
 
 from jina import Flow, Client, Document, __default_host__
-from ..helpers import create_workspace, wait_for_workspace, delete_workspace
+from ..helpers import (
+    assert_request,
+    create_workspace,
+    delete_flow,
+    wait_for_workspace,
+    delete_workspace,
+    create_flow,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -86,6 +93,18 @@ def test_upload_multiple_workspaces(parallels, mocker):
     response_mock.assert_called()
 
 
+def test_remote_flow():
+    workspace_id = create_workspace(
+        filepaths=[os.path.join(cur_dir, 'empty_flow.yml')],
+    )
+    assert wait_for_workspace(workspace_id)
+    flow_id = create_flow(workspace_id=workspace_id, filename='empty_flow.yml')
+    assert_request('get', url=f'http://{CLOUD_HOST}/flows/{flow_id}', expect_rcode=200)
+    assert_request('get', url=f'http://localhost:23456/status/', expect_rcode=200)
+    assert delete_flow(flow_id)
+    assert delete_workspace(workspace_id)
+
+
 def test_custom_project():
 
     HOST = __default_host__
@@ -117,7 +136,7 @@ def test_custom_project():
     )
     assert res[0].data.docs[0].matches[0].tags.fields['first'].string_value == 's'
     assert res[0].data.docs[0].matches[0].tags.fields['second'].string_value == 't'
-    delete_workspace(workspace_id, host=HOST)
+    assert delete_workspace(workspace_id, host=HOST)
 
 
 @pytest.fixture()
