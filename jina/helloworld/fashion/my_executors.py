@@ -59,11 +59,36 @@ class MyEncoder(Executor):
     def encode(self, docs: 'DocumentArray', **kwargs):
         # reduce dimension to 50 by random orthogonal projection
         content = np.stack(docs.get_attributes('content'))
+        print(f'\n\n\ncontent.shape={content.shape}\n\n\n')
         embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat
         for doc, embed in zip(docs, embeds):
             doc.embedding = embed
             doc.convert_image_blob_to_uri(width=28, height=28)
             doc.pop('blob')
+
+
+class MyEncoder2(Executor):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from jinahub.image.encoder.torch_encoder import ImageTorchEncoder
+
+        self.encoder = ImageTorchEncoder(model_name='alexnet', default_batch_size=256)
+
+    @requests
+    def encode(self, docs: 'DocumentArray', **kwargs):
+
+        content = np.stack(docs.get_attributes('content'))
+        new_docs = []
+        for doc, x in zip(docs, content):
+            x_stacked = np.stack((x.reshape(28, 28),) * 3, axis=-1).astype(np.uint8)
+            # print(f'\n\n\nx_stacked.shape={x_stacked.shape}')
+            # print(f'x_stacked.dtype={x_stacked.dtype}')
+            # print(f'x.shape={x.shape}')
+            # print(f'x.dtype={x.dtype}\n\n\n')
+            d = Document(blob=x_stacked)
+            new_docs.append(d)
+
+        self.encoder.encode(DocumentArray(new_docs), parameters={})
 
 
 def _get_ones(x, y):

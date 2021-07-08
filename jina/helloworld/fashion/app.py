@@ -12,7 +12,7 @@ if __name__ == '__main__':
         index_generator,
         query_generator,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator
+    from my_executors import MyEncoder, MyIndexer, MyEvaluator, MyEncoder2
 else:
     from .helper import (
         print_result,
@@ -21,7 +21,7 @@ else:
         index_generator,
         query_generator,
     )
-    from .my_executors import MyEncoder, MyIndexer, MyEvaluator
+    from .my_executors import MyEncoder, MyIndexer, MyEvaluator, MyEncoder2
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -73,7 +73,7 @@ def hello_world(args):
     # load index flow from a YAML file
     f = (
         Flow()
-        .add(uses=MyEncoder, parallel=2)
+        .add(uses=MyEncoder2, parallel=2)
         .add(uses=MyIndexer, workspace=args.workdir)
         .add(uses=MyEvaluator)
     )
