@@ -34,7 +34,6 @@ class TextEncoder(Executor):
         layer_index: int = -1,
         max_length: Optional[int] = None,
         acceleration: Optional[str] = None,
-        traversal_paths: Optional[List[str]] = None,
         embedding_fn_name: str = '__call__',
         *args,
         **kwargs,
@@ -100,16 +99,13 @@ class TextEncoder(Executor):
 
 
 class TextCrafter(Executor):
-    def __init__(self, traversal_paths: Optional[List[str]] = None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.traversal_paths = traversal_paths or ['c']
 
     @requests()
     def filter(self, docs: DocumentArray, **kwargs):
         filtered_docs = DocumentArray(
-            d
-            for d in docs.traverse_flat(self.traversal_paths)
-            if d.mime_type == 'text/plain'
+            d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
         )
         return filtered_docs
 
@@ -123,7 +119,6 @@ class ImageCrafter(Executor):
         resize_dim: int = 256,
         channel_axis: int = -1,
         target_channel_axis: int = 0,
-        traversal_paths: Optional[List[str]] = None,
         *args,
         **kwargs,
     ):
@@ -135,13 +130,10 @@ class ImageCrafter(Executor):
         self.img_std = np.array(img_std).reshape((1, 1, 3))
         self.channel_axis = channel_axis
         self.target_channel_axis = target_channel_axis
-        self.traversal_paths = traversal_paths or ['c']
 
     def craft(self, docs: DocumentArray, fn):
         filtered_docs = DocumentArray(
-            d
-            for d in docs.traverse_flat(self.traversal_paths)
-            if d.mime_type == 'image/jpeg'
+            d for d in docs.traverse_flat(['c']) if d.mime_type == 'image/jpeg'
         )
         for doc in filtered_docs:
             getattr(doc, fn)()
