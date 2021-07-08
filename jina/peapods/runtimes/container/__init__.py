@@ -9,7 +9,7 @@ from platform import uname
 from ..zmq.base import ZMQRuntime
 from ...zmq import Zmqlet
 from .... import __docker_host__
-from ....excepts import BadImageNameError
+from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
 
@@ -80,6 +80,16 @@ class ContainerRuntime(ZMQRuntime):
         import docker
 
         client = docker.from_env()
+
+        docker_version = client.version().get('Version')
+        if not docker_version:
+            raise DockerVersionError('docker version can not be resolved')
+
+        docker_version = tuple(docker_version.split('.'))
+        if docker_version < ('20',):
+            raise DockerVersionError(
+                f'docker version {".".join(docker_version)} is below 20.0.0'
+            )
 
         if self.args.uses.startswith('docker://'):
             uses_img = self.args.uses.replace('docker://', '')

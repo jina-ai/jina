@@ -251,6 +251,9 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
         def close(self):
             pass
 
+        def version(self):
+            return {"Version": "20.0.1"}
+
         @property
         def networks(self):
             return {'bridge': None}
