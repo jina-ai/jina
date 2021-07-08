@@ -351,6 +351,7 @@ class BasePea:
                 'failed to start'
             )
             if self.is_ready.wait(timeout=0.1):
+                print(f'{self.name} cancel runtime before is ready', flush=True)
                 self._cancel_runtime()
             else:
                 self.logger.warning(
