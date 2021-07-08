@@ -78,11 +78,11 @@ def delete_workspace(
     workspace_id: DaemonID,
     host: str = __default_host__,
     port: int = 8000,
-) -> None:
+) -> bool:
     print(f'will delete workspace {workspace_id}')
     url = _jinad_url(host, port, f'workspaces/{workspace_id}')
     r = requests.delete(url, params={'everything': True})
-    assert r.status_code == 200
+    return r.status_code == 200
 
 
 def wait_for_workspace(
@@ -125,6 +125,16 @@ def create_flow(
     print(f'Checking if the flow creation is succeeded: {r.json()}')
     assert r.status_code == 201
     return r.json()
+
+
+def delete_flow(
+    flow_id: DaemonID,
+    host: str = __default_host__,
+    port: int = 8000,
+) -> bool:
+    url = _jinad_url(host, port, f'flows/{flow_id}')
+    r = requests.delete(url)
+    return r.status_code == requests.codes.ok
 
 
 def container_ip(container_name: str) -> str:
