@@ -92,6 +92,9 @@ def test_push(mocker, monkeypatch, path, mode):
         return PostMockResponse(response_code=requests.codes.created)
 
     monkeypatch.setattr(requests, 'post', _mock_post)
+    # Second push will use --force --secret because of .jina/secret.key
+    # Then it will use put method
+    monkeypatch.setattr(requests, 'put', _mock_post)
 
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
