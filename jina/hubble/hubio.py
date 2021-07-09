@@ -184,7 +184,10 @@ class HubIO:
         table.add_row(':whale: DockerHub', f'https://hub.docker.com/r/jinahub/{uuid8}/')
         console.print(table)
 
-        usage = f'{uuid8}' if visibility == 'public' else f'{uuid8}:{secret}'
+        presented_id = image.get('alias', uuid8)
+        usage = (
+            f'{presented_id}' if visibility == 'public' else f'{presented_id}:{secret}'
+        )
 
         if not self.args.no_usage:
             self._get_prettyprint_usage(console, usage)

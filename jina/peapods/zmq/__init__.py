@@ -70,6 +70,9 @@ class Zmqlet:
         self.msg_sent = 0
         self.is_closed = False
         self.is_polling_paused = False
+        self.in_sock_type = None
+        self.out_sock_type = None
+        self.ctrl_sock_type = None
         self.opened_socks = []  # this must be here for `close()`
         (
             self.ctx,
@@ -89,6 +92,7 @@ class Zmqlet:
             self.opened_socks.append(self.in_connect_sock)
 
         self.out_sockets = {}
+        self._active = True
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)
@@ -262,6 +266,9 @@ class Zmqlet:
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
+        self._active = (
+            False  # Important to avoid sending idle back while flushing in socket
+        )
         if not self.is_closed:
             self.is_closed = True
             self._close_sockets()
@@ -289,9 +296,7 @@ class Zmqlet:
             ssh_keyfile=self.args.ssh_keyfile,
             ssh_password=self.args.ssh_password,
         )
-        self.logger.debug(
-            f'output {self.args.host_out}:{colored(self.args.port_out, "yellow")}'
-        )
+        self.logger.debug(f'output {host_out}:{colored(port_out, "yellow")}')
         return out_sock
 
     def _get_dynamic_out_socket(self, target_pod, as_streaming=False):
@@ -356,7 +361,7 @@ class Zmqlet:
         self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
-        if socket == self.out_sock and self.in_sock_type == zmq.DEALER:
+        if self._active and socket == self.out_sock and self.in_sock_type == zmq.DEALER:
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
@@ -379,6 +384,7 @@ class Zmqlet:
 
         :param raise_exception: if true: raise an exception which might occur during send, if false: log error
         """
+        self._active = False
         self._send_control_to_router('CANCEL', raise_exception)
 
     def recv_message(
@@ -509,14 +515,24 @@ class ZmqStreamlet(Zmqlet):
         :param args: Extra positional arguments
         :param kwargs: Extra key-value arguments
         """
-        if not self.is_closed and self.in_sock_type == zmq.DEALER:
+
+        # if Address already in use `self.in_sock_type` is not set
+        if (
+            not self.is_closed
+            and hasattr(self, 'in_sock_type')
+            and self.in_sock_type == zmq.DEALER
+        ):
             try:
-                self._send_cancel_to_router(raise_exception=True)
+                if self._active:
+                    self._send_cancel_to_router(raise_exception=True)
             except zmq.error.ZMQError:
                 self.logger.debug(
                     f'The dealer {self.name} can not unsubscribe from the router. '
                     f'In case the router is down this is expected.'
                 )
+        self._active = (
+            False  # Important to avoid sending idle back while flushing in socket
+        )
         if not self.is_closed:
             # wait until the close signal is received
             time.sleep(0.01)
@@ -585,13 +601,14 @@ class ZmqStreamlet(Zmqlet):
 
 
 def send_ctrl_message(
-    address: str, cmd: Union[str, Message], timeout: int
+    address: str, cmd: Union[str, Message], timeout: int, raise_exception: bool = False
 ) -> 'Message':
     """Send a control message to a specific address and wait for the response
 
     :param address: the socket address to send
     :param cmd: the control command to send
     :param timeout: the waiting time (in ms) for the response
+    :param raise_exception: raise exception when exception found
     :return: received message
     """
     if isinstance(cmd, str):
@@ -608,8 +625,11 @@ def send_ctrl_message(
         r = None
         try:
             r = recv_message(sock, timeout)
-        except TimeoutError:
-            pass
+        except Exception as ex:
+            if raise_exception:
+                raise ex
+            else:
+                pass
         finally:
             sock.close()
         return r
@@ -785,7 +805,8 @@ def _parse_from_frames(sock_type, frames: List[bytes]) -> 'Message':
         frames = [b' '] + frames
     elif sock_type == zmq.ROUTER:
         # the router appends dealer id when receive it, we need to remove it
-        frames.pop(0)
+        if len(frames) == 4:
+            frames.pop(0)
 
     return Message(frames[1], frames[2])
 

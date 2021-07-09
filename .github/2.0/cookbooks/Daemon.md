@@ -7,18 +7,18 @@ Table of Contents
     - [Workspace](#workspace)
     - [RESTful Flows](#restful-flows)
     - [RESTful Pods/Peas](#restful-podspeas)
-    - [Example Usage](#example-usage)
-  - [Development using JinaD](#development-using-jinad)
-    - [Build](#build)
+  - [Using JinaD](#using-jinad)
     - [Run](#run)
-      - [Why?](#why)
-    - [Metaworks](#metaworks)
+    - [Example Usage](#example-usage)
+    - [Development using JinaD](#development-using-jinad)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # JinaD 2.0
 
 JinaD is a daemon for deploying & managing Jina on remote via a RESTful interface. It achieves isolation of deployments by defining a `workspace` for each Jina object.
+
+------
 
 ## Concepts
 
@@ -99,23 +99,51 @@ with f:
   f.post(...)
 ```
 
+------
+
+## Using JinaD
+
+`JinaD` docker image is published on [Docker Hub](https://hub.docker.com/r/jinaai/jina/tags?page=1&ordering=last_updated&name=-daemon) & follows the [standard image versioning](https://github.com/jina-ai/jina/blob/master/RELEASE.md#docker-image-versioning) used in Jina.
+
+### Run
+
+```bash
+docker run --add-host host.docker.internal:host-gateway \
+           -v /var/run/docker.sock:/var/run/docker.sock \
+           -v /tmp/jinad:/tmp/jinad \
+           -p 8000:8000 \
+           --name jinad \
+           -d jinaai/jina:latest-daemon
+```
+
+**API Docs**
+
+- [Static docs with redoc](https://api.jina.ai/daemon/)
+
+- [Interactive swagger docs](http://localhost:8000/docs) (works once JinaD is started)
+
+
 ### Example Usage
 
-- [Dependency management with remote Pods](https://github.com/jina-ai/jina/blob/master/tests/distributed/test_against_external_daemon/test_remote_workspaces.py#L49)
+- [Remote Flows](https://github.com/jina-ai/jina/blob/master/tests/distributed/test_workspaces/test_remote_workspaces.py#L96)
 
-- [Jina custom project](https://github.com/jina-ai/jina/blob/master/tests/distributed/test_against_external_daemon/test_remote_workspaces.py#L90)
+- [Dependency management with remote Pods](https://github.com/jina-ai/jina/blob/master/tests/distributed/test_workspaces/test_remote_workspaces.py#L55)
 
-## Development using JinaD
+- [Jina custom project using workspaces](https://github.com/jina-ai/jina/blob/master/tests/distributed/test_workspaces/test_remote_workspaces.py#L108)
+
+------
+
+### Development using JinaD
 
 `JinaD` should always be deployed as a docker container.
 
-### Build
+##### Build
 
 ```bash
 docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
 ```
 
-### Run
+##### Run
 
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
@@ -127,7 +155,7 @@ docker run --add-host host.docker.internal:host-gateway \
            -d jinaai/jina:test-daemon
 ```
 
-#### Why?
+##### Why?
 
 - `jinaai/jina:test-daemon` ?
 
@@ -151,7 +179,7 @@ docker run --add-host host.docker.internal:host-gateway \
 
   This is the default root workspace for JinaD. This gets mounted internally to all child containers. If we don't mount this while starting, `/tmp/jinad` local to JinaD would get mounted to child containers, which is not accessible by DOCKERHOST
 
-### Metaworks
+##### Metaworks
 
 - Every restart of `JinaD` can read from locally serialized store, enabling it not to be alive during whole lifecycle of flow (to be added: validation)
 

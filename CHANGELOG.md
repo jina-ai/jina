@@ -68,6 +68,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -264,6 +265,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.0.1`)](#release-note-201)
 - [Release Note (`2.0.2`)](#release-note-202)
 - [Release Note (`2.0.3`)](#release-note-203)
+- [Release Note (`2.0.4`)](#release-note-204)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -9428,4 +9430,49 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b39d6d3f```](https://github.com/jina-ai/jina/commit/b39d6d3fab45400488bb6fd8108b1b1a620f54af)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```392ae388```](https://github.com/jina-ai/jina/commit/392ae388d8eb12f19dfb6bd3e57e36c20f3010fc)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```6bca2c1a```](https://github.com/jina-ai/jina/commit/6bca2c1a3c28fb4e1b156e194997c768eb90f519)] __-__ __version__: the next version will be 2.0.3 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-4></a>
+## Release Note (`2.0.4`)
+
+> Release time: 2021-07-07 14:47:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ felix-wang,  Wang Bo,  Tobias Jacobowitz,  Han Xiao,  Jina Dev Bot,  Nan Wang,  Maximilian Werk,  Deepankar Mahapatro,  Joan Fontanals,  🙇
+
+
+### 🆕 New Features
+
+ - [[```bec0c1ab```](https://github.com/jina-ai/jina/commit/bec0c1ab1f717a645b38377227053f5b7de4f956)] __-__ __hubble__: ignore uuid and secret while push again (#2790) (*felix-wang*)
+ - [[```a3337915```](https://github.com/jina-ai/jina/commit/a3337915ef147bedde24ec370e5fe8bcababfe59)] __-__ cache invalidator (#2859) (*Wang Bo*)
+
+### 🐞 Bug fixes
+
+ - [[```4f62f637```](https://github.com/jina-ai/jina/commit/4f62f63703f21b512e6d26b43f0a8183f9e4ec15)] __-__ make hubble executor work in container (#2875) (*felix-wang*)
+ - [[```f43ac776```](https://github.com/jina-ai/jina/commit/f43ac776c8ebd111b85bdf8826bef731866d22b0)] __-__ __core__: add complex test for routing list (#2760) (*Tobias Jacobowitz*)
+ - [[```7cbf37ef```](https://github.com/jina-ai/jina/commit/7cbf37ef8b2d2efd5f85f58a67a5b0de8570cbdd)] __-__ __core__: fix request/response missmatch while prefetching (#2843) (*Tobias Jacobowitz*)
+ - [[```0fd44bfb```](https://github.com/jina-ai/jina/commit/0fd44bfbd064cbe985396ee77688346fc07976ce)] __-__ __logger__: change debug level color to purple (*Han Xiao*)
+ - [[```ed90b94b```](https://github.com/jina-ai/jina/commit/ed90b94b727ea70ea9fc07eaff61face46e34b79)] __-__ __logger__: change debug level color to purple (#2867) (*Han Xiao*)
+ - [[```95d78fae```](https://github.com/jina-ai/jina/commit/95d78fae9f4db0a0df64171f132d80b73ed76922)] __-__ fix the clustered UI when displaying alias (#2860) (*Nan Wang*)
+ - [[```c87edd82```](https://github.com/jina-ai/jina/commit/c87edd82923281e4daaa4ac59d523268d93555ec)] __-__ removed edge label from flow plot (#2851) (*Maximilian Werk*)
+ - [[```3a72a4e3```](https://github.com/jina-ai/jina/commit/3a72a4e31f8c0110288f7b443c7437a9c2175335)] __-__ avoid gateway creation using jinad (#2852) (*Deepankar Mahapatro*)
+
+### 🚧 Code Refactoring
+
+ - [[```b241ddfb```](https://github.com/jina-ai/jina/commit/b241ddfbf5426a0ebad43926197fc410e77d1746)] __-__ __hubio__: use rich to refactor cli ux (#2858) (*Han Xiao*)
+ - [[```fa2e7558```](https://github.com/jina-ai/jina/commit/fa2e755826bb58ba5d2b7635bf45d3d025964816)] __-__ hubio module and hub cli (#2856) (*Han Xiao*)
+ - [[```b195b132```](https://github.com/jina-ai/jina/commit/b195b132559bd8881d801f43e650041a0e67ce32)] __-__ change cancel runtime logic (#2738) (*Joan Fontanals*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```c9ee572e```](https://github.com/jina-ai/jina/commit/c9ee572e10aa541481f51186e93edba741dd0655)] __-__ make unit tests success local (#2839) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```0c4b4a02```](https://github.com/jina-ai/jina/commit/0c4b4a02cbce6938d53a54e8c54279fd9c35ca37)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```24cb0509```](https://github.com/jina-ai/jina/commit/24cb05094954a2453233f4f07d743df0fdb3af99)] __-__ restructure daemon test directory (#2850) (*Deepankar Mahapatro*)
+ - [[```1332e38b```](https://github.com/jina-ai/jina/commit/1332e38b02f7a3a4d546cbe578ba7c9eee7f512a)] __-__ fix readme typo (*Han Xiao*)
+ - [[```34c17cd7```](https://github.com/jina-ai/jina/commit/34c17cd753fd2260f8071418297bf3510a0ef8da)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```075d84b0```](https://github.com/jina-ai/jina/commit/075d84b029ac942235ae482291077a5a0cef0918)] __-__ __version__: the next version will be 2.0.4 (*Jina Dev Bot*)
 
