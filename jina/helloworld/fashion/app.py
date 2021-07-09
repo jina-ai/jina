@@ -73,13 +73,7 @@ def hello_world(args):
     # load index flow from a YAML file
     f = (
         Flow()
-        # .add(uses=MyEncoder, parallel=1)
-        .add(
-            uses='jinahub+docker://ImageTorchEncoder',
-            override_with={'model_name': 'alexnet'},
-            parallel=1,
-        )
-        .add(uses=Converter)
+        .add(uses=MyEncoder, parallel=1)
         .add(uses=MyIndexer, workspace=args.workdir)
         .add(uses=MyEvaluator)
     )
