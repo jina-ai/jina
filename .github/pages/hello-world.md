@@ -35,6 +35,39 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results.
 The whole process takes about 1 minute.
 
+<br><br>
+
+#### Use jina hub Executors
+
+
+ You can run the `jina hello fashion` demo using a different embedding method.
+ As an example, you can use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
+  changing in `jina/helloworld/fashion/app.py` the flow
+
+ ```python
+f = (
+     Flow()
+     .add(uses=MyEncoder, parallel=2)
+     .add(uses=MyIndexer, workspace=args.workdir)
+     .add(uses=MyEvaluator)
+     )
+ ```
+
+ with the  flow
+
+ ```python
+ f = (
+     Flow()
+     .add(uses='jinahub+docker://ImageTorchEncoder',
+          override_with={'model_name': 'alexnet'},
+          parallel=1)
+     .add(uses=MyConverter)
+     .add(uses=MyIndexer, workspace=args.workdir)
+     .add(uses=MyEvaluator)
+     )
+ ```
+
+<br><br><br><br>
 
 ## 🤖 Covid-19 Chatbot
 
@@ -54,7 +87,36 @@ This downloads [CovidQA dataset](https://www.kaggle.com/xhlulu/covidqa) and tell
 The index process takes about 1 minute on CPU.
 Then it opens a web page where you can input questions and ask Jina.
 
+<br><br>
+
+#### Use jina hub Executors
+
+You can run the `jina hello chatbot` demo using a different embedding method. As an example, you can use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-torch-encoder)
+changing in `jina/helloworld/chatbot/app.py ` the flow
+
+```python
+Flow(cors=True)
+.add(uses=MyTransformer, parallel=args.parallel)
+.add(uses=MyIndexer, workspace=args.workdir)
+```
+
+with the flow
+
+```python
+Flow(cors=True)
+.add(uses=MyTransformer, parallel=args.parallel)
+.add(
+    uses='jinahub+docker://TransformerTorchEncoder',
+    parallel=args.parallel,
+    override_with={
+     'pretrained_model_name_or_path': 'sentence-transformers/paraphrase-mpnet-base-v2'
+    },
+)
+.add(uses=MyIndexer, workspace=args.workdir)
+```
+
 <br><br><br><br>
+
 
 ## 🪆 Multimodal Document Search
 
@@ -75,3 +137,153 @@ This downloads [people image dataset](https://www.kaggle.com/ahmadahmadzada/imag
 The index process takes about 3 minute on CPU.
 Then it opens a web page where you can query multimodal documents.
 We have prepared [a YouTube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you through this demo.
+
+<br><br>
+
+#### Use jina hub Executor
+
+You can run the `jina hello fashion` demo using a different embedding method.
+For example, you can use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
+by simply changing:
+
+You can change:
+
+-  `jina/helloworld/multimodal/flow-search.yml` with 
+```yaml
+jtype: Flow
+version: '1'
+with:
+  cors: True
+  expose_crud_endpoints: True
+executors:
+  - name: craftText
+    uses:
+      jtype: TextCrafter
+      metas:
+        py_modules:
+          - my_executors.py
+  - name: encodeText
+    uses:
+      jtype: TextEncoder
+      metas:
+        py_modules:
+          - my_executors.py
+  - name: textIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "text.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: craftImage
+    uses:
+      jtype: ImageCrafter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+    needs: gateway
+  - name: encodeImage
+    uses:
+      jtype: ImageEncoder
+      metas:
+        py_modules:
+          - my_executors.py
+  - name: imageIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "image.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: weightedRanker
+    uses:
+      jtype: WeightedRanker
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+    needs: [ textIndexer, imageIndexer ]
+  - name: keyvalueIndexer
+    uses:
+      jtype: KeyValueIndexer
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+    needs: weightedRanker
+```
+
+
+- `jina/helloworld/multimodal/flow-index.yml` with 
+
+```yaml
+jtype: Flow
+version: '1'
+executors:
+  - name: segment
+    uses:
+      jtype: Segmenter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: craftText
+    uses:
+      jtype: TextCrafter
+      metas:
+        py_modules:
+          - my_executors.py
+  - name: encodeText
+    uses:
+      jtype: TextEncoder
+      metas:
+        py_modules:
+          - my_executors.py
+  - name: textIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "text.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: craftImage
+    uses:
+      jtype: ImageCrafter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+    needs: segment
+  - name: encodeImage
+    uses:
+      jtype: ImageEncoder
+      metas:
+        py_modules:
+          - my_executors.py
+  - name: imageIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "image.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: keyValueIndexer
+    uses:
+      jtype: KeyValueIndexer
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+    needs: segment
+  - name: joinAll
+    needs: [ textIndexer, imageIndexer, keyValueIndexer ]
+```
