@@ -538,7 +538,7 @@ class ZmqStreamlet(Zmqlet):
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
-                    s.flush()
+                    s.flush(flag=zmq.POLLIN)
             super().close()
             if hasattr(self, 'io_loop'):
                 try:
