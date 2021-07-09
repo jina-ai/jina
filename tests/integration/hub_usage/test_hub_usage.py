@@ -86,13 +86,15 @@ def local_hub_executor(mocker, monkeypatch, tmpdir, test_envs):
 
     monkeypatch.setattr(requests, 'get', _mock_get)
 
-    from jina.hubble import hubapi, helper
+    from jina.hubble import hubapi, helper, HubExecutor
 
     pkg_path = Path(__file__).parent / 'dummyhub'
     stream_data = helper.archive_package(pkg_path)
     with open(tmpdir / 'dummy_test.zip', 'wb') as temp_zip_file:
         temp_zip_file.write(stream_data.getvalue())
-    hubapi.install_local(Path(tmpdir) / 'dummy_test.zip', 'hello', 'v0')
+    hubapi.install_local(
+        Path(tmpdir) / 'dummy_test.zip', HubExecutor(uuid='hello', tag='v0')
+    )
 
 
 def test_use_from_local_hub_pod_level(local_hub_executor):

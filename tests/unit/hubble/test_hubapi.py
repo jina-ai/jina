@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from jina.hubble import hubapi
+from jina.hubble import hubapi, HubExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,38 +14,37 @@ def executor_zip_file():
 
 
 @pytest.fixture
-def local_hub_executor(test_envs, executor_zip_file):
-    hubapi.install_local(executor_zip_file, 'hello', 'v0')
+def test_executor():
+    return HubExecutor(uuid='hello', alias=None, sn=0, tag='v0')
 
 
-def test_exist_local(test_envs, local_hub_executor):
-    assert hubapi.exist_local('hello', 'v0')
+# @pytest.fixture
+# def local_hub_executor(test_envs, executor_zip_file, test_executor):
+#     hubapi.install_local(executor_zip_file, test_executor)
 
 
-def test_resolve_local(test_envs, local_hub_executor):
-    assert hubapi.resolve_local('hello', 'v0')
+# def test_exist_local(test_envs, local_hub_executor):
+#     assert hubapi.exist_local('hello', 'v0')
 
 
-# def test_list_local(test_envs, local_hub_executor):
-#     from jina.hubble import hubapi
-
-#     assert len(hubapi.list_local()) == 1
-
-
-@pytest.mark.parametrize('name', ['dummy_1', 'dummy_2'])
-@pytest.mark.parametrize('tag', ['v0', 'v1'])
-def test_install_local(test_envs, executor_zip_file, name, tag):
-    assert not hubapi.exist_local(name, tag)
-    hubapi.install_local(executor_zip_file, name, tag)
-    assert hubapi.exist_local(name, tag)
-
-    hubapi.uninstall_local(name)
-    assert not hubapi.exist_local(name, tag)
+# def test_resolve_local(test_envs, local_hub_executor, test_executor):
+#     pkg, pkg_dist = hubapi.resolve_local(test_executor)
+#     assert pkg is not None
+#     assert pkg_dist is not None
 
 
-def test_uninstall_locall(test_envs, local_hub_executor):
-    hubapi.uninstall_local('hello')
-    assert not hubapi.exist_local('hello', None)
+def test_install_local(test_envs, executor_zip_file, test_executor):
+    assert not hubapi.exist_local(test_executor.uuid, test_executor.tag)
+    hubapi.install_local(executor_zip_file, test_executor)
+    assert hubapi.exist_local(test_executor.uuid, test_executor.tag)
+
+    hubapi.uninstall_local(test_executor.uuid)
+    assert not hubapi.exist_local(test_executor.uuid, test_executor.tag)
+
+
+# def test_uninstall_locall(test_envs, local_hub_executor):
+#     hubapi.uninstall_local('hello')
+#     assert not hubapi.exist_local('hello', None)
 
 
 def test_load_dump_secret(test_envs):

@@ -4,8 +4,6 @@ import argparse
 import hashlib
 import json
 import os
-import urllib
-from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
@@ -19,16 +17,14 @@ from .helper import (
     upload_file,
     disk_cache_offline,
 )
+from . import HubExecutor
+from .helper import install_requirements
 from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..parsers.hubble import set_hub_parser
 
-HubExecutor = namedtuple(
-    'HubExecutor',
-    ['uuid', 'alias', 'tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
-)
 
 _cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
@@ -303,13 +299,14 @@ with f:
         resp = resp.json()
 
         return HubExecutor(
-            resp['id'],
-            resp.get('alias', None),
-            resp['tag'],
-            resp['visibility'],
-            resp['image'],
-            resp['package']['download'],
-            resp['package']['md5'],
+            uuid=resp['id'],
+            alias=resp.get('alias', None),
+            sn=resp.get('sn', None),
+            tag=resp['tag'],
+            visibility=resp['visibility'],
+            image_name=resp['image'],
+            archive_url=resp['package']['download'],
+            md5sum=resp['package']['md5'],
         )
 
     def pull(self) -> str:
@@ -323,7 +320,7 @@ with f:
             import docker
 
         console = Console()
-        cached_zip_filepath = None
+        cached_zip_file = None
         usage = None
 
         with console.status(f'Pulling {self.args.uri}...') as st:
@@ -394,8 +391,8 @@ with f:
                 raise e
             finally:
                 # delete downloaded zip package if existed
-                if cached_zip_filepath is not None:
-                    cached_zip_filepath.unlink()
+                if cached_zip_file is not None:
+                    cached_zip_file.unlink()
 
                 if not self.args.no_usage and usage:
                     self._get_prettyprint_usage(console, usage)
