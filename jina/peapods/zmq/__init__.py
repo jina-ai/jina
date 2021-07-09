@@ -461,7 +461,7 @@ class AsyncZmqlet(Zmqlet):
                 else:
                     return msg
             else:
-                self.logger.error('Received message is empty.')
+                self.logger.debug('Received message is empty.')
         except (asyncio.CancelledError, TypeError) as ex:
             self.logger.error(f'receiving message error: {ex!r}, gateway cancelled?')
 
@@ -712,7 +712,7 @@ async def send_message_async(
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:
-        default_logger.error('all gateway tasks are cancelled')
+        default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
         raise ex
     finally:
@@ -776,7 +776,7 @@ async def recv_message_async(
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
     except asyncio.CancelledError:
-        default_logger.error('all gateway tasks are cancelled')
+        default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
         raise ex
     finally:
