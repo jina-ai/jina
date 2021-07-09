@@ -65,11 +65,9 @@ class MyEncoder(Executor):
         embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat
         for doc, embed in zip(docs, embeds):
             doc.embedding = embed
-            doc.convert_image_blob_to_uri(width=28, height=28)
-            doc.pop('blob')
 
 
-class Converter(Executor):
+class MyConverter(Executor):
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
         for doc in docs:
