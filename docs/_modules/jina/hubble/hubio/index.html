@@ -538,7 +538,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Error while pushing session_id=</span><span class="si">{</span><span class="n">req_header</span><span class="p">[</span><span class="s2">"jinameta-session-id"</span><span class="p">]</span><span class="si">}</span><span class="s1">: '</span>
                     <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
-                <span class="p">)</span></div>
+                <span class="p">)</span>
+                <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_prettyprint_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
         <span class="c1"># TODO: only support single executor now</span>
@@ -752,6 +753,7 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="si">}</span><span class="s1"> is not a valid scheme'</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="c1"># delete downloaded zip package if existed</span>
                 <span class="k">if</span> <span class="n">cached_zip_filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
