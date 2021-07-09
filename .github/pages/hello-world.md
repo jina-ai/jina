@@ -35,33 +35,6 @@ This downloads the Fashion-MNIST training and test dataset and tells Jina to ind
 Then it randomly samples images from the test set as queries and asks Jina to retrieve relevant results.
 The whole process takes about 1 minute.
 
-### Changing the embedding method
-
-You can run the `jina hello fashion` demo using a different embedding method from [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
-simply changing in `jina/helloworld/fashion/app.py` the flow
-
-```python
-    f = (
-        Flow()
-        .add(uses=MyEncoder, parallel=1)
-        .add(uses=MyIndexer, workspace=args.workdir)
-        .add(uses=MyEvaluator)
-    )
-```
-
-by the following flow
-
-```python
-    f = (
-        Flow()
-        .add(uses='jinahub+docker://ImageTorchEncoder',
-             override_with={'model_name': 'alexnet'},
-             parallel=1)
-        .add(uses=Converter)
-        .add(uses=MyIndexer, workspace=args.workdir)
-        .add(uses=MyEvaluator)
-    )
-```
 
 ## 🤖 Covid-19 Chatbot
 
