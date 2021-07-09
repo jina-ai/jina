@@ -86,9 +86,11 @@ class ContainerRuntime(ZMQRuntime):
             raise DockerVersionError('docker version can not be resolved')
 
         docker_version = tuple(docker_version.split('.'))
+        # docker daemon versions below 20.0x do not support "host.docker.internal:host-gateway"
         if docker_version < ('20',):
             raise DockerVersionError(
-                f'docker version {".".join(docker_version)} is below 20.0.0'
+                f'docker version {".".join(docker_version)} is below 20.0.0 and does not '
+                f'support "host.docker.internal:host-gateway" : https://github.com/docker/cli/issues/2664'
             )
 
         if self.args.uses.startswith('docker://'):

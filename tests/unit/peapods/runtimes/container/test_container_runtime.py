@@ -252,7 +252,7 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
             pass
 
         def version(self):
-            return {"Version": "20.0.1"}
+            return {'Version': '20.0.1'}
 
         @property
         def networks(self):
