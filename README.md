@@ -109,7 +109,7 @@ class Indexer(Executor):
             query.matches = [Document(self._docs[int(idx)], copy=True, scores={'euclid': d}) for idx, d in enumerate(dist)]
             query.matches.sort(key=lambda m: m.scores['euclid'].value)  # sort matches by their values
 
-f = Flow(port_expose=12345, protocol='http').add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
+f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
     f.block()  # block for listening request
