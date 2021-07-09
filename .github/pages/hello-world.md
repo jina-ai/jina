@@ -148,6 +148,68 @@ by simply changing:
 
 You can change:
 
+- `jina/helloworld/multimodal/flow-index.yml` with
+```yaml
+jtype: Flow
+version: '1'
+executors:
+  - name: segment
+    uses:
+      jtype: Segmenter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: craftText
+    uses:
+      jtype: TextCrafter
+      metas:
+        py_modules:
+          - my_executors.py
+  - name: encodeText
+    uses: 'jinahub+docker://TransformerTorchEncoder'
+  - name: textIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "text.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: craftImage
+    uses:
+      jtype: ImageCrafter
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+    needs: segment
+  - name: encodeImage
+    uses: 'jinahub+docker://ImageTorchEncoder'
+    override_with:
+      use_default_preprocessing: False
+  - name: imageIndexer
+    uses:
+      jtype: DocVectorIndexer
+      with:
+        index_file_name: "image.json"
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+  - name: keyValueIndexer
+    uses:
+      jtype: KeyValueIndexer
+      metas:
+        workspace: $HW_WORKDIR
+        py_modules:
+          - my_executors.py
+    needs: segment
+  - name: joinAll
+    needs: [ textIndexer, imageIndexer, keyValueIndexer ]
+```
+
 -  `jina/helloworld/multimodal/flow-search.yml` with 
 ```yaml
 jtype: Flow
@@ -163,11 +225,7 @@ executors:
         py_modules:
           - my_executors.py
   - name: encodeText
-    uses:
-      jtype: TextEncoder
-      metas:
-        py_modules:
-          - my_executors.py
+    uses: 'jinahub+docker://TransformerTorchEncoder'
   - name: textIndexer
     uses:
       jtype: DocVectorIndexer
@@ -186,11 +244,9 @@ executors:
           - my_executors.py
     needs: gateway
   - name: encodeImage
-    uses:
-      jtype: ImageEncoder
-      metas:
-        py_modules:
-          - my_executors.py
+    uses: 'jinahub+docker://ImageTorchEncoder'
+    override_with:
+      use_default_preprocessing: False
   - name: imageIndexer
     uses:
       jtype: DocVectorIndexer
@@ -216,74 +272,4 @@ executors:
         py_modules:
           - my_executors.py
     needs: weightedRanker
-```
-
-
-- `jina/helloworld/multimodal/flow-index.yml` with 
-
-```yaml
-jtype: Flow
-version: '1'
-executors:
-  - name: segment
-    uses:
-      jtype: Segmenter
-      metas:
-        workspace: $HW_WORKDIR
-        py_modules:
-          - my_executors.py
-  - name: craftText
-    uses:
-      jtype: TextCrafter
-      metas:
-        py_modules:
-          - my_executors.py
-  - name: encodeText
-    uses:
-      jtype: TextEncoder
-      metas:
-        py_modules:
-          - my_executors.py
-  - name: textIndexer
-    uses:
-      jtype: DocVectorIndexer
-      with:
-        index_file_name: "text.json"
-      metas:
-        workspace: $HW_WORKDIR
-        py_modules:
-          - my_executors.py
-  - name: craftImage
-    uses:
-      jtype: ImageCrafter
-      metas:
-        workspace: $HW_WORKDIR
-        py_modules:
-          - my_executors.py
-    needs: segment
-  - name: encodeImage
-    uses:
-      jtype: ImageEncoder
-      metas:
-        py_modules:
-          - my_executors.py
-  - name: imageIndexer
-    uses:
-      jtype: DocVectorIndexer
-      with:
-        index_file_name: "image.json"
-      metas:
-        workspace: $HW_WORKDIR
-        py_modules:
-          - my_executors.py
-  - name: keyValueIndexer
-    uses:
-      jtype: KeyValueIndexer
-      metas:
-        workspace: $HW_WORKDIR
-        py_modules:
-          - my_executors.py
-    needs: segment
-  - name: joinAll
-    needs: [ textIndexer, imageIndexer, keyValueIndexer ]
 ```
