@@ -69,7 +69,7 @@ class MyEncoder(Executor):
 
 class MyConverter(Executor):
     @requests
-    def encode(self, docs: 'DocumentArray', **kwargs):
+    def convert(self, docs: 'DocumentArray', **kwargs):
         for doc in docs:
             doc.convert_image_blob_to_uri(width=28, height=28)
             doc.pop('blob')

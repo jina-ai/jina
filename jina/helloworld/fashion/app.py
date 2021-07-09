@@ -73,7 +73,7 @@ def hello_world(args):
     # load index flow from a YAML file
     f = (
         Flow()
-        .add(uses=MyEncoder, parallel=1)
+        .add(uses=MyEncoder, parallel=2)
         .add(uses=MyConverter)
         .add(uses=MyIndexer, workspace=args.workdir)
         .add(uses=MyEvaluator)
