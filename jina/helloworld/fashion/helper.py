@@ -61,9 +61,7 @@ def index_generator(num_docs: int, target: dict):
         yield d
 
 
-def query_generator(
-    num_docs: int, target: dict, with_groundtruth: bool = True, seed: int = 1234
-):
+def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
     """
     Generate the query data.
 
@@ -72,7 +70,6 @@ def query_generator(
     :param with_groundtruth: True if want to include labels into query data
     :yields: query data
     """
-    random.seed(seed)
     gts = _get_groundtruths(target)
     for _ in range(num_docs):
         num_data = len(target['query-labels']['data'])
