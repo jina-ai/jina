@@ -7,16 +7,31 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 class MyIndexer(Executor):
+    """
+    Executor with basic exact search using cosine distance
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._docs = DocumentArrayMemmap(self.workspace + '/indexer')
 
     @requests(on='/index')
     def index(self, docs: 'DocumentArray', **kwargs):
+        """Extend self._docs
+
+        :param docs: DocumentArray containing Documents
+        :param kwargs: other keyword arguments
+        """
         self._docs.extend(docs)
 
     @requests(on=['/search', '/eval'])
     def search(self, docs: 'DocumentArray', parameters: Dict, **kwargs):
+        """Append best matches to each document in docs
+
+        :param docs: documents that are searched
+        :param parameters: dictionary of pairs (parameter,value)
+        :param kwargs: other keyword arguments
+        """
         a = np.stack(docs.get_attributes('embedding'))
         b = np.stack(self._docs.get_attributes('embedding'))
         q_emb = _ext_A(_norm(a))
@@ -33,6 +48,11 @@ class MyIndexer(Executor):
     def _get_sorted_top_k(
         dist: 'np.array', top_k: int
     ) -> Tuple['np.ndarray', 'np.ndarray']:
+        """Sort and select top k distances
+        :param dist: array of distances
+        :param top_k: number of values to retrieve
+        :return: indices and distances
+        """
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
             dist = np.take_along_axis(dist, idx, axis=1)
@@ -47,6 +67,10 @@ class MyIndexer(Executor):
 
 
 class MyEncoder(Executor):
+    """
+    Encode data using SVD decomposition
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         np.random.seed(1337)
@@ -57,11 +81,36 @@ class MyEncoder(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', **kwargs):
+        """Encode the data using an SVD decomposition
+
+        :param docs: input documents to update with an embedding
+        :param kwargs: other keyword arguments
+        """
         # reduce dimension to 50 by random orthogonal projection
         content = np.stack(docs.get_attributes('content'))
+        # content.shape=(request_size, 28, 28, 3)
+        content = content[:, :, :, 0].reshape(-1, 784)
+        # content.shape=(request_size, 784)
         embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat
         for doc, embed in zip(docs, embeds):
             doc.embedding = embed
+            doc.convert_image_blob_to_uri(width=28, height=28)
+            doc.pop('blob')
+
+
+class MyConverter(Executor):
+    """
+    Convert DocumentArrays removing blob and reshaping blob as image
+    """
+
+    @requests
+    def convert(self, docs: 'DocumentArray', **kwargs):
+        """
+        Remove blob and reshape documents as squared images
+        :param docs: documents to modify
+        :param kwargs: other keyword arguments
+        """
+        for doc in docs:
             doc.convert_image_blob_to_uri(width=28, height=28)
             doc.pop('blob')
 
@@ -101,6 +150,10 @@ def _cosine(A_norm_ext, B_norm_ext):
 
 
 class MyEvaluator(Executor):
+    """
+    Executor that evaluates precision and recall
+    """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.eval_at = 50
@@ -110,10 +163,18 @@ class MyEvaluator(Executor):
 
     @property
     def avg_precision(self):
+        """
+        Computes precision
+        :return: precision values
+        """
         return self.total_precision / self.num_docs
 
     @property
     def avg_recall(self):
+        """
+        Computes recall
+        :return: np.ndarray with recall values
+        """
         return self.total_recall / self.num_docs
 
     def _precision(self, actual, desired):
@@ -133,6 +194,12 @@ class MyEvaluator(Executor):
 
     @requests(on='/eval')
     def evaluate(self, docs: 'DocumentArray', groundtruths: 'DocumentArray', **kwargs):
+        """Evaluate documents using the class values from ground truths
+
+        :param docs: documents to evaluate
+        :param groundtruths: ground truth for the documents
+        :param kwargs: other keyword arguments
+        """
         for doc, groundtruth in zip(docs, groundtruths):
             self.num_docs += 1
             actual = [match.tags['id'] for match in doc.matches]

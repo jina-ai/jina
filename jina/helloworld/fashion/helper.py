@@ -52,7 +52,11 @@ def index_generator(num_docs: int, target: dict):
     :yields: index data
     """
     for internal_doc_id in range(num_docs):
-        d = Document(content=target['index']['data'][internal_doc_id])
+        # x_blackwhite.shape is (28,28)
+        x_blackwhite = target['index']['data'][internal_doc_id]
+        # x_color.shape is (28,28,3)
+        x_color = np.stack((x_blackwhite,) * 3, axis=-1).astype(np.uint8)
+        d = Document(content=x_color)
         d.tags['id'] = internal_doc_id
         yield d
 
@@ -70,7 +74,9 @@ def query_generator(num_docs: int, target: dict, with_groundtruth: bool = True):
     for _ in range(num_docs):
         num_data = len(target['query-labels']['data'])
         idx = random.randint(0, num_data - 1)
-        d = Document(content=(target['query']['data'][idx]))
+        x = target['query']['data'][idx]
+        x_stacked = np.stack((x,) * 3, axis=-1).astype(np.uint8)
+        d = Document(content=x_stacked)
 
         if with_groundtruth:
             gt = gts[target['query-labels']['data'][idx][0]]
@@ -182,7 +188,7 @@ def load_mnist(path):
     """
 
     with gzip.open(path, 'rb') as fp:
-        return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 784])
+        return np.frombuffer(fp.read(), dtype=np.uint8, offset=16).reshape([-1, 28, 28])
 
 
 def load_labels(path: str):
