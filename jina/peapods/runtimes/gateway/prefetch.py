@@ -127,11 +127,12 @@ class PrefetchCaller:
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
             while prefetch_task:
-                self.logger.debug(
-                    f'send: {self.zmqlet.msg_sent} '
-                    f'recv: {self.zmqlet.msg_recv} '
-                    f'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}'
-                )
+                if self.logger.debug_enabled:
+                    self.logger.debug(
+                        f'send: {self.zmqlet.msg_sent} '
+                        f'recv: {self.zmqlet.msg_recv} '
+                        f'pending: {self.zmqlet.msg_sent - self.zmqlet.msg_recv}'
+                    )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
                     yield await r

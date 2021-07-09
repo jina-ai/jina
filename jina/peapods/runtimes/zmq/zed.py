@@ -128,21 +128,19 @@ class ZEDRuntime(ZMQRuntime):
         self._request = msg.request
         self._message = msg
 
-        part_str = ''
         if self.expect_parts > 1:
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
             self._partial_messages = self._pending_msgs[req_id]
             self._partial_requests = [v.request for v in self._partial_messages]
-            part_str = f'({len(self.partial_requests)}/{self.expect_parts} parts)'
 
-        info_msg = f'recv {msg.envelope.request_type} '
-        if self.request_type == 'DataRequest':
-            info_msg += f'({self.envelope.header.exec_endpoint}) - ({self.envelope.request_id}) '
-        elif self.request_type == 'ControlRequest':
-            info_msg += f'({self.request.command}) '
-        info_msg += f'{part_str} from {msg.colored_route}'
-        self.logger.debug(info_msg)
+        if self.logger.debug_enabled:
+            self._log_info_msg(
+                msg,
+                f'({len(self.partial_requests)}/{self.expect_parts} parts)'
+                if self.expect_parts > 1
+                else '',
+            )
 
         if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
             # NOTE: reduce priority is higher than chain exception
@@ -159,6 +157,15 @@ class ZEDRuntime(ZMQRuntime):
             raise ChainedPodException
 
         return self
+
+    def _log_info_msg(self, msg, part_str):
+        info_msg = f'recv {msg.envelope.request_type} '
+        if self.request_type == 'DataRequest':
+            info_msg += f'({self.envelope.header.exec_endpoint}) - ({self.envelope.request_id}) '
+        elif self.request_type == 'ControlRequest':
+            info_msg += f'({self.request.command}) '
+        info_msg += f'{part_str} from {msg.colored_route}'
+        self.logger.debug(info_msg)
 
     def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
         """

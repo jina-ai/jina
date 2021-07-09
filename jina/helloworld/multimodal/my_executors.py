@@ -69,12 +69,7 @@ class TextEncoder(Executor):
 
     @requests
     def encode(self, docs: 'DocumentArray', *args, **kwargs):
-
-        chunks = DocumentArray(
-            d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
-        )
-
-        texts = chunks.get_attributes('text')
+        texts = docs.get_attributes('text')
 
         with torch.no_grad():
 
@@ -99,10 +94,20 @@ class TextEncoder(Executor):
             hidden_states = outputs.hidden_states
 
             embeds = self._compute_embedding(hidden_states, input_tokens)
-            for doc, embed in zip(chunks, embeds):
+            for doc, embed in zip(docs, embeds):
                 doc.embedding = embed
 
-        return chunks
+
+class TextCrafter(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @requests()
+    def filter(self, docs: DocumentArray, **kwargs):
+        filtered_docs = DocumentArray(
+            d for d in docs.traverse_flat(['c']) if d.mime_type == 'text/plain'
+        )
+        return filtered_docs
 
 
 class ImageCrafter(Executor):
@@ -127,10 +132,10 @@ class ImageCrafter(Executor):
         self.target_channel_axis = target_channel_axis
 
     def craft(self, docs: DocumentArray, fn):
-        chunks = DocumentArray(
+        filtered_docs = DocumentArray(
             d for d in docs.traverse_flat(['c']) if d.mime_type == 'image/jpeg'
         )
-        for doc in chunks:
+        for doc in filtered_docs:
             getattr(doc, fn)()
             raw_img = _load_image(doc.blob, self.channel_axis)
             img = self._normalize(raw_img)
@@ -138,7 +143,7 @@ class ImageCrafter(Executor):
             if self.channel_axis != self.target_channel_axis:
                 img = np.moveaxis(img, self.channel_axis, self.target_channel_axis)
             doc.blob = img
-        return chunks
+        return filtered_docs
 
     @requests(on='/index')
     def craft_index(self, docs: DocumentArray, **kwargs):

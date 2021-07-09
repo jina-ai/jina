@@ -231,7 +231,9 @@ class BasePea:
         from ..zmq import send_ctrl_message
 
         for retry in range(1, num_retry + 1):
-            self.logger.debug(f'Sending {command} command for the {retry}th time')
+            self.logger.debug(
+                f'Sending {command} command for the {retry}th time with timeout {self._timeout_ctrl}'
+            )
             try:
                 send_ctrl_message(
                     self._zed_runtime_ctrl_address,
@@ -239,6 +241,7 @@ class BasePea:
                     timeout=self._timeout_ctrl,
                     raise_exception=True,
                 )
+                self.logger.debug(f'Return from sending CONTROL message')
                 break
             except Exception as ex:
                 self.logger.warning(f'{ex!r}')

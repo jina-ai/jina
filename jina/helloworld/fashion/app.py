@@ -12,7 +12,7 @@ if __name__ == '__main__':
         index_generator,
         query_generator,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator
+    from my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter
 else:
     from .helper import (
         print_result,
@@ -21,7 +21,7 @@ else:
         index_generator,
         query_generator,
     )
-    from .my_executors import MyEncoder, MyIndexer, MyEvaluator
+    from .my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

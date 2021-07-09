@@ -122,3 +122,7 @@ class RoutingTableCyclicError(Exception):
 
 class RuntimeRunForeverEarlyError(Exception):
     """Raised when an error occurs when starting the run_forever of Runtime"""
+
+
+class DockerVersionError(SystemError):
+    """Raised when the docker version is incompatible"""
