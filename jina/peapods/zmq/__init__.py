@@ -517,6 +517,7 @@ class ZmqStreamlet(Zmqlet):
         """
 
         # if Address already in use `self.in_sock_type` is not set
+        print(f' CLOSING zmqstreamlet', flush=True)
         if (
             not self.is_closed
             and hasattr(self, 'in_sock_type')
@@ -524,6 +525,7 @@ class ZmqStreamlet(Zmqlet):
         ):
             try:
                 if self._active:
+                    print(f' CLOSING zmqstreamlet cancel to router', flush=True)
                     self._send_cancel_to_router(raise_exception=True)
             except zmq.error.ZMQError:
                 self.logger.debug(
@@ -537,12 +539,28 @@ class ZmqStreamlet(Zmqlet):
             # wait until the close signal is received
             time.sleep(0.01)
             if flush:
-                for s in self.opened_socks:
+                socket_names = {0: 'INPUT', 1: 'OUTPUT', 2: 'CONTROL', 3: 'SPECIAL'}
+                for i, s in enumerate(self.opened_socks):
+                    print(
+                        f' CLOSING zmqstreamlet flushing {socket_names.get(i, "NONE")} socket',
+                        flush=True,
+                    )
+                    print(
+                        f' zmqstreamlet receiving? {s.receiving()} and sending? {s.sending()}'
+                    )
                     s.flush()
+                    print(
+                        f' CLOSING zmqstreamlet DONE flushing {socket_names.get(i, "NONE")} socket',
+                        flush=True,
+                    )
+            print(f' CLOSING zmqstreamlet super close', flush=True)
             super().close()
+            print(f' CLOSING zmqstreamlet super close DONE', flush=True)
             if hasattr(self, 'io_loop'):
                 try:
+                    print(f' CLOSING zmqstreamlet stop io loop', flush=True)
                     self.io_loop.stop()
+                    print(f' CLOSING zmqstreamlet stop io loop DONE', flush=True)
                     # Replace handle events function, to skip
                     # None event after sockets are closed.
                     if hasattr(self.in_sock, '_handle_events'):
@@ -557,6 +575,8 @@ class ZmqStreamlet(Zmqlet):
                         )
                 except AttributeError as e:
                     self.logger.error(f'failed to stop. {e!r}')
+
+        print(f' CLOSING zmqstreamlet FINISHED', flush=True)
 
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """

@@ -309,8 +309,15 @@ class ZEDRuntime(ZMQRuntime):
             self._zmqstreamlet.send_message(self._callback(msg))
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
+            self.logger.warning('Runtime Terminated send back message ')
             self._zmqstreamlet.send_message(msg)
+            self.logger.warning(
+                'Runtime Terminated message sent back, now close zmqstreamlet '
+            )
             self._zmqstreamlet.close()
+            self.logger.warning(
+                'Runtime Terminated message sent back, zmqstreamlet closed properly '
+            )
         except KeyboardInterrupt as kbex:
             # save executor
             self.logger.debug(f'{kbex!r} causes the breaking from the event loop')
