@@ -390,16 +390,31 @@
 
 
 <div class="viewcode-block" id="MyIndexer"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyIndexer">[docs]</a><span class="k">class</span> <span class="nc">MyIndexer</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Executor with basic exact search using cosine distance</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span> <span class="o">=</span> <span class="n">DocumentArrayMemmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace</span> <span class="o">+</span> <span class="s1">'/indexer'</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MyIndexer.index"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyIndexer.index">[docs]</a>    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/index'</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Extend self._docs</span>
+
+<span class="sd">        :param docs: DocumentArray containing Documents</span>
+<span class="sd">        :param kwargs: other keyword arguments</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MyIndexer.search"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyIndexer.search">[docs]</a>    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">'/search'</span><span class="p">,</span> <span class="s1">'/eval'</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Append best matches to each document in docs</span>
+
+<span class="sd">        :param docs: documents that are searched</span>
+<span class="sd">        :param parameters: dictionary of pairs (parameter,value)</span>
+<span class="sd">        :param kwargs: other keyword arguments</span>
+<span class="sd">        """</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
         <span class="n">q_emb</span> <span class="o">=</span> <span class="n">_ext_A</span><span class="p">(</span><span class="n">_norm</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
@@ -416,6 +431,11 @@
     <span class="k">def</span> <span class="nf">_get_sorted_top_k</span><span class="p">(</span>
         <span class="n">dist</span><span class="p">:</span> <span class="s1">'np.array'</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="s1">'np.ndarray'</span><span class="p">]:</span>
+        <span class="sd">"""Sort and select top k distances</span>
+<span class="sd">        :param dist: array of distances</span>
+<span class="sd">        :param top_k: number of values to retrieve</span>
+<span class="sd">        :return: indices and distances</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">top_k</span> <span class="o">&gt;=</span> <span class="n">dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="n">top_k</span><span class="p">]</span>
             <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -430,6 +450,10 @@
 
 
 <div class="viewcode-block" id="MyEncoder"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder">[docs]</a><span class="k">class</span> <span class="nc">MyEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Encode data using SVD decomposition</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1337</span><span class="p">)</span>
@@ -440,11 +464,36 @@
 
 <div class="viewcode-block" id="MyEncoder.encode"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder.encode">[docs]</a>    <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Encode the data using an SVD decomposition</span>
+
+<span class="sd">        :param docs: input documents to update with an embedding</span>
+<span class="sd">        :param kwargs: other keyword arguments</span>
+<span class="sd">        """</span>
         <span class="c1"># reduce dimension to 50 by random orthogonal projection</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'content'</span><span class="p">))</span>
+        <span class="c1"># content.shape=(request_size, 28, 28, 3)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">784</span><span class="p">)</span>
+        <span class="c1"># content.shape=(request_size, 784)</span>
         <span class="n">embeds</span> <span class="o">=</span> <span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">784</span><span class="p">])</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">oth_mat</span>
         <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">embed</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeds</span><span class="p">):</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MyConverter"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyConverter">[docs]</a><span class="k">class</span> <span class="nc">MyConverter</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Convert DocumentArrays removing blob and reshaping blob as image</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="MyConverter.convert"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyConverter.convert">[docs]</a>    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Remove blob and reshape documents as squared images</span>
+<span class="sd">        :param docs: documents to modify</span>
+<span class="sd">        :param kwargs: other keyword arguments</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">)</span></div></div>
 
@@ -484,6 +533,10 @@
 
 
 <div class="viewcode-block" id="MyEvaluator"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator">[docs]</a><span class="k">class</span> <span class="nc">MyEvaluator</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Executor that evaluates precision and recall</span>
+<span class="sd">    """</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eval_at</span> <span class="o">=</span> <span class="mi">50</span>
@@ -493,10 +546,18 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">avg_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Computes precision</span>
+<span class="sd">        :return: precision values</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_precision</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_docs</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">avg_recall</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Computes recall</span>
+<span class="sd">        :return: np.ndarray with recall values</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_recall</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_docs</span>
 
     <span class="k">def</span> <span class="nf">_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actual</span><span class="p">,</span> <span class="n">desired</span><span class="p">):</span>
@@ -516,6 +577,12 @@
 
 <div class="viewcode-block" id="MyEvaluator.evaluate"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator.evaluate">[docs]</a>    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/eval'</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="n">groundtruths</span><span class="p">:</span> <span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""Evaluate documents using the class values from ground truths</span>
+
+<span class="sd">        :param docs: documents to evaluate</span>
+<span class="sd">        :param groundtruths: ground truth for the documents</span>
+<span class="sd">        :param kwargs: other keyword arguments</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">groundtruth</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">groundtruths</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_docs</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">actual</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">matches</span><span class="p">]</span>
