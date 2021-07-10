@@ -148,7 +148,11 @@ class RoutingTable(ProtoTypeMixin):
             )
         target = self.pods[pod_name]
 
-        target.host = pod.head_host
+        # TODO this is just a hack
+        if pod_name == f'end-gateway':
+            target.host = pod.args.host_in
+        else:
+            target.host = pod.head_host
         target.port = pod.head_port_in
         target.target_identity = pod.head_zmq_identity
 
