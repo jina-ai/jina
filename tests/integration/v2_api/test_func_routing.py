@@ -186,3 +186,28 @@ def test_target_peapod(mocker):
         f.post('/hello', inputs=Document(), on_done=success_mock, on_error=fail_mock)
         success_mock.assert_called()
         fail_mock.assert_not_called()
+
+
+def test_target_peapod(mocker):
+    class FailExecutor(Executor):
+        @requests
+        def fail(self, **kwargs):
+            raise RuntimeError
+
+    class PassExecutor(Executor):
+        @requests
+        def success(self, **kwargs):
+            pass
+
+    f = Flow().add(uses=FailExecutor, name='foofoo').add(uses=PassExecutor, name='foo')
+
+    with f:
+        # both pods are called, create error
+        mock = mocker.Mock()
+        f.post(on='/foo', inputs=Document(), on_error=mock)
+        mock.assert_called()
+
+        # only PassExecutor is called, create no error
+        mock = mocker.Mock()
+        f.post(on='/foo', target_peapod='foo', inputs=Document(), on_error=mock)
+        mock.assert_not_called()

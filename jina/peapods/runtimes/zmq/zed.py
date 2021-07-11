@@ -223,7 +223,10 @@ class ZEDRuntime(ZMQRuntime):
             )
 
         # skip executor if target_peapod mismatch
-        if not re.match(self.envelope.header.target_peapod, self.name):
+        if (
+            self.envelope.header.target_peapod
+            and self.envelope.header.target_peapod != self.name.split('/')[0]
+        ):
             self.logger.debug(
                 f'skip executor: mismatch target, target: {self.envelope.header.target_peapod}, name: {self.name}'
             )
