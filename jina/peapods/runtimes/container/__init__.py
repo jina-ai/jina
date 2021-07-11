@@ -119,6 +119,7 @@ class ContainerRuntime(ZMQRuntime):
                 'pull_latest',
                 'runtime_cls',
                 'docker_kwargs',
+                'gpus',
             },
         )
 
@@ -163,6 +164,37 @@ class ContainerRuntime(ZMQRuntime):
                     'mode': 'rw',
                 }
 
+        device_requests = []
+        if self.args.gpus:
+            _gpus = {
+                'count': 0,
+                'capabilities': [['gpu']],
+                'device': [],
+                'driver': '',
+                'capabilities': ['gpu'],
+            }
+            gpu_args = self.args.gpus[0]
+            for gpu_arg in gpu_args.split(','):
+                if gpu_arg == 'all':
+                    _gpus['count'] = -1
+                if gpu_arg.isdigit():
+                    _gpus['count'] = int(gpu_arg)
+                if '=' in gpu_arg:
+                    gpu_arg_key, gpu_arg_value = gpu_arg.split('=')
+                    if gpu_arg_key in _gpus.keys():
+                        if isinstance(_gpus[gpu_arg_key], list):
+                            _gpus[gpu_arg_key].append(gpu_arg_value)
+                        else:
+                            _gpus[gpu_arg_key] = gpu_arg_value
+            device_requests = [
+                docker.types.DeviceRequest(
+                    count=_gpus['count'],
+                    driver=_gpus['driver'],
+                    device_ids=_gpus['device'],
+                    capabilities=_gpus['capabilities'],
+                )
+            ]
+
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
             _expose_port.append(self.args.port_in)
@@ -184,6 +216,7 @@ class ContainerRuntime(ZMQRuntime):
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
             extra_hosts={__docker_host__: 'host-gateway'},
+            device_requests=device_requests,
             **docker_kwargs,
         )
 
