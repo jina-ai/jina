@@ -188,7 +188,7 @@ def test_target_peapod(mocker):
         fail_mock.assert_not_called()
 
 
-def test_target_peapod(mocker):
+def test_target_peapod_with_overlaped_name(mocker):
     class FailExecutor(Executor):
         @requests
         def fail(self, **kwargs):
