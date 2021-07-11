@@ -172,8 +172,7 @@ class ContainerRuntime(ZMQRuntime):
                 'device': [],
                 'driver': '',
             }
-            gpu_args = self.args.gpus[0]
-            for gpu_arg in gpu_args.split(','):
+            for gpu_arg in self.args.gpus.split(','):
                 if gpu_arg == 'all':
                     _gpus['count'] = -1
                 if gpu_arg.isdigit():

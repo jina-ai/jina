@@ -50,8 +50,6 @@ Note,
     gp.add_argument(
         '--gpus',
         type=str,
-        nargs='*',
-        metavar='DIR',
         help='''
     Specify gpu to the inside the container. 
 
