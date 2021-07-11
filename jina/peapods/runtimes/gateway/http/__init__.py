@@ -54,6 +54,7 @@ class HTTPRuntime(AsyncNewLoopRuntime):
                 host=self.args.host,
                 port=self.args.port_expose,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
+                timeout_keep_alive=0
             )
         )
         await self._server.setup()
