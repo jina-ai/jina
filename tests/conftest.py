@@ -176,3 +176,8 @@ def test_envs(tmpdir):
 @pytest.fixture(autouse=True)
 def test_log_level(monkeypatch):
     monkeypatch.setenv('JINA_LOG_LEVEL', 'DEBUG')
+
+
+@pytest.fixture(autouse=True)
+def test_timeout_ctrl_time(monkeypatch):
+    monkeypatch.setenv('JINA_DEFAULT_TIMEOUT_CTRL', '500')

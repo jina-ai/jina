@@ -204,14 +204,13 @@ class ZEDRuntime(ZMQRuntime):
             Handle does not handle explicitly message because it may wait for different messages when different parts are expected
         :return: ZEDRuntime procedure.
         """
-
-        if (
-            not re.match(self.envelope.header.target_peapod, self.name)
-            or self.request_type != 'DataRequest'
-        ):
+        # skip executor for non-DataRequest
+        if self.request_type != 'DataRequest':
+            self.logger.debug(f'skip executor: not data request')
             return self
 
         # migrated from the previously RouteDriver logic
+        # set dealer id
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
             self.envelope.receiver_id = dealer_id
@@ -219,11 +218,25 @@ class ZEDRuntime(ZMQRuntime):
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
                 self._zmqstreamlet.pause_pollin()
+            self.logger.debug(
+                f'using route, set receiver_id: {self.envelope.receiver_id}'
+            )
 
+        # skip executor if target_peapod mismatch
+        if not re.match(self.envelope.header.target_peapod, self.name):
+            self.logger.debug(
+                f'skip executor: mismatch target, target: {self.envelope.header.target_peapod}, name: {self.name}'
+            )
+            return self
+
+        # skip executor if endpoints mismatch
         if (
             self.envelope.header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
+            self.logger.debug(
+                f'skip executor: mismatch request, exec_endpoint: {self.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
+            )
             return self
 
         params = self._parse_params(self.request.parameters, self._executor.metas.name)
