@@ -171,7 +171,6 @@ class ContainerRuntime(ZMQRuntime):
                 'capabilities': [['gpu']],
                 'device': [],
                 'driver': '',
-                'capabilities': ['gpu'],
             }
             gpu_args = self.args.gpus[0]
             for gpu_arg in gpu_args.split(','):
