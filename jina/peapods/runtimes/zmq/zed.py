@@ -237,7 +237,7 @@ class ZEDRuntime(ZMQRuntime):
             self.envelope.header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
-            self.logger.info(
+            self.logger.debug(
                 f'skip executor: mismatch request, exec_endpoint: {self.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
             return self
