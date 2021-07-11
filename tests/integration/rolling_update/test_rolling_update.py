@@ -75,7 +75,7 @@ def test_normal(docs):
         assert len(set(shard_list)) == NUM_SHARDS
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 def test_simple_run(docs):
     flow = Flow().add(
         name='pod1',
@@ -90,7 +90,7 @@ def test_simple_run(docs):
 
 
 @pytest.mark.repeat(5)
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 def test_thread_run(docs, mocker, reraise):
     def update_rolling(flow, pod_name):
         with reraise:
@@ -119,7 +119,7 @@ def test_thread_run(docs, mocker, reraise):
 
 
 @pytest.mark.repeat(5)
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 def test_vector_indexer_thread(config, docs, mocker, reraise):
     def update_rolling(flow, pod_name):
         with reraise:
