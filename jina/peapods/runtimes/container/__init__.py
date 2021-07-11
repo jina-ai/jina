@@ -168,7 +168,7 @@ class ContainerRuntime(ZMQRuntime):
         if self.args.gpus:
             _gpus = {
                 'count': 0,
-                'capabilities': [['gpu']],
+                'capabilities': ['gpu'],
                 'device': [],
                 'driver': '',
             }
@@ -190,7 +190,7 @@ class ContainerRuntime(ZMQRuntime):
                     count=_gpus['count'],
                     driver=_gpus['driver'],
                     device_ids=_gpus['device'],
-                    capabilities=_gpus['capabilities'],
+                    capabilities=[_gpus['capabilities']],
                 )
             ]
 

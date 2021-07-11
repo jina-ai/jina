@@ -343,11 +343,11 @@ def test_container_volume(docker_image_built, tmpdir):
     'gpus_value',
     [
         'all',  # all gpus
-        # '2',  # use two gpus
-        # 'device=GPU-fake-gpu-id',  # gpu by one device id
-        # 'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2',  # gpu by 2 device id
-        # 'device=GPU-fake-gpu-id,driver=nvidia,capabilities=utility,capabilities=display',  # gpu with id, driver and capability
-        # 'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2,driver=nvidia,capabilities=utility',  # multiple ids
+        '2',  # use two gpus
+        'device=GPU-fake-gpu-id',  # gpu by one device id
+        'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2',  # gpu by 2 device id
+        'device=GPU-fake-gpu-id,driver=nvidia,capabilities=utility,capabilities=display',  # gpu with id, driver and capability
+        'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2,driver=nvidia,capabilities=utility',  # multiple ids
     ],
 )
 def test_gpu_container(docker_image_built, gpus_value):
