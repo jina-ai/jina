@@ -587,14 +587,13 @@
 <span class="sd">            Handle does not handle explicitly message because it may wait for different messages when different parts are expected</span>
 <span class="sd">        :return: ZEDRuntime procedure.</span>
 <span class="sd">        """</span>
-
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_peapod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_type</span> <span class="o">!=</span> <span class="s1">'DataRequest'</span>
-        <span class="p">):</span>
+        <span class="c1"># skip executor for non-DataRequest</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_type</span> <span class="o">!=</span> <span class="s1">'DataRequest'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'skip executor: not data request'</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
 
         <span class="c1"># migrated from the previously RouteDriver logic</span>
+        <span class="c1"># set dealer id</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="p">:</span>
             <span class="n">dealer_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span> <span class="o">=</span> <span class="n">dealer_id</span>
@@ -602,11 +601,25 @@
             <span class="c1"># when no available dealer, pause the pollin from upstream</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">pause_pollin</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'using route, set receiver_id: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">receiver_id</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
 
+        <span class="c1"># skip executor if target_peapod mismatch</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_peapod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'skip executor: mismatch target, target: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_peapod</span><span class="si">}</span><span class="s1">, name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="c1"># skip executor if endpoints mismatch</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span>
             <span class="ow">and</span> <span class="n">__default_endpoint__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span>
         <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'skip executor: mismatch request, exec_endpoint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="si">}</span><span class="s1">, requests: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">requests</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -877,7 +890,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 10, 2021.
+            Last updated on Jul 11, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

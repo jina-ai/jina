@@ -422,6 +422,10 @@
 <span class="sd">        :param return_results: if set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.</span>
 <span class="sd">        :param kwargs: additional parameters</span>
 <span class="sd">        :return: None or list of Response</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            ``target_peapod`` uses ``re.match`` for checking if the pattern is matched.</span>
+<span class="sd">             ``target_peapod=='foo'`` will match both pods with the name ``foo`` and ``foo_what_ever_suffix``.</span>
 <span class="sd">        """</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -521,7 +525,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 10, 2021.
+            Last updated on Jul 11, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

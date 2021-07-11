@@ -437,6 +437,13 @@
 <dd class="field-odd"><p>None or list of Response</p>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">target_peapod</span></code> uses <code class="docutils literal notranslate"><span class="pre">re.match</span></code> for checking if the pattern is matched.</dt><dd><p><code class="docutils literal notranslate"><span class="pre">target_peapod=='foo'</span></code> will match both pods with the name <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">foo_what_ever_suffix</span></code>.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.clients.mixin.PostMixin.index">
@@ -536,7 +543,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 10, 2021.
+            Last updated on Jul 11, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
