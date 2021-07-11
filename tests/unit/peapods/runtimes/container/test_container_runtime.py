@@ -350,6 +350,7 @@ def test_container_volume(docker_image_built, tmpdir):
         'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2,driver=nvidia,capabilities=utility',  # multiple ids
     ],
 )
+@pytest.mark.skip('GPU test requires gpu device available from local/github workflow.')
 def test_gpu_container(docker_image_built, gpus_value):
     args = set_pea_parser().parse_args(
         ['--uses', f'docker://{img_name}', '--gpus', gpus_value]
