@@ -1,7 +1,12 @@
 name: Latency Tracking
 
+#on:
+#  - pull_request
+
 on:
-  - pull_request
+  push:
+    branches-ignore:
+      - '**'  # temporally ignore all
 
 jobs:
   latency-tracking:
