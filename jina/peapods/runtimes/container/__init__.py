@@ -192,6 +192,7 @@ class ContainerRuntime(ZMQRuntime):
                     capabilities=[_gpus['capabilities']],
                 )
             ]
+            del self.args.gpus
 
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
