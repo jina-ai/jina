@@ -28,6 +28,7 @@ docker:                     devel, cicd, network, hub, daemon, standard
 pathspec:                   devel, cicd, hub, standard
 rich:                       devel, standard, hub, cicd
 cryptography:               devel, cicd, hub, standard
+filelock:                   devel, cicd, hub, standard
 requests:                   http, devel, cicd, daemon, standard
 torch>=1.1.0:               framework, cicd, chatbot, multimodal
 transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
