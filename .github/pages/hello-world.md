@@ -65,7 +65,7 @@ In `your_project_folder` you will  have a file `app.py`  that you can change to 
          Flow()
          .add(uses='jinahub+docker://ImageTorchEncoder',
               override_with={'model_name': 'alexnet'},
-              parallel=1)
+              parallel=2)
          .add(uses=MyConverter)
          .add(uses=MyIndexer, workspace=args.workdir)
          .add(uses=MyEvaluator)
