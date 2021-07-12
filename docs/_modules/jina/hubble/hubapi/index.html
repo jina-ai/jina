@@ -419,6 +419,13 @@
     <span class="k">return</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">local_id</span><span class="si">}</span><span class="s1">.json'</span></div>
 
 
+<div class="viewcode-block" id="get_lockfile"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_lockfile">[docs]</a><span class="k">def</span> <span class="nf">get_lockfile</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">"""Get the path of file locker</span>
+<span class="sd">    :return: the path of file locker</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_hub_root</span> <span class="o">/</span> <span class="s1">'LOCK'</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="load_secret"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.load_secret">[docs]</a><span class="k">def</span> <span class="nf">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="sd">"""Get the UUID and Secret from local</span>
 
