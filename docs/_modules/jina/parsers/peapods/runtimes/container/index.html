@@ -429,6 +429,20 @@
 <span class="s1">- If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container. </span>
 <span class="s1">- All volumes are mounted with read-write mode.</span>
 <span class="s1">'''</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--gpus'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">    Specify gpu to the inside the container. </span>
+
+<span class="s1">    Note, </span>
+<span class="s1">    - To access all gpus, use `--gpus all`.</span>
+<span class="s1">    - To access multiple gpu access, use `--gpus 2`, start a gpu container on 2 gpus.</span>
+<span class="s1">    - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
+<span class="s1">    - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
+<span class="s1">    - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="s1">    '''</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
       </article>

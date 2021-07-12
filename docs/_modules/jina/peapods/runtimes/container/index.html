@@ -457,6 +457,38 @@
                 <span class="p">)</span>
         <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_gpu_device_requests</span><span class="p">(</span><span class="n">gpu_args</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">docker</span>
+
+        <span class="n">_gpus</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'count'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">'capabilities'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'gpu'</span><span class="p">],</span>
+            <span class="s1">'device'</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s1">'driver'</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">gpu_arg</span> <span class="ow">in</span> <span class="n">gpu_args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">','</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gpu_arg</span> <span class="o">==</span> <span class="s1">'all'</span><span class="p">:</span>
+                <span class="n">_gpus</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="n">gpu_arg</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                <span class="n">_gpus</span><span class="p">[</span><span class="s1">'count'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gpu_arg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">'='</span> <span class="ow">in</span> <span class="n">gpu_arg</span><span class="p">:</span>
+                <span class="n">gpu_arg_key</span><span class="p">,</span> <span class="n">gpu_arg_value</span> <span class="o">=</span> <span class="n">gpu_arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'='</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">gpu_arg_key</span> <span class="ow">in</span> <span class="n">_gpus</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_gpus</span><span class="p">[</span><span class="n">gpu_arg_key</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                        <span class="n">_gpus</span><span class="p">[</span><span class="n">gpu_arg_key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gpu_arg_value</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">_gpus</span><span class="p">[</span><span class="n">gpu_arg_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">gpu_arg_value</span>
+        <span class="n">device_requests</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">docker</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">DeviceRequest</span><span class="p">(</span>
+                <span class="n">count</span><span class="o">=</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'count'</span><span class="p">],</span>
+                <span class="n">driver</span><span class="o">=</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'driver'</span><span class="p">],</span>
+                <span class="n">device_ids</span><span class="o">=</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'device'</span><span class="p">],</span>
+                <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="n">_gpus</span><span class="p">[</span><span class="s1">'capabilities'</span><span class="p">]],</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="n">device_requests</span>
+
     <span class="k">def</span> <span class="nf">_docker_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replay</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="c1"># important to notice, that client is not assigned as instance member to avoid potential</span>
         <span class="c1"># heavy copy into new process memory space</span>
@@ -502,6 +534,7 @@
                 <span class="s1">'pull_latest'</span><span class="p">,</span>
                 <span class="s1">'runtime_cls'</span><span class="p">,</span>
                 <span class="s1">'docker_kwargs'</span><span class="p">,</span>
+                <span class="s1">'gpus'</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
 
@@ -546,6 +579,11 @@
                     <span class="s1">'mode'</span><span class="p">:</span> <span class="s1">'rw'</span><span class="p">,</span>
                 <span class="p">}</span>
 
+        <span class="n">device_requests</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">gpus</span><span class="p">:</span>
+            <span class="n">device_requests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_gpu_device_requests</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">gpus</span><span class="p">)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">gpus</span>
+
         <span class="n">_expose_port</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">socket_in</span><span class="o">.</span><span class="n">is_bind</span><span class="p">:</span>
             <span class="n">_expose_port</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_in</span><span class="p">)</span>
@@ -567,6 +605,7 @@
             <span class="n">network_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_net_mode</span><span class="p">,</span>
             <span class="n">entrypoint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">entrypoint</span><span class="p">,</span>
             <span class="n">extra_hosts</span><span class="o">=</span><span class="p">{</span><span class="n">__docker_host__</span><span class="p">:</span> <span class="s1">'host-gateway'</span><span class="p">},</span>
+            <span class="n">device_requests</span><span class="o">=</span><span class="n">device_requests</span><span class="p">,</span>
             <span class="o">**</span><span class="n">docker_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
