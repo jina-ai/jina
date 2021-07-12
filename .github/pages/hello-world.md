@@ -170,7 +170,7 @@ For example, you can use  [ImageTorchEncoder](https://github.com/jina-ai/executo
 To do so:
 
 - 1) Clone the repository with  `jina hello fork multimodal <your_project_folder>`.
-In the repository you will  have `app.py`  which you can change to leverage other embedding methods. 
+In the repository you will  have `flow-index.yml` and `flow-search.yml`  which you can change to leverage other embedding methods. 
 
 - 2) Change `<your_project_folder>/flow-index.yml` with
   ```yaml
