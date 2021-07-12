@@ -683,7 +683,10 @@ def send_message(
     num_bytes = 0
     try:
         _prep_send_socket(sock, timeout)
-        print(f' Socket send message multipart with timeout {timeout}', flush=True)
+        print(
+            f' Socket send message multipart with timeout {timeout} and number of parts {len(msg.dump())}',
+            flush=True,
+        )
         sock.send_multipart(msg.dump())
         print(f' Socket already sent message multipart', flush=True)
         num_bytes = msg.size
@@ -767,6 +770,7 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
     try:
         _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
+        print(f' Received back msg_data with {len(msg_data)} parts', flush=True)
         return _parse_from_frames(sock.type, msg_data)
 
     except zmq.error.Again:
