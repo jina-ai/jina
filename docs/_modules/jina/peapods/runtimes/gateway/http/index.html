@@ -382,6 +382,7 @@
         </label>
         <h1>Source code for jina.peapods.runtimes.gateway.http</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
 
 <span class="kn">from</span> <span class="nn">.app</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
 <span class="kn">from</span> <span class="nn">...zmq.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
@@ -427,7 +428,6 @@
 <span class="sd">                :param sockets: sockets of server.</span>
 <span class="sd">                """</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_loop</span><span class="p">()</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">sockets</span><span class="o">=</span><span class="n">sockets</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">.....helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
 
@@ -448,7 +448,8 @@
 
 <div class="viewcode-block" id="HTTPRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.gateway.http/#jina.peapods.runtimes.gateway.http.HTTPRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Stop the server."""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div></div>
 </pre></div>
       </article>
       <footer>
