@@ -552,7 +552,7 @@ class ZmqStreamlet(Zmqlet):
                         flush=True,
                     )
                     print(
-                        f' zmqstreamlet receiving? {s.receiving()} and sending? {s.sending()}',
+                        f' zmqstreamlet receiving? {s.receiving()} and sending? {s.sending()} with size: {s._send_queue.qsize()}, full? {s._send_queue.full()}',
                         flush=True,
                     )
                     events = s.flush()
