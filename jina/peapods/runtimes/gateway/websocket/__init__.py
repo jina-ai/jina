@@ -23,10 +23,6 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
         class UviServer(Server):
             """The uvicorn server."""
 
-            def __init__(self, *args, **kwargs):
-                super().__init__(*args, **kwargs)
-                self._exit = True
-
             async def setup(self, sockets=None):
                 """
                 Setup uvicorn server.
@@ -41,7 +37,6 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
                 await self.startup(sockets=sockets)
                 if self.should_exit:
                     return
-                self._exit = False
 
             async def serve(self, sockets=None):
                 """
@@ -51,14 +46,6 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
                 """
                 await self.main_loop()
                 await self.shutdown(sockets=sockets)
-                self._exit = True
-
-            async def stop(self):
-                while True:
-                    if self._exit:
-                        return
-                    else:
-                        await asyncio.sleep(0.1)
 
         from .....helper import extend_rest_interface
 
@@ -81,4 +68,4 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
-        await self._server.stop()
+        await self._server.shutdown()
