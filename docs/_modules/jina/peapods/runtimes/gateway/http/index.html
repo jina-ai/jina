@@ -382,7 +382,6 @@
         </label>
         <h1>Source code for jina.peapods.runtimes.gateway.http</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
 
 <span class="kn">from</span> <span class="nn">.app</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
 <span class="kn">from</span> <span class="nn">...zmq.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
@@ -421,11 +420,11 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
                     <span class="k">return</span>
 
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
                 <span class="sd">"""</span>
 <span class="sd">                Start the server.</span>
 
-<span class="sd">                :param sockets: sockets of server.</span>
+<span class="sd">                :param kwargs: keyword arguments</span>
 <span class="sd">                """</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_loop</span><span class="p">()</span>
 
