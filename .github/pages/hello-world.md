@@ -75,6 +75,8 @@ In `your_project_folder` you will  have a file `app.py`  that you can change to 
      - The line `uses='jinahub+docker://ImageTorchEncoder` allows downloading 
         `ImageTorchEncoder` from Jina Hub and use it in the `Flow`.
      - The line `override_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the class `ImageTorchEncoder`.
+       In this case attribute `'model_name'` takes value `'alexnet'`.
+
 - 3) Run `python <your_project_folder>/app.py` to execute.
 
 <br><br><br><br>
@@ -134,7 +136,8 @@ In the repository you will  have `app.py`  which you can change to leverage othe
      Note two details:
      - The line `uses='jinahub+docker://TransformerTorchEncoder'` allows downloading 
         `TransformerTorchEncoder` from Jina Hub and use it in the `Flow`.
-     - The line `override_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the class `ImageTorchEncoder`.
+     - The line `override_with={'pretrained_model_name_or_path': 'sentence-transformers/paraphrase-mpnet-base-v2'}` allows a user to specify an attribute of the class `ImageTorchEncoder`.
+       In this case attribute `'pretrained_model_name_or_path'` takes value `'sentence-transformers/paraphrase-mpnet-base-v2'`.
 
 - 3) Run `python <your_project_folder>/app.py` to execute.
 
