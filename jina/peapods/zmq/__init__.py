@@ -650,7 +650,7 @@ def send_ctrl_message(
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        send_message(sock, msg, timeout)
+        send_message(sock, msg, raise_exception=raise_exception, timeout=timeout)
         r = None
         try:
             r = recv_message(sock, timeout)

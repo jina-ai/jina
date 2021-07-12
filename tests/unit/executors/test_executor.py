@@ -1,6 +1,7 @@
 import os
 
 import pytest
+
 from jina import Executor
 from jina.executors.metas import get_default_metas
 
@@ -178,3 +179,16 @@ def test_executor_workspace_parent_noreplica_nopea(
             test_metas_workspace_replica_peas['name'],
         )
     )
+
+
+def test_workspace_not_exists(tmpdir):
+    class MyExec(Executor):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+        def do(self, *args, **kwargs):
+            with open(os.path.join(self.workspace, 'text.txt'), 'w') as f:
+                f.write('here!')
+
+    e = MyExec(metas={'workspace': tmpdir})
+    e.do()
