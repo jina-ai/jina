@@ -538,7 +538,8 @@ class ZmqStreamlet(Zmqlet):
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
-                    s.flush()
+                    events = s.flush()
+                    self.logger.debug(f'Handled #{events} during flush of socket')
             super().close()
             if hasattr(self, 'io_loop'):
                 try:
