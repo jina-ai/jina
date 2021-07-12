@@ -1,5 +1,4 @@
 import os
-import asyncio
 
 from .app import get_fastapi_app
 from ...zmq.asyncio import AsyncNewLoopRuntime
@@ -38,14 +37,13 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
                 if self.should_exit:
                     return
 
-            async def serve(self, sockets=None):
+            async def serve(self, **kwargs):
                 """
                 Start the server.
 
-                :param sockets: sockets of server.
+                :param kwargs: keyword arguments
                 """
                 await self.main_loop()
-                await self.shutdown(sockets=sockets)
 
         from .....helper import extend_rest_interface
 
