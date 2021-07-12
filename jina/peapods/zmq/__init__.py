@@ -142,15 +142,21 @@ class Zmqlet:
             return f'tcp://{host_out}:{port_ctrl}', ctrl_with_ipc
 
     def _pull(self, interval: int = 1):
+        self.logger.debug(f'_Pull with interval {interval}')
         socks = dict(self.poller.poll(interval))
         # the priority ctrl_sock > in_sock
         if socks.get(self.ctrl_sock) == zmq.POLLIN:
+            self.logger.debug(f'_Pull return control')
+
             return self.ctrl_sock
         elif socks.get(self.out_sock, None) == zmq.POLLIN:
+            self.logger.debug(f'_Pull return out')
             return self.out_sock  # for dealer return idle status to router
         elif socks.get(self.in_sock) == zmq.POLLIN:
+            self.logger.debug(f'_Pull return in')
             return self.in_sock
         elif socks.get(self.in_connect_sock) == zmq.POLLIN:
+            self.logger.debug(f'_Pull return in_connect_sock')
             return self.in_connect_sock
 
     def _close_sockets(self):
@@ -546,7 +552,8 @@ class ZmqStreamlet(Zmqlet):
                         flush=True,
                     )
                     print(
-                        f' zmqstreamlet receiving? {s.receiving()} and sending? {s.sending()}'
+                        f' zmqstreamlet receiving? {s.receiving()} and sending? {s.sending()}',
+                        flush=True,
                     )
                     events = s.flush()
                     self.logger.debug(f'Handled #{events} during flush of socket')
