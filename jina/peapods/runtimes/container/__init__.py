@@ -222,7 +222,7 @@ class ContainerRuntime(ZMQRuntime):
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
             extra_hosts={__docker_host__: 'host-gateway'},
-            device_requests=[],
+            device_requests=device_requests,
             **docker_kwargs,
         )
 
