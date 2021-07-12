@@ -498,9 +498,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               Note,
               - To access all gpus, use `--gpus all`.
               - To access multiple gpu access, use `--gpus 2`, start a gpu container on 2 gpus.
-              - To access specified gpus based on device id, use `--gpus device=GPU-[YOUR-GPU-DEVICE-ID]`
-              - To access specified gpus based on multiple device id, use `--gpus device=GPU-[YOUR-GPU-DEVICE-ID1],device=GPU-[YOUR-GPU-DEVICE-ID2]`
-              - To specify more parameters, use `--gpus device=GPU-[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
+              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
+              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
+              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for input, by default it is 0.0.0.0
         :param host_out: The host address for output, by default it is 0.0.0.0
