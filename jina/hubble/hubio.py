@@ -16,7 +16,7 @@ from .helper import (
     get_hubble_url,
     upload_file,
 )
-from .hubapi import install_local, resolve_local, load_secret, dump_secret
+from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
@@ -54,9 +54,11 @@ class HubIO:
         with ImportExtensions(required=True):
             import rich
             import cryptography
+            import filelock
 
             assert rich  #: prevent pycharm auto remove the above line
             assert cryptography
+            assert filelock
 
     def _load_docker_client(self):
         with ImportExtensions(required=True):
@@ -156,6 +158,7 @@ class HubIO:
                     f'Error while pushing session_id={req_header["jinameta-session-id"]}: '
                     f'\n{e!r}'
                 )
+                raise e
 
     def _prettyprint_result(self, console, result):
         # TODO: only support single executor now
@@ -332,43 +335,47 @@ with f:
                     self._client.images.pull(executor.image_name)
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
+                    import filelock
 
-                    try:
+                    with filelock.FileLock(get_lockfile(), timeout=-1):
+                        try:
+                            pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                            return f'{pkg_path / "config.yml"}'
+                        except FileNotFoundError:
+                            pass  # have not been downloaded yet, download for the first time
+
+                        # download the package
+                        cache_dir = Path(
+                            os.environ.get(
+                                'JINA_HUB_CACHE_DIR',
+                                Path.home().joinpath('.cache', 'jina'),
+                            )
+                        )
+                        cache_dir.mkdir(parents=True, exist_ok=True)
+
+                        st.update(f'Downloading...')
+                        cached_zip_filepath = download_with_resume(
+                            executor.archive_url,
+                            cache_dir,
+                            f'{executor.uuid}-{executor.md5sum}.zip',
+                            md5sum=executor.md5sum,
+                        )
+
+                        st.update(f'Unpacking...')
+                        install_local(
+                            cached_zip_filepath,
+                            executor.uuid,
+                            tag or executor.tag,
+                            install_deps=self.args.install_requirements,
+                        )
+
                         pkg_path = resolve_local(executor.uuid, tag or executor.tag)
                         return f'{pkg_path / "config.yml"}'
-                    except FileNotFoundError:
-                        pass  # have not been downloaded yet, download for the first time
-
-                    # download the package
-                    cache_dir = Path(
-                        os.environ.get(
-                            'JINA_HUB_CACHE_DIR', Path.home().joinpath('.cache', 'jina')
-                        )
-                    )
-                    cache_dir.mkdir(parents=True, exist_ok=True)
-
-                    st.update(f'Downloading...')
-                    cached_zip_filepath = download_with_resume(
-                        executor.archive_url,
-                        cache_dir,
-                        f'{executor.uuid}-{executor.md5sum}.zip',
-                        md5sum=executor.md5sum,
-                    )
-
-                    st.update(f'Unpacking...')
-                    install_local(
-                        cached_zip_filepath,
-                        executor.uuid,
-                        tag or executor.tag,
-                        install_deps=self.args.install_requirements,
-                    )
-
-                    pkg_path = resolve_local(executor.uuid, tag or executor.tag)
-                    return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
             except Exception as e:
                 self.logger.error(f'{e!r}')
+                raise e
             finally:
                 # delete downloaded zip package if existed
                 if cached_zip_filepath is not None:

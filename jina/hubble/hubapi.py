@@ -36,6 +36,13 @@ def get_config_path(local_id: str) -> 'Path':
     return _hub_root / f'{local_id}.json'
 
 
+def get_lockfile() -> str:
+    """Get the path of file locker
+    :return: the path of file locker
+    """
+    return str(_hub_root / 'LOCK')
+
+
 def load_secret(work_path: 'Path') -> Tuple[str, str]:
     """Get the UUID and Secret from local
 
