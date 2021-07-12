@@ -1,4 +1,5 @@
 import os
+import asyncio
 
 from .app import get_fastapi_app
 from ...zmq.asyncio import AsyncNewLoopRuntime
@@ -44,7 +45,6 @@ class HTTPRuntime(AsyncNewLoopRuntime):
                 :param sockets: sockets of server.
                 """
                 await self.main_loop()
-                await self.shutdown(sockets=sockets)
 
         from .....helper import extend_rest_interface
 
@@ -66,3 +66,4 @@ class HTTPRuntime(AsyncNewLoopRuntime):
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
+        await self._server.shutdown()
