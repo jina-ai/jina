@@ -49,7 +49,7 @@ class ChunkMerger(Executor):
         return DocumentArray(list(results.values()))
 
 
-@pytest.mark.timeout(5)
+@pytest.mark.timeout(60)
 @pytest.mark.parametrize('num_replicas, num_shards', [(1, 1), (2, 2)])
 def test_sharding_tail_pea(num_replicas, num_shards):
     """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""
