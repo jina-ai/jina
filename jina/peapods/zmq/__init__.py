@@ -548,7 +548,8 @@ class ZmqStreamlet(Zmqlet):
                     print(
                         f' zmqstreamlet receiving? {s.receiving()} and sending? {s.sending()}'
                     )
-                    s.flush()
+                    events = s.flush()
+                    self.logger.debug(f'Handled #{events} during flush of socket')
                     print(
                         f' CLOSING zmqstreamlet DONE flushing {socket_names.get(i, "NONE")} socket',
                         flush=True,
