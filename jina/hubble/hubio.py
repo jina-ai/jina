@@ -352,11 +352,18 @@ with f:
 
                     with filelock.FileLock(get_lockfile(), timeout=-1):
                         try:
-                            pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                            pkg_path, pkg_dist_path = resolve_local(executor)
+                            # check serial number to upgrade
+                            sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
+                            if not sn_file_path.exists():
+                                raise FileNotFoundError(f'{sn_file_path} doe not exist')
+                            if self.args.install_requirements:
+                                requirements_file = pkg_dist_path / 'requirements.txt'
+                                if requirements_file.exists():
+                                    install_requirements(requirements_file)
                             return f'{pkg_path / "config.yml"}'
                         except FileNotFoundError:
                             pass  # have not been downloaded yet, download for the first time
-
                         # download the package
                         cache_dir = Path(
                             os.environ.get(
@@ -367,7 +374,7 @@ with f:
                         cache_dir.mkdir(parents=True, exist_ok=True)
 
                         st.update(f'Downloading...')
-                        cached_zip_filepath = download_with_resume(
+                        cached_zip_file = download_with_resume(
                             executor.archive_url,
                             cache_dir,
                             f'{executor.uuid}-{executor.md5sum}.zip',
@@ -376,13 +383,12 @@ with f:
 
                         st.update(f'Unpacking...')
                         install_local(
-                            cached_zip_filepath,
-                            executor.uuid,
-                            tag or executor.tag,
+                            cached_zip_file,
+                            executor,
                             install_deps=self.args.install_requirements,
                         )
 
-                        pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                        pkg_path, _ = resolve_local(executor)
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')

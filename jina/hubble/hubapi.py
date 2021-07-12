@@ -114,20 +114,16 @@ def dump_secret(work_path: 'Path', uuid8: str, secret: str):
 def install_local(
     zip_package: 'Path',
     executor: 'HubExecutor',
-    force: Optional[bool] = False,
     install_deps: Optional[bool] = False,
 ):
     """Install the package in zip format to the Jina Hub root.
 
     :param zip_package: the path of the zip file
     :param executor: the executor to install
-    :param force: if set, overwrites the package
     :param install_deps: if set, install dependencies
     """
 
     pkg_path, pkg_dist_path = get_dist_path(executor.uuid, executor.tag)
-    if pkg_dist_path.exists() and not force:
-        return
 
     # clean existed dist-info
     for dist in _hub_root.glob(f'{executor.uuid}-*.dist-info'):
@@ -155,7 +151,7 @@ def install_local(
 
         # store the serial number in local
         if executor.sn is not None:
-            sn_file = pkg_dist_path / f'SN-{executor.sn}'
+            sn_file = pkg_dist_path / f'PKG-SN-{executor.sn}'
             sn_file.touch()
 
     except Exception as ex:
