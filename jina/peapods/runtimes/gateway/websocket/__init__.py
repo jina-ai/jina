@@ -1,4 +1,5 @@
 import os
+import asyncio
 
 from .app import get_fastapi_app
 from ...zmq.asyncio import AsyncNewLoopRuntime
@@ -67,3 +68,4 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
+        await self._server.shutdown()
