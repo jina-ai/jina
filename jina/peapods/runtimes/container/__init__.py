@@ -75,7 +75,7 @@ class ContainerRuntime(ZMQRuntime):
         client.close()
 
     @staticmethod
-    def _set_device_requests_for_gpu(gpu_args):
+    def _get_gpu_device_requests(gpu_args):
         import docker
 
         _gpus = {
@@ -198,7 +198,7 @@ class ContainerRuntime(ZMQRuntime):
 
         device_requests = []
         if self.args.gpus:
-            device_requests = self._set_device_requests_for_gpu(self.args.gpus)
+            device_requests = self._get_gpu_device_requests(self.args.gpus)
             del self.args.gpus
 
         _expose_port = [self.args.port_ctrl]

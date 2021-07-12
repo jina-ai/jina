@@ -338,7 +338,6 @@ def test_container_volume(docker_image_built, tmpdir):
     )
 
 
-@pytest.mark.slow
 @pytest.mark.parametrize(
     (
         'gpus_value',
@@ -387,7 +386,7 @@ def test_gpu_container(
         ['--uses', f'docker://{img_name}', '--gpus', gpus_value]
     )
 
-    device_requests = ContainerRuntime._set_device_requests_for_gpu(args.gpus)
+    device_requests = ContainerRuntime._get_gpu_device_requests(args.gpus)
     assert device_requests[0]['Count'] == expected_count
     assert device_requests[0]['DeviceIDs'] == expected_device
     assert device_requests[0]['Driver'] == expected_driver
