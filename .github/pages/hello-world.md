@@ -40,15 +40,15 @@ The whole process takes about 1 minute.
 #### Use Jina Hub Executors
 
 
- You can run the `jina hello fashion` demo using a different embedding method.
+You can run the `jina hello fashion` demo using a different embedding method.
 To do so:
- 
+
 - 1) Clone the repository with  `jina hello fork fashion <your_project_folder>`.
 In `your_project_folder` you will  have a file `app.py`  that you can change to leverage other embedding methods. 
 
 - 2) Change  lines 74 to 79 from `app.py` to define a different `Flow`. For example, you can use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
   changing 
-     
+  
       ```python
      f = (
           Flow()
@@ -59,7 +59,7 @@ In `your_project_folder` you will  have a file `app.py`  that you can change to 
       ```
 
      with the  flow
-    
+  
      ```python
      f = (
          Flow()
@@ -73,7 +73,7 @@ In `your_project_folder` you will  have a file `app.py`  that you can change to 
      ```
      Note two details:
      - The line `uses='jinahub+docker://ImageTorchEncoder` allows downloading 
-     `ImageTorchEncoder` from Jina Hub and use it in the `Flow`.
+        `ImageTorchEncoder` from Jina Hub and use it in the `Flow`.
      - The line `override_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the class `ImageTorchEncoder`.
 - 3) Run `python <your_project_folder>/app.py` to execute.
 
@@ -102,9 +102,10 @@ Then it opens a web page where you can input questions and ask Jina.
 #### Use Jina Hub Executors
 
 
-You can run the `jina hello chatbot` demo using a different embedding method. As an example, you can use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-torch-encoder)
+You can run the `jina hello chatbot` demo using a different embedding method. 
+As an example, you can use [TransformerTorchEncoder](https://github.com/jina-ai/executor-transformer-torch-encoder).
 To do so:
- 
+
 - 1) Clone the repository with  `jina hello fork chatbot <your_project_folder>`.
 In the repository you will  have `app.py`  which you can change to leverage other embedding methods. 
 
@@ -117,7 +118,7 @@ In the repository you will  have `app.py`  which you can change to leverage othe
     .add(uses=MyIndexer, workspace=args.workdir)
     ```
   with the flow
-    
+  
     ```python
     Flow(cors=True)
     .add(uses=MyTransformer, parallel=args.parallel)
@@ -132,7 +133,7 @@ In the repository you will  have `app.py`  which you can change to leverage othe
     ```
      Note two details:
      - The line `uses='jinahub+docker://TransformerTorchEncoder'` allows downloading 
-     `TransformerTorchEncoder` from Jina Hub and use it in the `Flow`.
+        `TransformerTorchEncoder` from Jina Hub and use it in the `Flow`.
      - The line `override_with={'model_name': 'alexnet'}` allows a user to specify an attribute of the class `ImageTorchEncoder`.
 
 - 3) Run `python <your_project_folder>/app.py` to execute.
@@ -165,9 +166,9 @@ We have prepared [a YouTube tutorial](https://youtu.be/B_nH8GCmBfc) to walk you 
 #### Use Jina Hub Executors
 
 You can run the `jina hello fashion` demo using a different embedding method.
-For example, you can use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder)
+For example, you can use  [ImageTorchEncoder](https://github.com/jina-ai/executor-image-torch-encoder).
 To do so:
- 
+
 - 1) Clone the repository with  `jina hello fork multimodal <your_project_folder>`.
 In the repository you will  have `app.py`  which you can change to leverage other embedding methods. 
 
@@ -231,7 +232,7 @@ In the repository you will  have `app.py`  which you can change to leverage othe
          needs: segment
        - name: joinAll
          needs: [ textIndexer, imageIndexer, keyValueIndexer ]
-     ```
+  ```
     and `flow-search.yml` with 
      ```yaml
      jtype: Flow
