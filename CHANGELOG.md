@@ -71,6 +71,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9571,4 +9572,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e7e0426d```](https://github.com/jina-ai/jina/commit/e7e0426d90167c9b757316319e5a5c663ce2020b)] __-__ remove the latency track (#2915) (*Nan Wang*)
  - [[```a1b7fe47```](https://github.com/jina-ai/jina/commit/a1b7fe47ccbd23e40976985864b793b13c0b6d96)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d4c6af5b```](https://github.com/jina-ai/jina/commit/d4c6af5b1ee9cc56e847d1fc4abbe3ef3852e04e)] __-__ __version__: the next version will be 2.0.6 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-7></a>
+## Release Note (`2.0.7`)
+
+> Release time: 2021-07-12 14:36:57
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Alex Cureton-Griffiths,  cristian,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```ac16f790```](https://github.com/jina-ai/jina/commit/ac16f79040ac98756012a6fb7813eddaeac706f6)] __-__ auto create workspace if not there (#2926) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```b748b36a```](https://github.com/jina-ai/jina/commit/b748b36a7ca4e6933b8b545777b5c9698dc431b8)] __-__ docs readme event banner (#2925) (*Alex Cureton-Griffiths*)
+ - [[```7f581ebf```](https://github.com/jina-ai/jina/commit/7f581ebfa3533509c1dfe37a7e731c6e2971c951)] __-__ __version__: the next version will be 2.0.7 (*Jina Dev Bot*)
 
