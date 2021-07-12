@@ -340,24 +340,55 @@ def test_container_volume(docker_image_built, tmpdir):
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
-    'gpus_value',
+    (
+        'gpus_value',
+        'expected_count',
+        'expected_device',
+        'expected_driver',
+        'expected_capabilities',
+    ),
     [
-        'all',  # all gpus
-        '2',  # use two gpus
-        'device=GPU-fake-gpu-id',  # gpu by one device id
-        'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2',  # gpu by 2 device id
-        'device=GPU-fake-gpu-id,driver=nvidia,capabilities=utility,capabilities=display',  # gpu with id, driver and capability
-        'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2,driver=nvidia,capabilities=utility',  # multiple ids
+        ('all', -1, [], '', [['gpu']]),  # all gpus
+        ('2', 2, [], '', [['gpu']]),  # use two gpus
+        (
+            'device=GPU-fake-gpu-id',
+            0,
+            ['GPU-fake-gpu-id'],
+            '',
+            [['gpu']],
+        ),  # gpu by one device id
+        (
+            'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2',
+            0,
+            ['GPU-fake-gpu-id1', 'GPU-fake-gpu-id2'],
+            '',
+            [['gpu']],
+        ),  # gpu by 2 device id
+        (
+            'device=GPU-fake-gpu-id,driver=nvidia,capabilities=utility,capabilities=display',
+            0,
+            ['GPU-fake-gpu-id'],
+            'nvidia',
+            [['gpu', 'utility', 'display']],
+        ),  # gpu with id, driver and capability
+        (
+            'device=GPU-fake-gpu-id1,device=GPU-fake-gpu-id2,driver=nvidia,capabilities=utility',
+            0,
+            ['GPU-fake-gpu-id1', 'GPU-fake-gpu-id2'],
+            'nvidia',
+            [['gpu', 'utility']],
+        ),  # multiple ids
     ],
 )
-@pytest.mark.skip('GPU test requires gpu device available from local/github workflow.')
-def test_gpu_container(docker_image_built, gpus_value):
+def test_gpu_container(
+    gpus_value, expected_count, expected_device, expected_driver, expected_capabilities
+):
     args = set_pea_parser().parse_args(
         ['--uses', f'docker://{img_name}', '--gpus', gpus_value]
     )
 
-    with Pea(args):
-        pass
-
-    time.sleep(2)
-    Pea(args).start().close()
+    device_requests = ContainerRuntime._set_device_requests_for_gpu(args.gpus)
+    assert device_requests[0]['Count'] == expected_count
+    assert device_requests[0]['DeviceIDs'] == expected_device
+    assert device_requests[0]['Driver'] == expected_driver
+    assert device_requests[0]['Capabilities'] == expected_capabilities
