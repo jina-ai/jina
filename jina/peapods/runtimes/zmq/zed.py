@@ -305,6 +305,9 @@ class ZEDRuntime(ZMQRuntime):
 
     def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
+        self.logger.debug(f' callback message => IS DATA? {msg.is_data_request}')
+        if not msg.is_data_request:
+            self.logger.debug(f' Control => {msg.request.command}')
         self._pre_hook(msg)._handle()._post_hook(msg)
         self.is_post_hook_done = True
         return msg

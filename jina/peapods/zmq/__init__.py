@@ -598,6 +598,7 @@ class ZmqStreamlet(Zmqlet):
         """
 
         def _callback(msg, sock_type):
+            self.logger.debug(f'_callback received message on socket {sock_type}')
             msg = _parse_from_frames(sock_type, msg)
             self.bytes_recv += msg.size
             self.msg_recv += 1
