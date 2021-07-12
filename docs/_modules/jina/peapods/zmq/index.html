@@ -921,7 +921,8 @@
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">flush</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opened_socks</span><span class="p">:</span>
-                    <span class="n">s</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                    <span class="n">events</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Handled #</span><span class="si">{</span><span class="n">events</span><span class="si">}</span><span class="s1"> during flush of socket'</span><span class="p">)</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'io_loop'</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
