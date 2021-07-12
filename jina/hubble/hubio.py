@@ -4,10 +4,13 @@ import argparse
 import hashlib
 import json
 import os
+import urllib
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
+
+import docker
 
 from .helper import (
     archive_package,
@@ -15,6 +18,7 @@ from .helper import (
     parse_hub_uri,
     get_hubble_url,
     upload_file,
+    disk_cache,
 )
 from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
 from ..helper import get_full_version, ArgNamespace
@@ -26,6 +30,8 @@ HubExecutor = namedtuple(
     'HubExecutor',
     ['uuid', 'alias', 'tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
 )
+
+_cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
 
 class HubIO:
@@ -264,6 +270,7 @@ with f:
         console.print(p1, p2, p3, p4)
 
     @staticmethod
+    @disk_cache((urllib.error.URLError,), cache_file=str(_cache_file))
     def _fetch_meta(
         name: str,
         tag: Optional[str] = None,
@@ -332,7 +339,16 @@ with f:
                 if scheme == 'jinahub+docker':
                     self._load_docker_client()
                     st.update(f'Pulling {executor.image_name}...')
-                    self._client.images.pull(executor.image_name)
+                    try:
+                        self._client.images.pull(executor.image_name)
+                    except docker.errors.APIError:
+                        img_not_found = False
+                        try:
+                            self._client.images.get(executor.image_name)
+                        except docker.errors.ImageNotFound:
+                            img_not_found = True
+                        if img_not_found:
+                            raise
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock

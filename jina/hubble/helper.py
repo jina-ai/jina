@@ -4,10 +4,11 @@ import hashlib
 import io
 import json
 import os
+import shelve
 import zipfile
-from functools import lru_cache
+from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, Iterable
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
@@ -250,3 +251,33 @@ def upload_file(
     response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
 
     return response
+
+
+def disk_cache(exceptions: Iterable[Exception], cache_file: str = 'disk_cache.db'):
+    """
+    Decorator which caches a function in disk and uses cache when an exception is raised
+
+    :param exceptions: exceptions used to trigger using the cache
+    :param cache_file: the cache file
+
+    :return: function decorator
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            call_hash = f'{func.__name__}({", ".join(args)})'
+            with shelve.open(cache_file) as cache_db:
+                try:
+                    result = func(*args, **kwargs)
+                    cache_db[call_hash] = result
+                except exceptions:
+                    if call_hash in cache_db:
+                        return cache_db[call_hash]
+                    else:
+                        raise
+            return result
+
+        return wrapper
+
+    return decorator
