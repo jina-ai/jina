@@ -70,6 +70,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9527,4 +9528,47 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```bdd7363b```](https://github.com/jina-ai/jina/commit/bdd7363b20d80d0b1e4435e03d7847b2087befc6)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```f9206ae3```](https://github.com/jina-ai/jina/commit/f9206ae35d15e6a0486fdb8218394bc895d5ab12)] __-__ polish wording (#2897) (*Alex Cureton-Griffiths*)
  - [[```72e362da```](https://github.com/jina-ai/jina/commit/72e362da64a0a1d65561f7162e4b4051ac7637fd)] __-__ __version__: the next version will be 2.0.5 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-6></a>
+## Release Note (`2.0.6`)
+
+> Release time: 2021-07-12 12:22:08
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Wang Bo,  Joan Fontanals,  felix-wang,  Winston Wong,  Jina Dev Bot,  Nan Wang,  Gikiman,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f9c50b73```](https://github.com/jina-ai/jina/commit/f9c50b7397f3b58f66bc4c7818f02c4e3210517b)] __-__ add gpu support to container runtime (#2914) (*Wang Bo*)
+ - [[```e74e7b4e```](https://github.com/jina-ai/jina/commit/e74e7b4e6a169935a6efa6bcac68829b90d28ba7)] __-__ add debug log about flushed messages (#2908) (*Joan Fontanals*)
+ - [[```6c5a64c2```](https://github.com/jina-ai/jina/commit/6c5a64c2192362fd36ed7098c03a48099ac7de38)] __-__ __hubble__: add filelock while installing executor from hubble (#2866) (*felix-wang*)
+
+### 🐞 Bug fixes
+
+ - [[```9cf21c32```](https://github.com/jina-ai/jina/commit/9cf21c321dca0ea337b271613f832b7944c1695a)] __-__ remove unused import (#2921) (*Joan Fontanals*)
+ - [[```57918806```](https://github.com/jina-ai/jina/commit/5791880699ff9e1daba04adf73b609b6c4de108e)] __-__ wait for server to stop in cancel (#2902) (*Joan Fontanals*)
+ - [[```fc481fb3```](https://github.com/jina-ai/jina/commit/fc481fb3da02c053f69a68c9ac772c353957f012)] __-__ fix #2910 (#2911) (*Nan Wang*)
+
+### 🚧 Code Refactoring
+
+ - [[```bd34aae6```](https://github.com/jina-ai/jina/commit/bd34aae6ff3f9e7e308c78d11d3142575a775f1d)] __-__ small refactors (#2922) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```632315fb```](https://github.com/jina-ai/jina/commit/632315fb616b2518b533ba17584d109f105f6889)] __-__ declare cors in `Get Started` &#39;s FLow (#2907) (*Gikiman*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```9917aabc```](https://github.com/jina-ai/jina/commit/9917aabc73a6660dabfd1c2765e0721fd7b66f27)] __-__ timeout control adjusting for ci (#2916) (*Joan Fontanals*)
+ - [[```4a8abd44```](https://github.com/jina-ai/jina/commit/4a8abd44fd5da28025f76648624146f3af7ba458)] __-__ test flow.load_config with override_with on protocol (#2901) (*Winston Wong*)
+
+### 🍹 Other Improvements
+
+ - [[```320f14ac```](https://github.com/jina-ai/jina/commit/320f14ac6e467ab6afa2c1cfd61581b73c0e9f73)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```e7e0426d```](https://github.com/jina-ai/jina/commit/e7e0426d90167c9b757316319e5a5c663ce2020b)] __-__ remove the latency track (#2915) (*Nan Wang*)
+ - [[```a1b7fe47```](https://github.com/jina-ai/jina/commit/a1b7fe47ccbd23e40976985864b793b13c0b6d96)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d4c6af5b```](https://github.com/jina-ai/jina/commit/d4c6af5b1ee9cc56e847d1fc4abbe3ef3852e04e)] __-__ __version__: the next version will be 2.0.6 (*Jina Dev Bot*)
 
