@@ -242,7 +242,7 @@ def test_gateway_args(protocol, expected):
     assert p.runtime_cls.__name__ == expected
 
 
-@pytest.mark.timeout(5)
+@pytest.mark.timeout(30)
 @pytest.mark.slow
 def test_idle_does_not_create_response():
     args = set_pea_parser().parse_args([])
