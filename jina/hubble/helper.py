@@ -253,12 +253,18 @@ def upload_file(
     return response
 
 
-def disk_cache(exceptions: Iterable[Exception], cache_file: str = 'disk_cache.db'):
+def disk_cache(
+    exceptions: Iterable[Exception],
+    cache_file: str = 'disk_cache.db',
+    message: str = "Calling {func_name} failed, using cached results",
+):
     """
     Decorator which caches a function in disk and uses cache when an exception is raised
 
     :param exceptions: exceptions used to trigger using the cache
     :param cache_file: the cache file
+    :param message: the warning message shown when defaulting to cache. Use "{func_name}" if you want to print
+        the function name
 
     :return: function decorator
     """
@@ -273,6 +279,7 @@ def disk_cache(exceptions: Iterable[Exception], cache_file: str = 'disk_cache.db
                     cache_db[call_hash] = result
                 except exceptions:
                     if call_hash in cache_db:
+                        default_logger.warning(message.format(func_name=func.__name__))
                         return cache_db[call_hash]
                     else:
                         raise
