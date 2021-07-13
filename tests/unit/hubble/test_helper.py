@@ -44,11 +44,8 @@ def test_unpack_package(tmpdir, dummy_zip_file):
     helper.unpack_package(dummy_zip_file, tmpdir / 'dummp_executor')
 
 
-first_time = False
-
-
 def test_disk_cache(tmpdir):
-    global first_time
+    raise_exception = True
     tmpfile = f'jina_test_{next(tempfile._get_candidate_names())}.db'
 
     class _Exception(Exception):
@@ -56,11 +53,9 @@ def test_disk_cache(tmpdir):
 
     @disk_cache((_Exception,), cache_file=str(tmpdir / tmpfile))
     def _myfunc() -> bool:
-        global first_time
-        if not first_time:
+        if raise_exception:
             raise _Exception('Failing')
         else:
-            first_time = False
             return True
 
     # test fails
@@ -68,8 +63,10 @@ def test_disk_cache(tmpdir):
         _myfunc()
     assert 'Failing' in str(info.value)
 
-    first_time = True
-    # saves result in cache in a first try
+    raise_exception = False
+    # saves result in cache
     assert _myfunc()
+
+    raise_exception = True
     # defaults to cache
     assert _myfunc()
