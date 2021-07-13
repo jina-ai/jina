@@ -5,6 +5,7 @@ import pytest
 import tempfile
 from pathlib import Path
 from jina.hubble import helper
+from jina.hubble.helper import disk_cache
 
 
 @pytest.fixture
@@ -41,3 +42,22 @@ def test_archive_package(tmpdir):
 
 def test_unpack_package(tmpdir, dummy_zip_file):
     helper.unpack_package(dummy_zip_file, tmpdir / 'dummp_executor')
+
+
+first_time = True
+
+
+def test_disk_cache():
+    @disk_cache((Exception,))
+    def _myfunc() -> bool:
+        global first_time
+        if not first_time:
+            raise Exception("Failing")
+        else:
+            first_time = False
+            return True
+
+    # saves result in cache in a first try
+    assert _myfunc()
+    # defaults to cache
+    assert _myfunc()

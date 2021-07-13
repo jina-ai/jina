@@ -272,7 +272,7 @@ def disk_cache(
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            call_hash = f'{func.__name__}({", ".join(args)})'
+            call_hash = f'{func.__name__}({", ".join(map(str, args))})'
             with shelve.open(cache_file) as cache_db:
                 try:
                     result = func(*args, **kwargs)
