@@ -693,7 +693,10 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># notice how executor related exceptions are handled here</span>
             <span class="c1"># generally unless executor throws an OSError, the exception are caught and solved inplace</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+            <span class="n">processed_msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="c1"># dont sent responses for CANCEL and IDLE control requests</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">is_data_request</span> <span class="ow">or</span> <span class="n">msg</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'CANCEL'</span><span class="p">,</span> <span class="s1">'IDLE'</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">processed_msg</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">RuntimeTerminated</span><span class="p">:</span>
             <span class="c1"># this is the proper way to end when a terminate signal is sent</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_zmqstreamlet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
