@@ -143,4 +143,5 @@ tests/integration/crud/simple/simple_indexer/
 latency
 MyIndexer/
 MyMemMap/
+original/
 output/

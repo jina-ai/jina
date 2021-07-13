@@ -6,13 +6,14 @@ import sys
 import time
 import timeit
 from typing import Dict
+from pathlib import Path
 
 # this line is needed here for measuring import time accurately for 1M imports
 import_time = timeit.timeit(stmt='import jina', number=1000000)
 
 from jina import Document, Flow, __version__
-from jina.helloworld.fashion.helper import (index_generator, load_labels,
-                                            load_mnist, query_generator)
+from jina.parsers.helloworld import set_hw_parser
+from jina.helloworld.fashion.helper import (index_generator, download_data, query_generator)
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from packaging import version
 from pkg_resources import resource_filename
@@ -99,32 +100,32 @@ def _benchmark_qps() -> Dict[str, float]:
     Returns:
         A dict mapping keys
     """
-    num_docs = 60000
-    num_query = 4096
-    request_size = 1024
-    top_k = 50
-    cwd = os.path.join(os.getcwd(), 'original')
+    args = set_hw_parser().parse_args()
+    args.workdir = os.path.join(os.getcwd(), 'original')
+    args.num_query = 4096
 
     targets = {
         'index-labels': {
-            'filename': os.path.join(cwd, 'index-labels'),
+            'url': args.index_labels_url,
+            'filename': os.path.join(args.workdir, 'index-labels'),
         },
         'query-labels': {
-            'filename': os.path.join(cwd, 'query-labels'),
+            'url': args.query_labels_url,
+            'filename': os.path.join(args.workdir, 'query-labels'),
         },
         'index': {
-            'filename': os.path.join(cwd, 'index-original'),
+            'url': args.index_data_url,
+            'filename': os.path.join(args.workdir, 'index-original'),
         },
         'query': {
-            'filename': os.path.join(cwd, 'query-original'),
+            'url': args.query_data_url,
+            'filename': os.path.join(args.workdir, 'query-original'),
         },
     }
 
-    for k, v in targets.items():
-        if k == 'index-labels' or k == 'query-labels':
-            v['data'] = load_labels(v['filename'])
-        if k == 'index' or k == 'query':
-            v['data'] = load_mnist(v['filename'])
+    # download the data
+    Path(args.workdir).mkdir(parents=True, exist_ok=True)
+    download_data(targets, args.download_proxy)
 
     try:
         f = Flow().add(uses=MyEncoder).add(uses=MyIndexer)
@@ -133,18 +134,18 @@ def _benchmark_qps() -> Dict[str, float]:
             # do index
             st = time.perf_counter()
             f.index(
-                index_generator(num_docs=num_docs, target=targets),
-                request_size=request_size
+                index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
+                request_size=args.request_size
             )
             index_time = time.perf_counter() - st
 
             # do query
             st = time.perf_counter()
             f.search(
-                query_generator(num_docs=num_query, target=targets),
+                query_generator(num_docs=args.num_query, target=targets),
                 shuffle=True,
-                request_size=request_size,
-                parameters={'top_k': top_k}
+                request_size=args.request_size,
+                parameters={'top_k': args.top_k}
             )
             query_time = time.perf_counter() - st
 
@@ -155,8 +156,8 @@ def _benchmark_qps() -> Dict[str, float]:
     return {
         'index_time': index_time,
         'query_time': query_time,
-        'index_qps': num_docs / index_time,
-        'query_qps': num_query / query_time,
+        'index_qps': targets['index']['data'].shape[0] / index_time,
+        'query_qps': args.num_query / query_time,
     }
 
 
