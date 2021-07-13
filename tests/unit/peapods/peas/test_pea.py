@@ -2,12 +2,14 @@ import os
 import time
 
 import pytest
+import zmq
 
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.executors import BaseExecutor
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina.peapods import Pea
 from jina.peapods.runtimes.zmq.zed import ZEDRuntime
+from jina.types.message.common import ControlMessage
 
 
 def bad_func(*args, **kwargs):
@@ -238,3 +240,19 @@ def test_gateway_args(protocol, expected):
     )
     p = Pea(args)
     assert p.runtime_cls.__name__ == expected
+
+
+@pytest.mark.timeout(5)
+@pytest.mark.slow
+def test_idle_does_not_create_response():
+    args = set_pea_parser().parse_args([])
+
+    with Pea(args) as p:
+        msg = ControlMessage('IDLE', pod_name='fake_pod')
+
+        with zmq.Context().socket(zmq.PAIR) as socket:
+            socket.connect(f'tcp://localhost:{p.args.port_ctrl}')
+            socket.send_multipart(msg.dump())
+            event = socket.poll(timeout=1000)
+
+            assert not event
