@@ -311,7 +311,7 @@ class ZEDRuntime(ZMQRuntime):
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
             processed_msg = self._callback(msg)
-            # dont sent responses for CLOSE and IDLE control requests
+            # dont sent responses for CANCEL and IDLE control requests
             if msg.is_data_request or msg.request.command not in ['CANCEL', 'IDLE']:
                 self._zmqstreamlet.send_message(processed_msg)
         except RuntimeTerminated:
