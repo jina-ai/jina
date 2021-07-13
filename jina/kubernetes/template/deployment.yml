@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {name}
+  namespace: {namespace}
+spec:
+  replicas: {replicas}
+  selector:
+    matchLabels:
+      app: {name}
+  template:
+    metadata:
+      labels:
+        app: {name}
+    spec:
+      containers:
+      - name: {name}
+        image: {image}
+        command: {command}
+        args: {args}
+        ports:
+          - containerPort: {port}
+        env:
+        - name: JINA_LOG_LEVEL
+          value: debug
+        - name: PYTHONUNBUFFERED
+          value: "1"

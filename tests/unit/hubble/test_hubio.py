@@ -113,7 +113,7 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_get)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor = HubIO(args)._fetch_meta('dummy_mwu_encoder')
+    executor = HubIO(args).fetch_meta('dummy_mwu_encoder')
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.alias == 'alias_dummy'
@@ -152,7 +152,7 @@ def test_pull(test_envs, mocker, monkeypatch):
             archive_url=None,
         )
 
-    monkeypatch.setattr(HubIO, '_fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
     def _mock_download(url, stream=True, headers=None):
         mock(url=url)

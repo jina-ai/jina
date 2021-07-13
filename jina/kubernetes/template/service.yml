@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {name}
+  namespace: {namespace}
+  labels:
+    app: {target}
+
+spec:
+  type: LoadBalancer
+  ports:
+    - port: {port}
+      targetPort: {port}
+  selector:
+    app: {target}

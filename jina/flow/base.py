@@ -6,6 +6,7 @@ import os
 import re
 import socket
 import threading
+import time
 import uuid
 import warnings
 from collections import OrderedDict
@@ -27,7 +28,10 @@ from ..helper import (
     download_mermaid_url,
     CatchAllCleanupContextManager,
 )
+from ..hubble.helper import get_hubble_url, parse_hub_uri
+from ..hubble.hubio import HubIO
 from ..jaml import JAMLCompatible
+from ..kubernetes import kubernetes_tools
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
@@ -1556,3 +1560,99 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: new network settings
         """
         self._common_kwargs.update(kwargs)
+
+    def deploy(self, deployment_type='k8s'):
+        """Deploys the Flow. Currently only Kubernetes is supported.
+        Moreover it comes with some limitations at the moment:
+        - only 'simple' linear Flows are supported
+        - sharding is not supported
+        - replicas are just used for redundancy - they can not be used in parallel
+        - each image can only be used once
+        - ingress is only possible on port 8080
+        """
+
+        if deployment_type == 'k8s':
+            self.logger.info(f'✨ Deploy Flow on Kubernetes...')
+            namespace = self.args.name
+            self.logger.info(f'📦 Create Namespace {namespace}')
+            kubernetes_tools.create('namespace', {'name': namespace})
+
+            pod_to_args = {}
+            for pod_name, pod in self._pod_nodes.items():
+                if pod_name == 'gateway':
+                    continue
+                scheme, name, tag, secret = parse_hub_uri(pod.args.uses)
+                meta_data = HubIO.fetch_meta(name)
+                image_name = meta_data.image_name
+                replicas = pod.args.replicas
+                self.logger.info(f'🔋 Create Service for "{pod_name}" with image "{name}" pulling from "{image_name}"')
+                kubernetes_tools.create('service', {
+                    'name': name.lower(),
+                    'target': name.lower(),
+                    'namespace': namespace,
+                    'port': 8081
+                })
+                cluster_ip = kubernetes_tools.get_service_cluster_ip(name.lower(), namespace)
+                pod_to_args[pod_name] = {'host_in': cluster_ip}
+
+                self.logger.info(f'🐳 Create Deployment for "{image_name}" with replicas {replicas}')
+                kubernetes_tools.create('deployment', {
+                    'name': name.lower(),
+                    'namespace': namespace,
+                    'image': image_name,
+                    'replicas': replicas,
+                    'command': "[\"jina\"]",
+                    'args': "[\"executor\", \"--uses\", \"config.yml\", \"--port-in\", \"8082\", \"--dynamic-routing-in\", \"--dynamic-routing-out\", \"--socket-in\", \"ROUTER_BIND\", \"--socket-out\", \"ROUTER_BIND\"]",
+                    'port': 8081
+                })
+            self.logger.info(f'🔒 Create "gateway service"')
+            kubernetes_tools.create('service', {
+                'name': 'gateway-exposed',
+                'target': 'gateway',
+                'namespace': namespace,
+                'port': 8080
+            })
+            kubernetes_tools.create('service', {
+                'name': 'gateway-in',
+                'target': 'gateway',
+                'namespace': namespace,
+                'port': 8081
+            })
+
+
+            gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip('gateway-exposed', namespace)
+
+            gateway_yaml = self.create_gateway_yaml(pod_to_args, gateway_cluster_ip)
+            kubernetes_tools.create('deployment', {
+                'name': 'gateway',
+                'replicas': 1,
+                'port': 8080,
+                'command': "[\"python\"]",
+                'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
+                'image': 'gcr.io/jina-showcase/generic-gateway',
+                'namespace': namespace
+            })
+        else:
+            raise Exception(f'deployment type "{deployment_type}" is not supported')
+
+    def create_gateway_yaml(self, pod_to_args, gateway_host_in):
+        yaml = f"""
+        !Flow
+        version: '1'
+        with:
+          port_expose: 8080
+          host_in: {gateway_host_in}
+          port_in: 8081
+        pods:
+        """
+        for pod, args in pod_to_args.items():
+            yaml += f"""
+          - name: {pod}
+            port_in: 8081
+            host: {args['host_in']}
+            external: True
+             """
+
+        # return yaml
+        base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
+        return base_64_yaml

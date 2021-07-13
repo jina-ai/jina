@@ -262,7 +262,7 @@ with f:
         console.print(p1, p2, p3, p4)
 
     @staticmethod
-    def _fetch_meta(
+    def fetch_meta(
         name: str,
         tag: Optional[str] = None,
         secret: Optional[str] = None,
@@ -320,7 +320,7 @@ with f:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
                 st.update('Fetching meta data...')
-                executor = HubIO._fetch_meta(name, tag=tag, secret=secret)
+                executor = HubIO.fetch_meta(name, tag=tag, secret=secret)
                 usage = (
                     f'{executor.uuid}'
                     if executor.visibility == 'public'
