@@ -44,19 +44,31 @@ def test_unpack_package(tmpdir, dummy_zip_file):
     helper.unpack_package(dummy_zip_file, tmpdir / 'dummp_executor')
 
 
-first_time = True
+first_time = False
 
 
-def test_disk_cache():
-    @disk_cache((Exception,))
+def test_disk_cache(tmpdir):
+    global first_time
+    tmpfile = f'jina_test_{next(tempfile._get_candidate_names())}.db'
+
+    class _Exception(Exception):
+        pass
+
+    @disk_cache((_Exception,), cache_file=str(tmpdir / tmpfile))
     def _myfunc() -> bool:
         global first_time
         if not first_time:
-            raise Exception("Failing")
+            raise _Exception('Failing')
         else:
             first_time = False
             return True
 
+    # test fails
+    with pytest.raises(_Exception) as info:
+        _myfunc()
+    assert 'Failing' in str(info.value)
+
+    first_time = True
     # saves result in cache in a first try
     assert _myfunc()
     # defaults to cache

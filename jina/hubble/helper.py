@@ -256,7 +256,7 @@ def upload_file(
 def disk_cache(
     exceptions: Iterable[Exception],
     cache_file: str = 'disk_cache.db',
-    message: str = "Calling {func_name} failed, using cached results",
+    message: str = 'Calling {func_name} failed, using cached results',
 ):
     """
     Decorator which caches a function in disk and uses cache when an exception is raised
