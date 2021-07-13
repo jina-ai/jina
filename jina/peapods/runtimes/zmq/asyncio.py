@@ -24,7 +24,7 @@ class AsyncZMQRuntime(ZMQRuntime):
         args: 'argparse.Namespace',
         ctrl_addr: str,
         cancel_event: Union['multiprocessing.Event', 'threading.Event'],
-        **kwargs
+        **kwargs,
     ):
         super().__init__(args, ctrl_addr, **kwargs)
         self.is_cancel = cancel_event
@@ -45,6 +45,7 @@ class AsyncZMQRuntime(ZMQRuntime):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
         while True:
             if self.is_cancel.is_set():
+                self.logger.warning(f' CANCEL ASYNC RUNTIME')
                 await self.async_cancel()
                 return
             else:

@@ -216,7 +216,9 @@ class BasePea:
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
+        print(f' Joining pea {self.name}')
         self.worker.join(*args, **kwargs)
+        print(f' Pea {self.name} joined')
 
     def terminate(self):
         """Terminate the Pea.

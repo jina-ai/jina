@@ -60,10 +60,13 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """Running method of ther server."""
+        self.logger.warning(f' ASYNC run forever')
         self.is_ready_event.set()
         await self._server.serve()
 
     async def async_cancel(self):
         """Stop the server."""
+        self.logger.warning(f' ASYNC cancel')
         self._server.should_exit = True
         await self._server.shutdown()
+        self.logger.warning(f' _server shutdown completed')
