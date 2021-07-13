@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import shutil
 import sys
@@ -11,12 +10,14 @@ from pathlib import Path
 # this line is needed here for measuring import time accurately for 1M imports
 import_time = timeit.timeit(stmt='import jina', number=1000000)
 
-from jina import Document, Flow, __version__
-from jina.parsers.helloworld import set_hw_parser
-from jina.helloworld.fashion.helper import (index_generator, download_data, query_generator)
-from jina.types.arrays.memmap import DocumentArrayMemmap
-from packaging import version
 from pkg_resources import resource_filename
+from packaging import version
+from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina.helloworld.fashion.helper import (
+    index_generator, download_data, query_generator)
+from jina.parsers.helloworld import set_hw_parser
+from jina.logging.logger import JinaLogger
+from jina import Document, Flow, __version__
 
 try:
     from jina.helloworld.fashion.executors import MyEncoder, MyIndexer
@@ -25,7 +26,7 @@ except:
 
 
 # declare base logger
-log = logging.getLogger(__name__)
+log = JinaLogger(__name__, "custom_logger")
 
 
 def __doc_generator():
@@ -59,12 +60,14 @@ def _benchmark_avg_flow_time() -> Dict[str, float]:
         Flow().add().add().add(),
         Flow().add().add().add(needs='gateway')
     ]
+    log.info("Benchmarking average flow time")
     st = time.perf_counter()
     for f in fs:
         with f:
             f.post(on='/', inputs=__doc_generator, request_size=10)
     flow_time = time.perf_counter() - st
     avg_flow_time = flow_time / len(fs)
+    log.info("Average flow time: %f seconds", avg_flow_time)
 
     return {
         'avg_flow_time': avg_flow_time
@@ -84,9 +87,11 @@ def _benchmark_dam_extend_qps() -> Dict[str, float]:
     for i in range(dam_size):
         dlist.append(Document(text=f'This is the document number: {i}', ))
 
+    log.info("Benchmarking DAM extend")
     st = time.perf_counter()
     dam.extend(dlist)
     dam_extend_time = time.perf_counter() - st
+    log.info("%d qps within %d seconds", dam_size/dam_extend_time, dam_extend_time)
 
     return {
         'dam_extend_time': dam_extend_time,
@@ -128,26 +133,38 @@ def _benchmark_qps() -> Dict[str, float]:
     download_data(targets, args.download_proxy)
 
     try:
-        f = Flow().add(uses=MyEncoder).add(uses=MyIndexer)
+        f = (
+            Flow()
+            .add(uses=MyEncoder)
+            .add(uses=MyIndexer)
+        )
 
         with f:
             # do index
+            log.info("Benchmarking index")
             st = time.perf_counter()
             f.index(
-                index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
-                request_size=args.request_size
+                index_generator(
+                    num_docs=targets['index']['data'].shape[0], target=targets),
+                request_size=args.request_size,
+                show_progress=True
             )
             index_time = time.perf_counter() - st
+            log.info("Indexed %d docs within %d seconds",
+                     targets['index']['data'].shape[0], index_time)
 
             # do query
+            log.info("Benchmarking query")
             st = time.perf_counter()
             f.search(
                 query_generator(num_docs=args.num_query, target=targets),
                 shuffle=True,
                 request_size=args.request_size,
-                parameters={'top_k': args.top_k}
+                parameters={'top_k': args.top_k},
+                show_progress=True
             )
             query_time = time.perf_counter() - st
+            log.info("%d query within %d seconds", args.num_query, query_time)
 
     except Exception as e:
         log.error(e)
@@ -172,8 +189,8 @@ def benchmark() -> Dict[str, str]:
     }
     stats.update(_benchmark_import_time())
     stats.update(_benchmark_dam_extend_qps())
-    stats.update(_benchmark_avg_flow_time())
     stats.update(_benchmark_qps())
+    stats.update(_benchmark_avg_flow_time())
 
     return stats
 
@@ -194,8 +211,8 @@ def write_stats(stats: Dict[str, str], path: str = 'output/stats.json') -> None:
     try:
         with open(path) as fp:
             his = json.load(fp)
-    except:
-        pass
+    except Exception as e:
+        log.warning(e)
 
     try:
         with open(path, 'w+') as fp:
