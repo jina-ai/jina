@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
 
-import docker
 
 from .helper import (
     archive_package,
@@ -319,6 +318,9 @@ with f:
         :return: the `uses` string
         """
         from rich.console import Console
+
+        with ImportExtensions(required=True):
+            import docker
 
         console = Console()
         cached_zip_filepath = None
