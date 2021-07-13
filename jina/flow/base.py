@@ -1585,53 +1585,75 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 meta_data = HubIO.fetch_meta(name)
                 image_name = meta_data.image_name
                 replicas = pod.args.replicas
-                self.logger.info(f'🔋 Create Service for "{pod_name}" with image "{name}" pulling from "{image_name}"')
-                kubernetes_tools.create('service', {
-                    'name': name.lower(),
-                    'target': name.lower(),
-                    'namespace': namespace,
-                    'port': 8081
-                })
-                cluster_ip = kubernetes_tools.get_service_cluster_ip(name.lower(), namespace)
+                self.logger.info(
+                    f'🔋 Create Service for "{pod_name}" with image "{name}" pulling from "{image_name}"'
+                )
+                kubernetes_tools.create(
+                    'service',
+                    {
+                        'name': name.lower(),
+                        'target': name.lower(),
+                        'namespace': namespace,
+                        'port': 8081,
+                    },
+                )
+                cluster_ip = kubernetes_tools.get_service_cluster_ip(
+                    name.lower(), namespace
+                )
                 pod_to_args[pod_name] = {'host_in': cluster_ip}
 
-                self.logger.info(f'🐳 Create Deployment for "{image_name}" with replicas {replicas}')
-                kubernetes_tools.create('deployment', {
-                    'name': name.lower(),
-                    'namespace': namespace,
-                    'image': image_name,
-                    'replicas': replicas,
-                    'command': "[\"jina\"]",
-                    'args': "[\"executor\", \"--uses\", \"config.yml\", \"--port-in\", \"8082\", \"--dynamic-routing-in\", \"--dynamic-routing-out\", \"--socket-in\", \"ROUTER_BIND\", \"--socket-out\", \"ROUTER_BIND\"]",
-                    'port': 8081
-                })
+                self.logger.info(
+                    f'🐳 Create Deployment for "{image_name}" with replicas {replicas}'
+                )
+                kubernetes_tools.create(
+                    'deployment',
+                    {
+                        'name': name.lower(),
+                        'namespace': namespace,
+                        'image': image_name,
+                        'replicas': replicas,
+                        'command': "[\"jina\"]",
+                        'args': "[\"executor\", \"--uses\", \"config.yml\", \"--port-in\", \"8082\", \"--dynamic-routing-in\", \"--dynamic-routing-out\", \"--socket-in\", \"ROUTER_BIND\", \"--socket-out\", \"ROUTER_BIND\"]",
+                        'port': 8081,
+                    },
+                )
             self.logger.info(f'🔒 Create "gateway service"')
-            kubernetes_tools.create('service', {
-                'name': 'gateway-exposed',
-                'target': 'gateway',
-                'namespace': namespace,
-                'port': 8080
-            })
-            kubernetes_tools.create('service', {
-                'name': 'gateway-in',
-                'target': 'gateway',
-                'namespace': namespace,
-                'port': 8081
-            })
+            kubernetes_tools.create(
+                'service',
+                {
+                    'name': 'gateway-exposed',
+                    'target': 'gateway',
+                    'namespace': namespace,
+                    'port': 8080,
+                },
+            )
+            kubernetes_tools.create(
+                'service',
+                {
+                    'name': 'gateway-in',
+                    'target': 'gateway',
+                    'namespace': namespace,
+                    'port': 8081,
+                },
+            )
 
-
-            gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip('gateway-exposed', namespace)
+            gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip(
+                'gateway-exposed', namespace
+            )
 
             gateway_yaml = self.create_gateway_yaml(pod_to_args, gateway_cluster_ip)
-            kubernetes_tools.create('deployment', {
-                'name': 'gateway',
-                'replicas': 1,
-                'port': 8080,
-                'command': "[\"python\"]",
-                'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
-                'image': 'gcr.io/jina-showcase/generic-gateway',
-                'namespace': namespace
-            })
+            kubernetes_tools.create(
+                'deployment',
+                {
+                    'name': 'gateway',
+                    'replicas': 1,
+                    'port': 8080,
+                    'command': "[\"python\"]",
+                    'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
+                    'image': 'gcr.io/jina-showcase/generic-gateway',
+                    'namespace': namespace,
+                },
+            )
         else:
             raise Exception(f'deployment type "{deployment_type}" is not supported')
 

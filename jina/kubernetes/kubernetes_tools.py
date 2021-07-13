@@ -11,6 +11,7 @@ k8s_client = client.ApiClient()
 v1 = client.CoreV1Api()
 beta = client.ExtensionsV1beta1Api()
 
+
 def create(template, params):
     yaml = get_yaml(template, params)
     fd, path = tempfile.mkstemp()
@@ -50,6 +51,7 @@ def get_yaml(template, params):
 def get_service_cluster_ip(service_name, namespace):
     resp = v1.read_namespaced_service(service_name, namespace)
     return resp.spec.cluster_ip
+
 
 def get_service_spec(service_name, namespace):
     resp = v1.read_namespaced_service(service_name, namespace)
