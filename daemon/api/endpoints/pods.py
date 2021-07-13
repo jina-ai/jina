@@ -78,4 +78,4 @@ async def _rolling_update(id: DaemonID, dump_path: str):
             params={'dump_path': dump_path},
         )
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in pod store')

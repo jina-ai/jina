@@ -87,4 +87,6 @@ async def _list(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in store')
+        raise HTTPException(
+            status_code=404, detail=f'{id} not found in workspace store'
+        )

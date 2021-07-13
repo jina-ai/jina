@@ -7,7 +7,6 @@ from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ....enums import RemoteWorkspaceState
 from ..zmq.asyncio import AsyncZMQRuntime
 from ...zmq import send_ctrl_message
-from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored
 

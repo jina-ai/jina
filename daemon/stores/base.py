@@ -5,7 +5,7 @@ from collections.abc import MutableMapping
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union
+from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Type, Union
 
 from jina.logging.logger import JinaLogger
 from .. import jinad_args, __root_workspace__
@@ -141,7 +141,7 @@ class BaseStore(MutableMapping):
         return wrapper
 
     @classmethod
-    def load(cls) -> Union[Dict, 'BaseStore']:
+    def load(cls) -> 'BaseStore':
         """Load store from a pickle in local workspace
 
         :return: Store from local or empty store

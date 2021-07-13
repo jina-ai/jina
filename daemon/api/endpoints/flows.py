@@ -87,4 +87,4 @@ async def _status(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
+        raise HTTPException(status_code=404, detail=f'{id} not found in flow store')
