@@ -11,6 +11,10 @@ Table of Contents
     - [Run](#run)
     - [Example Usage](#example-usage)
     - [Development using JinaD](#development-using-jinad)
+        - [Build](#build)
+        - [Run](#run-1)
+        - [Why?](#why)
+        - [Metaworks](#metaworks)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -116,6 +120,8 @@ docker run --add-host host.docker.internal:host-gateway \
            -d jinaai/jina:latest-daemon
 ```
 
+**Note** : `JinaD` should always be deployed as a docker container. Simply starting the server using `jinad` command would not work.
+
 **API Docs**
 
 - [Static docs with redoc](https://api.jina.ai/daemon/)
@@ -134,8 +140,6 @@ docker run --add-host host.docker.internal:host-gateway \
 ------
 
 ### Development using JinaD
-
-`JinaD` should always be deployed as a docker container.
 
 ##### Build
 
