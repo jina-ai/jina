@@ -244,15 +244,24 @@ def test_gateway_args(protocol, expected):
 
 @pytest.mark.timeout(30)
 @pytest.mark.slow
-def test_idle_does_not_create_response():
+@pytest.mark.parametrize(
+    'command, response_expected',
+    [
+        ('IDLE', 0),
+        ('CANCEL', 0),
+        ('TERMINATE', 1),
+        ('STATUS', 1),
+        ('ACTIVATE', 1),
+        ('DEACTIVATE', 1),
+    ],
+)
+def test_idle_does_not_create_response(command, response_expected):
     args = set_pea_parser().parse_args([])
 
     with Pea(args) as p:
-        msg = ControlMessage('IDLE', pod_name='fake_pod')
+        msg = ControlMessage(command, pod_name='fake_pod')
 
         with zmq.Context().socket(zmq.PAIR) as socket:
             socket.connect(f'tcp://localhost:{p.args.port_ctrl}')
             socket.send_multipart(msg.dump())
-            event = socket.poll(timeout=1000)
-
-            assert not event
+            assert socket.poll(timeout=1000) == response_expected
