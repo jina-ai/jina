@@ -202,11 +202,8 @@ def write_stats(stats: Dict[str, str], path: str = 'output/stats.json') -> None:
         stats: This is the summary result of all benchmarks.
     """
     his = []
-
-    if not os.path.exists(path):
-        path_dir = os.path.split(path)[0]
-        if not os.path.exists(path_dir):
-            os.mkdir(path_dir)
+    path_dir = os.path.join(os.getcwd(), os.path.split(path)[0])
+    Path(path_dir).mkdir(parents=True, exist_ok=True)
 
     try:
         with open(path) as fp:

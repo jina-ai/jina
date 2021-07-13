@@ -28,7 +28,7 @@ jobs:
           docker build --build-arg JINA_VER=master -f latency/Dockerfile -t latency-tracking .
           docker run -v $(pwd)/latency/output:/app/output latency-tracking
           bash latency/batch.sh ${{ env.NUM_LAST_RELEASE }}
-          python latency/ppstat.py ${{ env.NUM_LAST_RELEASE }} latency/output/stats.json > latency/comment.txt
+          python latency/ppstat.py ${{ env.NUM_LAST_RELEASE }} $(pwd)/latency/output/stats.json > latency/comment.txt
       - id: get-comment-body
         run: |
           body=$(cat latency/comment.txt)
