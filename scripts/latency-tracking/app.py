@@ -208,8 +208,8 @@ def write_stats(stats: Dict[str, str], path: str = 'output/stats.json') -> None:
     try:
         with open(path) as fp:
             his = json.load(fp)
-    except Exception as e:
-        log.warning(e)
+    except:
+        pass
 
     try:
         with open(path, 'w+') as fp:
@@ -226,6 +226,7 @@ def write_stats(stats: Dict[str, str], path: str = 'output/stats.json') -> None:
             result = list(cleaned.values())
             result.sort(key=lambda x: version.Version(x['version']))
             json.dump(result, fp, indent=2)
+            log.info("Stats: %s", result)
     except Exception as e:
         log.error(e)
         sys.exit(1)
