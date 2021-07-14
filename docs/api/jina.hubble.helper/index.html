@@ -533,6 +533,23 @@ The HTTP server must support byte ranges.</p>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py function">
+<dt id="jina.hubble.helper.disk_cache_offline">
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></code><code class="sig-name descname"><span class="pre">disk_cache_offline</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'disk_cache.db'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Calling</span> <span class="pre">{func_name}</span> <span class="pre">failed,</span> <span class="pre">using</span> <span class="pre">cached</span> <span class="pre">results'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#disk_cache_offline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.disk_cache_offline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache_file</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the cache file</p></li>
+<li><p><strong>message</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the warning message shown when defaulting to cache. Use “{func_name}” if you want to print
+the function name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>function decorator</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>
