@@ -355,7 +355,11 @@ with f:
                             pkg_path, pkg_dist_path = resolve_local(executor)
                             # check serial number to upgrade
                             sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
-                            if not sn_file_path.exists():
+                            if (
+                                not sn_file_path.exists()
+                                and any(True for _ in pkg_dist_path.glob('PKG-SN-*'))
+                                > 0
+                            ):
                                 raise FileNotFoundError(f'{sn_file_path} doe not exist')
                             if self.args.install_requirements:
                                 requirements_file = pkg_dist_path / 'requirements.txt'
