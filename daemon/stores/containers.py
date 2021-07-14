@@ -53,6 +53,7 @@ class ContainerStore(BaseStore):
     async def ready(self, uri) -> bool:
         """Check if the container with mini-jinad is alive
 
+        :param uri: uri of mini-jinad
         :return: True if mini-jinad is ready"""
         async with aiohttp.ClientSession() as session:
             for _ in range(20):
