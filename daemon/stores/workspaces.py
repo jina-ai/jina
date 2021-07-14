@@ -1,5 +1,6 @@
 from pathlib import Path
 from shutil import rmtree
+from copy import deepcopy
 from typing import Union
 
 from jina.enums import RemoteWorkspaceState
@@ -182,3 +183,13 @@ class WorkspaceStore(BaseStore):
             self._logger.success(
                 f'{colored(str(id), "cyan")} is released from the store.'
             )
+
+    def clear(self, **kwargs) -> None:
+        """Delete all the objects in the store
+
+        :param kwargs: keyward args
+        """
+
+        _status = deepcopy(self.status)
+        for k in _status.items.keys():
+            self.delete(id=k, workspace=True, **kwargs)

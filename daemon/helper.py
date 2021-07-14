@@ -95,6 +95,11 @@ class ClientSession:
 
 
 def raise_if_not_alive(func: Callable):
+    """Decorator to be used in store for connection valiation
+
+    :param func: function to be wrapped
+    """
+
     async def wrapper(self, *args, **kwargs):
         try:
             return await func(self, *args, **kwargs)

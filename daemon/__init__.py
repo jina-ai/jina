@@ -171,6 +171,7 @@ async def _cleanup_session():
 
 
 def setup():
+    """Setup steps for JinaD"""
     _update_default_args()
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     if not jinad_args.no_fluentd:
@@ -180,6 +181,7 @@ def setup():
 
 
 def teardown():
+    """Cleanup steps for JinaD"""
     asyncio.run(_cleanup_session())
 
     from jina import __stop_msg__
@@ -189,7 +191,7 @@ def teardown():
 
 
 def main():
-    """Entrypoint for jinad"""
+    """Entrypoint for JinaD"""
     try:
         setup()
     except KeyboardInterrupt:

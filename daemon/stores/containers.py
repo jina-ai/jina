@@ -1,9 +1,12 @@
 import os
 import sys
 import asyncio
+from copy import deepcopy
 from platform import uname
 from http import HTTPStatus
 from typing import Dict, TYPE_CHECKING
+
+import aiohttp
 
 from jina import __docker_host__
 from jina.helper import colored, random_port
@@ -51,18 +54,22 @@ class ContainerStore(BaseStore):
         """Check if the container with mini-jinad is alive
 
         :return: True if mini-jinad is ready"""
-        for _ in range(20):
-            try:
-                async with ClientSession() as session:
+        async with ClientSession() as session:
+            for _ in range(20):
+                try:
                     async with session.get(uri) as response:
                         if response.status == HTTPStatus.OK:
-                            self._logger.success(
+                            self._logger.debug(
                                 f'connected to {uri} to create a {self._kind}'
                             )
                             return True
-            except Exception:
-                await asyncio.sleep(0.5)
-                continue
+                except aiohttp.ClientConnectionError as e:
+                    await asyncio.sleep(0.5)
+                    continue
+                except Exception as e:
+                    self._logger.error(
+                        f'error while checking if mini-jinad is ready: {e}'
+                    )
         self._logger.error(f'couldn\'t reach container at {uri} after 10secs')
         return False
 
@@ -132,6 +139,18 @@ class ContainerStore(BaseStore):
             command = self._command(minid_port, workspace_id)
             self.params = params.dict(exclude={'log_config'})
 
+            self._logger.debug(
+                'creating container with following arguments \n'
+                + '\n'.join(
+                    [
+                        '{:15s} -> {:15s}'.format('id', id),
+                        '{:15s} -> {:15s}'.format('workspace', workspace_id),
+                        '{:15s} -> {:15s}'.format('ports', str(ports)),
+                        '{:15s} -> {:15s}'.format('command', command),
+                    ]
+                )
+            )
+
             container, network, ports = Dockerizer.run(
                 workspace_id=workspace_id, container_id=id, command=command, ports=ports
             )
@@ -144,7 +163,7 @@ class ContainerStore(BaseStore):
             self._logger.error(f'Error while creating the {self._kind.title()}: \n{e}')
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
-                # Dockerizer.rm_container(container.id)
+                Dockerizer.rm_container(container.id)
             raise
         else:
             self[id] = ContainerItem(
@@ -162,6 +181,9 @@ class ContainerStore(BaseStore):
                 ),
                 workspace_id=workspace_id,
             )
+            self._logger.debug(
+                f'id in store after add is \n {self[id].metadata.json(indent=2)} \n'
+            )
             self._logger.success(
                 f'{colored(id, "green")} is added to workspace {colored(workspace_id, "green")}'
             )
@@ -175,7 +197,8 @@ class ContainerStore(BaseStore):
 
         :param id: id of the container
         :param kwargs: keyword args
-        :raises KeyError: [description]
+        :raises KeyError: if id doesn't exist in the store
+        :return: id of the container
         """
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
@@ -202,7 +225,11 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
-        await self._delete(uri=self[id].metadata.uri)
+        self._logger.debug(
+            f'id {id} in store before delete is \n {self[id].metadata.json(indent=2)} \n'
+        )
+        uri = self[id].metadata.uri
+        await self._delete(uri=uri)
         workspace_id = self[id].workspace_id
         del self[id]
         from . import workspace_store
@@ -210,3 +237,13 @@ class ContainerStore(BaseStore):
         Dockerizer.rm_container(id)
         workspace_store[workspace_id].metadata.managed_objects.remove(id)
         self._logger.success(f'{colored(id, "green")} is released from the store.')
+
+    async def clear(self, **kwargs) -> None:
+        """Delete all the objects in the store
+
+        :param kwargs: keyward args
+        """
+
+        _status = deepcopy(self.status)
+        for k in _status.items.keys():
+            await self.delete(id=k, workspace=True, **kwargs)

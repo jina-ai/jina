@@ -25,11 +25,12 @@ class PeaStore(ContainerStore):
             async with session.post(
                 url=f'{uri}/{self._kind}', json=self.params
             ) as response:
+                response_json = await response.json()
                 if response.status != HTTPStatus.CREATED:
                     raise Runtime400Exception(
-                        f'{self._kind.title()} creation failed: {response.json()}'
+                        f'{self._kind.title()} creation failed: {response_json}'
                     )
-                return await response.json()
+                return response_json
 
     async def _update(self, uri, **kwargs):
         # TODO
@@ -49,8 +50,9 @@ class PeaStore(ContainerStore):
         )
         async with ClientSession() as session:
             async with session.delete(url=f'{uri}/{self._kind}') as response:
+                response_json = await response.json()
                 if response.status != HTTPStatus.OK:
                     raise Runtime400Exception(
-                        f'{self._kind.title()} deletion failed: {response.json()}'
+                        f'{self._kind.title()} deletion failed: {response_json}'
                     )
-                return await response.json()
+                return response_json

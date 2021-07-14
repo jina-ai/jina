@@ -46,12 +46,12 @@ class FlowStore(ContainerStore):
         """Sends `PUT` request to `mini-jinad` to execute a command on a Flow.
 
         :param uri: uri of mini-jinad
-        :param id: existing id in flow store
         :param kind: type of update command to execute (only rolling_update for now)
         :param dump_path: the path to which to dump on disk
         :param pod_name: pod to target with the dump request
         :param shards: nr of shards to dump
-        :return: response from mini-jinad"""
+        :return: response from mini-jinad
+        """
         params = {
             'kind': kind,
             'dump_path': dump_path,
@@ -63,17 +63,18 @@ class FlowStore(ContainerStore):
             async with session.put(
                 url=f'{uri}/{self._kind}', params=params
             ) as response:
+                response_json = await response.json()
                 if response.status != HTTPStatus.OK:
                     raise Runtime400Exception(
-                        f'{self._kind.title()} update failed: {response.json()}'
+                        f'{self._kind.title()} update failed: {response_json}'
                     )
-                return await response.json()
+                return response_json
 
     @raise_if_not_alive
     async def _delete(self, uri, **kwargs) -> None:
         """Sends a `DELETE` request to terminate the Flow & remove the container
 
-        :param host: host of mini-jinad
+        :param uri: uri of mini-jinad
         :param kwargs: keyword args
         :raises Runtime400Exception: if deletion fails
         """
@@ -82,8 +83,9 @@ class FlowStore(ContainerStore):
         )
         async with ClientSession() as session:
             async with session.delete(url=f'{uri}/{self._kind}') as response:
+                response_json = await response.json()
                 if response.status != HTTPStatus.OK:
                     raise Runtime400Exception(
-                        f'{self._kind.title()} deletion failed: {response.json()}'
+                        f'{self._kind.title()} deletion failed: {response_json}'
                     )
-                return await response.json()
+                return response_json
