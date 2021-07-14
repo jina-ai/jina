@@ -10,7 +10,6 @@ from . import HubExecutor
 from .helper import unpack_package, install_requirements
 from ..helper import random_identity
 
-print(f'====> {os.environ.get("JINA_HUB_ROOT")}')
 _hub_root = Path(
     os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina', 'hub-packages'))
 )
@@ -189,13 +188,11 @@ def list_local():
 def resolve_local(executor: 'HubExecutor') -> Optional['Path']:
     """Return the path of the executor if available.
 
-    :param executor: the executor
+    :param executor: the executor to check
     :return: the path of the executor package
     """
     pkg_path = _hub_root / executor.uuid
     pkg_dist_path = _hub_root / f'{executor.uuid}-{executor.tag}.dist-info'
-
-    print(f'pkg_path: {pkg_path}')
 
     if not pkg_path.exists():
         raise FileNotFoundError(f'{pkg_path} does not exist')
