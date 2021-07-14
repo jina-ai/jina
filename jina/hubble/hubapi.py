@@ -197,7 +197,7 @@ def resolve_local(executor: 'HubExecutor') -> Optional['Path']:
     if not pkg_path.exists():
         raise FileNotFoundError(f'{pkg_path} doe not exist')
     elif not pkg_dist_path.exists():
-        raise FileNotFoundError(f'{pkg_dist_path} doe not exist')
+        raise FileNotFoundError(f'{pkg_dist_path} does not exist')
     else:
         return pkg_path, pkg_dist_path
 
