@@ -1,11 +1,15 @@
 import os
 import json
+import urllib
 from typing import NamedTuple
+
+import docker
 import pytest
 import requests
 import itertools
 from pathlib import Path
 
+from jina.hubble.helper import disk_cache
 from jina.hubble.hubio import HubIO, HubExecutor
 from jina.hubble import helper
 from jina.parsers.hubble import set_hub_push_parser
@@ -127,7 +131,6 @@ class DownloadMockResponse:
         self.response_code = response_code
 
     def iter_content(self, buffer=32 * 1024):
-
         zip_file = Path(__file__).parent / 'dummy_executor.zip'
         with zip_file.open('rb') as f:
             yield f.read(buffer)
@@ -172,3 +175,88 @@ def test_pull(test_envs, mocker, monkeypatch):
 
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
     HubIO(args).pull()
+
+
+class MockImageCollection:
+    def __init__(self, fail_pull: bool, fail_get: bool):
+        self.fail_pull = fail_pull
+        self.fail_get = fail_get
+
+    def pull(self, repository: str):
+        if self.fail_pull:
+            raise docker.errors.APIError('Failed pullingdocker image')
+        else:
+            return
+
+    def get(self, repository: str):
+        if self.fail_get:
+            raise docker.errors.ImageNotFound("Image not found")
+        else:
+            return
+
+
+class MockDockerClient:
+    def __init__(self, fail_pull: bool = True, fail_get: bool = True):
+        self.images = MockImageCollection(fail_pull, fail_get)
+
+
+def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
+    mock = mocker.Mock()
+
+    fail_meta_fetch = True
+
+    @disk_cache((urllib.error.URLError,), cache_file=str(tmpfile))
+    def _mock_fetch(name, tag=None, secret=None):
+        mock(name=name)
+        if fail_meta_fetch:
+            raise urllib.error.URLError('Failed fetching meta')
+        else:
+            return HubExecutor(
+                uuid='dummy_mwu_encoder',
+                alias='alias_dummy',
+                tag='v0',
+                image_name='jinahub/pod.dummy_mwu_encoder',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            )
+
+    def _gen_load_docker_client(fail_pull: bool, fail_get: bool):
+        def _load_docker_client(obj):
+            obj._client = MockDockerClient(fail_pull=fail_pull, fail_get=fail_get)
+
+        return _load_docker_client
+
+    args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
+    monkeypatch.setattr(
+        HubIO,
+        '_load_docker_client',
+        _gen_load_docker_client(fail_pull=True, fail_get=True),
+    )
+    monkeypatch.setattr(HubIO, '_fetch_meta', _mock_fetch)
+
+    # Expect failure due to _fetch_meta
+    with pytest.raises(urllib.error.URLError):
+        HubIO(args).pull()
+
+    fail_meta_fetch = False
+    # Expect failure due to image pull
+    with pytest.raises(docker.errors.APIError):
+        HubIO(args).pull()
+
+    # expect successful pull
+    monkeypatch.setattr(
+        HubIO,
+        '_load_docker_client',
+        _gen_load_docker_client(fail_pull=False, fail_get=True),
+    )
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
+
+    # expect successful pull using cached _fetch_meta response and saved image
+    fail_meta_fetch = True
+    monkeypatch.setattr(
+        HubIO,
+        '_load_docker_client',
+        _gen_load_docker_client(fail_pull=True, fail_get=False),
+    )
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'

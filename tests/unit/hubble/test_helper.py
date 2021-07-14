@@ -44,14 +44,13 @@ def test_unpack_package(tmpdir, dummy_zip_file):
     helper.unpack_package(dummy_zip_file, tmpdir / 'dummp_executor')
 
 
-def test_disk_cache(tmpdir):
+def test_disk_cache(tmpfile):
     raise_exception = True
-    tmpfile = f'jina_test_{next(tempfile._get_candidate_names())}.db'
 
     class _Exception(Exception):
         pass
 
-    @disk_cache((_Exception,), cache_file=str(tmpdir / tmpfile))
+    @disk_cache((_Exception,), cache_file=str(tmpfile))
     def _myfunc() -> bool:
         if raise_exception:
             raise _Exception('Failing')
