@@ -315,6 +315,7 @@ class BasePea:
         """
         # if that 1s is not enough, it means the process/thread is still in forever loop, cancel it
         self.logger.info(f'close pea {self.name}')
+        self.logger.debug('waiting for ready or shutdown signal from runtime')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
                 self.logger.info(f'_deactivate_runtime pea {self.name}')
@@ -352,12 +353,26 @@ class BasePea:
             # sometimes, we arrive to the close logic before the `is_ready` is even set.
             # Observed with `gateway` when Pods fail to start
             self.logger.warning(
-                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod'
+                'Pea is being closed before being ready. Most likely some other Pea in the Flow or Pod '
                 'failed to start'
             )
-            if self.is_ready.wait(timeout=0.1):
-                print(f'{self.name} cancel runtime before is ready', flush=True)
-                self._cancel_runtime()
+            _timeout = self.args.timeout_ready
+            if _timeout <= 0:
+                _timeout = None
+            else:
+                _timeout /= 1e3
+            self.logger.debug('waiting for ready or shutdown signal from runtime')
+            if self.ready_or_shutdown.event.wait(_timeout):
+                self.logger.debug(f'ready or shutdown or timeout happened')
+                if self.is_ready.is_set():
+                    self.logger.debug(f' since it is ready, need to cancel')
+                    self._cancel_runtime()
+                    if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
+                        self.terminate()
+                        time.sleep(0.1)
+                        raise Exception(
+                            f'Shutdown signal was not received for {self._timeout_ctrl}'
+                        )
             else:
                 self.logger.warning(
                     'Terminating process after waiting for readiness signal for graceful shutdown'

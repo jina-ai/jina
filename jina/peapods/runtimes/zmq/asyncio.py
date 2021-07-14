@@ -43,13 +43,10 @@ class AsyncZMQRuntime(ZMQRuntime):
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        while True:
-            if self.is_cancel.is_set():
-                self.logger.warning(f' CANCEL ASYNC RUNTIME')
-                await self.async_cancel()
-                return
-            else:
-                await asyncio.sleep(0.1)
+        while not self.is_cancel.is_set():
+            await asyncio.sleep(0.1)
+
+        await self.async_cancel()
 
     async def _loop_body(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
