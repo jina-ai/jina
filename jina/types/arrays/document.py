@@ -300,8 +300,18 @@ class DocumentArray(
         else:
             self._pb_body.sort(*args, **kwargs)
 
+    def _compute_dist(self, X, Y, metric) -> np.ndarray:
+        if metric == 'cosine':
+            dists = cosine_distance(X, Y)
+        if metric == 'euclidean':
+            dists = euclidean_distance_squared(X, Y)
+        return dists
+
     def match(
-        self, darray: DocumentArray, metric: str = 'cosine', limit: Optional[int] = None
+        self,
+        darray: 'DocumentArray',
+        metric: str = 'cosine',
+        limit: Optional[int] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -310,22 +320,20 @@ class DocumentArray(
         :param limit: the maximum number of matches, when not given
                       all Documents in `another` are considered as matches
         """
-        a = np.stack(self.get_attributes('embedding'))
-        b = np.stack(darray.get_attributes('embedding'))
-        q_emb = _ext_A(_norm(a))
-        d_emb = _ext_B(_norm(b))
-        if metric == 'cosine':
-            dists = _cosine(q_emb, d_emb)
+        X = np.stack(self.get_attributes('embedding'))
+        Y = np.stack(darray.get_attributes('embedding'))
+        dists = self._compute_dist(X, Y, metric)
+
         idx, dist = self._get_sorted_top_k(dists, int(limit))
         for _q, _ids, _dists in zip(docs, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(self.docs[int(_id)], copy=True)
-                d.scores['metric'] = 1 - _dist
+                d.scores['metric'] = _dist
                 _q.matches.append(d)
 
     @staticmethod
     def _get_sorted_top_k(
-        dist: 'np.array', top_k: int
+        dist: 'np.ndarray', top_k: int
     ) -> Tuple['np.ndarray', 'np.ndarray']:
         if top_k >= dist.shape[1]:
             idx = dist.argsort(axis=1)[:, :top_k]
@@ -481,35 +489,27 @@ class DocumentArray(
             return da
 
 
-def _get_ones(x, y):
-    return np.ones((x, y))
+def cosine_distance(X: 'np.ndarray', Y: 'np.ndarray') -> 'np.ndarray':
+    """Cosine distance between each row in X and each row in Y.
+
+    :param X: np.ndarray with ndim=2
+    :param Y: np.ndarray with ndim=2
+    :return: np.ndarray  with ndim=2
+    """
+    return 1 - np.dot(X, Y.T) / np.outer(
+        np.linalg.norm(X, axis=1), np.linalg.norm(Y, axis=1)
+    )
 
 
-def _ext_A(A):
-    nA, dim = A.shape
-    A_ext = _get_ones(nA, dim * 3)
-    A_ext[:, dim : 2 * dim] = A
-    A_ext[:, 2 * dim :] = A ** 2
-    return A_ext
+def euclidean_distance_squared(X: 'np.ndarray', Y: 'np.ndarray') -> 'np.ndarray':
+    """Euclidean (squared) distance between each row in X and each row in Y.
 
-
-def _ext_B(B):
-    nB, dim = B.shape
-    B_ext = _get_ones(dim * 3, nB)
-    B_ext[:dim] = (B ** 2).T
-    B_ext[dim : 2 * dim] = -2.0 * B.T
-    del B
-    return B_ext
-
-
-def _euclidean(A_ext, B_ext):
-    sqdist = A_ext.dot(B_ext).clip(min=0)
-    return np.sqrt(sqdist)
-
-
-def _norm(A):
-    return A / np.linalg.norm(A, ord=2, axis=1, keepdims=True)
-
-
-def _cosine(A_norm_ext, B_norm_ext):
-    return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
+    :param X: np.ndarray with ndim=2
+    :param Y: np.ndarray with ndim=2
+    :return: np.ndarray with ndim=2
+    """
+    return (
+        np.sum(Y ** 2, axis=1)
+        + np.sum(X ** 2, axis=1)[:, np.newaxis]
+        - 2 * np.dot(X, Y.T)
+    )
