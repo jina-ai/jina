@@ -4,10 +4,12 @@ import argparse
 import hashlib
 import json
 import os
+import urllib
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
+
 
 from .helper import (
     archive_package,
@@ -15,8 +17,9 @@ from .helper import (
     parse_hub_uri,
     get_hubble_url,
     upload_file,
+    disk_cache_offline,
 )
-from .hubapi import install_local, resolve_local, load_secret, dump_secret
+from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
@@ -26,6 +29,8 @@ HubExecutor = namedtuple(
     'HubExecutor',
     ['uuid', 'alias', 'tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
 )
+
+_cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
 
 class HubIO:
@@ -54,9 +59,11 @@ class HubIO:
         with ImportExtensions(required=True):
             import rich
             import cryptography
+            import filelock
 
             assert rich  #: prevent pycharm auto remove the above line
             assert cryptography
+            assert filelock
 
     def _load_docker_client(self):
         with ImportExtensions(required=True):
@@ -262,6 +269,7 @@ with f:
         console.print(p1, p2, p3, p4)
 
     @staticmethod
+    @disk_cache_offline(cache_file=str(_cache_file))
     def _fetch_meta(
         name: str,
         tag: Optional[str] = None,
@@ -311,6 +319,9 @@ with f:
         """
         from rich.console import Console
 
+        with ImportExtensions(required=True):
+            import docker
+
         console = Console()
         cached_zip_filepath = None
         usage = None
@@ -330,42 +341,52 @@ with f:
                 if scheme == 'jinahub+docker':
                     self._load_docker_client()
                     st.update(f'Pulling {executor.image_name}...')
-                    self._client.images.pull(executor.image_name)
+                    try:
+                        self._client.images.pull(executor.image_name)
+                    except docker.errors.APIError as api_exc:
+                        try:
+                            self._client.images.get(executor.image_name)
+                        except docker.errors.ImageNotFound:
+                            raise api_exc
+
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
+                    import filelock
 
-                    try:
+                    with filelock.FileLock(get_lockfile(), timeout=-1):
+                        try:
+                            pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                            return f'{pkg_path / "config.yml"}'
+                        except FileNotFoundError:
+                            pass  # have not been downloaded yet, download for the first time
+
+                        # download the package
+                        cache_dir = Path(
+                            os.environ.get(
+                                'JINA_HUB_CACHE_DIR',
+                                Path.home().joinpath('.cache', 'jina'),
+                            )
+                        )
+                        cache_dir.mkdir(parents=True, exist_ok=True)
+
+                        st.update(f'Downloading...')
+                        cached_zip_filepath = download_with_resume(
+                            executor.archive_url,
+                            cache_dir,
+                            f'{executor.uuid}-{executor.md5sum}.zip',
+                            md5sum=executor.md5sum,
+                        )
+
+                        st.update(f'Unpacking...')
+                        install_local(
+                            cached_zip_filepath,
+                            executor.uuid,
+                            tag or executor.tag,
+                            install_deps=self.args.install_requirements,
+                        )
+
                         pkg_path = resolve_local(executor.uuid, tag or executor.tag)
                         return f'{pkg_path / "config.yml"}'
-                    except FileNotFoundError:
-                        pass  # have not been downloaded yet, download for the first time
-
-                    # download the package
-                    cache_dir = Path(
-                        os.environ.get(
-                            'JINA_HUB_CACHE_DIR', Path.home().joinpath('.cache', 'jina')
-                        )
-                    )
-                    cache_dir.mkdir(parents=True, exist_ok=True)
-
-                    st.update(f'Downloading...')
-                    cached_zip_filepath = download_with_resume(
-                        executor.archive_url,
-                        cache_dir,
-                        f'{executor.uuid}-{executor.md5sum}.zip',
-                        md5sum=executor.md5sum,
-                    )
-
-                    st.update(f'Unpacking...')
-                    install_local(
-                        cached_zip_filepath,
-                        executor.uuid,
-                        tag or executor.tag,
-                        install_deps=self.args.install_requirements,
-                    )
-
-                    pkg_path = resolve_local(executor.uuid, tag or executor.tag)
-                    return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
             except Exception as e:

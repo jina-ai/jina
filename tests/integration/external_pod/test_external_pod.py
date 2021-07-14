@@ -5,7 +5,6 @@ from jina.parsers import set_pod_parser
 
 from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.helper import random_port
-from jina.excepts import FlowTopologyError
 from tests import validate_callback
 
 

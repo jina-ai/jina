@@ -208,6 +208,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 complete_workspace = os.path.join(complete_workspace, str(replica_id))
             if pea_id is not None and pea_id != -1:
                 complete_workspace = os.path.join(complete_workspace, str(pea_id))
+            if not os.path.exists(complete_workspace):
+                os.makedirs(complete_workspace)
             return os.path.abspath(complete_workspace)
         else:
             raise Exception('can not find metas.workspace or runtime_args.workspace')

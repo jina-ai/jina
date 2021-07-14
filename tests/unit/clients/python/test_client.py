@@ -132,7 +132,7 @@ def test_client_csv(protocol, mocker, func_name):
 
 
 # Timeout is necessary to fail in case of hanging client requests
-@pytest.mark.timeout(5)
+@pytest.mark.timeout(60)
 def test_client_websocket(mocker, flow_with_websocket):
     with flow_with_websocket:
         time.sleep(0.5)

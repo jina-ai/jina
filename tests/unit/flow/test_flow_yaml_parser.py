@@ -114,3 +114,15 @@ def test_flow_uses_from_dict():
     d1 = {'jtype': 'DummyEncoder', 'metas': {'name': 'dummy1'}}
     with Flow().add(uses=d1):
         pass
+
+
+def test_flow_yaml_override_with_protocol():
+    from jina.enums import GatewayProtocolType
+
+    path = os.path.join(cur_dir.parent, 'yaml/examples/faiss/flow-index.yml')
+    f1 = Flow.load_config(path)
+    assert f1.protocol == GatewayProtocolType.GRPC
+    f2 = Flow.load_config(path, override_with={'protocol': 'http'})
+    assert f2.protocol == GatewayProtocolType.HTTP
+    f3 = Flow.load_config(path, override_with={'protocol': 'websocket'})
+    assert f3.protocol == GatewayProtocolType.WEBSOCKET

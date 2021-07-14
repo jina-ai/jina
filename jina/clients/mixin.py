@@ -39,6 +39,10 @@ class PostMixin:
         :param return_results: if set, the results of all Requests will be returned as a list. This is useful when one wants process Responses in bulk instead of using callback.
         :param kwargs: additional parameters
         :return: None or list of Response
+
+        .. warning::
+            ``target_peapod`` uses ``re.match`` for checking if the pattern is matched.
+             ``target_peapod=='foo'`` will match both pods with the name ``foo`` and ``foo_what_ever_suffix``.
         """
 
         async def _get_results(*args, **kwargs):

@@ -1,5 +1,4 @@
 import os
-from typing import AsyncGenerator
 
 import grpc
 
@@ -9,8 +8,6 @@ from ....zmq import AsyncZmqlet
 from .....proto import jina_pb2_grpc
 
 __all__ = ['GRPCRuntime']
-
-from .....types.message import Message
 
 
 class GRPCPrefetchCall(jina_pb2_grpc.JinaRPCServicer):

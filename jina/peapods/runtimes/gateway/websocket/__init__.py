@@ -37,14 +37,13 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
                 if self.should_exit:
                     return
 
-            async def serve(self, sockets=None):
+            async def serve(self, **kwargs):
                 """
                 Start the server.
 
-                :param sockets: sockets of server.
+                :param kwargs: keyword arguments
                 """
                 await self.main_loop()
-                await self.shutdown(sockets=sockets)
 
         from .....helper import extend_rest_interface
 
@@ -67,3 +66,4 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
+        await self._server.shutdown()
