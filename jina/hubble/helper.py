@@ -289,6 +289,8 @@ def disk_cache_offline(
         return wrapper
 
     return decorator
+
+
 def install_requirements(requirements_file: 'Path'):
     """Install modules included in requirments file
 
