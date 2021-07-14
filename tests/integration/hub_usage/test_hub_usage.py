@@ -5,7 +5,6 @@ import requests
 import pytest
 
 from jina import Flow
-from jina.hubble.hubio import HubIO, HubExecutor
 from jina.excepts import RuntimeFailToStart
 from jina.executors import BaseExecutor
 from jina.parsers import set_pod_parser
@@ -54,10 +53,13 @@ def test_use_from_local_dir_flow_level():
 def local_hub_executor(tmpdir, test_envs):
     from jina.hubble import hubapi, helper, HubExecutor
 
+    hubapi._hub_root = Path(os.environ.get('JINA_HUB_ROOT'))
+
     pkg_path = Path(__file__).parent / 'dummyhub'
     stream_data = helper.archive_package(pkg_path)
     with open(tmpdir / 'dummy_test.zip', 'wb') as temp_zip_file:
         temp_zip_file.write(stream_data.getvalue())
+
     hubapi.install_local(
         Path(tmpdir) / 'dummy_test.zip', HubExecutor(uuid='hello', tag='v0')
     )
@@ -66,6 +68,8 @@ def local_hub_executor(tmpdir, test_envs):
 def test_use_from_local_hub_pod_level(
     test_envs, mocker, monkeypatch, local_hub_executor
 ):
+    from jina.hubble.hubio import HubIO, HubExecutor
+
     mock = mocker.Mock()
 
     def _mock_fetch(name, tag=None, secret=None):
@@ -89,6 +93,8 @@ def test_use_from_local_hub_pod_level(
 def test_use_from_local_hub_flow_level(
     test_envs, mocker, monkeypatch, local_hub_executor
 ):
+    from jina.hubble.hubio import HubIO, HubExecutor
+
     mock = mocker.Mock()
 
     def _mock_fetch(name, tag=None, secret=None):
