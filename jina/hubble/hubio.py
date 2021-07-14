@@ -343,14 +343,12 @@ with f:
                     st.update(f'Pulling {executor.image_name}...')
                     try:
                         self._client.images.pull(executor.image_name)
-                    except docker.errors.APIError:
-                        img_not_found = False
+                    except docker.errors.APIError as api_exc:
                         try:
                             self._client.images.get(executor.image_name)
                         except docker.errors.ImageNotFound:
-                            img_not_found = True
-                        if img_not_found:
-                            raise
+                            raise api_exc
+
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock
