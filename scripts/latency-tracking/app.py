@@ -203,13 +203,14 @@ def write_stats(stats: Dict[str, str], path: str = 'output/stats.json') -> None:
     """
     his = []
     path_dir = os.path.join(os.getcwd(), os.path.split(path)[0])
+    path = os.path.join(os.getcwd(), path)
     Path(path_dir).mkdir(parents=True, exist_ok=True)
 
     try:
         with open(path) as fp:
             his = json.load(fp)
-    except:
-        pass
+    except Exception as e:
+        log.warning("Existing file not found at: %s", path)
 
     try:
         with open(path, 'w+') as fp:
@@ -227,6 +228,10 @@ def write_stats(stats: Dict[str, str], path: str = 'output/stats.json') -> None:
             result.sort(key=lambda x: version.Version(x['version']))
             json.dump(result, fp, indent=2)
             log.info("Stats: %s", result)
+
+        if os.path.exists(path):
+            log.info("Stats written successful at: %s", path)
+
     except Exception as e:
         log.error(e)
         sys.exit(1)
