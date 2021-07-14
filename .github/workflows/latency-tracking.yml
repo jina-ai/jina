@@ -22,9 +22,9 @@ jobs:
           python-version: 3.7
       - name: Run current latency vs. last ${{ env.NUM_LAST_RELEASE }} versions
         run: |
-          sudo rm -f .dockerignore
-          sudo mkdir -p /var/output
           sudo apt-get install jq
+          rm -f .dockerignore
+          mkdir -p /var/output
           pip install prettytable==2.1.0
           docker build --build-arg JINA_VER=master -f latency/Dockerfile -t latency-tracking .
           docker run -v /var/output:/app/output latency-tracking
