@@ -32,7 +32,7 @@ async def _fetch_pea_params():
 )
 async def _create(pea: PeaDepends = Depends(PeaDepends)):
     try:
-        return store.add(
+        return await store.add(
             id=pea.id,
             workspace_id=pea.workspace_id,
             params=pea.params,
@@ -59,7 +59,7 @@ async def _clear_all():
 )
 async def _delete(id: DaemonID, workspace: bool = False):
     try:
-        store.delete(id=id, workspace=workspace)
+        await store.delete(id=id, workspace=workspace)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 

@@ -1,92 +1,89 @@
 from typing import Dict
-
-import requests
+from http import HTTPStatus
 
 from .containers import ContainerStore
 from ..excepts import Runtime400Exception
-from ..models import DaemonID
 from ..models.enums import UpdateOperation
+from ..helper import ClientSession, raise_if_not_alive
 
 
 class FlowStore(ContainerStore):
-    """A Store of Flows spawned by as Containers by Daemon"""
-
-    # TODO: lot of duplicate code with peas.py, refactor needed
+    """A Store of Flows spawned as Containers by Daemon"""
 
     _kind = 'flow'
 
-    def _add(self, port_expose: int, **kwargs) -> Dict:
-        """Sends `post` request to `mini-jinad` to create a Flow.
+    @raise_if_not_alive
+    async def _add(self, uri: str, port_expose: int, **kwargs) -> Dict:
+        """Sends `POST` request to `mini-jinad` to create a Flow.
 
+        :param uri: uri of mini-jinad
         :param port_expose: port expose for container flow
         :param kwargs: keyword args
-        :return: response from mini-jinad"""
-        try:
-            r = requests.post(
-                url=f'{self.host}/{self._kind}',
+        :return: response from mini-jinad
+        """
+        self._logger.debug(f'sending POST request to mini-jinad on {uri}/{self._kind}')
+        async with ClientSession() as session:
+            async with session.post(
+                url=f'{uri}/{self._kind}',
                 params={'port_expose': port_expose},
                 json=self.params,
-            )
-            if r.status_code != requests.codes.created:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} creation failed \n{"".join(r.json()["body"])}'
-                )
-            return r.json()
-        except requests.exceptions.RequestException as ex:
-            self._logger.error(f'{ex!r}')
-            raise Runtime400Exception(
-                f'{self._kind.title()} creation failed: {r.json()}'
-            )
+            ) as response:
+                if response.status != HTTPStatus.CREATED:
+                    raise Runtime400Exception(
+                        f'{self._kind.title()} creation failed: {response.json()}'
+                    )
+                return await response.json()
 
-    def update(
+    @raise_if_not_alive
+    async def _update(
         self,
-        id: DaemonID,
+        uri: str,
         kind: UpdateOperation,
         dump_path: str,
         pod_name: str,
         shards: int = None,
     ) -> Dict:
-        """Sends `put` request to `mini-jinad` to execute a command on a Flow.
+        """Sends `PUT` request to `mini-jinad` to execute a command on a Flow.
 
-        :param id: flow id
+        :param uri: uri of mini-jinad
+        :param id: existing id in flow store
         :param kind: type of update command to execute (only rolling_update for now)
         :param dump_path: the path to which to dump on disk
         :param pod_name: pod to target with the dump request
         :param shards: nr of shards to dump
         :return: response from mini-jinad"""
-        try:
-            params = {
-                'kind': kind,
-                'dump_path': dump_path,
-                'pod_name': pod_name,
-                'shards': shards,
-            }
-            r = requests.put(
-                url=f'{self[id].metadata.host}/{self._kind}', params=params
-            )
+        params = {
+            'kind': kind,
+            'dump_path': dump_path,
+            'pod_name': pod_name,
+            'shards': shards,
+        }
+        self._logger.debug(f'sending PUT request to mini-jinad on {uri}/{self._kind}')
+        async with ClientSession() as session:
+            async with session.put(
+                url=f'{uri}/{self._kind}', params=params
+            ) as response:
+                if response.status != HTTPStatus.OK:
+                    raise Runtime400Exception(
+                        f'{self._kind.title()} update failed: {response.json()}'
+                    )
+                return await response.json()
 
-            if r.status_code != requests.codes.ok:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} update failed \n{"".join(r.json()["body"])}'
-                )
-            return r.json()
-
-        except requests.exceptions.RequestException as ex:
-            self._logger.error(f'{ex!r}')
-            raise Runtime400Exception(f'{self._kind.title()} update failed: {r.json()}')
-
-    def _delete(self, host, **kwargs) -> None:
-        """Sends a delete request to terminate the Flow & remove the container
+    @raise_if_not_alive
+    async def _delete(self, uri, **kwargs) -> None:
+        """Sends a `DELETE` request to terminate the Flow & remove the container
 
         :param host: host of mini-jinad
         :param kwargs: keyword args
         :raises Runtime400Exception: if deletion fails
         """
-        try:
-            r = requests.delete(url=f'{host}/{self._kind}')
-            if r.status_code != requests.codes.ok:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} deletion failed \n{"".join(r.json()["body"])}'
-                )
-        except requests.exceptions.RequestException as ex:
-            raise Runtime400Exception(f'{self._kind.title()} deletion failed')
+        self._logger.debug(
+            f'sending DELETE request to mini-jinad on {uri}/{self._kind}'
+        )
+        async with ClientSession() as session:
+            async with session.delete(url=f'{uri}/{self._kind}') as response:
+                if response.status != HTTPStatus.OK:
+                    raise Runtime400Exception(
+                        f'{self._kind.title()} deletion failed: {response.json()}'
+                    )
+                return await response.json()

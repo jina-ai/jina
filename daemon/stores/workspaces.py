@@ -119,7 +119,7 @@ class WorkspaceStore(BaseStore):
                     f'container {colored(container_id, "cyan")} is successfully removed'
                 )
             else:
-                self._logger.info(
+                self._logger.debug(
                     f'no container to delete for id {colored(id, "cyan")}'
                 )
             if container_id:

@@ -30,7 +30,7 @@ async def _fetch_pod_params():
 )
 async def _create(pod: PodDepends = Depends(PodDepends)):
     try:
-        return store.add(
+        return await store.add(
             id=pod.id,
             workspace_id=pod.workspace_id,
             params=pod.params,
@@ -55,7 +55,7 @@ async def _clear_all():
 )
 async def _delete(id: DaemonID, workspace: bool = False):
     try:
-        store.delete(id=id, workspace=workspace)
+        await store.delete(id=id, workspace=workspace)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
@@ -73,6 +73,7 @@ async def _status(id: DaemonID):
 @router.put(path='/{id}/rolling_update', summary='Trigger a rolling update on this Pod')
 async def _rolling_update(id: DaemonID, dump_path: str):
     try:
+        # TODO: This logic should move to store
         return requests.put(
             f'{store[id].metadata.rest_api_uri}/pod/rolling_update',
             params={'dump_path': dump_path},

@@ -1,4 +1,5 @@
 import os
+import asyncio
 import pathlib
 import subprocess
 from pathlib import Path
@@ -120,20 +121,10 @@ def _get_app(mode=None):
     return app
 
 
-def _start_uvicorn(app: 'FastAPI'):
-    config = Config(
-        app=app,
-        host=jinad_args.host,
-        port=jinad_args.port_expose,
-        loop='uvloop',
-        log_level='error',
-    )
-    server = Server(config=config)
-    server.run()
-
-    from jina import __stop_msg__
-
-    daemon_logger.success(__stop_msg__)
+def _update_default_args():
+    global jinad_args, __root_workspace__
+    jinad_args = _get_run_args()
+    __root_workspace__ = '/workspace' if jinad_args.mode else jinad_args.workspace
 
 
 def _start_fluentd():
@@ -160,17 +151,50 @@ def _start_consumer():
     ConsumerThread().start()
 
 
-def _update_default_args():
-    global jinad_args, __root_workspace__
-    jinad_args = _get_run_args()
-    __root_workspace__ = '/workspace' if jinad_args.mode else jinad_args.workspace
+def _start_uvicorn(app: 'FastAPI'):
+    config = Config(
+        app=app,
+        host=jinad_args.host,
+        port=jinad_args.port_expose,
+        loop='uvloop',
+        log_level='error',
+    )
+    server = Server(config=config)
+    server.run()
 
 
-def main():
-    """Entrypoint for jinad"""
+async def _cleanup_session():
+    from .helper import ClientSession
+
+    async with ClientSession(cleanup=True):
+        pass
+
+
+def setup():
     _update_default_args()
     pathlib.Path(__root_workspace__).mkdir(parents=True, exist_ok=True)
     if not jinad_args.no_fluentd:
         Thread(target=_start_fluentd, daemon=True).start()
     _start_consumer()
     _start_uvicorn(app=_get_app(mode=jinad_args.mode))
+
+
+def teardown():
+    asyncio.run(_cleanup_session())
+
+    from jina import __stop_msg__
+
+    daemon_logger.success(__stop_msg__)
+    daemon_logger.close()
+
+
+def main():
+    """Entrypoint for jinad"""
+    try:
+        setup()
+    except KeyboardInterrupt:
+        pass
+    except Exception as e:
+        daemon_logger.info(f'Error during ')
+    finally:
+        teardown()

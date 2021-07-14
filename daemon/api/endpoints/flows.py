@@ -30,7 +30,7 @@ async def _fetch_flow_params():
 )
 async def _create(flow: FlowDepends = Depends(FlowDepends)):
     try:
-        return store.add(
+        return await store.add(
             id=flow.id,
             workspace_id=flow.workspace_id,
             params=flow.params,
@@ -53,7 +53,7 @@ async def _update(
     pod_name: str,
     shards: int = None,
 ):
-    return store.update(id, kind, dump_path, pod_name, shards)
+    return await store.update(id, kind, dump_path, pod_name, shards)
 
 
 # order matters! this must be put in front of del {id}
@@ -73,7 +73,7 @@ async def _clear_all():
 )
 async def _delete(id: DaemonID):
     try:
-        store.delete(id=id)
+        await store.delete(id=id)
     except KeyError:
         raise HTTPException(status_code=404, detail=f'{id} not found in {store!r}')
 
