@@ -5,6 +5,7 @@ import io
 import json
 import os
 import shelve
+import urllib
 import zipfile
 from functools import lru_cache, wraps
 from pathlib import Path
@@ -253,15 +254,13 @@ def upload_file(
     return response
 
 
-def disk_cache(
-    exceptions: Iterable[Exception],
+def disk_cache_offline(
     cache_file: str = 'disk_cache.db',
     message: str = 'Calling {func_name} failed, using cached results',
 ):
     """
-    Decorator which caches a function in disk and uses cache when an exception is raised
+    Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised
 
-    :param exceptions: exceptions used to trigger using the cache
     :param cache_file: the cache file
     :param message: the warning message shown when defaulting to cache. Use "{func_name}" if you want to print
         the function name
@@ -277,7 +276,7 @@ def disk_cache(
                 try:
                     result = func(*args, **kwargs)
                     cache_db[call_hash] = result
-                except exceptions:
+                except urllib.error.URLError:
                     if call_hash in cache_db:
                         default_logger.warning(message.format(func_name=func.__name__))
                         return cache_db[call_hash]

@@ -9,7 +9,7 @@ import requests
 import itertools
 from pathlib import Path
 
-from jina.hubble.helper import disk_cache
+from jina.hubble.helper import disk_cache_offline
 from jina.hubble.hubio import HubIO, HubExecutor
 from jina.hubble import helper
 from jina.parsers.hubble import set_hub_push_parser
@@ -205,7 +205,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
 
     fail_meta_fetch = True
 
-    @disk_cache((urllib.error.URLError,), cache_file=str(tmpfile))
+    @disk_cache_offline(cache_file=str(tmpfile))
     def _mock_fetch(name, tag=None, secret=None):
         mock(name=name)
         if fail_meta_fetch:

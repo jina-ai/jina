@@ -17,7 +17,7 @@ from .helper import (
     parse_hub_uri,
     get_hubble_url,
     upload_file,
-    disk_cache,
+    disk_cache_offline,
 )
 from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
 from ..helper import get_full_version, ArgNamespace
@@ -269,7 +269,7 @@ with f:
         console.print(p1, p2, p3, p4)
 
     @staticmethod
-    @disk_cache((urllib.error.URLError,), cache_file=str(_cache_file))
+    @disk_cache_offline(cache_file=str(_cache_file))
     def _fetch_meta(
         name: str,
         tag: Optional[str] = None,
