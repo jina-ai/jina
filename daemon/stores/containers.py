@@ -13,7 +13,7 @@ from jina.helper import colored, random_port
 from .base import BaseStore
 from ..dockerize import Dockerizer
 from ..excepts import Runtime400Exception
-from ..helper import id_cleaner, ClientSession
+from ..helper import id_cleaner
 from ..models import DaemonID
 from ..models.containers import (
     ContainerArguments,
@@ -54,7 +54,7 @@ class ContainerStore(BaseStore):
         """Check if the container with mini-jinad is alive
 
         :return: True if mini-jinad is ready"""
-        async with ClientSession() as session:
+        async with aiohttp.ClientSession() as session:
             for _ in range(20):
                 try:
                     async with session.get(uri) as response:

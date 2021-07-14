@@ -71,33 +71,11 @@ def get_log_file_path(log_id: 'DaemonID') -> Tuple[str, 'DaemonID']:
     return filepath, workspace_id
 
 
-class ClientSession:
-    """
-    Reentract async context manager to keep a single aiohttp client session across the server.
-    This is internally to communicate with `mini-jinad`
-
-    :return: client session
-    """
-
-    session: aiohttp.ClientSession = None
-
-    def __init__(self, cleanup: bool = False) -> None:
-        self.cleanup = cleanup
-
-    async def __aenter__(self):
-        if not ClientSession.session:
-            ClientSession.session = aiohttp.ClientSession()
-        return ClientSession.session
-
-    async def __aexit__(self, *args, **kwargs):
-        if self.cleanup:
-            await ClientSession.session.close()
-
-
 def raise_if_not_alive(func: Callable):
     """Decorator to be used in store for connection valiation
 
     :param func: function to be wrapped
+    :return: wrapped function
     """
 
     async def wrapper(self, *args, **kwargs):

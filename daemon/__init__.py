@@ -163,13 +163,6 @@ def _start_uvicorn(app: 'FastAPI'):
     server.run()
 
 
-async def _cleanup_session():
-    from .helper import ClientSession
-
-    async with ClientSession(cleanup=True):
-        pass
-
-
 def setup():
     """Setup steps for JinaD"""
     _update_default_args()
@@ -182,8 +175,6 @@ def setup():
 
 def teardown():
     """Cleanup steps for JinaD"""
-    asyncio.run(_cleanup_session())
-
     from jina import __stop_msg__
 
     daemon_logger.success(__stop_msg__)
@@ -197,6 +188,6 @@ def main():
     except KeyboardInterrupt:
         pass
     except Exception as e:
-        daemon_logger.info(f'Error during ')
+        daemon_logger.info(f'error while server was running {e!r}')
     finally:
         teardown()
