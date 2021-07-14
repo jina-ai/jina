@@ -138,7 +138,7 @@ class ContainerStore(BaseStore):
             ports.update({f'{minid_port}/tcp': minid_port})
             uri = self._uri(minid_port)
             command = self._command(minid_port, workspace_id)
-            self.params = params.dict(exclude={'log_config'})
+            params = params.dict(exclude={'log_config'})
 
             self._logger.debug(
                 'creating container with following arguments \n'
@@ -159,7 +159,7 @@ class ContainerStore(BaseStore):
                 raise Runtime400Exception(
                     f'{id.type.title()} creation failed, couldn\'t reach the container at {uri} after 10secs'
                 )
-            object = await self._add(uri=uri, **kwargs)
+            object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
             self._logger.error(f'Error while creating the {self._kind.title()}: \n{e}')
             if id in Dockerizer.containers:

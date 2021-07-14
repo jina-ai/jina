@@ -15,11 +15,12 @@ class FlowStore(ContainerStore):
     _kind = 'flow'
 
     @raise_if_not_alive
-    async def _add(self, uri: str, port_expose: int, **kwargs) -> Dict:
+    async def _add(self, uri: str, port_expose: int, params: Dict, **kwargs) -> Dict:
         """Sends `POST` request to `mini-jinad` to create a Flow.
 
         :param uri: uri of mini-jinad
         :param port_expose: port expose for container flow
+        :param params: json payload to be sent
         :param kwargs: keyword args
         :return: response from mini-jinad
         """
@@ -28,7 +29,7 @@ class FlowStore(ContainerStore):
             method='POST',
             url=f'{uri}/{self._kind}',
             params={'port_expose': port_expose},
-            json=self.params,
+            json=params,
         ) as response:
             if response.status != HTTPStatus.CREATED:
                 raise Runtime400Exception(

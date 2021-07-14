@@ -14,17 +14,18 @@ class PeaStore(ContainerStore):
     _kind = 'pea'
 
     @raise_if_not_alive
-    async def _add(self, uri, **kwargs) -> Dict:
+    async def _add(self, uri: str, params: Dict, **kwargs) -> Dict:
         """Sends `POST` request to `mini-jinad` to create a Pea/Pod.
 
         :param uri: uri of mini-jinad
+        :param params: json payload to be sent
         :param kwargs: keyword args
         :raises Runtime400Exception: if creation fails
         :return: response from mini-jinad
         """
         self._logger.debug(f'sending POST request to mini-jinad on {uri}/{self._kind}')
         async with aiohttp.request(
-            method='POST', url=f'{uri}/{self._kind}', json=self.params
+            method='POST', url=f'{uri}/{self._kind}', json=params
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
