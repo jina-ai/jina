@@ -63,7 +63,7 @@ async def _update(
     summary='Terminate all running Flows',
 )
 async def _clear_all():
-    store.clear()
+    await store.clear()
 
 
 @router.delete(

@@ -45,7 +45,7 @@ async def _create(pod: PodDepends = Depends(PodDepends)):
     summary='Terminate all running Pods',
 )
 async def _clear_all():
-    store.clear()
+    await store.clear()
 
 
 @router.delete(

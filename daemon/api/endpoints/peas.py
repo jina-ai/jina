@@ -49,7 +49,7 @@ async def _create(pea: PeaDepends = Depends(PeaDepends)):
     summary='Terminate all running Peas',
 )
 async def _clear_all():
-    store.clear()
+    await store.clear()
 
 
 @router.delete(
