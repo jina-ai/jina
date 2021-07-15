@@ -42,9 +42,7 @@ def document_to_index():
 def test_local_flow_use_external_executor(
     local_flow, document_to_index, docker_compose
 ):
-    def validate_embedding_shape(resp):
-        assert resp.docs[0].blob.shape == (50, 50)
-        assert resp.docs[0].embedding.shape == (512,)
-
     with local_flow as f:
-        f.index(inputs=document_to_index, on_done=validate_embedding_shape)
+        results = f.index(inputs=document_to_index, return_results=True)
+        assert results[0].docs[0].blob.shape == (50, 50)
+        assert results[0].docs[0].embedding.shape == (512,)
