@@ -17,9 +17,9 @@ def external_pod_args():
         '--port-in',
         str(45678),
         '--host',
-        '0.0.0.0',
-        '--host-in',
-        '0.0.0.0',
+        '172.28.1.1',
+        # '--host-in',
+        # '0.0.0.0',
     ]
     args = vars(set_pod_parser().parse_args(args))
     del args['external']

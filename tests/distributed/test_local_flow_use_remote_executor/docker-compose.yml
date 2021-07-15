@@ -10,6 +10,17 @@ services:
       - "45678:45678"
     expose:
       - 10000-60000
+    networks:
+      test:
+        ipv4_address: 10.1.0.100
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    entrypoint: "jina executor --uses jinahub+docker://CLIPImageEncoder --port-in 45678 --socket-in ROUTER_BIND --dynamic-routing-out"
+    entrypoint: "jina executor --port-in 45678 --socket-in ROUTER_BIND --dynamic-routing-out"
+networks:
+  test:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.0.0/24
+
