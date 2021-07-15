@@ -42,6 +42,7 @@ class FlowStore(ContainerStore):
 
         :param uri: uri of mini-jinad
         :param params: json payload to be sent
+        :param kwargs: keyword args
         :return: response from mini-jinad
         """
 
