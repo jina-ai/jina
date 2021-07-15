@@ -390,7 +390,7 @@ with f:
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
             except Exception as e:
-                self.logger.error(f'{e!r}')
+                self.logger.error(f'Error while pulling {self.args.uri}: \n{e!r}')
                 raise e
             finally:
                 # delete downloaded zip package if existed

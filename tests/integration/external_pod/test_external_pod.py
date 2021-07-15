@@ -1,11 +1,11 @@
 import pytest
 
 from jina.peapods.pods.factory import PodFactory
-from jina.parsers import set_pod_parser
+from jina.peapods import Pea
+from jina.parsers import set_pod_parser, set_pea_parser
 
 from jina import Flow, Executor, requests, Document, DocumentArray
 from jina.helper import random_port
-from tests import validate_callback
 
 
 def validate_response(resp):
@@ -66,7 +66,7 @@ class MyExternalExecutor(Executor):
 @pytest.mark.parametrize('num_replicas', [1, 2], indirect=True)
 @pytest.mark.parametrize('num_parallel', [1, 2], indirect=True)
 def test_flow_with_external_pod(
-    external_pod, external_pod_args, input_docs, mocker, num_replicas, num_parallel
+    external_pod, external_pod_args, input_docs, num_replicas, num_parallel
 ):
     with external_pod:
         external_args = vars(external_pod_args)
@@ -78,17 +78,54 @@ def test_flow_with_external_pod(
             name='external_fake',
             external=True,
         )
-        mock = mocker.Mock()
         with flow:
-            flow.index(inputs=input_docs, on_done=mock)
+            resp = flow.index(inputs=input_docs, return_results=True)
+        validate_response(resp[0])
 
-    validate_callback(mock, validate_response)
+
+@pytest.fixture(scope='function')
+def external_executor_args():
+    args = [
+        '--uses',
+        'MyExternalExecutor',
+        '--name',
+        'external_real',
+        '--port-in',
+        str(random_port()),
+        '--host-in',
+        '0.0.0.0',
+        '--socket-in',
+        'ROUTER_BIND',
+        '--dynamic-routing-out',
+    ]
+    return set_pea_parser().parse_args(args)
+
+
+@pytest.fixture
+def external_executor(external_executor_args):
+    return Pea(external_executor_args)
+
+
+def test_flow_with_external_executor(
+    external_executor, external_executor_args, input_docs
+):
+    with external_executor:
+        external_args = vars(external_executor_args)
+        del external_args['name']
+        flow = Flow().add(
+            **external_args,
+            name='external_fake',
+            external=True,
+        )
+        with flow:
+            resp = flow.index(inputs=input_docs, return_results=True)
+        validate_response(resp[0])
 
 
 @pytest.mark.parametrize('num_replicas', [2], indirect=True)
 @pytest.mark.parametrize('num_parallel', [2], indirect=True)
 def test_two_flow_with_shared_external_pod(
-    external_pod, external_pod_args, input_docs, mocker, num_replicas, num_parallel
+    external_pod, external_pod_args, input_docs, num_replicas, num_parallel
 ):
     with external_pod:
         external_args = vars(external_pod_args)
@@ -112,7 +149,38 @@ def test_two_flow_with_shared_external_pod(
             )
         )
         with flow1, flow2:
+            results = flow1.index(inputs=input_docs, return_results=True)
+            validate_response(results[0])
 
+            results = flow2.index(inputs=input_docs, return_results=True)
+            validate_response(results[0])
+
+
+def test_two_flow_with_shared_external_executor(
+    external_executor,
+    external_executor_args,
+    input_docs,
+):
+    with external_executor:
+        external_args = vars(external_executor_args)
+        del external_args['name']
+        flow1 = Flow().add(
+            **external_args,
+            name='external_fake',
+            external=True,
+        )
+
+        flow2 = (
+            Flow()
+            .add(name='foo')
+            .add(
+                **external_args,
+                name='external_fake',
+                external=True,
+                needs=['gateway', 'foo'],
+            )
+        )
+        with flow1, flow2:
             results = flow1.index(inputs=input_docs, return_results=True)
             validate_response(results[0])
 
@@ -176,11 +244,9 @@ def test_flow_with_external_pod_parallel(
     external_pod_parallel_1_args,
     external_pod_parallel_2_args,
     input_docs,
-    mocker,
     num_replicas,
     num_parallel,
 ):
-
     with external_pod_parallel_1, external_pod_parallel_2:
         external_args_1 = vars(external_pod_parallel_1_args)
         external_args_2 = vars(external_pod_parallel_2_args)
@@ -209,11 +275,9 @@ def test_flow_with_external_pod_parallel(
             .join(needs=['external_fake_1', 'external_fake_2'], port_in=random_port())
         )
 
-        mock = mocker.Mock()
         with flow:
-            flow.index(inputs=input_docs, on_done=mock)
-
-    validate_callback(mock, validate_response)
+            resp = flow.index(inputs=input_docs, return_results=True)
+        validate_response(resp[0])
 
 
 @pytest.fixture(scope='function')
@@ -246,11 +310,9 @@ def test_flow_with_external_pod_pre_parallel(
     external_pod_pre_parallel,
     external_pod_pre_parallel_args,
     input_docs,
-    mocker,
     num_replicas,
     num_parallel,
 ):
-
     with external_pod_pre_parallel:
         external_args = vars(external_pod_pre_parallel_args)
         del external_args['name']
@@ -273,11 +335,9 @@ def test_flow_with_external_pod_pre_parallel(
             )
             .join(needs=['pod1', 'pod2'])
         )
-        mock = mocker.Mock()
         with flow:
-            flow.index(inputs=input_docs, on_done=mock)
-
-    validate_callback(mock, validate_response)
+            resp = flow.index(inputs=input_docs, return_results=True)
+        validate_response(resp[0])
 
 
 @pytest.fixture(scope='function')
@@ -312,7 +372,6 @@ def test_flow_with_external_pod_join(
     external_pod_join,
     external_pod_join_args,
     input_docs,
-    mocker,
     num_replicas,
     num_parallel,
 ):
@@ -341,8 +400,6 @@ def test_flow_with_external_pod_join(
                 needs=['pod1', 'pod2'],
             )
         )
-        mock = mocker.Mock()
         with flow:
-            flow.index(inputs=input_docs, on_done=mock)
-
-    validate_callback(mock, validate_response)
+            resp = flow.index(inputs=input_docs, return_results=True)
+        validate_response(resp[0])
