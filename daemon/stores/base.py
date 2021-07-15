@@ -1,10 +1,9 @@
 import os
 import pickle
 import shutil
-from collections.abc import MutableMapping
-from copy import deepcopy
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
+from collections.abc import MutableMapping
 from typing import Callable, Dict, Sequence, TYPE_CHECKING, Tuple, Union
 
 from jina.logging.logger import JinaLogger
@@ -42,6 +41,13 @@ class BaseStore(MutableMapping):
         raise NotImplementedError
 
     def delete(self, *args, **kwargs) -> DaemonID:
+        """Deletes an element from the store. This method needs to be overridden by the subclass
+
+
+        .. #noqa: DAR101"""
+        raise NotImplementedError
+
+    def clear(self) -> None:
         """Deletes an element from the store. This method needs to be overridden by the subclass
 
 
@@ -154,21 +160,8 @@ class BaseStore(MutableMapping):
         else:
             return cls()
 
-    def clear(self, **kwargs) -> None:
-        """Delete all the objects in the store
-
-        :param kwargs: keyward args
-        """
-
-        _status = deepcopy(self.status)
-        for k in _status.items.keys():
-            self.delete(id=k, workspace=True, **kwargs)
-
     def reset(self) -> None:
         """Calling :meth:`clear` and reset all stats """
 
         self.clear()
         self.status = self._status_model()
-
-    def __len__(self):
-        return len(self.items())
