@@ -82,7 +82,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         open(self._body_path, mode).close()
 
         self._header = open(self._header_path, 'r+b')
-        self._body = open(self._body_path, 'r+b')
+        self._body = open(self._body_path, 'a+b')
 
         tmp = np.frombuffer(
             self._header.read(),
@@ -147,7 +147,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
             ).tobytes()
         )
         self._header_map[doc.id] = (len(self._header_map), p, r, r + l)
-        self._start = p + r + l
+        self._start = p + r + l  # <==> self._start = self._start + l
         self._body.write(value)
         if flush:
             self._header.flush()
