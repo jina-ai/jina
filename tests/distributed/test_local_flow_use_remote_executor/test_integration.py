@@ -1,26 +1,27 @@
-import pytest
+import os
+import time
 
+import pytest
 import numpy as np
 
 from jina import Flow, Document
 from jina.parsers import set_pod_parser
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
+
 
 @pytest.fixture
 def external_pod_args():
     args = [
-        '--external',
-        '--name',
-        'external_fake',
         '--port-in',
         str(45678),
         '--host',
-        '52.59.53.88',
+        '172.28.1.1',
         '--host-in',
-        '52.59.53.88',
+        '172.28.1.1',
     ]
     args = vars(set_pod_parser().parse_args(args))
-    del args['name']
     del args['external']
     del args['pod_role']
     return args
@@ -37,10 +38,15 @@ def document_to_index():
     return Document(content=image)
 
 
-def test_local_flow_use_external_executor(local_flow, document_to_index):
+@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
+def test_local_flow_use_external_executor(
+    local_flow, document_to_index, docker_compose
+):
     def validate_embedding_shape(resp):
+        print(resp.docs[0])
         assert resp.docs[0].blob.shape == (50, 50)
-        assert resp.docs[0].embedding.shape == (1024,)
+        assert resp.docs[0].embedding.shape == (512,)
 
     with local_flow as f:
         f.index(inputs=document_to_index, on_done=validate_embedding_shape)
+        # print(rv)
