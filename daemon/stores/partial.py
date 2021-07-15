@@ -42,8 +42,6 @@ class PartialStore:
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        finally:
-            os.kill(os.getpid(), signal.SIGINT)
 
 
 class PartialPeaStore(PartialStore):
