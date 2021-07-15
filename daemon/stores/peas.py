@@ -1,52 +1,59 @@
-import requests
+from http import HTTPStatus
+from typing import Dict
+
+import aiohttp
 
 from .containers import ContainerStore
 from ..excepts import Runtime400Exception
+from ..helper import raise_if_not_alive
 
 
 class PeaStore(ContainerStore):
-    """A Store of Peas spawned by as Containers by Daemon"""
+    """A Store of Peas spawned as Containers by Daemon"""
 
     _kind = 'pea'
 
-    def _add(self):
-        try:
-            self._logger.debug(
-                f'sending POST request to mini-jinad on {self.host}/{self._kind}'
-            )
-            r = requests.post(url=f'{self.host}/{self._kind}', json=self.params)
-            if r.status_code != requests.codes.created:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} creation failed: {r.json()}'
-                )
-            return r.json()
-        except requests.exceptions.RequestException as ex:
-            self._logger.error(f'{ex!r}')
-            raise Runtime400Exception(
-                f'{self._kind.title()} deletion failed. request timed out'
-            )
+    @raise_if_not_alive
+    async def _add(self, uri: str, params: Dict, **kwargs) -> Dict:
+        """Sends `POST` request to `mini-jinad` to create a Pea/Pod.
 
-    def _update(self):
+        :param uri: uri of mini-jinad
+        :param params: json payload to be sent
+        :param kwargs: keyword args
+        :raises Runtime400Exception: if creation fails
+        :return: response from mini-jinad
+        """
+        self._logger.debug(f'sending POST request to mini-jinad on {uri}/{self._kind}')
+        async with aiohttp.request(
+            method='POST', url=f'{uri}/{self._kind}', json=params
+        ) as response:
+            response_json = await response.json()
+            if response.status != HTTPStatus.CREATED:
+                raise Runtime400Exception(
+                    f'{self._kind.title()} creation failed: {response_json}'
+                )
+            return response_json
+
+    async def _update(self, uri, **kwargs):
         # TODO
         pass
 
-    def _delete(self, host, **kwargs):
-        """Sends a delete request to terminate the Pea & remove the container
+    @raise_if_not_alive
+    async def _delete(self, uri, **kwargs) -> Dict:
+        """Sends a `DELETE` request to `mini-jinad` to terminate a Pea/Pod
 
-        :param host: host of mini-jinad
+        :param uri: uri of mini-jinad
         :param kwargs: keyword args
         :raises Runtime400Exception: if deletion fails
+        :return: response from mini-jinad
         """
-        try:
-            self._logger.debug(
-                f'sending DELETE request to mini-jinad on {host}/{self._kind}'
-            )
-            r = requests.delete(url=f'{host}/{self._kind}')
-            if r.status_code != requests.codes.ok:
+        self._logger.debug(
+            f'sending DELETE request to mini-jinad on {uri}/{self._kind}'
+        )
+        async with aiohttp.request('GET', url=f'{uri}/{self._kind}') as response:
+            response_json = await response.json()
+            if response.status != HTTPStatus.OK:
                 raise Runtime400Exception(
-                    f'{self._kind.title()} deletion failed: {r.json()}'
+                    f'{self._kind.title()} deletion failed: {response_json}'
                 )
-        except requests.exceptions.RequestException as ex:
-            raise Runtime400Exception(
-                f'{self._kind.title()} deletion failed. request timed out'
-            )
+            return response_json

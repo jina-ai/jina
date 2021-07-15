@@ -1,6 +1,10 @@
 import os
 import re
-from typing import TYPE_CHECKING, Tuple
+from typing import Callable, TYPE_CHECKING, Tuple
+
+import aiohttp
+
+from .excepts import Runtime400Exception
 
 if TYPE_CHECKING:
     from .models import DaemonID
@@ -65,3 +69,22 @@ def get_log_file_path(log_id: 'DaemonID') -> Tuple[str, 'DaemonID']:
         workspace_id = get_store_from_id(log_id)[log_id].workspace_id
         filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')
     return filepath, workspace_id
+
+
+def raise_if_not_alive(func: Callable):
+    """Decorator to be used in store for connection valiation
+
+    :param func: function to be wrapped
+    :return: wrapped function
+    """
+
+    async def wrapper(self, *args, **kwargs):
+        try:
+            return await func(self, *args, **kwargs)
+        except aiohttp.ClientConnectionError as e:
+            self._logger.error(f'connection to server failed: {e!r}')
+            raise Runtime400Exception(
+                f'connection to server failed during {func.__name__} for {self._kind.title()}'
+            )
+
+    return wrapper
