@@ -30,11 +30,12 @@ class FlowStore(ContainerStore):
             params={'port_expose': str(port_expose)},
             json=params,
         ) as response:
+            response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
                 raise Runtime400Exception(
-                    f'{self._kind.title()} creation failed: {response.json()}'
+                    f'{self._kind.title()} creation failed: {response_json}'
                 )
-            return await response.json()
+            return response_json
 
     @raise_if_not_alive
     async def _update(self, uri: str, params: Dict, **kwargs) -> Dict:

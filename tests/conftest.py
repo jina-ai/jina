@@ -194,7 +194,6 @@ def tmpfile(tmpdir):
 @pytest.yield_fixture(scope="session")
 def event_loop(request):
     """
-    Creates & closes an instance of the default event loop for each test
     Valid only for `pytest.mark.asyncio` tests
     """
     loop = asyncio.get_event_loop_policy().new_event_loop()
