@@ -3,6 +3,7 @@ import sys
 import warnings
 from types import SimpleNamespace, ModuleType
 from typing import Optional
+from importlib.abc import MetaPathFinder, Loader
 
 from . import __resources_path__
 
@@ -95,6 +96,57 @@ class ImportExtensions:
                 return True  # suppress the error
 
 
+class ModuleLoader(Loader):
+    """A custom module loader"""
+
+    @classmethod
+    def exec_module(cls, module):
+        """load module into memory
+
+        :param module: a namespace module
+        """
+        load_path = module.__spec__.origin
+        init_file = '__init__.py'
+        if load_path.endswith(init_file):
+            module.__path__ = [load_path[: -len(init_file) - 1]]
+
+
+_loader = ModuleLoader()
+
+
+class PathFinder:
+    """A custom source file path finder"""
+
+    __path__ = None
+
+    @classmethod
+    def find_spec(cls, name, paths, target=None):
+        """find moduel spec from given paths
+
+        :param name: module full name
+        :param paths: the search paths
+        :param target: the target
+        :return: a module spec
+        """
+        from importlib.machinery import ModuleSpec
+
+        # TODO: read PEP 420
+        last_module = name.split('.')[-1]
+        if paths is None:
+            paths = [cls.__path__]
+        for path in paths:
+            full_path = os.path.join(path, last_module)
+
+            init_path = os.path.join(full_path, '__init__.py')
+            module_path = full_path + '.py'
+
+            if os.path.exists(init_path) and not os.path.exists(module_path):
+                return ModuleSpec(name, _loader, origin=init_path)
+            elif os.path.exists(module_path):
+                return ModuleSpec(name, _loader, origin=module_path)
+        return None
+
+
 class PathImporter:
     """The class to import modules from paths."""
 
@@ -115,6 +167,7 @@ class PathImporter:
                 raise FileNotFoundError(
                     f'cannot import module from {p}, file not exist'
                 )
+
             module = PathImporter._path_import(p)
         return module
 
