@@ -11,6 +11,10 @@ Table of Contents
     - [Run](#run)
     - [Example Usage](#example-usage)
     - [Development using JinaD](#development-using-jinad)
+        - [Build](#build)
+        - [Run](#run-1)
+        - [Why?](#why)
+        - [Metaworks](#metaworks)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -149,6 +153,7 @@ docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jin
 docker run --add-host host.docker.internal:host-gateway \
            --name jinad \
            -e JINA_DAEMON_BUILD=DEVEL \
+           -e JINA_LOG_LEVEL=DEBUG \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v /tmp/jinad:/tmp/jinad \
            -p 8000:8000 \

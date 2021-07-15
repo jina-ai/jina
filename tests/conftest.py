@@ -1,4 +1,5 @@
 import os
+import asyncio
 import pathlib
 import random
 import shutil
@@ -188,3 +189,13 @@ def test_timeout_ctrl_time(monkeypatch):
 def tmpfile(tmpdir):
     tmpfile = f'jina_test_{next(tempfile._get_candidate_names())}.db'
     return tmpdir / tmpfile
+
+
+@pytest.fixture(scope="session")
+def event_loop(request):
+    """
+    Valid only for `pytest.mark.asyncio` tests
+    """
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()

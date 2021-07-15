@@ -119,7 +119,7 @@ class DaemonClient:
                 f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}'
             )
         except asyncio.CancelledError:
-            self.logger.warning(f'log streaming is cancelled')
+            self.logger.debug(f'log streaming is cancelled')
         finally:
             for l in all_remote_loggers.values():
                 l.close()

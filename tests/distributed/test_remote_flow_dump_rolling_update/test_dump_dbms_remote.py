@@ -10,7 +10,6 @@ from ..helpers import (
     create_flow,
     create_workspace,
     wait_for_workspace,
-    container_ip,
     delete_workspace,
 )
 
@@ -66,7 +65,7 @@ def test_dump_dbms_remote(docker_compose):
     nr_docs = 100
     nr_search = 1
     docs = list(_get_documents(nr=nr_docs, index_start=0, emb_size=EMB_SIZE))
-    jinad_ip = container_ip('test_remote_flow_dump_reload')
+    jinad_ip = 'localhost'
 
     dbms_flow_id, query_flow_id, workspace_id = _create_flows(jinad_ip)
 
