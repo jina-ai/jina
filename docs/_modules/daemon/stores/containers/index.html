@@ -383,11 +383,13 @@
         <h1>Source code for daemon.stores.containers</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">platform</span> <span class="kn">import</span> <span class="n">uname</span>
+<span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">aiohttp</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docker_host__</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span><span class="p">,</span> <span class="n">random_port</span>
@@ -396,6 +398,7 @@
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">Runtime400Exception</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">id_cleaner</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
+<span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span>
 <span class="kn">from</span> <span class="nn">..models.containers</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ContainerArguments</span><span class="p">,</span>
     <span class="n">ContainerItem</span><span class="p">,</span>
@@ -413,52 +416,93 @@
     <span class="n">_kind</span> <span class="o">=</span> <span class="s1">'container'</span>
     <span class="n">_status_model</span> <span class="o">=</span> <span class="n">ContainerStoreStatus</span>
 
-    <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Implements jina object creation in `mini-jinad`</span>
 
 <span class="sd">        .. #noqa: DAR101"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Implements jina object update in `mini-jinad`</span>
 
 <span class="sd">        .. #noqa: DAR101"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Implements jina object termination in `mini-jinad`</span>
 
 <span class="sd">        .. #noqa: DAR101"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="ContainerStore.ready"><a class="viewcode-back" href="../../../../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.ready">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""Check if the container with mini-jinad is alive</span>
 
+<span class="sd">        :param uri: uri of mini-jinad</span>
 <span class="sd">        :return: True if mini-jinad is ready"""</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">/'</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'connected to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1"> to create a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">'connected to </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1"> to create a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+                            <span class="p">)</span>
+                            <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'error while checking if mini-jinad is ready: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">)</span>
-                    <span class="k">return</span> <span class="kc">True</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-                <span class="k">continue</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'couldn</span><span class="se">\'</span><span class="s1">t reach container at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1"> after 10secs'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'couldn</span><span class="se">\'</span><span class="s1">t reach </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> container at </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1"> after 10secs'</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">_uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Returns uri of mini-jinad.</span>
+
+<span class="sd">        NOTE: JinaD (running inside a container) needs to access other containers via dockerhost.</span>
+<span class="sd">        Mac/WSL: this would work as is, as dockerhost is accessible.</span>
+<span class="sd">        Linux: this would only work if we start jinad passing extra_hosts.</span>
+
+<span class="sd">        NOTE: Checks if we actually are in docker (needed for unit tests). If not docker, use localhost.</span>
+
+<span class="sd">        :param port: mini jinad port</span>
+<span class="sd">        :return: uri for mini-jinad</span>
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">'linux'</span>
+            <span class="ow">and</span> <span class="s1">'microsoft'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">release</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'/.dockerenv'</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">__docker_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+
+    <span class="k">def</span> <span class="nf">_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Returns command for mini-jinad container to be appended to default entrypoint</span>
+
+<span class="sd">        NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`</span>
+<span class="sd">        NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container</span>
+
+<span class="sd">        :param port: mini jinad port</span>
+<span class="sd">        :param workspace_id: workspace id</span>
+<span class="sd">        :return: command for mini-jinad container</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'--port-expose </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1"> --mode </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1"> --workspace-id </span><span class="si">{</span><span class="n">workspace_id</span><span class="o">.</span><span class="n">jid</span><span class="si">}</span><span class="s1">'</span>
 
     <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
         <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="s1">'BaseModel'</span><span class="p">,</span>
         <span class="n">ports</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
         <span class="sd">"""Add a container to the store</span>
 
 <span class="sd">        :param id: id of the container</span>
@@ -476,37 +520,34 @@
             <span class="k">if</span> <span class="n">workspace_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">workspace_store</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1"> not found in workspace store'</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">minid_port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
-            <span class="c1"># NOTE: jinad when running inside a container needs to access other containers via dockerhost</span>
-            <span class="c1"># mac/wsl: this would work as is, as dockerhost is accessible.</span>
-            <span class="c1"># linux: this would only work if we start jinad passing extra_hosts.</span>
-            <span class="c1"># check if we actually are in docker, needed for unit tests</span>
-            <span class="c1"># if not docker, use localhost</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">'linux'</span>
-                <span class="ow">and</span> <span class="s1">'microsoft'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">release</span>
-                <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'/.dockerenv'</span><span class="p">)</span>
-            <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minid_port</span><span class="si">}</span><span class="s1">'</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'http://</span><span class="si">{</span><span class="n">__docker_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minid_port</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">minid_port</span> <span class="o">=</span> <span class="n">random_port</span><span class="p">()</span>
+            <span class="n">ports</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">minid_port</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="n">minid_port</span><span class="p">})</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">(</span><span class="n">minid_port</span><span class="p">)</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="n">minid_port</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s1">'log_config'</span><span class="p">})</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">dict</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s1">'log_config'</span><span class="p">})</span>
-            <span class="c1"># NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`</span>
-            <span class="c1"># NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container</span>
-            <span class="n">command</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'--port-expose </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minid_port</span><span class="si">}</span><span class="s1"> --mode </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1"> --workspace-id </span><span class="si">{</span><span class="n">workspace_id</span><span class="o">.</span><span class="n">jid</span><span class="si">}</span><span class="s1">'</span>
-            <span class="n">ports</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">minid_port</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">minid_port</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s1">'creating container with following arguments </span><span class="se">\n</span><span class="s1">'</span>
+                <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="nb">id</span><span class="p">),</span>
+                        <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'workspace'</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">),</span>
+                        <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'ports'</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ports</span><span class="p">)),</span>
+                        <span class="s1">'</span><span class="si">{:15s}</span><span class="s1"> -&gt; </span><span class="si">{:15s}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'command'</span><span class="p">,</span> <span class="n">command</span><span class="p">),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
             <span class="n">container</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">ports</span> <span class="o">=</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
                 <span class="n">workspace_id</span><span class="o">=</span><span class="n">workspace_id</span><span class="p">,</span> <span class="n">container_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span> <span class="n">ports</span><span class="o">=</span><span class="n">ports</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ready</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">ready</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">id</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed, couldn</span><span class="se">\'</span><span class="s1">t reach the container at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1"> after 10secs'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">id</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed, couldn</span><span class="se">\'</span><span class="s1">t reach the container at </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1"> after 10secs'</span>
                 <span class="p">)</span>
-            <span class="nb">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="nb">object</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'got an error while creating the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">: </span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while creating the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">Dockerizer</span><span class="o">.</span><span class="n">containers</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'removing container </span><span class="si">{</span><span class="n">id_cleaner</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="n">Dockerizer</span><span class="o">.</span><span class="n">rm_container</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
@@ -519,7 +560,7 @@
                     <span class="n">image_id</span><span class="o">=</span><span class="n">id_cleaner</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
                     <span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
                     <span class="n">ports</span><span class="o">=</span><span class="n">ports</span><span class="p">,</span>
-                    <span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+                    <span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span>
                 <span class="p">),</span>
                 <span class="n">arguments</span><span class="o">=</span><span class="n">ContainerArguments</span><span class="p">(</span>
                     <span class="n">command</span><span class="o">=</span><span class="n">command</span><span class="p">,</span>
@@ -531,12 +572,53 @@
                 <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is added to workspace </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">workspace_id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
 
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
             <span class="n">workspace_store</span><span class="p">[</span><span class="n">workspace_id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">managed_objects</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">id</span>
 
     <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
-    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="n">UpdateOperation</span><span class="p">,</span>
+        <span class="n">dump_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">shards</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaemonID</span><span class="p">:</span>
+        <span class="sd">"""Update the container in the store</span>
+
+<span class="sd">        :param id: id of the container</span>
+<span class="sd">        :param kind: type of update command to execute (only rolling_update for now)</span>
+<span class="sd">        :param dump_path: the path to which to dump on disk</span>
+<span class="sd">        :param pod_name: pod to target with the dump request</span>
+<span class="sd">        :param shards: nr of shards to dump</span>
+<span class="sd">        :param kwargs: keyword args</span>
+<span class="sd">        :raises KeyError: if id doesn't exist in the store</span>
+<span class="sd">        :return: id of the container</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.'</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'kind'</span><span class="p">:</span> <span class="n">kind</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">,</span>
+            <span class="s1">'pod_name'</span><span class="p">:</span> <span class="n">pod_name</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'shards'</span><span class="p">:</span> <span class="n">shards</span><span class="p">}</span> <span class="k">if</span> <span class="n">shards</span> <span class="k">else</span> <span class="p">{})</span>
+
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">uri</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">object</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while updating the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1">: </span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="nb">object</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is updated successfully'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">id</span>
+
+    <span class="nd">@BaseStore</span><span class="o">.</span><span class="n">dump</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Delete a container from the store</span>
 
 <span class="sd">        :param id: id of the container</span>
@@ -546,14 +628,25 @@
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.'</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_delete</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">uri</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delete</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">)</span>
         <span class="n">workspace_id</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">workspace_id</span>
         <span class="k">del</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
         <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">workspace_store</span>
 
         <span class="n">Dockerizer</span><span class="o">.</span><span class="n">rm_container</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
         <span class="n">workspace_store</span><span class="p">[</span><span class="n">workspace_id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">managed_objects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.'</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"green"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is released from the store.'</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ContainerStore.clear"><a class="viewcode-back" href="../../../../api/daemon.stores.containers/#daemon.stores.containers.ContainerStore.clear">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Delete all the objects in the store</span>
+
+<span class="sd">        :param kwargs: keyward args</span>
+<span class="sd">        """</span>
+
+        <span class="n">_status</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_status</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">workspace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

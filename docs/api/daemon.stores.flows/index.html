@@ -408,29 +408,7 @@
 <dt id="daemon.stores.flows.FlowStore">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">daemon.stores.flows.</span></code><code class="sig-name descname"><span class="pre">FlowStore</span></code><a class="reference internal" href="../../_modules/daemon/stores/flows/#FlowStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flows.FlowStore" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../daemon.stores.containers/#daemon.stores.containers.ContainerStore" title="daemon.stores.containers.ContainerStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">daemon.stores.containers.ContainerStore</span></code></a></p>
-<p>A Store of Flows spawned by as Containers by Daemon</p>
-<dl class="py method">
-<dt id="daemon.stores.flows.FlowStore.update">
-<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/flows/#FlowStore.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.flows.FlowStore.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends <cite>put</cite> request to <cite>mini-jinad</cite> to execute a command on a Flow.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>id</strong> (<a class="reference internal" href="../daemon.models.id/#daemon.models.id.DaemonID" title="daemon.models.id.DaemonID"><code class="xref py py-class docutils literal notranslate"><span class="pre">DaemonID</span></code></a>) – flow id</p></li>
-<li><p><strong>kind</strong> (<a class="reference internal" href="../daemon.models.enums/#daemon.models.enums.UpdateOperation" title="daemon.models.enums.UpdateOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpdateOperation</span></code></a>) – type of update command to execute (only rolling_update for now)</p></li>
-<li><p><strong>dump_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the path to which to dump on disk</p></li>
-<li><p><strong>pod_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – pod to target with the dump request</p></li>
-<li><p><strong>shards</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – nr of shards to dump</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>response from mini-jinad</p>
-</dd>
-</dl>
-</dd></dl>
+<p>A Store of Flows spawned as Containers by Daemon</p>
 </dd></dl>
 </div>
 

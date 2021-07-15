@@ -1090,8 +1090,8 @@
         <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">size</span>
     <span class="k">except</span> <span class="n">zmq</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">Again</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'cannot send message to sock </span><span class="si">{</span><span class="n">sock</span><span class="si">}</span><span class="s1"> after timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">ms, please check the following:'</span>
-            <span class="s1">'is the server still online? is the network broken? are "port" correct? '</span>
+            <span class="sa">f</span><span class="s1">'cannot send message to sock </span><span class="si">{</span><span class="n">sock</span><span class="o">.</span><span class="n">getsockopt_string</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LAST_ENDPOINT</span><span class="p">)</span><span class="si">}</span><span class="s1"> after timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">ms, '</span>
+            <span class="s1">'please check the following: is the server still online? is the network broken? are "port" correct? '</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="n">zmq</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">ZMQError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="n">default_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
@@ -1124,8 +1124,8 @@
 
     <span class="k">except</span> <span class="n">zmq</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">Again</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'no response from sock </span><span class="si">{</span><span class="n">sock</span><span class="si">}</span><span class="s1"> after timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">ms, please check the following:'</span>
-            <span class="s1">'is the server still online? is the network broken? are "port" correct? '</span>
+            <span class="sa">f</span><span class="s1">'no response from sock </span><span class="si">{</span><span class="n">sock</span><span class="o">.</span><span class="n">getsockopt_string</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">LAST_ENDPOINT</span><span class="p">)</span><span class="si">}</span><span class="s1"> after timeout=</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">ms, '</span>
+            <span class="sa">f</span><span class="s1">'please check the following: is the server still online? is the network broken? are "port" correct? '</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ex</span>

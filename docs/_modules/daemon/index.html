@@ -382,6 +382,7 @@
         </label>
         <h1>Source code for daemon</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -503,20 +504,10 @@
     <span class="k">return</span> <span class="n">app</span>
 
 
-<span class="k">def</span> <span class="nf">_start_uvicorn</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="s1">'FastAPI'</span><span class="p">):</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
-        <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
-        <span class="n">host</span><span class="o">=</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
-        <span class="n">port</span><span class="o">=</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
-        <span class="n">loop</span><span class="o">=</span><span class="s1">'uvloop'</span><span class="p">,</span>
-        <span class="n">log_level</span><span class="o">=</span><span class="s1">'error'</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-    <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__stop_msg__</span>
-
-    <span class="n">daemon_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_update_default_args</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">jinad_args</span><span class="p">,</span> <span class="n">__root_workspace__</span>
+    <span class="n">jinad_args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
+    <span class="n">__root_workspace__</span> <span class="o">=</span> <span class="s1">'/workspace'</span> <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">mode</span> <span class="k">else</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace</span>
 
 
 <span class="k">def</span> <span class="nf">_start_fluentd</span><span class="p">():</span>
@@ -543,20 +534,46 @@
     <span class="n">ConsumerThread</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_update_default_args</span><span class="p">():</span>
-    <span class="k">global</span> <span class="n">jinad_args</span><span class="p">,</span> <span class="n">__root_workspace__</span>
-    <span class="n">jinad_args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
-    <span class="n">__root_workspace__</span> <span class="o">=</span> <span class="s1">'/workspace'</span> <span class="k">if</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">mode</span> <span class="k">else</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace</span>
+<span class="k">def</span> <span class="nf">_start_uvicorn</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="s1">'FastAPI'</span><span class="p">):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+        <span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span>
+        <span class="n">host</span><span class="o">=</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">port_expose</span><span class="p">,</span>
+        <span class="n">loop</span><span class="o">=</span><span class="s1">'uvloop'</span><span class="p">,</span>
+        <span class="n">log_level</span><span class="o">=</span><span class="s1">'error'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/daemon/#daemon.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="sd">"""Entrypoint for jinad"""</span>
+<div class="viewcode-block" id="setup"><a class="viewcode-back" href="../../api/daemon/#daemon.setup">[docs]</a><span class="k">def</span> <span class="nf">setup</span><span class="p">():</span>
+    <span class="sd">"""Setup steps for JinaD"""</span>
     <span class="n">_update_default_args</span><span class="p">()</span>
     <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">__root_workspace__</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">no_fluentd</span><span class="p">:</span>
         <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_start_fluentd</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
     <span class="n">_start_consumer</span><span class="p">()</span>
     <span class="n">_start_uvicorn</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">_get_app</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">jinad_args</span><span class="o">.</span><span class="n">mode</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="teardown"><a class="viewcode-back" href="../../api/daemon/#daemon.teardown">[docs]</a><span class="k">def</span> <span class="nf">teardown</span><span class="p">():</span>
+    <span class="sd">"""Cleanup steps for JinaD"""</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__stop_msg__</span>
+
+    <span class="n">daemon_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="n">__stop_msg__</span><span class="p">)</span>
+    <span class="n">daemon_logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/daemon/#daemon.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">"""Entrypoint for JinaD"""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">setup</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">daemon_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'error while server was running </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">teardown</span><span class="p">()</span></div>
 </pre></div>
       </article>
       <footer>

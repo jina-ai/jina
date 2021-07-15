@@ -424,9 +424,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'nothing to close. exiting'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">raise</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">)</span></div></div>
+            <span class="k">raise</span></div></div>
 
 
 <div class="viewcode-block" id="PartialPeaStore"><a class="viewcode-back" href="../../../../api/daemon.stores.partial/#daemon.stores.partial.PartialPeaStore">[docs]</a><span class="k">class</span> <span class="nc">PartialPeaStore</span><span class="p">(</span><span class="n">PartialStore</span><span class="p">):</span>

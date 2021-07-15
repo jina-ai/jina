@@ -411,14 +411,17 @@
 <p>A Store of Containers spawned by daemon</p>
 <dl class="py method">
 <dt id="daemon.stores.containers.ContainerStore.ready">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">ready</span></code><a class="headerlink" href="#daemon.stores.containers.ContainerStore.ready" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">async</span> </em><code class="sig-name descname"><span class="pre">ready</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the container with mini-jinad is alive</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uri</strong> – uri of mini-jinad</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if mini-jinad is ready</p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if mini-jinad is ready</p>
 </dd>
 </dl>
 </dd></dl>
@@ -428,9 +431,27 @@
 <dd><p>Add a new element to the store. This method needs to be overridden by the subclass</p>
 </dd></dl>
 <dl class="py method">
+<dt id="daemon.stores.containers.ContainerStore.update">
+<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.containers.ContainerStore.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the element to the store. This method needs to be overridden by the subclass</p>
+</dd></dl>
+<dl class="py method">
 <dt id="daemon.stores.containers.ContainerStore.delete">
 <code class="sig-name descname"><span class="pre">delete</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#daemon.stores.containers.ContainerStore.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes an element from the store. This method needs to be overridden by the subclass</p>
+</dd></dl>
+<dl class="py method">
+<dt id="daemon.stores.containers.ContainerStore.clear">
+<em class="property"><span class="pre">async</span> </em><code class="sig-name descname"><span class="pre">clear</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/daemon/stores/containers/#ContainerStore.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daemon.stores.containers.ContainerStore.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all the objects in the store</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> – keyward args</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 </dd></dl>
 </div>

@@ -382,97 +382,86 @@
         </label>
         <h1>Source code for daemon.stores.flows</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 
-<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">aiohttp</span>
 
 <span class="kn">from</span> <span class="nn">.containers</span> <span class="kn">import</span> <span class="n">ContainerStore</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">Runtime400Exception</span>
-<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
-<span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">raise_if_not_alive</span>
 
 
 <div class="viewcode-block" id="FlowStore"><a class="viewcode-back" href="../../../../api/daemon.stores.flows/#daemon.stores.flows.FlowStore">[docs]</a><span class="k">class</span> <span class="nc">FlowStore</span><span class="p">(</span><span class="n">ContainerStore</span><span class="p">):</span>
-    <span class="sd">"""A Store of Flows spawned by as Containers by Daemon"""</span>
-
-    <span class="c1"># TODO: lot of duplicate code with peas.py, refactor needed</span>
+    <span class="sd">"""A Store of Flows spawned as Containers by Daemon"""</span>
 
     <span class="n">_kind</span> <span class="o">=</span> <span class="s1">'flow'</span>
 
-    <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port_expose</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">"""Sends `post` request to `mini-jinad` to create a Flow.</span>
+    <span class="nd">@raise_if_not_alive</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port_expose</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Sends `POST` request to `mini-jinad` to create a Flow.</span>
 
+<span class="sd">        :param uri: uri of mini-jinad</span>
 <span class="sd">        :param port_expose: port expose for container flow</span>
+<span class="sd">        :param params: json payload to be sent</span>
 <span class="sd">        :param kwargs: keyword args</span>
-<span class="sd">        :return: response from mini-jinad"""</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'port_expose'</span><span class="p">:</span> <span class="n">port_expose</span><span class="p">},</span>
-                <span class="n">json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">created</span><span class="p">:</span>
+<span class="sd">        :return: response from mini-jinad</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'sending POST request to mini-jinad on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">'POST'</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'port_expose'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">port_expose</span><span class="p">)},</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed </span><span class="se">\n</span><span class="si">{</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">"body"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed: </span><span class="si">{</span><span class="n">response_json</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
-            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">response_json</span>
 
-<div class="viewcode-block" id="FlowStore.update"><a class="viewcode-back" href="../../../../api/daemon.stores.flows/#daemon.stores.flows.FlowStore.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">,</span>
-        <span class="n">kind</span><span class="p">:</span> <span class="n">UpdateOperation</span><span class="p">,</span>
-        <span class="n">dump_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">pod_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">shards</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">"""Sends `put` request to `mini-jinad` to execute a command on a Flow.</span>
+    <span class="nd">@raise_if_not_alive</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Sends `PUT` request to `mini-jinad` to execute a command on a Flow.</span>
 
-<span class="sd">        :param id: flow id</span>
-<span class="sd">        :param kind: type of update command to execute (only rolling_update for now)</span>
-<span class="sd">        :param dump_path: the path to which to dump on disk</span>
-<span class="sd">        :param pod_name: pod to target with the dump request</span>
-<span class="sd">        :param shards: nr of shards to dump</span>
-<span class="sd">        :return: response from mini-jinad"""</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">'kind'</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span>
-                <span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">,</span>
-                <span class="s1">'pod_name'</span><span class="p">:</span> <span class="n">pod_name</span><span class="p">,</span>
-                <span class="s1">'shards'</span><span class="p">:</span> <span class="n">shards</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
-                <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
-            <span class="p">)</span>
+<span class="sd">        :param uri: uri of mini-jinad</span>
+<span class="sd">        :param params: json payload to be sent</span>
+<span class="sd">        :param kwargs: keyword args</span>
+<span class="sd">        :return: response from mini-jinad</span>
+<span class="sd">        """</span>
 
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'sending PUT request to mini-jinad on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">'PUT'</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> update failed </span><span class="se">\n</span><span class="si">{</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">"body"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> update failed: </span><span class="si">{</span><span class="n">response_json</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
-            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">response_json</span>
 
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> update failed: </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
+    <span class="nd">@raise_if_not_alive</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Sends a `DELETE` request to terminate the Flow &amp; remove the container</span>
 
-    <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Sends a delete request to terminate the Flow &amp; remove the container</span>
-
-<span class="sd">        :param host: host of mini-jinad</span>
+<span class="sd">        :param uri: uri of mini-jinad</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        :raises Runtime400Exception: if deletion fails</span>
+<span class="sd">        :return: response from mini-jinad</span>
 <span class="sd">        """</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'sending DELETE request to mini-jinad on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span>
+        <span class="p">)</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">'DELETE'</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> deletion failed </span><span class="se">\n</span><span class="si">{</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">"body"</span><span class="p">])</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> deletion failed: </span><span class="si">{</span><span class="n">response_json</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
-        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">Runtime400Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> deletion failed'</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">response_json</span></div>
 </pre></div>
       </article>
       <footer>
