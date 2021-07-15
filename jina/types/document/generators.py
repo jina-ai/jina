@@ -106,7 +106,7 @@ def from_csv(
     """
     from ..document import Document
 
-    lines = csv.DictReader(fp)
+    lines = csv.DictReader(open(fp))
     for value in _subsample(lines, size, sampling_rate):
         if 'groundtruth' in value and 'document' in value:
             yield Document(value['document'], field_resolver), Document(
