@@ -20,6 +20,7 @@ def workspace():
     _clean_up_workspace(image_id, network_id, workspace_id, workspace_store)
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     'model, store, id',
     [
@@ -27,30 +28,32 @@ def workspace():
         (PodModel(), PodStore, DaemonID(f'jpod')),
     ],
 )
-def test_peastore_add(model, store, id, workspace):
+async def test_peastore_add(model, store, id, workspace):
     s = store()
-    s.add(id=id, params=model, workspace_id=workspace, ports={})
+    await s.add(id=id, params=model, workspace_id=workspace, ports={})
     assert len(s) == 1
     assert id in s
-    s.delete(id)
+    await s.delete(id)
     assert not s
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     'model, store, type', [(PeaModel(), PeaStore, 'pea'), (PodModel(), PodStore, 'pod')]
 )
-def test_peastore_multi_add(model, store, type, workspace):
+async def test_peastore_multi_add(model, store, type, workspace):
     s = store()
     for j in range(5):
         id = DaemonID(f'j{type}')
-        s.add(id=id, params=model, workspace_id=workspace, ports={})
+        await s.add(id=id, params=model, workspace_id=workspace, ports={})
 
         assert len(s) == j + 1
         assert id in s
-    s.clear()
+    await s.clear()
     assert not s
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     'model, store, id',
     [
@@ -58,7 +61,7 @@ def test_peastore_multi_add(model, store, type, workspace):
         (PodModel(), PodStore, DaemonID(f'jpod')),
     ],
 )
-def test_peapod_store_add_bad(model, store, id, workspace):
+async def test_peapod_store_add_bad(model, store, id, workspace):
     class BadCrafter(Executor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -67,5 +70,5 @@ def test_peapod_store_add_bad(model, store, id, workspace):
     model.uses = 'BadCrafter'
     s = store()
     with pytest.raises(Exception):
-        s.add(id=id, params=model, workspace_id=workspace, ports={})
+        await s.add(id=id, params=model, workspace_id=workspace, ports={})
     assert not s

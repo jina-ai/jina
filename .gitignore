@@ -138,3 +138,10 @@ shell/jina-wizard.sh
 
 # test with config in resources
 tests/integration/crud/simple/simple_indexer/
+
+# latency tracking
+latency
+MyIndexer/
+MyMemMap/
+original/
+output/
