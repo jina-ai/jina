@@ -4,10 +4,12 @@ import hashlib
 import io
 import json
 import os
+import shelve
+import urllib
 import zipfile
-from functools import lru_cache
+from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, Iterable
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
@@ -250,3 +252,38 @@ def upload_file(
     response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
 
     return response
+
+
+def disk_cache_offline(
+    cache_file: str = 'disk_cache.db',
+    message: str = 'Calling {func_name} failed, using cached results',
+):
+    """
+    Decorator which caches a function in disk and uses cache when a urllib.error.URLError exception is raised
+
+    :param cache_file: the cache file
+    :param message: the warning message shown when defaulting to cache. Use "{func_name}" if you want to print
+        the function name
+
+    :return: function decorator
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            call_hash = f'{func.__name__}({", ".join(map(str, args))})'
+            with shelve.open(cache_file) as cache_db:
+                try:
+                    result = func(*args, **kwargs)
+                    cache_db[call_hash] = result
+                except urllib.error.URLError:
+                    if call_hash in cache_db:
+                        default_logger.warning(message.format(func_name=func.__name__))
+                        return cache_db[call_hash]
+                    else:
+                        raise
+            return result
+
+        return wrapper
+
+    return decorator
