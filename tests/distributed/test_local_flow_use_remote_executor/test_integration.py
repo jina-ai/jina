@@ -17,9 +17,9 @@ def external_pod_args():
         '--port-in',
         str(45678),
         '--host',
-        '172.28.1.1',
+        '0.0.0.0',
         '--host-in',
-        '172.28.1.1',
+        '0.0.0.0',
     ]
     args = vars(set_pod_parser().parse_args(args))
     del args['external']
@@ -43,10 +43,8 @@ def test_local_flow_use_external_executor(
     local_flow, document_to_index, docker_compose
 ):
     def validate_embedding_shape(resp):
-        print(resp.docs[0])
         assert resp.docs[0].blob.shape == (50, 50)
         assert resp.docs[0].embedding.shape == (512,)
 
     with local_flow as f:
         f.index(inputs=document_to_index, on_done=validate_embedding_shape)
-        # print(rv)
