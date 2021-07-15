@@ -15,6 +15,7 @@ from ..dockerize import Dockerizer
 from ..excepts import Runtime400Exception
 from ..helper import id_cleaner
 from ..models import DaemonID
+from ..models.enums import UpdateOperation
 from ..models.containers import (
     ContainerArguments,
     ContainerItem,
@@ -61,7 +62,7 @@ class ContainerStore(BaseStore):
                     async with session.get(uri) as response:
                         if response.status == HTTPStatus.OK:
                             self._logger.debug(
-                                f'connected to {uri} to create a {self._kind}'
+                                f'connected to {uri} to create a {self._kind.title()}'
                             )
                             return True
                 except aiohttp.ClientConnectionError as e:
@@ -71,7 +72,9 @@ class ContainerStore(BaseStore):
                     self._logger.error(
                         f'error while checking if mini-jinad is ready: {e}'
                     )
-        self._logger.error(f'couldn\'t reach container at {uri} after 10secs')
+        self._logger.error(
+            f'couldn\'t reach {self._kind.title()} container at {uri} after 10secs'
+        )
         return False
 
     def _uri(self, port: int) -> str:
@@ -102,9 +105,9 @@ class ContainerStore(BaseStore):
         NOTE: `command` is appended to already existing entrypoint, hence removed the prefix `jinad`
         NOTE: Important to set `workspace_id` here as this gets set in jina objects in the container
 
-        :param port: [description]
-        :param workspace_id: [description]
-        :return: [description]
+        :param port: mini jinad port
+        :param workspace_id: workspace id
+        :return: command for mini-jinad container
         """
         return f'--port-expose {port} --mode {self._kind} --workspace-id {workspace_id.jid}'
 
@@ -182,9 +185,6 @@ class ContainerStore(BaseStore):
                 ),
                 workspace_id=workspace_id,
             )
-            self._logger.debug(
-                f'id in store after add is \n {self[id].metadata.json(indent=2)} \n'
-            )
             self._logger.success(
                 f'{colored(id, "green")} is added to workspace {colored(workspace_id, "green")}'
             )
@@ -193,10 +193,22 @@ class ContainerStore(BaseStore):
             return id
 
     @BaseStore.dump
-    async def update(self, id: DaemonID, **kwargs) -> DaemonID:
+    async def update(
+        self,
+        id: DaemonID,
+        kind: UpdateOperation,
+        dump_path: str,
+        pod_name: str,
+        shards: int = None,
+        **kwargs,
+    ) -> DaemonID:
         """Update the container in the store
 
         :param id: id of the container
+        :param kind: type of update command to execute (only rolling_update for now)
+        :param dump_path: the path to which to dump on disk
+        :param pod_name: pod to target with the dump request
+        :param shards: nr of shards to dump
         :param kwargs: keyword args
         :raises KeyError: if id doesn't exist in the store
         :return: id of the container
@@ -204,9 +216,16 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
+        params = {
+            'kind': kind.value,
+            'dump_path': dump_path,
+            'pod_name': pod_name,
+        }
+        params.update({'shards': shards} if shards else {})
+
         uri = self[id].metadata.uri
         try:
-            object = await self._update(uri, **kwargs)
+            object = await self._update(uri, params)
         except Exception as e:
             self._logger.error(f'Error while updating the {self._kind.title()}: \n{e}')
             raise
@@ -226,9 +245,6 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
-        self._logger.debug(
-            f'id {id} in store before delete is \n {self[id].metadata.json(indent=2)} \n'
-        )
         uri = self[id].metadata.uri
         await self._delete(uri=uri)
         workspace_id = self[id].workspace_id

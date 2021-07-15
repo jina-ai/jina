@@ -5,7 +5,6 @@ import aiohttp
 
 from .containers import ContainerStore
 from ..excepts import Runtime400Exception
-from ..models.enums import UpdateOperation
 from ..helper import raise_if_not_alive
 
 
@@ -28,7 +27,7 @@ class FlowStore(ContainerStore):
         async with aiohttp.request(
             method='POST',
             url=f'{uri}/{self._kind}',
-            params={'port_expose': port_expose},
+            params={'port_expose': str(port_expose)},
             json=params,
         ) as response:
             if response.status != HTTPStatus.CREATED:
@@ -38,32 +37,17 @@ class FlowStore(ContainerStore):
             return await response.json()
 
     @raise_if_not_alive
-    async def _update(
-        self,
-        uri: str,
-        kind: UpdateOperation,
-        dump_path: str,
-        pod_name: str,
-        shards: int = None,
-    ) -> Dict:
+    async def _update(self, uri: str, params: Dict, **kwargs) -> Dict:
         """Sends `PUT` request to `mini-jinad` to execute a command on a Flow.
 
         :param uri: uri of mini-jinad
-        :param kind: type of update command to execute (only rolling_update for now)
-        :param dump_path: the path to which to dump on disk
-        :param pod_name: pod to target with the dump request
-        :param shards: nr of shards to dump
+        :param params: json payload to be sent
         :return: response from mini-jinad
         """
-        params = {
-            'kind': kind,
-            'dump_path': dump_path,
-            'pod_name': pod_name,
-            'shards': shards,
-        }
+
         self._logger.debug(f'sending PUT request to mini-jinad on {uri}/{self._kind}')
         async with aiohttp.request(
-            method='PUT', url=f'{uri}/{self._kind}', json=self.params
+            method='PUT', url=f'{uri}/{self._kind}', params=params
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
