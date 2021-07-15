@@ -300,7 +300,21 @@ class DocumentArray(
         else:
             self._pb_body.sort(*args, **kwargs)
 
-    def _compute_dist(self, X, Y, metric) -> np.ndarray:
+    def _compute_dist(
+        self, X: 'np.ndarray', Y: 'np.ndarray', metric: str
+    ) -> 'np.ndarray':
+        """Computes the distance between each row of X and each row on Y.
+
+        - Let `n_X = X.shape[0]`
+        - Let `n_Y = Y.shape[0]`
+        - Returns a matrix `dist` of shape `(n_X, n_Y)`.
+          `dist[i,j] = metric(X[i], X[j])`.
+
+        :param X: np.ndarray of ndim 2
+        :param Y:  np.ndarray of ndim 2
+        :param metric: string describing the metric type
+        :return:  np.ndarray of ndim 2
+        """
         if metric == 'cosine':
             dists = cosine_distance(X, Y)
         if metric == 'euclidean':
@@ -315,6 +329,11 @@ class DocumentArray(
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
+
+        Note:
+            - If metric is 'cosine' it uses the cosine **similarity**.
+            - IF metric is 'euclidean' it uses the euclidean **distance**.
+
         :param darray: the other DocumentArray to match against
         :param metric: the distance metric
         :param limit: the maximum number of matches, when not given
@@ -322,13 +341,18 @@ class DocumentArray(
         """
         X = np.stack(self.get_attributes('embedding'))
         Y = np.stack(darray.get_attributes('embedding'))
+        if limit is None:
+            limit = len(darray)
         dists = self._compute_dist(X, Y, metric)
+        idx, dist = self._get_sorted_top_k(dists, limit)
 
-        idx, dist = self._get_sorted_top_k(dists, int(limit))
-        for _q, _ids, _dists in zip(docs, idx, dist):
+        for _q, _ids, _dists in zip(self, idx, dist):
             for _id, _dist in zip(_ids, _dists):
-                d = Document(self.docs[int(_id)], copy=True)
-                d.scores['metric'] = _dist
+                d = Document(darray[int(_id)], copy=True)
+                if metric == 'cosine':
+                    d.scores[metric] = 1 - _dist
+                else:
+                    d.scores[metric] = _dist
                 _q.matches.append(d)
 
     @staticmethod
