@@ -56,6 +56,7 @@ class Zmqlet:
         self.name = args.name or self.__class__.__name__
         self.logger = logger
         self.send_recv_kwargs = vars(args)
+        self.logger.warning(f' my identity is {self.identity}')
         if ctrl_addr:
             self.ctrl_addr = ctrl_addr
             self.ctrl_with_ipc = self.ctrl_addr.startswith('ipc://')
@@ -212,11 +213,14 @@ class Zmqlet:
             )
 
             in_connect = None
+            print(f' hosts_in_connect {self.args.hosts_in_connect}')
             if self.args.hosts_in_connect:
                 for address in self.args.hosts_in_connect:
                     if in_connect is None:
                         host, port = address.split(':')
 
+                        # here we need to know if we are connecting to a `send_as_bind`? later we may need to connect to this socket with DEALER
+                        # and the conenction may already be taken by a wrong socket
                         in_connect, _ = _init_socket(
                             ctx,
                             host,
@@ -286,6 +290,7 @@ class Zmqlet:
         )
 
     def _init_dynamic_out_socket(self, host_out, port_out):
+        print(f' {self.name} set out socket dynamic')
         out_sock, _ = _init_socket(
             self.ctx,
             host_out,
@@ -301,12 +306,14 @@ class Zmqlet:
 
     def _get_dynamic_out_socket(self, target_pod, as_streaming=False):
         host = get_connect_host(target_pod.host, False, self.args)
+        print(f' {self.name} set out socket dynamic streaming {as_streaming}')
         out_sock = self._init_dynamic_out_socket(host, target_pod.port)
-
+        print(f'out_sock {out_sock} => {out_sock.type} vs {zmq.DEALER}')
         if as_streaming:
             out_sock = ZMQStream(out_sock, self.io_loop)
 
         self.opened_socks.append(out_sock)
+        print(f'target_pod.full_address {target_pod.full_address}')
         self.out_sockets[target_pod.full_address] = out_sock
         return out_sock
 
@@ -316,11 +323,12 @@ class Zmqlet:
         next_routes = []
         for target, send_as_bind in next_targets:
             pod_address = target.active_target_pod.full_address
-
+            self.logger.warning(f' SEND AS BIND? {send_as_bind}')
             if send_as_bind:
                 out_socket = self.out_sock
             else:
                 out_socket = self.out_sockets.get(pod_address, None)
+                self.logger.warning(f' out_socket {out_socket}')
                 if out_socket is None:
                     out_socket = self._get_dynamic_out_socket(target.active_target_pod)
 
@@ -328,7 +336,9 @@ class Zmqlet:
         return next_routes
 
     def _send_message_dynamic(self, msg: 'Message'):
+        print(f'_get_dynamic_next_routes JOAN')
         next_routes = self._get_dynamic_next_routes(msg)
+        print(f'next_routes  {next_routes}')
         for routing_table, out_sock in next_routes:
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
@@ -338,6 +348,7 @@ class Zmqlet:
             new_message.envelope.receiver_id = (
                 routing_table.active_target_pod.target_identity
             )
+            # print(f'out socket  {out_sock.type}')
 
             self._send_message_via(out_sock, new_message)
 
@@ -347,7 +358,9 @@ class Zmqlet:
         :param msg: the protobuf message to send
         """
         # choose output sock
+        self.logger.warning(f' send_message JOAN - 0')
         if msg.is_data_request:
+            self.logger.warning(f' JOAN HERE')
             if self.args.dynamic_routing_out:
                 self._send_message_dynamic(msg)
                 return
@@ -420,22 +433,35 @@ class AsyncZmqlet(Zmqlet):
         :param msg: the protobuf message to send
         :param kwargs: keyword arguments
         """
+        self.logger.warning(
+            f' I HAVE TO SEND A MESSAGE with dynamic routing out? {self.args.dynamic_routing_out}'
+        )
         if self.args.dynamic_routing_out:
             asyncio.create_task(self._send_message_dynamic(msg))
         else:
             asyncio.create_task(self._send_message_via(self.out_sock, msg))
 
     async def _send_message_dynamic(self, msg: 'Message'):
-        for routing_table, out_sock in self._get_dynamic_next_routes(msg):
+        a = self._get_dynamic_next_routes(msg)
+        self.logger.warning(f' a {a}')
+        for routing_table, out_sock in a:
+            self.logger.warning(f' out_sock {out_sock.type}')
             new_envelope = jina_pb2.EnvelopeProto()
             new_envelope.CopyFrom(msg.envelope)
             new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
+            self.logger.warning(
+                f' BEFORE SEND MESSAGE VIA {new_message.envelope.receiver_id}'
+            )
             asyncio.create_task(self._send_message_via(out_sock, new_message))
 
     async def _send_message_via(self, socket, msg):
         try:
+            self.logger.warning(
+                f' IN SEND MESSAGE VIA send_message_async {self.send_recv_kwargs}'
+            )
             num_bytes = await send_message_async(socket, msg, **self.send_recv_kwargs)
+            self.logger.warning(f' num_bytes {num_bytes}')
             self.bytes_sent += num_bytes
             self.msg_sent += 1
         except (asyncio.CancelledError, TypeError) as ex:
@@ -833,6 +859,7 @@ def _init_socket(
     ssh_server: Optional[str] = None,
     ssh_keyfile: Optional[str] = None,
     ssh_password: Optional[str] = None,
+    blah=False,
 ) -> Tuple['zmq.Socket', str]:
     sock = {
         SocketType.PULL_BIND: lambda: ctx.socket(zmq.PULL),
@@ -885,7 +912,8 @@ def _init_socket(
 
         # note that ssh only takes effect on CONNECT, not BIND
         # that means control socket setup does not need ssh
-        _connect_socket(sock, address, ssh_server, ssh_keyfile, ssh_password)
+        if not blah:
+            _connect_socket(sock, address, ssh_server, ssh_keyfile, ssh_password)
 
     if socket_type in {SocketType.SUB_CONNECT, SocketType.SUB_BIND}:
         # sock.setsockopt(zmq.SUBSCRIBE, identity.encode('ascii') if identity else b'')
@@ -901,6 +929,7 @@ def _connect_socket(
     ssh_keyfile: Optional[str] = None,
     ssh_password: Optional[str] = None,
 ):
+    print(f' JOAAAN HERE CONNECTING SOCKET address {address} with sock {sock.type}')
     if ssh_server is not None:
         tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
     else:

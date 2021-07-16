@@ -650,7 +650,11 @@ class Pod(BasePod, ExitFIFO):
     def _set_dynamic_routing_in(args):
         if args.dynamic_routing:
             args.dynamic_routing_in = True
-            args.socket_in = SocketType.ROUTER_BIND
+            # if the outgoinh is remote and I am local, I need to Connect as Dealer because they will send_as_bind
+            if args.name == 'gateway':
+                args.socket_in = SocketType.DEALER_CONNECT
+            else:
+                args.socket_in = SocketType.ROUTER_BIND
             args.zmq_identity = random_identity()
 
     @staticmethod

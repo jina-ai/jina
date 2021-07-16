@@ -164,6 +164,7 @@ class BasePea:
             },
         )
         self.daemon = self.args.daemon  #: required here to set process/thread daemon
+        self.logger.warning(f' my zmq identity will be {self.args.zmq_identity}')
 
     def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
@@ -241,12 +242,14 @@ class BasePea:
     def activate_runtime(self):
         """ Send activate control message. """
         if self._is_dealer:
-            self._retry_control_message('ACTIVATE')
+            pass
+            # self._retry_control_message('ACTIVATE')
 
     def _deactivate_runtime(self):
         """Send deactivate control message. """
         if self._is_dealer:
-            self._retry_control_message('DEACTIVATE')
+            pass
+            # self._retry_control_message('DEACTIVATE')
 
     def _cancel_runtime(self):
         """Send terminate control message."""
