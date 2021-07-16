@@ -16,7 +16,7 @@ def mixin_flow_features_parser(parser):
     gp.add_argument(
         '--env',
         action=KVAppendAction,
-        metavar='KEY=VALUE',
+        metavar='KEY: VALUE',
         nargs='*',
         help='The map of environment variables that are available inside runtime',
     )
