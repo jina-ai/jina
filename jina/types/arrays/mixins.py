@@ -5,11 +5,16 @@ from typing import List, Dict, Iterable
 from jina import DocumentArray
 
 
-class FilterMixin:
+class TagsFilterMixin:
     def fuzzy_filter(
-        self, regexes: List[Dict[str]], traversal_paths: Iterable[str] = ['r']
+        self, regexes: List[Dict[str]], traversal_paths: Iterable[str] = ['m']
     ):
-        """Filter document array by tags attribute."""
+        """Filter document array by tags using regex.
+
+        :param regexes: List of dict, each key is the name of the tag, each value is the value of the tag.
+        :param traversal_paths: List of document traversal paths, default traversal at matches level. If filter by chunks, use
+          ['c'], filter by matches use ['m'], or combine them to filter on multiple levels.
+        """
         filtered = DocumentArray()
         docs = self.traverse_flat(traversal_paths)
         for tag_name, regex in regexes:
@@ -22,9 +27,16 @@ class FilterMixin:
     def hard_filter(
         self,
         conditions: List[tuple(str, str, str)],
-        traversal_paths: Iterable[str] = ['r'],
+        traversal_paths: Iterable[str] = ['m'],
     ):
-        """Filter documents by hard match on tags."""
+        """Filter documents by hard match on tags.
+
+        :param conditions: List of tuple, consist of attribute of the tag, operator and value. For instance,
+          `('color', 'eq', 'blue')` filter all documents where color equal to blue. The built-in operators consist of:
+          `gt`, `lt`, `eq`, `ne`, `ge`, `ne`.
+        :param traversal_paths: List of document traversal paths, default traversal at matches level. If filter by chunks, use
+          ['c'], filter by matches use ['m'], or combine them to filter on multiple levels.
+        """
         filtered = DocumentArray()
         docs = self.traverse_flat(traversal_paths)
         operators_map = {

@@ -17,7 +17,7 @@ from typing import (
 )
 
 from .traversable import TraversableSequence
-from .mixins import FilterMixin
+from .mixins import TagsFilterMixin
 from ..document import Document
 from ...helper import typename, cached_property, cache_invalidate
 from ...proto import jina_pb2
@@ -101,7 +101,11 @@ class DocumentArrayGetAttrMixin:
 
 
 class DocumentArray(
-    TraversableSequence, MutableSequence, DocumentArrayGetAttrMixin, Itr, FilterMixin
+    TraversableSequence,
+    MutableSequence,
+    DocumentArrayGetAttrMixin,
+    Itr,
+    TagsFilterMixin,
 ):
     """
     :class:`DocumentArray` is a mutable sequence of :class:`Document`.
