@@ -24,8 +24,8 @@ def flow(request):
     elif flow_src == 'python':
         return Flow().add(
             uses='docker://override-config-test',
-            override_with={'param1': 50, 'param2': 30},
-            override_metas={'workspace': 'different_workspace'},
+            uses_with={'param1': 50, 'param2': 30},
+            uses_metas={'workspace': 'different_workspace'},
         )
 
 
@@ -44,8 +44,8 @@ def test_override_config_params(docker_image, flow):
 def test_override_config_params_parallel(docker_image):
     flow = Flow(return_results=True).add(
         uses='docker://override-config-test',
-        override_with={'param1': 50, 'param2': 30},
-        override_metas={'workspace': 'different_workspace'},
+        uses_with={'param1': 50, 'param2': 30},
+        uses_metas={'workspace': 'different_workspace'},
         parallel=2,
     )
     with flow:

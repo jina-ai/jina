@@ -14,16 +14,16 @@ def flow(request):
     elif flow_src == 'uses-yml':
         return Flow(return_results=True).add(
             uses=os.path.join(cur_dir, 'default_config.yml'),
-            override_with={'param1': 50, 'param2': 30},
-            override_metas={'workspace': 'different_workspace'},
+            uses_with={'param1': 50, 'param2': 30},
+            uses_metas={'workspace': 'different_workspace'},
         )
     elif flow_src == 'class':
         from .executor import Override
 
         return Flow(return_results=True).add(
             uses=Override,
-            override_with={'param1': 50, 'param2': 30, 'param3': 10},
-            override_metas={'workspace': 'different_workspace', 'name': 'name'},
+            uses_with={'param1': 50, 'param2': 30, 'param3': 10},
+            uses_metas={'workspace': 'different_workspace', 'name': 'name'},
         )
 
 
@@ -42,8 +42,8 @@ def test_override_config_params(flow):
 def test_override_config_params_parallel():
     flow = Flow(return_results=True).add(
         uses=os.path.join(cur_dir, 'default_config.yml'),
-        override_with={'param1': 50, 'param2': 30},
-        override_metas={'workspace': 'different_workspace'},
+        uses_with={'param1': 50, 'param2': 30},
+        uses_metas={'workspace': 'different_workspace'},
         parallel=2,
     )
     with flow:
