@@ -19,12 +19,9 @@ Table of Contents
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker) Installed.
-- Working on `master` branch (_before stable Jina 2.0_)
-    ```bash
-    $ git clone --branch master https://github.com/jina-ai/jina.git
-    $ cd jina && pip install -e ".[devel]"
-    ```
+- [Docker](https://docs.docker.com/get-docker) installed.
+- `jina[standard] >= 2.0.0` installed.
+    - Run `pip install -U "jina[standard]>=2.0.0"` to upgrade jina to correct version.
 
 ## 1. Create Executor
 
@@ -33,13 +30,13 @@ The resulted file structure should look like the following:
 ```text
 MyExecutor/
 ├── Dockerfile	        # Optional
-├── manifest.yml	# Optional 
+├── manifest.yml	    # Optional 
 ├── config.yml	        # Optional
 ├── README.md	        # Optional
 ├── requirements.txt	# Optional
 ├── __init__.py
 ├── setup.py	        # Optional
-└── tests/	           # Optional
+└── tests/	            # Optional
     ├── test_MyAwesomeExecutor.py
     └── __init__.py
 
@@ -87,7 +84,7 @@ Link to the _**detailed guidelines**_ for creating an executor is [here](https:/
 
 ## 3. Use in Jina Flow
 
-### 3.2 using docker images
+### 3.1 Using docker images
 
 Use the prebuilt images from `Hubble` in your python codes, 
 
@@ -98,7 +95,22 @@ from jina import Flow
 f = Flow().add(uses='jinahub+docker://<UUID8/Alias>[:<SECRET>]')
 ```
 
-### 3.2 using source codes
+**Attention:**
+
+If you are a Mac user, please use `host.docker.internal` as your url when you want to connect a local port from executor docker container. 
+
+For example: [`jinahub+docker://PostgreSQLStorage`](https://github.com/jina-ai/executor-indexers/tree/main/jinahub/indexers/storage/PostgreSQLStorage) will connect PostgreSQL server which was started at local. Then you must use it with:
+
+```python
+from jina import Flow,Document
+f = Flow().add(uses='jinahub+docker://PostgreSQLStorage', override_with={'hostname':'host.docker.internal'})
+with f:
+    resp = f.post(on='/index', inputs=Document(), return_results=True)
+    print(f'{resp}')
+```
+
+
+### 3.2 Using source codes
 
 Use the source codes from `Hubble` in your python codes,
 
@@ -108,7 +120,7 @@ from jina import Flow
 f = Flow().add(uses='jinahub://<UUID8/Alias>[:<SECRET>]')
 ```
 
-### 3.2 Override Default Parameters
+### 3.3 Override Default Parameters
 
 It is possible that the default parameters of the published executor may not be ideal for your usecase.
 You can override any of these parameters by passing `override_with` and `override_metas` as parameters.
