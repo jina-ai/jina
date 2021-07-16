@@ -352,7 +352,7 @@ class DocumentArray(
 
         dists = compute_distances(X, Y, metric)
         idx, dist = self._get_sorted_smallest_k(dists, limit)
-        # breakpoint()
+
         for _q, _ids, _dists in zip(self, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(darray[int(_id)], copy=True)
