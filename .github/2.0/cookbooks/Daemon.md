@@ -11,10 +11,6 @@ Table of Contents
     - [Run](#run)
     - [Example Usage](#example-usage)
     - [Development using JinaD](#development-using-jinad)
-        - [Build](#build)
-        - [Run](#run-1)
-        - [Why?](#why)
-        - [Metaworks](#metaworks)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
