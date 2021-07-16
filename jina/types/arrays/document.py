@@ -302,34 +302,6 @@ class DocumentArray(
         else:
             self._pb_body.sort(*args, **kwargs)
 
-    def compute_distances(
-        self, X: 'np.ndarray', Y: 'np.ndarray', metric: str
-    ) -> 'np.ndarray':
-        """Computes the distance between each row of X and each row on Y according to `metric`.
-
-        - Let `n_X = X.shape[0]`
-        - Let `n_Y = Y.shape[0]`
-        - Returns a matrix `dist` of shape `(n_X, n_Y)` with `dist[i,j] = metric(X[i], X[j])`.
-
-        :param X: np.ndarray of ndim 2
-        :param Y:  np.ndarray of ndim 2
-        :param metric: string describing the metric type
-        :return: np.ndarray of ndim 2
-        """
-        assert metric in [
-            'cosine',
-            'euclidean_squared',
-            'euclidean',
-        ], f'Input metric={metric} not valid'
-
-        if metric == 'cosine':
-            dists = cosine_distance(X, Y)
-        if metric == 'euclidean_squared':
-            dists = euclidean_distance_squared(X, Y)
-        if metric == 'euclidean':
-            dists = np.sqrt(euclidean_distance_squared(X, Y))
-        return dists
-
     def match(
         self,
         darray: 'DocumentArray',
@@ -378,7 +350,7 @@ class DocumentArray(
         Y = np.stack(darray.get_attributes('embedding'))
         limit = min(limit, len(darray))
 
-        dists = self.compute_distances(X, Y, metric)
+        dists = compute_distances(X, Y, metric)
         idx, dist = self._get_sorted_smallest_k(dists, limit)
 
         for _q, _ids, _dists in zip(self, idx, dist):
@@ -549,6 +521,30 @@ class DocumentArray(
             dap.ParseFromString(fp.read())
             da = DocumentArray(dap.docs)
             return da
+
+
+def compute_distances(X: 'np.ndarray', Y: 'np.ndarray', metric: str) -> 'np.ndarray':
+    """Computes the distance between each row of X and each row on Y according to `metric`.
+    - Let `n_X = X.shape[0]`
+    - Let `n_Y = Y.shape[0]`
+    - Returns a matrix `dist` of shape `(n_X, n_Y)` with `dist[i,j] = metric(X[i], X[j])`.
+    :param X: np.ndarray of ndim 2
+    :param Y:  np.ndarray of ndim 2
+    :param metric: string describing the metric type
+    :return: np.ndarray of ndim 2
+    """
+    assert metric in [
+        'cosine',
+        'euclidean_squared',
+        'euclidean',
+    ], f'Input metric={metric} not valid'
+    if metric == 'cosine':
+        dists = cosine_distance(X, Y)
+    if metric == 'euclidean_squared':
+        dists = euclidean_distance_squared(X, Y)
+    if metric == 'euclidean':
+        dists = np.sqrt(euclidean_distance_squared(X, Y))
+    return dists
 
 
 def cosine_distance(X: 'np.ndarray', Y: 'np.ndarray') -> 'np.ndarray':
