@@ -63,6 +63,24 @@ def docarray_for_cache():
     return da
 
 
+@pytest.fixture
+def docarrays_for_embedding_distance_computation():
+    d1 = Document(embedding=np.array([0, 0, 0]))
+    d2 = Document(embedding=np.array([3, 0, 0]))
+    d3 = Document(embedding=np.array([1, 0, 0]))
+    d4 = Document(embedding=np.array([2, 0, 0]))
+
+    d1_m = Document(embedding=np.array([1, 0, 0]))
+    d2_m = Document(embedding=np.array([2, 0, 0]))
+    d3_m = Document(embedding=np.array([0, 0, 1]))
+    d4_m = Document(embedding=np.array([0, 0, 2]))
+    d5_m = Document(embedding=np.array([0, 0, 3]))
+
+    D1 = DocumentArray([d1, d2, d3, d4])
+    D2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+    return D1, D2
+
+
 def test_length(docarray, docs):
     assert len(docs) == len(docarray) == 3
 
@@ -443,6 +461,28 @@ def test_new_distances_equal_previous_distances():
     ### test cosine distance
     X_ext = _ext_A(_norm(X))
     Y_ext = _ext_B(_norm(Y))
-    dists_previous_euclidean = _cosine(X_ext, Y_ext)
-    dists_new_euclidean = cosine_distance(X, Y)
-    np.testing.assert_almost_equal(dists_previous_euclidean, dists_new_euclidean)
+    dists_previous_cosine = _cosine(X_ext, Y_ext)
+    dists_new_cosine = cosine_distance(X, Y)
+    np.testing.assert_almost_equal(dists_previous_cosine, dists_new_cosine)
+
+
+@pytest.mark.parametrize('limit', [1, 2])
+def test_matching_retrieves_correct_number(
+    docarrays_for_embedding_distance_computation, limit
+):
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1.match(D2, metric='euclidean_squared', limit=limit, is_distance=True)
+    for m in D1.get_attributes('matches'):
+        assert len(m) == limit
+
+
+def test_matching_retrieves_closest_matches(
+    docarrays_for_embedding_distance_computation,
+):
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1.match(D2, metric='euclidean_squared', limit=3, is_distance=True)
+    expected_sorted_values = [
+        D1[0].get_attributes('matches')[i].scores['euclidean_squared'].value
+        for i in range(3)
+    ]
+    assert expected_sorted_values == sorted(expected_sorted_values)
