@@ -36,7 +36,7 @@ jobs:
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
       - run:
           pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s tests/distributed
       - name: destroy-jinad-on-aws
