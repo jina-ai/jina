@@ -536,11 +536,11 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             if allow_py_modules:
                 # also add YAML parent path to the search paths
                 if s_path:
-                    # inject PathFinder
-                    from ..importer import PathFinder
+                    # append ExtensionPathFinder into sys.meta_path
+                    from ..importer import ExtensionPathFinder
 
-                    PathFinder.__path__ = os.path.dirname(s_path)
-                    sys.meta_path.append(PathFinder())
+                    ExtensionPathFinder.__path__ = os.path.dirname(s_path)
+                    sys.meta_path.append(ExtensionPathFinder())
 
                 load_py_modules(
                     no_tag_yml,
@@ -548,7 +548,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 )
 
                 if s_path:
-                    # clean PathFinder
+                    # pop ExtensionPathFinder from sys.meta_path
                     sys.meta_path.pop()
 
             from ..flow.base import Flow

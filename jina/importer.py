@@ -96,12 +96,12 @@ class ImportExtensions:
                 return True  # suppress the error
 
 
-class ModuleLoader(Loader):
-    """A custom module loader"""
+class ExtensionFileLoader(Loader):
+    """Loader for extension modules."""
 
     @classmethod
     def exec_module(cls, module):
-        """load module into memory
+        """Initialize an extension module
 
         :param module: a namespace module
         """
@@ -111,19 +111,19 @@ class ModuleLoader(Loader):
             module.__path__ = [load_path[: -len(init_file) - 1]]
 
 
-_loader = ModuleLoader()
+_loader = ExtensionFileLoader()
 
 
-class PathFinder:
-    """A custom source file path finder"""
+class ExtensionPathFinder:
+    """Meta path finder for extentions modules"""
 
-    __path__ = None
+    __path__ = '.'
 
     @classmethod
-    def find_spec(cls, name, paths, target=None):
-        """find moduel spec from given paths
+    def find_spec(cls, fullname, paths=None, target=None):
+        """Try to find a spec for the specified module.
 
-        :param name: module full name
+        :param fullname: module full name
         :param paths: the search paths
         :param target: the target
         :return: a module spec
@@ -131,7 +131,7 @@ class PathFinder:
         from importlib.machinery import ModuleSpec
 
         # TODO: read PEP 420
-        last_module = name.split('.')[-1]
+        last_module = fullname.split('.')[-1]
         if paths is None:
             paths = [cls.__path__]
         for path in paths:
@@ -141,9 +141,9 @@ class PathFinder:
             module_path = full_path + '.py'
 
             if os.path.exists(init_path) and not os.path.exists(module_path):
-                return ModuleSpec(name, _loader, origin=init_path)
+                return ModuleSpec(fullname, _loader, origin=init_path)
             elif os.path.exists(module_path):
-                return ModuleSpec(name, _loader, origin=module_path)
+                return ModuleSpec(fullname, _loader, origin=module_path)
         return None
 
 
