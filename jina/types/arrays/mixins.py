@@ -2,7 +2,7 @@ import re
 import operator
 from typing import List, Dict, Iterable
 
-from jina import DocumentArray
+from .document import DocumentArray
 
 
 class TagsFilterMixin:
@@ -11,7 +11,7 @@ class TagsFilterMixin:
     ):
         """Filter document array by tags using regex.
 
-        :param regexes: List of dict, each key is the name of the tag, each value is the value of the tag.
+        :param regexes: List of dict, each key is the name of the tag, each value is the regex to be used as pattern.
         :param traversal_paths: List of document traversal paths, default traversal at matches level. If filter by chunks, use
           ['c'], filter by matches use ['m'], or combine them to filter on multiple levels.
         """
