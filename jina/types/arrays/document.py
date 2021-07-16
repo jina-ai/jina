@@ -1,5 +1,6 @@
 import json
 import warnings
+from math import inf
 from abc import abstractmethod
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
@@ -16,13 +17,12 @@ from typing import (
     TypeVar,
 )
 
+import numpy as np
+
 from .traversable import TraversableSequence
 from ..document import Document
 from ...helper import typename, cached_property, cache_invalidate
 from ...proto import jina_pb2
-
-import numpy as np
-from math import inf
 
 try:
     # when protobuf using Cpp backend
@@ -330,8 +330,8 @@ class DocumentArray(
             """Invert values to scores if `is_distance=False` according to the metric that is passed.
 
             :param X: input np.ndarray
-            :param metric: string defining distance function ['cosine', 'euclidean', lidean_squared'].
-            :param is_distance: Boolean flag that describes if values in X need to be erted to similarities.
+            :param metric: string defining distance function ['cosine', 'euclidean', euclidean_squared'].
+            :param is_distance: Boolean flag that describes if values in X need to be reinterpreted as similarities.
             :return: A np.ndarray with distances if `is_distance=True`, scores if distance=False`.
             """
             if metric == 'cosine':
@@ -343,7 +343,7 @@ class DocumentArray(
                 if is_distance:
                     X = X
                 else:
-                    X = 1 / X
+                    X = 1 / (X + 1)
             return X
 
         X = np.stack(self.get_attributes('embedding'))
@@ -352,7 +352,7 @@ class DocumentArray(
 
         dists = compute_distances(X, Y, metric)
         idx, dist = self._get_sorted_smallest_k(dists, limit)
-
+        # breakpoint()
         for _q, _ids, _dists in zip(self, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(darray[int(_id)], copy=True)
