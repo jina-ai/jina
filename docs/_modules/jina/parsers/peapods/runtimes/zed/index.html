@@ -403,7 +403,8 @@
         <span class="n">default</span><span class="o">=</span><span class="n">__default_executor__</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
 <span class="s1">        The config of the executor, it could be one of the followings:</span>
-<span class="s1">        * an Executor-level YAML file path (.yml, .yaml, .jaml)</span>
+<span class="s1">        * an Executor YAML file (.yml, .yaml, .jaml)</span>
+<span class="s1">        * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
 <span class="s1">        * a docker image (must start with `docker://`)</span>
 <span class="s1">        * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="s1">        * the string literal of a JSON config</span>
@@ -414,21 +415,23 @@
 <span class="s1">        '''</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--uses-with'</span><span class="p">,</span>
         <span class="s1">'--override-with'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">    Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`</span>
+<span class="s1">    Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="s1">    '''</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--uses-metas'</span><span class="p">,</span>
         <span class="s1">'--override-metas'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">    Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`</span>
+<span class="s1">    Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
 <span class="s1">    '''</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>

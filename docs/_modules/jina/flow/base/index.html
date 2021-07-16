@@ -490,8 +490,6 @@
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">on_error_strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'IGNORE'</span><span class="p">,</span>
-        <span class="n">override_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">override_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_expose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -514,6 +512,8 @@
         <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">zmq_identity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -561,8 +561,6 @@
 
 <span class="sd">          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something</span>
 <span class="sd">          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</span>
-<span class="sd">        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`</span>
-<span class="sd">        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`</span>
 <span class="sd">        :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]</span>
 <span class="sd">        :param port_expose: The port of the host exposed to the public</span>
 <span class="sd">        :param port_in: The port for input data, default a random port between [49152, 65535]</span>
@@ -590,7 +588,8 @@
 <span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever</span>
 <span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
-<span class="sd">                  * an Executor-level YAML file path (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
@@ -598,6 +597,8 @@
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
+<span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
+<span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 <span class="sd">        :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.</span>
 
@@ -828,8 +829,6 @@
         <span class="n">memory_hwm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">on_error_strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'IGNORE'</span><span class="p">,</span>
-        <span class="n">override_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">override_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">parallel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">peas_hosts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
@@ -858,6 +857,8 @@
         <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
         <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">zmq_identity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -906,8 +907,6 @@
 
 <span class="sd">          Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something</span>
 <span class="sd">          is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.</span>
-<span class="sd">        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`</span>
-<span class="sd">        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`</span>
 <span class="sd">        :param parallel: The number of parallel peas in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary</span>
 <span class="sd">        :param peas_hosts: The hosts of the peas when parallel greater than 1.</span>
 <span class="sd">                  Peas will be evenly distributed among the hosts. By default,</span>
@@ -951,7 +950,8 @@
 <span class="sd">          - by default, `--uses` YAML file is always uploaded.</span>
 <span class="sd">          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.</span>
 <span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
-<span class="sd">                  * an Executor-level YAML file path (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
+<span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
@@ -961,6 +961,8 @@
 <span class="sd">                  - a text file stream has `.read()` interface</span>
 <span class="sd">        :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`</span>
 <span class="sd">        :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`</span>
+<span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
+<span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
 
 <span class="sd">          Note,</span>
