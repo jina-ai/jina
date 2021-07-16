@@ -169,7 +169,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -389,6 +388,8 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shelve</span>
 <span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -670,6 +671,16 @@
         <span class="k">return</span> <span class="n">wrapper</span>
 
     <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="install_requirements"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.install_requirements">[docs]</a><span class="k">def</span> <span class="nf">install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">):</span>
+    <span class="sd">"""Install modules included in requirments file</span>
+
+<span class="sd">    :param requirements_file: the requirements.txt file</span>
+<span class="sd">    """</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s1">'-m'</span><span class="p">,</span> <span class="s1">'pip'</span><span class="p">,</span> <span class="s1">'install'</span><span class="p">,</span> <span class="s1">'-r'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">requirements_file</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
+    <span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>

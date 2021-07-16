@@ -7,7 +7,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://docs.jina.ai/api/jina.hubble.html" />
   <meta property="og:site_name" content="Jina Documentation" />
-  <meta property="og:description" content="Submodules: jina.hubble.helper module, jina.hubble.hubapi module, jina.hubble.hubio module, jina.hubble.progress_bar module. Module contents:" />
+  <meta property="og:description" content="Submodules: jina.hubble.helper module, jina.hubble.hubapi module, jina.hubble.hubio module. Module contents:" />
   <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   <meta property="og:image:alt" content="Jina Documentation" />
   <meta name="twitter:card" content="summary_large_image">
@@ -192,7 +192,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -412,12 +411,49 @@
 <li class="toctree-l1"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="module-jina.hubble">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.hubble" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="jina.hubble.HubExecutor">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.</span></code><code class="sig-name descname"><span class="pre">HubExecutor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visibility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md5sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/#HubExecutor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.HubExecutor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Basic Executor Data Class from Hubble</p>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.uuid">
+<code class="sig-name descname"><span class="pre">uuid</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.uuid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.alias">
+<code class="sig-name descname"><span class="pre">alias</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.alias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.sn">
+<code class="sig-name descname"><span class="pre">sn</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.sn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.tag">
+<code class="sig-name descname"><span class="pre">tag</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.visibility">
+<code class="sig-name descname"><span class="pre">visibility</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.visibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.image_name">
+<code class="sig-name descname"><span class="pre">image_name</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.image_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.archive_url">
+<code class="sig-name descname"><span class="pre">archive_url</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.archive_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py attribute">
+<dt id="jina.hubble.HubExecutor.md5sum">
+<code class="sig-name descname"><span class="pre">md5sum</span></code><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#jina.hubble.HubExecutor.md5sum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
 </div>
 </div>
 

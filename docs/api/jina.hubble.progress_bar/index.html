@@ -24,7 +24,7 @@
 
   gtag('config', 'G-48ZDWC8GT6');
 </script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.jaml package" href="../jina.jaml/" /><link rel="prev" title="jina.hubble.hubio module" href="../jina.hubble.hubio/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
         <title>jina.hubble.progress_bar module - Jina 2.0.8 documentation</title>
@@ -135,8 +135,8 @@
   <input type="hidden" name="area" value="default">
 </form><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption"><span class="caption-text">Developer Reference</span></p>
-<ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../jina/">jina package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label for="toctree-checkbox-2"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label for="toctree-checkbox-3"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
@@ -187,11 +187,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.helloworld.fork/">jina.helloworld.fork module</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="../jina.hubble/">jina.hubble package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label for="toctree-checkbox-11"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -402,301 +401,16 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="module-jina.hubble.progress_bar">
-<span id="jina-hubble-progress-bar-module"></span><h1>jina.hubble.progress_bar module<a class="headerlink" href="#module-jina.hubble.progress_bar" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="jina.hubble.progress_bar.ProgressBar">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.progress_bar.</span></code><code class="sig-name descname"><span class="pre">ProgressBar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#ProgressBar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.logging.profile/#jina.logging.profile.TimeContext" title="jina.logging.profile.TimeContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.logging.profile.TimeContext</span></code></a></p>
-<p>A simple progress bar.</p>
-<dl>
-<dt>Example:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">ProgressBar</span><span class="p">(</span><span class="s1">'loop'</span><span class="p">)</span> <span class="k">as</span> <span class="n">bar</span><span class="p">:</span>
-    <span class="n">do_busy</span><span class="p">()</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The name of the task, will be displayed in front of the bar.</p></li>
-<li><p><strong>total</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Number of steps in the bar. Defaults to 100.</p></li>
-<li><p><strong>bar_len</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Total length of the bar.</p></li>
-<li><p><strong>logger</strong> – Jina logger</p></li>
-</ul>
-</dd>
-</dl>
-<p>Create the context manager to timing a code snippet.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context/message.</p></li>
-<li><p><strong>logger</strong> – Use existing logger or use naive <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Example:
-.. highlight:: python
-.. code-block:: python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>with TimeContext(‘loop’):</dt><dd><p>do_busy()</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ProgressBar.window_size">
-<code class="sig-name descname"><span class="pre">window_size</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.window_size" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ProgressBar.suffix">
-<code class="sig-name descname"><span class="pre">suffix</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'%(percent).2f</span> <span class="pre">%%</span> <span class="pre">eta:</span> <span class="pre">%(eta_td)s'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.suffix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ProgressBar.bar_prefix">
-<code class="sig-name descname"><span class="pre">bar_prefix</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'</span> <span class="pre">|'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.bar_prefix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ProgressBar.bar_suffix">
-<code class="sig-name descname"><span class="pre">bar_suffix</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'|</span> <span class="pre">'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.bar_suffix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ProgressBar.empty_fill">
-<code class="sig-name descname"><span class="pre">empty_fill</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'</span> <span class="pre">'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.empty_fill" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ProgressBar.fill">
-<code class="sig-name descname"><span class="pre">fill</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'#'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.fill" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.remaining">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">remaining</span></code><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.remaining" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the remaining steps to be completed</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the remaining steps</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.elapsed">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">elapsed</span></code><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.elapsed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the elapsed time</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the elapsed seconds</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.elapsed_td">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">elapsed_td</span></code><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.elapsed_td" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the timedelta of elapsed time</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the timedelta of elapsed seconds</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.eta">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">eta</span></code><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.eta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return EAT (estimated time of arrival)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>return the seconds of ETA</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.eta_td">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">eta_td</span></code><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.eta_td" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the timedelta of ETA</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the timedelta of ETA</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.percent">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">percent</span></code><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.percent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate percentage complete.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the percentage of completed</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.update_avg">
-<code class="sig-name descname"><span class="pre">update_avg</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#ProgressBar.update_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.update_avg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the average of speed
-:type steps: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param steps: the completed steps
-:type dt: <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>
-:param dt: the time seconds to use</p>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.ProgressBar.update">
-<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">completed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#ProgressBar.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.ProgressBar.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update progress with new values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>steps</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Number of incremental completed steps.</p></li>
-<li><p><strong>completed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – : Number of completed steps.</p></li>
-<li><p><strong>total</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – Total number of steps, or <cite>None</cite> to not change. Defaults to None.</p></li>
-<li><p><strong>suffix_msg</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the suffix message</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.hubble.progress_bar.ChargingBar">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.progress_bar.</span></code><code class="sig-name descname"><span class="pre">ChargingBar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#ChargingBar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.ChargingBar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.hubble.progress_bar.ProgressBar" title="jina.hubble.progress_bar.ProgressBar"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.hubble.progress_bar.ProgressBar</span></code></a></p>
-<p>Charging Bar</p>
-<p>Create the context manager to timing a code snippet.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context/message.</p></li>
-<li><p><strong>logger</strong> – Use existing logger or use naive <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Example:
-.. highlight:: python
-.. code-block:: python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>with TimeContext(‘loop’):</dt><dd><p>do_busy()</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ChargingBar.bar_prefix">
-<code class="sig-name descname"><span class="pre">bar_prefix</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'</span> <span class="pre">'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ChargingBar.bar_prefix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ChargingBar.bar_suffix">
-<code class="sig-name descname"><span class="pre">bar_suffix</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'</span> <span class="pre">'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ChargingBar.bar_suffix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ChargingBar.empty_fill">
-<code class="sig-name descname"><span class="pre">empty_fill</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'∙'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ChargingBar.empty_fill" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.ChargingBar.fill">
-<code class="sig-name descname"><span class="pre">fill</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'█'</span></em><a class="headerlink" href="#jina.hubble.progress_bar.ChargingBar.fill" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.hubble.progress_bar.Spinner">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.progress_bar.</span></code><code class="sig-name descname"><span class="pre">Spinner</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#Spinner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.Spinner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.logging.profile/#jina.logging.profile.TimeContext" title="jina.logging.profile.TimeContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.logging.profile.TimeContext</span></code></a></p>
-<p>Create the context manager to timing a code snippet.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context/message.</p></li>
-<li><p><strong>logger</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>]) – Use existing logger or use naive <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Example:
-.. highlight:: python
-.. code-block:: python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>with TimeContext(‘loop’):</dt><dd><p>do_busy()</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.Spinner.phases">
-<code class="sig-name descname"><span class="pre">phases</span></code><em class="property"> <span class="pre">=</span> <span class="pre">('-',</span> <span class="pre">'\\',</span> <span class="pre">'|',</span> <span class="pre">'/')</span></em><a class="headerlink" href="#jina.hubble.progress_bar.Spinner.phases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.Spinner.running">
-<code class="sig-name descname"><span class="pre">running</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#Spinner.running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.Spinner.running" title="Permalink to this definition">¶</a></dt>
-<dd><p>daemon thread to output spinner</p>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.hubble.progress_bar.Spinner.update">
-<code class="sig-name descname"><span class="pre">update</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#Spinner.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.Spinner.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the progress bar</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – parameters that can be accepted</p>
-</dd>
-</dl>
-</dd></dl>
-</dd></dl>
-<dl class="py class">
-<dt id="jina.hubble.progress_bar.PieSpinner">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.hubble.progress_bar.</span></code><code class="sig-name descname"><span class="pre">PieSpinner</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/progress_bar/#PieSpinner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.progress_bar.PieSpinner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.hubble.progress_bar.Spinner" title="jina.hubble.progress_bar.Spinner"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.hubble.progress_bar.Spinner</span></code></a></p>
-<p>Create the context manager to timing a code snippet.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context/message.</p></li>
-<li><p><strong>logger</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>]) – Use existing logger or use naive <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Example:
-.. highlight:: python
-.. code-block:: python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>with TimeContext(‘loop’):</dt><dd><p>do_busy()</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="py attribute">
-<dt id="jina.hubble.progress_bar.PieSpinner.phases">
-<code class="sig-name descname"><span class="pre">phases</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['◷',</span> <span class="pre">'◶',</span> <span class="pre">'◵',</span> <span class="pre">'◴']</span></em><a class="headerlink" href="#jina.hubble.progress_bar.PieSpinner.phases" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-</dd></dl>
+        <div class="section" id="jina-hubble-progress-bar-module">
+<h1>jina.hubble.progress_bar module<a class="headerlink" href="#jina-hubble-progress-bar-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
       </article>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../jina.jaml/">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">jina.jaml package</div>
-              </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="../jina.hubble.hubio/">
-              <svg><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">jina.hubble.hubio module</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
 
         <div class="related-information">

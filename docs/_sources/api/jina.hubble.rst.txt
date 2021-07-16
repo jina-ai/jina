@@ -10,7 +10,6 @@ Submodules
    jina.hubble.helper
    jina.hubble.hubapi
    jina.hubble.hubio
-   jina.hubble.progress_bar
 
 Module contents
 ---------------

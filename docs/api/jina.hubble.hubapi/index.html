@@ -192,7 +192,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.hubble.hubio/">jina.hubble.hubio module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -465,15 +464,13 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.hubble.hubapi.install_local">
-<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">install_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_deps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#install_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.install_local" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">install_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zip_package</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_deps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#install_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.install_local" title="Permalink to this definition">¶</a></dt>
 <dd><p>Install the package in zip format to the Jina Hub root.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zip_package</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the path of the zip file</p></li>
-<li><p><strong>uuid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the UUID of the executor</p></li>
-<li><p><strong>tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the TAG of the executor</p></li>
-<li><p><strong>force</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – if set, overwrites the package</p></li>
+<li><p><strong>executor</strong> (<a class="reference internal" href="../jina.hubble/#jina.hubble.HubExecutor" title="jina.hubble.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a>) – the executor to install</p></li>
 <li><p><strong>install_deps</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – if set, install dependencies</p></li>
 </ul>
 </dd>
@@ -501,14 +498,11 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.hubble.hubapi.resolve_local">
-<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">resolve_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#resolve_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.resolve_local" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></code><code class="sig-name descname"><span class="pre">resolve_local</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">executor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#resolve_local"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.resolve_local" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the path of the executor if available.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uuid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the UUID of executor</p></li>
-<li><p><strong>tag</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – the TAG of executor</p></li>
-</ul>
+<dd class="field-odd"><p><strong>executor</strong> (<a class="reference internal" href="../jina.hubble/#jina.hubble.HubExecutor" title="jina.hubble.HubExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">HubExecutor</span></code></a>) – the executor to check</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</p>

@@ -169,7 +169,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../api/jina.hubble.progress_bar/">jina.hubble.progress_bar module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label for="toctree-checkbox-12"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -385,13 +384,12 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">unpack_package</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">HubExecutor</span>
+<span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">unpack_package</span><span class="p">,</span> <span class="n">install_requirements</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 
 <span class="n">_hub_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
@@ -495,38 +493,22 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">secret_data</span><span class="p">))</span></div>
 
 
-<span class="k">def</span> <span class="nf">_install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">):</span>
-    <span class="sd">"""Install modules included in requirments file</span>
-
-<span class="sd">    :param requirements_file: the requirements.txt file</span>
-<span class="sd">    """</span>
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s1">'-m'</span><span class="p">,</span> <span class="s1">'pip'</span><span class="p">,</span> <span class="s1">'install'</span><span class="p">,</span> <span class="s1">'-r'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">requirements_file</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
-    <span class="p">)</span>
-
-
 <div class="viewcode-block" id="install_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.install_local">[docs]</a><span class="k">def</span> <span class="nf">install_local</span><span class="p">(</span>
     <span class="n">zip_package</span><span class="p">:</span> <span class="s1">'Path'</span><span class="p">,</span>
-    <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">force</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">executor</span><span class="p">:</span> <span class="s1">'HubExecutor'</span><span class="p">,</span>
     <span class="n">install_deps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""Install the package in zip format to the Jina Hub root.</span>
 
 <span class="sd">    :param zip_package: the path of the zip file</span>
-<span class="sd">    :param uuid: the UUID of the executor</span>
-<span class="sd">    :param tag: the TAG of the executor</span>
-<span class="sd">    :param force: if set, overwrites the package</span>
+<span class="sd">    :param executor: the executor to install</span>
 <span class="sd">    :param install_deps: if set, install dependencies</span>
 <span class="sd">    """</span>
 
-    <span class="n">pkg_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">get_dist_path</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">pkg_dist_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
-        <span class="k">return</span>
+    <span class="n">pkg_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">get_dist_path</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
 
     <span class="c1"># clean existed dist-info</span>
-    <span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">_hub_root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-*.dist-info'</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">_hub_root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-*.dist-info'</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pkg_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">pkg_path</span><span class="p">)</span>
@@ -542,12 +524,17 @@
         <span class="k">if</span> <span class="n">install_deps</span><span class="p">:</span>
             <span class="n">requirements_file</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span>
             <span class="k">if</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="n">_install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
+                <span class="n">install_requirements</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
                 <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="s1">'requirements.txt'</span><span class="p">)</span>
 
         <span class="n">manifest_path</span> <span class="o">=</span> <span class="n">pkg_path</span> <span class="o">/</span> <span class="s1">'manifest.yml'</span>
         <span class="k">if</span> <span class="n">manifest_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">manifest_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="s1">'manifest.yml'</span><span class="p">)</span>
+
+        <span class="c1"># store the serial number in local</span>
+        <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">sn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sn_file</span> <span class="o">=</span> <span class="n">pkg_dist_path</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'PKG-SN-</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">sn</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">sn_file</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
 
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="c1"># clean pkg_path, pkg_dist_path</span>
@@ -580,19 +567,21 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="resolve_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.resolve_local">[docs]</a><span class="k">def</span> <span class="nf">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'Path'</span><span class="p">]:</span>
+<div class="viewcode-block" id="resolve_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.resolve_local">[docs]</a><span class="k">def</span> <span class="nf">resolve_local</span><span class="p">(</span><span class="n">executor</span><span class="p">:</span> <span class="s1">'HubExecutor'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'Path'</span><span class="p">]:</span>
     <span class="sd">"""Return the path of the executor if available.</span>
 
-<span class="sd">    :param uuid: the UUID of executor</span>
-<span class="sd">    :param tag: the TAG of executor</span>
+<span class="sd">    :param executor: the executor to check</span>
 <span class="sd">    :return: the path of the executor package</span>
 <span class="sd">    """</span>
-    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="n">uuid</span>
-    <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">.dist-info'</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">tag</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pkg_dist_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()):</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1"> doe not exist'</span><span class="p">)</span>
+    <span class="n">pkg_path</span> <span class="o">=</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span>
+    <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">_hub_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s1">.dist-info'</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pkg_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_path</span><span class="si">}</span><span class="s1"> does not exist'</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">pkg_dist_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pkg_dist_path</span><span class="si">}</span><span class="s1"> does not exist'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pkg_path</span></div>
+        <span class="k">return</span> <span class="n">pkg_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span></div>
 
 
 <div class="viewcode-block" id="exist_local"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.exist_local">[docs]</a><span class="k">def</span> <span class="nf">exist_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -603,7 +592,7 @@
 <span class="sd">    :return: True if existed, else False</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">resolve_local</span><span class="p">(</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
+        <span class="n">resolve_local</span><span class="p">(</span><span class="n">HubExecutor</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">uuid</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span></div>

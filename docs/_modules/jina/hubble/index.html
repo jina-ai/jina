@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <meta name="generator" content="sphinx-3.5.3, furo 2021.06.18.beta36"/>
-        <title>jina.executors - Jina 2.0.8 documentation</title>
+        <title>jina.hubble - Jina 2.0.8 documentation</title>
       <link rel="stylesheet" href="../../../_static/styles/furo.css?digest=9b17055c4366e8b2949c66d6a9d8b0efe4dbaa60">
     <link rel="stylesheet" href="../../../_static/pygments.css">
     
@@ -379,228 +379,23 @@
         <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <h1>Source code for jina.executors</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
-
-<span class="kn">from</span> <span class="nn">.decorators</span> <span class="kn">import</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
-<span class="kn">from</span> <span class="nn">.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">typename</span>
-<span class="kn">from</span> <span class="nn">..jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">subvar_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
-
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">,</span> <span class="s1">'AnyExecutor'</span><span class="p">,</span> <span class="s1">'ExecutorType'</span><span class="p">]</span>
-
-<span class="n">AnyExecutor</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'AnyExecutor'</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s1">'BaseExecutor'</span><span class="p">)</span>
+        <h1>Source code for jina.hubble</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 
-<div class="viewcode-block" id="ExecutorType"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.ExecutorType">[docs]</a><span class="k">class</span> <span class="nc">ExecutorType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">),</span> <span class="nb">type</span><span class="p">):</span>
-    <span class="sd">"""The class of Executor type, which is the metaclass of :class:`BaseExecutor`."""</span>
+<div class="viewcode-block" id="HubExecutor"><a class="viewcode-back" href="../../../api/jina.hubble/#jina.hubble.HubExecutor">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HubExecutor</span><span class="p">:</span>
+    <span class="sd">"""Basic Executor Data Class from Hubble"""</span>
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        # noqa: DAR101</span>
-<span class="sd">        # noqa: DAR102</span>
-
-<span class="sd">        :return: Executor class</span>
-<span class="sd">        """</span>
-        <span class="n">_cls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">register_class</span><span class="p">(</span><span class="n">_cls</span><span class="p">)</span>
-
-<div class="viewcode-block" id="ExecutorType.register_class"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.ExecutorType.register_class">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">register_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Register a class and wrap update, train, aggregate functions.</span>
-
-<span class="sd">        :param cls: The class.</span>
-<span class="sd">        :return: The class, after being registered.</span>
-<span class="sd">        """</span>
-
-        <span class="n">reg_cls_set</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">'_registered_class'</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
-
-        <span class="n">cls_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span>
-        <span class="k">if</span> <span class="n">cls_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reg_cls_set</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">'force_register'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="n">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="p">[</span><span class="s1">'__init__'</span><span class="p">],</span> <span class="n">store_init_kwargs</span><span class="p">)</span>
-
-            <span class="n">reg_cls_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cls_id</span><span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">'_registered_class'</span><span class="p">,</span> <span class="n">reg_cls_set</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span></div></div>
-
-
-<div class="viewcode-block" id="BaseExecutor"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.BaseExecutor">[docs]</a><span class="k">class</span> <span class="nc">BaseExecutor</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ExecutorType</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    The base class of the executor, can be used to build encoder, indexer, etc.</span>
-
-<span class="sd">    Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.metas.defaults`.</span>
-
-<span class="sd">    All arguments in the :func:`__init__` can be specified with a ``with`` map in the YAML config. Example:</span>
-
-<span class="sd">    .. highlight:: python</span>
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        class MyAwesomeExecutor:</span>
-<span class="sd">            def __init__(awesomeness = 5):</span>
-<span class="sd">                pass</span>
-
-<span class="sd">    is equal to</span>
-
-<span class="sd">    .. highlight:: yaml</span>
-<span class="sd">    .. code-block:: yaml</span>
-
-<span class="sd">        jtype: MyAwesomeExecutor</span>
-<span class="sd">        with:</span>
-<span class="sd">            awesomeness: 5</span>
-
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""`metas` and `requests` are always auto-filled with values from YAML config.</span>
-
-<span class="sd">        :param metas: a dict of metas fields</span>
-<span class="sd">        :param requests: a dict of endpoint-function mapping</span>
-<span class="sd">        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime</span>
-<span class="sd">        :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_metas</span><span class="p">(</span><span class="n">metas</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_runtime_args</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_add_runtime_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">_runtime_args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span><span class="o">**</span><span class="n">_runtime_args</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_add_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
-        <span class="n">request_mapping</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, Callable]</span>
-
-        <span class="k">if</span> <span class="n">_requests</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">_requests</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="c1"># the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`</span>
-                <span class="c1"># this to ensure we always have `_func` as unbound method</span>
-                <span class="n">_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">_func</span><span class="p">):</span>
-                    <span class="c1"># the target function is not decorated with `@requests` yet</span>
-                    <span class="n">request_mapping</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">_func</span>
-                <span class="k">elif</span> <span class="n">typename</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'jina.executors.decorators.FunctionMapper'</span><span class="p">:</span>
-                    <span class="c1"># the target function is already decorated with `@requests`, need unwrap with `.fn`</span>
-                    <span class="n">request_mapping</span><span class="p">[</span><span class="n">endpoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">_func</span><span class="o">.</span><span class="n">fn</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'expect </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s1"> to be a function, but receiving </span><span class="si">{</span><span class="n">typename</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
-                    <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">request_mapping</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">requests</span> <span class="o">=</span> <span class="n">request_mapping</span>
-
-    <span class="k">def</span> <span class="nf">_add_metas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
-
-        <span class="n">tmp</span> <span class="o">=</span> <span class="n">get_default_metas</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">_metas</span><span class="p">:</span>
-            <span class="n">tmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_metas</span><span class="p">)</span>
-
-        <span class="n">unresolved_attr</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
-        <span class="c1"># set self values filtered by those non-exist, and non-expandable</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tmp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">subvar_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-                        <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">unresolved_attr</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">unresolved_attr</span><span class="p">:</span>
-            <span class="n">_tmp</span> <span class="o">=</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="n">_tmp</span><span class="p">[</span><span class="s1">'metas'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
-            <span class="n">new_metas</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">expand_dict</span><span class="p">(</span><span class="n">_tmp</span><span class="p">)[</span><span class="s1">'metas'</span><span class="p">]</span>
-
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_metas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-                            <span class="n">subvar_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">or</span> <span class="n">internal_var_regex</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-                        <span class="p">):</span>
-                            <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1"> is not substitutable or badly referred'</span>
-                            <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="c1"># `name` is important as it serves as an identifier of the executor</span>
-        <span class="c1"># if not given, then set a name by the rule</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">metas</span> <span class="o">=</span> <span class="n">target</span>
-
-<div class="viewcode-block" id="BaseExecutor.close"><a class="viewcode-back" href="../../../api/jina.executors/#jina.executors.BaseExecutor.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Always invoked as executor is destroyed.</span>
-
-<span class="sd">        You can write destructor &amp; saving logic here.</span>
-<span class="sd">        """</span>
-        <span class="k">pass</span></div>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        # noqa: DAR101</span>
-<span class="sd">        # noqa: DAR102</span>
-<span class="sd">        # noqa: DAR201</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">req_endpoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">req_endpoint</span><span class="p">](</span>
-                <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-            <span class="p">)</span>  <span class="c1"># unbound method, self is required</span>
-        <span class="k">elif</span> <span class="n">__default_endpoint__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">[</span><span class="n">__default_endpoint__</span><span class="p">](</span>
-                <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-            <span class="p">)</span>  <span class="c1"># unbound method, self is required</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Get the path of the current shard.</span>
-
-<span class="sd">        :return: returns the workspace of the shard of this Executor.</span>
-<span class="sd">        """</span>
-        <span class="n">workspace</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="p">,</span> <span class="s1">'workspace'</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">'workspace'</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">workspace</span><span class="p">:</span>
-            <span class="n">complete_workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">workspace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">replica_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">'replica_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="n">pea_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">'pea_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">replica_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">replica_id</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">complete_workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">replica_id</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">pea_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pea_id</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                <span class="n">complete_workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">pea_id</span><span class="p">))</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">complete_workspace</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'can not find metas.workspace or runtime_args.workspace'</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">alias</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">sn</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">visibility</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">image_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">archive_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">md5sum</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 </pre></div>
       </article>
       <footer>
