@@ -1,8 +1,8 @@
 """Module wrapping interactions with the local executor packages."""
 
+import json
 import os
 import shutil
-import json
 from pathlib import Path
 from typing import Tuple, Optional
 
@@ -85,15 +85,12 @@ def dump_secret(work_path: 'Path', uuid8: str, secret: str):
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
-    local_id = None
-    fernet = None
     if local_id_file.exists():
         try:
             with local_id_file.open() as f:
                 local_id, local_key = f.readline().strip().split('\t')
                 fernet = Fernet(local_key.encode())
-
-        except Exception as ex:
+        except Exception:
             return
     else:
         local_id = str(random_identity())
