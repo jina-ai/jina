@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
 
-
+from . import HubExecutor
 from .helper import (
     archive_package,
     download_with_resume,
@@ -17,14 +17,12 @@ from .helper import (
     upload_file,
     disk_cache_offline,
 )
-from . import HubExecutor
 from .helper import install_requirements
 from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..parsers.hubble import set_hub_parser
-
 
 _cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
