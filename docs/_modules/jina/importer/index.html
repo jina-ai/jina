@@ -438,21 +438,21 @@
                         <span class="k">break</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span><span class="p">:</span>
-                <span class="n">req_msg</span> <span class="o">=</span> <span class="s1">'fallback to default behavior'</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required</span><span class="p">:</span>
-                    <span class="n">req_msg</span> <span class="o">=</span> <span class="s1">'and it is required'</span>
-                <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'Module "</span><span class="si">{</span><span class="n">missing_module</span><span class="si">}</span><span class="s1">" is not installed, </span><span class="si">{</span><span class="n">req_msg</span><span class="si">}</span><span class="s1">. '</span>
-                    <span class="sa">f</span><span class="s1">'You are trying to use an extension feature not enabled by the '</span>
-                    <span class="s1">'current installation.</span><span class="se">\n</span><span class="s1">'</span>
-                    <span class="s1">'This feature is available in: '</span>
-                <span class="p">)</span>
                 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">colored</span>
 
-                <span class="n">err_msg</span> <span class="o">+=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">req_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'fallback to default behavior'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'yellow'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required</span><span class="p">:</span>
+                    <span class="n">req_msg</span> <span class="o">=</span> <span class="n">colored</span><span class="p">(</span><span class="s1">'and it is required'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'red'</span><span class="p">)</span>
+                <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'''Python package "</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">missing_module</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span><span class="si">}</span><span class="s1">" is not installed, </span><span class="si">{</span><span class="n">req_msg</span><span class="si">}</span><span class="s1">. </span>
+<span class="s1">                    You are trying to use a feature not enabled by your current Jina installation.'''</span>
+
+                <span class="n">avail_tags</span> <span class="o">=</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                     <span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">'[</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">]'</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tags</span>
                 <span class="p">)</span>
-                <span class="n">err_msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Use </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">"pip install jina[TAG]"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1"> to enable it'</span>
+                <span class="n">err_msg</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="se">\n\n</span><span class="s1">To enable this feature, use </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">"pip install jina[TAG]"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">, '</span>
+                    <span class="sa">f</span><span class="s1">'where </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s2">"[TAG]"</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1"> is one of </span><span class="si">{</span><span class="n">avail_tags</span><span class="si">}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">'</span>
+                <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">exc_val</span><span class="o">.</span><span class="n">msg</span><span class="si">}</span><span class="s1">'</span>
@@ -543,7 +543,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 16, 2021.
+            Last updated on Jul 17, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
