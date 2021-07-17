@@ -9,9 +9,9 @@ Table of Contents
     - [2.1 Distribute your executor](#21-distribute-your-executor)
     - [2.2 Pull distributed executor](#22-pull-distributed-executor)
   - [3. Use in Jina Flow](#3-use-in-jina-flow)
-    - [3.2 using docker images](#32-using-docker-images)
-    - [3.2 using source codes](#32-using-source-codes)
-    - [3.2 Override Default Parameters](#32-override-default-parameters)
+    - [3.1 Using docker images](#31-using-docker-images)
+    - [3.2 Using source codes](#32-using-source-codes)
+    - [3.3 Override Default Parameters](#33-override-default-parameters)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
