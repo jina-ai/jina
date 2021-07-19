@@ -1,0 +1,59 @@
+name: Distributed Tests
+
+on: pull_request
+
+jobs:
+  distributed-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "SCRIPTPATH=${PWD}/scripts/setup-jinad.sh" >> $GITHUB_ENV
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: latest
+      - run: terraform init
+        working-directory: ./tests/distributed
+      - run: >
+          terraform plan
+          -var='scriptpath=${{ env.SCRIPTPATH }}'
+          -var='branch=${{ github.head_ref }}'
+        working-directory: ./tests/distributed
+      - name: Create remote instances
+        run: >
+          terraform apply -auto-approve
+          -var='scriptpath=${{ env.SCRIPTPATH }}'
+          -var='branch=${{ github.head_ref }}'
+        working-directory: ./tests/distributed
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Prepare environment
+        run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          pip install ".[cicd,test,daemon]" --no-cache-dir
+          jina
+          export JINA_LOG_LEVEL="ERROR"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tests
+        run: pytest --suppress-no-test-exit-code  --force-flaky --max-runs 1 --cov=jina --cov-report=xml --timeout=360 -v -s tests/distributed
+      - if: always()
+        name: Destroy remote instances
+        run: >
+          terraform destroy -auto-approve
+          -var='scriptpath=${{ env.SCRIPTPATH }}'
+          -var='branch=${{ github.head_ref }}'
+        working-directory: ./tests/distributed
