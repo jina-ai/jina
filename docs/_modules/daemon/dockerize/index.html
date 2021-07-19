@@ -381,6 +381,7 @@
         </label>
         <h1>Source code for daemon.dockerize</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">docker</span>
@@ -650,6 +651,15 @@
             <span class="k">pass</span>
         <span class="k">return</span> <span class="n">__root_workspace__</span>
 
+    <span class="nd">@classproperty</span>
+    <span class="k">def</span> <span class="nf">dockersock</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""docker socket path</span>
+
+<span class="sd">        :return: abs path to docker socket</span>
+<span class="sd">        """</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="s1">'/var/run/docker.sock'</span>
+        <span class="k">return</span> <span class="n">location</span> <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'Darwin'</span> <span class="k">else</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="n">location</span>
+
 <div class="viewcode-block" id="Dockerizer.volume"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.volume">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">DaemonID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">"""</span>
@@ -665,8 +675,7 @@
                 <span class="s1">'bind'</span><span class="p">:</span> <span class="s1">'/workspace'</span><span class="p">,</span>
                 <span class="s1">'mode'</span><span class="p">:</span> <span class="s1">'rw'</span><span class="p">,</span>
             <span class="p">},</span>
-            <span class="c1"># TODO: without adding slash, it fails on WSL (needs to checked on linux/mac)</span>
-            <span class="s1">'//var/run/docker.sock'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'bind'</span><span class="p">:</span> <span class="s1">'/var/run/docker.sock'</span><span class="p">},</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">dockersock</span><span class="p">:</span> <span class="p">{</span><span class="s1">'bind'</span><span class="p">:</span> <span class="s1">'/var/run/docker.sock'</span><span class="p">},</span>
         <span class="p">}</span></div>
 
 <div class="viewcode-block" id="Dockerizer.environment"><a class="viewcode-back" href="../../../api/daemon.dockerize/#daemon.dockerize.Dockerizer.environment">[docs]</a>    <span class="nd">@classmethod</span>
