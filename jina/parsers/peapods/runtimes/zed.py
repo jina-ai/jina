@@ -21,7 +21,8 @@ def mixin_zed_runtime_parser(parser):
         default=__default_executor__,
         help='''
         The config of the executor, it could be one of the followings:
-        * an Executor-level YAML file path (.yml, .yaml, .jaml)
+        * an Executor YAML file (.yml, .yaml, .jaml)
+        * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
         * a docker image (must start with `docker://`)
         * the string literal of a YAML config (must start with `!` or `jtype: `)
         * the string literal of a JSON config
@@ -32,21 +33,23 @@ def mixin_zed_runtime_parser(parser):
         ''',
     )
     gp.add_argument(
+        '--uses-with',
         '--override-with',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
         help='''
-    Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
+    Dictionary of keyword arguments that will override the `with` configuration in `uses`
     ''',
     )
     gp.add_argument(
+        '--uses-metas',
         '--override-metas',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
         help='''
-    Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
+    Dictionary of keyword arguments that will override the `metas` configuration in `uses`
     ''',
     )
     gp.add_argument(

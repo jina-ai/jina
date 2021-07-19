@@ -79,7 +79,7 @@ jobs:
         with:
           python-version: 3.7
       - id: file_changes
-        uses: jitterbit/get-changed-files@v1
+        uses: Ana06/get-changed-files@v1.2
       - name: docstring check with darglint and pydocstyle
         run: ./scripts/docstrings_lint.sh
         env:
@@ -96,7 +96,7 @@ jobs:
         with:
           python-version: 3.7
       - id: file_changes
-        uses: jitterbit/get-changed-files@v1
+        uses: Ana06/get-changed-files@v1.2
       - name: check black
         run: ./scripts/black.sh
         env:

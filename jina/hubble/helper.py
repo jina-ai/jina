@@ -5,11 +5,13 @@ import io
 import json
 import os
 import shelve
+import subprocess
+import sys
 import urllib
 import zipfile
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict, Iterable
+from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
@@ -287,3 +289,13 @@ def disk_cache_offline(
         return wrapper
 
     return decorator
+
+
+def install_requirements(requirements_file: 'Path'):
+    """Install modules included in requirments file
+
+    :param requirements_file: the requirements.txt file
+    """
+    subprocess.check_call(
+        [sys.executable, '-m', 'pip', 'install', '-r', f'{requirements_file}']
+    )

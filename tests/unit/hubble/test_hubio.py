@@ -2,7 +2,7 @@ import os
 import json
 import urllib
 from typing import NamedTuple
-
+import shutil
 import docker
 import pytest
 import requests
@@ -105,6 +105,10 @@ def test_push(mocker, monkeypatch, path, mode):
 
     args = set_hub_push_parser().parse_args(_args_list)
     result = HubIO(args).push()
+
+    # remove .jina
+    exec_config_path = os.path.join(exec_path, '.jina')
+    shutil.rmtree(exec_config_path)
 
 
 def test_fetch(mocker, monkeypatch):

@@ -4,8 +4,8 @@ with:
 executors:
   - name: name
     uses: default_config.yml
-    override_with:
+    uses_with:
       param1: 50
       param2: 30
-    override_metas:
+    uses_metas:
       workspace: 'different_workspace'
