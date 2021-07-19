@@ -486,15 +486,25 @@ def test_matching_retrieves_correct_number(
         assert len(m) == limit
 
 
-@pytest.mark.parametrize('is_distance', [True, False])
+@pytest.mark.parametrize(
+    'is_distance, metric',
+    [
+        (True, 'euclidean_squared'),
+        (False, 'euclidean_squared'),
+        (True, 'euclidean'),
+        (False, 'euclidean'),
+        (True, 'cosine'),
+        (False, 'cosine'),
+    ],
+)
 def test_matching_retrieves_closest_matches(
-    docarrays_for_embedding_distance_computation, is_distance
+    docarrays_for_embedding_distance_computation, is_distance, metric
 ):
     """
     Tests if match.values are returned 'low to high' if is_distance is True of 'high to low' otherwise
     """
     D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric='euclidean_squared', limit=3, is_distance=is_distance)
+    D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
     expected_sorted_values = [
         D1[0].get_attributes('matches')[i].scores['euclidean_squared'].value
         for i in range(3)
