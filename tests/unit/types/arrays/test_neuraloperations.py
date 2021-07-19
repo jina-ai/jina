@@ -163,34 +163,6 @@ def test_cosine_distance_squared(numpy_array, numpy_array_query):
         (False, 'cosine'),
     ],
 )
-def test_docarraymemmap_match_docarray(
-    is_distance, metric, docarrays_for_embedding_distance_computation, tmpdir
-):
-    D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
-    values_docarray = [m.scores[metric].value for d in D1 for m in d.matches]
-
-    D1memmap = DocumentArrayMemmap(tmpdir)
-    D1memmap.extend(D1)
-    D1memmap.match(D2)
-    values_docarraymemmap = [
-        m.scores[metric].value for d in D1memmap for m in d.matches
-    ]
-
-    np.testing.assert_equal(values_docarray, values_docarraymemmap)
-
-
-@pytest.mark.parametrize(
-    'is_distance, metric',
-    [
-        (True, 'euclidean_squared'),
-        (False, 'euclidean_squared'),
-        (True, 'euclidean'),
-        (False, 'euclidean'),
-        (True, 'cosine'),
-        (False, 'cosine'),
-    ],
-)
 def test_docarray_match_docarraymemmap(is_distance, metric, tmpdir):
     D1, D2 = get_docarrays_for_embedding_distance_computation()
     D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
@@ -202,34 +174,4 @@ def test_docarray_match_docarraymemmap(is_distance, metric, tmpdir):
     D1_.match(D2memmap, metric=metric, limit=3, is_distance=is_distance)
     values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
 
-    np.testing.assert_equal(values_docarray, values_docarraymemmap)
-
-
-@pytest.mark.parametrize(
-    'is_distance, metric',
-    [
-        (True, 'euclidean_squared'),
-        (False, 'euclidean_squared'),
-        (True, 'euclidean'),
-        (False, 'euclidean'),
-        (True, 'cosine'),
-        (False, 'cosine'),
-    ],
-)
-def test_docarraymemmap_match_docarraymemmap(is_distance, metric, tmpdir):
-    D1, D2 = get_docarrays_for_embedding_distance_computation()
-    D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
-    values_docarray = [m.scores[metric].value for d in D1 for m in d.matches]
-
-    D1_, D2_ = get_docarrays_for_embedding_distance_computation()
-    print(f'tmpdir={tmpdir}')
-    D1memmap = DocumentArrayMemmap(tmpdir + '_1')
-    D1memmap.extend(D1_)
-    D2memmap = DocumentArrayMemmap(tmpdir + '_2')
-    D2memmap.extend(D2_)
-    D1memmap.match(D2memmap, metric=metric, limit=3, is_distance=is_distance)
-
-    values_docarraymemmap = [
-        m.scores[metric].value for d in D1memmap for m in d.matches
-    ]
     np.testing.assert_equal(values_docarray, values_docarraymemmap)

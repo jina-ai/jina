@@ -5,13 +5,16 @@ import numpy as np
 
 from jina import Document
 
+if False:
+    from .document import DocumentArrayGetAttrMixin
+
 
 class DocumentArrayNeuralOperationsMixin:
     """ A mixin that provides match functionality to DocumentArrays """
 
     def match(
         self,
-        darray: 'DocumentArrayNeuralOperationsMixin',
+        darray: 'DocumentArrayGetAttrMixin',
         metric: str = 'cosine',
         limit: Optional[int] = inf,
         is_distance: bool = False,
