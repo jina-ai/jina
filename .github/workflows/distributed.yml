@@ -43,7 +43,7 @@ jobs:
         working-directory: ./tests/distributed
       - name: Validate Setup
         run: |
-          sudo apt-get -qq update && apt-get install -qq -y jq curl
+          sudo apt-get -qq update && sudo apt-get install -qq -y jq curl
           COUNT=0
           HOSTS=$(terraform output -json instance_ips)
           for HOST in $(echo $HOSTS | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" ); do

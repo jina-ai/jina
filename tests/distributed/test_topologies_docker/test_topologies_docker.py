@@ -16,7 +16,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-CLOUDHOST, *args = get_cloudhost(2)
+HOST, PORT_EXPOSE = get_cloudhost(2)
 NUM_DOCS = 100
 
 
@@ -40,7 +40,8 @@ def test_r_l_docker(parallels, docker_image, mocker):
         Flow()
         .add(
             uses=f'docker://{docker_image}',
-            host=CLOUDHOST,
+            host=HOST,
+            port_expose=PORT_EXPOSE,
             parallel=parallels,
             timeout_ready=-1,
         )
@@ -62,7 +63,12 @@ def test_l_r_docker(parallels, docker_image, mocker):
     f = (
         Flow()
         .add(parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
+        .add(
+            uses=f'docker://{docker_image}',
+            host=HOST,
+            port_expose=PORT_EXPOSE,
+            parallel=parallels,
+        )
     )
     with f:
         f.index(
@@ -78,9 +84,19 @@ def test_r_l_r_docker(parallels, docker_image, mocker):
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
+        .add(
+            uses=f'docker://{docker_image}',
+            host=HOST,
+            port_expose=PORT_EXPOSE,
+            parallel=parallels,
+        )
         .add()
-        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
+        .add(
+            uses=f'docker://{docker_image}',
+            host=HOST,
+            port_expose=PORT_EXPOSE,
+            parallel=parallels,
+        )
     )
     with f:
         f.index(
@@ -96,9 +112,24 @@ def test_r_r_r_docker(parallels, docker_image, mocker):
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
+        .add(
+            uses=f'docker://{docker_image}',
+            host=HOST,
+            port_expose=PORT_EXPOSE,
+            parallel=parallels,
+        )
+        .add(
+            uses=f'docker://{docker_image}',
+            host=HOST,
+            port_expose=PORT_EXPOSE,
+            parallel=parallels,
+        )
+        .add(
+            uses=f'docker://{docker_image}',
+            host=HOST,
+            port_expose=PORT_EXPOSE,
+            parallel=parallels,
+        )
     )
     with f:
         f.index(
@@ -114,7 +145,12 @@ def test_l_r_l_docker(parallels, docker_image, mocker):
     f = (
         Flow()
         .add()
-        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
+        .add(
+            uses=f'docker://{docker_image}',
+            host=HOST,
+            port_expose=PORT_EXPOSE,
+            parallel=parallels,
+        )
         .add()
     )
     with f:

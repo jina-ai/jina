@@ -15,7 +15,7 @@ from ..helpers import (
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-CLOUDHOST = get_cloudhost(2)
+HOST, PORT_EXPOSE = get_cloudhost(2)
 event = Event()
 success = 0
 failure = 0
@@ -25,7 +25,7 @@ def get_flows():
     global success, failure
     while not event.is_set():
         try:
-            r = requests.get(f'http://{CLOUDHOST}/flows', timeout=1)
+            r = requests.get(f'http://{HOST}:{PORT_EXPOSE}/flows', timeout=1)
             if r.status_code != 200:
                 failure += 1
             else:
