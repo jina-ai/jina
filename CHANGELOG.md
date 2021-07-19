@@ -72,6 +72,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9594,4 +9595,60 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```b748b36a```](https://github.com/jina-ai/jina/commit/b748b36a7ca4e6933b8b545777b5c9698dc431b8)] __-__ docs readme event banner (#2925) (*Alex Cureton-Griffiths*)
  - [[```7f581ebf```](https://github.com/jina-ai/jina/commit/7f581ebfa3533509c1dfe37a7e731c6e2971c951)] __-__ __version__: the next version will be 2.0.7 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-8></a>
+## Release Note (`2.0.8`)
+
+> Release time: 2021-07-19 03:06:17
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  Wang Bo,  Han Xiao,  felix-wang,  Zhaofeng Miao,  Deepankar Mahapatro,  Joan Fontanals,  Alex Cureton-Griffiths,  Maksudur Rahman Maateen,  Nan Wang,  David Buchaca Prats,  AlaeddineAbdessalem,  Kelton Zhang,  Tobias Jacobowitz,  🙇
+
+
+### 🆕 New Features
+
+ - [[```06d2f2e7```](https://github.com/jina-ai/jina/commit/06d2f2e7a9039845839436cc3b0b136ca92f6353)] __-__ __hubble__:  upgrade the local executor if necessary (#2920) (*felix-wang*)
+ - [[```5082c49e```](https://github.com/jina-ai/jina/commit/5082c49ebcf70b070f96682b7e1766c17822253b)] __-__ __daemon__: async interaction with children (#2948) (*Deepankar Mahapatro*)
+ - [[```12fff436```](https://github.com/jina-ai/jina/commit/12fff436f4c31db24c553b15903def0491754fb1)] __-__ shipped latency tracking code in scripts (#2933) (*Maksudur Rahman Maateen*)
+ - [[```4e72338a```](https://github.com/jina-ai/jina/commit/4e72338a8796f4057d08b5e433816f06d8ba7a22)] __-__ support offline executors (#2935) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```a7dd9c82```](https://github.com/jina-ai/jina/commit/a7dd9c82151ae1e405901e51c2897783603dd710)] __-__ __ci__: head commit ahead base commit (#2968) (*Wang Bo*)
+ - [[```1c6958ba```](https://github.com/jina-ai/jina/commit/1c6958baf53c9dc228b951e7e25be17ffdbd32e9)] __-__ fix pydantic typo example (#2965) (*Han Xiao*)
+ - [[```bab63236```](https://github.com/jina-ai/jina/commit/bab6323648bfbc5256331cd10eb162edc72f7078)] __-__ __hubble__: logging error message refering to jinahub uri (#2945) (*felix-wang*)
+ - [[```e0893758```](https://github.com/jina-ai/jina/commit/e08937585d80b22d0b6a40e98080668bfc8db643)] __-__ fix early pea shutdown logic (#2947) (*Joan Fontanals*)
+ - [[```41a90a8d```](https://github.com/jina-ai/jina/commit/41a90a8d8ec63d084fe804235219ed1e9fa824d0)] __-__ add lz4, uvloop, filelock to daemon (#2946) (*Kelton Zhang*)
+ - [[```d28b279b```](https://github.com/jina-ai/jina/commit/d28b279be1c4ba32cd1d6287cfc4aec53c0eb7e5)] __-__ __core__: dont respond to cancel and idle (#2940) (*Tobias Jacobowitz*)
+ - [[```e0e3aa17```](https://github.com/jina-ai/jina/commit/e0e3aa17f950a090d557d91cca4f9ec294ae418c)] __-__ fix arguments passed (#2928) (*Joan Fontanals*)
+
+### 🚧 Code Refactoring
+
+ - [[```3e1ad70c```](https://github.com/jina-ai/jina/commit/3e1ad70c615a6c72d3ee06a90df765e35cec0f3a)] __-__ __cli__: rename override_metas/with to uses_metas/with (#2964) (*Han Xiao*)
+ - [[```46cf10bf```](https://github.com/jina-ai/jina/commit/46cf10bf76c46ffc711d5421f9823cd50653f130)] __-__ small nicer refactor (#2941) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```0c21d687```](https://github.com/jina-ai/jina/commit/0c21d68714beb21aba7f72199ae5bce58d25a55a)] __-__ __cookbook__: add mac user hostname attention (#2960) (*Zhaofeng Miao*)
+ - [[```0e8546a6```](https://github.com/jina-ai/jina/commit/0e8546a6b5c058b001375f9cfa716c89a322c3a6)] __-__ update readme from jina hello examples (#2905) (*David Buchaca Prats*)
+ - [[```abb27763```](https://github.com/jina-ai/jina/commit/abb277638318ffd8920edd2c265191c899d6ba72)] __-__ warn against simply run &#34;jinad&#34; (#2932) (*Kelton Zhang*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```de8e01ef```](https://github.com/jina-ai/jina/commit/de8e01ef615d53a997de1bee513ab9aa8be35f34)] __-__ show external pod started with exec (#2952) (*Joan Fontanals*)
+ - [[```d81cd363```](https://github.com/jina-ai/jina/commit/d81cd3631a2dbb918ebb11f84458006d03c447ef)] __-__ add tests for termination (#2924) (*Joan Fontanals*)
+ - [[```b9064104```](https://github.com/jina-ai/jina/commit/b9064104567422e337a3bdff163152d814431295)] __-__ add git to jinad docker image (#2938) (*Deepankar Mahapatro*)
+ - [[```36773424```](https://github.com/jina-ai/jina/commit/3677342462c5ba6195d722feabef9420d4a85970)] __-__ adding rich to daemon reqs (#2929) (*Deepankar Mahapatro*)
+ - [[```473be875```](https://github.com/jina-ai/jina/commit/473be8750462fcf54b22d66769d2cd5df9751ca5)] __-__ fix fluentd with jinad image (#2931) (*Deepankar Mahapatro*)
+
+### 🍹 Other Improvements
+
+ - [[```e5b10c38```](https://github.com/jina-ai/jina/commit/e5b10c38f2c13e9daef593a77f8e9300fec1f378)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```547d5d4e```](https://github.com/jina-ai/jina/commit/547d5d4e2724b8e87886fe0a682f5cea7fbae175)] __-__ __importer__: improve styling and error message in importer (#2967) (*Han Xiao*)
+ - [[```894a4a71```](https://github.com/jina-ai/jina/commit/894a4a715a53b24c2a340d5c4841a90343a3bdcb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a1f74e6b```](https://github.com/jina-ai/jina/commit/a1f74e6bb7530fcc32dab5a37b4b662257326291)] __-__ chore remove event banner (#2949) (*Alex Cureton-Griffiths*)
+ - [[```99c542e9```](https://github.com/jina-ai/jina/commit/99c542e9616ad7990b1e9cafee6381ede10661ab)] __-__ remove the meetup banner (#2951) (*Nan Wang*)
+ - [[```fde37372```](https://github.com/jina-ai/jina/commit/fde37372ff5a63f1e3a3f56cbb5e310ed0940a9a)] __-__ __version__: the next version will be 2.0.8 (*Jina Dev Bot*)
 

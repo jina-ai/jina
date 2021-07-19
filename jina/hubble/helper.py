@@ -5,13 +5,13 @@ import io
 import json
 import os
 import shelve
-import urllib
-import sys
 import subprocess
+import sys
+import urllib
 import zipfile
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict, Iterable
+from typing import Tuple, Optional, Dict
 from urllib.parse import urlparse, urljoin
 from urllib.request import Request, urlopen
 
