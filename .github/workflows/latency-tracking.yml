@@ -26,7 +26,7 @@ jobs:
           sudo mkdir -p /var/output
           sudo apt-get install jq
           pip install prettytable==2.1.0
-          docker build --build-arg JINA_VER=master -f latency/Dockerfile -t latency-tracking .
+          docker build --build-arg JINA_VER=master -f latency/dockerfiles/Dockerfile -t latency-tracking .
           docker run -v /var/output:/app/output latency-tracking
           bash latency/batch.sh ${{ env.NUM_LAST_RELEASE }}
           python latency/ppstat.py ${{ env.NUM_LAST_RELEASE }} /var/output/stats.json > latency/comment.txt
