@@ -240,12 +240,12 @@ class BasePea:
 
     def activate_runtime(self):
         """ Send activate control message. """
-        if self._is_dealer:
+        if self._is_worker:
             self._retry_control_message('ACTIVATE')
 
     def _deactivate_runtime(self):
         """Send deactivate control message. """
-        if self._is_dealer:
+        if self._is_worker:
             self._retry_control_message('DEACTIVATE')
 
     def _cancel_runtime(self):
@@ -290,11 +290,14 @@ class BasePea:
             )
 
     @property
-    def _is_dealer(self):
+    def _is_worker(self):
         """Return true if this `Pea` must act as a Dealer responding to a Router
         .. # noqa: DAR201
         """
-        return self.args.socket_in == SocketType.DEALER_CONNECT
+        return (
+            self.args.socket_in == SocketType.DEALER_CONNECT
+            and self.args.is_load_balanced
+        )
 
     def close(self) -> None:
         """Close the Pea
@@ -404,11 +407,3 @@ class BasePea:
 
         .. #noqa: DAR201"""
         return self.args.pea_role
-
-    @property
-    def _is_inner_pea(self) -> bool:
-        """Determine whether this is a inner pea or a head/tail
-
-
-        .. #noqa: DAR201"""
-        return self.role is PeaRoleType.SINGLETON or self.role is PeaRoleType.PARALLEL

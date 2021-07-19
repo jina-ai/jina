@@ -98,3 +98,13 @@ def mixin_pea_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    gp.add_argument(
+        '--is-load-balanced',
+        action='store_true',
+        default=False,
+        help='Informs a Pea that it is load balanced by a router. It is used to enable certain control messaging '
+        'patterns as `ACTIVATE` and `DEACTIVATE` '
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )

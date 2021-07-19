@@ -294,6 +294,8 @@ class Pod(BasePod, ExitFIFO):
     ):
         super().__init__()
         args.upload_files = BasePod._set_upload_files(args)
+        self.is_head_dealer = args.is_load_balance
+        args.is_load_balance = False
         self.args = args
         self.needs = (
             needs or set()
@@ -611,12 +613,15 @@ class Pod(BasePod, ExitFIFO):
             self.is_head_router = True
             self.is_tail_router = True
             parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
+            parsed_args['head'].is_load_balanced = self.is_head_dealer
             parsed_args['tail'] = BasePod._copy_to_tail_args(args, args.polling)
             parsed_args['peas'] = self._set_peas_args(
                 args,
                 head_args=parsed_args['head'],
                 tail_args=parsed_args['tail'],
             )
+            for a in parsed_args['peas']:
+                a.is_load_balanced = True
         elif (
             getattr(args, 'uses_before', None)
             and args.uses_before != __default_executor__
@@ -628,6 +633,7 @@ class Pod(BasePod, ExitFIFO):
             if getattr(args, 'uses_before', None):
                 self.is_head_router = True
                 parsed_args['head'] = self._copy_to_head_args(args, args.polling)
+                parsed_args['head'].is_load_balanced = self.is_head_dealer
             if getattr(args, 'uses_after', None):
                 self.is_tail_router = True
                 parsed_args['tail'] = self._copy_to_tail_args(args, args.polling)
@@ -636,12 +642,17 @@ class Pod(BasePod, ExitFIFO):
                 head_args=parsed_args.get('head', None),
                 tail_args=parsed_args.get('tail', None),
             )
+            if parsed_args['head'] is not None:
+                for a in parsed_args['peas']:
+                    a.is_load_balanced = self.is_head_dealer
         else:
             self.is_head_router = False
             self.is_tail_router = False
             Pod._set_dynamic_routing_in(args)
             Pod._set_dynamic_routing_out(args)
             parsed_args['peas'] = [args]
+            for a in parsed_args['peas']:
+                a.is_load_balanced = self.is_head_dealer
 
         # note that peas_args['peas'][0] exist either way and carries the original property
         return parsed_args

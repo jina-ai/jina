@@ -106,6 +106,7 @@ class CompoundPod(BasePod, ExitStack):
             for _args in self.replicas_args:
                 _args.noblock_on_start = True
                 _args.polling = PollingType.ALL
+                _args.is_load_balanced = True
                 self._enter_replica(Pod(_args))
             tail_args = self.tail_args
             tail_args.noblock_on_start = True
@@ -250,6 +251,7 @@ class CompoundPod(BasePod, ExitStack):
                 _args = self.replicas_args[i]
                 _args.noblock_on_start = False
                 _args.dump_path = dump_path
+                _args.is_load_balanced = True
                 new_replica = Pod(_args)
                 self.enter_context(new_replica)
                 self.replicas[i] = new_replica
