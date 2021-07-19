@@ -1,4 +1,5 @@
 import pytest
+import copy
 
 import numpy as np
 
@@ -10,7 +11,8 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina import Document, DocumentArray
 
 
-def get_docarrays_for_embedding_distance_computation():
+@pytest.fixture
+def docarrays_for_embedding_distance_computation():
     d1 = Document(embedding=np.array([0, 0, 0]))
     d2 = Document(embedding=np.array([3, 0, 0]))
     d3 = Document(embedding=np.array([1, 0, 0]))
@@ -25,11 +27,6 @@ def get_docarrays_for_embedding_distance_computation():
     D1 = DocumentArray([d1, d2, d3, d4])
     D2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
     return D1, D2
-
-
-@pytest.fixture
-def docarrays_for_embedding_distance_computation():
-    return get_docarrays_for_embedding_distance_computation()
 
 
 @pytest.fixture
@@ -163,12 +160,15 @@ def test_cosine_distance_squared(numpy_array, numpy_array_query):
         (False, 'cosine'),
     ],
 )
-def test_docarray_match_docarraymemmap(is_distance, metric, tmpdir):
-    D1, D2 = get_docarrays_for_embedding_distance_computation()
+def test_docarray_match_docarraymemmap(
+    docarrays_for_embedding_distance_computation, is_distance, metric, tmpdir
+):
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1_ = copy.deepcopy(D1)
+    D2_ = copy.deepcopy(D2)
     D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
     values_docarray = [m.scores[metric].value for d in D1 for m in d.matches]
 
-    D1_, D2_ = get_docarrays_for_embedding_distance_computation()
     D2memmap = DocumentArrayMemmap(tmpdir)
     D2memmap.extend(D2_)
     D1_.match(D2memmap, metric=metric, limit=3, is_distance=is_distance)
