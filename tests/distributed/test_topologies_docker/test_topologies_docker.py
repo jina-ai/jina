@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from jina import Flow, Document
+from ..helpers import get_cloudhost
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -15,7 +16,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
+CLOUDHOST, *args = get_cloudhost(2)
 NUM_DOCS = 100
 
 
@@ -39,7 +40,7 @@ def test_r_l_docker(parallels, docker_image, mocker):
         Flow()
         .add(
             uses=f'docker://{docker_image}',
-            host=CLOUD_HOST,
+            host=CLOUDHOST,
             parallel=parallels,
             timeout_ready=-1,
         )
@@ -61,7 +62,7 @@ def test_l_r_docker(parallels, docker_image, mocker):
     f = (
         Flow()
         .add(parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -77,9 +78,9 @@ def test_r_l_r_docker(parallels, docker_image, mocker):
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
         .add()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -95,9 +96,9 @@ def test_r_r_r_docker(parallels, docker_image, mocker):
 
     f = (
         Flow()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -113,7 +114,7 @@ def test_l_r_l_docker(parallels, docker_image, mocker):
     f = (
         Flow()
         .add()
-        .add(uses=f'docker://{docker_image}', host=CLOUD_HOST, parallel=parallels)
+        .add(uses=f'docker://{docker_image}', host=CLOUDHOST, parallel=parallels)
         .add()
     )
     with f:

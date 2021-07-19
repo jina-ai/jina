@@ -1,13 +1,23 @@
+import os
 import time
 from contextlib import ExitStack
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 import requests
 
 from daemon.models import DaemonID
 from jina import __default_host__
 from jina.enums import RemoteWorkspaceState
+
+
+def get_cloudhost(index: Union[str, int] = ''):
+    assert (
+        f'CLOUDHOST{index}' in os.environ
+    ), f'Please make sure the cloud instance is ready & \'CLOUDHOST{index}\' env variable is set.'
+    host = os.environ.get(f'CLOUDHOST{index}')
+    ip, port = host.split(':')
+    return host, ip, port
 
 
 def assert_request(

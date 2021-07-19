@@ -3,6 +3,7 @@ import os
 import pytest
 
 from jina import Flow, Document
+from ..helpers import get_cloudhost
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,7 +15,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
+CLOUDHOST = get_cloudhost(1)
 NUM_DOCS = 100
 
 
@@ -25,7 +26,7 @@ def test_r_l_simple(silent_log, parallels, mocker):
     f = (
         Flow()
         .add(
-            host=CLOUD_HOST,
+            host=CLOUDHOST,
             parallel=parallels,
             quiet_remote_logs=silent_log,
             timeout_ready=-1,
@@ -45,7 +46,7 @@ def test_r_l_simple(silent_log, parallels, mocker):
 def test_l_r_simple(parallels, mocker):
     response_mock = mocker.Mock()
 
-    f = Flow().add(parallel=parallels).add(host=CLOUD_HOST, parallel=parallels)
+    f = Flow().add(parallel=parallels).add(host=CLOUDHOST, parallel=parallels)
     with f:
         f.index(
             inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
@@ -60,9 +61,9 @@ def test_r_l_r_simple(parallels, mocker):
 
     f = (
         Flow()
-        .add(host=CLOUD_HOST, parallel=parallels)
+        .add(host=CLOUDHOST, parallel=parallels)
         .add()
-        .add(host=CLOUD_HOST, parallel=parallels)
+        .add(host=CLOUDHOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -78,9 +79,9 @@ def test_r_r_r_simple(parallels, mocker):
 
     f = (
         Flow()
-        .add(host=CLOUD_HOST, parallel=parallels)
-        .add(host=CLOUD_HOST, parallel=parallels)
-        .add(host=CLOUD_HOST, parallel=parallels)
+        .add(host=CLOUDHOST, parallel=parallels)
+        .add(host=CLOUDHOST, parallel=parallels)
+        .add(host=CLOUDHOST, parallel=parallels)
     )
     with f:
         f.index(
@@ -94,7 +95,7 @@ def test_r_r_r_simple(parallels, mocker):
 def test_l_r_l_simple(parallels, mocker):
     response_mock = mocker.Mock()
 
-    f = Flow().add().add(host=CLOUD_HOST, parallel=parallels).add()
+    f = Flow().add().add(host=CLOUDHOST, parallel=parallels).add()
     with f:
         f.index(
             inputs=(Document(text='hello') for _ in range(NUM_DOCS)),
@@ -110,7 +111,7 @@ def test_needs(parallels, mocker):
     f = (
         Flow()
         .add(name='pod1', parallel=parallels)
-        .add(host=CLOUD_HOST, name='pod2', parallel=parallels, needs='gateway')
+        .add(host=CLOUDHOST, name='pod2', parallel=parallels, needs='gateway')
         .add(name='pod3', parallel=parallels, needs=['pod1'])
         .needs_all()
     )
@@ -129,13 +130,13 @@ def test_complex_needs(parallels, mocker):
     f = (
         Flow()
         .add(name='r1')
-        .add(name='r2', host=CLOUD_HOST)
-        .add(name='r3', needs='r1', host=CLOUD_HOST, parallel=parallels)
+        .add(name='r2', host=CLOUDHOST)
+        .add(name='r3', needs='r1', host=CLOUDHOST, parallel=parallels)
         .add(name='r4', needs='r2', parallel=parallels)
         .add(name='r5', needs='r3')
-        .add(name='r6', needs='r4', host=CLOUD_HOST)
+        .add(name='r6', needs='r4', host=CLOUDHOST)
         .add(name='r8', needs='r6', parallel=parallels)
-        .add(name='r9', needs='r5', host=CLOUD_HOST, parallel=parallels)
+        .add(name='r9', needs='r5', host=CLOUDHOST, parallel=parallels)
         .add(name='r10', needs=['r9', 'r8'])
     )
     with f:

@@ -2,6 +2,9 @@ name: Distributed Tests
 
 on: pull_request
 
+env:
+  INSTANCES: 2
+
 jobs:
   distributed-tests:
     runs-on: ubuntu-latest
@@ -25,14 +28,39 @@ jobs:
         working-directory: ./tests/distributed
       - run: >
           terraform plan
+          -var='instances=${{ env.INSTANCES }}'
           -var='scriptpath=${{ env.SCRIPTPATH }}'
           -var='branch=${{ github.head_ref }}'
+          -var='commit=${{ github.sha }}'
         working-directory: ./tests/distributed
       - name: Create remote instances
         run: >
           terraform apply -auto-approve
+          -var='instances=${{ env.INSTANCES }}'
           -var='scriptpath=${{ env.SCRIPTPATH }}'
           -var='branch=${{ github.head_ref }}'
+          -var='commit=${{ github.sha }}'
+        working-directory: ./tests/distributed
+      - name: Validate Setup
+        run: |
+          sudo apt-get -qq update && apt-get install -qq -y jq curl
+          COUNT=0
+          HOSTS=$(terraform output -json instance_ips)
+          for HOST in $(echo $HOSTS | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" ); do
+            IP=$(echo "$HOST" | rev | cut -d "=" -f1 | rev)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${IP}:8000)
+            if [[ $STATUS -eq 200 ]]; then
+              echo "Successfully connected to ${HOST}"
+              COUNT=$((COUNT+1))
+              echo "$HOST" >> $GITHUB_ENV
+            fi
+          done
+          if [[ $COUNT -eq ${{ env.INSTANCES }} ]]; then
+            echo "${{ env.INSTANCES }} instances successfully setup"
+          else:
+            echo "Issue in remote setup. Tried setting up ${{ env.INSTANCES }} instances, ${COUNT} succeeded"
+            exit 1
+          fi
         working-directory: ./tests/distributed
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -54,6 +82,8 @@ jobs:
         name: Destroy remote instances
         run: >
           terraform destroy -auto-approve
+          -var='instances=${{ env.INSTANCES }}'
           -var='scriptpath=${{ env.SCRIPTPATH }}'
           -var='branch=${{ github.head_ref }}'
+          -var='commit=${{ github.sha }}'
         working-directory: ./tests/distributed

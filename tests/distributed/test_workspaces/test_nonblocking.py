@@ -4,9 +4,10 @@ from threading import Thread, Event
 import requests
 
 from ..helpers import (
+    get_cloudhost,
     create_workspace,
-    delete_workspace,
     wait_for_workspace,
+    delete_workspace,
     create_flow,
     delete_flow,
 )
@@ -14,7 +15,7 @@ from ..helpers import (
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
+CLOUDHOST = get_cloudhost(2)
 event = Event()
 success = 0
 failure = 0
@@ -24,7 +25,7 @@ def get_flows():
     global success, failure
     while not event.is_set():
         try:
-            r = requests.get(f'http://{CLOUD_HOST}/flows', timeout=1)
+            r = requests.get(f'http://{CLOUDHOST}/flows', timeout=1)
             if r.status_code != 200:
                 failure += 1
             else:
