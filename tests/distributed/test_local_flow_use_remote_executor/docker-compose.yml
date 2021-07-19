@@ -1,0 +1,26 @@
+version: "3.3"
+services:
+  external-executor:
+    image: jinaai/jina:test-pip
+    environment:
+      JINA_LOG_LEVEL: DEBUG
+    container_name: test_external_executor
+    ports:
+      - "8001:8000"
+      - "45678:45678"
+    expose:
+      - 10000-60000
+    networks:
+      test:
+        ipv4_address: 10.1.0.100
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: "jina executor --port-in 45678 --socket-in ROUTER_BIND --dynamic-routing-out"
+networks:
+  test:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.0.0/24
+
