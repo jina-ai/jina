@@ -103,6 +103,7 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
             '--runs-in-docker',
+            '--is-load-balanced',
             '--uses-before',
             '--uses-after',
             '--parallel',
@@ -171,6 +172,7 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
             '--runs-in-docker',
+            '--is-load-balanced',
             '--uses-before',
             '--uses-after',
             '--parallel',
@@ -257,6 +259,7 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
             '--runs-in-docker',
+            '--is-load-balanced',
             '--routing-table',
         ],
         'hub push': [
@@ -326,6 +329,7 @@ ac_table = {
             '--pea-role',
             '--noblock-on-start',
             '--runs-in-docker',
+            '--is-load-balanced',
         ],
         'client': [
             '--help',
