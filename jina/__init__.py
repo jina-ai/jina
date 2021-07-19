@@ -32,7 +32,7 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.0.8'
+__version__ = '2.0.9'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
