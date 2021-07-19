@@ -271,6 +271,10 @@ class Dockerizer:
 
     @classproperty
     def dockersock(cls) -> str:
+        """docker socket path
+
+        :return: abs path to docker socket
+        """
         location = '/var/run/docker.sock'
         return location if platform.system() == 'Darwin' else '/' + location
 

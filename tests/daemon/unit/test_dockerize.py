@@ -9,6 +9,5 @@ import pytest
     (['Linux', '//var/run/docker.sock'], ['Darwin', '/var/run/docker.sock']),
 )
 def test_sock(value, expected, monkeypatch):
-    print(value, expected)
     monkeypatch.setattr(platform, 'system', lambda: value)
     assert Dockerizer.dockersock == expected
