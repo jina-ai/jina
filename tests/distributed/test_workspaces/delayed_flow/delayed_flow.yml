@@ -1,0 +1,7 @@
+jtype: Flow
+with:
+  protocol: 'http'
+  port_expose: 34567
+executors:
+  - name: delayed_exc
+    uses: delayed_executor.yml

@@ -149,6 +149,7 @@ docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jin
 docker run --add-host host.docker.internal:host-gateway \
            --name jinad \
            -e JINA_DAEMON_BUILD=DEVEL \
+           -e JINA_LOG_LEVEL=DEBUG \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v /tmp/jinad:/tmp/jinad \
            -p 8000:8000 \

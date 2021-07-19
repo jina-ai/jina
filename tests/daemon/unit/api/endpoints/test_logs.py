@@ -49,7 +49,7 @@ def _create_flow():
             network='',
             ports={},
             rest_api_uri='',
-            host="",
+            uri="",
         ),
         arguments=ContainerArguments(command='command', object=Flow()),
         workspace_id=workspace_id,

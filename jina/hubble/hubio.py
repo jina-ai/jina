@@ -4,28 +4,27 @@ import argparse
 import hashlib
 import json
 import os
-from collections import namedtuple
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
 
+from . import HubExecutor
 from .helper import (
     archive_package,
     download_with_resume,
     parse_hub_uri,
     get_hubble_url,
     upload_file,
+    disk_cache_offline,
 )
+from .helper import install_requirements
 from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
 from ..parsers.hubble import set_hub_parser
 
-HubExecutor = namedtuple(
-    'HubExecutor',
-    ['uuid', 'alias', 'tag', 'visibility', 'image_name', 'archive_url', 'md5sum'],
-)
+_cache_file = Path.home().joinpath('.jina', 'disk_cache.db')
 
 
 class HubIO:
@@ -264,6 +263,7 @@ with f:
         console.print(p1, p2, p3, p4)
 
     @staticmethod
+    @disk_cache_offline(cache_file=str(_cache_file))
     def _fetch_meta(
         name: str,
         tag: Optional[str] = None,
@@ -297,13 +297,14 @@ with f:
         resp = resp.json()
 
         return HubExecutor(
-            resp['id'],
-            resp.get('alias', None),
-            resp['tag'],
-            resp['visibility'],
-            resp['image'],
-            resp['package']['download'],
-            resp['package']['md5'],
+            uuid=resp['id'],
+            alias=resp.get('alias', None),
+            sn=resp.get('sn', None),
+            tag=resp['tag'],
+            visibility=resp['visibility'],
+            image_name=resp['image'],
+            archive_url=resp['package']['download'],
+            md5sum=resp['package']['md5'],
         )
 
     def pull(self) -> str:
@@ -313,8 +314,11 @@ with f:
         """
         from rich.console import Console
 
+        with ImportExtensions(required=True):
+            import docker
+
         console = Console()
-        cached_zip_filepath = None
+        cached_zip_file = None
         usage = None
 
         with console.status(f'Pulling {self.args.uri}...') as st:
@@ -332,18 +336,36 @@ with f:
                 if scheme == 'jinahub+docker':
                     self._load_docker_client()
                     st.update(f'Pulling {executor.image_name}...')
-                    self._client.images.pull(executor.image_name)
+                    try:
+                        self._client.images.pull(executor.image_name)
+                    except docker.errors.APIError as api_exc:
+                        try:
+                            self._client.images.get(executor.image_name)
+                        except docker.errors.ImageNotFound:
+                            raise api_exc
+
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock
 
                     with filelock.FileLock(get_lockfile(), timeout=-1):
                         try:
-                            pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                            pkg_path, pkg_dist_path = resolve_local(executor)
+                            # check serial number to upgrade
+                            sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
+                            if not sn_file_path.exists() and any(
+                                True for _ in pkg_dist_path.glob('PKG-SN-*')
+                            ):
+                                raise FileNotFoundError(
+                                    f'{pkg_path} need to be upgraded'
+                                )
+                            if self.args.install_requirements:
+                                requirements_file = pkg_dist_path / 'requirements.txt'
+                                if requirements_file.exists():
+                                    install_requirements(requirements_file)
                             return f'{pkg_path / "config.yml"}'
                         except FileNotFoundError:
                             pass  # have not been downloaded yet, download for the first time
-
                         # download the package
                         cache_dir = Path(
                             os.environ.get(
@@ -354,7 +376,7 @@ with f:
                         cache_dir.mkdir(parents=True, exist_ok=True)
 
                         st.update(f'Downloading...')
-                        cached_zip_filepath = download_with_resume(
+                        cached_zip_file = download_with_resume(
                             executor.archive_url,
                             cache_dir,
                             f'{executor.uuid}-{executor.md5sum}.zip',
@@ -363,23 +385,22 @@ with f:
 
                         st.update(f'Unpacking...')
                         install_local(
-                            cached_zip_filepath,
-                            executor.uuid,
-                            tag or executor.tag,
+                            cached_zip_file,
+                            executor,
                             install_deps=self.args.install_requirements,
                         )
 
-                        pkg_path = resolve_local(executor.uuid, tag or executor.tag)
+                        pkg_path, _ = resolve_local(executor)
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
             except Exception as e:
-                self.logger.error(f'{e!r}')
+                self.logger.error(f'Error while pulling {self.args.uri}: \n{e!r}')
                 raise e
             finally:
                 # delete downloaded zip package if existed
-                if cached_zip_filepath is not None:
-                    cached_zip_filepath.unlink()
+                if cached_zip_file is not None:
+                    cached_zip_file.unlink()
 
                 if not self.args.no_usage and usage:
                     self._get_prettyprint_usage(console, usage)

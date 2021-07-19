@@ -1,8 +1,10 @@
 import os
+import asyncio
 import pathlib
 import random
 import shutil
 import string
+import tempfile
 import time
 
 import pytest
@@ -181,3 +183,19 @@ def test_log_level(monkeypatch):
 @pytest.fixture(autouse=True)
 def test_timeout_ctrl_time(monkeypatch):
     monkeypatch.setenv('JINA_DEFAULT_TIMEOUT_CTRL', '500')
+
+
+@pytest.fixture(autouse=True)
+def tmpfile(tmpdir):
+    tmpfile = f'jina_test_{next(tempfile._get_candidate_names())}.db'
+    return tmpdir / tmpfile
+
+
+@pytest.fixture(scope="session")
+def event_loop(request):
+    """
+    Valid only for `pytest.mark.asyncio` tests
+    """
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()

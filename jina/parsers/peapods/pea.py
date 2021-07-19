@@ -47,7 +47,7 @@ def mixin_pea_parser(parser):
     gp.add_argument(
         '--env',
         action=KVAppendAction,
-        metavar='KEY=VALUE',
+        metavar='KEY: VALUE',
         nargs='*',
         help='The map of environment variables that are available inside runtime',
     )
