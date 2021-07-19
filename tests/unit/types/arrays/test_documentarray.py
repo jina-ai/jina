@@ -501,7 +501,7 @@ def test_matching_retrieves_closest_matches(
     docarrays_for_embedding_distance_computation, is_distance, metric
 ):
     """
-    Tests if match.values are returned 'low to high' if is_distance is True of 'high to low' otherwise
+    Tests if match.values are returned 'low to high' if is_distance is True or 'high to low' otherwise
     """
     D1, D2 = docarrays_for_embedding_distance_computation
     D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
