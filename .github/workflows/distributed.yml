@@ -43,9 +43,11 @@ jobs:
         working-directory: ./tests/distributed
       - name: Validate Setup
         run: |
-          sudo apt-get -qq update && apt-get install -qq -y jq curl
+          sudo apt-get -qq update && sudo apt-get install -qq -y jq curl
           COUNT=0
+          terraform output -json instance_ips
           HOSTS=$(terraform output -json instance_ips)
+          echo $HOSTS
           for HOST in $(echo $HOSTS | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" ); do
             IP=$(echo "$HOST" | rev | cut -d "=" -f1 | rev)
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${IP}:8000)

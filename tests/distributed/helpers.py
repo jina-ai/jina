@@ -15,9 +15,7 @@ def get_cloudhost(index: Union[str, int] = ''):
     assert (
         f'CLOUDHOST{index}' in os.environ
     ), f'Please make sure the cloud instance is ready & \'CLOUDHOST{index}\' env variable is set.'
-    host = os.environ.get(f'CLOUDHOST{index}')
-    ip, port = host.split(':')
-    return host, ip, port
+    return os.environ[f'CLOUDHOST{index}'].split(':')
 
 
 def assert_request(

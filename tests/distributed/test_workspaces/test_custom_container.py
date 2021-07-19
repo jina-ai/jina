@@ -15,20 +15,20 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-CLOUDHOST, IP, PORT = get_cloudhost(2)
+HOST, PORT_EXPOSE = get_cloudhost(2)
 
 
 def test_create_custom_container():
     workspace_id = create_workspace(
         filepaths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')],
-        host=IP,
-        port=PORT,
+        host=HOST,
+        port=PORT_EXPOSE,
     )
-    assert wait_for_workspace(workspace_id=workspace_id, host=IP, port=PORT)
+    assert wait_for_workspace(workspace_id=workspace_id, host=HOST, port=PORT_EXPOSE)
 
-    container_id = requests.get(f'http://{CLOUDHOST}/workspaces/{workspace_id}').json()[
-        'metadata'
-    ]['container_id']
+    container_id = requests.get(
+        f'http://{HOST}:{PORT_EXPOSE}/workspaces/{workspace_id}'
+    ).json()['metadata']['container_id']
     assert container_id
 
     # container doesn't live on local anymore
@@ -36,12 +36,14 @@ def test_create_custom_container():
     # assert container.name == workspace_id
 
     workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'custom_workspace_no_run'), host=IP, port=PORT
+        dirpath=os.path.join(cur_dir, 'custom_workspace_no_run'),
+        host=HOST,
+        port=PORT_EXPOSE,
     )
-    assert wait_for_workspace(workspace_id=workspace_id, host=IP, port=PORT)
-    container_id = requests.get(f'http://{CLOUDHOST}/workspaces/{workspace_id}').json()[
-        'metadata'
-    ]['container_id']
+    assert wait_for_workspace(workspace_id=workspace_id, host=HOST, port=PORT_EXPOSE)
+    container_id = requests.get(
+        f'http://{HOST}:{PORT_EXPOSE}/workspaces/{workspace_id}'
+    ).json()['metadata']['container_id']
     assert not container_id
 
 
@@ -51,10 +53,10 @@ def test_update_custom_container():
             os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad'),
             os.path.join(cur_dir, 'flow_app_ws/requirements.txt'),
         ],
-        host=IP,
-        port=PORT,
+        host=HOST,
+        port=PORT_EXPOSE,
     )
-    assert wait_for_workspace(workspace_id=workspace_id, host=IP, port=PORT)
+    assert wait_for_workspace(workspace_id=workspace_id, host=HOST, port=PORT_EXPOSE)
 
     container_id, requirements, image_id = _container_info(workspace_id)
     assert container_id
@@ -65,7 +67,7 @@ def test_update_custom_container():
 
     with ExitStack() as file_stack:
         requests.put(
-            f'http://{CLOUDHOST}/workspaces/{workspace_id}',
+            f'http://{HOST}:{PORT_EXPOSE}/workspaces/{workspace_id}',
             files=[
                 (
                     'files',
@@ -75,7 +77,9 @@ def test_update_custom_container():
                 )
             ],
         )
-        assert wait_for_workspace(workspace_id=workspace_id, host=IP, port=PORT)
+        assert wait_for_workspace(
+            workspace_id=workspace_id, host=HOST, port=PORT_EXPOSE
+        )
         new_container_id, requirements, new_image_id = _container_info(workspace_id)
         assert new_container_id
         assert new_container_id != container_id
@@ -85,7 +89,9 @@ def test_update_custom_container():
 
 
 def _container_info(workspace_id):
-    response = requests.get(f'http://{CLOUDHOST}/workspaces/{workspace_id}').json()
+    response = requests.get(
+        f'http://{HOST}:{PORT_EXPOSE}/workspaces/{workspace_id}'
+    ).json()
     return (
         response['metadata']['container_id'],
         (response['arguments']['requirements']).split(),
@@ -95,18 +101,20 @@ def _container_info(workspace_id):
 
 def test_delete_custom_container():
     workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'custom_workspace_blocking'), host=IP, port=PORT
+        dirpath=os.path.join(cur_dir, 'custom_workspace_blocking'),
+        host=HOST,
+        port=PORT_EXPOSE,
     )
-    assert wait_for_workspace(workspace_id=workspace_id, host=IP, port=PORT)
+    assert wait_for_workspace(workspace_id=workspace_id, host=HOST, port=PORT_EXPOSE)
 
     # check that container was created
-    response = requests.get(f'http://{CLOUDHOST}/workspaces/{workspace_id}')
+    response = requests.get(f'http://{HOST}:{PORT_EXPOSE}/workspaces/{workspace_id}')
     container_id = response.json()['metadata']['container_id']
     assert container_id
 
     # delete container
     requests.delete(
-        f'http://{CLOUDHOST}/workspaces/{workspace_id}',
+        f'http://{HOST}:{PORT_EXPOSE}/workspaces/{workspace_id}',
         params={
             'container': True,
             'everything': False,
@@ -116,7 +124,7 @@ def test_delete_custom_container():
     )
 
     # check that deleted container is gone
-    response = requests.get(f'http://{CLOUDHOST}/workspaces/{workspace_id}')
+    response = requests.get(f'http://{HOST}:{PORT_EXPOSE}/workspaces/{workspace_id}')
     assert response.status_code == 200
     container_id = response.json()['metadata']['container_id']
     assert not container_id
