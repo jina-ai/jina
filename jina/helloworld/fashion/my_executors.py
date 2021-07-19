@@ -98,23 +98,6 @@ class MyEncoder(Executor):
             doc.pop('blob')
 
 
-class MyConverter(Executor):
-    """
-    Convert DocumentArrays removing blob and reshaping blob as image
-    """
-
-    @requests
-    def convert(self, docs: 'DocumentArray', **kwargs):
-        """
-        Remove blob and reshape documents as squared images
-        :param docs: documents to modify
-        :param kwargs: other keyword arguments
-        """
-        for doc in docs:
-            doc.convert_image_blob_to_uri(width=28, height=28)
-            doc.pop('blob')
-
-
 def _get_ones(x, y):
     return np.ones((x, y))
 
