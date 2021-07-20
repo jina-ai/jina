@@ -358,10 +358,11 @@ class Document(ProtoTypeMixin):
 
         :param value: a Python dict or a StructView
         """
-        self._pb_body.tags.Clear()
         if isinstance(value, StructView):
+            self._pb_body.tags.Clear()
             self._pb_body.tags.update(value._pb_body)
         elif isinstance(value, dict):
+            self._pb_body.tags.Clear()
             self._pb_body.tags.update(value)
         else:
             raise TypeError(f'{value!r} is not supported.')
