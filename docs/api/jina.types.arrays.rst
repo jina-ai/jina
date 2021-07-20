@@ -11,6 +11,7 @@ Submodules
    jina.types.arrays.document
    jina.types.arrays.match
    jina.types.arrays.memmap
+   jina.types.arrays.neural_ops
    jina.types.arrays.traversable
 
 Module contents

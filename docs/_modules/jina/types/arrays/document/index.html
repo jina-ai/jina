@@ -298,6 +298,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.memmap/">jina.types.arrays.memmap module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.neural_ops/">jina.types.arrays.neural_ops module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
@@ -398,7 +399,9 @@
     <span class="n">TypeVar</span><span class="p">,</span>
 <span class="p">)</span>
 
+
 <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
+<span class="kn">from</span> <span class="nn">.neural_ops</span> <span class="kn">import</span> <span class="n">DocumentArrayNeuralOperationsMixin</span>
 <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">...helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">cache_invalidate</span>
 <span class="kn">from</span> <span class="nn">...proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
@@ -482,7 +485,11 @@
 
 
 <div class="viewcode-block" id="DocumentArray"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArray">[docs]</a><span class="k">class</span> <span class="nc">DocumentArray</span><span class="p">(</span>
-    <span class="n">TraversableSequence</span><span class="p">,</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">DocumentArrayGetAttrMixin</span><span class="p">,</span> <span class="n">Itr</span>
+    <span class="n">TraversableSequence</span><span class="p">,</span>
+    <span class="n">MutableSequence</span><span class="p">,</span>
+    <span class="n">DocumentArrayGetAttrMixin</span><span class="p">,</span>
+    <span class="n">DocumentArrayNeuralOperationsMixin</span><span class="p">,</span>
+    <span class="n">Itr</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    :class:`DocumentArray` is a mutable sequence of :class:`Document`.</span>

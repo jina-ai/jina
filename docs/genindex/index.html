@@ -297,6 +297,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.document/">jina.types.arrays.document module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.memmap/">jina.types.arrays.memmap module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.neural_ops/">jina.types.arrays.neural_ops module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
@@ -847,6 +848,8 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.CompressAlgo">CompressAlgo (class in jina.enums)</a>
 </li>
+        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.compute_distances">compute_distances() (in module jina.types.arrays.neural_ops)</a>
+</li>
         <li><a href="../api/jina.peapods.peas.helper/#jina.peapods.peas.helper.ConditionalEvent">ConditionalEvent (class in jina.peapods.peas.helper)</a>
 </li>
         <li><a href="../api/jina.optimizers.discovery/#jina.optimizers.discovery.config_global_environment">config_global_environment() (in module jina.optimizers.discovery)</a>
@@ -997,6 +1000,8 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.CopyFrom">(jina.types.document.Document method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.cosine_distance">cosine_distance() (in module jina.types.arrays.neural_ops)</a>
+</li>
         <li><a href="../api/jina.helper/#jina.helper.countdown">countdown() (in module jina.helper)</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild.CPU">CPU (daemon.models.enums.DaemonBuild attribute)</a>
@@ -1270,10 +1275,10 @@
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonBuild">DaemonBuild (class in daemon.models.enums)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.peapods.runtimes.jinad.client/#jina.peapods.runtimes.jinad.client.DaemonClient">DaemonClient (class in jina.peapods.runtimes.jinad.client)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.excepts/#jina.excepts.DaemonConnectivityError">DaemonConnectivityError</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.DaemonEnum">DaemonEnum (class in daemon.models.enums)</a>
@@ -1408,6 +1413,8 @@
 </li>
         <li><a href="../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap">DocumentArrayMemmap (class in jina.types.arrays.memmap)</a>
 </li>
+        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOperationsMixin">DocumentArrayNeuralOperationsMixin (class in jina.types.arrays.neural_ops)</a>
+</li>
         <li><a href="../api/jina.helloworld.fashion.helper/#jina.helloworld.fashion.helper.download_data">download_data() (in module jina.helloworld.fashion.helper)</a>
 
         <ul>
@@ -1479,6 +1486,8 @@
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.ERROR">ERROR (jina.enums.LogVerbosity attribute)</a>
 </li>
         <li><a href="../api/jina.jaml/#jina.jaml.JAML.escape">escape() (jina.jaml.JAML static method)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.euclidean_distance_squared">euclidean_distance_squared() (in module jina.types.arrays.neural_ops)</a>
 </li>
         <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator.evaluate">evaluate() (jina.helloworld.fashion.my_executors.MyEvaluator method)</a>
 </li>
@@ -2636,8 +2645,6 @@
           <li><a href="../api/jina.peapods.networking/#module-jina.peapods.networking">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas
 
@@ -2645,6 +2652,8 @@
           <li><a href="../api/jina.peapods.peas/#module-jina.peapods.peas">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas.helper
 
@@ -2909,6 +2918,13 @@
 
         <ul>
           <li><a href="../api/jina.types.arrays.memmap/#module-jina.types.arrays.memmap">module</a>
+</li>
+        </ul></li>
+        <li>
+    jina.types.arrays.neural_ops
+
+        <ul>
+          <li><a href="../api/jina.types.arrays.neural_ops/#module-jina.types.arrays.neural_ops">module</a>
 </li>
         </ul></li>
         <li>
@@ -3323,6 +3339,8 @@
         <li><a href="../api/daemon.models.workspaces/#daemon.models.workspaces.WorkspaceMetadata.managed_objects">managed_objects (daemon.models.workspaces.WorkspaceMetadata attribute)</a>
 </li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ColorFormatter.MAPPING">MAPPING (jina.logging.formatter.ColorFormatter attribute)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOperationsMixin.match">match() (jina.types.arrays.neural_ops.DocumentArrayNeuralOperationsMixin method)</a>
 </li>
         <li><a href="../api/jina.types.arrays.match/#jina.types.arrays.match.MatchArray">MatchArray (class in jina.types.arrays.match)</a>
 </li>
@@ -3745,6 +3763,8 @@
           <li><a href="../api/jina.types.arrays.match/#module-jina.types.arrays.match">jina.types.arrays.match</a>
 </li>
           <li><a href="../api/jina.types.arrays.memmap/#module-jina.types.arrays.memmap">jina.types.arrays.memmap</a>
+</li>
+          <li><a href="../api/jina.types.arrays.neural_ops/#module-jina.types.arrays.neural_ops">jina.types.arrays.neural_ops</a>
 </li>
           <li><a href="../api/jina.types.arrays.traversable/#module-jina.types.arrays.traversable">jina.types.arrays.traversable</a>
 </li>
