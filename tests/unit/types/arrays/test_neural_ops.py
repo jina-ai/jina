@@ -3,7 +3,7 @@ import copy
 
 import numpy as np
 
-from jina.types.arrays.neuraloperations import (
+from jina.types.arrays.neural_ops import (
     cosine_distance,
     euclidean_distance_squared,
 )
@@ -30,12 +30,12 @@ def docarrays_for_embedding_distance_computation():
 
 
 @pytest.fixture
-def numpy_array():
+def embeddings():
     return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
 
 
 @pytest.fixture
-def numpy_array_query():
+def embedding_query():
     return np.array([[1, 0, 0]])
 
 
@@ -126,26 +126,26 @@ def test_matching_retrieves_closest_matches(
         assert expected_sorted_values == sorted(expected_sorted_values)[::-1]
 
 
-def test_euclidean_distance_squared(numpy_array, numpy_array_query):
+def test_euclidean_distance_squared(embeddings, embedding_query):
     """
-    numpy_array = [[1,0,0],[2,0,0],[3,0,0]]
-    numpy_array_query = [[1,0,0]]
+    embeddings = [[1,0,0],[2,0,0],[3,0,0]]
+    embedding_query = [[1,0,0]]
     Should expect as output [[0,1,4]].T  because (1-1)**2 = 0, (2-1)**2 = 1, (3-1)**2 = 2**2 = 4
     """
     np.testing.assert_almost_equal(
-        euclidean_distance_squared(numpy_array_query, numpy_array),
+        euclidean_distance_squared(embedding_query, embeddings),
         np.array([[0, 1, 4]]),
     )
 
 
-def test_cosine_distance_squared(numpy_array, numpy_array_query):
+def test_cosine_distance_squared(embeddings, embedding_query):
     """
-    numpy_array = [[1,0,0],[2,0,0],[3,0,0]]
-    numpy_array_query = [[1,0,0]]
+    embeddings = [[1,0,0],[2,0,0],[3,0,0]]
+    embedding_query = [[1,0,0]]
     Should expect as output [[0,0,0]].T because query has same direction as every other element
     """
     np.testing.assert_almost_equal(
-        cosine_distance(numpy_array_query, numpy_array), np.array([[0, 0, 0]])
+        cosine_distance(embedding_query, embeddings), np.array([[0, 0, 0]])
     )
 
 

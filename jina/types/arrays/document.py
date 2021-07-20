@@ -18,7 +18,7 @@ from typing import (
 
 
 from .traversable import TraversableSequence
-from .neuraloperations import DocumentArrayNeuralOperationsMixin
+from .neural_ops import DocumentArrayNeuralOperationsMixin
 from ..document import Document
 from ...helper import typename, cached_property, cache_invalidate
 from ...proto import jina_pb2
