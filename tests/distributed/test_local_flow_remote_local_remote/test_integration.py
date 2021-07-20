@@ -12,7 +12,7 @@ compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
 flow_yml = os.path.join(cur_dir, 'flow.yml')
 
 
-# @pytest.mark.skip('jinad with docker-compose not supported for now')
+@pytest.mark.skip('jinad with docker-compose not supported for now')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 @pytest.mark.parametrize(
     'encoder_needs, indexer_needs',
