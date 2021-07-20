@@ -16,7 +16,9 @@ from typing import (
     TypeVar,
 )
 
+
 from .traversable import TraversableSequence
+from .neural_ops import DocumentArrayNeuralOperationsMixin
 from ..document import Document
 from ...helper import typename, cached_property, cache_invalidate
 from ...proto import jina_pb2
@@ -100,7 +102,11 @@ class DocumentArrayGetAttrMixin:
 
 
 class DocumentArray(
-    TraversableSequence, MutableSequence, DocumentArrayGetAttrMixin, Itr
+    TraversableSequence,
+    MutableSequence,
+    DocumentArrayGetAttrMixin,
+    DocumentArrayNeuralOperationsMixin,
+    Itr,
 ):
     """
     :class:`DocumentArray` is a mutable sequence of :class:`Document`.
