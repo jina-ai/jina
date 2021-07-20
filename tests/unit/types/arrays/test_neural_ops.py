@@ -2,6 +2,7 @@ import pytest
 import copy
 
 import numpy as np
+from scipy.spatial.distance import cdist
 
 from jina.types.arrays.neural_ops import (
     cosine_distance,
@@ -85,6 +86,22 @@ def test_new_distances_equal_previous_distances():
     dists_previous_cosine = _cosine(X_ext, Y_ext)
     dists_new_cosine = cosine_distance(X, Y)
     np.testing.assert_almost_equal(dists_previous_cosine, dists_new_cosine)
+
+
+def test_new_distances_equal_scipy_cdist():
+    """
+    Tests if current distance implementations match scipy.spatial.distance.cdist
+    """
+    X = np.array([[1, 1, 1], [4, 5, 6], [0, 1, 2]])
+    Y = np.array([[1, 1, 2], [2, 3, 4]])
+
+    XYdistances = cdist(X, Y, metric='euclidean')
+    XY_new = np.sqrt(euclidean_distance_squared(X, Y))
+    np.testing.assert_almost_equal(XYdistances, XY_new)
+
+    XYdistances = cdist(X, Y, metric='cosine')
+    XY_new = cosine_distance(X, Y)
+    np.testing.assert_almost_equal(XYdistances, XY_new)
 
 
 @pytest.mark.parametrize('limit', [1, 2])
