@@ -95,13 +95,13 @@ def test_new_distances_equal_scipy_cdist():
     X = np.array([[1, 1, 1], [4, 5, 6], [0, 1, 2]])
     Y = np.array([[1, 1, 2], [2, 3, 4]])
 
-    XYdistances = cdist(X, Y, metric='euclidean')
+    XY_cdist = cdist(X, Y, metric='euclidean')
     XY_new = np.sqrt(euclidean_distance_squared(X, Y))
-    np.testing.assert_almost_equal(XYdistances, XY_new)
+    np.testing.assert_almost_equal(XY_cdist, XY_new)
 
-    XYdistances = cdist(X, Y, metric='cosine')
+    XY_cdist = cdist(X, Y, metric='cosine')
     XY_new = cosine_distance(X, Y)
-    np.testing.assert_almost_equal(XYdistances, XY_new)
+    np.testing.assert_almost_equal(XY_cdist, XY_new)
 
 
 @pytest.mark.parametrize('limit', [1, 2])
