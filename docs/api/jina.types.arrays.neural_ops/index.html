@@ -405,13 +405,13 @@
         <div class="section" id="module-jina.types.arrays.neural_ops">
 <span id="jina-types-arrays-neural-ops-module"></span><h1>jina.types.arrays.neural_ops module<a class="headerlink" href="#module-jina.types.arrays.neural_ops" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOperationsMixin">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.arrays.neural_ops.</span></code><code class="sig-name descname"><span class="pre">DocumentArrayNeuralOperationsMixin</span></code><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOperationsMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOperationsMixin" title="Permalink to this definition">¶</a></dt>
+<dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.arrays.neural_ops.</span></code><code class="sig-name descname"><span class="pre">DocumentArrayNeuralOpsMixin</span></code><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOpsMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A mixin that provides match functionality to DocumentArrays</p>
 <dl class="py method">
-<dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOperationsMixin.match">
-<code class="sig-name descname"><span class="pre">match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">darray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOperationsMixin.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOperationsMixin.match" title="Permalink to this definition">¶</a></dt>
+<dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match">
+<code class="sig-name descname"><span class="pre">match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">darray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOpsMixin.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute embedding based nearest neighbour in <cite>another</cite> for each Document in <cite>self</cite>,
 and store results in <cite>matches</cite>.</p>
 <dl class="simple">
@@ -425,7 +425,7 @@ and store results in <cite>matches</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>darray</strong> (<a class="reference internal" href="../jina.types.arrays.document/#jina.types.arrays.document.DocumentArrayGetAttrMixin" title="jina.types.arrays.document.DocumentArrayGetAttrMixin"><em>DocumentArrayGetAttrMixin</em></a>) – the other DocumentArray to match against</p></li>
+<li><p><strong>darray</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – the other DocumentArray or DocumentArrayMemmap to match against</p></li>
 <li><p><strong>metric</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the distance metric</p></li>
 <li><p><strong>limit</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum number of matches, when not given
 all Documents in <cite>another</cite> are considered as matches</p></li>
@@ -437,44 +437,6 @@ all Documents in <cite>another</cite> are considered as matches</p></li>
 </dd>
 </dl>
 </dd></dl>
-</dd></dl>
-<dl class="py function">
-<dt id="jina.types.arrays.neural_ops.compute_distances">
-<code class="sig-prename descclassname"><span class="pre">jina.types.arrays.neural_ops.</span></code><code class="sig-name descname"><span class="pre">compute_distances</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#compute_distances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.compute_distances" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the distance between each row of X and each row on Y according to <cite>metric</cite>.
-- Let <cite>n_X = X.shape[0]</cite>
-- Let <cite>n_Y = Y.shape[0]</cite>
-- Returns a matrix <cite>dist</cite> of shape <cite>(n_X, n_Y)</cite> with <cite>dist[i,j] = metric(X[i], X[j])</cite>.
-:type X: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param X: np.ndarray of ndim 2
-:type Y: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param Y:  np.ndarray of ndim 2
-:type metric: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param metric: string describing the metric type
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:return: np.ndarray of ndim 2</p>
-</dd></dl>
-<dl class="py function">
-<dt id="jina.types.arrays.neural_ops.cosine_distance">
-<code class="sig-prename descclassname"><span class="pre">jina.types.arrays.neural_ops.</span></code><code class="sig-name descname"><span class="pre">cosine_distance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#cosine_distance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.cosine_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cosine distance between each row in X and each row in Y.
-:type X: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param X: np.ndarray with ndim=2
-:type Y: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param Y: np.ndarray with ndim=2
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:return: np.ndarray  with ndim=2</p>
-</dd></dl>
-<dl class="py function">
-<dt id="jina.types.arrays.neural_ops.euclidean_distance_squared">
-<code class="sig-prename descclassname"><span class="pre">jina.types.arrays.neural_ops.</span></code><code class="sig-name descname"><span class="pre">euclidean_distance_squared</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#euclidean_distance_squared"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.euclidean_distance_squared" title="Permalink to this definition">¶</a></dt>
-<dd><p>Euclidean (squared) distance between each row in X and each row in Y.
-:type X: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param X: np.ndarray with ndim=2
-:type Y: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param Y: np.ndarray with ndim=2
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:return: np.ndarray with ndim=2</p>
 </dd></dl>
 </div>
 
