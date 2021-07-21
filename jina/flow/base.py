@@ -806,7 +806,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 start_pod = graph._get_target_pod(start)
                 if is_remote_local_connection(start_pod.host, pod.head_host):
                     pod.head_args.hosts_in_connect.append(
-                        graph._get_target_pod(start).full_address
+                        graph._get_target_pod(start).full_out_address
                     )
 
                     graph.add_edge(start, end, True)
