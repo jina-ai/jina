@@ -32,8 +32,31 @@ def pea(args: 'Namespace'):
         pass
 
 
+def zed_runtime(args: 'Namespace'):
+    """
+    Start a ZEDRuntime
+
+    :param args: arguments coming from the CLI.
+    """
+    from jina.peapods.runtimes.zmq.zed import ZEDRuntime
+    from jina.peapods.zmq import Zmqlet
+    import multiprocessing
+
+    # This event is not needed but ZEDRuntime was born to communicate to the Pea and needs an event
+    dummy_event = multiprocessing.Event()
+
+    zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
+        args.host, args.port_ctrl, args.ctrl_with_ipc
+    )[0]
+
+    with ZEDRuntime(
+        args, ctrl_addr=zed_runtime_ctrl_address, ready_event=dummy_event
+    ) as runtime:
+        runtime.run_forever()
+
+
 # alias
-executor = pea
+executor = zed_runtime
 
 
 def gateway(args: 'Namespace'):
