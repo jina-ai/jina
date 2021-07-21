@@ -104,6 +104,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         self._start = 0
         if self._header_map:
             self._start = tmp[-1][1] + tmp[-1][3]
+            self._body.seek(self._start)
 
     def __len__(self):
         return len(self._header_map)
