@@ -1572,7 +1572,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
 
         if deployment_type == 'k8s':
-            self.logger.info(f'✨ Deploy Flow on Kubernetes...')
+            # self.logger.info(f'✨ Deploy Flow on Kubernetes...')
             namespace = self.args.name
             self.logger.info(f'📦 Create Namespace {namespace}')
             kubernetes_tools.create('namespace', {'name': namespace})
@@ -1618,10 +1618,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     },
                 )
             self.logger.info(f'🔒 Create "gateway service"')
+            external_gateway_service = 'gateway-exposed'
             kubernetes_tools.create(
                 'service',
                 {
-                    'name': 'gateway-exposed',
+                    'name': external_gateway_service,
                     'target': 'gateway',
                     'namespace': namespace,
                     'port': 8080,
@@ -1654,6 +1655,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     'namespace': namespace,
                 },
             )
+
+            self.logger.info(f'🌐 Create "Ingress resource"')
+            kubernetes_tools.create_gateway_ingress(namespace)
         else:
             raise Exception(f'deployment type "{deployment_type}" is not supported')
 

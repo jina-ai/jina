@@ -10,6 +10,38 @@ config.load_kube_config()
 k8s_client = client.ApiClient()
 v1 = client.CoreV1Api()
 beta = client.ExtensionsV1beta1Api()
+networking_v1_beta1_api = client.NetworkingV1beta1Api()
+
+
+def create_gateway_ingress(namespace: str):
+    body = client.NetworkingV1beta1Ingress(
+        api_version="networking.k8s.io/v1beta1",
+        kind="Ingress",
+        metadata=client.V1ObjectMeta(name=f'{namespace}-ingress', annotations={
+            "nginx.ingress.kubernetes.io/rewrite-target": "/"
+        }),
+        spec=client.NetworkingV1beta1IngressSpec(
+            rules=[client.NetworkingV1beta1IngressRule(
+                host="",
+                http=client.NetworkingV1beta1HTTPIngressRuleValue(
+                    paths=[client.NetworkingV1beta1HTTPIngressPath(
+                        path="/",
+                        backend=client.NetworkingV1beta1IngressBackend(
+                            service_port=8080,
+                            service_name="gateway-exposed")
+
+                    )]
+                )
+            )
+            ]
+        )
+    )
+    # Creation of the Deployment in specified namespace
+    # (Can replace "default" with a namespace you may have created)
+    networking_v1_beta1_api.create_namespaced_ingress(
+        namespace=namespace,
+        body=body
+    )
 
 
 def create(template, params):
