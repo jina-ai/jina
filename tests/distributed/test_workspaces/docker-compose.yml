@@ -4,7 +4,7 @@ services:
     image: jinaai/jina:test-daemon
     container_name: test_upload_simple_non_standard_rootworkspace
     ports:
-      - "9000:8000"
+      - "9090:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp/other_jinad:/tmp/jinad
