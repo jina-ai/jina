@@ -188,4 +188,6 @@ def test_extend_and_get_attribute(tmpdir, embed_dim):
     docs = list(random_docs(100, start_id=100, embed_dim=embed_dim))
     dam2.extend(docs)
     x = dam2.get_attributes('embedding')
+    assert len(x) == 200
+    assert x[0].shape == (embed_dim,)
     assert len(dam2) == 200
