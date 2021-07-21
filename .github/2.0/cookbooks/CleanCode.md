@@ -354,10 +354,10 @@ tips to help you write beautiful and efficient code.
    from jina import Document
    
    root_document = Document(text='i am root')
-   root_document.append(Document(text='i am chunk 1'))  # add one chunk to root
-   root_document.extend([
+   root_document.chunks.append(Document(text='i am chunk 1'))  # add one chunk to root
+   root_document.chunks.extend([
        Document(text='i am chunk 2'),
-       Document(text='i am chunk 3')
+       Document(text='i am chunk 3'),
    ])  # add multiple chunks to root
    ```
    
