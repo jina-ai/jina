@@ -161,6 +161,13 @@ class BasePod:
         return self.head_args.port_in
 
     @property
+    def tail_port_out(self):
+        """Get the port_out of the TailPea of this pod
+        .. # noqa: DAR201
+        """
+        return self.tail_args.port_out
+
+    @property
     def head_zmq_identity(self):
         """Get the zmq_identity of the HeadPea of this pod
         .. # noqa: DAR201

@@ -1,4 +1,5 @@
 import socket
+import platform
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
 
 import docker
@@ -268,6 +269,15 @@ class Dockerizer:
             pass
         return __root_workspace__
 
+    @classproperty
+    def dockersock(cls) -> str:
+        """docker socket path
+
+        :return: abs path to docker socket
+        """
+        location = '/var/run/docker.sock'
+        return location if platform.system() == 'Darwin' else '/' + location
+
     @classmethod
     def volume(cls, workspace_id: DaemonID) -> Dict[str, Dict]:
         """
@@ -283,8 +293,7 @@ class Dockerizer:
                 'bind': '/workspace',
                 'mode': 'rw',
             },
-            # TODO: without adding slash, it fails on WSL (needs to checked on linux/mac)
-            '//var/run/docker.sock': {'bind': '/var/run/docker.sock'},
+            cls.dockersock: {'bind': '/var/run/docker.sock'},
         }
 
     @classmethod

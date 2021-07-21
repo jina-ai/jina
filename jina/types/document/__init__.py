@@ -345,7 +345,7 @@ class Document(ProtoTypeMixin):
         return self._pb_body.content_hash
 
     @property
-    def tags(self) -> Dict:
+    def tags(self) -> StructView:
         """Return the `tags` field of this Document as a Python dict
 
         :return: a Python dict view of the tags.
@@ -353,13 +353,19 @@ class Document(ProtoTypeMixin):
         return StructView(self._pb_body.tags)
 
     @tags.setter
-    def tags(self, value: Dict):
+    def tags(self, value: Union[Dict, StructView]):
         """Set the `tags` field of this Document to a Python dict
 
-        :param value: a Python dict
+        :param value: a Python dict or a StructView
         """
-        self._pb_body.tags.Clear()
-        self._pb_body.tags.update(value)
+        if isinstance(value, StructView):
+            self._pb_body.tags.Clear()
+            self._pb_body.tags.update(value._pb_body)
+        elif isinstance(value, dict):
+            self._pb_body.tags.Clear()
+            self._pb_body.tags.update(value)
+        else:
+            raise TypeError(f'{value!r} is not supported.')
 
     def _update(
         self,

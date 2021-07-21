@@ -34,6 +34,14 @@ class TargetPod(ProtoTypeMixin):
         return self.proto.port
 
     @property
+    def port_out(self) -> int:
+        """Returns the `port` field of this TargetPod
+
+        :return: port
+        """
+        return self.proto.port_out
+
+    @property
     def host(self) -> str:
         """Returns the `host` field of this TargetPod
 
@@ -48,6 +56,14 @@ class TargetPod(ProtoTypeMixin):
         :return: address
         """
         return f'{self.host}:{self.port}'
+
+    @property
+    def full_out_address(self) -> str:
+        """Return the full zmq adress of the tail of this TargetPod
+
+        :return: address
+        """
+        return f'{self.host}:{self.port_out}'
 
     @property
     def expected_parts(self) -> int:
@@ -150,6 +166,7 @@ class RoutingTable(ProtoTypeMixin):
 
         target.host = pod.head_host
         target.port = pod.head_port_in
+        target.port_out = pod.tail_port_out
         target.target_identity = pod.head_zmq_identity
 
     def _get_target_pod(self, pod: str) -> TargetPod:
