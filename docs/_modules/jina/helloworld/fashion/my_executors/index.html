@@ -415,38 +415,12 @@
 <span class="sd">        :param parameters: dictionary of pairs (parameter,value)</span>
 <span class="sd">        :param kwargs: other keyword arguments</span>
 <span class="sd">        """</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-        <span class="n">q_emb</span> <span class="o">=</span> <span class="n">_ext_A</span><span class="p">(</span><span class="n">_norm</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-        <span class="n">d_emb</span> <span class="o">=</span> <span class="n">_ext_B</span><span class="p">(</span><span class="n">_norm</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
-        <span class="n">dists</span> <span class="o">=</span> <span class="n">_cosine</span><span class="p">(</span><span class="n">q_emb</span><span class="p">,</span> <span class="n">d_emb</span><span class="p">)</span>
-        <span class="n">idx</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sorted_top_k</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'top_k'</span><span class="p">]))</span>
-        <span class="k">for</span> <span class="n">_q</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">_dist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span><span class="p">):</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_id</span><span class="p">)],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="s1">'cosine'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">_dist</span>
-                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_sorted_top_k</span><span class="p">(</span>
-        <span class="n">dist</span><span class="p">:</span> <span class="s1">'np.array'</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="s1">'np.ndarray'</span><span class="p">]:</span>
-        <span class="sd">"""Sort and select top k distances</span>
-<span class="sd">        :param dist: array of distances</span>
-<span class="sd">        :param top_k: number of values to retrieve</span>
-<span class="sd">        :return: indices and distances</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">top_k</span> <span class="o">&gt;=</span> <span class="n">dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="n">top_k</span><span class="p">]</span>
-            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">idx_ps</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">kth</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="n">top_k</span><span class="p">]</span>
-            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">idx_ps</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">idx_fs</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">idx_ps</span><span class="p">,</span> <span class="n">idx_fs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">idx_fs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">idx</span><span class="p">,</span> <span class="n">dist</span></div>
+        <span class="n">docs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">,</span>
+            <span class="n">metric</span><span class="o">=</span><span class="s1">'cosine'</span><span class="p">,</span>
+            <span class="n">is_distance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'top_k'</span><span class="p">]),</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="MyEncoder"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEncoder">[docs]</a><span class="k">class</span> <span class="nc">MyEncoder</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -496,40 +470,6 @@
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">)</span></div></div>
-
-
-<span class="k">def</span> <span class="nf">_get_ones</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
-
-
-<span class="k">def</span> <span class="nf">_ext_A</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-    <span class="n">nA</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">A_ext</span> <span class="o">=</span> <span class="n">_get_ones</span><span class="p">(</span><span class="n">nA</span><span class="p">,</span> <span class="n">dim</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="n">A_ext</span><span class="p">[:,</span> <span class="n">dim</span> <span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span>
-    <span class="n">A_ext</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">A</span> <span class="o">**</span> <span class="mi">2</span>
-    <span class="k">return</span> <span class="n">A_ext</span>
-
-
-<span class="k">def</span> <span class="nf">_ext_B</span><span class="p">(</span><span class="n">B</span><span class="p">):</span>
-    <span class="n">nB</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">B_ext</span> <span class="o">=</span> <span class="n">_get_ones</span><span class="p">(</span><span class="n">dim</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">nB</span><span class="p">)</span>
-    <span class="n">B_ext</span><span class="p">[:</span><span class="n">dim</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
-    <span class="n">B_ext</span><span class="p">[</span><span class="n">dim</span> <span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">B</span><span class="o">.</span><span class="n">T</span>
-    <span class="k">del</span> <span class="n">B</span>
-    <span class="k">return</span> <span class="n">B_ext</span>
-
-
-<span class="k">def</span> <span class="nf">_euclidean</span><span class="p">(</span><span class="n">A_ext</span><span class="p">,</span> <span class="n">B_ext</span><span class="p">):</span>
-    <span class="n">sqdist</span> <span class="o">=</span> <span class="n">A_ext</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B_ext</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sqdist</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_norm</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">A</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_cosine</span><span class="p">(</span><span class="n">A_norm_ext</span><span class="p">,</span> <span class="n">B_norm_ext</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">A_norm_ext</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">B_norm_ext</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
 
 
 <div class="viewcode-block" id="MyEvaluator"><a class="viewcode-back" href="../../../../../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyEvaluator">[docs]</a><span class="k">class</span> <span class="nc">MyEvaluator</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
