@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This script is executed inside a remote ec2 instance to build & start jinad
+# (and additional containers during distributed tests).
+
 set -e
 
 while [[ "$#" -gt 0 ]]; do
@@ -39,6 +42,7 @@ if [[ "$debug" = "true" ]]; then
         echo -e "\n'debug' is true, and 'branch' is set to '${branch}. Building & running jinad!"
         git clone https://github.com/jina-ai/jina.git && cd jina && git fetch && git checkout ${branch}
         docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+        cd tests/distributed/test_topologies_docker && docker build mwu-encoder -t test-mwu-encoder && cd -
         docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
         docker run --add-host host.docker.internal:host-gateway \
                 --name jinad \

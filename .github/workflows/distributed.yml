@@ -23,7 +23,8 @@ jobs:
           aws-region: us-east-1
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: latest
+          terraform_version: 0.14.7
+          terraform_wrapper: false
       - run: terraform init
         working-directory: ./tests/distributed
       - run: >
@@ -42,24 +43,23 @@ jobs:
           -var='commit=${{ github.sha }}'
         working-directory: ./tests/distributed
       - name: Validate Setup
+        id: validate
         run: |
           sudo apt-get -qq update && sudo apt-get install -qq -y jq curl
           COUNT=0
-          terraform output -json instance_ips
           HOSTS=$(terraform output -json instance_ips)
-          echo $HOSTS
-          for HOST in $(echo $HOSTS | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" ); do
+          for HOST in $(echo $HOSTS | jq -r "to_entries | map(\"\(.key)=\(.value|tostring)\") | .[]" ); do
             IP=$(echo "$HOST" | rev | cut -d "=" -f1 | rev)
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://${IP}:8000)
             if [[ $STATUS -eq 200 ]]; then
               echo "Successfully connected to ${HOST}"
               COUNT=$((COUNT+1))
-              echo "$HOST" >> $GITHUB_ENV
+              echo "${HOST}:8000" >> $GITHUB_ENV
             fi
           done
           if [[ $COUNT -eq ${{ env.INSTANCES }} ]]; then
             echo "${{ env.INSTANCES }} instances successfully setup"
-          else:
+          else
             echo "Issue in remote setup. Tried setting up ${{ env.INSTANCES }} instances, ${COUNT} succeeded"
             exit 1
           fi
@@ -70,7 +70,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Prepare environment
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[cicd,test,daemon]" --no-cache-dir
@@ -79,7 +78,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Tests
-        run: pytest --suppress-no-test-exit-code  --force-flaky --max-runs 1 --cov=jina --cov-report=xml --timeout=360 -v -s tests/distributed
+        run: |
+          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          # still needed for 2 docker-compose tests
+          docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
+          pytest --suppress-no-test-exit-code  --force-flaky --max-runs 1 --cov=jina --cov-report=xml --timeout=360 -v -s tests/distributed
+        timeout-minutes: 30
       - if: always()
         name: Destroy remote instances
         run: >

@@ -26,7 +26,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-CLOUDHOST, IP, PORT = get_cloudhost(1)
+HOST, PORT_EXPOSE = get_cloudhost(1)
 NUM_DOCS = 100
 
 
@@ -38,7 +38,8 @@ def test_upload_simple(parallels, mocker):
         .add()
         .add(
             uses='mwu_encoder.yml',
-            host=CLOUDHOST,
+            host=HOST,
+            port_expose=PORT_EXPOSE,
             parallel=parallels,
             upload_files=['mwu_encoder.py'],
         )
@@ -66,7 +67,8 @@ def test_upload_multiple_workspaces(parallels, mocker):
         .add(
             name='tf_encoder',
             uses=_path(encoder_workspace, 'tf.yml'),
-            host=CLOUDHOST,
+            host=HOST,
+            port_expose=PORT_EXPOSE,
             parallel=parallels,
             py_modules=[_path(encoder_workspace, 'tf_encoder.py')],
             upload_files=[
@@ -77,7 +79,8 @@ def test_upload_multiple_workspaces(parallels, mocker):
         .add(
             name='tdb_indexer',
             uses=_path(indexer_workspace, 'tdb.yml'),
-            host=CLOUDHOST,
+            host=HOST,
+            port_expose=PORT_EXPOSE,
             parallel=parallels,
             py_modules=[_path(indexer_workspace, 'tdb_indexer.py')],
             upload_files=[
@@ -96,24 +99,29 @@ def test_upload_multiple_workspaces(parallels, mocker):
 
 def test_remote_flow():
     workspace_id = create_workspace(
-        filepaths=[os.path.join(cur_dir, 'empty_flow.yml')],
+        filepaths=[os.path.join(cur_dir, 'empty_flow.yml')], host=HOST, port=PORT_EXPOSE
     )
-    assert wait_for_workspace(workspace_id=workspace_id, host=IP, port=PORT)
+    assert wait_for_workspace(workspace_id=workspace_id, host=HOST, port=PORT_EXPOSE)
     flow_id = create_flow(
-        workspace_id=workspace_id, filename='empty_flow.yml', host=IP, port=PORT
+        workspace_id=workspace_id,
+        filename='empty_flow.yml',
+        host=HOST,
+        port=PORT_EXPOSE,
     )
-    assert_request('get', url=f'http://{CLOUDHOST}/flows/{flow_id}', expect_rcode=200)
-    assert_request('get', url=f'http://localhost:23456/status/', expect_rcode=200)
-    assert delete_flow(flow_id=flow_id, host=IP, port=PORT)
-    assert delete_workspace(workspace_id, host=IP, port=PORT)
+    assert_request(
+        'get', url=f'http://{HOST}:{PORT_EXPOSE}/flows/{flow_id}', expect_rcode=200
+    )
+    assert_request('get', url=f'http://{HOST}:23456/status/', expect_rcode=200)
+    assert delete_flow(flow_id=flow_id, host=HOST, port=PORT_EXPOSE)
+    assert delete_workspace(workspace_id, host=HOST, port=PORT_EXPOSE)
 
 
 def test_custom_project():
 
     workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'flow_app_ws'), host=IP, port=PORT
+        dirpath=os.path.join(cur_dir, 'flow_app_ws'), host=HOST, port=PORT_EXPOSE
     )
-    assert wait_for_workspace(workspace_id, host=IP, port=PORT)
+    assert wait_for_workspace(workspace_id, host=HOST, port=PORT_EXPOSE)
     # we need to wait for the flow to start in the custom project
     time.sleep(5)
 
@@ -127,17 +135,17 @@ def test_custom_project():
             except StopIteration:
                 return
 
-    Client(host=IP, port_expose=42860, show_progress=True).post(
+    Client(host=HOST, port_expose=42860, show_progress=True).post(
         on='/index', inputs=gen_docs
     )
-    res = Client(host=IP, port_expose=42860, show_progress=True).post(
+    res = Client(host=HOST, port_expose=42860, show_progress=True).post(
         on='/search',
         inputs=Document(tags={'key': 'first', 'value': 's'}),
         return_results=True,
     )
     assert res[0].data.docs[0].matches[0].tags.fields['first'].string_value == 's'
     assert res[0].data.docs[0].matches[0].tags.fields['second'].string_value == 't'
-    assert delete_workspace(workspace_id, host=IP, port=PORT)
+    assert delete_workspace(workspace_id, host=HOST, port=PORT_EXPOSE)
 
 
 @pytest.fixture()

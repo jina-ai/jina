@@ -18,7 +18,7 @@ module "jinad" {
 
 locals {
   dict = { for i in range(1, var.instances + 1) : "CLOUDHOST${i}" => {
-    type : "t2.micro"
+    type : "t2.medium"
     disk = {
       type = "gp2"
       size = 20

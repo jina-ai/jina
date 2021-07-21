@@ -305,6 +305,7 @@ class Dockerizer:
         return {
             'JINA_LOG_WORKSPACE': '/workspace/logs',
             'JINA_RANDOM_PORT_MIN': '49153',
+            'JINA_LOG_LEVEL': 'DEBUG',
         }
 
     @classmethod

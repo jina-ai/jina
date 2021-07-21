@@ -18,6 +18,7 @@ docker run --add-host host.docker.internal:host-gateway \
 
 HOST, PORT_EXPOSE = get_cloudhost(2)
 NUM_DOCS = 100
+DOCKER_IMAGE = 'test-mwu-encoder'  # This should already be built on actual remote
 
 
 @pytest.fixture()
@@ -34,12 +35,12 @@ def docker_image():
 
 
 @pytest.mark.parametrize('parallels', [1, 2])
-def test_r_l_docker(parallels, docker_image, mocker):
+def test_r_l_docker(parallels, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,
@@ -57,14 +58,14 @@ def test_r_l_docker(parallels, docker_image, mocker):
 
 
 @pytest.mark.parametrize('parallels', [1, 2])
-def test_l_r_docker(parallels, docker_image, mocker):
+def test_l_r_docker(parallels, mocker):
     response_mock = mocker.Mock()
 
     f = (
         Flow()
         .add(parallel=parallels)
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,
@@ -79,20 +80,20 @@ def test_l_r_docker(parallels, docker_image, mocker):
 
 
 @pytest.mark.parametrize('parallels', [1, 2])
-def test_r_l_r_docker(parallels, docker_image, mocker):
+def test_r_l_r_docker(parallels, mocker):
     response_mock = mocker.Mock()
 
     f = (
         Flow()
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,
         )
         .add()
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,
@@ -107,25 +108,25 @@ def test_r_l_r_docker(parallels, docker_image, mocker):
 
 
 @pytest.mark.parametrize('parallels', [1, 2])
-def test_r_r_r_docker(parallels, docker_image, mocker):
+def test_r_r_r_docker(parallels, mocker):
     response_mock = mocker.Mock()
 
     f = (
         Flow()
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,
         )
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,
         )
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,
@@ -140,13 +141,13 @@ def test_r_r_r_docker(parallels, docker_image, mocker):
 
 
 @pytest.mark.parametrize('parallels', [1, 2])
-def test_l_r_l_docker(parallels, docker_image, mocker):
+def test_l_r_l_docker(parallels, mocker):
     response_mock = mocker.Mock()
     f = (
         Flow()
         .add()
         .add(
-            uses=f'docker://{docker_image}',
+            uses=f'docker://{DOCKER_IMAGE}',
             host=HOST,
             port_expose=PORT_EXPOSE,
             parallel=parallels,

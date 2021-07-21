@@ -8,8 +8,8 @@ from jina import Executor, requests
 class DelayedExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print('sleeping for 5 secs')
-        time.sleep(5)
+        print('sleeping for 8 secs')
+        time.sleep(8)
         print('done sleeping')
 
     @requests
