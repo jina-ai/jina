@@ -32,7 +32,12 @@ class MyIndexer(Executor):
         :param parameters: dictionary of pairs (parameter,value)
         :param kwargs: other keyword arguments
         """
-        docs.match(self._docs, metric='cosine', is_distance=False)
+        docs.match(
+            self._docs,
+            metric='cosine',
+            is_distance=False,
+            limit=int(parameters['top_k']),
+        )
 
 
 class MyEncoder(Executor):
