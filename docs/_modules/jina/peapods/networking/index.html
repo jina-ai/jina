@@ -396,6 +396,7 @@
 <span class="sd">    :param second: the ip or host name of the second runtime</span>
 <span class="sd">    :return: True, if first is remote and second is local</span>
 <span class="sd">    """</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="n">first_ip</span> <span class="o">=</span> <span class="n">ipaddress</span><span class="o">.</span><span class="n">ip_address</span><span class="p">(</span><span class="n">first</span><span class="p">)</span>
         <span class="n">first_global</span> <span class="o">=</span> <span class="n">first_ip</span><span class="o">.</span><span class="n">is_global</span>
@@ -487,7 +488,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 20, 2021.
+            Last updated on Jul 21, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

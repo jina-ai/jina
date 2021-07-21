@@ -599,7 +599,6 @@
                 <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">hosts_in_connect</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">in_connect</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
-
                         <span class="n">in_connect</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_init_socket</span><span class="p">(</span>
                             <span class="n">ctx</span><span class="p">,</span>
                             <span class="n">host</span><span class="p">,</span>
@@ -669,6 +668,7 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_init_dynamic_out_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_out</span><span class="p">,</span> <span class="n">port_out</span><span class="p">):</span>
+
         <span class="n">out_sock</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_init_socket</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span><span class="p">,</span>
             <span class="n">host_out</span><span class="p">,</span>
@@ -835,7 +835,9 @@
 <span class="sd">        :return: Received protobuf message. Or None in case of any error.</span>
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="k">await</span> <span class="n">recv_message_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">send_recv_kwargs</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="k">await</span> <span class="n">recv_message_async</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">in_connect_sock</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">send_recv_kwargs</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">msg_recv</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bytes_recv</span> <span class="o">+=</span> <span class="n">msg</span><span class="o">.</span><span class="n">size</span>
@@ -1300,7 +1302,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 20, 2021.
+            Last updated on Jul 21, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -544,6 +544,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_in</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tail_port_out</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Get the port_out of the TailPea of this pod</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tail_args</span><span class="o">.</span><span class="n">port_out</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_zmq_identity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Get the zmq_identity of the HeadPea of this pod</span>
 <span class="sd">        .. # noqa: DAR201</span>
@@ -1053,7 +1060,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 20, 2021.
+            Last updated on Jul 21, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

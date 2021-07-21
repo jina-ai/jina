@@ -1189,7 +1189,7 @@
                 <span class="n">start_pod</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">is_remote_local_connection</span><span class="p">(</span><span class="n">start_pod</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_host</span><span class="p">):</span>
                     <span class="n">pod</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">hosts_in_connect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">graph</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">full_address</span>
+                        <span class="n">graph</span><span class="o">.</span><span class="n">_get_target_pod</span><span class="p">(</span><span class="n">start</span><span class="p">)</span><span class="o">.</span><span class="n">full_out_address</span>
                     <span class="p">)</span>
 
                     <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -1962,7 +1962,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 20, 2021.
+            Last updated on Jul 21, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

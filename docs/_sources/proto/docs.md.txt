@@ -481,6 +481,7 @@ Represents a Status
 | ----- | ---- | ----- | ----------- |
 | host | [string](#string) |  | the host HeadPea of the BasePod |
 | port | [uint32](#uint32) |  | the port HeadPea of the BasePod |
+| port_out | [uint32](#uint32) |  | the port TailPea of the BasePod |
 | expected_parts | [uint32](#uint32) |  | the number of parts the pod should expect |
 | out_edges | [RoutingEdgeProto](#jina.RoutingEdgeProto) | repeated | pod_name of Pods, the TailPea should send traffic to |
 | target_identity | [string](#string) |  |  |

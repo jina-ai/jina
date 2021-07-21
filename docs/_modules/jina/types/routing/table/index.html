@@ -417,6 +417,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">port</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">port_out</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">"""Returns the `port` field of this TargetPod</span>
+
+<span class="sd">        :return: port</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">port_out</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Returns the `host` field of this TargetPod</span>
 
@@ -431,6 +439,14 @@
 <span class="sd">        :return: address</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">full_out_address</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Return the full zmq adress of the tail of this TargetPod</span>
+
+<span class="sd">        :return: address</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_out</span><span class="si">}</span><span class="s1">'</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">expected_parts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -533,6 +549,7 @@
 
         <span class="n">target</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_host</span>
         <span class="n">target</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_port_in</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">port_out</span> <span class="o">=</span> <span class="n">pod</span><span class="o">.</span><span class="n">tail_port_out</span>
         <span class="n">target</span><span class="o">.</span><span class="n">target_identity</span> <span class="o">=</span> <span class="n">pod</span><span class="o">.</span><span class="n">head_zmq_identity</span></div>
 
     <span class="k">def</span> <span class="nf">_get_target_pod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pod</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TargetPod</span><span class="p">:</span>
@@ -636,7 +653,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 20, 2021.
+            Last updated on Jul 21, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
