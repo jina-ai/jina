@@ -13,6 +13,10 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
       - run: echo "SCRIPTPATH=${PWD}/scripts/setup-jinad.sh" >> $GITHUB_ENV
       - name: Configure AWS Credentials
