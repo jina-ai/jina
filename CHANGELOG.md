@@ -73,6 +73,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9652,4 +9653,42 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a1f74e6b```](https://github.com/jina-ai/jina/commit/a1f74e6bb7530fcc32dab5a37b4b662257326291)] __-__ chore remove event banner (#2949) (*Alex Cureton-Griffiths*)
  - [[```99c542e9```](https://github.com/jina-ai/jina/commit/99c542e9616ad7990b1e9cafee6381ede10661ab)] __-__ remove the meetup banner (#2951) (*Nan Wang*)
  - [[```fde37372```](https://github.com/jina-ai/jina/commit/fde37372ff5a63f1e3a3f56cbb5e310ed0940a9a)] __-__ __version__: the next version will be 2.0.8 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-9></a>
+## Release Note (`2.0.9`)
+
+> Release time: 2021-07-21 14:38:46
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ David Buchaca Prats,  Wang Bo,  Han Xiao,  AlaeddineAbdessalem,  Joan Fontanals,  Jina Dev Bot,  Deepankar Mahapatro,  🙇
+
+
+### 🆕 New Features
+
+ - [[```9a231c40```](https://github.com/jina-ai/jina/commit/9a231c405ebfc348fe61ae80c9c89df9b87ea1ed)] __-__ add match function (#2942) (*David Buchaca Prats*)
+
+### 🐞 Bug fixes
+
+ - [[```5217ea97```](https://github.com/jina-ai/jina/commit/5217ea97321a7b3402b70f71d2bae7c0d0e62bf6)] __-__ __cli__: parse known args only and warn unknown (#2986) (*Han Xiao*)
+ - [[```133c90ba```](https://github.com/jina-ai/jina/commit/133c90ba344e8044ce60465471ed3757e19600d8)] __-__ seek body file when computing _start (#2980) (*AlaeddineAbdessalem*)
+ - [[```32dc3dc3```](https://github.com/jina-ai/jina/commit/32dc3dc38fa807a4f2f180ef459e656a79c56f09)] __-__ fix setting extra host_connect_in (#2973) (*Joan Fontanals*)
+ - [[```10117c14```](https://github.com/jina-ai/jina/commit/10117c1405f236e45d7a920fb420a8eaaf61fdc3)] __-__ __ci__: change latency tracking path (#2981) (*Joan Fontanals*)
+ - [[```a6afc9b8```](https://github.com/jina-ai/jina/commit/a6afc9b853cbd6fef45867fecc54b700359468c8)] __-__ __types__: allow setter Document.tags for StructView (#2976) (*Han Xiao*)
+ - [[```6bea7f24```](https://github.com/jina-ai/jina/commit/6bea7f24258f19a9bc3aa1948ac5d9c8710765fd)] __-__ __daemon__: dockersock mounting for mac (#2971) (*Deepankar Mahapatro*)
+
+### 🚧 Code Refactoring
+
+ - [[```50cc25df```](https://github.com/jina-ai/jina/commit/50cc25dfa8a29682ae67eea0e68daba1e211a70c)] __-__ update hello examples (#2984) (*David Buchaca Prats*)
+
+### 📗 Documentation
+
+ - [[```8d0fe594```](https://github.com/jina-ai/jina/commit/8d0fe59456b1c48cf216e074f709b63079cea195)] __-__ __cookbook__: add document creation clean code (#2983) (*Wang Bo*)
+
+### 🍹 Other Improvements
+
+ - [[```99479dc1```](https://github.com/jina-ai/jina/commit/99479dc15f2dfc28a00bf7ac2d9ebda13f041ce1)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```8d2c7d37```](https://github.com/jina-ai/jina/commit/8d2c7d37fa5767607c98d445c55ef15940b8c447)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```9fc9a726```](https://github.com/jina-ai/jina/commit/9fc9a726396e8cebbcceca9e08be92770700d1a5)] __-__ __version__: the next version will be 2.0.9 (*Jina Dev Bot*)
 
