@@ -336,7 +336,7 @@ tips to help you write beautiful and efficient code.
    </tr>
    </table>
 
-1. Add `Chunks` to root `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control it's `granularity`, at `chunk` creation time, it didn't know anything about it's parent, and will get a wrong `granularity` value.
+1. Add `Chunks` to root `Document`, do not create them in one line to keep recursive document structure correct. This is because `chunks` use `ref_doc` to control its `granularity`, at `chunk` creation time, it didn't know anything about its parent, and will get a wrong `granularity` value.
 
    <table>
    <tr>
