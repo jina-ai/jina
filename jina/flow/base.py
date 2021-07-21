@@ -1613,7 +1613,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         'image': image_name,
                         'replicas': replicas,
                         'command': "[\"jina\"]",
-                        'args': "[\"executor\", \"--uses\", \"config.yml\", \"--port-in\", \"8082\", \"--dynamic-routing-in\", \"--dynamic-routing-out\", \"--socket-in\", \"ROUTER_BIND\", \"--socket-out\", \"ROUTER_BIND\"]",
+                        'args': "[\"executor\", \"--uses\", \"config.yml\", \"--port-in\", \"8081\", \"--dynamic-routing-in\", \"--dynamic-routing-out\", \"--socket-in\", \"ROUTER_BIND\", \"--socket-out\", \"ROUTER_BIND\"]",
                         'port': 8081,
                     },
                 )
@@ -1638,7 +1638,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             )
 
             gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip(
-                'gateway-exposed', namespace
+                'gateway-in', namespace
             )
 
             gateway_yaml = self.create_gateway_yaml(pod_to_args, gateway_cluster_ip)
@@ -1665,6 +1665,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           port_expose: 8080
           host_in: {gateway_host_in}
           port_in: 8081
+          protocol: http
         pods:
         """
         for pod, args in pod_to_args.items():
@@ -1673,7 +1674,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             port_in: 8081
             host: {args['host_in']}
             external: True
-             """
+            """
 
         # return yaml
         base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
