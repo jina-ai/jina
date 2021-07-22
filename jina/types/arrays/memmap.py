@@ -157,20 +157,27 @@ class DocumentArrayMemmap(
             self._header.flush()
             self._body.flush()
 
-    def _get_doc_array_by_slice(self, s: slice):
-        from .document import DocumentArray
-
+    def _iteridx_by_slice(self, s: slice):
         start, stop, step = s.start or 0, s.stop or self.__len__(), s.step or 1
+        if (
+            start <= -self.__len__()
+            or start >= self.__len__()
+            or stop <= -self.__len__()
+            or stop >= self.__len__()
+        ):
+            raise IndexError(f'index slice out of bound')
         if 0 > stop > -self.__len__():
             stop = stop + self.__len__()
 
         if 0 > start > -self.__len__():
             start = start + self.__len__()
+        return range(start, stop, step)
 
-        if not step:
-            step = 1
+    def _get_doc_array_by_slice(self, s: slice):
+        from .document import DocumentArray
+
         da = DocumentArray()
-        for i in range(start, stop, step):
+        for i in self._iteridx_by_slice(s):
             da.append(self[self._int2str_id(i)])
 
         return da
@@ -188,18 +195,11 @@ class DocumentArrayMemmap(
         else:
             raise TypeError(f'`key` must be int, str or slice, but receiving {key!r}')
 
-    def __delitem__(self, key: Union[int, str]):
-        if isinstance(key, str):
-            idx = self._str2int_id(key)
-            str_key = key
-        elif isinstance(key, int):
-            idx = key
-            str_key = self._int2str_id(idx)
-        else:
-            raise TypeError(f'`key` must be int or str, but receiving {key!r}')
-
+    def _del_doc(self, idx: int, str_key: str, key: Union[int, str, slice]):
         p = idx * self._header_entry_size
         self._header.seek(p, 0)
+
+        # TODO: shouldn't key here be str_key instead ?
         self._header.write(
             np.array(
                 (key, -1, -1, -1),
@@ -214,6 +214,22 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._header_map.pop(str_key)
+
+    def __delitem__(self, key: Union[int, str, slice]):
+        if isinstance(key, str):
+            idx = self._str2int_id(key)
+            str_key = key
+            self._del_doc(idx, str_key, key)
+        elif isinstance(key, int):
+            idx = key
+            str_key = self._int2str_id(idx)
+            self._del_doc(idx, str_key, key)
+        elif isinstance(key, slice):
+            for idx in self._iteridx_by_slice(key):
+                str_key = self._int2str_id(idx)
+                self._del_doc(idx, str_key, str_key)
+        else:
+            raise TypeError(f'`key` must be int, str or slice, but receiving {key!r}')
 
     def _str2int_id(self, key: str) -> int:
         return self._header_map[key][0]
