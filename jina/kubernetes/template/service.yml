@@ -5,9 +5,8 @@ metadata:
   namespace: {namespace}
   labels:
     app: {target}
-
 spec:
-  type: LoadBalancer
+  type: {type}
   ports:
     - port: {port}
       targetPort: {port}

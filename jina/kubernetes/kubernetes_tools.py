@@ -20,11 +20,36 @@ networking_v1_beta1_api = client.NetworkingV1beta1Api()
 
 
 def create_gateway_ingress(namespace: str):
+    # create ingress class
+    # body = client.V1beta1IngressClass(
+    #     api_version="networking.k8s.io/v1",
+    #     kind="IngressClass",
+    #     metadata=client.V1ObjectMeta(
+    #         name=f'{namespace}-lb',
+    #         annotations= {
+    #             "linkerd.io/inject": "enabled"
+    #         }
+    #     ),
+    #     spec=client.V1beta1IngressClassSpec(
+    #         controller="example.com/ingress-controller",
+    #         parameters={
+    #             "apiGroup": "k8s.example.com",
+    #             "kind": "IngressParameters",
+    #             "name": "external-lb",
+    #         }
+    #     )
+    # )
+    # networking_v1_beta1_api.create_ingress_class(
+    #     body=body
+    # )
+
+    # create ingress
     body = client.NetworkingV1beta1Ingress(
         api_version="networking.k8s.io/v1beta1",
         kind="Ingress",
         metadata=client.V1ObjectMeta(name=f'{namespace}-ingress', annotations={
-            "nginx.ingress.kubernetes.io/rewrite-target": "/"
+            "nginx.ingress.kubernetes.io/rewrite-target": "/",
+            "linkerd.io/inject": "enabled"
         }),
         spec=client.NetworkingV1beta1IngressSpec(
             rules=[client.NetworkingV1beta1IngressRule(

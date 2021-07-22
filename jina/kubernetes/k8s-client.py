@@ -1,9 +1,15 @@
+
 import requests
 import time
 
-ip = 'x.x.x.x'
+from jina.kubernetes import kubernetes_tools
+
+kubernetes_tools.get_pod_logs("f1")
+
+
+ip = '34.141.109.41'
 host = f'http://{ip}'
-for _ in range(200):
+while True:
     resp = requests.post(f'{host}/index', json={'data': [{'text': 'hello jina'}]})
-    print('first resp', resp.text)
+    # print('resp', resp.status_code)
     time.sleep(0.5)

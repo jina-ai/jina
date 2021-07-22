@@ -14,7 +14,7 @@ spec:
         app: {name}
     spec:
       containers:
-      - name: {name}
+      - name: executor
         image: {image}
         command: {command}
         args: {args}
