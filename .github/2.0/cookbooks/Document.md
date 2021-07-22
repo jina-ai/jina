@@ -954,7 +954,7 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 
 `DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects.
 
-The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`, by default the cosine similarity is used to evaluate the score between documents.
+The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By default, the cosine similarity is used to evaluate the score between documents.
 
 ![match_illustration_5](https://github.com/jina-ai/jina/blob/master/.github/images/match_illustration_5.svg)
 
