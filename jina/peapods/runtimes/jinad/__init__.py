@@ -158,6 +158,10 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         Check if the runtime has successfully started
 
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded
+        :param kwargs: extra keyword arguments
+
         :return: True if is ready or it needs to be shutdown
         """
         return ready_or_shutdown_event.wait(timeout)
@@ -168,6 +172,9 @@ class JinadRuntime(AsyncZMQRuntime):
     ):
         """
         Signal the runtime to terminate
+
+        :param cancel_event: the cancel event to set
+        :param kwargs: extra keyword arguments
         """
         cancel_event.set()
 
@@ -175,12 +182,22 @@ class JinadRuntime(AsyncZMQRuntime):
     def activate(**kwargs):
         """
         Activate the runtime, does not apply to these runtimes
+
+        :param kwargs: extra keyword arguments
         """
         # does not apply to this types of runtimes
         pass
 
     @staticmethod
     def get_control_address(host: str, port: str, **kwargs):
+        """
+        Get the control address for a runtime with a given host and port
+
+        :param host: the host where the runtime works
+        :param port: the control port where the runtime listens
+        :param kwargs: extra keyword arguments
+        :return: The corresponding control address
+        """
         from ...zmq import Zmqlet
 
         return Zmqlet.get_ctrl_address(host, port, False)[0]
