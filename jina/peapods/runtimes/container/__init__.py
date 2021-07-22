@@ -281,6 +281,10 @@ class ContainerRuntime(ZMQRuntime):
         """
         Check if the runtime has successfully started
 
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded
+        :param kwargs: extra keyword arguments
+
         :return: True if is ready or it needs to be shutdown
         """
         return ready_or_shutdown_event.wait(timeout)
@@ -315,15 +319,22 @@ class ContainerRuntime(ZMQRuntime):
         control_address: str,
         timeout_ctrl: int,
         socket_in_type: 'SocketType',
+        skip_deactivate: bool,
         logger: 'JinaLogger',
         **kwargs,
     ):
         """
         Check if the runtime has successfully started
 
-        :return: True if is ready or it needs to be shutdown
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param skip_deactivate: flag to tell if deactivate signal may be missed.
+            This is important when you want to independently kill a Runtime
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
         """
-        if socket_in_type == SocketType.DEALER_CONNECT:
+        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
             ContainerRuntime._retry_control_message(
                 ctrl_address=control_address,
                 timeout_ctrl=timeout_ctrl,
@@ -345,11 +356,16 @@ class ContainerRuntime(ZMQRuntime):
         timeout_ctrl: int,
         socket_in_type: 'SocketType',
         logger: 'JinaLogger',
+        **kwargs,
     ):
         """
         Check if the runtime has successfully started
 
-        :return: True if is ready or it needs to be shutdown
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
         """
         if socket_in_type == SocketType.DEALER_CONNECT:
             ContainerRuntime._retry_control_message(
@@ -364,13 +380,21 @@ class ContainerRuntime(ZMQRuntime):
     def get_control_address(
         host: str, port: str, docker_kwargs: Optional[Dict], **kwargs
     ):
+        """
+        Get the control address for a runtime with a given host and port
+
+        :param host: the host where the runtime works
+        :param port: the control port where the runtime listens
+        :param docker_kwargs: the extra docker kwargs from which maybe extract extra hosts
+        :param kwargs: extra keyword arguments
+        :return: The corresponding control address
+        """
         if (
             docker_kwargs
             and 'extra_hosts' in docker_kwargs
             and __docker_host__ in docker_kwargs['extra_hosts']
         ):
             ctrl_host = __docker_host__
-            docker_kwargs.pop('extra_hosts')
         else:
             ctrl_host = host
 
