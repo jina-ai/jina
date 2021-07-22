@@ -10,6 +10,7 @@ ac_table = {
         'ping',
         'gateway',
         'hub',
+        'help',
         'pea',
         'client',
         'export-api',
@@ -269,6 +270,7 @@ ac_table = {
         ],
         'hub pull': ['--help', '--no-usage', '--install-requirements'],
         'hub': ['--help', 'push', 'pull'],
+        'help': ['--help'],
         'pea': [
             '--help',
             '--name',

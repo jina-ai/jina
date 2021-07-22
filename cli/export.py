@@ -10,8 +10,6 @@ def api_to_dict():
     from jina import __version__
     from jina.parsers import get_main_parser
 
-    parsers = get_main_parser()._actions[-1].choices
-
     all_d = {
         'name': 'Jina',
         'description': 'Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep '
@@ -28,13 +26,21 @@ def api_to_dict():
         'revision': os.environ.get('JINA_VCS_VERSION'),
     }
 
-    for p_name in parsers.keys():
-        d = {'name': p_name, 'options': []}
-        for ddd in _export_parser_args(
-            lambda *x: get_main_parser()._actions[-1].choices[p_name], type_as_str=True
-        ):
-            d['options'].append(ddd)
-        all_d['methods'].append(d)
+    def get_p(p, parent_d):
+        parsers = p()._actions[-1].choices
+        for p_name in parsers.keys():
+            d = {'name': p_name, 'options': [], 'help': parsers[p_name].description}
+            for ddd in _export_parser_args(
+                lambda *x: p()._actions[-1].choices[p_name], type_as_str=True
+            ):
+                d['options'].append(ddd)
+
+            if not d['options']:
+                d['methods'] = []
+                get_p(lambda *x: parsers[p_name], d)
+            parent_d['methods'].append(d)
+
+    get_p(get_main_parser, all_d)
 
     return all_d
 
