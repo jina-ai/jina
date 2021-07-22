@@ -952,13 +952,13 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 
 ### Finding closest documents between `DocumentArray` objects
 
-`DocumentArray` provides a`.match` function that finds the closest documents between two document arrays.
+`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects.
 
 The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`, by default the cosine similarity is used to evaluate the score between documents.
 
 ![match_illustration_5](https://github.com/jina-ai/jina/blob/master/.github/images/match_illustration_5.svg)
 
-More generally, given two `DocumentArray`objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, is_distance=True, limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`.
+More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, is_distance=True, limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`.
 
 - `metric` can be `'cosine'`, `'euclidean'`,  `'euclidean_squared'` 
 -  `is_distance=True` interprets the input metric as a distance (lower metric values imply closer elements), otherwise it is considered a similairty  (higher metric values imply closer elements).
