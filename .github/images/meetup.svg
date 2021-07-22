@@ -1,0 +1,29 @@
+<svg fill="none" viewBox="0 0 1000 100"  xmlns="http://www.w3.org/2000/svg">
+    <foreignObject width="100%" height="100%">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="background-color: #fffbdd; text-align:center; margin-left: auto; margin-right: auto; border-radius: 6px; border-style: solid; border-width: 1px; border-color: #b0880033; color: #24292e;">
+            <style>
+            p {
+                font-family: sans-serif;
+                font-size: 12pt;
+                font-weight: bold;
+                color: #0366d6;
+                <!--animation: mymove 2s infinite;-->
+            }
+
+            @keyframes mymove {
+                from {
+                    color: red;
+                }
+                to {
+                    color: yellow;
+                }
+            }
+            </style>
+            <p>
+                <a href="https://www.meetup.com/jina-community-meetup/events/279360997/">
+                    📢 29 July 2021: Join us in Berlin for our Jina &amp; Tonic meetup! 🍹
+                </a>
+            </p>
+        </div>
+    </foreignObject>
+</svg>

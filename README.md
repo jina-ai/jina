@@ -1,7 +1,5 @@
 <p align="center">
-<!--
-<a href="https://www.meetup.com/jina-community-meetup/events/279298872/"><img src="./.github/images/eah.svg"></a>
--->
+<a href="https://www.meetup.com/jina-community-meetup/events/279360997/"><img src="./.github/images/meetup.svg"></a>
 <img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px">
 </p>
 
