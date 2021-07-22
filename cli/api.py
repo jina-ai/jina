@@ -166,3 +166,14 @@ def hub(args: 'Namespace'):
     from jina.hubble.hubio import HubIO
 
     getattr(HubIO(args), args.hub)()
+
+
+def help(args: 'Namespace'):
+    """
+    Lookup the usage of certain argument in Jina API.
+
+    :param args: arguments coming from the CLI.
+    """
+    from .lookup import lookup_and_print
+
+    lookup_and_print(args.query)

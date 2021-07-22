@@ -127,6 +127,26 @@ def set_client_cli_parser(parser=None):
     return parser
 
 
+def set_help_parser(parser=None):
+    """Set the parser for the jina help lookup
+
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+
+    if not parser:
+        from .base import set_base_parser
+
+        parser = set_base_parser()
+
+    parser.add_argument(
+        'query',
+        type=str,
+        help='Lookup the usage & mention of the argument name in Jina API. The name can be fuzzy',
+    )
+    return parser
+
+
 def get_main_parser():
     """The main parser for Jina
 
@@ -212,6 +232,14 @@ def get_main_parser():
         )
     )
 
+    set_help_parser(
+        sp.add_parser(
+            'help',
+            help='Show help text of a CLI argument',
+            description='Show help text of a CLI argument',
+            formatter_class=_chf,
+        )
+    )
     # Below are low-level / internal / experimental CLIs, hidden from users by default
 
     set_pea_parser(
