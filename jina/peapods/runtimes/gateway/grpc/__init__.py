@@ -70,6 +70,10 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         """
         Check if the runtime has successfully started
 
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded
+        :param kwargs: extra keyword arguments
+
         :return: True if is ready or it needs to be shutdown
         """
         return ready_or_shutdown_event.wait(timeout)
