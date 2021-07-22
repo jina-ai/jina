@@ -108,8 +108,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
         on_error_strategy: Optional[str] = 'IGNORE',
-        override_metas: Optional[dict] = None,
-        override_with: Optional[dict] = None,
         port_ctrl: Optional[int] = None,
         port_expose: Optional[int] = None,
         port_in: Optional[int] = None,
@@ -132,6 +130,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         timeout_ready: Optional[int] = 600000,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
+        uses_metas: Optional[dict] = None,
+        uses_with: Optional[dict] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
         **kwargs,
@@ -179,8 +179,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
-        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
-        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
         :param port_ctrl: The port for controlling the runtime, default a random port between [49152, 65535]
         :param port_expose: The port of the host exposed to the public
         :param port_in: The port for input data, default a random port between [49152, 65535]
@@ -208,7 +206,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param timeout_ready: The timeout in milliseconds of a Pea waits for the runtime to be ready, -1 for waiting forever
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
-                  * an Executor-level YAML file path (.yml, .yaml, .jaml)
+                  * an Executor YAML file (.yml, .yaml, .jaml)
+                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -216,6 +215,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
+        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
 
@@ -446,8 +447,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         memory_hwm: Optional[int] = -1,
         name: Optional[str] = None,
         on_error_strategy: Optional[str] = 'IGNORE',
-        override_metas: Optional[dict] = None,
-        override_with: Optional[dict] = None,
         parallel: Optional[int] = 1,
         peas_hosts: Optional[List[str]] = None,
         polling: Optional[str] = 'ANY',
@@ -476,6 +475,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
+        uses_metas: Optional[dict] = None,
+        uses_with: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
@@ -524,8 +525,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
           Note, `IGNORE`, `SKIP_EXECUTOR` and `SKIP_HANDLE` do not guarantee the success execution in the sequel flow. If something
           is wrong in the upstream, it is hard to carry this exception and moving forward without any side-effect.
-        :param override_metas: Dictionary of keyword arguments that will override the default `metas configuration` provided to the executor in `uses`
-        :param override_with: Dictionary of keyword arguments that will override the default `with configuration` provided to the executor in `uses`
         :param parallel: The number of parallel peas in the pod running at the same time, `port_in` and `port_out` will be set to random, and routers will be added automatically when necessary
         :param peas_hosts: The hosts of the peas when parallel greater than 1.
                   Peas will be evenly distributed among the hosts. By default,
@@ -569,7 +568,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
           - by default, `--uses` YAML file is always uploaded.
           - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
-                  * an Executor-level YAML file path (.yml, .yaml, .jaml)
+                  * an Executor YAML file (.yml, .yaml, .jaml)
+                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -579,6 +579,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   - a text file stream has `.read()` interface
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`
+        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param volumes: The path on the host to be mounted inside the container.
 
           Note,
@@ -804,7 +806,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 start_pod = graph._get_target_pod(start)
                 if is_remote_local_connection(start_pod.host, pod.head_host):
                     pod.head_args.hosts_in_connect.append(
-                        graph._get_target_pod(start).full_address
+                        graph._get_target_pod(start).full_out_address
                     )
 
                     graph.add_edge(start, end, True)

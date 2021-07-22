@@ -1,13 +1,16 @@
 name: Latency Tracking
 
+#on:
+# - pull_request
 on:
- - pull_request
-
+  push:
+    branches-ignore:
+      - '**'  # temporally disable this action
 jobs:
   latency-tracking:
     runs-on: ubuntu-latest
     env:
-      NUM_LAST_RELEASE: 1
+      NUM_LAST_RELEASE: 2
     steps:
       - uses: actions/checkout@v2
       - name: Test docker install

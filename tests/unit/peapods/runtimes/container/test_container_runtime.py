@@ -302,8 +302,8 @@ def test_container_override_params(docker_image_built, tmpdir, mocker):
         name=random_name(),
         uses=f'docker://{img_name}',
         volumes=abc_path + ':' + '/mapped/here/abc',
-        override_with={'greetings': 'overriden greetings'},
-        override_metas={
+        uses_with={'greetings': 'overriden greetings'},
+        uses_metas={
             'name': 'ext-mwu-encoder',
             'workspace': '/mapped/here/abc',
         },
@@ -324,7 +324,7 @@ def test_container_volume(docker_image_built, tmpdir):
         name=random_name(),
         uses=f'docker://{img_name}',
         volumes=abc_path + ':' + '/mapped/here/abc',
-        override_metas={
+        uses_metas={
             'name': 'ext-mwu-encoder',
             'workspace': '/mapped/here/abc',
         },
