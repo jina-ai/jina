@@ -549,6 +549,17 @@
     <span class="kn">from</span> <span class="nn">jina.hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 
     <span class="nb">getattr</span><span class="p">(</span><span class="n">HubIO</span><span class="p">(</span><span class="n">args</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">hub</span><span class="p">)()</span></div>
+
+
+<div class="viewcode-block" id="help"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.help">[docs]</a><span class="k">def</span> <span class="nf">help</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Lookup the usage of certain argument in Jina API.</span>
+
+<span class="sd">    :param args: arguments coming from the CLI.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">.lookup</span> <span class="kn">import</span> <span class="n">lookup_and_print</span>
+
+    <span class="n">lookup_and_print</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">query</span><span class="p">)</span></div>
 </pre></div>
       </article>
       <footer>
@@ -561,7 +572,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 21, 2021.
+            Last updated on Jul 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

@@ -10,6 +10,7 @@ Submodules
    cli.api
    cli.autocomplete
    cli.export
+   cli.lookup
 
 Module contents
 ---------------

@@ -393,8 +393,6 @@
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
     <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span>
 
-    <span class="n">parsers</span> <span class="o">=</span> <span class="n">get_main_parser</span><span class="p">()</span><span class="o">.</span><span class="n">_actions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span>
-
     <span class="n">all_d</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Jina'</span><span class="p">,</span>
         <span class="s1">'description'</span><span class="p">:</span> <span class="s1">'Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep '</span>
@@ -411,13 +409,21 @@
         <span class="s1">'revision'</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_VCS_VERSION'</span><span class="p">),</span>
     <span class="p">}</span>
 
-    <span class="k">for</span> <span class="n">p_name</span> <span class="ow">in</span> <span class="n">parsers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="n">p_name</span><span class="p">,</span> <span class="s1">'options'</span><span class="p">:</span> <span class="p">[]}</span>
-        <span class="k">for</span> <span class="n">ddd</span> <span class="ow">in</span> <span class="n">_export_parser_args</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="o">*</span><span class="n">x</span><span class="p">:</span> <span class="n">get_main_parser</span><span class="p">()</span><span class="o">.</span><span class="n">_actions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="n">p_name</span><span class="p">],</span> <span class="n">type_as_str</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">):</span>
-            <span class="n">d</span><span class="p">[</span><span class="s1">'options'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ddd</span><span class="p">)</span>
-        <span class="n">all_d</span><span class="p">[</span><span class="s1">'methods'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">get_p</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">parent_d</span><span class="p">):</span>
+        <span class="n">parsers</span> <span class="o">=</span> <span class="n">p</span><span class="p">()</span><span class="o">.</span><span class="n">_actions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span>
+        <span class="k">for</span> <span class="n">p_name</span> <span class="ow">in</span> <span class="n">parsers</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="n">p_name</span><span class="p">,</span> <span class="s1">'options'</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">'help'</span><span class="p">:</span> <span class="n">parsers</span><span class="p">[</span><span class="n">p_name</span><span class="p">]</span><span class="o">.</span><span class="n">description</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">ddd</span> <span class="ow">in</span> <span class="n">_export_parser_args</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="o">*</span><span class="n">x</span><span class="p">:</span> <span class="n">p</span><span class="p">()</span><span class="o">.</span><span class="n">_actions</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="n">p_name</span><span class="p">],</span> <span class="n">type_as_str</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">):</span>
+                <span class="n">d</span><span class="p">[</span><span class="s1">'options'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ddd</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="p">[</span><span class="s1">'options'</span><span class="p">]:</span>
+                <span class="n">d</span><span class="p">[</span><span class="s1">'methods'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">get_p</span><span class="p">(</span><span class="k">lambda</span> <span class="o">*</span><span class="n">x</span><span class="p">:</span> <span class="n">parsers</span><span class="p">[</span><span class="n">p_name</span><span class="p">],</span> <span class="n">d</span><span class="p">)</span>
+            <span class="n">parent_d</span><span class="p">[</span><span class="s1">'methods'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="n">get_p</span><span class="p">(</span><span class="n">get_main_parser</span><span class="p">,</span> <span class="n">all_d</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">all_d</span></div>
 
@@ -485,7 +491,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 21, 2021.
+            Last updated on Jul 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

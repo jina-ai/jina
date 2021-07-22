@@ -510,6 +510,26 @@
     <span class="k">return</span> <span class="n">parser</span></div>
 
 
+<div class="viewcode-block" id="set_help_parser"><a class="viewcode-back" href="../../../api/jina.parsers/#jina.parsers.set_help_parser">[docs]</a><span class="k">def</span> <span class="nf">set_help_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">"""Set the parser for the jina help lookup</span>
+
+<span class="sd">    :param parser: an optional existing parser to build upon</span>
+<span class="sd">    :return: the parser</span>
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">set_base_parser</span>
+
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'query'</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Lookup the usage &amp; mention of the argument name in Jina API. The name can be fuzzy'</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
 <div class="viewcode-block" id="get_main_parser"><a class="viewcode-back" href="../../../api/jina.parsers/#jina.parsers.get_main_parser">[docs]</a><span class="k">def</span> <span class="nf">get_main_parser</span><span class="p">():</span>
     <span class="sd">"""The main parser for Jina</span>
 
@@ -595,6 +615,14 @@
         <span class="p">)</span>
     <span class="p">)</span>
 
+    <span class="n">set_help_parser</span><span class="p">(</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+            <span class="s1">'help'</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'Show help text of a CLI argument'</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'Show help text of a CLI argument'</span><span class="p">,</span>
+            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
     <span class="c1"># Below are low-level / internal / experimental CLIs, hidden from users by default</span>
 
     <span class="n">set_pea_parser</span><span class="p">(</span>
@@ -639,7 +667,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 21, 2021.
+            Last updated on Jul 22, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
