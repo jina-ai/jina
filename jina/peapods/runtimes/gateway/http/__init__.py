@@ -1,8 +1,13 @@
 import os
+from typing import Union, Optional
 
 from .app import get_fastapi_app
 from ...zmq.asyncio import AsyncNewLoopRuntime
 from .....importer import ImportExtensions
+
+if False:
+    import multiprocessing
+    import threading
 
 __all__ = ['HTTPRuntime']
 
@@ -59,10 +64,22 @@ class HTTPRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """Running method of ther server."""
-        self.is_ready_event.set()
         await self._server.serve()
 
     async def async_cancel(self):
         """Stop the server."""
         self._server.should_exit = True
         await self._server.shutdown()
+
+    @staticmethod
+    def wait_ready_or_shutdown(
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        return ready_or_shutdown_event.wait(timeout)

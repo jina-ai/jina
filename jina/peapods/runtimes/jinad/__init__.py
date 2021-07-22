@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 import time
-from typing import Optional
+from typing import Optional, Union
 
 from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ....enums import RemoteWorkspaceState
@@ -10,6 +10,10 @@ from ...zmq import send_ctrl_message
 from .client import PeaDaemonClient, WorkspaceDaemonClient
 from ....excepts import DaemonConnectivityError
 from ....helper import cached_property, colored
+
+if False:
+    import multiprocessing
+    import threading
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -56,7 +60,6 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         Streams log messages using websocket from remote server
         """
-        self.is_ready_event.set()
         self._logging_task = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs
@@ -142,3 +145,35 @@ class JinadRuntime(AsyncZMQRuntime):
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""
         await asyncio.sleep(1e10)
+
+    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+
+    @staticmethod
+    def wait_ready_or_shutdown(
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        return ready_or_shutdown_event.wait(timeout)
+
+    @staticmethod
+    def cancel(
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
+    ):
+        """
+        Signal the runtime to terminate
+        """
+        cancel_event.set()
+
+    @staticmethod
+    def activate(**kwargs):
+        """
+        Activate the runtime, does not apply to these runtimes
+        """
+        # does not apply to this types of runtimes
+        pass

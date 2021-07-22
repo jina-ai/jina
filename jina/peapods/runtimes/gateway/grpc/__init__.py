@@ -1,11 +1,16 @@
 import os
 
 import grpc
+from typing import Union, Optional
 
 from ..prefetch import PrefetchCaller
 from ...zmq.asyncio import AsyncNewLoopRuntime
 from ....zmq import AsyncZmqlet
 from .....proto import jina_pb2_grpc
+
+if False:
+    import multiprocessing
+    import threading
 
 __all__ = ['GRPCRuntime']
 
@@ -53,6 +58,19 @@ class GRPCRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """The async running of server."""
-        self.is_ready_event.set()
         await self.server.wait_for_termination()
         self.zmqlet.close()
+
+    @staticmethod
+    def wait_ready_or_shutdown(
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        print(f' waiting here Joan')
+        return ready_or_shutdown_event.wait(timeout)

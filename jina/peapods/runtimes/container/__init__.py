@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import warnings
+from typing import Union, Optional
 from pathlib import Path
 from platform import uname
 
@@ -12,6 +13,11 @@ from .... import __docker_host__
 from ....excepts import BadImageNameError, DockerVersionError
 from ...zmq import send_ctrl_message
 from ....helper import ArgNamespace, slugify
+from ....enums import SocketType
+
+if False:
+    import multiprocessing
+    import threading
 
 
 class ContainerRuntime(ZMQRuntime):
@@ -42,7 +48,6 @@ class ContainerRuntime(ZMQRuntime):
 
     def run_forever(self):
         """Stream the logs while running."""
-        self.is_ready_event.set()
         self._stream_logs()
 
     def _set_network_for_dind_linux(self):
@@ -263,3 +268,92 @@ class ContainerRuntime(ZMQRuntime):
         except docker.errors.NotFound:
             return False
         return True
+
+    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+    @staticmethod
+    def wait_ready_or_shutdown(
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        return ready_or_shutdown_event.wait(timeout)
+
+    @staticmethod
+    def _retry_control_message(
+        ctrl_address: str,
+        timeout_ctrl: int,
+        command: str,
+        num_retry: int,
+        logger: 'JinaLogger',
+    ):
+        from ...zmq import send_ctrl_message
+
+        for retry in range(1, num_retry + 1):
+            logger.debug(f'Sending {command} command for the {retry}th time')
+            try:
+                send_ctrl_message(
+                    ctrl_address,
+                    command,
+                    timeout=timeout_ctrl,
+                    raise_exception=True,
+                )
+                break
+            except Exception as ex:
+                logger.warning(f'{ex!r}')
+                if retry == num_retry:
+                    raise ex
+
+    @staticmethod
+    def cancel(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            ContainerRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='DEACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+        ContainerRuntime._retry_control_message(
+            ctrl_address=control_address,
+            timeout_ctrl=timeout_ctrl,
+            command='TERMINATE',
+            num_retry=3,
+            logger=logger,
+        )
+
+    @staticmethod
+    def activate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            ContainerRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='ACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )

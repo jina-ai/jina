@@ -63,7 +63,6 @@ class BaseRuntime:
     def __init__(
         self,
         args: 'argparse.Namespace',
-        ready_event: Union['multiprocessing.Event', 'threading.Event'],
         **kwargs,
     ):
         super().__init__()
@@ -73,7 +72,6 @@ class BaseRuntime:
         else:
             self.name = self.__class__.__name__
         self.logger = JinaLogger(self.name, **vars(self.args))
-        self.is_ready_event = ready_event
 
     def run_forever(self):
         """Running the blocking procedure inside ``S``. Note, once this method is called,
@@ -94,7 +92,6 @@ class BaseRuntime:
         You can tidy up things here.  Optional in subclasses. The default implementation does nothing.
         """
         self.logger.close()
-        self.is_ready_event.clear()
 
     def __enter__(self):
         return self

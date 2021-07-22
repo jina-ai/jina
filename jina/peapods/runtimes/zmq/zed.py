@@ -2,7 +2,7 @@ import argparse
 import re
 import time
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional, Union
 
 import zmq
 
@@ -27,6 +27,11 @@ from ....types.arrays.document import DocumentArray
 from ....types.message import Message
 from ....types.request import Request
 from ....types.routing.table import RoutingTable
+
+if False:
+    from jina.logging.logger import JinaLogger
+    import multiprocessing
+    import threading
 
 
 class ZEDRuntime(ZMQRuntime):
@@ -78,7 +83,6 @@ class ZEDRuntime(ZMQRuntime):
             args=self.args,
             logger=self.logger,
             ctrl_addr=self.ctrl_addr,
-            ready_event=self.is_ready_event,
         )
 
     def _load_executor(self):
@@ -498,3 +502,128 @@ class ZEDRuntime(ZMQRuntime):
         .. # noqa: DAR201
         """
         return self._message.envelope
+
+    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+
+    @staticmethod
+    def status(ctrl_address: str, timeout_ctrl: int):
+        """
+        Send get status control message.
+
+        :return: control message.
+        """
+        from ...zmq import send_ctrl_message
+
+        return send_ctrl_message(
+            ctrl_address, 'STATUS', timeout=timeout_ctrl, raise_exception=False
+        )
+
+    @staticmethod
+    def is_ready(ctrl_address: str, timeout_ctrl: int) -> bool:
+        """
+        Check if status is ready.
+
+        :return: True if status is ready else False.
+        """
+        status = ZEDRuntime.status(ctrl_address, timeout_ctrl)
+        return status and status.is_ready
+
+    @staticmethod
+    def wait_ready_or_shutdown(
+        timeout: Optional[float],
+        ctrl_address: str,
+        timeout_ctrl: int,
+        shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        timeout_ns = 1000000 * timeout
+        now = time.time_ns()
+        while time.time_ns() - now < timeout_ns:
+            if shutdown_event.is_set() or ZEDRuntime.is_ready(
+                ctrl_address, timeout_ctrl
+            ):
+                return True
+
+        return False
+
+    @staticmethod
+    def _retry_control_message(
+        ctrl_address: str,
+        timeout_ctrl: int,
+        command: str,
+        num_retry: int,
+        logger: 'JinaLogger',
+    ):
+        from ...zmq import send_ctrl_message
+
+        for retry in range(1, num_retry + 1):
+            logger.debug(f'Sending {command} command for the {retry}th time')
+            try:
+                send_ctrl_message(
+                    ctrl_address,
+                    command,
+                    timeout=timeout_ctrl,
+                    raise_exception=True,
+                )
+                break
+            except Exception as ex:
+                logger.warning(f'{ex!r}')
+                if retry == num_retry:
+                    raise ex
+
+    @staticmethod
+    def cancel(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        skip_deactivate: bool,
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
+            ZEDRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='DEACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+        ZEDRuntime._retry_control_message(
+            ctrl_address=control_address,
+            timeout_ctrl=timeout_ctrl,
+            command='TERMINATE',
+            num_retry=3,
+            logger=logger,
+        )
+
+    @staticmethod
+    def activate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            ZEDRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='ACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )

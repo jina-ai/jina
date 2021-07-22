@@ -6,7 +6,6 @@ from typing import Union
 
 from ..zmq.base import ZMQRuntime
 
-
 if False:
     import multiprocessing
     import threading
@@ -43,6 +42,7 @@ class AsyncZMQRuntime(ZMQRuntime):
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        # handle terminate signals
         while not self.is_cancel.is_set():
             await asyncio.sleep(0.1)
 
@@ -85,4 +85,21 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
 
     async def async_setup(self):
         """The async method to setup."""
+        pass
+
+    @staticmethod
+    def cancel(
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
+    ):
+        """
+        Signal the runtime to terminate
+        """
+        cancel_event.set()
+
+    @staticmethod
+    def activate(**kwargs):
+        """
+        Activate the runtime, does not apply to these runtimes
+        """
+        # does not apply to this types of runtimes
         pass

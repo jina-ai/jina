@@ -3,7 +3,7 @@ import multiprocessing
 import os
 import threading
 import time
-from typing import Any, Tuple, Union, Dict
+from typing import Any, Tuple, Union, Dict, Optional
 
 from .helper import _get_event, ConditionalEvent
 from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
@@ -78,7 +78,6 @@ def run(
         runtime = runtime_cls(
             args=args,
             ctrl_addr=zed_runtime_ctrl_address,
-            ready_event=is_ready,
             cancel_event=cancel_event,
             timeout_ctrl=timeout_ctrl,
         )
@@ -93,6 +92,7 @@ def run(
     else:
         is_started.set()
         with runtime:
+            is_ready.set()
             runtime.run_forever()
     finally:
         _unset_envs()
@@ -186,13 +186,13 @@ class BasePea:
             else:
                 ctrl_host = self.args.host
 
-            self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
+            self._zed_runtime_ctrl_address, _ = Zmqlet.get_ctrl_address(
                 ctrl_host, self.args.port_ctrl, self.args.ctrl_with_ipc
-            )[0]
+            )
         else:
-            self._zed_runtime_ctrl_address = Zmqlet.get_ctrl_address(
+            self._zed_runtime_ctrl_address, _ = Zmqlet.get_ctrl_address(
                 self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
-            )[0]
+            )
 
     def start(self):
         """Start the Pea.
@@ -240,23 +240,32 @@ class BasePea:
 
     def activate_runtime(self):
         """ Send activate control message. """
-        if self._is_dealer:
-            self._retry_control_message('ACTIVATE')
+        self.runtime_cls.activate(
+            logger=self.logger,
+            socket_in_type=self.args.socket_in,
+            control_address=self._zed_runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+        )
 
-    def _deactivate_runtime(self):
-        """Send deactivate control message. """
-        if self._is_dealer:
-            self._retry_control_message('DEACTIVATE')
-
-    def _cancel_runtime(self):
+    def _cancel_runtime(self, skip_deactivate: bool = False):
         """Send terminate control message."""
-        from ..runtimes.zmq.zed import ZEDRuntime
-        from ..runtimes.container import ContainerRuntime
+        self.runtime_cls.cancel(
+            cancel_event=self.cancel_event,
+            logger=self.logger,
+            socket_in_type=self.args.socket_in,
+            control_address=self._zed_runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+            skip_deactivate=skip_deactivate,
+        )
 
-        if self.runtime_cls == ZEDRuntime or self.runtime_cls == ContainerRuntime:
-            self._retry_control_message('TERMINATE')
-        else:
-            self.cancel_event.set()
+    def _wait_for_ready_or_success(self, timeout: Optional[float]):
+        return self.runtime_cls.wait_ready_or_shutdown(
+            timeout=timeout,
+            ready_or_shutdown_event=self.ready_or_shutdown.event,
+            ctrl_address=self._zed_runtime_ctrl_address,
+            timeout_ctrl=self._timeout_ctrl,
+            shutdown_event=self.is_shutdown,
+        )
 
     def wait_start_success(self):
         """Block until all peas starts successfully.
@@ -269,7 +278,7 @@ class BasePea:
         else:
             _timeout /= 1e3
         self.logger.debug('waiting for ready or shutdown signal from runtime')
-        if self.ready_or_shutdown.event.wait(_timeout):
+        if self._wait_for_ready_or_success(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
                 if not self.is_started.is_set():
@@ -305,7 +314,6 @@ class BasePea:
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         if self.is_ready.is_set() and not self.is_shutdown.is_set():
             try:
-                self._deactivate_runtime()
                 self._cancel_runtime()
                 if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                     self.terminate()
@@ -341,9 +349,9 @@ class BasePea:
             else:
                 _timeout /= 1e3
             self.logger.debug('waiting for ready or shutdown signal from runtime')
-            if self.ready_or_shutdown.event.wait(_timeout):
-                if self.is_ready.is_set():
-                    self._cancel_runtime()
+            if self._wait_for_ready_or_success(_timeout):
+                if not self.is_shutdown.is_set():
+                    self._cancel_runtime(skip_deactivate=True)
                     if not self.is_shutdown.wait(timeout=self._timeout_ctrl):
                         self.terminate()
                         time.sleep(0.1)
