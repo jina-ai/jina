@@ -14,4 +14,5 @@ def test_dam_flow(tmpdir):
     dam = DocumentArrayMemmap(tmpdir)
     dam.append(Document())
     with f:
-        f.post('/', dam, on_always=_assert_called_once)
+        response = f.post('/', dam, on_always=_assert_called_once, return_results=True)
+    assert len(response.docs) == 1
