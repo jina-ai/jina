@@ -157,7 +157,25 @@ class DocumentArrayMemmap(
             self._header.flush()
             self._body.flush()
 
-    def __getitem__(self, key: Union[int, str]) -> 'Document':
+    def _get_doc_array_by_slice(self, s: slice):
+        from .document import DocumentArray
+
+        start, stop, step = s.start or 0, s.stop or self.__len__(), s.step or 1
+        if 0 > stop > -self.__len__():
+            stop = stop + self.__len__()
+
+        if 0 > start > -self.__len__():
+            start = start + self.__len__()
+
+        if not step:
+            step = 1
+        da = DocumentArray()
+        for i in range(start, stop, step):
+            da.append(self[self._int2str_id(i)])
+
+        return da
+
+    def __getitem__(self, key: Union[int, str, slice]):
         if isinstance(key, str):
             pos_info = self._header_map[key]
             _, p, r, l = pos_info
@@ -165,8 +183,10 @@ class DocumentArrayMemmap(
                 return Document(m[r:])
         elif isinstance(key, int):
             return self[self._int2str_id(key)]
+        elif isinstance(key, slice):
+            return self._get_doc_array_by_slice(key)
         else:
-            raise TypeError(f'`key` must be int or str, but receiving {key!r}')
+            raise TypeError(f'`key` must be int, str or slice, but receiving {key!r}')
 
     def __delitem__(self, key: Union[int, str]):
         if isinstance(key, str):
