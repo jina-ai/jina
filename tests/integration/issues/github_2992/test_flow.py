@@ -15,4 +15,5 @@ def test_dam_flow(tmpdir):
     dam.append(Document())
     with f:
         response = f.post('/', dam, on_always=_assert_called_once, return_results=True)
-    assert len(response.docs) == 1
+    assert len(response) == 1
+    assert len(response[0].docs) == 1
