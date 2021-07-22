@@ -4,7 +4,7 @@ import time
 from typing import Optional, Union
 
 from .client import PeaDaemonClient, WorkspaceDaemonClient
-from ....enums import RemoteWorkspaceState
+from ....enums import RemoteWorkspaceState, SocketType
 from ..zmq.asyncio import AsyncZMQRuntime
 from ...zmq import send_ctrl_message
 from .client import PeaDaemonClient, WorkspaceDaemonClient
@@ -14,6 +14,7 @@ from ....helper import cached_property, colored
 if False:
     import multiprocessing
     import threading
+    from jina.logging.logger import JinaLogger
 
 
 class JinadRuntime(AsyncZMQRuntime):
@@ -179,14 +180,55 @@ class JinadRuntime(AsyncZMQRuntime):
         cancel_event.set()
 
     @staticmethod
-    def activate(**kwargs):
+    def activate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
         """
-        Activate the runtime, does not apply to these runtimes
+        Check if the runtime has successfully started
 
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
         :param kwargs: extra keyword arguments
         """
-        # does not apply to this types of runtimes
-        pass
+
+        def _retry_control_message(
+            ctrl_address: str,
+            timeout_ctrl: int,
+            command: str,
+            num_retry: int,
+            logger: 'JinaLogger',
+        ):
+            from ...zmq import send_ctrl_message
+
+            for retry in range(1, num_retry + 1):
+                logger.debug(f'Sending {command} command for the {retry}th time')
+                try:
+                    send_ctrl_message(
+                        ctrl_address,
+                        command,
+                        timeout=timeout_ctrl,
+                        raise_exception=True,
+                    )
+                    break
+                except Exception as ex:
+                    logger.warning(f'{ex!r}')
+                    if retry == num_retry:
+                        raise ex
+
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            _retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='ACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
 
     @staticmethod
     def get_control_address(host: str, port: str, **kwargs):

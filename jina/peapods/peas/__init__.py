@@ -6,7 +6,7 @@ import time
 from typing import Any, Tuple, Union, Dict, Optional
 
 from .helper import _get_event, ConditionalEvent
-from ... import __stop_msg__, __ready_msg__, __default_host__, __docker_host__
+from ... import __stop_msg__, __ready_msg__, __default_host__
 from ...enums import PeaRoleType, RuntimeBackendType, SocketType, GatewayProtocolType
 from ...excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from ...helper import typename
