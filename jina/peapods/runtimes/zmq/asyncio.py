@@ -20,12 +20,12 @@ class AsyncZMQRuntime(ZMQRuntime):
     """
 
     def __init__(
-            self,
-            args: 'argparse.Namespace',
-            cancel_event: Optional[
-                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-            ] = None,
-            **kwargs
+        self,
+        args: 'argparse.Namespace',
+        cancel_event: Optional[
+            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+        ] = None,
+        **kwargs,
     ):
         super().__init__(args, **kwargs)
         self.is_cancel = cancel_event or asyncio.Event()
@@ -72,11 +72,14 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         try:
             for signame in {'SIGINT', 'SIGTERM'}:
                 self._loop.add_signal_handler(
-                    getattr(signal, signame), lambda *args, **kwargs: self.is_cancel.set()
+                    getattr(signal, signame),
+                    lambda *args, **kwargs: self.is_cancel.set(),
                 )
         except ValueError as exc:
-            self.logger.warning(f' The runtime {self.__class__.__name__} will not be able to handle signal handlers. '
-                                f' {repr(exc)}')
+            self.logger.warning(
+                f' The runtime {self.__class__.__name__} will not be able to handle signal handlers. '
+                f' {repr(exc)}'
+            )
 
         self._loop.run_until_complete(self.async_setup())
 
@@ -102,10 +105,13 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
 
     @staticmethod
     def cancel(
-            cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
     ):
         """
         Signal the runtime to terminate
+
+        :param cancel_event: the cancel event to set
+        :param kwargs: extra keyword arguments
         """
         cancel_event.set()
 
@@ -113,12 +119,22 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
     def activate(**kwargs):
         """
         Activate the runtime, does not apply to these runtimes
+
+        :param kwargs: extra keyword arguments
         """
         # does not apply to this types of runtimes
         pass
 
     @staticmethod
     def get_control_address(host: str, port: str, **kwargs):
+        """
+        Get the control address for a runtime with a given host and port
+
+        :param host: the host where the runtime works
+        :param port: the control port where the runtime listens
+        :param kwargs: extra keyword arguments
+        :return: The corresponding control address
+        """
         from ...zmq import Zmqlet
 
         # TODO: I think the control address with ipc from Gateway is not used anymore
