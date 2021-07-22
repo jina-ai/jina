@@ -51,6 +51,7 @@ Table of Contents
   - [Use `itertools` on `DocumentArray`](#use-itertools-on-documentarray)
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
   - [Access nested attributes from tags](#access-nested-attributes-from-tags)
+  - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
   - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
