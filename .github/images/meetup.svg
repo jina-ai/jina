@@ -3,9 +3,9 @@
         <div xmlns="http://www.w3.org/1999/xhtml" style="background-color: #fffbdd; width: 100%; padding: 0.5rem; text-align:center; margin-left: auto; margin-right: auto; border-radius: 6px;
     border-style: solid;
     border-width: 1px;
-    background-image: linear-gradient(var(--color-alert-warn-bg),var(--color-alert-warn-bg));
-    border-color: var(--color-alert-warn-border);
-    color: var(--color-alert-warn-text);">
+    background-image: linear-gradient(#fffbdd,#fffbdd);
+    border-color: #b0880033;
+    color: #24292e;">
             <style>
             p {
                 font-family: sans-serif;
