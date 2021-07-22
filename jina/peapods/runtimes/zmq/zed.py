@@ -37,16 +37,17 @@ if False:
 class ZEDRuntime(ZMQRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str, **kwargs):
+    def __init__(self, args: 'argparse.Namespace', **kwargs):
         """Initialize private parameters and execute private loading functions.
 
         :param args: args from CLI
         :param ctrl_addr: control port address
         :param kwargs: extra keyword arguments
         """
-        super().__init__(args, ctrl_addr, **kwargs)
+        super().__init__(args, **kwargs)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
+        self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
 
         self._request = None
         self._message = None
@@ -627,3 +628,9 @@ class ZEDRuntime(ZMQRuntime):
                 num_retry=3,
                 logger=logger,
             )
+
+    @staticmethod
+    def get_control_address(host: str, port: str, **kwargs):
+        from ...zmq import Zmqlet
+
+        return Zmqlet.get_ctrl_address(host, port, False)[0]

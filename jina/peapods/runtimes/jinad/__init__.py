@@ -19,12 +19,11 @@ if False:
 class JinadRuntime(AsyncZMQRuntime):
     """Runtime procedure for Jinad."""
 
-    def __init__(
-        self, args: 'argparse.Namespace', ctrl_addr: str, timeout_ctrl: int, **kwargs
-    ):
-        super().__init__(args, ctrl_addr, **kwargs)
+    def __init__(self, args: 'argparse.Namespace', timeout_ctrl: int, **kwargs):
+        super().__init__(args, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
+        self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
         self.timeout_ctrl = timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
@@ -177,3 +176,9 @@ class JinadRuntime(AsyncZMQRuntime):
         """
         # does not apply to this types of runtimes
         pass
+
+    @staticmethod
+    def get_control_address(host: str, port: str, **kwargs):
+        from ...zmq import Zmqlet
+
+        return Zmqlet.get_ctrl_address(host, port, False)[0]

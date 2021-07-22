@@ -21,11 +21,10 @@ class AsyncZMQRuntime(ZMQRuntime):
     def __init__(
         self,
         args: 'argparse.Namespace',
-        ctrl_addr: str,
         cancel_event: Union['multiprocessing.Event', 'threading.Event'],
         **kwargs
     ):
-        super().__init__(args, ctrl_addr, **kwargs)
+        super().__init__(args, **kwargs)
         self.is_cancel = cancel_event
 
     def run_forever(self):
@@ -87,6 +86,8 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         """The async method to setup."""
         pass
 
+    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+
     @staticmethod
     def cancel(
         cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
@@ -103,3 +104,10 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         """
         # does not apply to this types of runtimes
         pass
+
+    @staticmethod
+    def get_control_address(host: str, port: str, **kwargs):
+        from ...zmq import Zmqlet
+
+        # TODO: I think the control address with ipc from Gateway is not used anymore
+        return Zmqlet.get_ctrl_address(host, port, True)[0]

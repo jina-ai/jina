@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import warnings
-from typing import Union, Optional
+from typing import Union, Optional, Dict
 from pathlib import Path
 from platform import uname
 
@@ -23,8 +23,9 @@ if False:
 class ContainerRuntime(ZMQRuntime):
     """Runtime procedure for container."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str, **kwargs):
-        super().__init__(args, ctrl_addr, **kwargs)
+    def __init__(self, args: 'argparse.Namespace', **kwargs):
+        super().__init__(args, **kwargs)
+        self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl, None)
         self._set_network_for_dind_linux()
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
@@ -357,3 +358,19 @@ class ContainerRuntime(ZMQRuntime):
                 num_retry=3,
                 logger=logger,
             )
+
+    @staticmethod
+    def get_control_address(
+        host: str, port: str, docker_kwargs: Optional[Dict], **kwargs
+    ):
+        if (
+            docker_kwargs
+            and 'extra_hosts' in docker_kwargs
+            and __docker_host__ in docker_kwargs['extra_hosts']
+        ):
+            ctrl_host = __docker_host__
+            docker_kwargs.pop('extra_hosts')
+        else:
+            ctrl_host = host
+
+        return Zmqlet.get_ctrl_address(ctrl_host, port, False)[0]

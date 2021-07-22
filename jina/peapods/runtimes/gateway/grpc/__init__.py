@@ -72,5 +72,4 @@ class GRPCRuntime(AsyncNewLoopRuntime):
 
         :return: True if is ready or it needs to be shutdown
         """
-        print(f' waiting here Joan')
         return ready_or_shutdown_event.wait(timeout)

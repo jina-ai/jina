@@ -39,14 +39,8 @@ def zed_runtime(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
-    from jina.peapods.zmq import Zmqlet
 
-    # This event is not needed but ZEDRuntime was born to communicate to the Pea and needs an event
-    zed_runtime_ctrl_address, _ = Zmqlet.get_ctrl_address(
-        args.host, args.port_ctrl, args.ctrl_with_ipc
-    )
-
-    with ZEDRuntime(args, ctrl_addr=zed_runtime_ctrl_address) as runtime:
+    with ZEDRuntime(args) as runtime:
         runtime.logger.success(f' Executor {runtime._executor.metas.name} started')
         runtime.run_forever()
 
@@ -63,7 +57,6 @@ def gateway(args: 'Namespace'):
     """
     from jina.enums import GatewayProtocolType
     from jina.peapods.runtimes import get_runtime
-    from jina.peapods.zmq import Zmqlet
     import multiprocessing
 
     gateway_runtime_dict = {
@@ -73,14 +66,10 @@ def gateway(args: 'Namespace'):
     }
     runtime_cls = get_runtime(gateway_runtime_dict[args.protocol])
     dummy_cancel_event = multiprocessing.Event()
-    dummy_ctrl_address, _ = Zmqlet.get_ctrl_address(
-        args.host, args.port_ctrl, args.ctrl_with_ipc
-    )
 
-    with runtime_cls(
-        args, ctrl_addr=dummy_ctrl_address, cancel_event=dummy_cancel_event
-    ) as gt:
-        gt.run_forever()
+    with runtime_cls(args, cancel_event=dummy_cancel_event) as runtime:
+        runtime.logger.success(f' Gateway with protocol {args.protocol} started')
+        runtime.run_forever()
 
 
 def ping(args: 'Namespace'):

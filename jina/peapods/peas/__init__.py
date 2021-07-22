@@ -24,7 +24,6 @@ def run(
     runtime_cls,
     envs: Dict[str, str],
     timeout_ctrl: int,
-    zed_runtime_ctrl_address: str,
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
@@ -77,7 +76,6 @@ def run(
         _set_envs()
         runtime = runtime_cls(
             args=args,
-            ctrl_addr=zed_runtime_ctrl_address,
             cancel_event=cancel_event,
             timeout_ctrl=timeout_ctrl,
         )
@@ -159,7 +157,6 @@ class BasePea:
                 'is_ready': self.is_ready,
                 'cancel_event': self.cancel_event,
                 'timeout_ctrl': self._timeout_ctrl,
-                'zed_runtime_ctrl_address': self._zed_runtime_ctrl_address,
                 'runtime_cls': self.runtime_cls,
             },
         )
@@ -167,32 +164,11 @@ class BasePea:
 
     def _set_ctrl_adrr(self):
         """Sets control address for different runtimes"""
-        # This logic must be improved specially when it comes to naming. It is about relative local/remote position
-        # between the runtime and the `ZEDRuntime` it may control
-        from ..zmq import Zmqlet
-        from ..runtimes.container import ContainerRuntime
-
-        if self.runtime_cls == ContainerRuntime:
-            # Checks if caller (JinaD) has set `docker_kwargs['extra_hosts']` to __docker_host__.
-            # If yes, set host_ctrl to __docker_host__, else keep it as __default_host__
-            # Reset extra_hosts as that's set by default in ContainerRuntime
-            if (
-                self.args.docker_kwargs
-                and 'extra_hosts' in self.args.docker_kwargs
-                and __docker_host__ in self.args.docker_kwargs['extra_hosts']
-            ):
-                ctrl_host = __docker_host__
-                self.args.docker_kwargs.pop('extra_hosts')
-            else:
-                ctrl_host = self.args.host
-
-            self._zed_runtime_ctrl_address, _ = Zmqlet.get_ctrl_address(
-                ctrl_host, self.args.port_ctrl, self.args.ctrl_with_ipc
-            )
-        else:
-            self._zed_runtime_ctrl_address, _ = Zmqlet.get_ctrl_address(
-                self.args.host, self.args.port_ctrl, self.args.ctrl_with_ipc
-            )
+        self._zed_runtime_ctrl_address = self.runtime_cls.get_control_address(
+            host=self.args.host,
+            port=self.args.port_ctrl,
+            docker_kwargs=getattr(self.args, 'docker_kwargs', None),
+        )
 
     def start(self):
         """Start the Pea.
