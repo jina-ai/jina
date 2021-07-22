@@ -3,9 +3,9 @@ from http import HTTPStatus
 
 import aiohttp
 
+from ..helper import if_alive
 from .containers import ContainerStore
 from ..excepts import Runtime400Exception
-from ..helper import raise_if_not_alive
 
 
 class FlowStore(ContainerStore):
@@ -13,7 +13,7 @@ class FlowStore(ContainerStore):
 
     _kind = 'flow'
 
-    @raise_if_not_alive
+    @if_alive
     async def _add(self, uri: str, port_expose: int, params: Dict, **kwargs) -> Dict:
         """Sends `POST` request to `mini-jinad` to create a Flow.
 
@@ -37,7 +37,7 @@ class FlowStore(ContainerStore):
                 )
             return response_json
 
-    @raise_if_not_alive
+    @if_alive
     async def _update(self, uri: str, params: Dict, **kwargs) -> Dict:
         """Sends `PUT` request to `mini-jinad` to execute a command on a Flow.
 
@@ -58,7 +58,7 @@ class FlowStore(ContainerStore):
                 )
             return response_json
 
-    @raise_if_not_alive
+    @if_alive
     async def _delete(self, uri, **kwargs) -> Dict:
         """Sends a `DELETE` request to terminate the Flow & remove the container
 

@@ -1,21 +1,26 @@
+from http import HTTPStatus
 from typing import Dict, Optional, TYPE_CHECKING, Union
 
+import aiohttp
 import requests
 
+from jina.helper import run_async
+
 from .base import BaseClient
-from .helper import jinad_alive, daemonize, error_msg_from
+from ..models.id import daemonize
+from ..helper import error_msg_from, if_alive
 
 if TYPE_CHECKING:
     from ..models import DaemonID
 
 
-class _PeaClient(BaseClient):
+class AsyncPeaClient(BaseClient):
 
     kind = 'pea'
     endpoint = '/peas'
 
-    @jinad_alive
-    def create(
+    @if_alive
+    async def create(
         self, workspace_id: Union[str, 'DaemonID'], payload: Dict
     ) -> Optional[str]:
         """Create a remote Pea / Pod
@@ -25,31 +30,31 @@ class _PeaClient(BaseClient):
         :return: the identity of the spawned Pea / Pod
         """
 
-        r = requests.post(
+        async with aiohttp.request(
+            method='POST',
             url=self.store_api,
             params={'workspace_id': daemonize(workspace_id)},
             json=payload,
-            timeout=self.timeout,
-        )
-        response_json = r.json()
-        if r.status_code == requests.codes.created:
-            self.logger.success(
-                f'successfully created {self.kind} in workspace {workspace_id}'
-            )
-            return response_json
-        elif r.status_code == requests.codes.unprocessable:
-            self.logger.error(
-                f'validation error in the payload: {response_json["detail"][0]["msg"]}'
-            )
-            return None
-        else:
-            self.logger.error(
-                f'{self.kind} creation failed as: {error_msg_from(response_json)}'
-            )
-            return None
+        ) as response:
+            response_json = await response.json()
+            if response.status == HTTPStatus.CREATED:
+                self._logger.success(
+                    f'successfully created {self.kind} in workspace {workspace_id}'
+                )
+                return response_json
+            elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
+                self._logger.error(
+                    f'validation error in the payload: {response_json["detail"][0]["msg"]}'
+                )
+                return None
+            else:
+                self._logger.error(
+                    f'{self.kind} creation failed as: {error_msg_from(response_json)}'
+                )
+                return None
 
-    @jinad_alive
-    def delete(self, identity: Union[str, 'DaemonID'], **kwargs) -> bool:
+    @if_alive
+    async def delete(self, identity: Union[str, 'DaemonID'], **kwargs) -> bool:
         """Delete a remote pea/pod
 
         :param identity: the identity of the Pea/Pod
@@ -57,12 +62,22 @@ class _PeaClient(BaseClient):
         :return: True if the deletion is successful
         """
 
-        r = requests.delete(
-            url=f'{self.store_api}/{daemonize(identity)}', timeout=self.timeout
-        )
-        response_json = r.json()
-        if r.status_code != requests.codes.ok:
-            self.logger.error(
-                f'deletion of {self.kind} {identity} failed: {error_msg_from(response_json)}'
-            )
-        return r.status_code == requests.codes.ok
+        async with aiohttp.request(
+            method='DELETE', url=f'{self.store_api}/{daemonize(identity)}'
+        ) as response:
+            response_json = await response.json()
+            if response.status != HTTPStatus.OK:
+                self._logger.error(
+                    f'deletion of {self.kind} {identity} failed: {error_msg_from(response_json)}'
+                )
+            return response.status == HTTPStatus.OK
+
+
+class PeaClient(AsyncPeaClient):
+    def create(
+        self, workspace_id: Union[str, 'DaemonID'], payload: Dict
+    ) -> Optional[str]:
+        return run_async(super().create, workspace_id=workspace_id, payload=payload)
+
+    def delete(self, identity: Union[str, 'DaemonID'], **kwargs) -> bool:
+        return run_async(super().delete, identity=identity, **kwargs)

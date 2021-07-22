@@ -1,9 +1,9 @@
 from jina.logging.logger import JinaLogger
 
-from .peas import _PeaClient
-from .pods import _PodClient
-from .flows import _FlowClient
-from .workspaces import _WorkspaceClient
+from .peas import PeaClient
+from .pods import PodClient
+from .flows import FlowClient
+from .workspaces import WorkspaceClient
 
 
 __all__ = ['JinaDClient']
@@ -28,19 +28,19 @@ class JinaDClient:
 
     @property
     def peas(self):
-        return _PeaClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
+        return PeaClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
 
     @property
     def pods(self):
-        return _PodClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
+        return PodClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
 
     @property
     def flows(self):
-        return _FlowClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
+        return FlowClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
 
     @property
     def workspaces(self):
-        return _WorkspaceClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
+        return WorkspaceClient(uri=self.uri, logger=self.logger, timeout=self.timeout)
 
     @property
     def logs(self):

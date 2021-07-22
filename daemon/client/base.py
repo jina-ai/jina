@@ -1,12 +1,17 @@
+import os
+import json
+import asyncio
+from http import HTTPStatus
 from typing import Dict, Optional, Union
 
-import requests
+import aiohttp
 
+from jina import __resources_path__
 from jina.logging.logger import JinaLogger
 from jina.importer import ImportExtensions
 
-from ..models import DaemonID
-from .helper import jinad_alive, daemonize, error_msg_from
+from ..models.id import DaemonID, daemonize
+from ..helper import error_msg_from, if_alive
 
 
 class BaseClient:
@@ -18,7 +23,7 @@ class BaseClient:
     :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
     """
 
-    kind = ''
+    _kind = ''
     endpoint = '/'
 
     def __init__(
@@ -27,35 +32,37 @@ class BaseClient:
         logger: JinaLogger,
         timeout: int = None,
     ):
-        self.logger = logger
+        self._logger = logger
         self.timeout = timeout
         self.http_uri = f'http://{uri}'
         self.store_api = f'{self.http_uri}{self.endpoint}'
         self.logstream_api = f'ws://{uri}/logstream'
 
-    @jinad_alive
-    def alive(self) -> bool:
+    @if_alive
+    async def alive(self) -> bool:
         """
         Return True if `jinad` is alive at remote
 
         :return: True if `jinad` is alive at remote else false
         """
-        r = requests.get(url=self.http_uri, timeout=self.timeout)
-        return r.status_code == requests.codes.ok
+        async with aiohttp.request(method='GET', url=self.http_uri) as response:
+            return response.status == HTTPStatus.OK
 
-    @jinad_alive
-    def status(self) -> Optional[Dict]:
+    @if_alive
+    async def status(self) -> Optional[Dict]:
         """
         Get status of remote `jinad`
 
         :return: dict status of remote jinad
         """
-        r = requests.get(url=f'{self.http_uri}/status', timeout=self.timeout)
-        if r.status_code == requests.codes.ok:
-            return r.json()
+        async with aiohttp.request(
+            method='GET', url=f'{self.http_uri}/status'
+        ) as response:
+            if response.status == HTTPStatus.OK:
+                return await response.json()
 
-    @jinad_alive
-    def get(self, identity: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
+    @if_alive
+    async def get(self, identity: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
         """Get status of the remote object
 
         :param id: identity of the Pea/Pod
@@ -63,40 +70,40 @@ class BaseClient:
         :return: json response of the remote Pea / Pod status
         """
 
-        r = requests.get(
-            url=f'{self.store_api}/{daemonize(identity, self.kind)}',
-            timeout=self.timeout,
-        )
-        response_json = r.json()
-        if r.status_code == requests.codes.unprocessable:
-            self.logger.error(
-                f'validation error in the request: {error_msg_from(response_json)}'
-            )
-            return response_json['body']
-        elif r.status_code == requests.codes.not_found:
-            self.logger.error(
-                f'couldn\'t find {identity} in remote {self.kind.title()} store'
-            )
-            return response_json['detail']
-        else:
-            self.logger.success(f'Found {self.kind.title()} {identity} in store')
-            return response_json
+        async with aiohttp.request(
+            method='GET',
+            url=f'{self.store_api}/{daemonize(identity, self._kind)}',
+        ) as response:
+            response_json = await response.json()
+            if response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
+                self._logger.error(
+                    f'validation error in the request: {error_msg_from(response_json)}'
+                )
+                return response_json['body']
+            elif response.status == HTTPStatus.NOT_FOUND:
+                self._logger.error(
+                    f'couldn\'t find {identity} in remote {self._kind.title()} store'
+                )
+                return response_json['detail']
+            else:
+                self._logger.success(f'Found {self._kind.title()} {identity} in store')
+                return response_json
 
-    @jinad_alive
-    def list(self) -> Dict:
+    @if_alive
+    async def list(self) -> Dict:
         """
         List all objects in the store
 
         :return: json response of the remote Pea / Pod status
         """
-        r = requests.get(url=self.store_api, timeout=self.timeout)
-        response_json = r.json()
-        self.logger.success(
-            f'Found {len(response_json.get("items", []))} {self.kind.title()} in store'
-        )
-        return response_json['items'] if 'items' in response_json else response_json
+        async with aiohttp.request(method='GET', url=self.store_api) as response:
+            response_json = await response.json()
+            self._logger.success(
+                f'Found {len(response_json.get("items", []))} {self._kind.title()} in store'
+            )
+            return response_json['items'] if 'items' in response_json else response_json
 
-    def create(self, *args, **kwargs) -> Dict:
+    async def create(self, *args, **kwargs) -> Dict:
         """
         Create an object in the store
 
@@ -105,7 +112,7 @@ class BaseClient:
         """
         raise NotImplementedError
 
-    def delete(self, identity: DaemonID, *args, **kwargs) -> str:
+    async def delete(self, identity: DaemonID, *args, **kwargs) -> str:
         """
         Delete an object in the store
 
@@ -142,13 +149,13 @@ class BaseClient:
                     except json.decoder.JSONDecodeError:
                         continue
         except websockets.exceptions.ConnectionClosedOK:
-            self.logger.warning(f'log streaming is disconnected')
+            self._logger.warning(f'log streaming is disconnected')
         except websockets.exceptions.WebSocketException as e:
-            self.logger.error(
+            self._logger.error(
                 f'log streaming is disabled, you won\'t see logs on the remote\n Reason: {e!r}'
             )
         except asyncio.CancelledError:
-            self.logger.warning(f'log streaming is cancelled')
+            self._logger.warning(f'log streaming is cancelled')
         finally:
             for l in all_remote_loggers.values():
                 l.close()

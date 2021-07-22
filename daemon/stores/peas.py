@@ -3,9 +3,9 @@ from typing import Dict
 
 import aiohttp
 
+from ..helper import if_alive
 from .containers import ContainerStore
 from ..excepts import Runtime400Exception
-from ..helper import raise_if_not_alive
 
 
 class PeaStore(ContainerStore):
@@ -13,7 +13,7 @@ class PeaStore(ContainerStore):
 
     _kind = 'pea'
 
-    @raise_if_not_alive
+    @if_alive
     async def _add(self, uri: str, params: Dict, **kwargs) -> Dict:
         """Sends `POST` request to `mini-jinad` to create a Pea/Pod.
 
@@ -38,7 +38,7 @@ class PeaStore(ContainerStore):
         # TODO
         pass
 
-    @raise_if_not_alive
+    @if_alive
     async def _delete(self, uri, **kwargs) -> Dict:
         """Sends a `DELETE` request to `mini-jinad` to terminate a Pea/Pod
 

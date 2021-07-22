@@ -98,3 +98,10 @@ class DaemonID(str):
 
     def __repr__(self):
         return f'DaemonID({super().__repr__()})'
+
+
+def daemonize(identity: str, kind: str = 'workspace') -> DaemonID:
+    try:
+        return DaemonID(identity)
+    except TypeError:
+        return DaemonID(f'j{kind}-{identity}')

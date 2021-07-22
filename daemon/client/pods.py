@@ -1,7 +1,11 @@
-from .peas import _PeaClient
+from .peas import AsyncPeaClient, PeaClient
 
 
-class _PodClient(_PeaClient):
+class AsyncPodClient(AsyncPeaClient):
 
     kind = 'pod'
     endpoint = '/pods'
+
+
+class PodClient(AsyncPodClient, PeaClient):
+    """[summary]"""
