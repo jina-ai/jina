@@ -1,4 +1,3 @@
-
 import requests
 import time
 
@@ -6,6 +5,8 @@ from jina.kubernetes import kubernetes_tools
 
 kubernetes_tools.get_pod_logs("f1")
 
+time.sleep(2)
+input("Press Enter to continue...")
 
 ip = '34.141.109.41'
 host = f'http://{ip}'

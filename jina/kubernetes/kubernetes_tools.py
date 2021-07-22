@@ -47,32 +47,34 @@ def create_gateway_ingress(namespace: str):
     body = client.NetworkingV1beta1Ingress(
         api_version="networking.k8s.io/v1beta1",
         kind="Ingress",
-        metadata=client.V1ObjectMeta(name=f'{namespace}-ingress', annotations={
-            "nginx.ingress.kubernetes.io/rewrite-target": "/",
-            "linkerd.io/inject": "enabled"
-        }),
+        metadata=client.V1ObjectMeta(
+            name=f'{namespace}-ingress',
+            annotations={
+                "nginx.ingress.kubernetes.io/rewrite-target": "/",
+                "linkerd.io/inject": "enabled",
+            },
+        ),
         spec=client.NetworkingV1beta1IngressSpec(
-            rules=[client.NetworkingV1beta1IngressRule(
-                host="",
-                http=client.NetworkingV1beta1HTTPIngressRuleValue(
-                    paths=[client.NetworkingV1beta1HTTPIngressPath(
-                        path="/",
-                        backend=client.NetworkingV1beta1IngressBackend(
-                            service_port=8080,
-                            service_name="gateway-exposed")
-
-                    )]
+            rules=[
+                client.NetworkingV1beta1IngressRule(
+                    host="",
+                    http=client.NetworkingV1beta1HTTPIngressRuleValue(
+                        paths=[
+                            client.NetworkingV1beta1HTTPIngressPath(
+                                path="/",
+                                backend=client.NetworkingV1beta1IngressBackend(
+                                    service_port=8080, service_name="gateway-exposed"
+                                ),
+                            )
+                        ]
+                    ),
                 )
-            )
             ]
-        )
+        ),
     )
     # Creation of the Deployment in specified namespace
     # (Can replace "default" with a namespace you may have created)
-    networking_v1_beta1_api.create_namespaced_ingress(
-        namespace=namespace,
-        body=body
-    )
+    networking_v1_beta1_api.create_namespaced_ingress(namespace=namespace, body=body)
 
 
 def create(template, params):
@@ -115,15 +117,24 @@ def get_service_cluster_ip(service_name, namespace):
     resp = v1.read_namespaced_service(service_name, namespace)
     return resp.spec.cluster_ip
 
-def log_in_thread(pod_name, namespace):
+
+def log_in_thread(pod_name, namespace, container):
     w = Watch()
-    for e in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container='executor'):
+    for e in w.stream(
+        v1.read_namespaced_pod_log,
+        name=pod_name,
+        namespace=namespace,
+        container=container,
+    ):
         print(f"{UNDERLINE}{BOLD}{PASS}{pod_name}{ENDC} =>", e)
+
 
 def get_pod_logs(namespace):
     pods = v1.list_namespaced_pod(namespace)
     pod_names = [item.metadata.name for item in pods.items]
     for pod_name in pod_names:
-        x = threading.Thread(target=log_in_thread, args=(pod_name, namespace))
-        x.start()
-
+        for container in ['executor', 'linkerd-proxy']:
+            x = threading.Thread(
+                target=log_in_thread, args=(pod_name, namespace, container)
+            )
+            x.start()
