@@ -952,13 +952,13 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 
 ### Finding closest documents between `DocumentArray` objects
 
-`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects.
+`DocumentArray` provides a`.match` function that finds the closest documents between two `DocumentArray` objects. This function requires all documents to be compared have an `embedding` and all embeddings to have the same length.
 
 The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By default, the cosine similarity is used to evaluate the score between documents.
 
 ![match_illustration_5](https://github.com/jina-ai/jina/blob/master/.github/images/match_illustration_5.svg)
 
-More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, is_distance=True, limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`.
+More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, is_distance=True, limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
 
 - `metric` can be `'cosine'`, `'euclidean'`,  `'euclidean_squared'` 
 -  `is_distance=True` interprets the input metric as a distance (lower metric values imply closer elements), otherwise it is considered a similairty  (higher metric values imply closer elements).
@@ -980,21 +980,22 @@ d3_m = Document(embedding=np.array([1,1.2,1,1,0]))
 d4_m = Document(embedding=np.array([1,2.2,2,1,0]))
 d5_m = Document(embedding=np.array([4,5.2,2,1,0]))
 
-da_1  = DocumentArray([d1,d2,d3,d4])
+da_1  = DocumentArray([d1, d2, d3, d4])
 da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
 
 da_1.match(da_2, metric='euclidean', is_distance=True, limit=3)
 query = da_1[2]
-print(f'query={query.embedding}')
+print(f'query emb = {query.embedding}')
 for m in query.matches:
-    print(m.embedding, 'score =', m.scores['euclidean'].value)
+    print('match emb ='m.embedding, 'score =', m.scores['euclidean'].value)
 ```
 
 ```python
-query=[1 1 1 1 0]
-[1.  1.2 1.  1.  0. ] score = 0.20000000298023224
-[1.  2.2 2.  1.  0. ] score = 1.5620499849319458
-[1.  0.1 0.  0.  0. ] score = 1.6763054132461548
+executed in 12ms, finished 11:28:38 2021-07-22
+query emb = [1 1 1 1 0]
+match emb = [1.  1.2 1.  1.  0. ] score = 0.20000000298023224
+match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
+match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 ```
 
 
