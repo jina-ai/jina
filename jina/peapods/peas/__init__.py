@@ -23,7 +23,6 @@ def run(
     name: str,
     runtime_cls,
     envs: Dict[str, str],
-    timeout_ctrl: int,
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
@@ -49,8 +48,6 @@ def run(
     :param name: name of the Pea to have proper logging
     :param runtime_cls: the runtime class to instantiate
     :param envs: a dictionary of environment variables to be set in the new Process
-    :param timeout_ctrl: timeout time for the control port communication
-    :param zed_runtime_ctrl_address: the control address of the `ZEDRuntime` that is supported by the Pea or `ContainerRuntime` or `JinadRuntime`.
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
@@ -77,7 +74,6 @@ def run(
         runtime = runtime_cls(
             args=args,
             cancel_event=cancel_event,
-            timeout_ctrl=timeout_ctrl,
         )
     except Exception as ex:
         logger.error(
@@ -156,7 +152,6 @@ class BasePea:
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
                 'cancel_event': self.cancel_event,
-                'timeout_ctrl': self._timeout_ctrl,
                 'runtime_cls': self.runtime_cls,
             },
         )
@@ -224,7 +219,12 @@ class BasePea:
         )
 
     def _cancel_runtime(self, skip_deactivate: bool = False):
-        """Send terminate control message."""
+        """
+        Send terminate control message.
+
+        :param skip_deactivate: flag to tell if deactivate signal may be missed.
+            This is important when you want to independently kill a Runtime
+        """
         self.runtime_cls.cancel(
             cancel_event=self.cancel_event,
             logger=self.logger,
@@ -235,6 +235,12 @@ class BasePea:
         )
 
     def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
+        """
+        Waits for the process to be ready or to know it has failed.
+
+        :param timeout: The time to wait before readiness or failure is determined
+            .. # noqa: DAR201
+        """
         return self.runtime_cls.wait_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
