@@ -164,6 +164,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     - [Minimum Working Example](.github/2.0/cookbooks/Document.md#minimum-working-example)
     - [`Document` API](.github/2.0/cookbooks/Document.md#document-api)
     - [`DocumentArray` API](.github/2.0/cookbooks/Document.md#documentarray-api)
+    - [`DocumentArrayMemmap` API](.github/2.0/cookbooks/Document.md#documentarraymemmap-api)
 - ⚙️ `Executor`: how Jina processes Documents.
     - [Minimum working example](.github/2.0/cookbooks/Executor.md#minimum-working-example)
     - [`Executor` API](.github/2.0/cookbooks/Executor.md#executor-api)
