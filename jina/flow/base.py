@@ -1595,6 +1595,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         'target': name.lower(),
                         'namespace': namespace,
                         'port': 8081,
+                        'type': 'ClusterIP',
                     },
                 )
                 cluster_ip = kubernetes_tools.get_service_cluster_ip(
@@ -1626,6 +1627,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     'target': 'gateway',
                     'namespace': namespace,
                     'port': 8080,
+                    'type': 'ClusterIP',
                 },
             )
             kubernetes_tools.create(
@@ -1635,6 +1637,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     'target': 'gateway',
                     'namespace': namespace,
                     'port': 8081,
+                    'type': 'ClusterIP',
                 },
             )
 
