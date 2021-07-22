@@ -19,12 +19,17 @@ if False:
 class JinadRuntime(AsyncZMQRuntime):
     """Runtime procedure for Jinad."""
 
-    def __init__(self, args: 'argparse.Namespace', timeout_ctrl: int, **kwargs):
-        super().__init__(args, **kwargs)
+    def __init__(
+        self,
+        args: 'argparse.Namespace',
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        super().__init__(args, cancel_event=cancel_event, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
-        self.timeout_ctrl = timeout_ctrl
+        self.timeout_ctrl = args.timeout_ctrl
         self.host = args.host
         self.port_expose = args.port_expose
         # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
@@ -46,14 +51,11 @@ class JinadRuntime(AsyncZMQRuntime):
             )
 
     async def _wait_for_cancel(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        while True:
-            if self.is_cancel.is_set():
-                await self.async_cancel()
-                send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
-                return
-            else:
-                await asyncio.sleep(0.1)
+        while not self.is_cancel.is_set():
+            await asyncio.sleep(0.1)
+
+        await self.async_cancel()
+        send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
 
     async def async_run_forever(self):
         """

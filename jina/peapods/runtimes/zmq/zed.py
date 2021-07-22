@@ -60,9 +60,9 @@ class ZEDRuntime(ZMQRuntime):
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
 
-        self._load_zmqstreamlet()
         self._load_plugins()
         self._load_executor()
+        self._load_zmqstreamlet()
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
@@ -514,7 +514,6 @@ class ZEDRuntime(ZMQRuntime):
         :return: control message.
         """
         from ...zmq import send_ctrl_message
-
         return send_ctrl_message(
             ctrl_address, 'STATUS', timeout=timeout_ctrl, raise_exception=False
         )
@@ -542,9 +541,9 @@ class ZEDRuntime(ZMQRuntime):
 
         :return: True if is ready or it needs to be shutdown
         """
-        timeout_ns = 1000000 * timeout
+        timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
-        while time.time_ns() - now < timeout_ns:
+        while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if shutdown_event.is_set() or ZEDRuntime.is_ready(
                 ctrl_address, timeout_ctrl
             ):

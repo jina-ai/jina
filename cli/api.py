@@ -57,7 +57,6 @@ def gateway(args: 'Namespace'):
     """
     from jina.enums import GatewayProtocolType
     from jina.peapods.runtimes import get_runtime
-    import multiprocessing
 
     gateway_runtime_dict = {
         GatewayProtocolType.GRPC: 'GRPCRuntime',
@@ -65,10 +64,11 @@ def gateway(args: 'Namespace'):
         GatewayProtocolType.HTTP: 'HTTPRuntime',
     }
     runtime_cls = get_runtime(gateway_runtime_dict[args.protocol])
-    dummy_cancel_event = multiprocessing.Event()
 
-    with runtime_cls(args, cancel_event=dummy_cancel_event) as runtime:
-        runtime.logger.success(f' Gateway with protocol {args.protocol} started')
+    with runtime_cls(args) as runtime:
+        runtime.logger.success(
+            f' Gateway with protocol {gateway_runtime_dict[args.protocol]} started'
+        )
         runtime.run_forever()
 
 

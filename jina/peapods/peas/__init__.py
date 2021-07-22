@@ -234,7 +234,7 @@ class BasePea:
             skip_deactivate=skip_deactivate,
         )
 
-    def _wait_for_ready_or_success(self, timeout: Optional[float]):
+    def _wait_for_ready_or_shutdown(self, timeout: Optional[float]):
         return self.runtime_cls.wait_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
@@ -253,8 +253,8 @@ class BasePea:
             _timeout = None
         else:
             _timeout /= 1e3
-        self.logger.debug('waiting for ready or shutdown signal from runtime')
-        if self._wait_for_ready_or_success(_timeout):
+
+        if self._wait_for_ready_or_shutdown(_timeout):
             if self.is_shutdown.is_set():
                 # return too early and the shutdown is set, means something fails!!
                 if not self.is_started.is_set():
@@ -325,7 +325,7 @@ class BasePea:
             else:
                 _timeout /= 1e3
             self.logger.debug('waiting for ready or shutdown signal from runtime')
-            if self._wait_for_ready_or_success(_timeout):
+            if self._wait_for_ready_or_shutdown(_timeout):
                 if not self.is_shutdown.is_set():
                     self._cancel_runtime(skip_deactivate=True)
                     if not self.is_shutdown.wait(timeout=self._timeout_ctrl):

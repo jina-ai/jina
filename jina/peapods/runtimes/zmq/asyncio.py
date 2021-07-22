@@ -1,8 +1,9 @@
 import argparse
 import asyncio
 from abc import ABC
+import signal
 
-from typing import Union
+from typing import Union, Optional
 
 from ..zmq.base import ZMQRuntime
 
@@ -19,13 +20,15 @@ class AsyncZMQRuntime(ZMQRuntime):
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Union['multiprocessing.Event', 'threading.Event'],
-        **kwargs
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs
     ):
         super().__init__(args, **kwargs)
-        self.is_cancel = cancel_event
+        self.is_cancel = cancel_event or asyncio.Event()
 
     def run_forever(self):
         """Running method to block the main thread."""
@@ -53,7 +56,6 @@ class AsyncZMQRuntime(ZMQRuntime):
             await asyncio.gather(self.async_run_forever(), self._wait_for_cancel())
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
-        await self.async_cancel()
 
 
 class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
@@ -66,6 +68,16 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
         super().__init__(*args, **kwargs)
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
+
+        try:
+            for signame in {'SIGINT', 'SIGTERM'}:
+                self._loop.add_signal_handler(
+                    getattr(signal, signame), lambda *args, **kwargs: self.is_cancel.set()
+                )
+        except ValueError as exc:
+            self.logger.warning(f' The runtime {self.__class__.__name__} will not be able to handle signal handlers. '
+                                f' {repr(exc)}')
+
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
@@ -90,7 +102,7 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
 
     @staticmethod
     def cancel(
-        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
+            cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
     ):
         """
         Signal the runtime to terminate
