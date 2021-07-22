@@ -162,7 +162,6 @@ class BasePea:
         self._zed_runtime_ctrl_address = self.runtime_cls.get_control_address(
             host=self.args.host,
             port=self.args.port_ctrl,
-            ctrl_with_ipc=self.args.ctrl_with_ipc,
             docker_kwargs=getattr(self.args, 'docker_kwargs', None),
         )
 

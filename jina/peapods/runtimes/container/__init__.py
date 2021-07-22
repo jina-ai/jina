@@ -29,7 +29,6 @@ class ContainerRuntime(ZMQRuntime):
         self.ctrl_addr = self.get_control_address(
             args.host,
             args.port_ctrl,
-            ctrl_with_ipc=self.args.ctrl_with_ipc,
             docker_kwargs=self.args.docker_kwargs,
         )
         if (
@@ -391,7 +390,6 @@ class ContainerRuntime(ZMQRuntime):
     def get_control_address(
         host: str,
         port: str,
-        ctrl_with_ipc: bool,
         docker_kwargs: Optional[Dict],
         **kwargs,
     ):
@@ -400,7 +398,6 @@ class ContainerRuntime(ZMQRuntime):
 
         :param host: the host where the runtime works
         :param port: the control port where the runtime listens
-        :param ctrl_with_ipc: the control should work with ipc
         :param docker_kwargs: the extra docker kwargs from which maybe extract extra hosts
         :param kwargs: extra keyword arguments
         :return: The corresponding control address
@@ -414,4 +411,4 @@ class ContainerRuntime(ZMQRuntime):
         else:
             ctrl_host = host
 
-        return Zmqlet.get_ctrl_address(ctrl_host, port, ctrl_with_ipc)[0]
+        return Zmqlet.get_ctrl_address(ctrl_host, port, False)[0]
