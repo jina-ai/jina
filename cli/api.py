@@ -176,4 +176,4 @@ def help(args: 'Namespace'):
     """
     from .lookup import lookup_and_print
 
-    lookup_and_print(args.query)
+    lookup_and_print(args.query.lower())
