@@ -1,20 +1,21 @@
 from math import inf
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import numpy as np
 
 from jina import Document
 
 if False:
-    from .document import DocumentArrayGetAttrMixin
+    from .document import DocumentArray
+    from .memmap import DocumentArrayMemmap
 
 
-class DocumentArrayNeuralOperationsMixin:
+class DocumentArrayNeuralOpsMixin:
     """ A mixin that provides match functionality to DocumentArrays """
 
     def match(
         self,
-        darray: 'DocumentArrayGetAttrMixin',
+        darray: Union['DocumentArray', 'DocumentArrayMemmap'],
         metric: str = 'cosine',
         limit: Optional[int] = inf,
         is_distance: bool = False,
@@ -27,7 +28,7 @@ class DocumentArrayNeuralOperationsMixin:
             - If metric is 'euclidean' it uses the euclidean **distance**.
             - If metric is 'euclidean_squared' it uses the euclidean **distance** squared.
 
-        :param darray: the other DocumentArray to match against
+        :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param metric: the distance metric
         :param limit: the maximum number of matches, when not given
                       all Documents in `another` are considered as matches
@@ -35,38 +36,37 @@ class DocumentArrayNeuralOperationsMixin:
         """
 
         def invert_if_score(
-            X: 'np.ndarray', metric: str, is_distance: bool
+            x: 'np.ndarray',
         ) -> 'np.ndarray':
             """Invert values to scores if `is_distance=False` according to the metric that is passed.
 
-            :param X: input np.ndarray
-            :param metric: string defining distance function ['cosine', 'euclidean', euclidean_squared'].
-            :param is_distance: Boolean flag that describes if values in X need to be reinterpreted as similarities.
+            :param x: input np.ndarray
             :return: A np.ndarray with distances if `is_distance=True`, scores if distance=False`.
             """
             if metric == 'cosine':
                 if is_distance:
-                    X = X
+                    x = x
                 else:
-                    X = 1 - X
-            if metric == 'euclidean_squared' or metric == 'euclidean':
+                    x = 1 - x
+            elif metric == 'euclidean_squared' or metric == 'euclidean':
                 if is_distance:
-                    X = X
+                    x = x
                 else:
-                    X = 1 / (X + 1)
-            return X
+                    x = 1 / (x + 1)
+            return x
 
         X = np.stack(self.get_attributes('embedding'))
         Y = np.stack(darray.get_attributes('embedding'))
         limit = min(limit, len(darray))
 
-        dists = compute_distances(X, Y, metric)
+        dists = _compute_distances(X, Y, metric)
         idx, dist = self._get_sorted_smallest_k(dists, limit)
+        dist = invert_if_score(dist)
 
         for _q, _ids, _dists in zip(self, idx, dist):
             for _id, _dist in zip(_ids, _dists):
                 d = Document(darray[int(_id)], copy=True)
-                d.scores[metric] = invert_if_score(_dist, metric, is_distance)
+                d.scores[metric] = _dist
                 _q.matches.append(d)
 
     @staticmethod
@@ -92,49 +92,46 @@ class DocumentArrayNeuralOperationsMixin:
         return indices, dists
 
 
-def compute_distances(X: 'np.ndarray', Y: 'np.ndarray', metric: str) -> 'np.ndarray':
+def _compute_distances(x: 'np.ndarray', y: 'np.ndarray', metric: str) -> 'np.ndarray':
     """Computes the distance between each row of X and each row on Y according to `metric`.
     - Let `n_X = X.shape[0]`
     - Let `n_Y = Y.shape[0]`
     - Returns a matrix `dist` of shape `(n_X, n_Y)` with `dist[i,j] = metric(X[i], X[j])`.
-    :param X: np.ndarray of ndim 2
-    :param Y:  np.ndarray of ndim 2
+    :param x: np.ndarray of ndim 2
+    :param y:  np.ndarray of ndim 2
     :param metric: string describing the metric type
     :return: np.ndarray of ndim 2
     """
-    assert metric in [
-        'cosine',
-        'euclidean_squared',
-        'euclidean',
-    ], f'Input metric={metric} not valid'
     if metric == 'cosine':
-        dists = cosine_distance(X, Y)
-    if metric == 'euclidean_squared':
-        dists = euclidean_distance_squared(X, Y)
-    if metric == 'euclidean':
-        dists = np.sqrt(euclidean_distance_squared(X, Y))
+        dists = _cosine_distance(x, y)
+    elif metric == 'euclidean_squared':
+        dists = _euclidean_distance_squared(x, y)
+    elif metric == 'euclidean':
+        dists = np.sqrt(_euclidean_distance_squared(x, y))
+    else:
+        raise ValueError(f'Input metric={metric} not valid')
     return dists
 
 
-def cosine_distance(X: 'np.ndarray', Y: 'np.ndarray') -> 'np.ndarray':
+def _cosine_distance(x: 'np.ndarray', y: 'np.ndarray') -> 'np.ndarray':
     """Cosine distance between each row in X and each row in Y.
-    :param X: np.ndarray with ndim=2
-    :param Y: np.ndarray with ndim=2
+    :param x: np.ndarray with ndim=2
+    :param y: np.ndarray with ndim=2
     :return: np.ndarray  with ndim=2
     """
-    return 1 - np.dot(X, Y.T) / np.outer(
-        np.linalg.norm(X, axis=1), np.linalg.norm(Y, axis=1)
+    return 1 - np.dot(x, y.T) / np.outer(
+        np.linalg.norm(x, axis=1), np.linalg.norm(y, axis=1)
     )
 
 
-def euclidean_distance_squared(X: 'np.ndarray', Y: 'np.ndarray') -> 'np.ndarray':
+def _euclidean_distance_squared(x: 'np.ndarray', y: 'np.ndarray') -> 'np.ndarray':
     """Euclidean (squared) distance between each row in X and each row in Y.
-    :param X: np.ndarray with ndim=2
-    :param Y: np.ndarray with ndim=2
+    :param x: np.ndarray with ndim=2
+    :param y: np.ndarray with ndim=2
     :return: np.ndarray with ndim=2
     """
     return (
-        np.sum(Y ** 2, axis=1)
-        + np.sum(X ** 2, axis=1)[:, np.newaxis]
-        - 2 * np.dot(X, Y.T)
+        np.sum(y ** 2, axis=1)
+        + np.sum(x ** 2, axis=1)[:, np.newaxis]
+        - 2 * np.dot(x, y.T)
     )

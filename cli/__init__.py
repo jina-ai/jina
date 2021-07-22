@@ -4,15 +4,26 @@ import sys
 
 def _get_run_args(print_args: bool = True):
     from jina.parsers import get_main_parser
-    from jina.helper import colored
-    from jina import __resources_path__
+
+    silent_print = {'help'}
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
         from argparse import _StoreAction, _StoreTrueAction
 
-        args = parser.parse_args()
-        if print_args:
+        args, unknown = parser.parse_known_args()
+
+        if unknown:
+            import warnings
+
+            warnings.warn(
+                f'ignored unknown argument: {unknown}, '
+                f'this may be caused by the mismatched version on Jina'
+            )
+
+        if args.cli not in silent_print and print_args:
+            from jina.helper import colored
+            from jina import __resources_path__
 
             p = parser._actions[-1].choices[sys.argv[1]]
             default_args = {
