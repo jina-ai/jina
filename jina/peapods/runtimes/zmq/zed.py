@@ -657,15 +657,16 @@ class ZEDRuntime(ZMQRuntime):
             )
 
     @staticmethod
-    def get_control_address(host: str, port: str, **kwargs):
+    def get_control_address(host: str, port: str, ctrl_with_ipc: bool, **kwargs):
         """
         Get the control address for a runtime with a given host and port
 
         :param host: the host where the runtime works
         :param port: the control port where the runtime listens
+        :param ctrl_with_ipc: the control should work with ipc
         :param kwargs: extra keyword arguments
         :return: The corresponding control address
         """
         from ...zmq import Zmqlet
 
-        return Zmqlet.get_ctrl_address(host, port, False)[0]
+        return Zmqlet.get_ctrl_address(host, port, ctrl_with_ipc)[0]
