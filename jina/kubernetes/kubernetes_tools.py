@@ -1,10 +1,16 @@
+import threading
 import time
+
+import bcolors
+from bcolors import UNDERLINE, ENDC, BOLD, PASS
+
 
 from kubernetes import client, config, utils
 import os
 import tempfile
 
 from kubernetes.utils import FailToCreateError
+from kubernetes.watch import Watch
 
 config.load_kube_config()
 k8s_client = client.ApiClient()
@@ -84,7 +90,15 @@ def get_service_cluster_ip(service_name, namespace):
     resp = v1.read_namespaced_service(service_name, namespace)
     return resp.spec.cluster_ip
 
+def log_in_thread(pod_name, namespace):
+    w = Watch()
+    for e in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container='executor'):
+        print(f"{UNDERLINE}{BOLD}{PASS}{pod_name}{ENDC} =>", e)
 
-def get_service_spec(service_name, namespace):
-    resp = v1.read_namespaced_service(service_name, namespace)
-    return resp.spec
+def get_pod_logs(namespace):
+    pods = v1.list_namespaced_pod(namespace)
+    pod_names = [item.metadata.name for item in pods.items]
+    for pod_name in pod_names:
+        x = threading.Thread(target=log_in_thread, args=(pod_name, namespace))
+        x.start()
+
