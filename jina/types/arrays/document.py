@@ -2,6 +2,7 @@ import json
 import warnings
 import random
 from abc import abstractmethod
+from operator import itemgetter
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -455,7 +456,5 @@ class DocumentArray(
         if k < len(self):
             raise ValueError('DocumentArray do not have enough Document to sample')
         indices = random.sample(range(len(self)), k)
-        sampled = DocumentArray()
-        for index in indices:
-            sampled.append(self[index])
-        return sampled
+        sampled = list(itemgetter(*indices)(self))
+        return DocumentArray(sampled)
