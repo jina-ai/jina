@@ -74,6 +74,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -276,6 +277,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`2.0.7`)](#release-note-207)
 - [Release Note (`2.0.8`)](#release-note-208)
 - [Release Note (`2.0.9`)](#release-note-209)
+- [Release Note (`2.0.10`)](#release-note-2010)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -9692,4 +9694,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```99479dc1```](https://github.com/jina-ai/jina/commit/99479dc15f2dfc28a00bf7ac2d9ebda13f041ce1)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```8d2c7d37```](https://github.com/jina-ai/jina/commit/8d2c7d37fa5767607c98d445c55ef15940b8c447)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```9fc9a726```](https://github.com/jina-ai/jina/commit/9fc9a726396e8cebbcceca9e08be92770700d1a5)] __-__ __version__: the next version will be 2.0.9 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-10></a>
+## Release Note (`2.0.10`)
+
+> Release time: 2021-07-22 06:18:39
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```723c7d91```](https://github.com/jina-ai/jina/commit/723c7d9108cd2641bcb3795f19c9d6f6a51e3a7a)] __-__ __cli__: add jina help cli for quick arg lookup (*Han Xiao*)
+ - [[```0ca4f7a3```](https://github.com/jina-ai/jina/commit/0ca4f7a31b4da72dd691e983762755398acaeb92)] __-__ __cli__: add jina help cli for quick arg lookup (#2989) (*Han Xiao*)
+
+### 🚧 Code Refactoring
+
+ - [[```2e402c9d```](https://github.com/jina-ai/jina/commit/2e402c9d182f1f62245aa370a44f3434d636a548)] __-__ __types__: improving style and code quality of .match method (#2987) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```04790803```](https://github.com/jina-ai/jina/commit/0479080389f9bea64e7674a9ed2a7914f3229685)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```15983b9d```](https://github.com/jina-ai/jina/commit/15983b9d79ff78faf39efb19e4fc5d131b793d85)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```da23c8d4```](https://github.com/jina-ai/jina/commit/da23c8d45c0278405442d12bdf4043cb806ca8ef)] __-__ __version__: the next version will be 2.0.10 (*Jina Dev Bot*)
 

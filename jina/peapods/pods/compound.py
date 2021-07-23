@@ -224,16 +224,21 @@ class CompoundPod(BasePod, ExitStack):
             _args.socket_out = SocketType.PUSH_CONNECT
             _args.socket_in = SocketType.DEALER_CONNECT
             _args.dynamic_routing = False
+            # ugly trick to avoid Head of Replica to have wrong host in
+            tmp_args = copy.deepcopy(_args)
+            if _args.parallel > 1:
+                tmp_args.runs_in_docker = False
+                tmp_args.uses = ''
 
             _args.host_in = get_connect_host(
                 bind_host=head_args.host,
                 bind_expose_public=head_args.expose_public,
-                connect_args=_args,
+                connect_args=tmp_args,
             )
             _args.host_out = get_connect_host(
                 bind_host=tail_args.host,
                 bind_expose_public=tail_args.expose_public,
-                connect_args=_args,
+                connect_args=tmp_args,
             )
             result.append(_args)
         return result
