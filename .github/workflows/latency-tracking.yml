@@ -1,11 +1,8 @@
 name: Latency Tracking
 
-#on:
-# - pull_request
 on:
-  push:
-    branches-ignore:
-      - '**'  # temporally disable this action
+  - pull_request
+
 jobs:
   latency-tracking:
     runs-on: ubuntu-latest
