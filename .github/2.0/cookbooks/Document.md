@@ -52,6 +52,7 @@ Table of Contents
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
   - [Access nested attributes from tags](#access-nested-attributes-from-tags)
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
+  - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
   - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
