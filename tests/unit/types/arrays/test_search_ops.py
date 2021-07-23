@@ -17,11 +17,11 @@ def list_doc_examples():
 
 def test_single_regex(list_doc_examples, tmpdir):
     regexes = {'city': r'B.*'}
-    D = DocumentArray(list_doc_examples)
+    doc_array = DocumentArray(list_doc_examples)
     doc_array_memmap = DocumentArrayMemmap(tmpdir)
     doc_array_memmap.extend(list_doc_examples)
 
-    filtered_doc_array = D.find(regexes=regexes)
+    filtered_doc_array = doc_array.find(regexes=regexes)
     filtered_doc_array_memmap = doc_array_memmap.find(regexes=regexes)
 
     # Examples with Barcelona, Berlin, Brussels should match
