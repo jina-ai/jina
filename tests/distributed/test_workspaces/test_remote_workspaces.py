@@ -1,18 +1,14 @@
 import os
 import time
+import asyncio
 
 import numpy as np
 import pytest
 
 from jina import Flow, Client, Document, __default_host__
-from ..helpers import (
-    assert_request,
-    create_workspace,
-    delete_flow,
-    wait_for_workspace,
-    delete_workspace,
-    create_flow,
-)
+from daemon.models.id import DaemonID
+from daemon.clients import AsyncJinaDClient
+from ..helpers import assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 compose_yml = os.path.join(cur_dir, 'docker-compose.yml')
@@ -93,30 +89,38 @@ def test_upload_multiple_workspaces(parallels, mocker):
     response_mock.assert_called()
 
 
-def test_remote_flow():
-    workspace_id = create_workspace(
-        filepaths=[os.path.join(cur_dir, 'empty_flow.yml')],
+@pytest.mark.asyncio
+async def test_remote_flow():
+    client = AsyncJinaDClient(host=__default_host__, port=8000)
+    workspace_id = await client.workspaces.create(
+        paths=[os.path.join(cur_dir, 'empty_flow.yml')]
     )
-    assert wait_for_workspace(workspace_id)
-    flow_id = create_flow(workspace_id=workspace_id, filename='empty_flow.yml')
-    assert_request('get', url=f'http://{CLOUD_HOST}/flows/{flow_id}', expect_rcode=200)
+    assert DaemonID(workspace_id).type == 'workspace'
+    flow_id = await client.flows.create(
+        workspace_id=workspace_id, filename='empty_flow.yml'
+    )
+    assert DaemonID(flow_id).type == 'flow'
+    assert await client.flows.get(flow_id)
+    assert flow_id in await client.flows.list()
     assert_request('get', url=f'http://localhost:23456/status/', expect_rcode=200)
-    assert delete_flow(flow_id)
-    assert delete_workspace(workspace_id)
+    assert await client.flows.delete(flow_id)
+    assert await client.workspaces.delete(workspace_id)
 
 
-def test_custom_project():
+@pytest.mark.asyncio
+async def test_custom_project():
 
     HOST = __default_host__
 
-    workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'flow_app_ws'), host=HOST
+    client = AsyncJinaDClient(host=HOST, port=8000)
+    workspace_id = await client.workspaces.create(
+        paths=[os.path.join(cur_dir, 'flow_app_ws')]
     )
-    assert wait_for_workspace(workspace_id, host=HOST)
-    # we need to wait for the flow to start in the custom project
-    time.sleep(5)
+    assert DaemonID(workspace_id).type == 'workspace'
+    # Sleep to allow the workspace container to start
+    await asyncio.sleep(5)
 
-    def gen_docs():
+    async def gen_docs():
         import string
 
         d = iter(string.ascii_lowercase)
@@ -126,17 +130,23 @@ def test_custom_project():
             except StopIteration:
                 return
 
-    Client(host=HOST, port_expose=42860, show_progress=True).post(
-        on='/index', inputs=gen_docs
-    )
-    res = Client(host=HOST, port_expose=42860, show_progress=True).post(
+    async for resp in Client(
+        asyncio=True, host=HOST, port_expose=42860, show_progress=True
+    ).post(on='/index', inputs=gen_docs):
+        pass
+
+    async for resp in Client(
+        asyncio=True, host=HOST, port_expose=42860, show_progress=True
+    ).post(
         on='/search',
         inputs=Document(tags={'key': 'first', 'value': 's'}),
         return_results=True,
-    )
-    assert res[0].data.docs[0].matches[0].tags.fields['first'].string_value == 's'
-    assert res[0].data.docs[0].matches[0].tags.fields['second'].string_value == 't'
-    assert delete_workspace(workspace_id, host=HOST)
+    ):
+        fields = resp.data.docs[0].matches[0].tags.fields
+        assert fields['first'].string_value == 's'
+        assert fields['second'].string_value == 't'
+    print(f'Deleting workspace {workspace_id}')
+    assert await client.workspaces.delete(workspace_id)
 
 
 @pytest.fixture()

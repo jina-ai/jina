@@ -1,13 +1,12 @@
 import pytest
-import requests
 import aiohttp
 
 from daemon.models.id import DaemonID
-from daemon.client.base import BaseClient
-from daemon.client.peas import PeaClient, AsyncPeaClient
-from daemon.client.pods import PodClient, AsyncPodClient
-from daemon.client.flows import FlowClient
-from daemon.client.workspaces import WorkspaceClient
+from daemon.clients.base import BaseClient
+from daemon.clients.peas import PeaClient, AsyncPeaClient
+from daemon.clients.pods import PodClient, AsyncPodClient
+from daemon.clients.flows import FlowClient
+from daemon.clients.workspaces import WorkspaceClient
 from jina.logging.logger import JinaLogger
 
 logger = JinaLogger('BaseTests')

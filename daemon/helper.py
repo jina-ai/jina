@@ -64,7 +64,7 @@ def get_log_file_path(log_id: 'DaemonID') -> Tuple[str, 'DaemonID']:
 
     if IDLiterals.JWORKSPACE == log_id.jtype:
         workspace_id = log_id
-        filepath = get_workspace_path(log_id, 'logs', 'logging.log')
+        filepath = get_workspace_path(log_id, 'logging.log')
     else:
         workspace_id = get_store_from_id(log_id)[log_id].workspace_id
         filepath = get_workspace_path(workspace_id, 'logs', log_id, 'logging.log')

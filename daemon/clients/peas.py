@@ -2,22 +2,20 @@ from http import HTTPStatus
 from typing import Dict, Optional, TYPE_CHECKING, Union
 
 import aiohttp
-import requests
 
-from jina.helper import run_async
-
-from .base import BaseClient
 from ..models.id import daemonize
+from .base import BaseClient, AsyncBaseClient
 from ..helper import error_msg_from, if_alive
 
 if TYPE_CHECKING:
     from ..models import DaemonID
 
 
-class AsyncPeaClient(BaseClient):
+class AsyncPeaClient(AsyncBaseClient):
+    """Async Client to create/update/delete Peas on remote JinaD"""
 
-    kind = 'pea'
-    endpoint = '/peas'
+    _kind = 'pea'
+    _endpoint = '/peas'
 
     @if_alive
     async def create(
@@ -39,7 +37,7 @@ class AsyncPeaClient(BaseClient):
             response_json = await response.json()
             if response.status == HTTPStatus.CREATED:
                 self._logger.success(
-                    f'successfully created {self.kind} in workspace {workspace_id}'
+                    f'successfully created {self._kind.title()} in workspace {workspace_id}'
                 )
                 return response_json
             elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -49,35 +47,29 @@ class AsyncPeaClient(BaseClient):
                 return None
             else:
                 self._logger.error(
-                    f'{self.kind} creation failed as: {error_msg_from(response_json)}'
+                    f'{self._kind.title()} creation failed as: {error_msg_from(response_json)}'
                 )
                 return None
 
     @if_alive
-    async def delete(self, identity: Union[str, 'DaemonID'], **kwargs) -> bool:
-        """Delete a remote pea/pod
+    async def delete(self, id: Union[str, 'DaemonID'], **kwargs) -> bool:
+        """Delete a remote Pea/Pod
 
-        :param identity: the identity of the Pea/Pod
+        :param id: the identity of the Pea/Pod
         :param kwargs: keyword arguments
         :return: True if the deletion is successful
         """
 
         async with aiohttp.request(
-            method='DELETE', url=f'{self.store_api}/{daemonize(identity)}'
+            method='DELETE', url=f'{self.store_api}/{daemonize(id, self._kind)}'
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
                 self._logger.error(
-                    f'deletion of {self.kind} {identity} failed: {error_msg_from(response_json)}'
+                    f'deletion of {self._kind.title()} {id} failed: {error_msg_from(response_json)}'
                 )
             return response.status == HTTPStatus.OK
 
 
-class PeaClient(AsyncPeaClient):
-    def create(
-        self, workspace_id: Union[str, 'DaemonID'], payload: Dict
-    ) -> Optional[str]:
-        return run_async(super().create, workspace_id=workspace_id, payload=payload)
-
-    def delete(self, identity: Union[str, 'DaemonID'], **kwargs) -> bool:
-        return run_async(super().delete, identity=identity, **kwargs)
+class PeaClient(BaseClient, AsyncPeaClient):
+    """Client to create/update/delete Peas on remote JinaD"""
