@@ -21,6 +21,7 @@ from typing import (
 
 from .traversable import TraversableSequence
 from .neural_ops import DocumentArrayNeuralOpsMixin
+from .search_ops import DocumentArraySearchOpsMixin
 from ..document import Document
 from ...helper import typename, cached_property, cache_invalidate
 from ...proto import jina_pb2
@@ -108,6 +109,7 @@ class DocumentArray(
     MutableSequence,
     DocumentArrayGetAttrMixin,
     DocumentArrayNeuralOpsMixin,
+    DocumentArraySearchOpsMixin,
     Itr,
 ):
     """
