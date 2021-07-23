@@ -41,7 +41,7 @@ def test_multiple_regex(doc_array_creator, list_doc_examples, tmpdir):
     doc_array = doc_array_creator(list_doc_examples, tmpdir)
 
     filtered_doc_array = doc_array.find(
-        regexes=regexes, traversal_paths=['r'], operator='==', value=2
+        regexes=regexes, traversal_paths=['r'], operator='==', threshold=2
     )
 
     # Examples with Barcelona, Brussels should match

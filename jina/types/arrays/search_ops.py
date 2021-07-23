@@ -24,7 +24,7 @@ class DocumentArraySearchOpsMixin:
         regexes: Dict[str, Union[str, re.Pattern]],
         traversal_paths: list = ['r'],
         operator: str = '>=',
-        value: Optional[int] = None,
+        threshold: Optional[int] = None,
     ) -> 'DocumentArray':
         """
         Find Documents whose tag match the regular expressions in `regexes`.
@@ -39,11 +39,11 @@ class DocumentArraySearchOpsMixin:
         Example: If `len(regexes)=3`,  `value=2` and `operator='>='` then the documents
                  from the DocumentArray will be accepted if they match at least 2 regular expressions.
 
-        :param regexes: Dictionary of the form {tag:regex}
+        :param regexes: Dictionary of the form {tag: Optional[str, regex]}
         :param traversal_paths: List specifying traversal paths
         :param operator: Operator used to accept/reject a document
-        :param value: Number of regex that should match the operator to accept a Document.
-                      If no value is provided `value=len(regexes)`.
+        :param threshold: Number of regex that should match the operator to accept a Document.
+                          If no value is provided `threshold=len(regexes)`.
         :return: DocumentArray with Documents that match the regexes
         """
         from .document import DocumentArray
@@ -56,7 +56,7 @@ class DocumentArraySearchOpsMixin:
         iterdocs = self.traverse_flat(traversal_paths)
         filtered = DocumentArray()
 
-        value = value or len(regexes)
+        threshold = threshold or len(regexes)
 
         for tag_name, regex in regexes.items():
             if type(regex) == str:
@@ -69,7 +69,7 @@ class DocumentArraySearchOpsMixin:
                 if tag_value:
                     if pattern.match(tag_value):
                         counter += 1
-            if operator_func(counter, value):
+            if operator_func(counter, threshold):
                 filtered.append(self[pos])
 
         return filtered
