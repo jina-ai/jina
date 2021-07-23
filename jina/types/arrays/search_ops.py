@@ -3,8 +3,8 @@ from typing import Union, Dict
 
 import numpy as np
 
-if False:
-    from .document import DocumentArray
+# if False:
+from .document import DocumentArray
 
 
 class DocumentArraySearchOpsMixin:
@@ -21,7 +21,14 @@ class DocumentArraySearchOpsMixin:
     ) -> None:
         """
         Find Documents that match the regular expressions in `regexes`.
+        If `regexes` contain several regular expressions an `operator` can be used to
+        specify a decision depending on the number `value` of regular expression matches.
 
+        Example: If `len(regexes)=3`,  `value=2` and `operator='=='` then the documents
+                 from the DocumentArray will be accepted if they match exactly 2 regular expressions.
+
+        Example: If `len(regexes)=3`,  `value=2` and `operator='>='` then the documents
+                 from the DocumentArray will be accepted if they match at least 2 regular expressions.
 
         :param regexes: Dictionary of the form {tag:regex}
         :param traversal_paths: List specifying traversal paths
@@ -43,8 +50,10 @@ class DocumentArraySearchOpsMixin:
 
         for pos, doc in enumerate(iterdocs):
             for tag_name, pattern in regexes.items():
-                if pattern.match(doc.tags[tag_name]):
-                    matched_counts[pos] += 1
+                tag_value = doc.tags.get(tag_name, None)
+                if tag_value:
+                    if pattern.match(tag_value):
+                        matched_counts[pos] += 1
 
         if operator == '<':
             coordinate_flags = matched_counts < value
