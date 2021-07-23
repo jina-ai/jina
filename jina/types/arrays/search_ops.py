@@ -1,10 +1,10 @@
 import re
-from typing import Union, Dict
+from typing import Dict
 
 import numpy as np
 
-# if False:
-from .document import DocumentArray
+if False:
+    from .document import DocumentArray
 
 
 class DocumentArraySearchOpsMixin:
@@ -22,10 +22,9 @@ class DocumentArraySearchOpsMixin:
         """
         Find Documents that match the regular expressions in `regexes`.
         If `regexes` contain several regular expressions an `operator` can be used to
-        specify a decision depending on the number `value` of regular expression matches.
+        specify a decision depending on the of regular expression matches specified by `value`.
 
-        Example: If `len(regexes)=3`,  `value=2` and `operator='=='` then the documents
-                 from the DocumentArray will be accepted if they match exactly 2 regular expressions.
+        The supported operators are: ['<', '>', '==', '!=', '<=', '>=', 'any', 'all']
 
         Example: If `len(regexes)=3`,  `value=2` and `operator='>='` then the documents
                  from the DocumentArray will be accepted if they match at least 2 regular expressions.
