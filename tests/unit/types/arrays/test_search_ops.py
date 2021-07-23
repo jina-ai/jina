@@ -34,6 +34,9 @@ def test_single_regex(doc_array_creator, list_doc_examples, tmpdir):
     # Examples with Barcelona, Berlin, Brussels should match
     assert len(filtered_doc_array) == 3
 
+    for d in filtered_doc_array:
+        assert d.tags['city'].startswith('B')
+
 
 @pytest.mark.parametrize('doc_array_creator', [docarray_type, docarray_memmap_type])
 def test_multiple_regex(doc_array_creator, list_doc_examples, tmpdir):
@@ -46,3 +49,6 @@ def test_multiple_regex(doc_array_creator, list_doc_examples, tmpdir):
 
     # Examples with Barcelona, Brussels should match
     assert len(filtered_doc_array) == 2
+
+    for d in filtered_doc_array:
+        assert d.tags['city'].startswith('B') and 'Non' in d.tags['phone']

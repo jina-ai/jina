@@ -59,7 +59,7 @@ class DocumentArraySearchOpsMixin:
         threshold = threshold or len(regexes)
 
         for tag_name, regex in regexes.items():
-            if type(regex) == str:
+            if isinstance(regex, str):
                 regexes[tag_name] = re.compile(regex)
 
         for pos, doc in enumerate(iterdocs):
