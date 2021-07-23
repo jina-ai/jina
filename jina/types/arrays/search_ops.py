@@ -1,22 +1,27 @@
 import re
+import operator
 from typing import Dict
 
 import numpy as np
-
-if False:
-    from .document import DocumentArray
 
 
 class DocumentArraySearchOpsMixin:
     """ A mixin that provides search functionality to DocumentArrays"""
 
-    operators = ['<', '>', '==', '!=', '<=', '>=', 'any', 'all']
+    operators = {
+        '<': operator.lt,
+        '>': operator.gt,
+        '==': operator.eq,
+        '!=': operator.ne,
+        '<=': operator.le,
+        '>=': operator.ge,
+    }
 
     def find(
         self,
         regexes: Dict,
         traversal_paths: list = ['r'],
-        operator: str = 'all',
+        operator: str = '>=',
         value: int = 1,
     ) -> None:
         """
@@ -24,7 +29,7 @@ class DocumentArraySearchOpsMixin:
         If `regexes` contain several regular expressions an `operator` can be used to
         specify a decision depending on the of regular expression matches specified by `value`.
 
-        The supported operators are: ['<', '>', '==', '!=', '<=', '>=', 'any', 'all']
+        The supported operators are: ['<', '>', '==', '!=', '<=', '>=']
 
         Example: If `len(regexes)=3`,  `value=2` and `operator='>='` then the documents
                  from the DocumentArray will be accepted if they match at least 2 regular expressions.
@@ -33,13 +38,13 @@ class DocumentArraySearchOpsMixin:
         :param traversal_paths: List specifying traversal paths
         :param operator: Operator used to accept/reject a document
         :param value: Number of regex that should match the operator to accept a Document.
-                      This is ignored with operators `any` and `all`.
         :return: DocumentArray with Documents that match the regexes
         """
+        from .document import DocumentArray
 
         assert (
             operator in self.operators
-        ), f'operator={operator} is not a valid operator from {self.operators}'
+        ), f'operator={operator} is not a valid operator from {self.operators.keys()}'
         iterdocs = self.traverse_flat(traversal_paths)
         matched_counts = np.zeros(len(self), dtype=np.int32)
         filtered = DocumentArray()
@@ -54,24 +59,11 @@ class DocumentArraySearchOpsMixin:
                     if pattern.match(tag_value):
                         matched_counts[pos] += 1
 
-        if operator == '<':
-            coordinate_flags = matched_counts < value
-        elif operator == '>':
-            coordinate_flags = matched_counts > value
-        elif operator == '==':
-            coordinate_flags = matched_counts == value
-        elif operator == '!=':
-            coordinate_flags = matched_counts != value
-        elif operator == '<=':
-            coordinate_flags = matched_counts <= value
-        elif operator == '>=':
-            coordinate_flags = matched_counts >= value
-        elif operator == 'any':
-            coordinate_flags = matched_counts >= 1
-        elif operator == 'all':
-            coordinate_flags = matched_counts == len(regexes)
-
+        operator_func = self.operators[operator]
+        coordinate_flags = operator_func(matched_counts, value)
         indices = np.where(coordinate_flags)[0].tolist()
-        filtered.append(self[pos])
+
+        for pos in indices:
+            filtered.append(self[pos])
 
         return filtered

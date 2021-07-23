@@ -27,7 +27,6 @@ def test_single_regex(list_doc_examples, tmpdir):
     # Examples with Barcelona, Berlin, Brussels should match
     assert len(Dfiltered) == 3
     assert len(Dfiltered_memmap) == 3
-    assert Dfiltered_memmap == Dfiltered
 
 
 def test_multiple_regex(list_doc_examples, tmpdir):
@@ -36,10 +35,11 @@ def test_multiple_regex(list_doc_examples, tmpdir):
     Dmemmap = DocumentArrayMemmap(tmpdir)
     Dmemmap.extend(list_doc_examples)
 
-    Dfiltered = D.find(regexes=regexes, traversal_paths=['r'], operator='all')
-    Dfiltered_memmap = Dmemmap.find(regexes=regexes)
+    Dfiltered = D.find(regexes=regexes, traversal_paths=['r'], operator='==', value=2)
+    Dfiltered_memmap = Dmemmap.find(
+        regexes=regexes, traversal_paths=['r'], operator='==', value=2
+    )
 
-    # Examples with Barcelona, Brussesls should match
+    # Examples with Barcelona, Brussels should match
     assert len(Dfiltered) == 2
     assert len(Dfiltered_memmap) == 2
-    assert Dfiltered_memmap == Dfiltered
