@@ -1,5 +1,5 @@
 import pytest
-import numpy as np
+import re
 
 from jina import Document, DocumentArray
 from jina.types.arrays.memmap import DocumentArrayMemmap
@@ -25,9 +25,9 @@ def docarray_memmap_type(list_doc_examples, tmpdir):
     return doc_array_memmap
 
 
+@pytest.mark.parametrize('regexes', [{'city': r'B.*'}, {'city': re.compile('B.*')}])
 @pytest.mark.parametrize('doc_array_creator', [docarray_type, docarray_memmap_type])
-def test_single_regex(doc_array_creator, list_doc_examples, tmpdir):
-    regexes = {'city': r'B.*'}
+def test_single_regex(regexes, doc_array_creator, list_doc_examples, tmpdir):
     doc_array = doc_array_creator(list_doc_examples, tmpdir)
     filtered_doc_array = doc_array.find(regexes=regexes)
 
@@ -38,9 +38,15 @@ def test_single_regex(doc_array_creator, list_doc_examples, tmpdir):
         assert d.tags['city'].startswith('B')
 
 
+@pytest.mark.parametrize(
+    'regexes',
+    [
+        {'city': r'B.*', 'phone': 'Non'},
+        {'city': re.compile('B.*'), 'phone': re.compile('Non')},
+    ],
+)
 @pytest.mark.parametrize('doc_array_creator', [docarray_type, docarray_memmap_type])
-def test_multiple_regex(doc_array_creator, list_doc_examples, tmpdir):
-    regexes = {'city': r'B.*', 'phone': 'Non'}
+def test_multiple_regex(regexes, doc_array_creator, list_doc_examples, tmpdir):
     doc_array = doc_array_creator(list_doc_examples, tmpdir)
 
     filtered_doc_array = doc_array.find(
