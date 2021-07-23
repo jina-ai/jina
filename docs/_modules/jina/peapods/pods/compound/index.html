@@ -299,6 +299,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.memmap/">jina.types.arrays.memmap module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.neural_ops/">jina.types.arrays.neural_ops module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.search_ops/">jina.types.arrays.search_ops module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
@@ -607,16 +608,21 @@
             <span class="n">_args</span><span class="o">.</span><span class="n">socket_out</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">PUSH_CONNECT</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">socket_in</span> <span class="o">=</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">dynamic_routing</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># ugly trick to avoid Head of Replica to have wrong host in</span>
+            <span class="n">tmp_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">parallel</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">tmp_args</span><span class="o">.</span><span class="n">runs_in_docker</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">tmp_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="s1">''</span>
 
             <span class="n">_args</span><span class="o">.</span><span class="n">host_in</span> <span class="o">=</span> <span class="n">get_connect_host</span><span class="p">(</span>
                 <span class="n">bind_host</span><span class="o">=</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
                 <span class="n">bind_expose_public</span><span class="o">=</span><span class="n">head_args</span><span class="o">.</span><span class="n">expose_public</span><span class="p">,</span>
-                <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span><span class="p">,</span>
+                <span class="n">connect_args</span><span class="o">=</span><span class="n">tmp_args</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">host_out</span> <span class="o">=</span> <span class="n">get_connect_host</span><span class="p">(</span>
                 <span class="n">bind_host</span><span class="o">=</span><span class="n">tail_args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span>
                 <span class="n">bind_expose_public</span><span class="o">=</span><span class="n">tail_args</span><span class="o">.</span><span class="n">expose_public</span><span class="p">,</span>
-                <span class="n">connect_args</span><span class="o">=</span><span class="n">_args</span><span class="p">,</span>
+                <span class="n">connect_args</span><span class="o">=</span><span class="n">tmp_args</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>

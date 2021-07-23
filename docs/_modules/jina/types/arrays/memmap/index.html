@@ -299,6 +299,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.match/">jina.types.arrays.match module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.memmap/">jina.types.arrays.memmap module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.neural_ops/">jina.types.arrays.neural_ops module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.search_ops/">jina.types.arrays.search_ops module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.arrays.traversable/">jina.types.arrays.traversable module</a></li>
 </ul>
 </li>
@@ -397,6 +398,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArrayGetAttrMixin</span>
+<span class="kn">from</span> <span class="nn">.search_ops</span> <span class="kn">import</span> <span class="n">DocumentArraySearchOpsMixin</span>
 <span class="kn">from</span> <span class="nn">.traversable</span> <span class="kn">import</span> <span class="n">TraversableSequence</span>
 <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -404,7 +406,9 @@
 <span class="n">PAGE_SIZE</span> <span class="o">=</span> <span class="n">mmap</span><span class="o">.</span><span class="n">ALLOCATIONGRANULARITY</span>
 
 
-<div class="viewcode-block" id="DocumentArrayMemmap"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap">[docs]</a><span class="k">class</span> <span class="nc">DocumentArrayMemmap</span><span class="p">(</span><span class="n">TraversableSequence</span><span class="p">,</span> <span class="n">DocumentArrayGetAttrMixin</span><span class="p">,</span> <span class="n">Itr</span><span class="p">):</span>
+<div class="viewcode-block" id="DocumentArrayMemmap"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.memmap/#jina.types.arrays.memmap.DocumentArrayMemmap">[docs]</a><span class="k">class</span> <span class="nc">DocumentArrayMemmap</span><span class="p">(</span>
+    <span class="n">TraversableSequence</span><span class="p">,</span> <span class="n">DocumentArrayGetAttrMixin</span><span class="p">,</span> <span class="n">DocumentArraySearchOpsMixin</span><span class="p">,</span> <span class="n">Itr</span>
+<span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.</span>
 
