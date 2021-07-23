@@ -56,6 +56,7 @@ class AsyncZMQRuntime(ZMQRuntime):
             await asyncio.gather(self.async_run_forever(), self._wait_for_cancel())
         except asyncio.CancelledError:
             self.logger.warning('received terminate ctrl message from main process')
+        await self.async_cancel()
 
 
 class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
@@ -77,7 +78,7 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
                 )
         except ValueError as exc:
             self.logger.warning(
-                f' The runtime {self.__class__.__name__} will not be able to handle signal handlers. '
+                f' The runtime {self.__class__.__name__} will not be able to handle termination signals. '
                 f' {repr(exc)}'
             )
 

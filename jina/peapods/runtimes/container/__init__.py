@@ -36,7 +36,7 @@ class ContainerRuntime(ZMQRuntime):
             and 'extra_hosts' in self.args.docker_kwargs
             and __docker_host__ in self.args.docker_kwargs['extra_hosts']
         ):
-            self.args.docker_kwarg.pop('extra_hosts')
+            self.args.docker_kwargs.pop('extra_hosts')
         self._set_network_for_dind_linux()
         self._docker_run()
         while self._is_container_alive and not self.is_ready:
