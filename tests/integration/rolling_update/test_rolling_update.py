@@ -1,5 +1,6 @@
 import collections
 import os
+import time
 import threading
 
 import numpy as np
@@ -89,15 +90,28 @@ def test_simple_run(docs):
         flow.search(docs)
 
 
+@pytest.fixture()
+def docker_image():
+    docker_file = os.path.join(cur_dir, 'Dockerfile')
+    os.system(f"docker build -f {docker_file} -t test_rolling_update_docker {cur_dir}")
+    time.sleep(3)
+    yield
+    os.system(f"docker rmi $(docker images | grep 'test_rolling_update_docker')")
+
+
 @pytest.mark.repeat(5)
 @pytest.mark.timeout(60)
-def test_thread_run(docs, mocker, reraise):
+@pytest.mark.parametrize(
+    'uses', ['BaseExecutor', 'docker://test_rolling_update_docker']
+)
+def test_thread_run(docs, mocker, reraise, docker_image, uses):
     def update_rolling(flow, pod_name):
         with reraise:
             flow.rolling_update(pod_name)
 
     error_mock = mocker.Mock()
     with Flow().add(
+        uses=uses,
         name='pod1',
         replicas=2,
         parallel=2,
