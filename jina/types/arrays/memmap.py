@@ -14,6 +14,7 @@ from typing import (
 import numpy as np
 
 from .document import DocumentArrayGetAttrMixin
+from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
 
@@ -21,7 +22,9 @@ HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 
-class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
+class DocumentArrayMemmap(
+    TraversableSequence, DocumentArrayGetAttrMixin, DocumentArraySearchOpsMixin, Itr
+):
     """
     Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.
 

@@ -1001,6 +1001,62 @@ match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 
 
 
+### Selecting a subset of Documents from a `DocumentArray` using `.find`
+
+`DocumentArray` provides function `.find` that finds the documents in the `DocumentArray`  whose tag values match a dictionary of user provided regular expressions. Since a `Document` can have many tags, the function expects one regular expression for each tag that a user wants to consider.
+
+The simplest way to use this function is to provide only  the `regexes` dict. In this case, documents will be selected if all regular expressions passed are matched. Sometimes, a user might want to be less restrictive and might want to select documents only if a subset of the regular expressions is verified. In this case, `threshold` can be used to set the number of regular expressions that need to be matched in order to select a document.
+
+Let us consider the following example, where we want to select documents form a `DocumentArray` if the `city` tag contains a city that starts with `'B'`.
+
+```python
+d1 = Document(tags={'city': 'Barcelona', 'phone':'None'})
+d2 = Document(tags={'city': 'Berlin','phone':'648907348'})
+d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
+d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
+
+docarray = DocumentArray([d1, d2, d3, d4])
+
+regexes = {'city':r'B.*'}
+docarray_filtered = docarray.find(regexes=regexes)
+print(f'len(docarray_filtered)={len(docarray_filtered)}')
+for d in docarray_filtered:
+    print(f'dict(d.tags)={dict(d.tags)}')
+```
+
+Will print
+
+```python
+len(docarray_filtered)=3
+dict(d.tags)={'phone': 'None', 'city': 'Barcelona'}
+dict(d.tags)={'phone': '648907348', 'city': 'Berlin'}
+dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
+```
+
+We can consider more conditions, for example a subset of the previous documents that have `None` in the `'phone'` tag. We could do this as follows:
+
+```python
+regexes = {'city':r'B.*', 'phone':'None' }
+docarray_filtered = docarray.find(regexes=regexes)
+print(f'len(docarray_filtered)={len(docarray_filtered)}')
+for d in docarray_filtered:
+    print(f'dict(d.tags)={dict(d.tags)}')
+```
+
+Will print
+
+```
+len(docarray_filtered)=2
+dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
+dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
+```
+
+
+
+
+
+
+
 ## `DocumentArrayMemmap` API
 
 When your `DocumentArray` object contains a large number of `Document`, holding it in memory can be very demanding. You may want to use `DocumentArrayMemmap` to alleviate this issue. A `DocumentArrayMemmap` stores all Documents directly on the disk, while only keeps a small lookup table in memory. This lookup table contains the offset and length of each `Document`, hence it is much smaller than the full `DocumentArray`. Elements are loaded on-demand to memory during the access.
