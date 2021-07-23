@@ -187,8 +187,9 @@ def batch_iterator(
             yield data[_ : _ + batch_size]
     elif isinstance(data, Iterable):
         # as iterator, there is no way to know the length of it
+        iterator = iter(data)
         while True:
-            chunk = tuple(islice(data, batch_size))
+            chunk = tuple(islice(iterator, batch_size))
             if not chunk:
                 return
             yield chunk
