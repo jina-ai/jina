@@ -3,6 +3,10 @@ import operator
 from typing import Dict
 
 
+if False:
+    from .document import DocumentArray
+
+
 class DocumentArraySearchOpsMixin:
     """ A mixin that provides search functionality to DocumentArrays"""
 
