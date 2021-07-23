@@ -1,6 +1,6 @@
 import re
 import operator
-from typing import Dict
+from typing import Dict, Optional
 
 
 if False:
@@ -21,10 +21,10 @@ class DocumentArraySearchOpsMixin:
 
     def find(
         self,
-        regexes: Dict,
+        regexes: Dict[str, str],
         traversal_paths: list = ['r'],
         operator: str = '>=',
-        value: int = 1,
+        value: Optional[int] = None,
     ) -> 'DocumentArray':
         """
         Find Documents whose tag match the regular expressions in `regexes`.
@@ -33,6 +33,9 @@ class DocumentArraySearchOpsMixin:
 
         The supported operators are: ['<', '>', '==', '!=', '<=', '>=']
 
+        Example: If `len(regexes)=3` then the documents from the DocumentArray will be accepted if
+                 they match all 3 regular expressions.
+
         Example: If `len(regexes)=3`,  `value=2` and `operator='>='` then the documents
                  from the DocumentArray will be accepted if they match at least 2 regular expressions.
 
@@ -40,6 +43,7 @@ class DocumentArraySearchOpsMixin:
         :param traversal_paths: List specifying traversal paths
         :param operator: Operator used to accept/reject a document
         :param value: Number of regex that should match the operator to accept a Document.
+                      If no value is provided `value=len(regexes)`.
         :return: DocumentArray with Documents that match the regexes
         """
         from .document import DocumentArray
@@ -48,9 +52,11 @@ class DocumentArraySearchOpsMixin:
             operator in self.operators
         ), f'operator={operator} is not a valid operator from {self.operators.keys()}'
 
-        iterdocs = self.traverse_flat(traversal_paths)
         operator_func = self.operators[operator]
+        iterdocs = self.traverse_flat(traversal_paths)
         filtered = DocumentArray()
+
+        value = value or len(regexes)
 
         for tag_name, regex in regexes.items():
             regexes[tag_name] = re.compile(regex)
