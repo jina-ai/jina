@@ -1,5 +1,6 @@
 import collections
 import os
+import time
 import threading
 
 import numpy as np
@@ -89,15 +90,27 @@ def test_simple_run(docs):
         flow.search(docs)
 
 
+@pytest.fixture()
+def docker_image():
+    docker_file = os.path.join(cur_dir, 'Dockerfile')
+    os.system(f"docker build -f {docker_file} -t test_rolling_update_docker {cur_dir}")
+    time.sleep(3)
+    yield
+    os.system(f"docker rmi $(docker images | grep 'test_rolling_update_docker')")
+
+
 @pytest.mark.repeat(5)
 @pytest.mark.timeout(60)
-def test_thread_run(docs, mocker, reraise):
+@pytest.mark.parametrize('uses', ['docker://test_rolling_update_docker'])
+def test_thread_run(docs, mocker, reraise, docker_image, uses):
     def update_rolling(flow, pod_name):
         with reraise:
             flow.rolling_update(pod_name)
 
     error_mock = mocker.Mock()
+    total_responses = []
     with Flow().add(
+        uses=uses,
         name='pod1',
         replicas=2,
         parallel=2,
@@ -111,11 +124,15 @@ def test_thread_run(docs, mocker, reraise):
             ),
         )
         for i in range(50):
-            flow.search(docs, on_error=error_mock)
+            responses = flow.search(
+                docs, on_error=error_mock, request_size=10, return_results=True
+            )
+            total_responses.extend(responses)
             if i == 5:
                 x.start()
         x.join()
     error_mock.assert_not_called()
+    assert len(total_responses) == (len(docs) * 50 / 10)
 
 
 @pytest.mark.repeat(5)
@@ -126,6 +143,7 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
             flow.rolling_update(pod_name)
 
     error_mock = mocker.Mock()
+    total_responses = []
     with Flow().add(
         name='pod1',
         uses=DummyMarkExecutor,
@@ -143,11 +161,15 @@ def test_vector_indexer_thread(config, docs, mocker, reraise):
             ),
         )
         for i in range(40):
-            flow.search(docs, on_error=error_mock)
+            responses = flow.search(
+                docs, on_error=error_mock, request_size=10, return_results=True
+            )
+            total_responses.extend(responses)
             if i == 5:
                 x.start()
         x.join()
     error_mock.assert_not_called()
+    assert len(total_responses) == (len(docs) * 40 / 10)
 
 
 def test_workspace(config, tmpdir, docs):
