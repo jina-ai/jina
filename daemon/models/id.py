@@ -101,6 +101,12 @@ class DaemonID(str):
 
 
 def daemonize(identity: str, kind: str = 'workspace') -> DaemonID:
+    """Convert to DaemonID
+
+    :param identity: uuid or DaemonID
+    :param kind: defaults to 'workspace'
+    :return: DaemonID from identity
+    """
     try:
         return DaemonID(identity)
     except TypeError:

@@ -4,8 +4,6 @@ from typing import Callable, TYPE_CHECKING, Tuple, Dict
 
 import aiohttp
 
-from .excepts import Runtime400Exception
-
 if TYPE_CHECKING:
     from .models import DaemonID
 
@@ -62,7 +60,7 @@ def get_log_file_path(log_id: 'DaemonID') -> Tuple[str, 'DaemonID']:
     from .models.enums import IDLiterals
     from .stores import get_store_from_id
 
-    if IDLiterals.JWORKSPACE == log_id.jtype:
+    if log_id.jtype == IDLiterals.JWORKSPACE:
         workspace_id = log_id
         filepath = get_workspace_path(log_id, 'logging.log')
     else:
@@ -92,6 +90,12 @@ def if_alive(func: Callable, raise_type: Exception = None):
 
 
 def error_msg_from(response: Dict) -> str:
+    """Get error message from response
+
+    :param response: dict response
+    :return: prettified response string
+    """
+    # TODO
     assert 'detail' in response, '\'detail\' not found in response'
     assert 'body' in response, '\'body\' not found in response'
     return response['body']

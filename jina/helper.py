@@ -1138,7 +1138,7 @@ def run_async(func, *args, **kwargs):
             raise RuntimeError(
                 'you have an eventloop running but not using Jupyter/ipython, '
                 'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use Clien/Flow(asyncio=True). If not, then '
+                'may want to use Client/Flow(asyncio=True). If not, then '
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:

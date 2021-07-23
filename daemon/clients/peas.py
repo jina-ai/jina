@@ -37,7 +37,7 @@ class AsyncPeaClient(AsyncBaseClient):
             response_json = await response.json()
             if response.status == HTTPStatus.CREATED:
                 self._logger.success(
-                    f'successfully created {self._kind.title()} in workspace {workspace_id}'
+                    f'successfully created a {self._kind.title()} {response_json} in workspace {workspace_id}'
                 )
                 return response_json
             elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:

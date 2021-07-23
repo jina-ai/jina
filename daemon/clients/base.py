@@ -2,7 +2,7 @@ import os
 import json
 import asyncio
 from http import HTTPStatus
-from typing import Dict, Optional, TYPE_CHECKING, Union
+from typing import Dict, Optional, Union
 
 import aiohttp
 
@@ -12,10 +12,6 @@ from jina.logging.logger import JinaLogger
 
 from ..models.id import DaemonID, daemonize
 from ..helper import error_msg_from, if_alive
-
-
-if TYPE_CHECKING:
-    from rich.status import Status
 
 
 class AsyncBaseClient:
@@ -44,20 +40,18 @@ class AsyncBaseClient:
 
     @if_alive
     async def alive(self) -> bool:
-        """
-        Return True if `jinad` is alive at remote
+        """Check if JinaD is alive
 
-        :return: True if `jinad` is alive at remote else false
+        :return: True if JinaD is alive at remote else false
         """
         async with aiohttp.request(method='GET', url=self.http_uri) as response:
             return response.status == HTTPStatus.OK
 
     @if_alive
     async def status(self) -> Optional[Dict]:
-        """
-        Get status of remote `jinad`
+        """Get status of remote JinaD
 
-        :return: dict status of remote jinad
+        :return: dict status of remote JinaD
         """
         async with aiohttp.request(
             method='GET', url=f'{self.http_uri}/status'
@@ -73,7 +67,6 @@ class AsyncBaseClient:
         """Get status of the remote object
 
         :param id: identity of the Pea/Pod
-        :raises: requests.exceptions.RequestException
         :return: json response of the remote Pea / Pod status
         """
 
@@ -97,8 +90,7 @@ class AsyncBaseClient:
 
     @if_alive
     async def list(self) -> Dict:
-        """
-        List all objects in the store
+        """List all objects in the store
 
         :return: json response of the remote Pea / Pod status
         """
@@ -110,8 +102,7 @@ class AsyncBaseClient:
             return response_json['items'] if 'items' in response_json else response_json
 
     async def create(self, *args, **kwargs) -> Dict:
-        """
-        Create a Workspace/Flow/Pea/Pod on remote.
+        """Create a Workspace/Flow/Pea/Pod on remote.
         Must be implemented by the inherited class.
 
         # noqa: DAR101
@@ -120,8 +111,7 @@ class AsyncBaseClient:
         raise NotImplementedError
 
     async def delete(self, id: DaemonID, *args, **kwargs) -> str:
-        """
-        Delete a Workspace/Flow/Pea/Pod on remote.
+        """Delete a Workspace/Flow/Pea/Pod on remote.
         Must be implemented by the inherited class.
 
         # noqa: DAR101
@@ -168,7 +158,9 @@ class AsyncBaseClient:
                         )
                         continue
                     except asyncio.CancelledError:
-                        self._logger.debug(f'successfully cancelled log streaming task')
+                        self._logger.debug(
+                            f'successfully cancelled log streaming task for {id}'
+                        )
                         break
         finally:
             for logger in remote_loggers.values():
@@ -177,19 +169,48 @@ class AsyncBaseClient:
 
 class BaseClient(AsyncBaseClient):
     def alive(self) -> bool:
+        """Check if JinaD is alive
+
+        :return: True if JinaD is alive at remote else false
+        """
         return run_async(super().alive)
 
     def status(self) -> Optional[Dict]:
+        """Get status of remote JinaD
+
+        :return: dict status of remote JinaD
+        """
         return run_async(super().status)
 
     def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
+        """Get status of the remote object
+
+        :param id: identity of the Pea/Pod
+        :return: json response of the remote Pea / Pod status
+        """
         return run_async(super().get, id)
 
     def list(self) -> Dict:
+        """List all objects in the store
+
+        :return: json response of the remote Pea / Pod status
+        """
         return run_async(super().list)
 
     def create(self, *args, **kwargs) -> Dict:
+        """Create a Workspace/Flow/Pea/Pod on remote.
+        Must be implemented by the inherited class.
+
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         return run_async(super().create, *args, **kwargs)
 
     def delete(self, id: DaemonID, *args, **kwargs) -> str:
+        """Delete a Workspace/Flow/Pea/Pod on remote.
+        Must be implemented by the inherited class.
+
+        # noqa: DAR101
+        # noqa: DAR102
+        """
         return run_async(super().delete, id, *args, **kwargs)
