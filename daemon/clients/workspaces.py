@@ -104,15 +104,18 @@ class AsyncWorkspaceClient(AsyncBaseClient):
             status = stack.enter_context(
                 console.status('Workspace: Getting files...', spinner='earth')
             )
-            if paths:
-                data = self._files_in(paths=paths, exitstack=stack, complete=complete)
+            data = (
+                self._files_in(paths=paths, exitstack=stack, complete=complete)
+                if paths
+                else None
+            )
             status.update('Workspace: Sending request...')
             response = await stack.enter_async_context(
                 aiohttp.request(
                     method='POST',
                     url=self.store_api,
                     params={'id': daemonize(id)} if id else None,
-                    data=data if data else None,
+                    data=data,
                 )
             )
             response_json = await response.json()

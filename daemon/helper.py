@@ -92,6 +92,12 @@ def if_alive(func: Callable, raise_type: Exception = None):
 
 
 def error_msg_from(response: Dict) -> str:
+    """Get error message from response
+
+    :param response: dict response
+    :return: prettified response string
+    """
+    # TODO
     assert 'detail' in response, '\'detail\' not found in response'
     assert 'body' in response, '\'body\' not found in response'
     return response['body']
