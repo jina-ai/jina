@@ -1,6 +1,6 @@
 import re
 import operator
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 
 if False:
@@ -21,7 +21,7 @@ class DocumentArraySearchOpsMixin:
 
     def find(
         self,
-        regexes: Dict[str, str],
+        regexes: Dict[str, Union[str, re.Pattern]],
         traversal_paths: list = ['r'],
         operator: str = '>=',
         value: Optional[int] = None,
@@ -59,7 +59,8 @@ class DocumentArraySearchOpsMixin:
         value = value or len(regexes)
 
         for tag_name, regex in regexes.items():
-            regexes[tag_name] = re.compile(regex)
+            if type(regex) == str:
+                regexes[tag_name] = re.compile(regex)
 
         for pos, doc in enumerate(iterdocs):
             counter = 0
