@@ -13,6 +13,7 @@ def is_remote_local_connection(first: str, second: str):
     :param second: the ip or host name of the second runtime
     :return: True, if first is remote and second is local
     """
+
     try:
         first_ip = ipaddress.ip_address(first)
         first_global = first_ip.is_global
