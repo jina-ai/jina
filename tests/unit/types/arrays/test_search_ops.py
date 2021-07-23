@@ -18,28 +18,30 @@ def list_doc_examples():
 def test_single_regex(list_doc_examples, tmpdir):
     regexes = {'city': r'B.*'}
     D = DocumentArray(list_doc_examples)
-    Dmemmap = DocumentArrayMemmap(tmpdir)
-    Dmemmap.extend(list_doc_examples)
+    doc_array_memmap = DocumentArrayMemmap(tmpdir)
+    doc_array_memmap.extend(list_doc_examples)
 
-    Dfiltered = D.find(regexes=regexes)
-    Dfiltered_memmap = Dmemmap.find(regexes=regexes)
+    filtered_doc_array = D.find(regexes=regexes)
+    filtered_doc_array_memmap = doc_array_memmap.find(regexes=regexes)
 
     # Examples with Barcelona, Berlin, Brussels should match
-    assert len(Dfiltered) == 3
-    assert len(Dfiltered_memmap) == 3
+    assert len(filtered_doc_array) == 3
+    assert len(filtered_doc_array_memmap) == 3
 
 
 def test_multiple_regex(list_doc_examples, tmpdir):
     regexes = {'city': r'B.*', 'phone': 'Non'}
-    D = DocumentArray(list_doc_examples)
-    Dmemmap = DocumentArrayMemmap(tmpdir)
-    Dmemmap.extend(list_doc_examples)
+    doc_array = DocumentArray(list_doc_examples)
+    doc_array_memmap = DocumentArrayMemmap(tmpdir)
+    doc_array_memmap.extend(list_doc_examples)
 
-    Dfiltered = D.find(regexes=regexes, traversal_paths=['r'], operator='==', value=2)
-    Dfiltered_memmap = Dmemmap.find(
+    filtered_doc_array = doc_array.find(
+        regexes=regexes, traversal_paths=['r'], operator='==', value=2
+    )
+    filtered_doc_array_memmap = doc_array_memmap.find(
         regexes=regexes, traversal_paths=['r'], operator='==', value=2
     )
 
     # Examples with Barcelona, Brussels should match
-    assert len(Dfiltered) == 2
-    assert len(Dfiltered_memmap) == 2
+    assert len(filtered_doc_array) == 2
+    assert len(filtered_doc_array_memmap) == 2
