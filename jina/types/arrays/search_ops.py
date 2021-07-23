@@ -80,7 +80,7 @@ class DocumentArraySearchOpsMixin:
 
         :param k: Number of elements to sample from the document array.
         :param seed: initialize the random number generator, by default is None. If set will
-          save the state of the random function to produce certain outputs.
+            save the state of the random function to produce certain outputs.
         :return: A sampled list of :class:`Document` represented as :class:`DocumentArray`.
         """
         from .document import DocumentArray
