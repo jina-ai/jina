@@ -1,8 +1,6 @@
 import json
 import warnings
-import random
 from abc import abstractmethod
-from operator import itemgetter
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
 from typing import (
@@ -449,14 +447,3 @@ class DocumentArray(
             dap.ParseFromString(fp.read())
             da = DocumentArray(dap.docs)
             return da
-
-    def sample(self, k: int) -> 'DocumentArray':
-        """random sample k elements from :class:`DocumentArray` without replacement
-
-        :param k: Number of elements to sample.
-        """
-        if k < len(self):
-            raise ValueError('DocumentArray do not have enough Document to sample')
-        indices = random.sample(range(len(self)), k)
-        sampled = list(itemgetter(*indices)(self))
-        return DocumentArray(sampled)

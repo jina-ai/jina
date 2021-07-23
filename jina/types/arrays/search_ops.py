@@ -1,4 +1,5 @@
 import re
+import random
 import operator
 from typing import Dict, Optional, Union
 
@@ -73,3 +74,21 @@ class DocumentArraySearchOpsMixin:
                 filtered.append(self[pos])
 
         return filtered
+
+    def sample(self, k: int, seed: int = None) -> 'DocumentArray':
+        """random sample k elements from :class:`DocumentArray` without replacement.
+
+        :param k: Number of elements to sample from the document array.
+        :param seed: initialize the random number generator, by default is None. If set will
+          save the state of the random function to produce certain outputs.
+        :return: A sampled list of :class:`Document` represented as :class:`DocumentArray`.
+        """
+        from .document import DocumentArray
+
+        if k > len(self):
+            raise ValueError('DocumentArray do not have enough Document to sample')
+        if seed:
+            random.seed(seed)
+        indices = random.sample(range(len(self)), k)
+        sampled = list(operator.itemgetter(*indices)(self))
+        return DocumentArray(sampled)

@@ -397,3 +397,16 @@ def test_cache_invalidation_sort_reverse(docarray_for_cache):
     docarray_for_cache.reverse()
     assert docarray_for_cache[0].id == '2'
     assert docarray_for_cache[1].id == '1'
+
+
+def test_sample():
+    da = DocumentArray(random_docs(100))
+    sampled = da.sample(5)
+    assert len(sampled) == 5
+    sampled_seed_1 = da.sample(5, seed=1)
+    sampled_seed_2 = da.sample(5, seed=1)
+    assert len(sampled_seed_1) == 5
+    assert sampled_seed_1 == sampled_seed_2
+    assert sampled != sampled_seed_1
+    with pytest.raises(ValueError):
+        da.sample(101)  # can not sample with k greater than lenth of document array.
