@@ -1051,9 +1051,23 @@ dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
 dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
 ```
 
+### Random sample a subset of Documents from a `DocumentArray` using `sample`
 
+`DocumentArray` provides function `.sample` that sample `k` elements without replacement.
+It accepts 2 parameters, `k` and `seed`. `k` is used to define the number of elements to sample, and `seed`
+helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the document array.
 
+To make use of the function:
 
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random document array
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 documents into `da`
+sampled_da = da.sample(k=10)  # sample 10 documents
+sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
+```
 
 
 
@@ -1147,6 +1161,25 @@ for d in dam:
 ```text
 {'id': '44a74b56-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'goodbye'}
 {'id': '44a73562-c821-11eb-8522-1e008a366d48', 'mime_type': 'text/plain', 'text': 'world'}
+```
+
+### Random sample a subset of Documents from a `DocumentArrayMemmap` using `sample`
+
+`DocumentArrayMemmap` provides function `.sample` that sample `k` elements without replacement.
+It accepts 2 parameters, `k` and `seed`. `k` is used to define the number of elements to sample, and `seed`
+helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the document array.
+
+To make use of the function:
+
+```python
+from jina import Document
+from jina.types.arrays.memmap import DocumentArrayMemmap
+
+dam = DocumentArrayMemmap('./my-memmap')  # initialize a random document array
+for idx in range(100):
+    dam.append(Document(id=idx))  # append 100 documents into `da`
+sampled_dam = dam.sample(k=10)  # sample 10 documents
+sampled_dam_with_seed = dam.sample(k=10, seed=1)  # sample 10 documents with seed.
 ```
 
 ### Side-by-side vs. `DocumentArray`
