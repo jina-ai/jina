@@ -60,14 +60,11 @@ class AsyncBaseClient:
                 return await response.json()
 
     @if_alive
-    async def get(
-        self,
-        id: Union[str, DaemonID],
-    ) -> Optional[Union[str, Dict]]:
+    async def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
         """Get status of the remote object
 
         :param id: identity of the Pea/Pod
-        :return: json response of the remote Pea / Pod status
+        :return: response if the remote Flow/Pea/Pod/Workspace exists
         """
 
         async with aiohttp.request(
@@ -92,7 +89,7 @@ class AsyncBaseClient:
     async def list(self) -> Dict:
         """List all objects in the store
 
-        :return: json response of the remote Pea / Pod status
+        :return: json response of the remote Flow/Pea/Pod/Workspace status
         """
         async with aiohttp.request(method='GET', url=self.store_api) as response:
             response_json = await response.json()
@@ -182,13 +179,16 @@ class BaseClient(AsyncBaseClient):
         """
         return run_async(super().status)
 
-    def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
+    def get(
+        self, id: Union[str, DaemonID], *args, **kwargs
+    ) -> Optional[Union[str, Dict]]:
         """Get status of the remote object
 
         :param id: identity of the Pea/Pod
-        :return: json response of the remote Pea / Pod status
+        :param include_response: True if response is to be returned
+        :return: response if the remote Flow/Pea/Pod/Workspace exists
         """
-        return run_async(super().get, id)
+        return run_async(super().get, id, *args, **kwargs)
 
     def list(self) -> Dict:
         """List all objects in the store

@@ -1,3 +1,4 @@
+import os
 import socket
 import platform
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
@@ -305,6 +306,7 @@ class Dockerizer:
         return {
             'JINA_LOG_WORKSPACE': '/workspace/logs',
             'JINA_RANDOM_PORT_MIN': '49153',
+            'JINA_LOG_LEVEL': os.getenv('JINA_LOG_LEVEL') or 'INFO',
         }
 
     @classmethod

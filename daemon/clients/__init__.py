@@ -24,16 +24,22 @@ class JinaDClient:
     :param timeout: default timeout for requests, defaults to None
     """
 
-    base_cls = BaseClient
-    pea_cls = PeaClient
-    pod_cls = PodClient
-    flow_cls = FlowClient
-    workspace_cls = WorkspaceClient
+    _base_cls = BaseClient
+    _pea_cls = PeaClient
+    _pod_cls = PodClient
+    _flow_cls = FlowClient
+    _workspace_cls = WorkspaceClient
 
-    def __init__(self, host: str, port: int, timeout: int = None) -> None:
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        timeout: Optional[float] = None,
+        logger: JinaLogger = None,
+    ) -> None:
         uri = f'{host}:{port}'
         timeout = timeout
-        logger = JinaLogger(self.__class__.__name__)
+        logger = logger or JinaLogger(self.__class__.__name__)
         self.kwargs = {'uri': uri, 'logger': logger, 'timeout': timeout}
 
     @property
@@ -42,7 +48,7 @@ class JinaDClient:
 
         :return: Pea Client
         """
-        return self.pea_cls(**self.kwargs)
+        return self._pea_cls(**self.kwargs)
 
     @property
     def pods(self) -> Union[PodClient, AsyncPodClient]:
@@ -50,7 +56,7 @@ class JinaDClient:
 
         :return: Pod Client
         """
-        return self.pod_cls(**self.kwargs)
+        return self._pod_cls(**self.kwargs)
 
     @property
     def flows(self) -> Union[FlowClient, AsyncFlowClient]:
@@ -58,7 +64,7 @@ class JinaDClient:
 
         :return: Flow Client
         """
-        return self.flow_cls(**self.kwargs)
+        return self._flow_cls(**self.kwargs)
 
     @property
     def workspaces(self) -> Union[WorkspaceClient, AsyncWorkspaceClient]:
@@ -66,7 +72,7 @@ class JinaDClient:
 
         :return: Workspace Client
         """
-        return self.workspace_cls(**self.kwargs)
+        return self._workspace_cls(**self.kwargs)
 
     @property
     def alive(self) -> bool:
@@ -74,7 +80,7 @@ class JinaDClient:
 
         :return: True if alive
         """
-        return self.base_cls(**self.kwargs).alive()
+        return self._base_cls(**self.kwargs).alive()
 
     @property
     def status(self) -> Optional[Dict]:
@@ -82,23 +88,22 @@ class JinaDClient:
 
         :return: Dict object describing remote store
         """
-        return self.base_cls(**self.kwargs).status()
+        return self._base_cls(**self.kwargs).status()
 
 
 class AsyncJinaDClient(JinaDClient):
     """Async JinaD Client"""
 
-    base_cls = AsyncBaseClient
-    pea_cls = AsyncPeaClient
-    pod_cls = AsyncPodClient
-    flow_cls = AsyncFlowClient
-    workspace_cls = AsyncWorkspaceClient
+    _base_cls = AsyncBaseClient
+    _pea_cls = AsyncPeaClient
+    _pod_cls = AsyncPodClient
+    _flow_cls = AsyncFlowClient
+    _workspace_cls = AsyncWorkspaceClient
 
-    @property
     async def logs(self, id: 'DaemonID') -> Awaitable:
         """Stream logs
 
         :param identity: id of the JinaD object
         :return: logs coroutine to be awaited
         """
-        return await self.base_cls(**self.kwargs).logstream(id=id)
+        return await self._base_cls(**self.kwargs).logstream(id=id)

@@ -75,23 +75,38 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         )
         return data
 
+    async def _get_helper(self, id: 'DaemonID', status: 'Status'):
+        """
+        This is to handle a special case when JinadRuntime knows the workspace id already
+        (during Pea creation). It should get invoked only by :meth:`create`.
+
+        For parallel > 1
+        - pea0 throws TypeError & we create a workspace
+        - peaN (all other Peas) wait for workspace creation & don't emit logs
+        """
+        status.update('Workspace: Checking if already exists..')
+        response = await self.get(id=id)
+        state = self._item_model_cls(**response).state
+        if state == RemoteWorkspaceState.ACTIVE:
+            return True
+        elif state == RemoteWorkspaceState.FAILED:
+            return False
+        else:
+            return await self.wait(id=id, status=status, logs=False)
+
     @if_alive
     async def create(
         self,
         paths: Optional[List[str]] = None,
         id: Optional[Union[str, 'DaemonID']] = None,
-        wait: bool = True,
-        logs: bool = True,
         complete: bool = False,
         *args,
         **kwargs,
-    ) -> Optional[Union[Dict, bool]]:
+    ) -> Optional['DaemonID']:
         """Create a workspace
 
         :param paths: local file/directory paths to be uploaded to workspace, defaults to None
         :param id: workspace id (if already known), defaults to None
-        :param wait: True if we need to wait for workspace creation, defaults to True
-        :param logs: True if we stream logs during workspace creation, defaults to True
         :param complete: True if complete_path is used (used by JinadRuntime), defaults to False
         :param args: additional positional args
         :param kwargs: keyword args
@@ -99,11 +114,23 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         """
 
         async with AsyncExitStack() as stack:
-
             console = Console()
             status = stack.enter_context(
-                console.status('Workspace: Getting files...', spinner='earth')
+                console.status('Workspace: ...', spinner='earth')
             )
+            workspace_id = None
+            if id:
+                workspace_id = daemonize(id)
+                try:
+                    return (
+                        workspace_id
+                        if await self._get_helper(id=workspace_id, status=status)
+                        else None
+                    )
+                except (TypeError, ValueError):
+                    self._logger.debug('workspace doesn\'t exist, creating..')
+
+            status.update('Workspace: Getting files to upload...')
             data = (
                 self._files_in(paths=paths, exitstack=stack, complete=complete)
                 if paths
@@ -114,7 +141,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
                 aiohttp.request(
                     method='POST',
                     url=self.store_api,
-                    params={'id': daemonize(id)} if id else None,
+                    params={'id': workspace_id} if workspace_id else None,
                     data=data,
                 )
             )
@@ -123,11 +150,11 @@ class AsyncWorkspaceClient(AsyncBaseClient):
 
             if response.status == HTTPStatus.CREATED:
                 status.update(f'Workspace: {workspace_id} added...')
-                if wait:
-                    success = await self.wait(id=workspace_id, status=status, logs=logs)
-                    return workspace_id if success else None
-                else:
-                    return response_json
+                return (
+                    workspace_id
+                    if await self.wait(id=workspace_id, status=status, logs=True)
+                    else None
+                )
             else:
                 self._logger.error(
                     f'{self._kind.title()} creation failed as: {error_msg_from(response_json)}'
@@ -163,20 +190,20 @@ class AsyncWorkspaceClient(AsyncBaseClient):
                     await asyncio.sleep(sleep)
                     continue
                 elif state == RemoteWorkspaceState.ACTIVE:
-                    self._logger.info(f'{colored(id, "cyan")} created successfully')
                     if logstream:
+                        self._logger.info(f'{colored(id, "cyan")} created successfully')
                         logstream.cancel()
                     return True
                 elif state == RemoteWorkspaceState.FAILED:
-                    self._logger.critical(
-                        f'{colored(id, "red")} creation failed. please check logs'
-                    )
                     if logstream:
+                        self._logger.critical(
+                            f'{colored(id, "red")} creation failed. please check logs'
+                        )
                         logstream.cancel()
                     return False
             except ValueError as e:
-                self._logger.error(f'invalid response from remote: {e!r}')
                 if logstream:
+                    self._logger.error(f'invalid response from remote: {e!r}')
                     logstream.cancel()
                 return False
 

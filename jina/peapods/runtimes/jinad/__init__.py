@@ -8,7 +8,11 @@ from ....jaml.helper import complete_path
 from ....importer import ImportExtensions
 from ....enums import replace_enum_to_str
 from ..zmq.asyncio import AsyncNewLoopRuntime
-from ....excepts import DaemonConnectivityError
+from ....excepts import (
+    DaemonConnectivityError,
+    DaemonPeaCreationFailed,
+    DaemonWorkspaceCreationFailed,
+)
 
 
 class JinadRuntime(AsyncNewLoopRuntime):
@@ -23,10 +27,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.timeout_ctrl = timeout_ctrl
 
     async def async_setup(self):
-        """Create Workspace, Pea on remote JinaD server
-
-        :raises DaemonConnectivityError: [description]
-        """
+        """Create Workspace, Pea on remote JinaD server"""
         with ImportExtensions(required=True):
             # rich & aiohttp are used in `JinaDClient`
             import rich
@@ -38,21 +39,30 @@ class JinadRuntime(AsyncNewLoopRuntime):
 
         # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
         # so it can't be used for Client timeout.
-        self.client = AsyncJinaDClient(host=self.args.host, port=self.args.port_expose)
+        self.client = AsyncJinaDClient(
+            host=self.args.host, port=self.args.port_expose, logger=self.logger
+        )
         if not await self.client.alive:
-            raise DaemonConnectivityError()
+            raise DaemonConnectivityError
+
+        # Create a remote workspace with upload_files
         self.workspace_id = await self.client.workspaces.create(
             paths=self.args.upload_files,
-            workspace_id=self.args.workspace_id,
+            id=self.args.workspace_id,
             complete=True,
         )
         if not self.workspace_id:
             self.logger.critical(f'remote workspace creation failed')
-            raise
+            raise DaemonWorkspaceCreationFailed
+
         payload = replace_enum_to_str(vars(self._mask_args(self.args)))
+        # Create a remote Pea in the above workspace
         self.pea_id = await self.client.peas.create(
             workspace_id=self.workspace_id, payload=payload
         )
+        if not self.pea_id:
+            self.logger.critical(f'remote pea creation failed')
+            raise DaemonPeaCreationFailed
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
@@ -70,7 +80,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
         self.logstream = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs
-            else self.client.logs(identity=self.pea_id)
+            else self.client.logs(id=self.pea_id)
         )
 
     async def async_cancel(self):
@@ -129,6 +139,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
             changes = [
                 'note the following arguments have been masked or altered for remote purpose:'
             ] + changes
-            self.logger.warning('\n'.join(changes))
+            self.logger.debug('\n'.join(changes))
 
         return _args
