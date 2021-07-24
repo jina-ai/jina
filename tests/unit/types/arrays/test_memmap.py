@@ -191,3 +191,20 @@ def test_extend_and_get_attribute(tmpdir, embed_dim):
     assert len(x) == 200
     assert x[0].shape == (embed_dim,)
     assert len(dam2) == 200
+
+
+def test_sample(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    docs = list(random_docs(100))
+    da.extend(docs)
+    print(len(da))
+    sampled = da.sample(5)
+    assert len(sampled) == 5
+    assert isinstance(sampled, DocumentArray)
+    sampled_1 = da.sample(5, seed=1)
+    sampled_2 = da.sample(5, seed=1)
+    assert len(sampled_1) == 5
+    assert sampled_1 == sampled_2
+    assert sampled != sampled_1
+    with pytest.raises(ValueError):
+        da.sample(101)
