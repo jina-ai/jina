@@ -197,7 +197,6 @@ def test_sample(tmpdir):
     da = DocumentArrayMemmap(tmpdir)
     docs = list(random_docs(100))
     da.extend(docs)
-    print(len(da))
     sampled = da.sample(5)
     assert len(sampled) == 5
     assert isinstance(sampled, DocumentArray)
