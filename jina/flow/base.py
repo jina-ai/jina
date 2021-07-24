@@ -1080,7 +1080,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         )
 
                     for j in range(v.args.parallel):
-                        r = node
+                        r = v.args.uses
                         if v.args.replicas > 1:
                             r += f'_{i}_{j}'
                         elif v.args.parallel > 1:
@@ -1097,21 +1097,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 mermaid_graph.append('end')
 
         for node, v in self._pod_nodes.items():
-            ed_str = str(v.head_args.socket_in).split('_')[0]
             for need in sorted(v.needs):
-                if need in self._pod_nodes:
-                    st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[
-                        0
-                    ]
 
-                _s = start_repl.get(need, (need, f'({need})'))
-                _e = end_repl.get(node, (node, f'({node})'))
+                _s = start_repl.get(
+                    need, (need, f'("{need}<br>({self._pod_nodes[need].args.uses})")')
+                )
+                _e = end_repl.get(node, (node, f'("{node}<br>({v.args.uses})")'))
                 _s_role = self._pod_nodes[need].role
                 _e_role = self._pod_nodes[node].role
                 line_st = '-->'
 
                 if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
                     _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
+                elif _s_role == PodRoleType.GATEWAY:
+                    _s = start_repl.get(need, (need, f'("{need}")'))
 
                 if _e_role == PodRoleType.GATEWAY:
                     _e = ('gateway_END', f'({node})')
