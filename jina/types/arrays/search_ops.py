@@ -86,8 +86,8 @@ class DocumentArraySearchOpsMixin:
         from .document import DocumentArray
 
         if k > len(self):
-            raise ValueError('DocumentArray do not have enough Document to sample')
-        if seed:
+            raise ValueError(f'Sample size {k} is greater than the length of Document {len(self)}')
+        if seed is not None:
             random.seed(seed)
         indices = random.sample(range(len(self)), k)
         sampled = list(operator.itemgetter(*indices)(self))
