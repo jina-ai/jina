@@ -404,10 +404,15 @@ def test_sample():
     sampled = da.sample(5)
     assert len(sampled) == 5
     assert isinstance(sampled, DocumentArray)
-    sampled_seed_1 = da.sample(5, seed=1)
-    sampled_seed_2 = da.sample(5, seed=1)
-    assert len(sampled_seed_1) == 5
-    assert sampled_seed_1 == sampled_seed_2
-    assert sampled != sampled_seed_1
     with pytest.raises(ValueError):
         da.sample(101)  # can not sample with k greater than lenth of document array.
+
+
+def test_sample_with_seed():
+    da = DocumentArray(random_docs(100))
+    sampled_1 = da.sample(5, seed=1)
+    sampled_2 = da.sample(5, seed=1)
+    sampled_3 = da.sample(5, seed=2)
+    assert len(sampled_1) == len(sampled_2) == len(sampled_3) == 5
+    assert sampled_1 == sampled_2
+    assert sampled_1 != sampled_3

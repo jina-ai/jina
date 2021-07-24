@@ -200,10 +200,17 @@ def test_sample(tmpdir):
     sampled = da.sample(5)
     assert len(sampled) == 5
     assert isinstance(sampled, DocumentArray)
-    sampled_1 = da.sample(5, seed=1)
-    sampled_2 = da.sample(5, seed=1)
-    assert len(sampled_1) == 5
-    assert sampled_1 == sampled_2
-    assert sampled != sampled_1
     with pytest.raises(ValueError):
         da.sample(101)
+
+
+def test_sample_with_seed(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    docs = list(random_docs(100))
+    da.extend(docs)
+    sampled_1 = da.sample(5, seed=1)
+    sampled_2 = da.sample(5, seed=1)
+    sampled_3 = da.sample(5, seed=2)
+    assert len(sampled_1) == len(sampled_2) == len(sampled_3) == 5
+    assert sampled_1 == sampled_2
+    assert sampled_1 != sampled_3
