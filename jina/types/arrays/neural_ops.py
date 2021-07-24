@@ -64,6 +64,7 @@ class DocumentArrayNeuralOpsMixin:
         dist = invert_if_score(dist)
 
         for _q, _ids, _dists in zip(self, idx, dist):
+            _q.matches.clear()
             for _id, _dist in zip(_ids, _dists):
                 d = Document(darray[int(_id)], copy=True)
                 d.scores[metric] = _dist
