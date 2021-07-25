@@ -50,7 +50,7 @@ def test_upload_simple(parallels, mocker):
 @pytest.mark.parametrize('parallels', [2])
 def test_upload_multiple_workspaces(parallels, mocker):
     response_mock = mocker.Mock()
-    encoder_workspace = 'tf_encoder_ws'
+    encoder_workspace = 'sklearn_encoder_ws'
     indexer_workspace = 'tdb_indexer_ws'
 
     def _path(dir, filename):
@@ -59,11 +59,11 @@ def test_upload_multiple_workspaces(parallels, mocker):
     f = (
         Flow()
         .add(
-            name='tf_encoder',
-            uses=_path(encoder_workspace, 'tf.yml'),
+            name='sklearn_encoder',
+            uses=_path(encoder_workspace, 'sklearn.yml'),
             host=CLOUD_HOST,
             parallel=parallels,
-            py_modules=[_path(encoder_workspace, 'tf_encoder.py')],
+            py_modules=[_path(encoder_workspace, 'encoder.py')],
             upload_files=[
                 _path(encoder_workspace, '.jinad'),
                 _path(encoder_workspace, 'requirements.txt'),
