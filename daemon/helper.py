@@ -73,6 +73,7 @@ def if_alive(func: Callable, raise_type: Exception = None):
     """Decorator to be used in store for connection valiation
 
     :param func: function to be wrapped
+    :param raise_type: Exception class to be raied
     :return: wrapped function
     """
 

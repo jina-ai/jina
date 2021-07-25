@@ -16,7 +16,7 @@ from ..helper import error_msg_from, if_alive
 
 class AsyncBaseClient:
     """
-    JinaD baseclient.
+    JinaD baseclient (Async)
 
     :param host: the host address of ``jinad`` instance
     :param port: the port number of ``jinad`` instance
@@ -165,6 +165,8 @@ class AsyncBaseClient:
 
 
 class BaseClient(AsyncBaseClient):
+    """JinaD baseclient"""
+
     def alive(self) -> bool:
         """Check if JinaD is alive
 
@@ -179,16 +181,13 @@ class BaseClient(AsyncBaseClient):
         """
         return run_async(super().status)
 
-    def get(
-        self, id: Union[str, DaemonID], *args, **kwargs
-    ) -> Optional[Union[str, Dict]]:
+    def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
         """Get status of the remote object
 
         :param id: identity of the Pea/Pod
-        :param include_response: True if response is to be returned
         :return: response if the remote Flow/Pea/Pod/Workspace exists
         """
-        return run_async(super().get, id, *args, **kwargs)
+        return run_async(super().get, id)
 
     def list(self) -> Dict:
         """List all objects in the store
@@ -203,6 +202,8 @@ class BaseClient(AsyncBaseClient):
 
         # noqa: DAR101
         # noqa: DAR102
+
+        :return: details of newly created object
         """
         return run_async(super().create, *args, **kwargs)
 
@@ -212,5 +213,7 @@ class BaseClient(AsyncBaseClient):
 
         # noqa: DAR101
         # noqa: DAR102
+
+        :return: details of deleted object
         """
         return run_async(super().delete, id, *args, **kwargs)

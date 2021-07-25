@@ -75,7 +75,7 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         )
         return data
 
-    async def _get_helper(self, id: 'DaemonID', status: 'Status'):
+    async def _get_helper(self, id: 'DaemonID', status: 'Status') -> bool:
         """
         This is to handle a special case when JinadRuntime knows the workspace id already
         (during Pea creation). It should get invoked only by :meth:`create`.
@@ -83,6 +83,10 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         For parallel > 1
         - pea0 throws TypeError & we create a workspace
         - peaN (all other Peas) wait for workspace creation & don't emit logs
+
+        :param id: workspace id
+        :param status: rich.console.status object to be updated
+        :return: True if workspace creation is successful.
         """
         status.update('Workspace: Checking if already exists..')
         response = await self.get(id=id)

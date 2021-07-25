@@ -103,7 +103,7 @@ class AsyncJinaDClient(JinaDClient):
     async def logs(self, id: 'DaemonID') -> Awaitable:
         """Stream logs
 
-        :param identity: id of the JinaD object
+        :param id: id of the JinaD object
         :return: logs coroutine to be awaited
         """
         return await self._base_cls(**self.kwargs).logstream(id=id)

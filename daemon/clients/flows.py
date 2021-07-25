@@ -25,6 +25,8 @@ class AsyncFlowClient(AsyncBaseClient):
 
         :param workspace_id: workspace id where flow will be created
         :param filename: name of the flow yaml file in the workspace
+        :param args: positional args
+        :param kwargs: keyword args
         :return: flow id
         """
         async with aiohttp.request(
@@ -45,6 +47,8 @@ class AsyncFlowClient(AsyncBaseClient):
         """Terminate a Flow on remote JinaD
 
         :param id: flow id
+        :param args: positional args
+        :param kwargs: keyword args
         :return: True if deletion is successful
         """
         async with aiohttp.request(
