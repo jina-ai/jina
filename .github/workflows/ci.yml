@@ -249,7 +249,7 @@ jobs:
         id: test
         run: |
           if [[ "${{ matrix.test-path }}" =~ ^tests/distributed/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
-            # Build daemon for all daemon/distributed tests
+            # Build daemon for all  daemon/distributed tests
             docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
             if [[ "${{ matrix.test-path }}" =~ ^(tests/distributed/test_topologies/|tests/distributed/test_topologies_docker/|tests/distributed/test_workspaces/)$ ]]; then
               docker run --add-host=host.docker.internal:host-gateway --name jinad --env JINA_DAEMON_BUILD=DEVEL -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/jinad:/tmp/jinad -p 8000:8000 -d jinaai/jina:test-daemon
