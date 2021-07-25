@@ -1188,6 +1188,8 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `__bool__` |✅|✅|
 | `__eq__` |✅|✅|
 | `save`, `load` |❌ unnecessary |✅|
+| `sample` |✅ |✅|
+| `match` |✅ |❌|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 
