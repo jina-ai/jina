@@ -14,6 +14,7 @@ Subpackages
    jina.hubble
    jina.jaml
    jina.logging
+   jina.math
    jina.optimizers
    jina.parsers
    jina.peapods
