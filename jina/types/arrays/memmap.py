@@ -160,10 +160,10 @@ class DocumentArrayMemmap(
     def _iteridx_by_slice(self, s: slice):
         start, stop, step = s.start or 0, s.stop or self.__len__(), s.step or 1
         if (
-            start <= -self.__len__()
-            or start >= self.__len__()
-            or stop <= -self.__len__()
-            or stop >= self.__len__()
+            start < -self.__len__()
+            or start > self.__len__()
+            or stop < -self.__len__()
+            or stop > self.__len__()
         ):
             raise IndexError(f'index slice out of bound')
         if 0 > stop > -self.__len__():
@@ -199,10 +199,9 @@ class DocumentArrayMemmap(
         p = idx * self._header_entry_size
         self._header.seek(p, 0)
 
-        # TODO: shouldn't key here be str_key instead ?
         self._header.write(
             np.array(
-                (key, -1, -1, -1),
+                (str_key, -1, -1, -1),
                 dtype=[
                     ('', (np.str_, self._key_length)),
                     ('', np.int64),
