@@ -20,6 +20,7 @@ def hello_world(args):
     """
     Path(args.workdir).mkdir(parents=True, exist_ok=True)
 
+    """
     with ImportExtensions(
         required=True,
         help_text='this demo requires Pytorch and Transformers to be installed, '
@@ -32,7 +33,7 @@ def hello_world(args):
             transformers,
             torchvision,
         ]  #: prevent pycharm auto remove the above line
-
+    """
     # args.workdir = '0bae16ce-5bb2-43be-bcd4-6f1969e8068f'
     targets = {
         'people-img': {
