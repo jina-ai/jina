@@ -94,6 +94,9 @@ component/proto:
 component/type:
   - jina/types/**/*
 
+component/math:
+  - jina/math/**/*
+
 component/resource:
   - jina/resources/**/*
 
