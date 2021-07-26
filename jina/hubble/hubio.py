@@ -325,7 +325,7 @@ with f:
             try:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
 
-                st.update(f'Fetching meta data of {self.args.uri}...')
+                st.update(f'Fetching meta data of {name}...')
                 executor = HubIO._fetch_meta(name, tag=tag, secret=secret)
                 usage = (
                     f'{executor.uuid}'
@@ -375,7 +375,7 @@ with f:
                         )
                         cache_dir.mkdir(parents=True, exist_ok=True)
 
-                        st.update(f'Downloading {self.args.uri}...')
+                        st.update(f'Downloading {name}...')
                         cached_zip_file = download_with_resume(
                             executor.archive_url,
                             cache_dir,
@@ -383,7 +383,7 @@ with f:
                             md5sum=executor.md5sum,
                         )
 
-                        st.update(f'Unpacking {self.args.uri}...')
+                        st.update(f'Unpacking {name}...')
                         install_local(
                             cached_zip_file,
                             executor,
