@@ -36,10 +36,11 @@ class AsyncFlowClient(AsyncBaseClient):
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
+                error_msg = error_msg_from(response_json)
                 self._logger.error(
-                    f'{self._kind.title()} creation failed as: {error_msg_from(response_json)}'
+                    f'{self._kind.title()} creation failed as: {error_msg}'
                 )
-                return None
+                return error_msg
             return response_json
 
     @if_alive

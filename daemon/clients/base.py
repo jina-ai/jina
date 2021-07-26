@@ -116,7 +116,7 @@ class AsyncBaseClient:
         """
         raise NotImplementedError
 
-    async def logstream(self, id: Union[str, 'DaemonID'], timeout: float = None):
+    async def logstream(self, id: 'DaemonID', timeout: float = None):
         """Websocket log stream from remote Workspace/Flow/Pea/Pod
 
         :param id: identity of the Workspace/Flow/Pea/Pod
@@ -124,6 +124,11 @@ class AsyncBaseClient:
         """
         remote_log_config = os.path.join(__resources_path__, 'logging.remote.yml')
         remote_loggers: Dict[str, 'JinaLogger'] = {}
+        try:
+            id = daemonize(id)
+        except TypeError:
+            self._logger.error(f'invalid id {id} passed for logstreaming, exiting..')
+            return
         url = f'{self.logstream_api}/{id}'
         try:
             async with aiohttp.ClientSession() as session:

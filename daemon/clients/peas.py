@@ -46,10 +46,11 @@ class AsyncPeaClient(AsyncBaseClient):
                 )
                 return None
             else:
+                error_msg = error_msg_from(response_json)
                 self._logger.error(
-                    f'{self._kind.title()} creation failed as: {error_msg_from(response_json)}'
+                    f'{self._kind.title()} creation failed as: {error_msg}'
                 )
-                return None
+                return error_msg
 
     @if_alive
     async def delete(self, id: Union[str, 'DaemonID'], **kwargs) -> bool:

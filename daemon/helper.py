@@ -1,3 +1,4 @@
+from daemon.excepts import PartialDaemon400Exception
 import os
 import re
 from typing import Callable, TYPE_CHECKING, Tuple, Dict
@@ -99,5 +100,6 @@ def error_msg_from(response: Dict) -> str:
     # TODO
     assert 'detail' in response, '\'detail\' not found in response'
     assert 'body' in response, '\'body\' not found in response'
-    return response['body']
-    # return '\n'.join(j for j in response['body'])
+    if response['detail'] == PartialDaemon400Exception.__name__:
+        return response['body']
+    return '\n'.join(j for j in response['body'])

@@ -1091,6 +1091,10 @@ def is_jupyter() -> bool:  # pragma: no cover
         return False  # Other type (?)
 
 
+def is_pytest() -> bool:
+    return 'PYTEST_CURRENT_TEST' in os.environ
+
+
 def run_async(func, *args, **kwargs):
     """Generalized asyncio.run for jupyter notebook.
 
@@ -1122,7 +1126,7 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if is_jupyter():
+        if is_jupyter() or is_pytest():
             thread = _RunThread()
             thread.start()
             thread.join()

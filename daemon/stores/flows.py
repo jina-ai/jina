@@ -3,9 +3,9 @@ from http import HTTPStatus
 
 import aiohttp
 
-from ..helper import if_alive
 from .containers import ContainerStore
-from ..excepts import Runtime400Exception
+from ..excepts import PartialDaemon400Exception
+from ..helper import if_alive, error_msg_from
 
 
 class FlowStore(ContainerStore):
@@ -21,6 +21,7 @@ class FlowStore(ContainerStore):
         :param port_expose: port expose for container flow
         :param params: json payload to be sent
         :param kwargs: keyword args
+        :raises PartialDaemon400Exception: if creation fails
         :return: response from mini-jinad
         """
         self._logger.debug(f'sending POST request to mini-jinad on {uri}/{self._kind}')
@@ -32,9 +33,7 @@ class FlowStore(ContainerStore):
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} creation failed: {response_json}'
-                )
+                raise PartialDaemon400Exception(error_msg_from(response_json))
             return response_json
 
     @if_alive
@@ -44,6 +43,7 @@ class FlowStore(ContainerStore):
         :param uri: uri of mini-jinad
         :param params: json payload to be sent
         :param kwargs: keyword args
+        :raises PartialDaemon400Exception: if update fails
         :return: response from mini-jinad
         """
 
@@ -53,9 +53,7 @@ class FlowStore(ContainerStore):
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} update failed: {response_json}'
-                )
+                raise PartialDaemon400Exception(error_msg_from(response_json))
             return response_json
 
     @if_alive
@@ -64,7 +62,7 @@ class FlowStore(ContainerStore):
 
         :param uri: uri of mini-jinad
         :param kwargs: keyword args
-        :raises Runtime400Exception: if deletion fails
+        :raises PartialDaemon400Exception: if deletion fails
         :return: response from mini-jinad
         """
         self._logger.debug(
@@ -75,7 +73,5 @@ class FlowStore(ContainerStore):
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} deletion failed: {response_json}'
-                )
+                raise PartialDaemon400Exception(error_msg_from(response_json))
             return response_json
