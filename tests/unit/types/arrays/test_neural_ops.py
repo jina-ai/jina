@@ -1,15 +1,12 @@
-import pytest
 import copy
 
 import numpy as np
+import pytest
 from scipy.spatial.distance import cdist
 
-from jina.types.arrays.neural_ops import (
-    _cosine_distance,
-    _euclidean_distance_squared,
-)
-from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina import Document, DocumentArray
+from jina.math.distance import sqeuclidean, cosine
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 @pytest.fixture
@@ -77,14 +74,14 @@ def test_new_distances_equal_previous_distances():
     X_ext = _ext_A(X)
     Y_ext = _ext_B(Y)
     dists_previous_euclidean = _euclidean(X_ext, Y_ext)
-    dists_new_euclidean = np.sqrt(_euclidean_distance_squared(X, Y))
+    dists_new_euclidean = np.sqrt(sqeuclidean(X, Y))
     np.testing.assert_almost_equal(dists_previous_euclidean, dists_new_euclidean)
 
     ### test cosine distance
     X_ext = _ext_A(_norm(X))
     Y_ext = _ext_B(_norm(Y))
     dists_previous_cosine = _cosine(X_ext, Y_ext)
-    dists_new_cosine = _cosine_distance(X, Y)
+    dists_new_cosine = cosine(X, Y)
     np.testing.assert_almost_equal(dists_previous_cosine, dists_new_cosine)
 
 
@@ -96,11 +93,11 @@ def test_new_distances_equal_scipy_cdist():
     Y = np.array([[1, 1, 2], [2, 3, 4]])
 
     XY_cdist = cdist(X, Y, metric='euclidean')
-    XY_new = np.sqrt(_euclidean_distance_squared(X, Y))
+    XY_new = np.sqrt(sqeuclidean(X, Y))
     np.testing.assert_almost_equal(XY_cdist, XY_new)
 
     XY_cdist = cdist(X, Y, metric='cosine')
-    XY_new = _cosine_distance(X, Y)
+    XY_new = cosine(X, Y)
     np.testing.assert_almost_equal(XY_cdist, XY_new)
 
 
@@ -149,7 +146,7 @@ def test_euclidean_distance_squared(embeddings, embedding_query):
     Should expect as output [[0,1,4]].T  because (1-1)**2 = 0, (2-1)**2 = 1, (3-1)**2 = 2**2 = 4
     """
     np.testing.assert_almost_equal(
-        _euclidean_distance_squared(embedding_query, embeddings),
+        sqeuclidean(embedding_query, embeddings),
         np.array([[0, 1, 4]]),
     )
 
@@ -161,7 +158,7 @@ def test_cosine_distance_squared(embeddings, embedding_query):
     Should expect as output [[0,0,0]].T because query has same direction as every other element
     """
     np.testing.assert_almost_equal(
-        _cosine_distance(embedding_query, embeddings), np.array([[0, 0, 0]])
+        cosine(embedding_query, embeddings), np.array([[0, 0, 0]])
     )
 
 

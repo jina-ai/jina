@@ -24,9 +24,9 @@ def cdist(x_mat: 'np.ndarray', y_mat: 'np.ndarray', metric: str) -> 'np.ndarray'
     if metric == 'cosine':
         dists = cosine(x_mat, y_mat)
     elif metric == 'sqeuclidean':
-        dists = squclidean(x_mat, y_mat)
+        dists = sqeuclidean(x_mat, y_mat)
     elif metric == 'euclidean':
-        dists = np.sqrt(squclidean(x_mat, y_mat))
+        dists = np.sqrt(sqeuclidean(x_mat, y_mat))
     else:
         raise ValueError(f'Input metric={metric} not valid')
     return dists
@@ -43,7 +43,7 @@ def cosine(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
     )
 
 
-def squclidean(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
+def sqeuclidean(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
     """squared Euclidean distance between each row in x_mat and each row in y_mat.
     :param x_mat: np.ndarray with ndim=2
     :param y_mat: np.ndarray with ndim=2
