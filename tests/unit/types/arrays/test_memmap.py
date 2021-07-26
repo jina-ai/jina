@@ -256,3 +256,25 @@ def test_memmap_delete_by_slice(tmpdir):
     for candidate in candidates[:5] + candidates[-5:]:
         for d in dam:
             assert d.id != candidate.id
+
+
+def test_memmap_get_by_slice(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    candidates = list(random_docs(100))
+    for d in candidates:
+        d.id = f'id_{d.id}'
+    dam.extend(candidates)
+    assert len(dam) == 100
+
+    first_10 = dam[:10]
+    assert len(first_10) == 10
+    for doc_a, doc_b in zip(candidates[:10], first_10):
+        assert doc_a.id == doc_b.id
+
+    last_10 = dam[-10:]
+    assert len(last_10) == 10
+    for doc_a, doc_b in zip(candidates[-10:], last_10):
+        assert doc_a.id == doc_b.id
+
+    with pytest.raises(IndexError):
+        dam[:105]
