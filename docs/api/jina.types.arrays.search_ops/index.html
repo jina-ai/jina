@@ -445,6 +445,26 @@ If no value is provided <cite>threshold=len(regexes)</cite>.</p></li>
 </dd>
 </dl>
 </dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.sample">
+<code class="sig-name descname"><span class="pre">sample</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/search_ops/#DocumentArraySearchOpsMixin.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>random sample k elements from <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code> without replacement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of elements to sample from the document array.</p></li>
+<li><p><strong>seed</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – initialize the random number generator, by default is None. If set will
+save the state of the random function to produce certain outputs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../jina/#jina.DocumentArray" title="jina.DocumentArray">DocumentArray</a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A sampled list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code> represented as <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </div>
 
@@ -477,7 +497,7 @@ If no value is provided <cite>threshold=len(regexes)</cite>.</p></li>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 24, 2021.
+            Last updated on Jul 26, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
