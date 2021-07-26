@@ -167,8 +167,8 @@ class Dockerizer:
                 _log_stream(build_log, 'stream')
             elif 'message' in build_log:
                 _log_stream(build_log, 'message')
-            elif 'status' in build_log:
-                _log_stream(build_log, 'status')
+            # elif 'status' in build_log:
+            #     _log_stream(build_log, 'status')
 
         try:
             image = cls.client.images.get(name=workspace_id.tag)

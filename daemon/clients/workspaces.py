@@ -67,7 +67,8 @@ class AsyncWorkspaceClient(AsyncBaseClient):
                     if _path.is_file():
                         add_field_from(_path)
                     elif _path.is_dir():
-                        [add_field_from(p) for p in _path.glob('**/*')]
+                        # getting only top-level files for now
+                        [add_field_from(p) for p in _path.glob('*') if p.is_file()]
             except TypeError:
                 self._logger.error(f'invalid path {path}')
                 continue
@@ -213,6 +214,57 @@ class AsyncWorkspaceClient(AsyncBaseClient):
                     self._logger.error(f'invalid response from remote: {e!r}')
                     logstream.cancel()
                 return False
+
+    @if_alive
+    async def update(
+        self,
+        id: Union[str, 'DaemonID'],
+        paths: Optional[List[str]] = None,
+        complete: bool = False,
+        *args,
+        **kwargs,
+    ) -> 'DaemonID':
+        """Update a workspace
+
+        :param id: workspace id
+        :param paths: local file/directory paths to be uploaded to workspace, defaults to None
+        :param complete: True if complete_path is used (used by JinadRuntime), defaults to False
+        :param args: additional positional args
+        :param kwargs: keyword args
+        :return: workspace id
+        """
+
+        async with AsyncExitStack() as stack:
+            console = Console()
+            status = stack.enter_context(
+                console.status('Workspace update: ...', spinner='earth')
+            )
+            status.update('Workspace: Getting files to upload...')
+            data = (
+                self._files_in(paths=paths, exitstack=stack, complete=complete)
+                if paths
+                else None
+            )
+            status.update('Workspace: Sending request for update...')
+            response = await stack.enter_async_context(
+                aiohttp.request(
+                    method='PUT',
+                    url=f'{self.store_api}/{id}',
+                    data=data,
+                )
+            )
+            response_json = await response.json()
+            workspace_id = next(iter(response_json))
+
+            if response.status == HTTPStatus.OK:
+                status.update(f'Workspace: {workspace_id} added...')
+                return (
+                    workspace_id
+                    if await self.wait(id=workspace_id, status=status, logs=True)
+                    else None
+                )
+            else:
+                return None
 
     @if_alive
     async def delete(

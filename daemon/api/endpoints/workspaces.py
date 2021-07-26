@@ -73,7 +73,7 @@ async def _create(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
 )
 async def _update(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
     try:
-        return workspace.j
+        return workspace.item
     except Exception as ex:
         raise Runtime400Exception from ex
 

@@ -107,6 +107,15 @@ class AsyncBaseClient:
         """
         raise NotImplementedError
 
+    async def update(self, *args, **kwargs) -> Dict:
+        """Update a Workspace/Flow/Pea/Pod on remote.
+        Must be implemented by the inherited class.
+
+        # noqa: DAR101
+        # noqa: DAR102
+        """
+        raise NotImplementedError
+
     async def delete(self, id: DaemonID, *args, **kwargs) -> str:
         """Delete a Workspace/Flow/Pea/Pod on remote.
         Must be implemented by the inherited class.
