@@ -4,6 +4,7 @@ from typing import Optional, Tuple, Union
 import numpy as np
 
 from jina import Document
+from jina.math.distances import compute_distances
 
 if False:
     from .document import DocumentArray
@@ -59,7 +60,7 @@ class DocumentArrayNeuralOpsMixin:
         Y = np.stack(darray.get_attributes('embedding'))
         limit = min(limit, len(darray))
 
-        dists = _compute_distances(X, Y, metric)
+        dists = compute_distances(X, Y, metric)
         idx, dist = self._get_sorted_smallest_k(dists, limit)
         dist = invert_if_score(dist)
 
@@ -91,48 +92,3 @@ class DocumentArrayNeuralOpsMixin:
             dists = np.take_along_axis(dists, indices_fs, axis=1)
 
         return indices, dists
-
-
-def _compute_distances(x: 'np.ndarray', y: 'np.ndarray', metric: str) -> 'np.ndarray':
-    """Computes the distance between each row of X and each row on Y according to `metric`.
-    - Let `n_X = X.shape[0]`
-    - Let `n_Y = Y.shape[0]`
-    - Returns a matrix `dist` of shape `(n_X, n_Y)` with `dist[i,j] = metric(X[i], X[j])`.
-    :param x: np.ndarray of ndim 2
-    :param y:  np.ndarray of ndim 2
-    :param metric: string describing the metric type
-    :return: np.ndarray of ndim 2
-    """
-    if metric == 'cosine':
-        dists = _cosine_distance(x, y)
-    elif metric == 'euclidean_squared':
-        dists = _euclidean_distance_squared(x, y)
-    elif metric == 'euclidean':
-        dists = np.sqrt(_euclidean_distance_squared(x, y))
-    else:
-        raise ValueError(f'Input metric={metric} not valid')
-    return dists
-
-
-def _cosine_distance(x: 'np.ndarray', y: 'np.ndarray') -> 'np.ndarray':
-    """Cosine distance between each row in X and each row in Y.
-    :param x: np.ndarray with ndim=2
-    :param y: np.ndarray with ndim=2
-    :return: np.ndarray  with ndim=2
-    """
-    return 1 - np.dot(x, y.T) / np.outer(
-        np.linalg.norm(x, axis=1), np.linalg.norm(y, axis=1)
-    )
-
-
-def _euclidean_distance_squared(x: 'np.ndarray', y: 'np.ndarray') -> 'np.ndarray':
-    """Euclidean (squared) distance between each row in X and each row in Y.
-    :param x: np.ndarray with ndim=2
-    :param y: np.ndarray with ndim=2
-    :return: np.ndarray with ndim=2
-    """
-    return (
-        np.sum(y ** 2, axis=1)
-        + np.sum(x ** 2, axis=1)[:, np.newaxis]
-        - 2 * np.dot(x, y.T)
-    )
