@@ -40,11 +40,11 @@ def compute_distances(
     :return: np.ndarray of ndim 2
     """
     if metric == 'cosine':
-        dists = cosine_distance(x_mat, y)
+        dists = cosine_distance(x_mat, y_mat)
     elif metric == 'euclidean_squared':
-        dists = euclidean_distance_squared(x_mat, y)
+        dists = euclidean_distance_squared(x_mat, y_mat)
     elif metric == 'euclidean':
-        dists = np.sqrt(euclidean_distance_squared(x_mat, y))
+        dists = np.sqrt(euclidean_distance_squared(x_mat, y_mat))
     else:
         raise ValueError(f'Input metric={metric} not valid')
     return dists
