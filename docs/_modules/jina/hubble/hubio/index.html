@@ -709,7 +709,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
 
-                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s1">'Fetching meta data...'</span><span class="p">)</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Fetching meta data of </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
                 <span class="n">executor</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">_fetch_meta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">)</span>
                 <span class="n">usage</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span><span class="s1">'</span>
@@ -759,7 +759,7 @@
                         <span class="p">)</span>
                         <span class="n">cache_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Downloading...'</span><span class="p">)</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Downloading </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
                         <span class="n">cached_zip_file</span> <span class="o">=</span> <span class="n">download_with_resume</span><span class="p">(</span>
                             <span class="n">executor</span><span class="o">.</span><span class="n">archive_url</span><span class="p">,</span>
                             <span class="n">cache_dir</span><span class="p">,</span>
@@ -767,7 +767,7 @@
                             <span class="n">md5sum</span><span class="o">=</span><span class="n">executor</span><span class="o">.</span><span class="n">md5sum</span><span class="p">,</span>
                         <span class="p">)</span>
 
-                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unpacking...'</span><span class="p">)</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unpacking </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
                         <span class="n">install_local</span><span class="p">(</span>
                             <span class="n">cached_zip_file</span><span class="p">,</span>
                             <span class="n">executor</span><span class="p">,</span>
