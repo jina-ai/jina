@@ -239,3 +239,20 @@ def test_shuffle_with_seed(tmpdir):
     assert len(shuffled_1) == len(shuffled_2) == len(shuffled_3) == len(da)
     assert shuffled_1 == shuffled_2
     assert shuffled_1 != shuffled_3
+
+
+def test_memmap_delete_by_slice(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    candidates = list(random_docs(100))
+    for d in candidates:
+        d.id = f'id_{d.id}'
+    dam.extend(candidates)
+    assert len(dam) == 100
+    del dam[-5:]
+    assert len(dam) == 95
+    del dam[:5]
+    assert len(dam) == 90
+
+    for candidate in candidates[:5] + candidates[-5:]:
+        for d in dam:
+            assert d.id != candidate.id
