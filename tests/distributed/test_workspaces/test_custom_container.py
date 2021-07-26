@@ -4,7 +4,7 @@ import docker
 import pytest
 
 from jina import __default_host__
-from daemon.clients import AsyncJinaDClient
+from daemon.clients import JinaDClient
 from daemon.models.workspaces import WorkspaceItem
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -20,13 +20,12 @@ docker run --add-host host.docker.internal:host-gateway \
 CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 
 
-@pytest.mark.asyncio
-async def test_create_custom_container():
-    client = AsyncJinaDClient(host=__default_host__, port=8000)
-    workspace_id = await client.workspaces.create(
+def test_create_custom_container():
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
         paths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]
     )
-    workspace_details = await client.workspaces.get(id=workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
     workspace_details = WorkspaceItem(**workspace_details)
     assert workspace_details.metadata.container_id
 
@@ -35,24 +34,23 @@ async def test_create_custom_container():
     )
     assert container.name == workspace_id
 
-    workspace_id = await client.workspaces.create(
+    workspace_id = client.workspaces.create(
         paths=[os.path.join(cur_dir, 'custom_workspace_no_run')]
     )
-    workspace_details = await client.workspaces.get(id=workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
     workspace_details = WorkspaceItem(**workspace_details)
     assert not workspace_details.metadata.container_id
 
 
-@pytest.mark.asyncio
-async def test_update_custom_container():
-    client = AsyncJinaDClient(host=__default_host__, port=8000)
-    workspace_id = await client.workspaces.create(
+def test_update_custom_container():
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
         paths=[
             os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad'),
             os.path.join(cur_dir, 'flow_app_ws/requirements.txt'),
         ]
     )
-    workspace_details = await client.workspaces.get(id=workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
     workspace_details = WorkspaceItem(**workspace_details)
     container_id = workspace_details.metadata.container_id
     assert container_id
@@ -60,11 +58,11 @@ async def test_update_custom_container():
     assert image_id
     assert len(workspace_details.arguments.requirements.split()) == 2
 
-    workspace_id = await client.workspaces.update(
+    workspace_id = client.workspaces.update(
         id=workspace_id,
         paths=[os.path.join(cur_dir, 'sklearn_encoder_ws/requirements.txt')],
     )
-    workspace_details = await client.workspaces.get(id=workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
     workspace_details = WorkspaceItem(**workspace_details)
     new_container_id = workspace_details.metadata.container_id
     assert new_container_id
@@ -75,26 +73,25 @@ async def test_update_custom_container():
     assert len(workspace_details.arguments.requirements.split()) == 3
 
 
-@pytest.mark.asyncio
-async def test_delete_custom_container():
-    client = AsyncJinaDClient(host=__default_host__, port=8000)
-    workspace_id = await client.workspaces.create(
+def test_delete_custom_container():
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
         paths=[
             os.path.join(cur_dir, 'custom_workspace_blocking'),
         ]
     )
 
     # check that container was created
-    workspace_details = await client.workspaces.get(id=workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
     workspace_details = WorkspaceItem(**workspace_details)
     container_id = workspace_details.metadata.container_id
     assert container_id
 
-    await client.workspaces.delete(
+    client.workspaces.delete(
         id=workspace_id, container=True, network=False, files=False, everything=False
     )
     # check that deleted container is gone
-    workspace_details = await client.workspaces.get(id=workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
     workspace_details = WorkspaceItem(**workspace_details)
     container_id = workspace_details.metadata.container_id
     assert not container_id

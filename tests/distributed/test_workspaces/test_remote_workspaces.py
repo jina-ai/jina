@@ -7,7 +7,7 @@ import pytest
 
 from jina import Flow, Client, Document, __default_host__
 from daemon.models.id import DaemonID
-from daemon.clients import AsyncJinaDClient
+from daemon.clients import JinaDClient, AsyncJinaDClient
 from ..helpers import assert_request
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -89,22 +89,19 @@ def test_upload_multiple_workspaces(parallels, mocker):
     response_mock.assert_called()
 
 
-@pytest.mark.asyncio
-async def test_remote_flow():
-    client = AsyncJinaDClient(host=__default_host__, port=8000)
-    workspace_id = await client.workspaces.create(
+def test_remote_flow():
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
         paths=[os.path.join(cur_dir, 'empty_flow.yml')]
     )
     assert DaemonID(workspace_id).type == 'workspace'
-    flow_id = await client.flows.create(
-        workspace_id=workspace_id, filename='empty_flow.yml'
-    )
+    flow_id = client.flows.create(workspace_id=workspace_id, filename='empty_flow.yml')
     assert DaemonID(flow_id).type == 'flow'
-    assert await client.flows.get(flow_id)
-    assert flow_id in await client.flows.list()
+    assert client.flows.get(flow_id)
+    assert flow_id in client.flows.list()
     assert_request('get', url=f'http://localhost:23456/status/', expect_rcode=200)
-    assert await client.flows.delete(flow_id)
-    assert await client.workspaces.delete(workspace_id)
+    assert client.flows.delete(flow_id)
+    assert client.workspaces.delete(workspace_id)
 
 
 @pytest.mark.asyncio

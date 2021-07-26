@@ -5,7 +5,8 @@ import aiohttp
 
 from ..models.id import daemonize
 from ..helper import if_alive, error_msg_from
-from .base import BaseClient, AsyncBaseClient
+from .base import AsyncBaseClient
+from .mixin import AsyncToSyncMixin
 
 if TYPE_CHECKING:
     from ..models import DaemonID
@@ -64,5 +65,5 @@ class AsyncFlowClient(AsyncBaseClient):
             return response.status == HTTPStatus.OK
 
 
-class FlowClient(BaseClient, AsyncFlowClient):
+class FlowClient(AsyncToSyncMixin, AsyncFlowClient):
     """Client to create/update/delete Flows on remote JinaD"""

@@ -1,6 +1,7 @@
 import os
 import json
 import asyncio
+import inspect
 from pathlib import Path
 from http import HTTPStatus
 from contextlib import AsyncExitStack
@@ -14,9 +15,11 @@ from jina.jaml.helper import complete_path
 from jina.enums import RemoteWorkspaceState
 
 from ..models.id import daemonize
+from .base import AsyncBaseClient
+from .mixin import AsyncToSyncMixin
 from ..models.workspaces import WorkspaceItem
 from ..helper import error_msg_from, if_alive
-from .base import BaseClient, AsyncBaseClient
+
 
 if TYPE_CHECKING:
     from ..models import DaemonID
@@ -93,7 +96,11 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         :return: True if workspace creation is successful.
         """
         status.update('Workspace: Checking if already exists..')
-        response = await self.get(id=id)
+        response = (
+            await self.get(id=id)
+            if inspect.iscoroutinefunction(self.get)
+            else self.get(id=id)
+        )
         state = self._item_model_cls(**response).state
         if state == RemoteWorkspaceState.ACTIVE:
             return True
@@ -187,7 +194,11 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         logstream = asyncio.create_task(self.logstream(id=id)) if logs else None
         while True:
             try:
-                response = await self.get(id=id)
+                response = (
+                    await self.get(id=id)
+                    if inspect.iscoroutinefunction(self.get)
+                    else self.get(id=id)
+                )
                 state = self._item_model_cls(**response).state
                 status.update(f'Workspace: {state.value.title()}...')
                 if state in [
@@ -304,5 +315,5 @@ class AsyncWorkspaceClient(AsyncBaseClient):
             return response.status == HTTPStatus.OK
 
 
-class WorkspaceClient(BaseClient, AsyncWorkspaceClient):
+class WorkspaceClient(AsyncToSyncMixin, AsyncWorkspaceClient):
     """Client to create/update/delete workspaces on remote JinaD"""

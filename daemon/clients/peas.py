@@ -4,7 +4,8 @@ from typing import Dict, Optional, TYPE_CHECKING, Union
 import aiohttp
 
 from ..models.id import daemonize
-from .base import BaseClient, AsyncBaseClient
+from .base import AsyncBaseClient
+from .mixin import AsyncToSyncMixin
 from ..helper import error_msg_from, if_alive
 
 if TYPE_CHECKING:
@@ -72,5 +73,5 @@ class AsyncPeaClient(AsyncBaseClient):
             return response.status == HTTPStatus.OK
 
 
-class PeaClient(BaseClient, AsyncPeaClient):
+class PeaClient(AsyncToSyncMixin, AsyncPeaClient):
     """Client to create/update/delete Peas on remote JinaD"""

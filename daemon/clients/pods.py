@@ -1,5 +1,5 @@
-from .base import BaseClient
 from .peas import AsyncPeaClient
+from .mixin import AsyncToSyncMixin
 
 
 class AsyncPodClient(AsyncPeaClient):
@@ -9,5 +9,5 @@ class AsyncPodClient(AsyncPeaClient):
     _endpoint = '/pods'
 
 
-class PodClient(BaseClient, AsyncPodClient):
+class PodClient(AsyncToSyncMixin, AsyncPodClient):
     """Client to create/update/delete Pods on remote JinaD"""

@@ -10,6 +10,7 @@ from jina import __resources_path__
 from jina.helper import run_async
 from jina.logging.logger import JinaLogger
 
+from .mixin import AsyncToSyncMixin
 from ..models.id import DaemonID, daemonize
 from ..helper import error_msg_from, if_alive
 
@@ -178,56 +179,5 @@ class AsyncBaseClient:
                 logger.close()
 
 
-class BaseClient(AsyncBaseClient):
+class BaseClient(AsyncToSyncMixin, AsyncBaseClient):
     """JinaD baseclient"""
-
-    def alive(self) -> bool:
-        """Check if JinaD is alive
-
-        :return: True if JinaD is alive at remote else false
-        """
-        return run_async(super().alive)
-
-    def status(self) -> Optional[Dict]:
-        """Get status of remote JinaD
-
-        :return: dict status of remote JinaD
-        """
-        return run_async(super().status)
-
-    def get(self, id: Union[str, DaemonID]) -> Optional[Union[str, Dict]]:
-        """Get status of the remote object
-
-        :param id: identity of the Pea/Pod
-        :return: response if the remote Flow/Pea/Pod/Workspace exists
-        """
-        return run_async(super().get, id)
-
-    def list(self) -> Dict:
-        """List all objects in the store
-
-        :return: json response of the remote Pea / Pod status
-        """
-        return run_async(super().list)
-
-    def create(self, *args, **kwargs) -> Dict:
-        """Create a Workspace/Flow/Pea/Pod on remote.
-        Must be implemented by the inherited class.
-
-        # noqa: DAR101
-        # noqa: DAR102
-
-        :return: details of newly created object
-        """
-        return run_async(super().create, *args, **kwargs)
-
-    def delete(self, id: DaemonID, *args, **kwargs) -> str:
-        """Delete a Workspace/Flow/Pea/Pod on remote.
-        Must be implemented by the inherited class.
-
-        # noqa: DAR101
-        # noqa: DAR102
-
-        :return: details of deleted object
-        """
-        return run_async(super().delete, id, *args, **kwargs)

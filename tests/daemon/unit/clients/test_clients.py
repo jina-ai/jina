@@ -246,10 +246,10 @@ def test_peapod_create(monkeypatch, identity, client_cls):
         aiohttp,
         'request',
         lambda **kwargs: MockAiohttpResponse(
-            {'detail': [{'msg': 'abcd'}], 'body': 'empty data'}, 404
+            {'detail': [{'msg': 'abcd'}], 'body': ['empty', 'data']}, 404
         ),
     )
-    assert client.create(identity, payload) is None
+    assert client.create(identity, payload) == 'empty\ndata'
 
     monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
     assert client.create(identity, payload) is None
@@ -283,10 +283,10 @@ async def test_peapod_create_async(monkeypatch, identity, client_cls):
         aiohttp,
         'request',
         lambda **kwargs: MockAiohttpResponse(
-            {'detail': [{'msg': 'abcd'}], 'body': 'empty data'}, 404
+            {'detail': [{'msg': 'abcd'}], 'body': ['empty', 'data']}, 404
         ),
     )
-    assert await client.create(identity, payload) is None
+    assert await client.create(identity, payload) == 'empty\ndata'
 
     monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
     assert await client.create(identity, payload) is None
