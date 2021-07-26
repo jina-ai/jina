@@ -1,6 +1,6 @@
 <p align="center">
 <a href="https://www.meetup.com/jina-community-meetup/events/279360997/"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/meetup.svg"></a>
-<img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/jina/blob/master/.github/logo-only.gif?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="200px"></a>
 </p>
 
 <p align="center">
@@ -205,6 +205,7 @@ your active involvement.
   community
 - [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 - [Release cycles and development stages](RELEASE.md)
+- [Are You a Contributor Get Your Self Some Swags ](https://jina.ai/2021/07/12/swag.html)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-164-orange.svg?style=flat-square)](#contributors-)
