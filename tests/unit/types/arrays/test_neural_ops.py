@@ -109,7 +109,7 @@ def test_matching_retrieves_correct_number(
     docarrays_for_embedding_distance_computation, limit
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric='euclidean_squared', limit=limit, is_distance=True)
+    D1.match(D2, metric='sqeuclidean', limit=limit, is_distance=True)
     for m in D1.get_attributes('matches'):
         assert len(m) == limit
 
@@ -117,8 +117,8 @@ def test_matching_retrieves_correct_number(
 @pytest.mark.parametrize(
     'is_distance, metric',
     [
-        (True, 'euclidean_squared'),
-        (False, 'euclidean_squared'),
+        (True, 'sqeuclidean'),
+        (False, 'sqeuclidean'),
         (True, 'euclidean'),
         (False, 'euclidean'),
         (True, 'cosine'),
@@ -134,8 +134,7 @@ def test_matching_retrieves_closest_matches(
     D1, D2 = docarrays_for_embedding_distance_computation
     D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
     expected_sorted_values = [
-        D1[0].get_attributes('matches')[i].scores['euclidean_squared'].value
-        for i in range(3)
+        D1[0].get_attributes('matches')[i].scores['sqeuclidean'].value for i in range(3)
     ]
     if is_distance:
         assert expected_sorted_values == sorted(expected_sorted_values)
@@ -169,8 +168,8 @@ def test_cosine_distance_squared(embeddings, embedding_query):
 @pytest.mark.parametrize(
     'is_distance, metric',
     [
-        (True, 'euclidean_squared'),
-        (False, 'euclidean_squared'),
+        (True, 'sqeuclidean'),
+        (False, 'sqeuclidean'),
         (True, 'euclidean'),
         (False, 'euclidean'),
         (True, 'cosine'),
