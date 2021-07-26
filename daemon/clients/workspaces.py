@@ -61,10 +61,13 @@ class AsyncWorkspaceClient(AsyncBaseClient):
         for path in paths:
             try:
                 _path = Path(path)
-                if _path.is_file():
+                if complete:
                     add_field_from(_path)
-                elif _path.is_dir():
-                    [add_field_from(p) for p in _path.glob('**/*')]
+                else:
+                    if _path.is_file():
+                        add_field_from(_path)
+                    elif _path.is_dir():
+                        [add_field_from(p) for p in _path.glob('**/*')]
             except TypeError:
                 self._logger.error(f'invalid path {path}')
                 continue
