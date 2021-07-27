@@ -1,19 +1,18 @@
 import numpy as np
 
 
-class CustomPCA:
+class PCA:
     """A class for PCA dimensionality reduction in Jina."""
 
-    def __init__(self, k):
+    def __init__(self, k: int):
         self.k = k
 
-    def fit(self, x_mat):
+    def fit(self, x_mat: np.ndarray):
         """
         Computes the projection matrix of the PCA algorithm and stores it to self.w
 
         :param x_mat: Matrix of shape (n_observations, n_features)
         """
-        # x_matrix.shape = (n_observations, n_features)
 
         x_mat = x_mat - x_mat.mean(axis=0)
 
@@ -23,20 +22,29 @@ class CustomPCA:
         # Compute eigenvalues eigenvectors of cov
         e_values, e_vectors = np.linalg.eig(cov)
 
-        # Sort eigen values by magnitude (higher to lower)
+        # Sort eigenvalues by magnitude (higher to lower)
         idx = e_values.argsort()[::-1]
         e_values = e_values[idx]
 
-        # Sort eigen vectors by eigen value magnitude (higher to lower)
+        # Sort eigen vectors by eigenvalue magnitude (higher to lower)
         e_vectors = e_vectors[:, idx]
 
-        # Projection matrix contains eigen vectors sorted
+        # Projection matrix contains eigenvectors sorted
         self.w = e_vectors
 
-    def transform(self, x_mat):
+    def transform(self, x_mat: np.ndarray) -> np.ndarray:
         """Projects data from n_features to self.k features.
 
         :param x_mat: Matrix of shape (n_observations, n_features)
         :return: Matrix of shape (n_observations, self.k)
         """
         return x_mat.dot(self.w[:, : self.k])
+
+    def fit_transform(self, x_mat: np.ndarray) -> np.ndarray:
+        """Fits the PCA and returns a transformed data
+        :param x_mat:  Matrix of shape (n_observations, n_features)
+        :return: Matrix of shape (n_observations, self.k)
+        """
+
+        self.fit(x_mat)
+        return self.transform(x_mat)
