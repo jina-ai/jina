@@ -98,7 +98,7 @@ jobs:
       - name: prepare comment
         run: |
           pip install packaging==21.0 prettytable==2.1.0
-          python merge_outputs.py output stats.json
+          python latency/merge_outputs.py output stats.json
           python latency/ppstat.py output/stats.json > latency/comment.txt
       - id: get-comment-body
         run: |
