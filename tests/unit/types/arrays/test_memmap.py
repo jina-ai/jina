@@ -259,6 +259,10 @@ def test_memmap_delete_by_slice(tmpdir):
 
 
 def test_memmap_get_by_slice(tmpdir):
+    def _assert_similar(da1, da2):
+        for doc_a, doc_b in zip(da1, da2):
+            assert doc_a.id == doc_b.id
+
     dam = DocumentArrayMemmap(tmpdir)
     candidates = list(random_docs(100))
     for d in candidates:
@@ -268,13 +272,26 @@ def test_memmap_get_by_slice(tmpdir):
 
     first_10 = dam[:10]
     assert len(first_10) == 10
-    for doc_a, doc_b in zip(candidates[:10], first_10):
-        assert doc_a.id == doc_b.id
+    _assert_similar(candidates[:10], first_10)
 
     last_10 = dam[-10:]
     assert len(last_10) == 10
-    for doc_a, doc_b in zip(candidates[-10:], last_10):
-        assert doc_a.id == doc_b.id
+    _assert_similar(candidates[-10:], last_10)
 
-    with pytest.raises(IndexError):
-        dam[:105]
+    out_of_bound_1 = dam[-101:-95]
+    assert len(out_of_bound_1) == 5
+    _assert_similar(candidates[0:5], out_of_bound_1)
+
+    out_of_bound_2 = dam[-101:101]
+    assert len(out_of_bound_2) == 100
+    _assert_similar(candidates, out_of_bound_2)
+
+    out_of_bound_3 = dam[95:101]
+    assert len(out_of_bound_3) == 5
+    _assert_similar(candidates[95:], out_of_bound_3)
+
+    assert len(dam[101:105]) == 0
+
+    assert len(dam[-105:-101]) == 0
+
+    assert len(dam[10:0]) == 0
