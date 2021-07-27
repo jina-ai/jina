@@ -41,8 +41,6 @@ def _build_lookup_table():
                     noise2key[kk] = k
         return noise2key
 
-    api_to_dict(show_all_args=True)
-
     build_invert_index(api_to_dict(show_all_args=True))
     nkw2kw = build_noisy_index(all_keywords)
     return nkw2kw, all_keywords
