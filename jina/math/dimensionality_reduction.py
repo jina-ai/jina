@@ -2,14 +2,13 @@ import numpy as np
 
 
 class PCA:
-    """A class for PCA dimensionality reduction in Jina."""
+    """:class:`PCA` is a class for dimensionality reduction using PCA in Jina.
+
+    :param n_components: Number of components to keep when projecting with PCA
+    :param whiten: Flag variable stating if there projecting with whitening
+    """
 
     def __init__(self, n_components: int, whiten: bool = False):
-        """
-
-        :param n_components: Number of components to keep when projecting with PCA
-        :param whiten: Flag variable stating if there projecting with whitening
-        """
         self.n_components = n_components
         self.whiten = whiten
         self.e_values = None
