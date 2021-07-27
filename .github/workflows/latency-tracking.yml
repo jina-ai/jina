@@ -26,7 +26,7 @@ jobs:
         run: |
           sudo rm -f .dockerignore
           sudo mkdir -p /var/output
-          docker build --build-arg JINA_VER=master -f latency/dockerfiles/Dockerfile -t latency-tracking .
+          docker build --build-arg JINA_VER=master -f latency/Dockerfile -t latency-tracking .
           docker run -v /var/output:/app/output latency-tracking
       - name: Upload output
         uses: actions/upload-artifact@v2
@@ -97,8 +97,8 @@ jobs:
           python-version: 3.7
       - name: prepare comment
         run: |
-          pip install prettytable==2.1.0
-          python merge_outputs.py output
+          pip install packaging==21.0 prettytable==2.1.0
+          python merge_outputs.py output stats.json
           python latency/ppstat.py output/stats.json > latency/comment.txt
       - id: get-comment-body
         run: |
