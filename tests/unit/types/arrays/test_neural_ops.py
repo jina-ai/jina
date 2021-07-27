@@ -8,6 +8,7 @@ from jina import Document, DocumentArray
 from jina.math.distance import sqeuclidean, cosine
 from jina.math.helper import minmax_normalize
 from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina.math.dimensionality_reduction import PCA
 
 
 @pytest.fixture
@@ -256,3 +257,10 @@ def test_2arity_function(docarrays_for_embedding_distance_computation):
     for d in D1:
         for m in d.matches:
             assert 'dotp' in m.scores
+
+
+def test_pca_projection(embeddings):
+    n_components = 2
+    pca = PCA(n_components=n_components)
+    embeddings_transformed = pca.fit_transform(embeddings)
+    assert embeddings_transformed.shape[1] == n_components
