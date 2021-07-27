@@ -4,8 +4,9 @@ import numpy as np
 class PCA:
     """A class for PCA dimensionality reduction in Jina."""
 
-    def __init__(self, k: int):
+    def __init__(self, k: int, whitening: bool = True):
         self.k = k
+        self.whitening = whitening
 
     def fit(self, x_mat: np.ndarray):
         """
@@ -33,15 +34,14 @@ class PCA:
         self.w = e_vectors
         self.e_values = e_values
 
-    def transform(self, x_mat: np.ndarray, whitening: bool = True) -> np.ndarray:
+    def transform(self, x_mat: np.ndarray) -> np.ndarray:
         """Projects data from n_features to self.k features.
 
         :param x_mat: Matrix of shape (n_observations, n_features)
-        :param whitening: Boolean stating if whitening normalization is expected.
         :return: Matrix of shape (n_observations, self.k)
         """
         x_mat_projected = x_mat.dot(self.w[:, : self.k])
-        if whitening:
+        if self.whitening:
             return x_mat_projected / np.sqrt(self.e_values)
         else:
             return x_mat_projected
