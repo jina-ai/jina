@@ -3,49 +3,34 @@
 Table of Contents
 
 - [JinaD (Daemon)](#jinad-daemon)
-  - [Using JinaD](#using-jinad)
-    - [Run](#run)
-    - [API Docs](#api-docs)
-    - [JinaDClient](#jinadclient)
-      - [Connect from local](#connect-from-local)
-      - [Get remote status](#get-remote-status)
-  - [Concepts](#concepts)
-    - [Workspace](#workspace)
-      - [Special files](#special-files)
-      - [Create a workspace (redoc)](#create-a-workspace-redoc)
-      - [Get the details of a workspace (redoc)](#get-the-details-of-a-workspace-redoc)
-      - [List all workspaces (redoc)](#list-all-workspaces-redoc)
-      - [Delete a workspace (redoc)](#delete-a-workspace-redoc)
-    - [RESTful Flows](#restful-flows)
-      - [Create a Flow (redoc)](#create-a-flow-redoc)
-      - [Get details of a Flow (redoc)](#get-details-of-a-flow-redoc)
-      - [Terminate a Flow (redoc)](#terminate-a-flow-redoc)
-    - [RESTful Pods/Peas (Advanced)](#restful-podspeas-advanced)
-      - [Get all accepted arguments (redoc)](#get-all-accepted-arguments-redoc)
-      - [Create a Pea/Pod (redoc)](#create-a-peapod-redoc)
-      - [Get details of a Pea/Pod (redoc)](#get-details-of-a-peapod-redoc)
-      - [Terminate a Pea/Pod (redoc)](#terminate-a-peapod-redoc)
-    - [Logstreaming](#logstreaming)
-    - [Development using JinaD](#development-using-jinad)
-        - [Build](#build)
-        - [Run](#run-1)
-        - [Why?](#why)
+  - [Server](#server)
+      - [Run](#run)
+      - [API Docs](#api-docs)
+  - [Client (Python)](#client-python)
+  - [Workspace](#workspace)
+  - [RESTful Flows](#restful-flows)
+  - [RESTful Pods/Peas (Advanced)](#restful-podspeas-advanced)
+  - [Logstreaming](#logstreaming)
+  - [Development using JinaD](#development-using-jinad)
+      - [Build](#build)
+      - [Run](#run-1)
+      - [Why?](#why)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # JinaD (Daemon)
 
-JinaD is a daemon for deploying & managing Jina on remote via a RESTful interface. It achieves isolation of deployments by defining a `workspace` for each Jina object.
+JinaD is a [daemon](https://en.wikipedia.org/wiki/Daemon_(computing)) for deploying & managing Jina on remote via a RESTful interface. It allows users to create/update/delete Flows and Executors on remote hosts. It achieves isolation of deployments by defining a `workspace` for each Jina object, hence allowing a multi-tenant setup with parallel Flows on the same host.
 
 ------
 
-## Using JinaD
+## Server
 
 `JinaD` docker image is published on [Docker Hub](https://hub.docker.com/r/jinaai/jina/tags?page=1&ordering=last_updated&name=-daemon) along with core & follows the [standard image versioning](https://github.com/jina-ai/jina/blob/master/RELEASE.md#docker-image-versioning) used in Jina.
 
-### Run
+#### Run
 
-To deploy JinaD, SSH into a server (e.g.- ec2 instance) & run the below command.
+To deploy JinaD, SSH into a remote instance (e.g.- ec2 instance) & run the below command.
 
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
@@ -56,43 +41,56 @@ docker run --add-host host.docker.internal:host-gateway \
            -d jinaai/jina:master-daemon
 ```
 
-**Note** : `JinaD` should always be deployed as a docker container. Simply starting the server using `jinad` command would not work.
+<details>
+<summary><strong>Points to note</strong></summary>
 
-### API Docs
+- You can change the port via the `-p` argument. Following code assumes that `HOST` is the public IP of the above instance & `PORT` is as passed in the docker run cpmmand.
+
+- `JinaD` should always be deployed as a docker container. Simply starting the server using `jinad` command would not work.
+
+</details>
+
+#### API Docs
 
 - [Static docs with redoc](https://api.jina.ai/daemon/)
 
 - [Interactive swagger docs](http://localhost:8000/docs) (works once JinaD is started)
 
-### JinaDClient
+## Client (Python)
 
-With v2.0.11, we introduce a Python Client to work with JinaD servers. It is async by default as it uses `aiohttp` internally. You can use `JinaDClient` or (for your async code) feel free to use `AsyncJinaDClient` which makes all following code awaitables.
+With `v2.0.12`, we introduce a Python Client to work with JinaD servers. You can use `JinaDClient` or (for your async code) feel free to use `AsyncJinaDClient` which makes all following code awaitables.
 
-#### Connect from local
+<details>
+<summary><strong>Check if remote is alive</strong></summary>
+
+<!-- #### Connect from local -->
 
 ```python
 from daemon.clients import JinaDClient
-client = JinaDClient(host=CLOUDHOST, port=8000)
+client = JinaDClient(host=HOST, port=PORT)
 assert client.alive
 
 # OR,
 from daemon.clients import AsyncJinaDClient
-client = AsyncJinaDClient(host=CLOUDHOST, port=8000)
+client = AsyncJinaDClient(host=HOST, port=PORT)
 assert await client.alive
 ```
 
-#### Get remote status
+</details>
+
+<details>
+<summary><strong>Get remote status</strong></summary>
 
 ```python
 from daemon.clients import JinaDClient
-client = JinaDClient(host=CLOUDHOST, port=8000)
+client = JinaDClient(host=HOST, port=PORT)
 client.status
 ```
 
 <details>
 <summary>Example response</summary>
 
-```json
+```text
 {
   'jina' {
     'jina': '2.0.11',
@@ -117,11 +115,14 @@ client.status
 ```
 
 </details>
+</details>
 
+------
 
-## Concepts
+## Workspace
 
-### Workspace
+<details>
+<summary><strong>What is a workspace?</strong></summary>
 
 Workspace is the entrypoint for all objects in JinaD. It primarily represents 3 things.
 
@@ -142,38 +143,41 @@ Workspace is the entrypoint for all objects in JinaD. It primarily represents 3 
      - `.jinad` file
      - `requirements.txt` file
 
-#### Special files
+4. **Special files**
 
-- `.jinad` is an optional file defining how the base image is built. Following arguments are supported.
+   - `.jinad` is an optional file defining how the base image is built. Following arguments are supported.
 
-  ```ini
-  build = default                 ; NOTE: devel/default, (gpu: to be added).
-  python = 3.7                    ; NOTE: 3.7, 3.8, 3.9 allowed.
-  jina = 2.0.rc7                  ; NOTE: to be added.
-  ports = 45678                   ; NOTE: comma separated ports to be mapped.
-  run = "python app.py 45678"     ; NOTE: command to start a Jina project on remote.
-  ```
+     ```ini
+     build = default                 ; NOTE: devel/default, (gpu: to be added).
+     python = 3.7                    ; NOTE: 3.7, 3.8, 3.9 allowed.
+     jina = 2.0.rc7                  ; NOTE: to be added.
+     ports = 45678                   ; NOTE: comma separated ports to be mapped.
+     run = "python app.py 45678"     ; NOTE: command to start a Jina project on remote.
+     ```
 
-  You can also deploy an end-to-end Jina project on remote using the following steps.
-  - Include a `.jinad` file with `run` set to your default entrypoint (e.g. - `python app.py`)
-  - Upload all your files including `.jinad` during workspace creation.
-  - This will deploy a custom container with your project
+     You can also deploy an end-to-end Jina project on remote using the following steps.
+     - Include a `.jinad` file with `run` set to your default entrypoint (e.g. - `python app.py`)
+     - Upload all your files including `.jinad` during workspace creation.
+     - This will deploy a custom container with your project
 
-- `requirements.txt` defines all python packages to be installed using `pip` in the base image.
+   - `requirements.txt` defines all python packages to be installed using `pip` in the base image.
 
-  ```text
-  annoy
-  torch>=1.8.0
-  tensorflow
-  ```
+     ```text
+     annoy
+     torch>=1.8.0
+     tensorflow
+     ```
 
-#### Create a workspace ([redoc](https://api.jina.ai/daemon/#operation/_create_workspaces_post))
+</details>
+
+<details>
+<summary><strong>Create a workspace (<a href="https://api.jina.ai/daemon/#operation/_create_workspaces_post">redoc</a>)</strong></summary>
 
 Create a directory (say `awesome_project`) on local which has all your files (`yaml`, `py_modules`, `requirements.txt`, `.jinad` etc.)
 
 ```python
 from daemon.clients import JinaDClient
-client = JinaDClient(host=CLOUDHOST, port=8000)
+client = JinaDClient(host=HOST, port=PORT)
 my_workspace_id = client.workspaces.create(paths=['path_to_awesome_project'])
 ```
 
@@ -226,12 +230,14 @@ my_workspace_id = client.workspaces.create(paths=['path_to_awesome_project'])
   ```
 
 </details>
+</details>
 
-#### Get the details of a workspace ([redoc](https://api.jina.ai/daemon/#operation/_list_workspaces__id__get))
+<details>
+<summary><strong>Get details of a workspace (<a href="https://api.jina.ai/daemon/#operation/_list_workspaces__id__get">redoc</a>)</strong></summary>
 
 ```python
 from daemon.clients import JinaDClient
-client = JinaDClient(host=CLOUDHOST, port=8000)
+client = JinaDClient(host=HOST, port=PORT)
 client.workspaces.get(my_workspace_id)
 ```
 
@@ -262,8 +268,10 @@ client.workspaces.get(my_workspace_id)
 ```
 
 </details>
+</details>
 
-#### List all workspaces ([redoc](https://api.jina.ai/daemon/#operation/_get_items_workspaces_get))
+<details>
+<summary><strong>List all workspaces (<a href="https://api.jina.ai/daemon/#operation/_get_items_workspaces_get">redoc</a>)</strong></summary>
 
 ```python
 client.workspaces.list()
@@ -272,7 +280,7 @@ client.workspaces.list()
 <details>
 <summary>Example response</summary>
 
-```json
+```text
 {
   'jworkspace-2b017b8f-19af-4d78-9364-6404447d91ac': {
     ...
@@ -296,29 +304,39 @@ client.workspaces.list()
 ```
 
 </details>
+</details>
 
-#### Delete a workspace ([redoc](https://api.jina.ai/daemon/#operation/_delete_workspaces__id__delete))
+<details>
+<summary><strong>Delete a workspace (<a href="https://api.jina.ai/daemon/#operation/_delete_workspaces__id__delete">redoc</a>)</strong></summary>
 
 ```python
 assert client.workspaces.delete(id=workspace_id)
 ```
 
-### RESTful Flows
+</details>
+
+------
+
+## RESTful Flows
 
 JinaD enables management of (remote + containerized) Flows with all your dependencies via REST APIs.
 
-#### Create a Flow ([redoc](https://api.jina.ai/daemon/#operation/_create_flows_post))
+<details>
+<summary><strong>Create a Flow (<a href="https://api.jina.ai/daemon/#operation/_create_flows_post">redoc</a>)</strong></summary>
 
 This creates a new container using the base image & network defined by `workspace_id` & starts a Flow inside the container. Only the ports needed for external communication are mapped to local. Make sure you've added all your config files while creating the workspace in the previous step.
 
 ```python
 from daemon.clients import JinaDClient
-client = JinaDClient(host=CLOUDHOST, port=8000)
+client = JinaDClient(host=HOST, port=PORT)
 client.flows.create(workspace_id=workspace_id, filename='my_awesome_flow.yml')
 # jflow-a71cc28f-a5db-4cc0-bb9e-bb7797172cc9
 ```
 
-#### Get details of a Flow ([redoc](https://api.jina.ai/daemon/#operation/_status_flows__id__get))
+</details>
+
+<details>
+<summary><strong>Get details of a Flow (<a href="https://api.jina.ai/daemon/#operation/_status_flows__id__get">redoc</a>)</strong></summary>
 
 ```python
 client.flows.get(flow_id)
@@ -327,7 +345,7 @@ client.flows.get(flow_id)
 <details>
 <summary>Example response</summary>
 
-```json
+```text
 {
   'time_created': '2021-07-27T05:12:06.646809',
   'metadata': {
@@ -365,32 +383,40 @@ client.flows.get(flow_id)
 ```
 
 </details>
+</details>
 
-#### Terminate a Flow ([redoc](https://api.jina.ai/daemon/#operation/_delete_flows__id__delete))
+<details>
+<summary><strong>Terminate a Flow (<a href="https://api.jina.ai/daemon/#operation/_delete_flows__id__delete">redoc</a>)</strong></summary>
 
 ```python
 assert client.flows.delete(flow_id)
 ```
 
-### RESTful Pods/Peas (Advanced)
+</details>
+
+------
+
+## RESTful Pods/Peas (Advanced)
 
 You wouldn't need to create remote Peas/Pods directly yourself. You can use the below code by passing `host` & `port_expose` to an executor with the Flow. Internally it uses `JinaD` for remote management.
 
 ```python
 from jina import Flow
-f = Flow().add(host=CLOUDHOST, port_expose=8000)
+f = Flow().add(host=HOST, port_expose=PORT)
 with f:
   f.post(...)
 ```
 
-In case you want to create remote Peas/Pods manually, you can follow the below guidelines.
+<details>
+<summary>In case you want to create remote Peas/Pods manually, you can follow the guidelines below.</summary>
 
-#### Get all accepted arguments ([redoc](https://api.jina.ai/daemon/#operation/_fetch_pea_params_peas_arguments_get))
+<details>
+<summary><strong>Get all accepted arguments (<a href="https://api.jina.ai/daemon/#operation/_fetch_pea_params_peas_arguments_get">redoc</a>)</strong></summary>
 
 ```python
 # Learn about payload
 from daemon.clients import JinaDClient
-client = JinaDClient(host=CLOUDHOST, port=8000)
+client = JinaDClient(host=HOST, port=PORT)
 
 # Get arguments accepted by Peas
 client.peas.arguments()
@@ -402,7 +428,7 @@ client.pods.arguments()
 <details>
 <summary>Example response</summary>
 
-```json
+```text
 {
     "name": {
         "title": "Name",
@@ -414,8 +440,10 @@ client.pods.arguments()
 ```
 
 </details>
+</details>
 
-#### Create a Pea/Pod ([redoc](https://api.jina.ai/daemon/#operation/_create_peas_post))
+<details>
+<summary><strong>Create a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_create_peas_post">redoc</a>)</strong></summary>
 
 ```python
 # To create a Pea
@@ -427,7 +455,10 @@ client.pods.create(workspace_id=workspace_id, payload=payload)
 # jpod-44f8aeac-726e-4381-b5ff-9ae01e217b6d
 ```
 
-#### Get details of a Pea/Pod ([redoc](https://api.jina.ai/daemon/#operation/_status_peas__id__get))
+</details>
+
+<details>
+<summary><strong>Get details of a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_status_peas__id__get">redoc</a>)</strong></summary>
 
 ```python
 # Pea
@@ -440,7 +471,7 @@ client.pods.get(pod_id)
 <details>
 <summary>Example response</summary>
 
-```json
+```text
 {
   'time_created': '2021-07-27T05:53:36.512694',
   'metadata': {
@@ -471,8 +502,10 @@ client.pods.get(pod_id)
 ```
 
 </details>
+</details>
 
-#### Terminate a Pea/Pod ([redoc](https://api.jina.ai/daemon/#operation/_delete_peas__id__delete))
+<details>
+<summary><strong>Terminate a Pea/Pod (<a href="https://api.jina.ai/daemon/#operation/_delete_peas__id__delete">redoc</a>)</strong></summary>
 
 ```python
 # Pea
@@ -482,13 +515,21 @@ assert client.peas.delete(pea_id)
 assert client.pods.delete(pod_id)
 ```
 
-### Logstreaming
+</details>
+</details>
 
-We can stream logs from a JinaD server for a running Flow/Pea/Pod/Workspace. Unlike other modules, this needs to be awaited.
+------
+
+## Logstreaming
+
+<details>
+<summary>We can stream logs from a JinaD server for a running Flow/Pea/Pod/Workspace.</summary>
+
+Unlike other modules, this needs to be awaited.
 
 ```python
 from daemon.clients import AsyncJinaDClient
-client = AsyncJinaDClient(host=CLOUDHOST, port=8000)
+client = AsyncJinaDClient(host=HOST, port=PORT)
 await client.logs(id=my_workspace_id)
 ```
 
@@ -514,18 +555,22 @@ await client.logs(id=my_workspace_id)
 ```
 
 </details>
+</details>
 
 ------
 
-### Development using JinaD
+## Development using JinaD
 
-##### Build
+<details>
+<summary>Follow the guidelines below, if you're developing using JinaD </summary>
+
+#### Build
 
 ```bash
 docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
 ```
 
-##### Run
+#### Run
 
 ```bash
 docker run --add-host host.docker.internal:host-gateway \
@@ -538,7 +583,7 @@ docker run --add-host host.docker.internal:host-gateway \
            -d jinaai/jina:test-daemon
 ```
 
-##### Why?
+#### Why?
 
 - `jinaai/jina:test-daemon` ?
 
@@ -561,3 +606,5 @@ docker run --add-host host.docker.internal:host-gateway \
 - `-v /tmp/jinad:/tmp/jinad` ?
 
   This is the default root workspace for JinaD. This gets mounted internally to all child containers. If we don't mount this while starting, `/tmp/jinad` local to JinaD would get mounted to child containers, which is not accessible by DOCKERHOST
+
+</details>

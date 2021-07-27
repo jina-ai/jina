@@ -19,8 +19,8 @@ class AsyncBaseClient:
     """
     JinaD baseclient (Async)
 
-    :param host: the host address of ``jinad`` instance
-    :param port: the port number of ``jinad`` instance
+    :param uri: the uri of ``jinad`` instance
+    :param logger: jinad logger
     :param timeout: stop waiting for a response after a given number of seconds with the timeout parameter.
     """
 
