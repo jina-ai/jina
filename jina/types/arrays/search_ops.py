@@ -91,6 +91,20 @@ class DocumentArraySearchOpsMixin:
             )
         if seed is not None:
             random.seed(seed)
+        # NOTE, this could simplified to random.sample(self, k)
+        # without getting indices and itemgetter etc.
+        # however it's only work on DocumentArray, not DocumentArrayMemmap.
         indices = random.sample(range(len(self)), k)
         sampled = list(operator.itemgetter(*indices)(self))
         return DocumentArray(sampled)
+
+    def shuffle(self, seed: int = None) -> 'DocumentArray':
+        """Randomly shuffle documents within the :class:`DocumentArray`.
+
+        :param seed: initialize the random number generator, by default is None. If set will
+            save the state of the random function to produce certain outputs.
+        :return: The shuffled list of :class:`Document` represented as :class:`DocumentArray`.
+        """
+        from .document import DocumentArray
+
+        return DocumentArray(self.sample(len(self), seed=seed))
