@@ -35,6 +35,7 @@ class Zmqlet:
     :param args: the parsed arguments from the CLI
     :param logger: the logger to use
     :param ctrl_addr: control address
+    :param disable_data_requests disable all communication for data requests
 
     .. warning::
         Starting from v0.3.6, :class:`ZmqStreamlet` replaces :class:`Zmqlet` as one of the key components in :class:`jina.peapods.runtimes.zmq.zed.ZEDRuntime`.
@@ -46,6 +47,7 @@ class Zmqlet:
         args: 'argparse.Namespace',
         logger: Optional['JinaLogger'] = None,
         ctrl_addr: Optional[str] = None,
+        disable_data_requests=False,
     ):
         self.args = args
 
@@ -55,6 +57,7 @@ class Zmqlet:
             self.identity = random_identity()
         self.name = args.name or self.__class__.__name__
         self.logger = logger
+        self.disable_data_requests = self.args.grpc_data_requests
         self.send_recv_kwargs = vars(args)
         if ctrl_addr:
             self.ctrl_addr = ctrl_addr
@@ -73,21 +76,31 @@ class Zmqlet:
         self.in_sock_type = None
         self.out_sock_type = None
         self.ctrl_sock_type = None
-        self.opened_socks = []  # this must be here for `close()`
-        (
-            self.ctx,
-            self.in_sock,
-            self.out_sock,
-            self.ctrl_sock,
-            self.in_connect_sock,
-        ) = self._init_sockets()
+        self.ctx = self._get_zmq_ctx()
+        self.ctx.setsockopt(zmq.LINGER, 0)
 
-        self.in_sock_type = self.in_sock.type
-        self.out_sock_type = self.out_sock.type
+        self.opened_socks = []
+        self.ctrl_sock = self._init_control_socket()
+
+        if not self.disable_data_requests:
+            (
+                self.in_connect_sock,
+                self.in_sock,
+                self.out_sock,
+            ) = self._init_data_sockets()
+            self.in_sock_type = self.in_sock.type
+            self.out_sock_type = self.out_sock.type
+        else:
+            self.in_sock = None
+            self.out_sock = None
+            self.in_connect_sock = None
+
         self.ctrl_sock_type = self.ctrl_sock.type
 
         self._register_pollin()
-        self.opened_socks.extend([self.in_sock, self.out_sock, self.ctrl_sock])
+        self.opened_socks.append(self.ctrl_sock)
+        if not self.disable_data_requests:
+            self.opened_socks.extend([self.in_sock, self.out_sock])
         if self.in_connect_sock is not None:
             self.opened_socks.append(self.in_connect_sock)
 
@@ -98,20 +111,25 @@ class Zmqlet:
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` (if :attr:`out_sock_type` is zmq.ROUTER)
         in poller."""
         self.poller = zmq.Poller()
-        self.poller.register(self.in_sock, zmq.POLLIN)
         self.poller.register(self.ctrl_sock, zmq.POLLIN)
-        if self.out_sock_type == zmq.ROUTER and not self.args.dynamic_routing_out:
-            self.poller.register(self.out_sock, zmq.POLLIN)
-        if self.in_connect_sock is not None:
-            self.poller.register(self.in_connect_sock, zmq.POLLIN)
+
+        if not self.disable_data_requests:
+            self.poller.register(self.in_sock, zmq.POLLIN)
+
+            if self.out_sock_type == zmq.ROUTER and not self.args.dynamic_routing_out:
+                self.poller.register(self.out_sock, zmq.POLLIN)
+            if self.in_connect_sock is not None:
+                self.poller.register(self.in_connect_sock, zmq.POLLIN)
 
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """
-        self.poller.unregister(self.in_sock)
+        if not self.disable_data_requests:
+            self.poller.unregister(self.in_sock)
 
     def resume_pollin(self):
         """Put :attr:`in_sock` back to the poller """
-        self.poller.register(self.in_sock)
+        if not self.disable_data_requests:
+            self.poller.register(self.in_sock)
 
     @staticmethod
     def get_ctrl_address(
@@ -146,36 +164,31 @@ class Zmqlet:
         # the priority ctrl_sock > in_sock
         if socks.get(self.ctrl_sock) == zmq.POLLIN:
             return self.ctrl_sock
-        elif socks.get(self.out_sock, None) == zmq.POLLIN:
-            return self.out_sock  # for dealer return idle status to router
-        elif socks.get(self.in_sock) == zmq.POLLIN:
-            return self.in_sock
-        elif socks.get(self.in_connect_sock) == zmq.POLLIN:
-            return self.in_connect_sock
+        elif not self.disable_data_requests:
+            if socks.get(self.out_sock, None) == zmq.POLLIN:
+                return self.out_sock  # for dealer return idle status to router
+            elif socks.get(self.in_sock) == zmq.POLLIN:
+                return self.in_sock
+            elif socks.get(self.in_connect_sock) == zmq.POLLIN:
+                return self.in_connect_sock
+
+        return None
 
     def _close_sockets(self):
         """Close input, output and control sockets of this `Zmqlet`. """
         for k in self.opened_socks:
             k.close()
 
-    def _init_sockets(self) -> Tuple:
-        """Initialize all sockets and the ZMQ context.
+    def _init_control_socket(self) -> 'zmq.Socket':
+        """Initialize the control socket.
 
-        :return: A tuple of four pieces:
-
-            - ZMQ context
-            - the input socket
-            - the output socket
-            - the control socket
+        :return: The control socket
         """
-        ctx = self._get_zmq_ctx()
-        ctx.setsockopt(zmq.LINGER, 0)
-
-        self.logger.debug('setting up sockets...')
+        self.logger.debug('setting up control sockets...')
         try:
             if self.ctrl_with_ipc:
                 ctrl_sock, ctrl_addr = _init_socket(
-                    ctx,
+                    self.ctx,
                     self.ctrl_addr,
                     None,
                     SocketType.PAIR_BIND,
@@ -183,68 +196,76 @@ class Zmqlet:
                 )
             else:
                 ctrl_sock, ctrl_addr = _init_socket(
-                    ctx, __default_host__, self.args.port_ctrl, SocketType.PAIR_BIND
+                    self.ctx,
+                    __default_host__,
+                    self.args.port_ctrl,
+                    SocketType.PAIR_BIND,
                 )
-            self.logger.debug(f'control over {colored(ctrl_addr, "yellow")}')
-
-            in_sock, in_addr = _init_socket(
-                ctx,
-                self.args.host_in,
-                self.args.port_in,
-                self.args.socket_in,
-                self.identity,
-                ssh_server=self.args.ssh_server,
-                ssh_keyfile=self.args.ssh_keyfile,
-                ssh_password=self.args.ssh_password,
-            )
-            self.logger.debug(
-                f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}'
-            )
-            out_sock, out_addr = _init_socket(
-                ctx,
-                self.args.host_out,
-                self.args.port_out,
-                self.args.socket_out,
-                self.identity,
-                ssh_server=self.args.ssh_server,
-                ssh_keyfile=self.args.ssh_keyfile,
-                ssh_password=self.args.ssh_password,
-            )
-
-            in_connect = None
-            if self.args.hosts_in_connect:
-                for address in self.args.hosts_in_connect:
-                    if in_connect is None:
-                        host, port = address.split(':')
-                        in_connect, _ = _init_socket(
-                            ctx,
-                            host,
-                            port,
-                            SocketType.ROUTER_CONNECT,
-                            self.identity,
-                            ssh_server=self.args.ssh_server,
-                            ssh_keyfile=self.args.ssh_keyfile,
-                            ssh_password=self.args.ssh_password,
-                        )
-                    else:
-                        _connect_socket(
-                            in_connect,
-                            address,
-                            ssh_server=self.args.ssh_server,
-                            ssh_keyfile=self.args.ssh_keyfile,
-                            ssh_password=self.args.ssh_password,
-                        )
 
             self.logger.debug(
-                f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) '
-                f'output {colored(out_addr, "yellow")} ({self.args.socket_out.name}) '
                 f'control over {colored(ctrl_addr, "yellow")} ({SocketType.PAIR_BIND.name})'
             )
 
-            return ctx, in_sock, out_sock, ctrl_sock, in_connect
+            return ctrl_sock
         except zmq.error.ZMQError as ex:
             self.close()
             raise ex
+
+    def _init_data_sockets(self):
+        in_sock, in_addr = _init_socket(
+            self.ctx,
+            self.args.host_in,
+            self.args.port_in,
+            self.args.socket_in,
+            self.identity,
+            ssh_server=self.args.ssh_server,
+            ssh_keyfile=self.args.ssh_keyfile,
+            ssh_password=self.args.ssh_password,
+        )
+        self.logger.debug(
+            f'input {self.args.host_in}:{colored(self.args.port_in, "yellow")}'
+        )
+        in_connect = None
+        if self.args.hosts_in_connect:
+            for address in self.args.hosts_in_connect:
+                if in_connect is None:
+                    host, port = address.split(':')
+                    in_connect, _ = _init_socket(
+                        self.ctx,
+                        host,
+                        port,
+                        SocketType.ROUTER_CONNECT,
+                        self.identity,
+                        ssh_server=self.args.ssh_server,
+                        ssh_keyfile=self.args.ssh_keyfile,
+                        ssh_password=self.args.ssh_password,
+                    )
+                else:
+                    _connect_socket(
+                        in_connect,
+                        address,
+                        ssh_server=self.args.ssh_server,
+                        ssh_keyfile=self.args.ssh_keyfile,
+                        ssh_password=self.args.ssh_password,
+                    )
+
+        out_sock, out_addr = _init_socket(
+            self.ctx,
+            self.args.host_out,
+            self.args.port_out,
+            self.args.socket_out,
+            self.identity,
+            ssh_server=self.args.ssh_server,
+            ssh_keyfile=self.args.ssh_keyfile,
+            ssh_password=self.args.ssh_password,
+        )
+
+        self.logger.debug(
+            f'input {colored(in_addr, "yellow")} ({self.args.socket_in.name}) '
+            f'input {colored(out_addr, "yellow")} ({self.args.socket_out.name}) '
+        )
+
+        return in_connect, in_sock, out_sock
 
     def _get_zmq_ctx(self):
         return zmq.Context()
@@ -311,6 +332,7 @@ class Zmqlet:
         return out_sock
 
     def _get_dynamic_next_routes(self, message):
+        print(f'got this routing table {message.envelope.routing_table}')
         routing_table = RoutingTable(message.envelope.routing_table)
         next_targets = routing_table.get_next_targets()
         next_routes = []
@@ -324,6 +346,7 @@ class Zmqlet:
                 if out_socket is None:
                     out_socket = self._get_dynamic_out_socket(target.active_target_pod)
 
+            self.logger.debug(f'gonna send msg from {self.name} to {target.active_pod}')
             next_routes.append((target, out_socket))
         return next_routes
 
@@ -348,6 +371,10 @@ class Zmqlet:
         """
         # choose output sock
         if msg.is_data_request:
+            if self.disable_data_requests:
+                raise ValueError(
+                    'DataRequest handling disabled for this Zmqlet, but still got data reqeust'
+                )
             if self.args.dynamic_routing_out:
                 self._send_message_dynamic(msg)
                 return
@@ -365,14 +392,18 @@ class Zmqlet:
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
-        msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
-        self.bytes_sent += send_message(
-            self.in_sock, msg, raise_exception=raise_exception, **self.send_recv_kwargs
-        )
-        self.msg_sent += 1
-        self.logger.debug(
-            f'control message {command} with id {self.identity} is sent to the router'
-        )
+        if not self.disable_data_requests:
+            msg = ControlMessage(command, pod_name=self.name, identity=self.identity)
+            self.bytes_sent += send_message(
+                self.in_sock,
+                msg,
+                raise_exception=raise_exception,
+                **self.send_recv_kwargs,
+            )
+            self.msg_sent += 1
+            self.logger.debug(
+                f'control message {command} with id {self.identity} is sent to the router'
+            )
 
     def _send_idle_to_router(self):
         """Tell the upstream router this dealer is idle """
@@ -431,6 +462,7 @@ class AsyncZmqlet(Zmqlet):
             new_envelope.CopyFrom(msg.envelope)
             new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
+            self.logger.debug(f'send the following routing table {routing_table}')
             asyncio.create_task(self._send_message_via(out_sock, new_message))
 
     async def _send_message_via(self, socket, msg):
@@ -494,12 +526,16 @@ class ZmqStreamlet(Zmqlet):
 
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
-        self.in_sock = ZMQStream(self.in_sock, self.io_loop)
-        self.out_sock = ZMQStream(self.out_sock, self.io_loop)
+        self.io_loop.add_callback(callback=lambda: self.is_ready_event.set())
+
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
+        if self.in_sock is not None:
+            self.in_sock = ZMQStream(self.in_sock, self.io_loop)
+            self.in_sock.stop_on_recv()
+        if self.out_sock is not None:
+            self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         if self.in_connect_sock is not None:
             self.in_connect_sock = ZMQStream(self.in_connect_sock, self.io_loop)
-        self.in_sock.stop_on_recv()
 
     def _get_dynamic_out_socket(self, target_pod):
         return super()._get_dynamic_out_socket(target_pod, as_streaming=True)
@@ -560,12 +596,13 @@ class ZmqStreamlet(Zmqlet):
 
     def pause_pollin(self):
         """Remove :attr:`in_sock` from the poller """
-        self.in_sock.stop_on_recv()
+        if self.in_sock:
+            self.in_sock.stop_on_recv()
         self.is_polling_paused = True
 
     def resume_pollin(self):
         """Put :attr:`in_sock` back to the poller """
-        if self.is_polling_paused:
+        if self.is_polling_paused and self.in_sock:
             self.in_sock.on_recv(self._in_sock_callback)
             self.is_polling_paused = False
 
@@ -586,8 +623,9 @@ class ZmqStreamlet(Zmqlet):
             if msg:
                 self.send_message(msg)
 
-        self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
-        self.in_sock.on_recv(self._in_sock_callback)
+        if self.in_sock:
+            self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
+            self.in_sock.on_recv(self._in_sock_callback)
         self.ctrl_sock.on_recv(lambda x: _callback(x, self.ctrl_sock_type))
         if self.out_sock_type == zmq.ROUTER and not self.args.dynamic_routing_out:
             self.out_sock.on_recv(lambda x: _callback(x, self.out_sock_type))

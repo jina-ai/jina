@@ -16,18 +16,29 @@ if False:
 class PrefetchCaller:
     """An async zmq request sender to be used in the Gateway"""
 
-    def __init__(self, args: argparse.Namespace, zmqlet: 'AsyncZmqlet'):
+    def __init__(
+        self,
+        args: argparse.Namespace,
+        zmqlet: 'AsyncZmqlet' = None,
+        grpclet: 'Grpclet' = None,
+    ):
         """
         :param args: args from CLI
         :param zmqlet: zeromq object
         """
         self.args = args
         self.zmqlet = zmqlet
+        self.grpclet = grpclet
         self.name = args.name or self.__class__.__name__
 
         self.logger = JinaLogger(self.name, **vars(args))
         self._message_buffer: Dict[str, Future[Message]] = dict()
-        self._receive_task = get_or_reuse_loop().create_task(self._receive())
+        if self.zmqlet:
+            self._receive_task = get_or_reuse_loop().create_task(self._receive())
+        else:
+            self.grpclet._callback = self._process_message
+            self._receive_task = None
+            get_or_reuse_loop().create_task(self.grpclet._async_setup())
 
     async def _receive(self):
         try:
@@ -37,13 +48,7 @@ class PrefetchCaller:
                 if message is None:
                     break
 
-                if message.request_id in self._message_buffer:
-                    future = self._message_buffer.pop(message.request_id)
-                    future.set_result(message)
-                else:
-                    self.logger.warning(
-                        f'Discarding unexpected message with request id {message.request_id}'
-                    )
+                await self._process_message(message)
         except asyncio.CancelledError:
             raise
         finally:
@@ -53,11 +58,24 @@ class PrefetchCaller:
                 )
             self._message_buffer.clear()
 
+    async def _process_message(self, message):
+        self.logger.debug(f'process message {type(message)}')
+        if isinstance(message, Message):
+            message = message.request
+        if message.request_id in self._message_buffer:
+            future = self._message_buffer.pop(message.request_id)
+            future.set_result(message)
+        else:
+            self.logger.warning(
+                f'Discarding unexpected message with request id {message.request_id}'
+            )
+
     async def close(self):
         """
         Stop receiving messages
         """
-        self._receive_task.cancel()
+        if self._receive_task:
+            self._receive_task.cancel()
 
     async def send(self, request_iterator, *args) -> AsyncGenerator[None, Message]:
         """
@@ -71,7 +89,7 @@ class PrefetchCaller:
         self.zmqlet: 'AsyncZmqlet'
         self.logger: JinaLogger
 
-        if self._receive_task.done():
+        if self._receive_task and self._receive_task.done():
             raise RuntimeError(
                 'PrefetchCaller receive task not running, can not send messages'
             )
@@ -97,11 +115,22 @@ class PrefetchCaller:
 
                     future = get_or_reuse_loop().create_future()
                     self._message_buffer[next_request.request_id] = future
-                    asyncio.create_task(
-                        self.zmqlet.send_message(
-                            Message(None, next_request, 'gateway', **vars(self.args))
+                    if self.grpclet:
+                        asyncio.create_task(
+                            self.grpclet.send_message(
+                                Message(
+                                    None, next_request, 'gateway', **vars(self.args)
+                                )
+                            )
                         )
-                    )
+                    else:
+                        asyncio.create_task(
+                            self.zmqlet.send_message(
+                                Message(
+                                    None, next_request, 'gateway', **vars(self.args)
+                                )
+                            )
+                        )
 
                     fetch_to.append(future)
                 except (StopIteration, StopAsyncIteration):

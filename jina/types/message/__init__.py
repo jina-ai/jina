@@ -63,6 +63,7 @@ class Message:
             # otherwise delay it to after request is built
             self.envelope = None
 
+        print(f'req is type {type(request)} ')
         self.request = request
         if envelope is None:
             self.envelope = self._add_envelope(*args, **kwargs)
@@ -108,6 +109,7 @@ class Message:
         :param val: serialized Request
         """
         if isinstance(val, bytes):
+            print('deserialize byrs')
             self._request = Request(
                 val,
                 CompressAlgo.from_string(self.envelope.compression.algorithm)
@@ -115,8 +117,15 @@ class Message:
                 else None,
             )
             self._size += sys.getsizeof(val)
-        elif isinstance(val, (Request, jina_pb2.RequestProto)):
+        elif isinstance(val, Request):
             self._request = val  # type: Union['Request', 'jina_pb2.RequestProto']
+        elif isinstance(val, jina_pb2.RequestProto):
+            self._request = Request(
+                val,
+                CompressAlgo.from_string(self.envelope.compression.algorithm)
+                if self.envelope
+                else None,
+            )
         else:
             raise TypeError(
                 f'expecting request to be bytes or jina_pb2.RequestProto, but receiving {type(val)}'

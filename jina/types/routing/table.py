@@ -214,6 +214,9 @@ class RoutingTable(ProtoTypeMixin):
         for edge in self._get_out_edges(self.active_pod):
             new_graph = RoutingTable(self, copy=True)
             new_graph.active_pod = edge.pod
+            print(
+                f'setting active pod to {edge.pod} because {self._get_out_edges(self.active_pod) } self.active_pod {self.active_pod}'
+            )
             targets.append((new_graph, edge.send_as_bind))
         return targets
 

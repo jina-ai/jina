@@ -1,12 +1,15 @@
 import argparse
+import asyncio
 import re
 import time
 from collections import defaultdict
+from threading import Thread
 from typing import Dict, List, Optional, Union
 
 import zmq
 
 from .base import ZMQRuntime
+from ...grpc import Grpclet
 from ...zmq import ZmqStreamlet
 from .... import __default_endpoint__
 from ....enums import OnErrorStrategy, SocketType
@@ -58,17 +61,29 @@ class ZEDRuntime(ZMQRuntime):
 
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
+        self.grpc_data_requests = self.args.grpc_data_requests
 
+        if self.grpc_data_requests:
+            self._grpclet = Grpclet(
+                args=self.args, message_callback=self._msg_callback, logger=self.logger
+            )
+        else:
+            self._grpclet = None
         self._load_plugins()
         self._load_executor()
         self._load_zmqstreamlet()
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
+        if self._grpclet:
+            t = Thread(target=self._grpclet.run_forever)
+            t.start()
         self._zmqstreamlet.start(self._msg_callback)
 
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
+        if self.grpc_data_requests:
+            asyncio.run_coroutine_threadsafe(self._grpclet.close(), self._grpclet._loop)
         self._zmqstreamlet.close()
         self._executor.close()
         super().teardown()
@@ -195,6 +210,7 @@ class ZEDRuntime(ZMQRuntime):
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
         parsed_params = parameters
+        print(f'params {type(parameters)}')
         specific_parameters = parameters.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
@@ -244,6 +260,7 @@ class ZEDRuntime(ZMQRuntime):
             )
             return self
 
+        print(f'req {type(self.request)}')
         params = self._parse_params(self.request.parameters, self._executor.metas.name)
 
         # executor logic
@@ -300,9 +317,11 @@ class ZEDRuntime(ZMQRuntime):
             )
 
     def _callback(self, msg: 'Message'):
+        self.logger.debug('zed runtime callback')
         self.is_post_hook_done = False  #: if the post_hook is called
         self._pre_hook(msg)._handle()._post_hook(msg)
         self.is_post_hook_done = True
+        self.logger.debug('done')
         return msg
 
     def _msg_callback(self, msg: 'Message') -> None:
@@ -318,7 +337,12 @@ class ZEDRuntime(ZMQRuntime):
             processed_msg = self._callback(msg)
             # dont sent responses for CANCEL and IDLE control requests
             if msg.is_data_request or msg.request.command not in ['CANCEL', 'IDLE']:
-                self._zmqstreamlet.send_message(processed_msg)
+                if self.grpc_data_requests:
+                    asyncio.run_coroutine_threadsafe(
+                        self._grpclet.send_message(processed_msg), self._grpclet._loop
+                    )
+                else:
+                    self._zmqstreamlet.send_message(processed_msg)
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
             self._zmqstreamlet.send_message(msg)
