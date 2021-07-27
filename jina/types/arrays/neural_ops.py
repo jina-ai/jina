@@ -47,7 +47,7 @@ class DocumentArrayNeuralOpsMixin:
         :param limit: the maximum number of matches, when not given
                       all Documents in `another` are considered as matches
         :param normalization: a tuple [a, b] to be used with min-max normalization,
-                                the max distance will be rescaled to `a`, the min distance will be rescaled to `b`
+                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.

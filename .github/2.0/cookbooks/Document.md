@@ -964,7 +964,7 @@ The following image shows how `DocumentArrayA` finds `limit=5` matches from the 
 More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
 
 - `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` 
-- `normalization` is a tuple [a, b] to be used with min-max normalization. The max distance will be rescaled to `a`, the min distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
+- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
 
 The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from the elements in `da_2`.
 
