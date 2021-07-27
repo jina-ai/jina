@@ -392,6 +392,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span><span class="p">,</span> <span class="n">ModuleType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">importlib.abc</span> <span class="kn">import</span> <span class="n">MetaPathFinder</span><span class="p">,</span> <span class="n">Loader</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 
@@ -484,6 +485,57 @@
                 <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># suppress the error</span></div>
 
 
+<div class="viewcode-block" id="ExtensionFileLoader"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.ExtensionFileLoader">[docs]</a><span class="k">class</span> <span class="nc">ExtensionFileLoader</span><span class="p">(</span><span class="n">Loader</span><span class="p">):</span>
+    <span class="sd">"""Loader for extension modules."""</span>
+
+<div class="viewcode-block" id="ExtensionFileLoader.exec_module"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.ExtensionFileLoader.exec_module">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">exec_module</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+        <span class="sd">"""Initialize an extension module</span>
+
+<span class="sd">        :param module: a namespace module</span>
+<span class="sd">        """</span>
+        <span class="n">load_path</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">__spec__</span><span class="o">.</span><span class="n">origin</span>
+        <span class="n">init_file</span> <span class="o">=</span> <span class="s1">'__init__.py'</span>
+        <span class="k">if</span> <span class="n">load_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">init_file</span><span class="p">):</span>
+            <span class="n">module</span><span class="o">.</span><span class="n">__path__</span> <span class="o">=</span> <span class="p">[</span><span class="n">load_path</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">init_file</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span></div></div>
+
+
+<span class="n">_loader</span> <span class="o">=</span> <span class="n">ExtensionFileLoader</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="ExtensionPathFinder"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.ExtensionPathFinder">[docs]</a><span class="k">class</span> <span class="nc">ExtensionPathFinder</span><span class="p">:</span>
+    <span class="sd">"""Meta path finder for extentions modules"""</span>
+
+    <span class="n">__path__</span> <span class="o">=</span> <span class="s1">'.'</span>
+
+<div class="viewcode-block" id="ExtensionPathFinder.find_spec"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.ExtensionPathFinder.find_spec">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">find_spec</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">fullname</span><span class="p">,</span> <span class="n">paths</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">"""Try to find a spec for the specified module.</span>
+
+<span class="sd">        :param fullname: module full name</span>
+<span class="sd">        :param paths: the search paths</span>
+<span class="sd">        :param target: the target</span>
+<span class="sd">        :return: a module spec</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">importlib.machinery</span> <span class="kn">import</span> <span class="n">ModuleSpec</span>
+
+        <span class="c1"># TODO: read PEP 420</span>
+        <span class="n">last_module</span> <span class="o">=</span> <span class="n">fullname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">paths</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">__path__</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">last_module</span><span class="p">)</span>
+
+            <span class="n">init_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s1">'__init__.py'</span><span class="p">)</span>
+            <span class="n">module_path</span> <span class="o">=</span> <span class="n">full_path</span> <span class="o">+</span> <span class="s1">'.py'</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">init_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">module_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">ModuleSpec</span><span class="p">(</span><span class="n">fullname</span><span class="p">,</span> <span class="n">_loader</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">init_path</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">module_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">ModuleSpec</span><span class="p">(</span><span class="n">fullname</span><span class="p">,</span> <span class="n">_loader</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">module_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
 <div class="viewcode-block" id="PathImporter"><a class="viewcode-back" href="../../../api/jina.importer/#jina.importer.PathImporter">[docs]</a><span class="k">class</span> <span class="nc">PathImporter</span><span class="p">:</span>
     <span class="sd">"""The class to import modules from paths."""</span>
 
@@ -504,6 +556,7 @@
                 <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'cannot import module from </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s1">, file not exist'</span>
                 <span class="p">)</span>
+
             <span class="n">module</span> <span class="o">=</span> <span class="n">PathImporter</span><span class="o">.</span><span class="n">_path_import</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">module</span></div>
 

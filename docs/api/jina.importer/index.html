@@ -427,6 +427,45 @@
 </dl>
 </dd></dl>
 <dl class="py class">
+<dt id="jina.importer.ExtensionFileLoader">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.importer.</span></code><code class="sig-name descname"><span class="pre">ExtensionFileLoader</span></code><a class="reference internal" href="../../_modules/jina/importer/#ExtensionFileLoader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.ExtensionFileLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">importlib.abc.Loader</span></code></p>
+<p>Loader for extension modules.</p>
+<dl class="py method">
+<dt id="jina.importer.ExtensionFileLoader.exec_module">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">exec_module</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/importer/#ExtensionFileLoader.exec_module"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.ExtensionFileLoader.exec_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize an extension module</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>module</strong> – a namespace module</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt id="jina.importer.ExtensionPathFinder">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.importer.</span></code><code class="sig-name descname"><span class="pre">ExtensionPathFinder</span></code><a class="reference internal" href="../../_modules/jina/importer/#ExtensionPathFinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.ExtensionPathFinder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Meta path finder for extentions modules</p>
+<dl class="py method">
+<dt id="jina.importer.ExtensionPathFinder.find_spec">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">find_spec</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fullname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/importer/#ExtensionPathFinder.find_spec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.ExtensionPathFinder.find_spec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to find a spec for the specified module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fullname</strong> – module full name</p></li>
+<li><p><strong>paths</strong> – the search paths</p></li>
+<li><p><strong>target</strong> – the target</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a module spec</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
 <dt id="jina.importer.PathImporter">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.importer.</span></code><code class="sig-name descname"><span class="pre">PathImporter</span></code><a class="reference internal" href="../../_modules/jina/importer/#PathImporter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.importer.PathImporter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
