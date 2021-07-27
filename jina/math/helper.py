@@ -3,6 +3,13 @@ from typing import Tuple
 import numpy as np
 
 
+def minmax_normalize(x: 'np.ndarray', t_range: Tuple = (0, 1)):
+    min_d = np.min(x)
+    max_d = np.max(x)
+    a, b = t_range
+    return (b - a) * (x - min_d) / (max_d - min_d) + a
+
+
 def top_k(
     values: 'np.ndarray', k: int, descending: bool = False
 ) -> Tuple['np.ndarray', 'np.ndarray']:

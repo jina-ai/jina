@@ -106,6 +106,6 @@ class MyIndexer(Executor):
         docs.match(
             self._docs,
             metric='cosine',
-            is_distance=False,
+            normalization=(1, 0),
             limit=1,
         )
