@@ -31,8 +31,9 @@ jobs:
       - name: Upload output
         uses: actions/upload-artifact@v2
         with:
-          name: latency-tracking
+          name: lt-current
           path: /var/output/
+          if-no-files-found: error
 
   previous-releases:
     runs-on: ubuntu-latest
@@ -63,8 +64,9 @@ jobs:
       - name: Upload output
         uses: actions/upload-artifact@v2
         with:
-          name: latency-tracking
+          name: lt-prev
           path: /var/output/
+          if-no-files-found: error
 
   comment-on-pr:
     needs:
@@ -72,15 +74,24 @@ jobs:
       - previous-releases
     runs-on: ubuntu-latest
     steps:
-      - name: Download output
+      - run: mkdir -p /var/output
+      - name: Download output from current
         uses: actions/download-artifact@v2
         with:
-          name: latency-tracking
-          path: /var/output/
-      - uses: actions/setup-python@v2
+          name: lt-current
+          path: /var/output
+      - name: Download output from previous-releases
+        uses: actions/download-artifact@v2
+        with:
+          name: lt-prev
+          path: /var/output
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: /var/output/
+      - name: prepare comment
+        uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: prepare comment
         run: |
           pip install prettytable==2.1.0
           python latency/ppstat.py ${{ env.NUM_LAST_RELEASE }} /var/output/stats.json > latency/comment.txt
