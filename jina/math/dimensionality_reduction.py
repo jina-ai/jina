@@ -31,14 +31,20 @@ class PCA:
 
         # Projection matrix contains eigenvectors sorted
         self.w = e_vectors
+        self.e_values = e_values
 
-    def transform(self, x_mat: np.ndarray) -> np.ndarray:
+    def transform(self, x_mat: np.ndarray, whitening: bool = True) -> np.ndarray:
         """Projects data from n_features to self.k features.
 
         :param x_mat: Matrix of shape (n_observations, n_features)
+        :param whitening: Boolean stating if whitening normalization is expected.
         :return: Matrix of shape (n_observations, self.k)
         """
-        return x_mat.dot(self.w[:, : self.k])
+        x_mat_projected = x_mat.dot(self.w[:, : self.k])
+        if whitening:
+            return x_mat_projected / np.sqrt(self.e_values)
+        else:
+            return x_mat_projected
 
     def fit_transform(self, x_mat: np.ndarray) -> np.ndarray:
         """Fits the PCA and returns a transformed data
