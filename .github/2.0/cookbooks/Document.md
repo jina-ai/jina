@@ -961,10 +961,10 @@ The following image shows how `DocumentArrayA` finds `limit=5` matches from the 
 
 ![match_illustration_5](https://github.com/jina-ai/jina/blob/master/.github/images/match_illustration_5.svg)
 
-More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, is_distance=True, limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
+More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
 
 - `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` 
--  `is_distance=True` interprets the input metric as a distance (lower metric values imply closer elements), otherwise it is considered a similairty  (higher metric values imply closer elements).
+- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
 
 The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from the elements in `da_2`.
 
@@ -986,14 +986,14 @@ d5_m = Document(embedding=np.array([4,5.2,2,1,0]))
 da_1  = DocumentArray([d1, d2, d3, d4])
 da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
 
-da_1.match(da_2, metric='euclidean', is_distance=True, limit=3)
+da_1.match(da_2, metric='euclidean', limit=3)
 query = da_1[2]
 print(f'query emb = {query.embedding}')
 for m in query.matches:
-    print('match emb ='m.embedding, 'score =', m.scores['euclidean'].value)
+    print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
 ```
 
-```python
+```text
 executed in 12ms, finished 11:28:38 2021-07-22
 query emb = [1 1 1 1 0]
 match emb = [1.  1.2 1.  1.  0. ] score = 0.20000000298023224

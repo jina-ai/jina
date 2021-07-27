@@ -103,7 +103,7 @@ class Indexer(Executor):
 
     @requests(on='/search')
     def bar(self, docs: DocumentArray, **kwargs):        
-         docs.match(self._docs, metric='euclidean', is_distance=True, limit=20)
+         docs.match(self._docs, metric='euclidean', limit=20)
         
 f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:

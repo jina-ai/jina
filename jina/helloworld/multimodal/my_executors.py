@@ -216,7 +216,7 @@ class DocVectorIndexer(Executor):
         docs.match(
             self._docs,
             metric='cosine',
-            is_distance=False,
+            normalization=(1, 0),
             limit=int(parameters['top_k']),
         )
 
