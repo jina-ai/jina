@@ -480,9 +480,23 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="c1"># NOTE, this could simplified to random.sample(self, k)</span>
+        <span class="c1"># without getting indices and itemgetter etc.</span>
+        <span class="c1"># however it's only work on DocumentArray, not DocumentArrayMemmap.</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)),</span> <span class="n">k</span><span class="p">)</span>
         <span class="n">sampled</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">)(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">sampled</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">sampled</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DocumentArraySearchOpsMixin.shuffle"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.search_ops/#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.shuffle">[docs]</a>    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DocumentArray'</span><span class="p">:</span>
+        <span class="sd">"""Randomly shuffle documents within the :class:`DocumentArray`.</span>
+
+<span class="sd">        :param seed: initialize the random number generator, by default is None. If set will</span>
+<span class="sd">            save the state of the random function to produce certain outputs.</span>
+<span class="sd">        :return: The shuffled list of :class:`Document` represented as :class:`DocumentArray`.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+        <span class="k">return</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">))</span></div></div>
 </pre></div>
       </article>
       <footer>
