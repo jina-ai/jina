@@ -53,6 +53,7 @@ Table of Contents
   - [Access nested attributes from tags](#access-nested-attributes-from-tags)
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
   - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
+  - [Random sample a subset of Documents from a `DocumentArray` using `sample`](#random-sample-a-subset-of-documents-from-a-documentarray-using-sample)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
   - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
@@ -960,10 +961,10 @@ The following image shows how `DocumentArrayA` finds `limit=5` matches from the 
 
 ![match_illustration_5](https://github.com/jina-ai/jina/blob/master/.github/images/match_illustration_5.svg)
 
-More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, is_distance=True, limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
+More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
 
-- `metric` can be `'cosine'`, `'euclidean'`,  `'euclidean_squared'` 
--  `is_distance=True` interprets the input metric as a distance (lower metric values imply closer elements), otherwise it is considered a similairty  (higher metric values imply closer elements).
+- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` 
+- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
 
 The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from the elements in `da_2`.
 
@@ -985,14 +986,14 @@ d5_m = Document(embedding=np.array([4,5.2,2,1,0]))
 da_1  = DocumentArray([d1, d2, d3, d4])
 da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
 
-da_1.match(da_2, metric='euclidean', is_distance=True, limit=3)
+da_1.match(da_2, metric='euclidean', limit=3)
 query = da_1[2]
 print(f'query emb = {query.embedding}')
 for m in query.matches:
-    print('match emb ='m.embedding, 'score =', m.scores['euclidean'].value)
+    print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
 ```
 
-```python
+```text
 executed in 12ms, finished 11:28:38 2021-07-22
 query emb = [1 1 1 1 0]
 match emb = [1.  1.2 1.  1.  0. ] score = 0.20000000298023224
@@ -1052,9 +1053,23 @@ dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
 dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
 ```
 
+### Random sample a subset of Documents from a `DocumentArray` using `sample`
 
+`DocumentArray` provides function `.sample` that sample `k` elements without replacement.
+It accepts 2 parameters, `k` and `seed`. `k` is used to define the number of elements to sample, and `seed`
+helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the document array.
 
+To make use of the function:
 
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random document array
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 documents into `da`
+sampled_da = da.sample(k=10)  # sample 10 documents
+sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
+```
 
 
 
@@ -1175,6 +1190,8 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `__bool__` |✅|✅|
 | `__eq__` |✅|✅|
 | `save`, `load` |❌ unnecessary |✅|
+| `sample` |✅ |✅|
+| `match` |✅ |❌|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 

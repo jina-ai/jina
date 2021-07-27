@@ -3,10 +3,16 @@ import os
 from typing import List
 
 
-def api_to_dict():
+def api_to_dict(show_all_args: bool = False):
     """Convert Jina API to a dict
+    :param show_all_args: if set, then hidden args are also exported
     :return: dict
     """
+    if show_all_args:
+        from jina.parsers import helper
+
+        helper._SHOW_ALL_ARGS, old_val = True, helper._SHOW_ALL_ARGS
+
     from jina import __version__
     from jina.parsers import get_main_parser
 
@@ -41,6 +47,9 @@ def api_to_dict():
             parent_d['methods'].append(d)
 
     get_p(get_main_parser, all_d)
+
+    if show_all_args:
+        helper._SHOW_ALL_ARGS = old_val
 
     return all_d
 
