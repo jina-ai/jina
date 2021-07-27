@@ -158,19 +158,31 @@ class DocumentArrayMemmap(
             self._body.flush()
 
     def _iteridx_by_slice(self, s: slice):
-        start, stop, step = s.start or 0, s.stop or self.__len__(), s.step or 1
-        if (
-            start < -self.__len__()
-            or start > self.__len__()
-            or stop < -self.__len__()
-            or stop > self.__len__()
-        ):
-            raise IndexError(f'index slice out of bound')
-        if 0 > stop > -self.__len__():
+        start, stop, step = (
+            s.start or 0,
+            s.stop if s.stop is not None else self.__len__(),
+            s.step or 1,
+        )
+        if 0 > stop >= -self.__len__():
             stop = stop + self.__len__()
 
-        if 0 > start > -self.__len__():
+        if 0 > start >= -self.__len__():
             start = start + self.__len__()
+
+        # if start and stop are in order, put them inside bounds
+        # otherwise, range will return an empty iterator
+        if start <= stop:
+            if (start < 0 and stop < 0) or (
+                start > self.__len__() and stop > self.__len__()
+            ):
+                start, stop = 0, 0
+            elif start < 0 and stop > self.__len__():
+                start, stop = 0, self.__len__()
+            elif start < 0:
+                start = 0
+            elif stop > self.__len__():
+                stop = self.__len__()
+
         return range(start, stop, step)
 
     def _get_doc_array_by_slice(self, s: slice):
