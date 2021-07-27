@@ -1,11 +1,10 @@
-from typing import Optional, Dict, Tuple
+from typing import Optional, Dict
 
 import numpy as np
 import torch
-from transformers import AutoModel, AutoTokenizer
-
-from jina import Executor, DocumentArray, requests, Document
+from jina import Executor, DocumentArray, requests
 from jina.types.arrays.memmap import DocumentArrayMemmap
+from transformers import AutoModel, AutoTokenizer
 
 
 class MyTransformer(Executor):
@@ -107,6 +106,6 @@ class MyIndexer(Executor):
         docs.match(
             self._docs,
             metric='cosine',
-            is_distance=False,
+            normalization=(1, 0),
             limit=1,
         )

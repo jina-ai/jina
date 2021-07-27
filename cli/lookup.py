@@ -41,7 +41,7 @@ def _build_lookup_table():
                     noise2key[kk] = k
         return noise2key
 
-    build_invert_index(api_to_dict())
+    build_invert_index(api_to_dict(show_all_args=True))
     nkw2kw = build_noisy_index(all_keywords)
     return nkw2kw, all_keywords
 
@@ -84,12 +84,15 @@ def _prettyprint_help(d, also_in=None):
             f'{k + ": " + colored(v, attrs="bold")}' for k, v in table.items()
         )
 
+        lb = '\033[F'
+        import argparse
+
         print(
             f'''
-    {colored(d['name'], attrs='bold')} is a CLI argument of Jina. 
+    {colored(d['name'], attrs='bold')} is {colored('an internal CLI of Jina, should not be used directly', color='yellow') if d['help'] == argparse.SUPPRESS else 'a CLI argument of Jina.'}. 
     It is available in {availables} {option_str}
     
-    {colored(d['help'], attrs='bold')}
+    {colored(d['help'], attrs='bold') if d['help'] != argparse.SUPPRESS else lb * 2}
 
     {table_str}
         '''
