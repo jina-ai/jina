@@ -7,7 +7,7 @@ jobs:
   latency-tracking:
     runs-on: ubuntu-latest
     env:
-      NUM_LAST_RELEASE: 2
+      NUM_LAST_RELEASE: 1
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.0
