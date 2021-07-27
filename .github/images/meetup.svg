@@ -4,7 +4,7 @@
             <style>
             p {
                 font-family: sans-serif;
-                font-size: 12pt;
+                font-size: max(1em, 12px);
                 <!--animation: mymove 2s infinite;-->
             }
 
