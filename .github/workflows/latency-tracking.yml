@@ -74,7 +74,7 @@ jobs:
       - previous-releases
     runs-on: ubuntu-latest
     steps:
-      - run: mkdir -p /var/output
+      - run: sudo mkdir -p /var/output
       - name: Download output from current
         uses: actions/download-artifact@v2
         with:
