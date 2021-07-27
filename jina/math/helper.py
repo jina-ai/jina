@@ -4,6 +4,16 @@ import numpy as np
 
 
 def minmax_normalize(x: 'np.ndarray', t_range: Tuple = (0, 1)):
+    """Normalize values in `x` into `t_range`.
+
+    .. note::
+        - with `t_range=(0, 1)` will normalize the min-value of the data to 0, max to 1;
+        - with `t_range=(1, 0)` will normalize the min-value of the data to 1, max value of the data to 0.
+
+    :param x: the data to be normalized
+    :param t_range: a tuple represents the target range.
+    :return: normalized data in `t_range`
+    """
     min_d = np.min(x)
     max_d = np.max(x)
     a, b = t_range
