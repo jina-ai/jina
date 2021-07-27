@@ -19,6 +19,18 @@ class AsyncPeaClient(AsyncBaseClient):
     _endpoint = '/peas'
 
     @if_alive
+    async def arguments(self) -> Optional[Dict]:
+        """Get all arguments accepted by a remote Pea/Pod
+
+        :return: dict arguments of remote JinaD
+        """
+        async with aiohttp.request(
+            method='GET', url=f'{self.store_api}/arguments'
+        ) as response:
+            if response.status == HTTPStatus.OK:
+                return await response.json()
+
+    @if_alive
     async def create(
         self, workspace_id: Union[str, 'DaemonID'], payload: Dict
     ) -> Optional[str]:

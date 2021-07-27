@@ -16,12 +16,13 @@ class AsyncToSyncMixin:
         """
         f = getattr(super(), func_name, None)
         if f:
-            return run_async(f, *args, **kwargs)
+            return run_async(f, any_event_loop=True, *args, **kwargs)
 
     alive = partialmethod(func, 'alive')
     status = partialmethod(func, 'status')
     get = partialmethod(func, 'get')
     list = partialmethod(func, 'list')
+    arguments = partialmethod(func, 'arguments')
     create = partialmethod(func, 'create')
     update = partialmethod(func, 'update')
     delete = partialmethod(func, 'delete')
