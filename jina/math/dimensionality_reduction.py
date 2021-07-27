@@ -4,9 +4,11 @@ import numpy as np
 class PCA:
     """A class for PCA dimensionality reduction in Jina."""
 
-    def __init__(self, k: int, whitening: bool = False):
-        self.k = k
+    def __init__(self, n_components: int, whitening: bool = False):
+        self.n_components = n_components
         self.whitening = whitening
+        self.e_values = None
+        self.w = None
 
     def fit(self, x_mat: np.ndarray):
         """
@@ -35,22 +37,22 @@ class PCA:
         self.e_values = e_values
 
     def transform(self, x_mat: np.ndarray) -> np.ndarray:
-        """Projects data from n_features to self.k features.
+        """Projects data from n_features to self.n_components features.
 
         :param x_mat: Matrix of shape (n_observations, n_features)
-        :return: Matrix of shape (n_observations, self.k)
+        :return: Matrix of shape (n_observations, self.n_components)
         """
-        x_mat_projected = x_mat.dot(self.w[:, : self.k])
-        if self.whitening:
-            return x_mat_projected / np.sqrt(self.e_values[0 : self.k])
-        else:
-            return x_mat_projected
+        if self.w is not None:
+            x_mat_projected = x_mat.dot(self.w[:, : self.n_components])
+            if self.whitening:
+                return x_mat_projected / np.sqrt(self.e_values[0 : self.n_components])
+            else:
+                return x_mat_projected
 
     def fit_transform(self, x_mat: np.ndarray) -> np.ndarray:
         """Fits the PCA and returns a transformed data
         :param x_mat:  Matrix of shape (n_observations, n_features)
-        :return: Matrix of shape (n_observations, self.k)
+        :return: Matrix of shape (n_observations, self.n_components)
         """
-
         self.fit(x_mat)
         return self.transform(x_mat)

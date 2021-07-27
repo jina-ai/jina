@@ -5,6 +5,7 @@ import numpy as np
 
 from jina import Document
 from ...math.helper import top_k, minmax_normalize
+from ...math.dimensionality_reduction import PCA
 
 if False:
     from .document import DocumentArray
@@ -82,3 +83,30 @@ class DocumentArrayNeuralOpsMixin:
                 d = Document(darray[int(_id)], copy=True)
                 d.scores[m_name] = _dist
                 _q.matches.append(d)
+
+    def visualize(
+        self, colors: Union[None, np.ndarray] = None, file_path: Union[None, str] = None
+    ):
+        """Visualize embeddings in a 2D projection with the PCA algorithm.
+
+        :param colors: Optional np.ndarray of lengh equal to len(self) containing integers for colors.
+        :param file_path: Optional path to store the visualization.
+        """
+
+        import matplotlib.pyplot as plt
+
+        pca = PCA(n_components=2)
+        x_mat = np.stack(self.get_attributes('embedding'))
+        x_mat_2d = pca.fit_transform(x_mat)
+
+        if colors is None:
+            plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1])
+        else:
+            plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1], c=colors)
+
+        plt.title('PCA projection')
+        plt.xlabel('PCA component 0')
+        plt.ylabel('PCA component 1')
+
+        if file_path:
+            plt.savefig(file_path)
