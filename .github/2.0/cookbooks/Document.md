@@ -54,6 +54,7 @@ Table of Contents
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
   - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
   - [Random sample a subset of Documents from a `DocumentArray` using `sample`](#random-sample-a-subset-of-documents-from-a-documentarray-using-sample)
+  - [Shuffle the `DocumentArray` using `shuffle`](#shuffle-the-documentarray-using-shuffle)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
   - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
@@ -1071,6 +1072,22 @@ sampled_da = da.sample(k=10)  # sample 10 documents
 sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
 ```
 
+### Shuffle the `DocumentArray` using `shuffle`
+
+`DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`.
+It accepts the parameter `seed`.  `seed` helps you generate pseudo random results. By default, `seed` is None.
+
+To make use of the function:
+
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random document array
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 documents into `da`
+shuffled_da = da.shuffle()  # shuffle the DocumentArray
+shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
+```
 
 
 ## `DocumentArrayMemmap` API
@@ -1191,6 +1208,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `__eq__` |✅|✅|
 | `save`, `load` |❌ unnecessary |✅|
 | `sample` |✅ |✅|
+| `shuffle` |✅ |✅|
 | `match` |✅ |❌|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
