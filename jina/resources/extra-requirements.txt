@@ -65,3 +65,4 @@ aiostream:                  devel, cicd, async, client, standard, daemon
 jsonschema:                 cicd
 dgl==0.6.1:                 cicd, graph
 black==20.8b1:              cicd
+matplotlib>=3.3.1:          devel
