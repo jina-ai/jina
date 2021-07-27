@@ -4,8 +4,11 @@ on:
   - pull_request
 
 jobs:
-  current:
+  nth-releases:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        last_nth_release: [master, 1, 2]
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.0
@@ -22,68 +25,36 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Run current latency vs. last ${{ env.NUM_LAST_RELEASE }} versions
-        run: |
-          sudo rm -f .dockerignore
-          sudo mkdir -p /var/output
-          docker build --build-arg JINA_VER=master -f latency/Dockerfile -t latency-tracking .
-          docker run -v /var/output:/app/output latency-tracking
-      - name: Upload output
-        uses: actions/upload-artifact@v2
-        with:
-          name: lt-current
-          path: /var/output/
-          if-no-files-found: error
-
-  previous-releases:
-    runs-on: ubuntu-latest
-    env:
-      NUM_LAST_RELEASE: 1
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v2
-      - name: Test docker install
-        run: |
-          docker build --build-arg PIP_TAG="[devel]" -f Dockerfiles/pip.Dockerfile -t jinaai/jina:master .
-      - uses: actions/checkout@v2
-        with:
-          repository: jina-ai/latency-tracking
-          path: latency
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: Run current latency vs. last ${{ env.NUM_LAST_RELEASE }} versions
+      - name: Tracking latency of nth version
         run: |
           sudo rm -f .dockerignore
           sudo mkdir -p /var/output
           sudo apt-get install jq
-          bash latency/batch.sh ${{ env.NUM_LAST_RELEASE }}
+          bash latency/track.sh ${{ matrix.last_nth_release }}
       - name: Upload output
         uses: actions/upload-artifact@v2
         with:
-          name: lt-prev
+          name: lt-${{ matrix.last_nth_release }}
           path: /var/output/
           if-no-files-found: error
 
   comment-on-pr:
-    needs:
-      - current
-      - previous-releases
+    needs: nth-releases
     runs-on: ubuntu-latest
     steps:
       - run: mkdir -p output
-      - name: Download output from current
+      - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: lt-current
+          name: lt-master
           path: output
-      - name: Download output from previous-releases
-        uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v2
         with:
-          name: lt-prev
+          name: lt-1
+          path: output
+      - uses: actions/download-artifact@v2
+        with:
+          name: lt-2
           path: output
       - name: Display structure of downloaded files
         run: ls -R
