@@ -423,7 +423,7 @@
         <span class="n">docs</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">,</span>
             <span class="n">metric</span><span class="o">=</span><span class="s1">'cosine'</span><span class="p">,</span>
-            <span class="n">is_distance</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">normalization</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
             <span class="n">limit</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="s1">'top_k'</span><span class="p">]),</span>
         <span class="p">)</span></div></div>
 

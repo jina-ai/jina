@@ -388,13 +388,12 @@
         </label>
         <h1>Source code for jina.types.arrays.neural_ops</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">inf</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">...math.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
-<span class="kn">from</span> <span class="nn">...math.helper</span> <span class="kn">import</span> <span class="n">top_k</span>
+<span class="kn">from</span> <span class="nn">...math.helper</span> <span class="kn">import</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">minmax_normalize</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -407,42 +406,70 @@
 <div class="viewcode-block" id="DocumentArrayNeuralOpsMixin.match"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">darray</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="s1">'DocumentArrayMemmap'</span><span class="p">],</span>
-        <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'cosine'</span><span class="p">,</span>
+        <span class="n">metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
+            <span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="s1">'np.ndarray'</span><span class="p">],</span> <span class="s1">'np.ndarray'</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="s1">'cosine'</span><span class="p">,</span>
         <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">inf</span><span class="p">,</span>
-        <span class="n">is_distance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">normalization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">metric_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Compute embedding based nearest neighbour in `another` for each Document in `self`,</span>
 <span class="sd">        and store results in `matches`.</span>
 
-<span class="sd">        Note:</span>
-<span class="sd">            - If metric is 'cosine' it uses the cosine **distance**.</span>
-<span class="sd">            - If metric is 'euclidean' it uses the euclidean **distance**.</span>
-<span class="sd">            - If metric is 'sqeuclidean' it uses the euclidean **distance** squared.</span>
+<span class="sd">        .. note::</span>
+<span class="sd">            'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.</span>
+
+<span class="sd">            You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,</span>
+<span class="sd">            ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,</span>
+<span class="sd">            ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,</span>
+<span class="sd">            ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.</span>
+
+<span class="sd">            To use scipy metric, please set ``use_scipy=True``.</span>
+
+<span class="sd">        - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``</span>
+<span class="sd">        - To invert the distance as score and make all values in range [0, 1],</span>
+<span class="sd">            use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.</span>
 
 <span class="sd">        :param darray: the other DocumentArray or DocumentArrayMemmap to match against</span>
 <span class="sd">        :param metric: the distance metric</span>
 <span class="sd">        :param limit: the maximum number of matches, when not given</span>
 <span class="sd">                      all Documents in `another` are considered as matches</span>
-<span class="sd">        :param is_distance: Boolean flag informing if `metric` values want to be considered as distances or scores.</span>
+<span class="sd">        :param normalization: a tuple [a, b] to be used with min-max normalization,</span>
+<span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
+<span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
+<span class="sd">        :param use_scipy: use Scipy as the computation backend</span>
+<span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
 <span class="sd">        """</span>
 
         <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
         <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
         <span class="n">limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="p">))</span>
 
-        <span class="n">dists</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
-        <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_distance</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">'cosine'</span><span class="p">:</span>
-                <span class="n">dist</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">dist</span>
-            <span class="k">elif</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">'sqeuclidean'</span> <span class="ow">or</span> <span class="n">metric</span> <span class="o">==</span> <span class="s1">'euclidean'</span><span class="p">:</span>
-                <span class="n">dist</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">dist</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">use_scipy</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">...math.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">):</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'metric must be either string or a 2-arity function, received: </span><span class="si">{</span><span class="n">metric</span><span class="si">!r}</span><span class="s1">'</span>
+            <span class="p">)</span>
 
+        <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+                <span class="n">dist</span> <span class="o">=</span> <span class="n">minmax_normalize</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
+
+        <span class="n">m_name</span> <span class="o">=</span> <span class="n">metric_name</span> <span class="ow">or</span> <span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span> <span class="k">else</span> <span class="n">metric</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">_q</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
             <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">_dist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span><span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_id</span><span class="p">)],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">metric</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dist</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dist</span>
                 <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div></div>
 </pre></div>
       </article>

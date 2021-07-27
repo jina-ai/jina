@@ -411,6 +411,29 @@
         <div class="section" id="module-jina.math.helper">
 <span id="jina-math-helper-module"></span><h1>jina.math.helper module<a class="headerlink" href="#module-jina.math.helper" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt id="jina.math.helper.minmax_normalize">
+<code class="sig-prename descclassname"><span class="pre">jina.math.helper.</span></code><code class="sig-name descname"><span class="pre">minmax_normalize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/helper/#minmax_normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.helper.minmax_normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize values in <cite>x</cite> into <cite>t_range</cite>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>with <cite>t_range=(0, 1)</cite> will normalize the min-value of the data to 0, max to 1;</p></li>
+<li><p>with <cite>t_range=(1, 0)</cite> will normalize the min-value of the data to 1, max value of the data to 0.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – the data to be normalized</p></li>
+<li><p><strong>t_range</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>) – a tuple represents the target range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>normalized data in <cite>t_range</cite></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt id="jina.math.helper.top_k">
 <code class="sig-prename descclassname"><span class="pre">jina.math.helper.</span></code><code class="sig-name descname"><span class="pre">top_k</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/helper/#top_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.helper.top_k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds values and indices of the k largest entries for the last dimension.</p>
