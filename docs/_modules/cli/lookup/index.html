@@ -430,7 +430,7 @@
                     <span class="n">noise2key</span><span class="p">[</span><span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
         <span class="k">return</span> <span class="n">noise2key</span>
 
-    <span class="n">build_invert_index</span><span class="p">(</span><span class="n">api_to_dict</span><span class="p">())</span>
+    <span class="n">build_invert_index</span><span class="p">(</span><span class="n">api_to_dict</span><span class="p">(</span><span class="n">show_all_args</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
     <span class="n">nkw2kw</span> <span class="o">=</span> <span class="n">build_noisy_index</span><span class="p">(</span><span class="n">all_keywords</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">nkw2kw</span><span class="p">,</span> <span class="n">all_keywords</span>
 
@@ -473,12 +473,15 @@
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span> <span class="o">+</span> <span class="s2">": "</span> <span class="o">+</span> <span class="n">colored</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">)</span>
 
+        <span class="n">lb</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\033</span><span class="s1">[F'</span>
+        <span class="kn">import</span> <span class="nn">argparse</span>
+
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'''</span>
-<span class="s1">    </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span><span class="si">}</span><span class="s1"> is a CLI argument of Jina. </span>
+<span class="s1">    </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span><span class="si">}</span><span class="s1"> is </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="s1">'an internal CLI of Jina, should not be used directly'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'yellow'</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">'help'</span><span class="p">]</span> <span class="o">==</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span> <span class="k">else</span> <span class="s1">'a CLI argument of Jina.'</span><span class="si">}</span><span class="s1">. </span>
 <span class="s1">    It is available in </span><span class="si">{</span><span class="n">availables</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">option_str</span><span class="si">}</span><span class="s1"></span>
 <span class="s1">    </span>
-<span class="s1">    </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'help'</span><span class="p">],</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">    </span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'help'</span><span class="p">],</span> <span class="n">attrs</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">'help'</span><span class="p">]</span> <span class="o">!=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span> <span class="k">else</span> <span class="n">lb</span> <span class="o">*</span> <span class="mi">2</span><span class="si">}</span><span class="s1"></span>
 
 <span class="s1">    </span><span class="si">{</span><span class="n">table_str</span><span class="si">}</span><span class="s1"></span>
 <span class="s1">        '''</span>
@@ -532,7 +535,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 26, 2021.
+            Last updated on Jul 27, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
