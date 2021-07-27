@@ -260,10 +260,11 @@ def test_2arity_function(docarrays_for_embedding_distance_computation):
             assert 'dotp' in m.scores
 
 
-def test_pca_projection(embeddings):
+@pytest.mark.parametrize('whiten', [True, False])
+def test_pca_projection(embeddings, whiten):
     n_components = 2
     n_features = embeddings.shape[1]
-    pca = PCA(n_components=n_components)
+    pca = PCA(n_components=n_components, whiten=whiten)
     assert pca.e_values is None
     assert pca.w is None
     embeddings_transformed = pca.fit_transform(embeddings)

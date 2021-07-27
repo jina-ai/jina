@@ -4,9 +4,14 @@ import numpy as np
 class PCA:
     """A class for PCA dimensionality reduction in Jina."""
 
-    def __init__(self, n_components: int, whitening: bool = False):
+    def __init__(self, n_components: int, whiten: bool = False):
+        """
+
+        :param n_components: Number of components to keep when projecting with PCA
+        :param whiten: Flag variable stating if there projecting with whitening
+        """
         self.n_components = n_components
-        self.whitening = whitening
+        self.whiten = whiten
         self.e_values = None
         self.w = None
 
@@ -44,7 +49,7 @@ class PCA:
         """
         if self.w is not None:
             x_mat_projected = x_mat.dot(self.w[:, : self.n_components])
-            if self.whitening:
+            if self.whiten:
                 return x_mat_projected / np.sqrt(self.e_values[0 : self.n_components])
             else:
                 return x_mat_projected
