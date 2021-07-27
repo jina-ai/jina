@@ -55,7 +55,7 @@ Note,
 
     Note, 
     - To access all gpus, use `--gpus all`.
-    - To access multiple gpus, use `--gpus 2`.
+    - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
     - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
     - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
     - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
