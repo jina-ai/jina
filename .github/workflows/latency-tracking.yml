@@ -67,6 +67,9 @@ jobs:
           path: /var/output/
 
   comment-on-pr:
+    needs:
+      - current
+      - previous-releases
     runs-on: ubuntu-latest
     steps:
       - name: Download output
