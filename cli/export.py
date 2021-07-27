@@ -5,6 +5,7 @@ from typing import List
 
 def api_to_dict(show_all_args: bool = False):
     """Convert Jina API to a dict
+    :param show_all_args: if set, then hidden args are also exported
     :return: dict
     """
     if show_all_args:
