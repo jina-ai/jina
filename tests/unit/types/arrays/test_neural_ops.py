@@ -261,6 +261,11 @@ def test_2arity_function(docarrays_for_embedding_distance_computation):
 
 def test_pca_projection(embeddings):
     n_components = 2
+    n_features = embeddings.shape[1]
     pca = PCA(n_components=n_components)
+    assert pca.e_values is None
+    assert pca.w is None
     embeddings_transformed = pca.fit_transform(embeddings)
+    assert len(pca.e_values) == n_features
+    assert pca.w.shape[0] == n_features
     assert embeddings_transformed.shape[1] == n_components

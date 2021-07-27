@@ -99,11 +99,7 @@ class DocumentArrayNeuralOpsMixin:
         x_mat = np.stack(self.get_attributes('embedding'))
         x_mat_2d = pca.fit_transform(x_mat)
 
-        if colors is None:
-            plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1])
-        else:
-            plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1], c=colors)
-
+        plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1], c=colors)
         plt.title('PCA projection')
         plt.xlabel('PCA component 0')
         plt.ylabel('PCA component 1')
