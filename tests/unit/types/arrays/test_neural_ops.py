@@ -1,4 +1,5 @@
 import copy
+import os
 
 import numpy as np
 import pytest
@@ -269,3 +270,10 @@ def test_pca_projection(embeddings):
     assert len(pca.e_values) == n_features
     assert pca.w.shape[0] == n_features
     assert embeddings_transformed.shape[1] == n_components
+
+
+def test_pca_plot_generated(embeddings, tmpdir):
+    doc_array = DocumentArray([Document(embedding=x) for x in embeddings])
+    file_path = os.path.join(tmpdir, 'pca_plot.png')
+    doc_array.visualize(file_path=file_path)
+    assert os.path.exists(file_path)
