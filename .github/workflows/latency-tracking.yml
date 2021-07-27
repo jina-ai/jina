@@ -88,10 +88,10 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
         working-directory: /var/output/
-      - name: prepare comment
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - name: prepare comment
         run: |
           pip install prettytable==2.1.0
           python latency/ppstat.py ${{ env.NUM_LAST_RELEASE }} /var/output/stats.json > latency/comment.txt
