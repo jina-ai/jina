@@ -880,11 +880,11 @@
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas</span>
 <span class="sd">        :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.</span>
-<span class="sd">        :param gpus: Specify gpu to the inside the container.</span>
+<span class="sd">        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.</span>
 
 <span class="sd">              Note,</span>
 <span class="sd">              - To access all gpus, use `--gpus all`.</span>
-<span class="sd">              - To access multiple gpu access, use `--gpus 2`, start a gpu container on 2 gpus.</span>
+<span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
