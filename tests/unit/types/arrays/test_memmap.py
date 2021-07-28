@@ -307,3 +307,14 @@ def test_memmap_update_document(tmpdir):
 
     for idx, doc in enumerate(dam):
         assert doc.content == f'new content {idx}'
+
+
+def test_memmap_update_in_memory(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    candidates = list(random_docs(100))
+    dam.extend(candidates)
+    for idx, candidate in enumerate(candidates):
+        candidate.content = f'new content {idx}'
+
+    for idx, doc in enumerate(dam):
+        assert doc.content == f'new content {idx}'
