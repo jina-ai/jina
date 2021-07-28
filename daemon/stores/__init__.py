@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Type
 
 from .base import BaseStore
 from .flows import FlowStore
@@ -13,20 +13,12 @@ if TYPE_CHECKING:
     from .partial import PartialStore
 
 
-def _get_store(kind: str):
-    """Get store object
+def _get_store(cls: Type[BaseStore]) -> BaseStore:
+    """Get store object from cls
 
-    :param kind:  store kind
+    :param cls: store class
     :return: store object
     """
-    if kind == 'pea':
-        cls = PeaStore
-    elif kind == 'pod':
-        cls = PodStore
-    elif kind == 'flow':
-        cls = FlowStore
-    elif kind == 'workspace':
-        cls = WorkspaceStore
 
     if jinad_args.no_store:
         return cls()
@@ -55,7 +47,7 @@ def _get_partial_store() -> Optional['PartialStore']:
         return None
 
 
-def get_store_from_id(entity_id: DaemonID) -> BaseStore:
+def get_store_from_id(entity_id: DaemonID) -> Optional[BaseStore]:
     """Get store from id
 
     :param entity_id: DaemonID
@@ -73,8 +65,8 @@ def get_store_from_id(entity_id: DaemonID) -> BaseStore:
         return None
 
 
-pea_store: PeaStore = _get_store('pea')
-pod_store: PodStore = _get_store('pod')
-flow_store: FlowStore = _get_store('flow')
-workspace_store: WorkspaceStore = _get_store('workspace')
+pea_store: PeaStore = _get_store(PeaStore)
+pod_store: PodStore = _get_store(PodStore)
+flow_store: FlowStore = _get_store(FlowStore)
+workspace_store: WorkspaceStore = _get_store(WorkspaceStore)
 partial_store = _get_partial_store()

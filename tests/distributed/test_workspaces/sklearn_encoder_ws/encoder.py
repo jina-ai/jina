@@ -1,9 +1,9 @@
 from jina import Executor, requests
 
 
-class TFEncoder(Executor):
+class Encoder(Executor):
     @requests
     def foo(*args, **kwargs):
-        import tensorflow
+        import sklearn
 
         pass
