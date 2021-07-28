@@ -1,0 +1,7 @@
+manifest_version: 1
+name: {{exec_name}}
+alias: {{exec_name}}
+description: {{exec_description}}
+author: {{exec_author}}
+url: {{exec_url}}
+keywords: {{exec_keywords}}

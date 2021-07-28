@@ -1,0 +1,4 @@
+jtype: {{exec_name}}
+metas:
+  py_modules:
+    - executor.py
