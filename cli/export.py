@@ -18,8 +18,7 @@ def api_to_dict(show_all_args: bool = False):
 
     all_d = {
         'name': 'Jina',
-        'description': 'Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep '
-        'learning technology',
+        'description': 'Cloud-native neural search framework for any kind of data',
         'license': 'Apache 2.0',
         'vendor': 'Jina AI Limited',
         'source': 'https://github.com/jina-ai/jina/tree/'
