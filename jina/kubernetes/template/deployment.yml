@@ -25,3 +25,6 @@ spec:
           value: debug
         - name: PYTHONUNBUFFERED
           value: "1"
+        - name: WORKER_CLASS
+          value: "uvicorn.workers.UvicornH11Worker"
+

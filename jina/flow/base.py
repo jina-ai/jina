@@ -32,6 +32,7 @@ from ..hubble.helper import get_hubble_url, parse_hub_uri
 from ..hubble.hubio import HubIO
 from ..jaml import JAMLCompatible
 from ..kubernetes import kubernetes_tools
+from ..kubernetes.naive import naive_deployment
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
@@ -1574,7 +1575,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if deployment_type == 'k8s':
             # self.logger.info(f'✨ Deploy Flow on Kubernetes...')
             namespace = self.args.name
-            self.logger.info(f'📦 Create Namespace {namespace}')
+            self.logger.info(f'📦\tCreate Namespace {namespace}')
             kubernetes_tools.create('namespace', {'name': namespace})
 
             pod_to_args = {}
@@ -1586,7 +1587,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 image_name = meta_data.image_name
                 replicas = pod.args.replicas
                 self.logger.info(
-                    f'🔋 Create Service for "{pod_name}" with image "{name}" pulling from "{image_name}"'
+                    f'🔋\tCreate Service for "{pod_name}" with image "{name}" pulling from "{image_name}"'
                 )
                 kubernetes_tools.create(
                     'service',
@@ -1598,13 +1599,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         'type': 'ClusterIP',
                     },
                 )
-                cluster_ip = kubernetes_tools.get_service_cluster_ip(
-                    name.lower(), namespace
-                )
-                pod_to_args[pod_name] = {'host_in': cluster_ip}
+                # cluster_ip = kubernetes_tools.get_service_cluster_ip(
+                #     name.lower(), namespace
+                # )
+                pod_to_args[pod_name] = {'host_in': f'{name.lower()}.{namespace}.svc.cluster.local'}
 
                 self.logger.info(
-                    f'🐳 Create Deployment for "{image_name}" with replicas {replicas}'
+                    f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas}'
                 )
                 kubernetes_tools.create(
                     'deployment',
@@ -1618,7 +1619,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         'port': 8081,
                     },
                 )
-            self.logger.info(f'🔒 Create "gateway service"')
+            self.logger.info(f'🔒\tCreate "gateway service"')
             external_gateway_service = 'gateway-exposed'
             kubernetes_tools.create(
                 'service',
@@ -1641,11 +1642,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 },
             )
 
-            gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip(
-                'gateway-in', namespace
-            )
+            # gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip(
+            #     'gateway-in', namespace
+            # )
 
-            gateway_yaml = self.create_gateway_yaml(pod_to_args, gateway_cluster_ip)
+            gateway_yaml = self.create_gateway_yaml(pod_to_args, 'gateway-in.f1.svc.cluster.local')
             kubernetes_tools.create(
                 'deployment',
                 {
@@ -1659,8 +1660,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 },
             )
 
-            self.logger.info(f'🌐 Create "Ingress resource"')
-            kubernetes_tools.create_gateway_ingress(namespace)
+# self.logger.info(f'🌐\tCreate "Ingress resource"')
+            # kubernetes_tools.create_gateway_ingress(namespace)
         else:
             raise Exception(f'deployment type "{deployment_type}" is not supported')
 
@@ -1686,3 +1687,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # return yaml
         base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
         return base_64_yaml
+
+
+    def deploy_naive(self, deployment_type='k8s'):
+        naive_deployment.deploy(self, deployment_type)

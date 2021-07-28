@@ -10,5 +10,7 @@ spec:
   ports:
     - port: {port}
       targetPort: {port}
+      name: grpc
+      protocol: TCP
   selector:
     app: {target}

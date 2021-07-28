@@ -51,7 +51,7 @@ def create_gateway_ingress(namespace: str):
             name=f'{namespace}-ingress',
             annotations={
                 "nginx.ingress.kubernetes.io/rewrite-target": "/",
-                "linkerd.io/inject": "enabled",
+                # "linkerd.io/inject": "enabled",
             },
         ),
         spec=client.NetworkingV1beta1IngressSpec(
@@ -126,14 +126,14 @@ def log_in_thread(pod_name, namespace, container):
         namespace=namespace,
         container=container,
     ):
-        print(f"{UNDERLINE}{BOLD}{PASS}{pod_name}{ENDC} =>", e)
+        print(f"{UNDERLINE}{BOLD}{PASS}{pod_name}:{container}{ENDC} =>", e)
 
 
 def get_pod_logs(namespace):
     pods = v1.list_namespaced_pod(namespace)
     pod_names = [item.metadata.name for item in pods.items]
     for pod_name in pod_names:
-        for container in ['executor', 'linkerd-proxy']:
+        for container in ['executor', 'istio-proxy']: #, 'linkerd-proxy']:
             x = threading.Thread(
                 target=log_in_thread, args=(pod_name, namespace, container)
             )
