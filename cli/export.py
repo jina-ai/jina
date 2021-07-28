@@ -18,8 +18,7 @@ def api_to_dict(show_all_args: bool = False):
 
     all_d = {
         'name': 'Jina',
-        'description': 'Jina is the cloud-native neural search solution powered by state-of-the-art AI and deep '
-        'learning technology',
+        'description': 'Cloud-native neural search framework for any kind of data',
         'license': 'Apache 2.0',
         'vendor': 'Jina AI Limited',
         'source': 'https://github.com/jina-ai/jina/tree/'
@@ -34,17 +33,18 @@ def api_to_dict(show_all_args: bool = False):
 
     def get_p(p, parent_d):
         parsers = p()._actions[-1].choices
-        for p_name in parsers.keys():
-            d = {'name': p_name, 'options': [], 'help': parsers[p_name].description}
-            for ddd in _export_parser_args(
-                lambda *x: p()._actions[-1].choices[p_name], type_as_str=True
-            ):
-                d['options'].append(ddd)
+        if parsers:
+            for p_name in parsers.keys():
+                d = {'name': p_name, 'options': [], 'help': parsers[p_name].description}
+                for ddd in _export_parser_args(
+                    lambda *x: p()._actions[-1].choices[p_name], type_as_str=True
+                ):
+                    d['options'].append(ddd)
 
-            if not d['options']:
-                d['methods'] = []
-                get_p(lambda *x: parsers[p_name], d)
-            parent_d['methods'].append(d)
+                if not d['options']:
+                    d['methods'] = []
+                    get_p(lambda *x: parsers[p_name], d)
+                parent_d['methods'].append(d)
 
     get_p(get_main_parser, all_d)
 
