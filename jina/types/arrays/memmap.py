@@ -207,7 +207,7 @@ class DocumentArrayMemmap(
         else:
             raise TypeError(f'`key` must be int, str or slice, but receiving {key!r}')
 
-    def _del_doc(self, idx: int, str_key: str, key: Union[int, str, slice]):
+    def _del_doc(self, idx: int, str_key: str):
         p = idx * self._header_entry_size
         self._header.seek(p, 0)
 
@@ -230,15 +230,15 @@ class DocumentArrayMemmap(
         if isinstance(key, str):
             idx = self._str2int_id(key)
             str_key = key
-            self._del_doc(idx, str_key, key)
+            self._del_doc(idx, str_key)
         elif isinstance(key, int):
             idx = key
             str_key = self._int2str_id(idx)
-            self._del_doc(idx, str_key, key)
+            self._del_doc(idx, str_key)
         elif isinstance(key, slice):
             for idx in self._iteridx_by_slice(key):
                 str_key = self._int2str_id(idx)
-                self._del_doc(idx, str_key, str_key)
+                self._del_doc(idx, str_key)
         else:
             raise TypeError(f'`key` must be int, str or slice, but receiving {key!r}')
 
@@ -261,10 +261,14 @@ class DocumentArrayMemmap(
     def __setitem__(self, key: Union[int, str], value: 'Document') -> None:
         if isinstance(key, int):
             if 0 <= key < len(self):
+                str_key = self._int2str_id(key)
                 # override an existing entry
                 self.append(value)
-                self._header_map[self._int2str_id(key)] = self._header_map[value.id]
-                del self[value.id]
+                self._header_map[str_key] = self._header_map[value.id]
+
+                # allows overwriting an existing document
+                if str_key != value.id:
+                    del self[value.id]
             else:
                 raise IndexError(f'`key`={key} is out of range')
         elif isinstance(key, str):
