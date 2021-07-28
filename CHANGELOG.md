@@ -77,6 +77,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9818,4 +9819,20 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```be7d39d3```](https://github.com/jina-ai/jina/commit/be7d39d3f39d9f9708a81a9aac94efdd04e53e3a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```c62a8558```](https://github.com/jina-ai/jina/commit/c62a85589e233323694e5ea0a12e543d7c317234)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```a6055cd4```](https://github.com/jina-ai/jina/commit/a6055cd4561326b68b306e09256919e45616956e)] __-__ __version__: the next version will be 2.0.12 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-13></a>
+## Release Note (`2.0.13`)
+
+> Release time: 2021-07-28 13:31:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```ed264bcc```](https://github.com/jina-ai/jina/commit/ed264bccd69be95246e5def4b2a924b459ec2c6c)] __-__ remove benchmark core in tag (*Han Xiao*)
+ - [[```2ccab7d6```](https://github.com/jina-ai/jina/commit/2ccab7d68376e44b6f30cc65fe321177d28a5f45)] __-__ __version__: the next version will be 2.0.13 (*Jina Dev Bot*)
 
