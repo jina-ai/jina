@@ -2,9 +2,10 @@ from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
 from jina.parsers import set_pea_parser
-from ....excepts import Runtime400Exception
+
 from ....models import PeaModel
 from ....models.partial import PartialStoreItem
+from ....excepts import PartialDaemon400Exception
 from ....stores import partial_store as store
 
 router = APIRouter(prefix='/pea', tags=['pea'])
@@ -37,7 +38,7 @@ async def _create(pea: 'PeaModel'):
         args = ArgNamespace.kwargs2namespace(pea.dict(), set_pea_parser())
         return store.add(args)
     except Exception as ex:
-        raise Runtime400Exception from ex
+        raise PartialDaemon400Exception from ex
 
 
 @router.delete(
@@ -53,7 +54,7 @@ async def _delete():
     try:
         store.delete()
     except Exception as ex:
-        raise Runtime400Exception from ex
+        raise PartialDaemon400Exception from ex
 
 
 @router.on_event('shutdown')

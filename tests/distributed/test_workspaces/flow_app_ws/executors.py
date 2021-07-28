@@ -1,5 +1,6 @@
+import numpy as np
 from tinydb import TinyDB, where
-import torch
+from sklearn.utils import shuffle
 from jina import requests, Document, DocumentArray, Executor
 
 
@@ -20,8 +21,9 @@ class TinyDBIndexer(Executor):
                 doc.matches = [Document(tags=r[0])]
 
 
-class TorchExecutor(Executor):
+class SklearnExecutor(Executor):
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
+        """This just validates sklearn is installed in the workspace"""
         for doc in docs:
-            doc.embedding = torch.rand(2, 3).numpy()
+            doc.embedding = shuffle(np.random.rand(2, 3))

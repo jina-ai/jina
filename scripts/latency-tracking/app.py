@@ -269,7 +269,8 @@ def main() -> None:
     }.items():
         os.environ[k] = str(v)
 
-    write_stats(benchmark())
+    output_path = 'output/{}.json'.format(__version__)
+    write_stats(benchmark(), output_path)
     cleanup()
 
 

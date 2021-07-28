@@ -1,9 +1,11 @@
 import os
 
 import docker
-import requests
+import pytest
 
-from ..helpers import create_workspace, wait_for_workspace
+from jina import __default_host__
+from daemon.clients import JinaDClient
+from daemon.models.workspaces import WorkspaceItem
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,98 +21,77 @@ CLOUD_HOST = 'localhost:8000'  # consider it as the staged version
 
 
 def test_create_custom_container():
-    workspace_id = create_workspace(
-        filepaths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
+        paths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]
     )
-    assert wait_for_workspace(workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
+    workspace_details = WorkspaceItem(**workspace_details)
+    assert workspace_details.metadata.container_id
 
-    container_id = requests.get(
-        f'http://{CLOUD_HOST}/workspaces/{workspace_id}'
-    ).json()['metadata']['container_id']
-    assert container_id
-    container = docker.from_env().containers.get(container_id)
+    container = docker.from_env().containers.get(
+        workspace_details.metadata.container_id
+    )
     assert container.name == workspace_id
 
-    workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'custom_workspace_no_run')
+    workspace_id = client.workspaces.create(
+        paths=[os.path.join(cur_dir, 'custom_workspace_no_run')]
     )
-    assert wait_for_workspace(workspace_id)
-    container_id = requests.get(
-        f'http://{CLOUD_HOST}/workspaces/{workspace_id}'
-    ).json()['metadata']['container_id']
-    assert not container_id
+    workspace_details = client.workspaces.get(id=workspace_id)
+    workspace_details = WorkspaceItem(**workspace_details)
+    assert not workspace_details.metadata.container_id
 
 
 def test_update_custom_container():
-    workspace_id = create_workspace(
-        filepaths=[
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
+        paths=[
             os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad'),
             os.path.join(cur_dir, 'flow_app_ws/requirements.txt'),
         ]
     )
-    assert wait_for_workspace(workspace_id)
-
-    container_id, requirements, image_id = _container_info(workspace_id)
+    workspace_details = client.workspaces.get(id=workspace_id)
+    workspace_details = WorkspaceItem(**workspace_details)
+    container_id = workspace_details.metadata.container_id
     assert container_id
-    assert len(requirements) == 2
+    image_id = workspace_details.metadata.image_id
     assert image_id
+    assert len(workspace_details.arguments.requirements.split()) == 2
 
-    from contextlib import ExitStack
-
-    with ExitStack() as file_stack:
-        requests.put(
-            f'http://{CLOUD_HOST}/workspaces/{workspace_id}',
-            files=[
-                (
-                    'files',
-                    file_stack.enter_context(
-                        open(f'{cur_dir}/tf_encoder_ws/requirements.txt', 'rb')
-                    ),
-                )
-            ],
-        )
-        assert wait_for_workspace(workspace_id)
-        new_container_id, requirements, new_image_id = _container_info(workspace_id)
-        assert new_container_id
-        assert new_container_id != container_id
-        assert new_image_id
-        assert new_image_id != image_id
-        assert len(requirements) == 3
-
-
-def _container_info(workspace_id):
-    response = requests.get(f'http://{CLOUD_HOST}/workspaces/{workspace_id}').json()
-    return (
-        response['metadata']['container_id'],
-        (response['arguments']['requirements']).split(),
-        response['metadata']['image_id'],
+    workspace_id = client.workspaces.update(
+        id=workspace_id,
+        paths=[os.path.join(cur_dir, 'sklearn_encoder_ws/requirements.txt')],
     )
+    workspace_details = client.workspaces.get(id=workspace_id)
+    workspace_details = WorkspaceItem(**workspace_details)
+    new_container_id = workspace_details.metadata.container_id
+    assert new_container_id
+    assert new_container_id != container_id
+    new_image_id = workspace_details.metadata.image_id
+    assert new_image_id
+    assert new_image_id != image_id
+    assert len(workspace_details.arguments.requirements.split()) == 3
 
 
 def test_delete_custom_container():
-    workspace_id = create_workspace(
-        dirpath=os.path.join(cur_dir, 'custom_workspace_blocking')
+    client = JinaDClient(host=__default_host__, port=8000)
+    workspace_id = client.workspaces.create(
+        paths=[
+            os.path.join(cur_dir, 'custom_workspace_blocking'),
+        ]
     )
-    assert wait_for_workspace(workspace_id)
 
     # check that container was created
-    response = requests.get(f'http://{CLOUD_HOST}/workspaces/{workspace_id}')
-    container_id = response.json()['metadata']['container_id']
+    workspace_details = client.workspaces.get(id=workspace_id)
+    workspace_details = WorkspaceItem(**workspace_details)
+    container_id = workspace_details.metadata.container_id
     assert container_id
 
-    # delete container
-    requests.delete(
-        f'http://{CLOUD_HOST}/workspaces/{workspace_id}',
-        params={
-            'container': True,
-            'everything': False,
-            'network': False,
-            'files': False,
-        },
+    client.workspaces.delete(
+        id=workspace_id, container=True, network=False, files=False, everything=False
     )
-
     # check that deleted container is gone
-    response = requests.get(f'http://{CLOUD_HOST}/workspaces/{workspace_id}')
-    assert response.status_code == 200
-    container_id = response.json()['metadata']['container_id']
+    workspace_details = client.workspaces.get(id=workspace_id)
+    workspace_details = WorkspaceItem(**workspace_details)
+    container_id = workspace_details.metadata.container_id
     assert not container_id

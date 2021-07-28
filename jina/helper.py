@@ -1101,11 +1101,15 @@ def run_async(func, *args, **kwargs):
     .. see_also:
         https://stackoverflow.com/questions/55409641/asyncio-run-cannot-be-called-from-a-running-event-loop
 
+    call `run_async(my_function, any_event_loop=True, *args, **kwargs)` to enable run with any eventloop
+
     :param func: function to run
     :param args: parameters
     :param kwargs: key-value parameters
     :return: asyncio.run(func)
     """
+
+    any_event_loop = kwargs.pop('any_event_loop', False)
 
     class _RunThread(threading.Thread):
         """Create a running thread when in Jupyter notebook."""
@@ -1122,7 +1126,7 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if is_jupyter():
+        if any_event_loop or is_jupyter():
             thread = _RunThread()
             thread.start()
             thread.join()
@@ -1139,7 +1143,7 @@ def run_async(func, *args, **kwargs):
             raise RuntimeError(
                 'you have an eventloop running but not using Jupyter/ipython, '
                 'this may mean you are using Jina with other integration? if so, then you '
-                'may want to use Clien/Flow(asyncio=True). If not, then '
+                'may want to use Client/Flow(asyncio=True). If not, then '
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
