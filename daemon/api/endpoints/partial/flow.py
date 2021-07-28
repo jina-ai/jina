@@ -2,10 +2,11 @@ from fastapi import APIRouter
 
 from jina.helper import ArgNamespace
 from jina.parsers.flow import set_flow_parser
-from ....excepts import Runtime400Exception
+
 from ....models import FlowModel
 from ....models.enums import UpdateOperation
 from ....models.partial import PartialFlowItem
+from ....excepts import PartialDaemon400Exception
 from ....stores import partial_store as store
 
 router = APIRouter(prefix='/flow', tags=['flow'])
@@ -37,7 +38,7 @@ async def _create(flow: 'FlowModel', port_expose: int):
         args = ArgNamespace.kwargs2namespace(flow.dict(), set_flow_parser())
         return store.add(args, port_expose)
     except Exception as ex:
-        raise Runtime400Exception from ex
+        raise PartialDaemon400Exception from ex
 
 
 @router.put(
@@ -59,7 +60,7 @@ async def _update(
     try:
         return store.update(kind, dump_path, pod_name, shards)
     except ValueError as ex:
-        raise Runtime400Exception from ex
+        raise PartialDaemon400Exception from ex
 
 
 @router.delete(
@@ -75,7 +76,7 @@ async def _delete():
     try:
         store.delete()
     except Exception as ex:
-        raise Runtime400Exception from ex
+        raise PartialDaemon400Exception from ex
 
 
 @router.on_event('shutdown')
