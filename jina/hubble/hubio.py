@@ -101,19 +101,19 @@ class HubIO:
                 '''
 [bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold]. 
 
-This walkthrough guides you to create your own Executor in 30 seconds.''',
-                title='New Executor',
+This guide helps you to create your own Executor in 30 seconds.''',
+                title='Create New Executor',
             )
         )
 
         exec_name = Prompt.ask(
-            'What is the [bold]name[/bold] of your executor\n'
-            '[dim]CamelCase is recommended[/dim]',
+            ':grey_question: What is the [bold]name[/bold] of your executor?\n'
+            '[dim]CamelCase is required[/dim]',
             default=f'MyExecutor{random.randint(0, 100)}',
         )
 
         exec_path = Prompt.ask(
-            '[bold]Which folder[/bold] to store your executor',
+            ':grey_question: [bold]Which folder[/bold] to store your executor?',
             default=os.path.join(os.getcwd(), exec_name),
         )
 
@@ -125,13 +125,13 @@ This walkthrough guides you to create your own Executor in 30 seconds.''',
         is_dockerfile = False
 
         if Confirm.ask(
-            '[green]That\'s all we need to create an Executor[/green].\n'
-            'Or do you want to proceed to advanced configuration',
+            '[green]That\'s all we need to create an Executor![/green]\n'
+            ':grey_question: Or do you want to proceed to advanced configuration',
             default=False,
         ):
             exec_description = (
                 Prompt.ask(
-                    'Please give a [bold]short description[/bold] of your executor\n'
+                    ':grey_question: Please give a [bold]short description[/bold] of your executor?\n'
                     f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
                 )
                 or exec_description
@@ -139,7 +139,7 @@ This walkthrough guides you to create your own Executor in 30 seconds.''',
 
             exec_author = (
                 Prompt.ask(
-                    'What is the [bold]author name[/bold]\n'
+                    ':grey_question: What is the [bold]author name[/bold]?\n'
                     f'[dim]Example: John Doe[/dim]'
                 )
                 or exec_author
@@ -147,7 +147,7 @@ This walkthrough guides you to create your own Executor in 30 seconds.''',
 
             exec_keywords = (
                 Prompt.ask(
-                    'Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
+                    ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
                     f'[dim]Example: image cv embedding encoding resnet[/dim]'
                 )
                 or exec_keywords
@@ -155,7 +155,7 @@ This walkthrough guides you to create your own Executor in 30 seconds.''',
 
             exec_url = (
                 Prompt.ask(
-                    'What is the [bold]URL[/bold] for documentation/reference/more info?\n'
+                    ':grey_question: What is the [bold]URL[/bold] for documentation/reference/more info?\n'
                     f'[dim]Example: https://docs.jina.ai[/dim]'
                 )
                 or exec_url
@@ -175,11 +175,11 @@ your executor has non-trivial dependencies or must be run under certain environm
             )
 
             is_dockerfile = Confirm.ask(
-                'Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
+                ':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
                 default=False,
             )
 
-            print('[green]That\'s all we need to create an Executor[/green].')
+            print('[green]That\'s all we need to create an Executor![/green]')
 
         def mustache_repl(srcs):
             for src in track(
