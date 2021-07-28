@@ -446,11 +446,18 @@
         <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 
+    <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+        <span class="s1">'new'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'create a new executor using the template'</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'Create a new executor using the template'</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">set_hub_push_parser</span><span class="p">(</span>
         <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
             <span class="s1">'push'</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">'push an executor package to the Jina hub'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Push an executor package to the Jina hub'</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'push an executor package to Jina hub'</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'Push an executor package to Jina hub'</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -458,8 +465,8 @@
     <span class="n">set_hub_pull_parser</span><span class="p">(</span>
         <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
             <span class="s1">'pull'</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">'download an executor package/image from the Jina hub'</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'Download an executor package/image from the Jina hub'</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'download an executor image/package from Jina hub'</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'Download an executor image/package from Jina hub'</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>

@@ -390,6 +390,7 @@
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span>
@@ -405,6 +406,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">install_requirements</span>
 <span class="kn">from</span> <span class="nn">.hubapi</span> <span class="kn">import</span> <span class="n">install_local</span><span class="p">,</span> <span class="n">resolve_local</span><span class="p">,</span> <span class="n">load_secret</span><span class="p">,</span> <span class="n">dump_secret</span><span class="p">,</span> <span class="n">get_lockfile</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">..importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">..logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -465,6 +467,246 @@
             <span class="o">**</span><span class="n">envs</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">return</span> <span class="n">header</span>
+
+<div class="viewcode-block" id="HubIO.new"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Create a new executor folder interactively."""</span>
+
+        <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="nb">print</span><span class="p">,</span> <span class="n">box</span>
+        <span class="kn">from</span> <span class="nn">rich.prompt</span> <span class="kn">import</span> <span class="n">Prompt</span><span class="p">,</span> <span class="n">Confirm</span>
+        <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
+        <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+        <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
+        <span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="n">track</span>
+        <span class="kn">from</span> <span class="nn">rich.syntax</span> <span class="kn">import</span> <span class="n">Syntax</span>
+
+        <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">Panel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+                <span class="sd">'''</span>
+<span class="sd">[bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold]. </span>
+
+<span class="sd">This guide helps you to create your own Executor in 30 seconds.'''</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s1">'Create New Executor'</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">exec_name</span> <span class="o">=</span> <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+            <span class="s1">':grey_question: What is the [bold]name[/bold] of your executor?</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="s1">'[dim]CamelCase is required[/dim]'</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="sa">f</span><span class="s1">'MyExecutor</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">exec_path</span> <span class="o">=</span> <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+            <span class="s1">':grey_question: [bold]Which folder[/bold] to store your executor?'</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="n">exec_name</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">exec_description</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
+        <span class="n">exec_keywords</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
+        <span class="n">exec_author</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
+        <span class="n">exec_url</span> <span class="o">=</span> <span class="s1">'{{}}'</span>
+
+        <span class="n">is_dockerfile</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">Confirm</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+            <span class="s1">'[green]That</span><span class="se">\'</span><span class="s1">s all we need to create an Executor![/green]</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="s1">':grey_question: Or do you want to proceed to advanced configuration'</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">exec_description</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+                    <span class="s1">':grey_question: Please give a [bold]short description[/bold] of your executor?</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'[dim]Example: </span><span class="si">{</span><span class="n">exec_name</span><span class="si">}</span><span class="s1"> embeds images into 128-dim vectors using ResNet.[/dim]'</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="n">exec_description</span>
+            <span class="p">)</span>
+
+            <span class="n">exec_author</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+                    <span class="s1">':grey_question: What is the [bold]author name[/bold]?</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'[dim]Example: John Doe[/dim]'</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="n">exec_author</span>
+            <span class="p">)</span>
+
+            <span class="n">exec_keywords</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+                    <span class="s1">':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'[dim]Example: image cv embedding encoding resnet[/dim]'</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="n">exec_keywords</span>
+            <span class="p">)</span>
+
+            <span class="n">exec_url</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+                    <span class="s1">':grey_question: What is the [bold]URL[/bold] for documentation/reference/more info?</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">'[dim]Example: https://docs.jina.ai[/dim]'</span>
+                <span class="p">)</span>
+                <span class="ow">or</span> <span class="n">exec_url</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Panel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+                    <span class="sd">'''</span>
+<span class="sd">[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when </span>
+<span class="sd">your executor has non-trivial dependencies or must be run under certain environment. </span>
+
+<span class="sd">- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you. </span>
+<span class="sd">- If you provide one, then Jina will respect the given [bold]Dockerfile[/bold].'''</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s1">'[Optional] [bold]Dockerfile[/bold]'</span><span class="p">,</span>
+                    <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">is_dockerfile</span> <span class="o">=</span> <span class="n">Confirm</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+                <span class="s1">':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?'</span><span class="p">,</span>
+                <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'[green]That</span><span class="se">\'</span><span class="s1">s all we need to create an Executor![/green]'</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">mustache_repl</span><span class="p">(</span><span class="n">srcs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">track</span><span class="p">(</span>
+                <span class="n">srcs</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s1">'Creating </span><span class="si">{</span><span class="n">exec_name</span><span class="si">}</span><span class="s1">...'</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">srcs</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">'executor-template'</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exec_path</span><span class="p">,</span> <span class="n">src</span><span class="p">),</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fpw</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_name}}'</span><span class="p">,</span> <span class="n">exec_name</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_description}}'</span><span class="p">,</span> <span class="n">exec_description</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_keywords}}'</span><span class="p">,</span> <span class="n">exec_keywords</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_author}}'</span><span class="p">,</span> <span class="n">exec_author</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{{exec_url}}'</span><span class="p">,</span> <span class="n">exec_url</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+                    <span class="n">f</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">v</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s1">'{{'</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">or</span> <span class="s1">'}}'</span> <span class="ow">in</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="p">]</span>
+                    <span class="n">fpw</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="n">Path</span><span class="p">(</span><span class="n">exec_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">pkg_files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">'executor.py'</span><span class="p">,</span>
+            <span class="s1">'manifest.yml'</span><span class="p">,</span>
+            <span class="s1">'README.md'</span><span class="p">,</span>
+            <span class="s1">'requirements.txt'</span><span class="p">,</span>
+            <span class="s1">'config.yml'</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">is_dockerfile</span><span class="p">:</span>
+            <span class="n">pkg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Dockerfile'</span><span class="p">)</span>
+
+        <span class="n">mustache_repl</span><span class="p">(</span><span class="n">pkg_files</span><span class="p">)</span>
+
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Filename'</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Description'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'executor.py'</span><span class="p">,</span> <span class="s1">'The main logic file of the Executor.'</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="s1">'config.yml'</span><span class="p">,</span>
+            <span class="s1">'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.'</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="s1">''</span><span class="p">,</span>
+            <span class="n">Panel</span><span class="p">(</span>
+                <span class="n">Syntax</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'''</span>
+<span class="s1">jtype: </span><span class="si">{</span><span class="n">exec_name</span><span class="si">}</span><span class="s1"></span>
+<span class="s1">with:</span>
+<span class="s1">    foo: 1</span>
+<span class="s1">    bar: hello</span>
+<span class="s1">py_modules:</span>
+<span class="s1">    - executor.py</span>
+<span class="s1">                '''</span><span class="p">,</span>
+                    <span class="s1">'yaml'</span><span class="p">,</span>
+                    <span class="n">theme</span><span class="o">=</span><span class="s1">'monokai'</span><span class="p">,</span>
+                    <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">title</span><span class="o">=</span><span class="s1">'config.yml'</span><span class="p">,</span>
+                <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'README.md'</span><span class="p">,</span> <span class="s1">'The usage of the Executor.'</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'requirements.txt'</span><span class="p">,</span> <span class="s1">'The Python dependencies of the Executor.'</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="s1">'manifest.yml'</span><span class="p">,</span>
+            <span class="s1">'The annotations of the Executor for getting better appealing on Jina Hub.'</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">field_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Field'</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'cyan'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">'Description'</span><span class="p">,</span> <span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'Human-readable title of the Executor'</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'alias'</span><span class="p">,</span> <span class="s1">'The unique identifier in Jina Hub'</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'description'</span><span class="p">,</span> <span class="s1">'Human-readable description of the Executor'</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'author'</span><span class="p">,</span> <span class="s1">'The author of the Executor'</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'url'</span><span class="p">,</span> <span class="s1">'URL to find more information on the Executor'</span><span class="p">)</span>
+        <span class="n">field_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'keywords'</span><span class="p">,</span> <span class="s1">'Keywords that help user find the Executor'</span><span class="p">)</span>
+
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="n">field_table</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_dockerfile</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="s1">'Dockerfile'</span><span class="p">,</span>
+                <span class="s1">'The Dockerfile describes how this executor will be built.'</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">final_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="s1">'Congrats! You have successfully created an Executor! Here are the next steps:'</span>
+        <span class="p">)</span>
+
+        <span class="n">p0</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'cd </span><span class="si">{</span><span class="n">exec_path</span><span class="si">}</span><span class="se">\n</span><span class="s1">ls'</span><span class="p">,</span>
+                <span class="s1">'console'</span><span class="p">,</span>
+                <span class="n">theme</span><span class="o">=</span><span class="s1">'monokai'</span><span class="p">,</span>
+                <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">'1. Checkout the Generated Executor'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">p1</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">table</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">'2. Understand Folder Structure'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'jina hub push </span><span class="si">{</span><span class="n">exec_path</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'console'</span><span class="p">,</span>
+                <span class="n">theme</span><span class="o">=</span><span class="s1">'monokai'</span><span class="p">,</span>
+                <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">'3. Share it to Jina Hub'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
+        <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+        <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">final_table</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">':tada: Next Steps'</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Push the executor pacakge to Jina Hub."""</span>

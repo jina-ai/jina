@@ -468,7 +468,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “fc907521-c759-4439-9987-ea63afa785f6”</p>
+<p>Default: “abbc053b-33b1-48ac-b955-4f5987924c94”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -543,7 +543,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “1cb32cd8-19b7-49f3-86d2-3c21ceaec4ad”</p>
+<p>Default: “d6ffef2c-e1e2-4c4f-89be-17da02e59ef5”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -576,7 +576,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “fe3bdc7f-e873-4842-b280-eeba36bf65f7”</p>
+<p>Default: “f8e2b502-d615-4856-b4e0-fb4a8b577deb”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -683,7 +683,7 @@
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 56253</p>
+<p>Default: 39139</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -739,11 +739,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 50653</p>
+<p>Default: 40797</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 47679</p>
+<p>Default: 48745</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -840,7 +840,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 42267</p>
+<p>Default: 37441</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1138,7 +1138,7 @@ peas are running on host provided by the argument <code class="docutils literal 
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 34865</p>
+<p>Default: 39373</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1194,11 +1194,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 49833</p>
+<p>Default: 54693</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 53413</p>
+<p>Default: 37641</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1332,7 +1332,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 43757</p>
+<p>Default: 60087</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1390,7 +1390,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <div class="section" id="hub">
 <h3>hub<a class="headerlink" href="#hub" title="Permalink to this headline">¶</a></h3>
 <p>Push/Pull an Executor to/from Jina Hub</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">push</span><span class="p">,</span> <span class="n">pull</span><span class="p">}</span> <span class="o">...</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">new</span><span class="p">,</span> <span class="n">push</span><span class="p">,</span> <span class="n">pull</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <div class="section" id="subcommands_repeat2">
@@ -1398,15 +1398,22 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 <p>use <cite>%(prog)-8s [sub-command] –help</cite> to get detailed information about each sub-command</p>
 <dl class="option-list">
 <dt><kbd>hub</kbd></dt>
-<dd><p>Possible choices: push, pull</p>
+<dd><p>Possible choices: new, push, pull</p>
 </dd>
 </dl>
 </div>
 <div class="section" id="Sub-commands:_repeat2">
 <h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="new">
+<h5>new<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h5>
+<p>Create a new executor using the template</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="push">
 <h5>push<a class="headerlink" href="#push" title="Permalink to this headline">¶</a></h5>
-<p>Push an executor package to the Jina hub</p>
+<p>Push an executor package to Jina hub</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">secret</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">public</span> <span class="o">|</span> <span class="o">--</span><span class="n">private</span><span class="p">]</span>
               <span class="n">path</span>
 </pre></div>
@@ -1449,7 +1456,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </div>
 <div class="section" id="pull">
 <h5>pull<a class="headerlink" href="#pull" title="Permalink to this headline">¶</a></h5>
-<p>Download an executor package/image from the Jina hub</p>
+<p>Download an executor image/package from Jina hub</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="n">uri</span>
 </pre></div>
 </div>
@@ -1564,7 +1571,7 @@ it depends on the settings of <cite>–compress-min-bytes</cite> and <cite>compr
 </dd>
 <dt><kbd>--port-ctrl</kbd></dt>
 <dd><p>The port for controlling the runtime, default a random port between [49152, 65535]</p>
-<p>Default: 47983</p>
+<p>Default: 41967</p>
 </dd>
 <dt><kbd>--ctrl-with-ipc</kbd></dt>
 <dd><p>If set, use ipc protocol for control socket</p>
@@ -1620,11 +1627,11 @@ reverse order. That is, if <cite>__init__.py</cite> depends on <cite>A.py</cite>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data, default a random port between [49152, 65535]</p>
-<p>Default: 51609</p>
+<p>Default: 41317</p>
 </dd>
 <dt><kbd>--port-out</kbd></dt>
 <dd><p>The port for output data, default a random port between [49152, 65535]</p>
-<p>Default: 37123</p>
+<p>Default: 37395</p>
 </dd>
 <dt><kbd>--hosts-in-connect</kbd></dt>
 <dd><p>The host address for input, by default it is 0.0.0.0</p>
@@ -1721,7 +1728,7 @@ container.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 37447</p>
+<p>Default: 33383</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1829,7 +1836,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port of the host exposed to the public</p>
-<p>Default: 56011</p>
+<p>Default: 46345</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
@@ -1983,6 +1990,7 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#hub">hub</a><ul>
 <li><a class="reference internal" href="#subcommands_repeat2">subcommands</a></li>
 <li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#new">new</a></li>
 <li><a class="reference internal" href="#push">push</a><ul>
 <li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
