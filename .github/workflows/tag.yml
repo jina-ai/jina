@@ -94,7 +94,7 @@ jobs:
           inputs: '{ "git_tag": ${GITHUB_REF} }'
 
   update-doc:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
