@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    daemon.api
+   daemon.clients
    daemon.models
    daemon.stores
 
