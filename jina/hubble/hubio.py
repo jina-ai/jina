@@ -85,11 +85,10 @@ class HubIO:
     def new(self) -> None:
         """Create a new executor folder interactively."""
 
-        from rich import print
+        from rich import print, box
         from rich.prompt import Prompt, Confirm
         from rich.panel import Panel
         from rich.table import Table
-        from rich import box
         from rich.console import Console
         from rich.progress import track
         from rich.syntax import Syntax
