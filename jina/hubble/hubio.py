@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import random
 from pathlib import Path
 from typing import Optional, Dict
 from urllib.parse import urlencode
@@ -19,6 +20,7 @@ from .helper import (
 )
 from .helper import install_requirements
 from .hubapi import install_local, resolve_local, load_secret, dump_secret, get_lockfile
+from .. import __resources_path__
 from ..helper import get_full_version, ArgNamespace
 from ..importer import ImportExtensions
 from ..logging.logger import JinaLogger
@@ -79,6 +81,247 @@ class HubIO:
             **envs,
         }
         return header
+
+    def new(self) -> None:
+        """Create a new executor folder interactively."""
+
+        from rich import print
+        from rich.prompt import Prompt, Confirm
+        from rich.panel import Panel
+        from rich.table import Table
+        from rich import box
+        from rich.console import Console
+        from rich.progress import track
+        from rich.syntax import Syntax
+
+        console = Console()
+
+        print(
+            Panel.fit(
+                '''
+[bold green]Executor[/bold green] is how Jina processes [bold]Document[/bold]. 
+
+This walkthrough guides you to create your own Executor in 30 seconds.''',
+                title='New Executor',
+            )
+        )
+
+        exec_name = Prompt.ask(
+            'What is the [bold]name[/bold] of your executor\n'
+            '[dim]CamelCase is recommended[/dim]',
+            default=f'MyExecutor{random.randint(0, 100)}',
+        )
+
+        exec_path = Prompt.ask(
+            '[bold]Which folder[/bold] to store your executor',
+            default=os.path.join(os.getcwd(), exec_name),
+        )
+
+        exec_description = '{{}}'
+        exec_keywords = '{{}}'
+        exec_author = '{{}}'
+        exec_url = '{{}}'
+
+        is_dockerfile = False
+
+        if Confirm.ask(
+            '[green]That\'s all we need to create an Executor[/green].\n'
+            'Or do you want to proceed to advanced configuration',
+            default=False,
+        ):
+            exec_description = (
+                Prompt.ask(
+                    'Please give a [bold]short description[/bold] of your executor\n'
+                    f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
+                )
+                or exec_description
+            )
+
+            exec_author = (
+                Prompt.ask(
+                    'What is the [bold]author name[/bold]\n'
+                    f'[dim]Example: John Doe[/dim]'
+                )
+                or exec_author
+            )
+
+            exec_keywords = (
+                Prompt.ask(
+                    'Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by space)[/dim]\n'
+                    f'[dim]Example: image cv embedding encoding resnet[/dim]'
+                )
+                or exec_keywords
+            )
+
+            exec_url = (
+                Prompt.ask(
+                    'What is the [bold]URL[/bold] for documentation/reference/more info?\n'
+                    f'[dim]Example: https://docs.jina.ai[/dim]'
+                )
+                or exec_url
+            )
+
+            print(
+                Panel.fit(
+                    '''
+[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when 
+your executor has non-trivial dependencies or must be run under certain environment. 
+
+- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you. 
+- If you provide one, then Jina will respect the given [bold]Dockerfile[/bold].''',
+                    title='[Optional] [bold]Dockerfile[/bold]',
+                    width=80,
+                )
+            )
+
+            is_dockerfile = Confirm.ask(
+                'Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
+                default=False,
+            )
+
+            print('[green]That\'s all we need to create an Executor[/green].')
+
+        def mustache_repl(srcs):
+            for src in track(
+                srcs, description=f'Creating {exec_name}...', total=len(srcs)
+            ):
+                with open(
+                    os.path.join(__resources_path__, 'executor-template', src)
+                ) as fp, open(os.path.join(exec_path, src), 'w') as fpw:
+                    f = (
+                        fp.read()
+                        .replace('{{exec_name}}', exec_name)
+                        .replace('{{exec_description}}', exec_description)
+                        .replace('{{exec_keywords}}', exec_keywords)
+                        .replace('{{exec_author}}', exec_author)
+                        .replace('{{exec_url}}', exec_url)
+                    )
+
+                    f = [
+                        v + '\n' for v in f.split('\n') if not ('{{' in v or '}}' in v)
+                    ]
+                    fpw.writelines(f)
+
+        Path(exec_path).mkdir(parents=True, exist_ok=True)
+        pkg_files = [
+            'executor.py',
+            'manifest.yml',
+            'README.md',
+            'requirements.txt',
+            'config.yml',
+        ]
+
+        if is_dockerfile:
+            pkg_files.append('Dockerfile')
+
+        mustache_repl(pkg_files)
+
+        table = Table(box=box.SIMPLE)
+        table.add_column('Filename', style='cyan', no_wrap=True)
+        table.add_column('Description', no_wrap=True)
+
+        table.add_row('executor.py', 'The main logic file of the Executor.')
+        table.add_row(
+            'config.yml',
+            'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.',
+        )
+        table.add_row(
+            '',
+            Panel(
+                Syntax(
+                    f'''
+jtype: {exec_name}
+with:
+    foo: 1
+    bar: hello
+py_modules:
+    - executor.py
+                ''',
+                    'yaml',
+                    theme='monokai',
+                    line_numbers=True,
+                    word_wrap=True,
+                ),
+                title='config.yml',
+                width=50,
+                expand=False,
+            ),
+        )
+        table.add_row('README.md', 'The usage of the Executor.')
+        table.add_row('requirements.txt', 'The Python dependencies of the Executor.')
+        table.add_row(
+            'manifest.yml',
+            'The annotations of the Executor for getting better appealing on Jina Hub.',
+        )
+
+        field_table = Table(box=box.SIMPLE)
+        field_table.add_column('Field', style='cyan', no_wrap=True)
+        field_table.add_column('Description', no_wrap=True)
+        field_table.add_row('name', 'Human-readable title of the Executor')
+        field_table.add_row('alias', 'The unique identifier in Jina Hub')
+        field_table.add_row('description', 'Human-readable description of the Executor')
+        field_table.add_row('author', 'The author of the Executor')
+        field_table.add_row('url', 'URL to find more information on the Executor')
+        field_table.add_row('keywords', 'Keywords that help user find the Executor')
+
+        table.add_row('', field_table)
+
+        if is_dockerfile:
+            table.add_row(
+                'Dockerfile',
+                'The Dockerfile describes how this executor will be built.',
+            )
+
+        final_table = Table(box=None)
+
+        final_table.add_row(
+            'Congrats! You have successfully created an Executor! Here are the next steps:'
+        )
+
+        p0 = Panel(
+            Syntax(
+                f'cd {exec_path}\nls',
+                'console',
+                theme='monokai',
+                line_numbers=True,
+                word_wrap=True,
+            ),
+            title='1. Checkout the Generated Executor',
+            width=120,
+            expand=False,
+        )
+
+        p1 = Panel(
+            table,
+            title='2. Understand Folder Structure',
+            width=120,
+            expand=False,
+        )
+
+        p2 = Panel(
+            Syntax(
+                f'jina hub push {exec_path}',
+                'console',
+                theme='monokai',
+                line_numbers=True,
+                word_wrap=True,
+            ),
+            title='3. Share it to Jina Hub',
+            width=120,
+            expand=False,
+        )
+
+        final_table.add_row(p0)
+        final_table.add_row(p1)
+        final_table.add_row(p2)
+
+        p = Panel(
+            final_table,
+            title=':tada: Next Steps',
+            width=130,
+            expand=False,
+        )
+        console.print(p)
 
     def push(self) -> None:
         """Push the executor pacakge to Jina Hub."""
