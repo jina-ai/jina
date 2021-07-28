@@ -402,9 +402,14 @@ You wouldn't need to create remote Peas/Pods directly yourself. You can use the 
 
 ```python
 from jina import Flow
-f = Flow().add(host=HOST, port_expose=PORT)
+f = Flow().add(uses='path-to-executor.yml',
+               py_modules=['path-to-executor.py', 'path-to-other-python-files.py'],
+               upload_files=['path-to-requirements.txt'], # required only if additional pip packages are to be installed
+               host=f'{HOST}:{PORT}')
+
 with f:
   f.post(...)
+
 ```
 
 <details>
