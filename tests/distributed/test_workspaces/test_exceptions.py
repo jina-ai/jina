@@ -25,10 +25,11 @@ def test_flow_error_in_partial_daemon():
 def test_pea_error_in_partial_daemon():
     client = JinaDClient(host=__default_host__, port=8000)
     workspace_id = client.workspaces.create()
-    error_msg = client.peas.create(
+    status, error_msg = client.peas.create(
         workspace_id=workspace_id,
         payload={'name': 'blah-pea', 'py_modules': ['abc.py']},
     )
+    assert not status
     assert 'jina.excepts.RuntimeFailToStart' in error_msg
     assert 'FileNotFoundError: can not find abc.py' in error_msg
     assert client.workspaces.delete(id=workspace_id)

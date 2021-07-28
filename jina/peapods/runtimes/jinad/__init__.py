@@ -33,6 +33,7 @@ class JinadRuntime(AsyncNewLoopRuntime):
             import rich
             import aiohttp
             from daemon.clients import AsyncJinaDClient
+            from daemon.models import DaemonID
 
             assert rich
             assert aiohttp
@@ -57,10 +58,10 @@ class JinadRuntime(AsyncNewLoopRuntime):
 
         payload = replace_enum_to_str(vars(self._mask_args(self.args)))
         # Create a remote Pea in the above workspace
-        self.pea_id = await self.client.peas.create(
+        success, self.pea_id = await self.client.peas.create(
             workspace_id=self.workspace_id, payload=payload
         )
-        if not self.pea_id:
+        if not success:
             self.logger.critical(f'remote pea creation failed')
             raise DaemonPeaCreationFailed
 

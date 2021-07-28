@@ -167,6 +167,9 @@ class ContainerStore(BaseStore):
             self._logger.error(f'{self._kind} creation failed as {e}')
             container_logs = Dockerizer.logs(container.id)
             if container_logs and isinstance(e, PartialDaemon400Exception):
+                self._logger.debug(
+                    f'error logs frm partial daemon: \n {container_logs}'
+                )
                 if e.message and isinstance(e.message, list):
                     e.message += container_logs.split('\n')
                 elif e.message and isinstance(e.message, str):
