@@ -13,6 +13,7 @@ from typing import (
 
 import numpy as np
 
+from .buffer import BufferPoolManager
 from .document import DocumentArrayGetAttrMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
@@ -64,6 +65,7 @@ class DocumentArrayMemmap(
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
         self._load_header_body()
+        self.buffer_pool = BufferPoolManager(self)
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -126,11 +128,14 @@ class DocumentArrayMemmap(
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
 
-    def append(self, doc: 'Document', flush: bool = True) -> None:
+    def append(
+        self, doc: 'Document', flush: bool = True, update_buffer: bool = True
+    ) -> None:
         """
         Append :param:`doc` in :class:`DocumentArrayMemmap`.
 
         :param doc: The doc needs to be appended.
+        :param update_buffer: If set, update the buffer.
         :param flush: If set, then flush to disk on done.
         """
         value = doc.binary_str()
@@ -156,6 +161,8 @@ class DocumentArrayMemmap(
         if flush:
             self._header.flush()
             self._body.flush()
+        if update_buffer:
+            self.buffer_pool.add_or_update(doc)
 
     def _iteridx_by_slice(self, s: slice):
         start, stop, step = (
@@ -194,12 +201,24 @@ class DocumentArrayMemmap(
 
         return da
 
+    def get_doc_by_key(self, key: str):
+        """
+        returns a document by key (ID)
+
+        :param key: id of the document
+        :return: returns a document
+        """
+        pos_info = self._header_map[key]
+        _, p, r, l = pos_info
+        with mmap.mmap(self._body_fileno, offset=p, length=l) as m:
+            return Document(m[r:])
+
     def __getitem__(self, key: Union[int, str, slice]):
         if isinstance(key, str):
-            pos_info = self._header_map[key]
-            _, p, r, l = pos_info
-            with mmap.mmap(self._body_fileno, offset=p, length=l) as m:
-                return Document(m[r:])
+            if key in self.buffer_pool:
+                return self.buffer_pool[key]
+            return self.get_doc_by_key(key)
+
         elif isinstance(key, int):
             return self[self._int2str_id(key)]
         elif isinstance(key, slice):
