@@ -295,3 +295,15 @@ def test_memmap_get_by_slice(tmpdir):
     assert len(dam[-105:-101]) == 0
 
     assert len(dam[10:0]) == 0
+
+
+def test_memmap_update_document(tmpdir):
+    dam = DocumentArrayMemmap(tmpdir)
+    candidates = list(random_docs(100))
+    dam.extend(candidates)
+    for idx, candidate in enumerate(candidates):
+        candidate.content = f'new content {idx}'
+        dam[idx] = candidate
+
+    for idx, doc in enumerate(dam):
+        assert doc.content == f'new content {idx}'
