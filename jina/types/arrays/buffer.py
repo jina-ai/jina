@@ -14,7 +14,7 @@ class BufferPoolManager:
     The memory buffer has a fixed size and uses an LRU strategy to empty spots when full.
     """
 
-    def __init__(self, dam: 'DocumentArrayMemmap', pool_size: int = 100000):
+    def __init__(self, dam: 'DocumentArrayMemmap', pool_size: int = 1000):
         self.pool_size = pool_size
         self.doc_map = OrderedDict()  # dam_idx: (buffer_idx, content_hash)
         self.dam = dam

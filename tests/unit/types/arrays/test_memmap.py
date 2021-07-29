@@ -107,6 +107,7 @@ def test_persist(tmpdir):
     for doc in docs:
         doc.scores['score'] = 50
         doc.evaluations['eval'] = 100
+        doc.update_content_hash()
 
     dam.extend(docs)
 
@@ -116,7 +117,7 @@ def test_persist(tmpdir):
     assert dam == dam2
 
     for d1, d2 in zip(dam, dam2):
-        assert d1.proto == d2.proto
+        assert d1.content_hash == d2.content_hash
 
     assert '1' in dam
 
