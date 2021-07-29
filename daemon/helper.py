@@ -1,9 +1,10 @@
-from daemon.excepts import PartialDaemon400Exception
 import os
 import re
-from typing import Callable, TYPE_CHECKING, Tuple, Dict
+from typing import Callable, List, TYPE_CHECKING, Tuple, Dict
 
 import aiohttp
+
+from .excepts import PartialDaemon400Exception
 
 if TYPE_CHECKING:
     from .models import DaemonID
@@ -102,4 +103,8 @@ def error_msg_from(response: Dict) -> str:
     assert 'body' in response, '\'body\' not found in response'
     if response['detail'] == PartialDaemon400Exception.__name__:
         return response['body']
-    return '\n'.join(j for j in response['body'])
+    return (
+        '\n'.join(j for j in response['body'])
+        if isinstance(response['body'], List)
+        else response['body']
+    )

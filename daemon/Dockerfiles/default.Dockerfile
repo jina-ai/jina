@@ -1,6 +1,6 @@
 # This is the default dockerfile used for all containers created by JinaD
 
-ARG JINA_VERSION=latest
+ARG JINA_VERSION=master
 ARG PY_VERSION=py38
 
 FROM jinaai/jina:$JINA_VERSION-$PY_VERSION-daemon
