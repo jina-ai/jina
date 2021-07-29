@@ -328,54 +328,6 @@ def test_content_hash_not_dependent_on_chunks_or_matches():
     assert doc1.content_hash == doc4.content_hash
 
 
-def test_include_scalar():
-    d1 = Document()
-    d1.text = 'hello'
-    dd1 = Document()
-    d1.chunks.append(dd1)
-    d1.update_content_hash(include_fields=('text',), exclude_fields=None)
-
-    d2 = Document()
-    d2.text = 'hello'
-    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
-
-    assert d1.content_hash == d2.content_hash
-
-    # change text should result in diff hash
-    d2.text = 'world'
-    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
-    assert d1.content_hash != d2.content_hash
-
-
-def test_include_repeated_fields():
-    def build_document(chunk=None):
-        d = Document()
-        d.chunks.append(chunk)
-        d.chunks[0].update_content_hash(
-            exclude_fields=('parent_id', 'id', 'content_hash')
-        )
-        d.chunks[0].parent_id = 0
-        d.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-        return d
-
-    c = Document()
-    d1 = build_document(chunk=c)
-    d2 = build_document(chunk=c)
-
-    assert d1.chunks[0].content_hash == d2.chunks[0].content_hash
-    assert d1.content_hash == d2.content_hash
-
-    # change text should result in same hash
-    d2.text = 'world'
-    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-    assert d1.content_hash == d2.content_hash
-
-    # change chunks should result in diff hash
-    d2.chunks.clear()
-    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-    assert d1.content_hash != d2.content_hash
-
-
 @pytest.mark.parametrize('from_str', [True, False])
 @pytest.mark.parametrize(
     'd_src',
@@ -1140,3 +1092,9 @@ def test_tags_update_nested_lists():
     assert d.tags['hey']['list'][1] is True
     assert d.tags['hey']['list'][2]['inlist'] == 'not here'
     assert d.tags['hoy'][0] == 1
+
+
+def test_update_content_hash():
+    docs = random_docs(10000)
+    for doc in docs:
+        doc.update_content_hash()

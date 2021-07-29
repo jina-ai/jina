@@ -428,38 +428,24 @@ class Document(ProtoTypeMixin):
 
     def update_content_hash(
         self,
-        exclude_fields: Optional[Tuple[str]] = (
+        exclude_fields: Tuple[str] = (
             'id',
             'chunks',
             'matches',
             'content_hash',
             'parent_id',
         ),
-        include_fields: Optional[Tuple[str]] = None,
     ) -> None:
         """Update the document hash according to its content.
 
-        :param exclude_fields: a tuple of field names that excluded when computing content hash
-        :param include_fields: a tuple of field names that included when computing content hash
-
-        .. note::
-            "exclude_fields" and "include_fields" are mutually exclusive, use one only
+        :param exclude_fields: a tuple of field names that excluded when computing content hash.
         """
         masked_d = jina_pb2.DocumentProto()
-        masked_d.CopyFrom(self._pb_body)
-        empty_doc = jina_pb2.DocumentProto()
-        if include_fields and exclude_fields:
-            raise ValueError(
-                '"exclude_fields" and "exclude_fields" are mutually exclusive, use one only'
-            )
-
-        if include_fields is not None:
-            FieldMask(paths=include_fields).MergeMessage(masked_d, empty_doc)
-            masked_d = empty_doc
-        elif exclude_fields is not None:
-            FieldMask(paths=exclude_fields).MergeMessage(
-                empty_doc, masked_d, replace_repeated_field=True
-            )
+        present_fields = {
+            field_descriptor.name for field_descriptor, _ in self._pb_body.ListFields()
+        }
+        fields_to_hash = present_fields.difference(exclude_fields)
+        FieldMask(paths=fields_to_hash).MergeMessage(self._pb_body, masked_d)
 
         self._pb_body.content_hash = blake2b(
             masked_d.SerializeToString(), digest_size=DIGEST_SIZE
