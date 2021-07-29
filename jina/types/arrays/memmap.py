@@ -121,6 +121,7 @@ class DocumentArrayMemmap(
         """
         for d in values:
             self.append(d, flush=False)
+            self.buffer_pool.add_or_update(d.id, d)
         self._header.flush()
         self._body.flush()
 
@@ -162,7 +163,7 @@ class DocumentArrayMemmap(
             self._header.flush()
             self._body.flush()
         if update_buffer:
-            self.buffer_pool.add_or_update(doc)
+            self.buffer_pool.add_or_update(doc.id, doc)
 
     def _iteridx_by_slice(self, s: slice):
         start, stop, step = (
@@ -244,6 +245,7 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._header_map.pop(str_key)
+        self.buffer_pool.delete_if_exists(str_key)
 
     def __delitem__(self, key: Union[int, str, slice]):
         if isinstance(key, str):
@@ -284,15 +286,18 @@ class DocumentArrayMemmap(
                 # override an existing entry
                 self.append(value)
                 self._header_map[str_key] = self._header_map[value.id]
+                self.buffer_pool.add_or_update(str_key, value)
 
                 # allows overwriting an existing document
                 if str_key != value.id:
                     del self[value.id]
+                    self.buffer_pool.delete_if_exists(value.id)
             else:
                 raise IndexError(f'`key`={key} is out of range')
         elif isinstance(key, str):
             value.id = key
             self.append(value)
+            self.buffer_pool.add_or_update(key, value)
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 

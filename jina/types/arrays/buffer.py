@@ -14,7 +14,7 @@ class BufferPoolManager:
     The memory buffer has a fixed size and uses an LRU strategy to empty spots when full.
     """
 
-    def __init__(self, dam: 'DocumentArrayMemmap', pool_size: int = 3):
+    def __init__(self, dam: 'DocumentArrayMemmap', pool_size: int = 100000):
         self.pool_size = pool_size
         self.doc_map = OrderedDict()  # dam_idx: (buffer_idx, content_hash)
         self.dam = dam
@@ -29,13 +29,13 @@ class BufferPoolManager:
                 break
         return idx
 
-    def add_or_update(self, doc: Document):
+    def add_or_update(self, idx: str, doc: Document):
         """
         Adds a document to the buffer pool or updates it if it already exists
 
+        :param idx: index
         :param doc: document
         """
-        idx = doc.id
         # if document is already in buffer, update it
         if idx in self.doc_map:
             self.buffer[self.doc_map[idx][0]] = doc
@@ -62,10 +62,23 @@ class BufferPoolManager:
             self.doc_map.move_to_end(idx)
             self.buffer[buffer_idx] = doc
 
+    def delete_if_exists(self, key):
+        """
+        Adds a document to the buffer pool or updates it if it already exists
+
+        :param key: document key
+        """
+        if key in self:
+            del self[key]
+
     def __getitem__(self, key):
         doc = self.buffer[self.doc_map[key][0]]
         self.doc_map.move_to_end(key)
         return doc
+
+    def __delitem__(self, key):
+        buffer_idx = self.doc_map.pop(key)[0]
+        self._empty.append(buffer_idx)
 
     def __contains__(self, key):
         return key in self.doc_map
