@@ -1,3 +1,5 @@
+import os
+import re
 import socket
 import platform
 from typing import Dict, List, Tuple, TYPE_CHECKING, Optional
@@ -26,6 +28,9 @@ if TYPE_CHECKING:
     from docker.models.networks import Network
     from docker.models.containers import Container
     from docker.client import APIClient, DockerClient
+
+
+PORT_REGEX = r'[0-9]+(?:\.[0-9]+){3}:[0-9]+'
 
 
 class Dockerizer:
@@ -162,8 +167,8 @@ class Dockerizer:
                 _log_stream(build_log, 'stream')
             elif 'message' in build_log:
                 _log_stream(build_log, 'message')
-            elif 'status' in build_log:
-                _log_stream(build_log, 'status')
+            # elif 'status' in build_log:
+            #     _log_stream(build_log, 'status')
 
         try:
             image = cls.client.images.get(name=workspace_id.tag)
@@ -188,8 +193,8 @@ class Dockerizer:
             workspace_id=workspace_id,
             container_id=workspace_id,
             command=None,
-            entrypoint=daemon_file.run,
             ports={f'{port}/tcp': port for port in daemon_file.ports},
+            entrypoint=daemon_file.run,
         )
 
     @classmethod
@@ -246,14 +251,34 @@ class Dockerizer:
             cls.logger.critical(
                 f'Image {image} or Network {network} not found locally {e!r}'
             )
+
             raise DockerImageException(
                 'Docker image not built properly, cannot proceed for run'
             )
         except docker.errors.APIError as e:
-            cls.logger.critical(f'API Error while starting the docker container \n{e}')
-            raise DockerContainerException()
+            msg = f'API Error while starting the docker container{e}'
+            if 'port is already allocated' in str(e):
+                match = re.findall(PORT_REGEX, str(e))
+                if match and len(match) > 0:
+                    msg = f'port conflict: {match[0]}'
+            cls.logger.critical(msg)
+            raise DockerContainerException(msg)
         # TODO: network & ports return can be avoided?
         return container, network, ports
+
+    @classmethod
+    def logs(cls, id: str) -> str:
+        """Get all logs of a container
+
+        :param id: container id
+        :return: logs as str
+        """
+        try:
+            container: 'Container' = cls.client.containers.get(container_id=id)
+            return container.logs(stdout=True, stderr=True).decode()
+        except docker.errors.NotFound:
+            cls.logger.error(f'no containers with id {id} found')
+            return ""
 
     @classmethod
     def _get_volume_host_dir(cls):
@@ -305,7 +330,7 @@ class Dockerizer:
         return {
             'JINA_LOG_WORKSPACE': '/workspace/logs',
             'JINA_RANDOM_PORT_MIN': '49153',
-            'JINA_LOG_LEVEL': 'DEBUG',
+            'JINA_LOG_LEVEL': os.getenv('JINA_LOG_LEVEL') or 'INFO',
         }
 
     @classmethod

@@ -1,11 +1,11 @@
-from http import HTTPStatus
 from typing import Dict
+from http import HTTPStatus
 
 import aiohttp
 
 from .containers import ContainerStore
-from ..excepts import Runtime400Exception
-from ..helper import raise_if_not_alive
+from ..excepts import PartialDaemon400Exception
+from ..helper import if_alive, error_msg_from
 
 
 class PeaStore(ContainerStore):
@@ -13,14 +13,14 @@ class PeaStore(ContainerStore):
 
     _kind = 'pea'
 
-    @raise_if_not_alive
+    @if_alive
     async def _add(self, uri: str, params: Dict, **kwargs) -> Dict:
         """Sends `POST` request to `mini-jinad` to create a Pea/Pod.
 
         :param uri: uri of mini-jinad
         :param params: json payload to be sent
         :param kwargs: keyword args
-        :raises Runtime400Exception: if creation fails
+        :raises PartialDaemon400Exception: if creation fails
         :return: response from mini-jinad
         """
         self._logger.debug(f'sending POST request to mini-jinad on {uri}/{self._kind}')
@@ -29,31 +29,27 @@ class PeaStore(ContainerStore):
         ) as response:
             response_json = await response.json()
             if response.status != HTTPStatus.CREATED:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} creation failed: {response_json}'
-                )
+                raise PartialDaemon400Exception(error_msg_from(response_json))
             return response_json
 
     async def _update(self, uri, **kwargs):
         # TODO
         pass
 
-    @raise_if_not_alive
+    @if_alive
     async def _delete(self, uri, **kwargs) -> Dict:
         """Sends a `DELETE` request to `mini-jinad` to terminate a Pea/Pod
 
         :param uri: uri of mini-jinad
         :param kwargs: keyword args
-        :raises Runtime400Exception: if deletion fails
+        :raises PartialDaemon400Exception: if deletion fails
         :return: response from mini-jinad
         """
         self._logger.debug(
             f'sending DELETE request to mini-jinad on {uri}/{self._kind}'
         )
-        async with aiohttp.request('GET', url=f'{uri}/{self._kind}') as response:
+        async with aiohttp.request('DELETE', url=f'{uri}/{self._kind}') as response:
             response_json = await response.json()
             if response.status != HTTPStatus.OK:
-                raise Runtime400Exception(
-                    f'{self._kind.title()} deletion failed: {response_json}'
-                )
+                raise PartialDaemon400Exception(error_msg_from(response_json))
             return response_json

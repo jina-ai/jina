@@ -101,6 +101,14 @@ class BadFlowYAMLVersion(Exception):
 
 
 class DaemonConnectivityError(Exception):
+    """Exception to raise when jina daemon is not reachable."""
+
+
+class DaemonWorkspaceCreationFailed(Exception):
+    """Exception to raise when jina daemon is not connectable."""
+
+
+class DaemonPeaCreationFailed(Exception):
     """Exception to raise when jina daemon is not connectable."""
 
 

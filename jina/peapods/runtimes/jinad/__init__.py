@@ -1,19 +1,22 @@
-import argparse
+import os
+import copy
 import asyncio
-import time
-from typing import Optional
+import argparse
 
-from .client import PeaDaemonClient, WorkspaceDaemonClient
-from ....enums import RemoteWorkspaceState
-from ..zmq.asyncio import AsyncZMQRuntime
 from ...zmq import send_ctrl_message
-from .client import PeaDaemonClient, WorkspaceDaemonClient
-from ....excepts import DaemonConnectivityError
-from ....helper import cached_property, colored
+from ....jaml.helper import complete_path
+from ....importer import ImportExtensions
+from ....enums import replace_enum_to_str
+from ..zmq.asyncio import AsyncNewLoopRuntime
+from ....excepts import (
+    DaemonConnectivityError,
+    DaemonPeaCreationFailed,
+    DaemonWorkspaceCreationFailed,
+)
 
 
-class JinadRuntime(AsyncZMQRuntime):
-    """Runtime procedure for Jinad."""
+class JinadRuntime(AsyncNewLoopRuntime):
+    """Runtime procedure for JinaD."""
 
     def __init__(
         self, args: 'argparse.Namespace', ctrl_addr: str, timeout_ctrl: int, **kwargs
@@ -22,25 +25,45 @@ class JinadRuntime(AsyncZMQRuntime):
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
         self.timeout_ctrl = timeout_ctrl
-        self.host = args.host
-        self.port_expose = args.port_expose
+
+    async def async_setup(self):
+        """Create Workspace, Pea on remote JinaD server"""
+        with ImportExtensions(required=True):
+            # rich & aiohttp are used in `JinaDClient`
+            import rich
+            import aiohttp
+            from daemon.clients import AsyncJinaDClient
+            from daemon.models import DaemonID
+
+            assert rich
+            assert aiohttp
+
         # NOTE: args.timeout_ready is always set to -1 for JinadRuntime so that wait_for_success doesn't fail in Pea,
         # so it can't be used for Client timeout.
-        self.workspace_api = WorkspaceDaemonClient(
-            host=self.host,
-            port=self.port_expose,
-            logger=self.logger,
+        self.client = AsyncJinaDClient(
+            host=self.args.host, port=self.args.port_expose, logger=self.logger
         )
-        self.pea_api = PeaDaemonClient(
-            host=self.host,
-            port=self.port_expose,
-            logger=self.logger,
+        if not await self.client.alive:
+            raise DaemonConnectivityError
+
+        # Create a remote workspace with upload_files
+        self.workspace_id = await self.client.workspaces.create(
+            paths=self.args.upload_files,
+            id=self.args.workspace_id,
+            complete=True,
         )
-        # Uploads Pea context to remote & Creates remote Pea using :class:`PeaDaemonClient`
-        if self._remote_id:
-            self.logger.success(
-                f'created a remote {self.pea_api.kind}: {colored(self._remote_id, "cyan")}'
-            )
+        if not self.workspace_id:
+            self.logger.critical(f'remote workspace creation failed')
+            raise DaemonWorkspaceCreationFailed
+
+        payload = replace_enum_to_str(vars(self._mask_args(self.args)))
+        # Create a remote Pea in the above workspace
+        success, self.pea_id = await self.client.peas.create(
+            workspace_id=self.workspace_id, payload=payload
+        )
+        if not success:
+            self.logger.critical(f'remote pea creation failed')
+            raise DaemonPeaCreationFailed
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPea`"""
@@ -53,92 +76,70 @@ class JinadRuntime(AsyncZMQRuntime):
                 await asyncio.sleep(0.1)
 
     async def async_run_forever(self):
-        """
-        Streams log messages using websocket from remote server
-        """
+        """Streams log messages using websocket from remote server"""
         self.is_ready_event.set()
-        self._logging_task = asyncio.create_task(
+        self.logstream = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs
-            else self.pea_api.logstream(self._remote_id)
+            else self.client.logs(id=self.pea_id)
         )
 
     async def async_cancel(self):
-        """
-        Cancels the logging task
-        """
-        self._logging_task.cancel()
-
-    def teardown(self):
-        """
-        Terminates the remote Workspace/Pod/Pea using :class:`JinadAPI`
-        """
-        self.pea_api.delete(id=self._remote_id)
-        # TODO: don't fail if workspace deletion fails. all peas would make this call. can be optimized
-        self.workspace_api.delete(id=self.args.workspace_id)
-        super().teardown()
-
-    def create_workspace(self):
-        """Create a workspace on remote (includes file upload & docker build)
-
-        :raises DaemonConnectivityError: if remote daemon is not reachable
-        :raises RuntimeError: if workspace creation fails
-        """
-        if not self.workspace_api.alive:
-            self.logger.error(
-                f'fail to connect to the daemon at {self.host}:{self.port_expose}, please check:\n'
-                f'- is there a typo in {self.host}?\n'
-                f'- on {self.host}, are you running `docker run --network host jinaai/jina:latest-daemon`?\n'
-                f'- on {self.host}, have you set the security policy to public for all required ports?\n'
-                f'- on local, are you behind VPN or proxy?'
-            )
-            raise DaemonConnectivityError
-
-        sleep = 2
-        retries = 100
-        for retry in range(retries):
-            workspace_status = self.workspace_api.get(id=self.args.workspace_id)
-            if not workspace_status:
-                raise DaemonConnectivityError
-            state = workspace_status.get('state', None)
-            if not state:
-                self.logger.info(
-                    f'creating workspace {colored(self.args.workspace_id, "cyan")} on remote. This might take some time.'
-                )
-                self.workspace_api.post(
-                    dependencies=self.args.upload_files,
-                    workspace_id=self.args.workspace_id,
-                )
-            elif state in [
-                RemoteWorkspaceState.PENDING,
-                RemoteWorkspaceState.CREATING,
-                RemoteWorkspaceState.UPDATING,
-            ]:
-                if retry % 10 == 0:
-                    self.logger.info(
-                        f'workspace {self.args.workspace_id} is getting created on remote. waiting..'
-                    )
-                time.sleep(sleep)
-            elif state == RemoteWorkspaceState.ACTIVE:
-                self.logger.success(
-                    f'successfully created a remote workspace: {colored(self.args.workspace_id, "cyan")}'
-                )
-                break
-            else:
-                raise RuntimeError(f'remote workspace creation failed')
-
-    @cached_property
-    def _remote_id(self) -> Optional[str]:
-        """Creates a workspace & a pea on remote
-
-        :return: id of rempte pea
-        """
-        self.create_workspace()
-        pea_id = self.pea_api.post(self.args)
-        if not pea_id:
-            raise RuntimeError('remote pea creation failed')
-        return pea_id
+        """Cancels the logstream task, removes the remote Pea & Workspace"""
+        self.logstream.cancel()
+        await self.client.peas.delete(id=self.pea_id)
+        # NOTE: don't fail if workspace deletion fails here
+        await self.client.workspaces.delete(id=self.workspace_id)
 
     async def _sleep_forever(self):
         """Sleep forever, no prince will come."""
         await asyncio.sleep(1e10)
+
+    def _mask_args(self, args: 'argparse.Namespace'):
+        _args = copy.deepcopy(args)
+
+        # reset the runtime to ZEDRuntime or ContainerRuntime
+        if _args.runtime_cls == 'JinadRuntime':
+            # TODO: add jinahub:// and jinahub+docker:// scheme here
+            if _args.uses.startswith('docker://'):
+                _args.runtime_cls = 'ContainerRuntime'
+            else:
+                _args.runtime_cls = 'ZEDRuntime'
+
+        # TODO:/NOTE this prevents jumping from remote to another remote (Han: 2021.1.17)
+        # _args.host = __default_host__
+        # host resetting disables dynamic routing. Use `disable_remote` instead
+        _args.disable_remote = True
+
+        # NOTE: on remote relative filepaths should be converted to filename only
+        def basename(field):
+            if field and not field.startswith('docker://'):
+                try:
+                    return os.path.basename(complete_path(field))
+                except FileNotFoundError:
+                    pass
+            return field
+
+        for f in ('uses', 'uses_after', 'uses_before', 'py_modules'):
+            attr = getattr(_args, f, None)
+            if not attr:
+                continue
+            setattr(_args, f, [basename(m) for m in attr]) if isinstance(
+                attr, list
+            ) else setattr(_args, f, basename(attr))
+
+        _args.log_config = ''  # do not use local log_config
+        _args.upload_files = []  # reset upload files
+        _args.noblock_on_start = False  # wait until start success
+
+        changes = []
+        for k, v in vars(_args).items():
+            if v != getattr(args, k):
+                changes.append(f'{k:>30s}: {str(getattr(args, k)):30s} -> {str(v):30s}')
+        if changes:
+            changes = [
+                'note the following arguments have been masked or altered for remote purpose:'
+            ] + changes
+            self.logger.debug('\n'.join(changes))
+
+        return _args

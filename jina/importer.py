@@ -3,6 +3,7 @@ import sys
 import warnings
 from types import SimpleNamespace, ModuleType
 from typing import Optional
+from importlib.abc import MetaPathFinder, Loader
 
 from . import __resources_path__
 
@@ -95,6 +96,57 @@ class ImportExtensions:
                 return True  # suppress the error
 
 
+class ExtensionFileLoader(Loader):
+    """Loader for extension modules."""
+
+    @classmethod
+    def exec_module(cls, module):
+        """Initialize an extension module
+
+        :param module: a namespace module
+        """
+        load_path = module.__spec__.origin
+        init_file = '__init__.py'
+        if load_path.endswith(init_file):
+            module.__path__ = [load_path[: -len(init_file) - 1]]
+
+
+_loader = ExtensionFileLoader()
+
+
+class ExtensionPathFinder:
+    """Meta path finder for extentions modules"""
+
+    __path__ = '.'
+
+    @classmethod
+    def find_spec(cls, fullname, paths=None, target=None):
+        """Try to find a spec for the specified module.
+
+        :param fullname: module full name
+        :param paths: the search paths
+        :param target: the target
+        :return: a module spec
+        """
+        from importlib.machinery import ModuleSpec
+
+        # TODO: read PEP 420
+        last_module = fullname.split('.')[-1]
+        if paths is None:
+            paths = [cls.__path__]
+        for path in paths:
+            full_path = os.path.join(path, last_module)
+
+            init_path = os.path.join(full_path, '__init__.py')
+            module_path = full_path + '.py'
+
+            if os.path.exists(init_path) and not os.path.exists(module_path):
+                return ModuleSpec(fullname, _loader, origin=init_path)
+            elif os.path.exists(module_path):
+                return ModuleSpec(fullname, _loader, origin=module_path)
+        return None
+
+
 class PathImporter:
     """The class to import modules from paths."""
 
@@ -115,6 +167,7 @@ class PathImporter:
                 raise FileNotFoundError(
                     f'cannot import module from {p}, file not exist'
                 )
+
             module = PathImporter._path_import(p)
         return module
 

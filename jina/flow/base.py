@@ -494,11 +494,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param env: The map of environment variables that are available inside runtime
         :param expose_public: If set, expose the public IP address to remote when necessary, by default it exposesprivate IP address, which only allows accessing under the same network/subnet. Important to set this to true when the Pea will receive input connections from remote Peas
         :param external: The Pod will be considered an external Pod that has been started independently from the Flow.This Pod will not be context managed by the Flow.
-        :param gpus: Specify gpu to the inside the container.
+        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
               Note,
               - To access all gpus, use `--gpus all`.
-              - To access multiple gpu access, use `--gpus 2`, start a gpu container on 2 gpus.
+              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
@@ -1080,7 +1080,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         )
 
                     for j in range(v.args.parallel):
-                        r = node
+                        r = v.args.uses
                         if v.args.replicas > 1:
                             r += f'_{i}_{j}'
                         elif v.args.parallel > 1:
@@ -1097,21 +1097,20 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 mermaid_graph.append('end')
 
         for node, v in self._pod_nodes.items():
-            ed_str = str(v.head_args.socket_in).split('_')[0]
             for need in sorted(v.needs):
-                if need in self._pod_nodes:
-                    st_str = str(self._pod_nodes[need].tail_args.socket_out).split('_')[
-                        0
-                    ]
 
-                _s = start_repl.get(need, (need, f'({need})'))
-                _e = end_repl.get(node, (node, f'({node})'))
+                _s = start_repl.get(
+                    need, (need, f'("{need}<br>({self._pod_nodes[need].args.uses})")')
+                )
+                _e = end_repl.get(node, (node, f'("{node}<br>({v.args.uses})")'))
                 _s_role = self._pod_nodes[need].role
                 _e_role = self._pod_nodes[node].role
                 line_st = '-->'
 
                 if _s_role in {PodRoleType.INSPECT, PodRoleType.JOIN_INSPECT}:
                     _s = start_repl.get(need, (need, f'{{{{{need}}}}}'))
+                elif _s_role == PodRoleType.GATEWAY:
+                    _s = start_repl.get(need, (need, f'("{need}")'))
 
                 if _e_role == PodRoleType.GATEWAY:
                     _e = ('gateway_END', f'({node})')

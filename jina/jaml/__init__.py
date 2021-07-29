@@ -1,3 +1,4 @@
+import sys
 import os
 import re
 import tempfile
@@ -534,10 +535,22 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 no_tag_yml = JAML.expand_dict(no_tag_yml, context)
             if allow_py_modules:
                 # also add YAML parent path to the search paths
+                if s_path:
+                    # append ExtensionPathFinder into sys.meta_path
+                    from ..importer import ExtensionPathFinder
+
+                    ExtensionPathFinder.__path__ = os.path.dirname(s_path)
+                    sys.meta_path.append(ExtensionPathFinder())
+
                 load_py_modules(
                     no_tag_yml,
                     extra_search_paths=(os.path.dirname(s_path),) if s_path else None,
                 )
+
+                if s_path:
+                    # pop ExtensionPathFinder from sys.meta_path
+                    sys.meta_path.pop()
+
             from ..flow.base import Flow
 
             if issubclass(cls, Flow):

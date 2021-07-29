@@ -4,8 +4,8 @@ import sys
 
 def _get_run_args(print_args: bool = True):
     from jina.parsers import get_main_parser
-    from jina.helper import colored
-    from jina import __resources_path__
+
+    silent_print = {'help', 'hub'}
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
@@ -21,7 +21,9 @@ def _get_run_args(print_args: bool = True):
                 f'this may be caused by the mismatched version on Jina'
             )
 
-        if print_args:
+        if args.cli not in silent_print and print_args:
+            from jina.helper import colored
+            from jina import __resources_path__
 
             p = parser._actions[-1].choices[sys.argv[1]]
             default_args = {

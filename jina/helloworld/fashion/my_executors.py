@@ -1,8 +1,7 @@
-from typing import Tuple, Dict
+from typing import Dict
 
 import numpy as np
-
-from jina import Executor, DocumentArray, requests, Document
+from jina import Executor, DocumentArray, requests
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
@@ -35,7 +34,7 @@ class MyIndexer(Executor):
         docs.match(
             self._docs,
             metric='cosine',
-            is_distance=False,
+            normalization=(1, 0),
             limit=int(parameters['top_k']),
         )
 

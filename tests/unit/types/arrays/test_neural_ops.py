@@ -1,15 +1,13 @@
-import pytest
 import copy
 
 import numpy as np
+import pytest
 from scipy.spatial.distance import cdist
 
-from jina.types.arrays.neural_ops import (
-    _cosine_distance,
-    _euclidean_distance_squared,
-)
-from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina import Document, DocumentArray
+from jina.math.distance import sqeuclidean, cosine
+from jina.math.helper import minmax_normalize
+from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 @pytest.fixture
@@ -38,6 +36,20 @@ def embeddings():
 @pytest.fixture
 def embedding_query():
     return np.array([[1, 0, 0]])
+
+
+def test_minmax_normalization_1d():
+    a = np.array([1, 2, 3])
+    np.testing.assert_almost_equal(minmax_normalize(a), [0, 0.5, 1])
+    np.testing.assert_almost_equal(minmax_normalize(a, (1, 0)), [1, 0.5, 0])
+
+
+def test_minmax_normalization_2d():
+    a = np.array([[1, 2, 3], [3, 2, 1]])
+    np.testing.assert_almost_equal(minmax_normalize(a), [[0, 0.5, 1], [1, 0.5, 0]])
+    np.testing.assert_almost_equal(
+        minmax_normalize(a, (1, 0)), [[1, 0.5, 0], [0, 0.5, 1]]
+    )
 
 
 def test_new_distances_equal_previous_distances():
@@ -77,14 +89,14 @@ def test_new_distances_equal_previous_distances():
     X_ext = _ext_A(X)
     Y_ext = _ext_B(Y)
     dists_previous_euclidean = _euclidean(X_ext, Y_ext)
-    dists_new_euclidean = np.sqrt(_euclidean_distance_squared(X, Y))
+    dists_new_euclidean = np.sqrt(sqeuclidean(X, Y))
     np.testing.assert_almost_equal(dists_previous_euclidean, dists_new_euclidean)
 
     ### test cosine distance
     X_ext = _ext_A(_norm(X))
     Y_ext = _ext_B(_norm(Y))
     dists_previous_cosine = _cosine(X_ext, Y_ext)
-    dists_new_cosine = _cosine_distance(X, Y)
+    dists_new_cosine = cosine(X, Y)
     np.testing.assert_almost_equal(dists_previous_cosine, dists_new_cosine)
 
 
@@ -96,11 +108,11 @@ def test_new_distances_equal_scipy_cdist():
     Y = np.array([[1, 1, 2], [2, 3, 4]])
 
     XY_cdist = cdist(X, Y, metric='euclidean')
-    XY_new = np.sqrt(_euclidean_distance_squared(X, Y))
+    XY_new = np.sqrt(sqeuclidean(X, Y))
     np.testing.assert_almost_equal(XY_cdist, XY_new)
 
     XY_cdist = cdist(X, Y, metric='cosine')
-    XY_new = _cosine_distance(X, Y)
+    XY_new = cosine(X, Y)
     np.testing.assert_almost_equal(XY_cdist, XY_new)
 
 
@@ -109,38 +121,41 @@ def test_matching_retrieves_correct_number(
     docarrays_for_embedding_distance_computation, limit
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric='euclidean_squared', limit=limit, is_distance=True)
+    D1.match(D2, metric='sqeuclidean', limit=limit)
     for m in D1.get_attributes('matches'):
         assert len(m) == limit
 
 
 @pytest.mark.parametrize(
-    'is_distance, metric',
+    'normalization, metric',
     [
-        (True, 'euclidean_squared'),
-        (False, 'euclidean_squared'),
-        (True, 'euclidean'),
-        (False, 'euclidean'),
-        (True, 'cosine'),
-        (False, 'cosine'),
+        (None, 'sqeuclidean'),
+        ((0, 1), 'sqeuclidean'),
+        (None, 'euclidean'),
+        ((0, 1), 'euclidean'),
+        (None, 'cosine'),
+        ((0, 1), 'cosine'),
     ],
 )
+@pytest.mark.parametrize('use_scipy', [True, False])
 def test_matching_retrieves_closest_matches(
-    docarrays_for_embedding_distance_computation, is_distance, metric
+    docarrays_for_embedding_distance_computation, normalization, metric, use_scipy
 ):
     """
-    Tests if match.values are returned 'low to high' if is_distance is True or 'high to low' otherwise
+    Tests if match.values are returned 'low to high' if normalization is True or 'high to low' otherwise
     """
     D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
+    D1.match(
+        D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
+    )
     expected_sorted_values = [
-        D1[0].get_attributes('matches')[i].scores['euclidean_squared'].value
-        for i in range(3)
+        D1[0].matches[i].scores['sqeuclidean'].value for i in range(3)
     ]
-    if is_distance:
-        assert expected_sorted_values == sorted(expected_sorted_values)
+    if normalization:
+        assert min(expected_sorted_values) >= 0
+        assert max(expected_sorted_values) <= 1
     else:
-        assert expected_sorted_values == sorted(expected_sorted_values)[::-1]
+        assert expected_sorted_values == sorted(expected_sorted_values)
 
 
 def test_euclidean_distance_squared(embeddings, embedding_query):
@@ -150,7 +165,7 @@ def test_euclidean_distance_squared(embeddings, embedding_query):
     Should expect as output [[0,1,4]].T  because (1-1)**2 = 0, (2-1)**2 = 1, (3-1)**2 = 2**2 = 4
     """
     np.testing.assert_almost_equal(
-        _euclidean_distance_squared(embedding_query, embeddings),
+        sqeuclidean(embedding_query, embeddings),
         np.array([[0, 1, 4]]),
     )
 
@@ -162,33 +177,82 @@ def test_cosine_distance_squared(embeddings, embedding_query):
     Should expect as output [[0,0,0]].T because query has same direction as every other element
     """
     np.testing.assert_almost_equal(
-        _cosine_distance(embedding_query, embeddings), np.array([[0, 0, 0]])
+        cosine(embedding_query, embeddings), np.array([[0, 0, 0]])
     )
 
 
 @pytest.mark.parametrize(
-    'is_distance, metric',
+    'normalization, metric',
     [
-        (True, 'euclidean_squared'),
-        (False, 'euclidean_squared'),
-        (True, 'euclidean'),
-        (False, 'euclidean'),
-        (True, 'cosine'),
-        (False, 'cosine'),
+        (None, 'sqeuclidean'),
+        ((0, 1), 'sqeuclidean'),
+        (None, 'euclidean'),
+        ((0, 1), 'euclidean'),
+        (None, 'cosine'),
+        ((0, 1), 'cosine'),
     ],
 )
+@pytest.mark.parametrize('use_scipy', [True, False])
 def test_docarray_match_docarraymemmap(
-    docarrays_for_embedding_distance_computation, is_distance, metric, tmpdir
+    docarrays_for_embedding_distance_computation,
+    normalization,
+    metric,
+    tmpdir,
+    use_scipy,
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
     D1_ = copy.deepcopy(D1)
     D2_ = copy.deepcopy(D2)
-    D1.match(D2, metric=metric, limit=3, is_distance=is_distance)
+    D1.match(
+        D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
+    )
     values_docarray = [m.scores[metric].value for d in D1 for m in d.matches]
 
     D2memmap = DocumentArrayMemmap(tmpdir)
     D2memmap.extend(D2_)
-    D1_.match(D2memmap, metric=metric, limit=3, is_distance=is_distance)
+    D1_.match(D2memmap, metric=metric, limit=3, normalization=normalization)
     values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
 
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
+
+
+@pytest.mark.parametrize(
+    'normalization, metric',
+    [
+        (None, 'hamming'),
+        ((0, 1), 'hamming'),
+        (None, 'minkowski'),
+        ((0, 1), 'minkowski'),
+        (None, 'jaccard'),
+        ((0, 1), 'jaccard'),
+    ],
+)
+def test_scipy_dist(
+    docarrays_for_embedding_distance_computation, normalization, metric, tmpdir
+):
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1_ = copy.deepcopy(D1)
+    D2_ = copy.deepcopy(D2)
+    D1.match(D2, metric=metric, limit=3, normalization=normalization, use_scipy=True)
+    values_docarray = [m.scores[metric].value for d in D1 for m in d.matches]
+
+    D2memmap = DocumentArrayMemmap(tmpdir)
+    D2memmap.extend(D2_)
+    D1_.match(
+        D2memmap, metric=metric, limit=3, normalization=normalization, use_scipy=True
+    )
+    values_docarraymemmap = [m.scores[metric].value for d in D1_ for m in d.matches]
+
+    np.testing.assert_equal(values_docarray, values_docarraymemmap)
+
+
+def test_2arity_function(docarrays_for_embedding_distance_computation):
+    def dotp(x, y):
+        return np.dot(x, np.transpose(y))
+
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1.match(D2, metric=dotp, use_scipy=True)
+
+    for d in D1:
+        for m in d.matches:
+            assert 'dotp' in m.scores
