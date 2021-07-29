@@ -439,9 +439,9 @@
 <span class="sd">    """</span>
     <span class="k">for</span> <span class="n">internal_doc_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_docs</span><span class="p">):</span>
         <span class="c1"># x_blackwhite.shape is (28,28)</span>
-        <span class="n">x_blackwhite</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">'index'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">][</span><span class="n">internal_doc_id</span><span class="p">]</span>
+        <span class="n">x_blackwhite</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">target</span><span class="p">[</span><span class="s1">'index'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">][</span><span class="n">internal_doc_id</span><span class="p">]</span>
         <span class="c1"># x_color.shape is (28,28,3)</span>
-        <span class="n">x_color</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">x_blackwhite</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">x_color</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">x_blackwhite</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">x_color</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">'id'</span><span class="p">]</span> <span class="o">=</span> <span class="n">internal_doc_id</span>
         <span class="k">yield</span> <span class="n">d</span></div>
@@ -460,9 +460,11 @@
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_docs</span><span class="p">):</span>
         <span class="n">num_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="s1">'query-labels'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">])</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_data</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">'query'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">x_stacked</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">x</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">x_stacked</span><span class="p">)</span>
+        <span class="c1"># x_blackwhite.shape is (28,28)</span>
+        <span class="n">x_blackwhite</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">target</span><span class="p">[</span><span class="s1">'query'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
+        <span class="c1"># x_color.shape is (28,28,3)</span>
+        <span class="n">x_color</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">x_blackwhite</span><span class="p">,)</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">x_color</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">with_groundtruth</span><span class="p">:</span>
             <span class="n">gt</span> <span class="o">=</span> <span class="n">gts</span><span class="p">[</span><span class="n">target</span><span class="p">[</span><span class="s1">'query-labels'</span><span class="p">][</span><span class="s1">'data'</span><span class="p">][</span><span class="n">idx</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
@@ -598,7 +600,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 28, 2021.
+            Last updated on Jul 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

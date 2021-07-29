@@ -385,7 +385,7 @@
         </label>
         <h1>Source code for daemon.clients.peas</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">aiohttp</span>
 
@@ -419,12 +419,12 @@
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">create</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">workspace_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">'DaemonID'</span><span class="p">],</span> <span class="n">payload</span><span class="p">:</span> <span class="n">Dict</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="sd">"""Create a remote Pea / Pod</span>
 
 <span class="sd">        :param workspace_id: id of workspace where the Pea would live in</span>
 <span class="sd">        :param payload: json payload</span>
-<span class="sd">        :return: the identity of the spawned Pea / Pod</span>
+<span class="sd">        :return: (True if pea creation succeeded) and (the identity of the spawned Pea/Pod or, error message)</span>
 <span class="sd">        """</span>
 
         <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
@@ -438,18 +438,17 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'successfully created a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">response_json</span><span class="si">}</span><span class="s1"> in workspace </span><span class="si">{</span><span class="n">workspace_id</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
-                <span class="k">return</span> <span class="n">response_json</span>
+                <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">response_json</span>
             <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">UNPROCESSABLE_ENTITY</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'validation error in the payload: </span><span class="si">{</span><span class="n">response_json</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"msg"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
-                <span class="p">)</span>
-                <span class="k">return</span> <span class="kc">None</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'validation error in the payload: </span><span class="si">{</span><span class="n">response_json</span><span class="p">[</span><span class="s2">"detail"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"msg"</span><span class="p">]</span><span class="si">}</span><span class="s1">'</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">error_msg</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">error_msg</span> <span class="o">=</span> <span class="n">error_msg_from</span><span class="p">(</span><span class="n">response_json</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> creation failed as: </span><span class="si">{</span><span class="n">error_msg</span><span class="si">}</span><span class="s1">'</span>
                 <span class="p">)</span>
-                <span class="k">return</span> <span class="n">error_msg</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">error_msg</span>
 
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">'DaemonID'</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -485,7 +484,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 28, 2021.
+            Last updated on Jul 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

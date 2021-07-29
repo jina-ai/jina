@@ -419,6 +419,7 @@
             <span class="kn">import</span> <span class="nn">rich</span>
             <span class="kn">import</span> <span class="nn">aiohttp</span>
             <span class="kn">from</span> <span class="nn">daemon.clients</span> <span class="kn">import</span> <span class="n">AsyncJinaDClient</span>
+            <span class="kn">from</span> <span class="nn">daemon.models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 
             <span class="k">assert</span> <span class="n">rich</span>
             <span class="k">assert</span> <span class="n">aiohttp</span>
@@ -443,10 +444,10 @@
 
         <span class="n">payload</span> <span class="o">=</span> <span class="n">replace_enum_to_str</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mask_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)))</span>
         <span class="c1"># Create a remote Pea in the above workspace</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">success</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">peas</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
             <span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">workspace_id</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pea_id</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">'remote pea creation failed'</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">DaemonPeaCreationFailed</span></div>
 
@@ -540,7 +541,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 28, 2021.
+            Last updated on Jul 29, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
