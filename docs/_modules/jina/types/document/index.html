@@ -677,7 +677,7 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mermaid_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>  <span class="c1">#: for mermaid visualize id</span>
-        <span class="k">if</span> <span class="n">hash_content</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">hash_content</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">copy</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Document.pop"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
