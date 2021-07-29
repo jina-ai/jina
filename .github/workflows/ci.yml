@@ -151,7 +151,7 @@ jobs:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.0
         with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
+          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
         id: buildx
@@ -186,7 +186,7 @@ jobs:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.0
         with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
+          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
@@ -226,7 +226,7 @@ jobs:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.0
         with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
+          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
 #        with:
 #          submodules: true
