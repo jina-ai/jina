@@ -1,5 +1,4 @@
-import base64
-import sys
+# Match merger executor
 from collections import OrderedDict
 
 from jina import Executor, requests, DocumentArray
