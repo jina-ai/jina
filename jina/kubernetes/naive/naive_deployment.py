@@ -25,14 +25,10 @@ def deploy_service(name, namespace, image_name, container_cmd, container_args, l
         },
     )
 
-    cluster_ip = kubernetes_tools.get_service_cluster_ip(
-        name, namespace
-    )
+    cluster_ip = kubernetes_tools.get_service_cluster_ip(name, namespace)
 
     replicas = 1
-    logger.info(
-        f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas}'
-    )
+    logger.info(f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas}')
     kubernetes_tools.create(
         'deployment',
         {
@@ -48,7 +44,6 @@ def deploy_service(name, namespace, image_name, container_cmd, container_args, l
     return cluster_ip
 
 
-
 def deploy_glue_executor(glue_executor, namespace, logger):
     return deploy_service(
         to_dns_name(glue_executor.name),
@@ -56,7 +51,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
         'jinaai/jina',
         '["jina"]',
         f'["executor", "--uses", "{glue_executor.uses}", "--port-in", "8081", "--dynamic-routing-in", "--dynamic-routing-out"]',
-        logger
+        logger,
     )
 
 
@@ -71,16 +66,22 @@ def deploy(flow, deployment_type='k8s'):
         flow.logger.info(f'📦\tCreate Namespace {namespace}')
         kubernetes_tools.create('namespace', {'name': namespace})
 
-        pod_to_pea_to_args = defaultdict(dict)
+        pod_to_pea_and_args = defaultdict(list)
         for pod_name, pod in flow._pod_nodes.items():
             if pod_name == 'gateway':
                 continue
 
             for name in ['head', 'tail']:
                 if pod.peas_args[name] is not None:
-                    cluster_ip = deploy_glue_executor(pod.peas_args[name], namespace, flow.logger)
-                    pod_to_pea_to_args[pod_name][pod.peas_args[name].name] = {'host_in': cluster_ip,
-                                                                              'parallel': pod.args.parallel}
+                    cluster_ip = deploy_glue_executor(
+                        pod.peas_args[name], namespace, flow.logger
+                    )
+                    pod_to_pea_and_args[pod_name].append(
+                        [
+                            pod.peas_args[name].name,
+                            {'host_in': cluster_ip, 'parallel': pod.args.parallel},
+                        ]
+                    )
 
             scheme, name, tag, secret = parse_hub_uri(pod.args.uses)
             meta_data = HubIO.fetch_meta(name)
@@ -99,7 +100,9 @@ def deploy(flow, deployment_type='k8s'):
                     container_args='["executor", "--uses", "config.yml", "--port-in", "8081", "--dynamic-routing-in", "--dynamic-routing-out", "--socket-in", "ROUTER_BIND", "--socket-out", "ROUTER_BIND"]',
                     logger=flow.logger,
                 )
-                pod_to_pea_to_args[pod_name][pea_name] = {'host_in': cluster_ip, 'parallel': pod.args.parallel}
+                pod_to_pea_and_args[pod_name].append(
+                    [pea_name, {'host_in': cluster_ip, 'parallel': pod.args.parallel}]
+                )
 
         flow.logger.info(f'🔒\tCreate "gateway service"')
         external_gateway_service = 'gateway-exposed'
@@ -128,7 +131,9 @@ def deploy(flow, deployment_type='k8s'):
         #     'gateway-in', namespace
         # )
 
-        gateway_yaml = create_gateway_yaml(pod_to_pea_to_args, 'gateway-in.f1.svc.cluster.local')
+        gateway_yaml = create_gateway_yaml(
+            pod_to_pea_and_args, 'gateway-in.f1.svc.cluster.local'
+        )
         kubernetes_tools.create(
             'deployment',
             {
@@ -148,7 +153,7 @@ def deploy(flow, deployment_type='k8s'):
         raise Exception(f'deployment type "{deployment_type}" is not supported')
 
 
-def create_gateway_yaml(pod_to_pea_to_args, gateway_host_in):
+def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in):
     yaml = f"""
         !Flow
         version: '1'
@@ -159,7 +164,7 @@ def create_gateway_yaml(pod_to_pea_to_args, gateway_host_in):
           protocol: http
         pods:
         """
-    for pod_name, pea_to_args in pod_to_pea_to_args.items():
+    for pod_name, pea_to_args in pod_to_pea_and_args.items():
         peas_hosts = []
         for pea_dns_name, args in pea_to_args.items():
             peas_hosts.append(args['host_in'])
