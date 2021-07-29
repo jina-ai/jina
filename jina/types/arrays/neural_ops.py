@@ -75,7 +75,7 @@ class DocumentArrayNeuralOpsMixin:
             if isinstance(normalization, (tuple, list)):
                 dist = minmax_normalize(dist, normalization)
 
-        source_docarray_ids = [d.id for d in self]
+        source_docarray_ids = {d.id for d in self}
         m_name = metric_name or (metric.__name__ if callable(metric) else metric)
         for _q, _ids, _dists in zip(self, idx, dist):
             _q.matches.clear()
