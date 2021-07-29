@@ -89,6 +89,10 @@ class DocumentArrayNeuralOpsMixin:
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
             )
 
+        # print('\n')
+        # print(dists)
+        # print('\n')
+
         dist, idx = top_k(dists, limit, descending=False)
         if normalization is not None:
             if isinstance(normalization, (tuple, list)):

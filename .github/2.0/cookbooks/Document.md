@@ -973,7 +973,7 @@ The following example find the 3 closest documents, according to the euclidean d
 from jina import Document, DocumentArray
 import numpy as np
 
-d1 = Document(embedding=np.array([0,0,0,0,0]))
+d1 = Document(embedding=np.array([0,0,0,0,1]))
 d2 = Document(embedding=np.array([1,0,0,0,0]))
 d3 = Document(embedding=np.array([1,1,1,1,0]))
 d4 = Document(embedding=np.array([1,2,2,1,0]))
@@ -984,10 +984,11 @@ d3_m = Document(embedding=np.array([1,1.2,1,1,0]))
 d4_m = Document(embedding=np.array([1,2.2,2,1,0]))
 d5_m = Document(embedding=np.array([4,5.2,2,1,0]))
 
-da_1  = DocumentArray([d1, d2, d3, d4])
+da_1 = DocumentArray([d1, d2, d3, d4])
 da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
 
-da_1.match(da_2, metric='euclidean', limit=3)
+
+da_1.match(da_2, metric='euclidean',  limit=3)
 query = da_1[2]
 print(f'query emb = {query.embedding}')
 for m in query.matches:
@@ -995,12 +996,51 @@ for m in query.matches:
 ```
 
 ```text
-executed in 12ms, finished 11:28:38 2021-07-22
 query emb = [1 1 1 1 0]
 match emb = [1.  1.2 1.  1.  0. ] score = 0.20000000298023224
 match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
 match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 ```
+
+
+
+#### Using Sparse arrays as embeddings
+
+We can use sparse embeddings and do the `.match` using `is_sparse=True`
+
+```python
+from jina import Document, DocumentArray
+import scipy.sparse as sp
+
+d1 = Document(embedding=sp.csr_matrix([0,0,0,0,1]))
+d2 = Document(embedding=sp.csr_matrix([1,0,0,0,0]))
+d3 = Document(embedding=sp.csr_matrix([1,1,1,1,0]))
+d4 = Document(embedding=sp.csr_matrix([1,2,2,1,0]))
+
+d1_m = Document(embedding=sp.csr_matrix([0,0.1,0,0,0]))
+d2_m = Document(embedding=sp.csr_matrix([1,0.1,0,0,0]))
+d3_m = Document(embedding=sp.csr_matrix([1,1.2,1,1,0]))
+d4_m = Document(embedding=sp.csr_matrix([1,2.2,2,1,0]))
+d5_m = Document(embedding=sp.csr_matrix([4,5.2,2,1,0]))
+
+da_1 = DocumentArray([d1, d2, d3, d4])
+da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+
+da_1.match(da_2, metric='euclidean', limit=4, is_sparse=True)
+query = da_1[2]
+print(f'query emb = {query.embedding.todense()}')
+for m in query.matches:
+    print('match emb =', m.embedding.todense(), 'score =', m.scores['euclidean'].value)
+```
+
+```
+query emb = [[1 1 1 1 0]]
+match emb = [[1.  1.2 1.  1.  0. ]] score = 0.20000000298023224
+match emb = [[1.  2.2 2.  1.  0. ]] score = 1.5620499849319458
+match emb = [[1.  0.1 0.  0.  0. ]] score = 1.6763054132461548
+```
+
+
 
 
 
