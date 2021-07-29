@@ -868,6 +868,9 @@ class Document(ProtoTypeMixin):
     def __enter__(self):
         return self
 
+    def __eq__(self, other):
+        return self.proto == other.proto
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.update_content_hash()
 
@@ -1200,10 +1203,10 @@ class Document(ProtoTypeMixin):
 
         mermaid_str = (
             """
-                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                            classDiagram
-                        
-                                    """
+                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                classDiagram
+
+                                        """
             + self.__mermaid_str__()
         )
 
