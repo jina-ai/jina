@@ -1,4 +1,4 @@
-FROM jina-ai/jina:latest
+FROM jinaai/jina:latest
 
 # install requirements before copying the workspace
 COPY requirements.txt /requirements.txt
