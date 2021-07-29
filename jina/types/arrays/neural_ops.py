@@ -6,6 +6,8 @@ import numpy as np
 from jina import Document
 from ...math.helper import top_k, minmax_normalize
 
+from jina.logging.predefined import default_logger
+
 if False:
     from .document import DocumentArray
     from .memmap import DocumentArrayMemmap
@@ -23,6 +25,7 @@ class DocumentArrayNeuralOpsMixin:
         limit: Optional[int] = inf,
         normalization: Optional[Tuple[int, int]] = None,
         use_scipy: bool = False,
+        is_sparse: bool = False,
         metric_name: Optional[str] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
@@ -50,19 +53,35 @@ class DocumentArrayNeuralOpsMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param use_scipy: use Scipy as the computation backend
+        :param is_sparse: boolean stating if inpyt is a scipy.sparse object
         :param metric_name: if provided, then match result will be marked with this string.
         """
+        if is_sparse is False:
+            X = np.stack(self.get_attributes('embedding'))
+            Y = np.stack(darray.get_attributes('embedding'))
+        else:
+            import scipy.sparse as sp
 
-        X = np.stack(self.get_attributes('embedding'))
-        Y = np.stack(darray.get_attributes('embedding'))
+            X = sp.vstack(self.get_attributes('embedding'))
+            Y = sp.vstack(darray.get_attributes('embedding'))
+
         limit = min(limit, len(darray))
-
         if isinstance(metric, str):
-            if use_scipy:
+
+            if use_scipy and is_sparse is False:
+                # cdist from scipy does not support sparse arrays
                 from scipy.spatial.distance import cdist
+
+                dists = cdist(X, Y, metric)
             else:
+                if use_scipy:
+                    default_logger.info(
+                        f'Scipy cdist does not support sparse arrays, using Jina.math.distances sparse cdist'
+                    )
                 from ...math.distance import cdist
-            dists = cdist(X, Y, metric)
+
+                dists = cdist(X, Y, metric, is_sparse=is_sparse)
+
         elif callable(metric):
             dists = metric(X, Y)
         else:
