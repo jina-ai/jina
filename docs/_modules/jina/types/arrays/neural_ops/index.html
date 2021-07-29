@@ -466,6 +466,11 @@
             <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">_dist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span><span class="p">):</span>
                 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">_id</span><span class="p">)],</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># Note, when match self with other, or both of them share the same Document</span>
+                <span class="c1"># we might have recursive matches .</span>
+                <span class="c1"># checkout https://github.com/jina-ai/jina/issues/3034</span>
+                <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'matches'</span><span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dist</span>
                 <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div></div>
 </pre></div>

@@ -1254,6 +1254,9 @@
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">proto</span>
+
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">()</span>
 
@@ -1586,10 +1589,10 @@
 
         <span class="n">mermaid_str</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sd">"""</span>
-<span class="sd">                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%</span>
-<span class="sd">                            classDiagram</span>
-<span class="sd">                        </span>
-<span class="sd">                                    """</span>
+<span class="sd">                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%</span>
+<span class="sd">                                classDiagram</span>
+
+<span class="sd">                                        """</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mermaid_str__</span><span class="p">()</span>
         <span class="p">)</span>
 
