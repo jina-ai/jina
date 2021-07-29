@@ -291,7 +291,7 @@ class Document(ProtoTypeMixin):
             )
         self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
-        if hash_content:
+        if hash_content and not copy:
             self.update_content_hash()
 
     def pop(self, *fields) -> None:
