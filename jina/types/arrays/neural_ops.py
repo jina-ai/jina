@@ -75,7 +75,6 @@ class DocumentArrayNeuralOpsMixin:
             if isinstance(normalization, (tuple, list)):
                 dist = minmax_normalize(dist, normalization)
 
-        source_docarray_ids = {d.id for d in self}
         m_name = metric_name or (metric.__name__ if callable(metric) else metric)
         for _q, _ids, _dists in zip(self, idx, dist):
             _q.matches.clear()
@@ -84,7 +83,7 @@ class DocumentArrayNeuralOpsMixin:
                 # Note, when match self with other, or both of them share the same Document
                 # we might have recursive matches .
                 # checkout https://github.com/jina-ai/jina/issues/3034
-                if d.id in source_docarray_ids:
-                    d.matches.clear()
+                if d.id in self:
+                    d.pop('matches')
                 d.scores[m_name] = _dist
                 _q.matches.append(d)

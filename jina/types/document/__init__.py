@@ -291,7 +291,7 @@ class Document(ProtoTypeMixin):
             )
         self.set_attributes(**kwargs)
         self._mermaid_id = random_identity()  #: for mermaid visualize id
-        if hash_content:
+        if hash_content and not copy:
             self.update_content_hash()
 
     def pop(self, *fields) -> None:
@@ -868,6 +868,9 @@ class Document(ProtoTypeMixin):
     def __enter__(self):
         return self
 
+    def __eq__(self, other):
+        return self.proto == other.proto
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.update_content_hash()
 
@@ -1200,10 +1203,10 @@ class Document(ProtoTypeMixin):
 
         mermaid_str = (
             """
-                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                            classDiagram
-                        
-                                    """
+                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                classDiagram
+
+                                        """
             + self.__mermaid_str__()
         )
 
