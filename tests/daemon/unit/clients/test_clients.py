@@ -231,7 +231,9 @@ def test_peapod_create(monkeypatch, identity, client_cls):
     monkeypatch.setattr(
         aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
     )
-    assert client.create(identity, payload) == {1: 2}
+    status, response = client.create(identity, payload)
+    assert status
+    assert response == {1: 2}
 
     monkeypatch.setattr(
         aiohttp,
@@ -240,7 +242,9 @@ def test_peapod_create(monkeypatch, identity, client_cls):
             {'detail': [{'msg': 'abcd'}], 'body': 'empty data'}, 422
         ),
     )
-    assert client.create(identity, payload) is None
+    status, response = client.create(identity, payload)
+    assert not status
+    assert response == 'validation error in the payload: abcd'
 
     monkeypatch.setattr(
         aiohttp,
@@ -249,7 +253,9 @@ def test_peapod_create(monkeypatch, identity, client_cls):
             {'detail': [{'msg': 'abcd'}], 'body': ['empty', 'data']}, 404
         ),
     )
-    assert client.create(identity, payload) == 'empty\ndata'
+    status, response = client.create(identity, payload)
+    assert not status
+    assert response == 'empty\ndata'
 
     monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
     assert client.create(identity, payload) is None
@@ -268,7 +274,9 @@ async def test_peapod_create_async(monkeypatch, identity, client_cls):
     monkeypatch.setattr(
         aiohttp, 'request', lambda **kwargs: MockAiohttpResponse({1: 2}, 201)
     )
-    assert await client.create(identity, payload) == {1: 2}
+    status, response = await client.create(identity, payload)
+    assert status
+    assert response == {1: 2}
 
     monkeypatch.setattr(
         aiohttp,
@@ -277,7 +285,9 @@ async def test_peapod_create_async(monkeypatch, identity, client_cls):
             {'detail': [{'msg': 'abcd'}], 'body': 'empty data'}, 422
         ),
     )
-    assert await client.create(identity, payload) is None
+    status, response = await client.create(identity, payload)
+    assert not status
+    assert response == 'validation error in the payload: abcd'
 
     monkeypatch.setattr(
         aiohttp,
@@ -286,7 +296,9 @@ async def test_peapod_create_async(monkeypatch, identity, client_cls):
             {'detail': [{'msg': 'abcd'}], 'body': ['empty', 'data']}, 404
         ),
     )
-    assert await client.create(identity, payload) == 'empty\ndata'
+    status, response = await client.create(identity, payload)
+    assert not status
+    assert response == 'empty\ndata'
 
     monkeypatch.setattr(aiohttp, 'request', lambda **kwargs: MockAiohttpException())
     assert await client.create(identity, payload) is None

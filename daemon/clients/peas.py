@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Dict, Optional, TYPE_CHECKING, Union
+from typing import Dict, Optional, TYPE_CHECKING, Tuple, Union
 
 import aiohttp
 
@@ -33,12 +33,12 @@ class AsyncPeaClient(AsyncBaseClient):
     @if_alive
     async def create(
         self, workspace_id: Union[str, 'DaemonID'], payload: Dict
-    ) -> Optional[str]:
+    ) -> Tuple[bool, str]:
         """Create a remote Pea / Pod
 
         :param workspace_id: id of workspace where the Pea would live in
         :param payload: json payload
-        :return: the identity of the spawned Pea / Pod
+        :return: (True if pea creation succeeded) and (the identity of the spawned Pea/Pod or, error message)
         """
 
         async with aiohttp.request(
@@ -52,18 +52,17 @@ class AsyncPeaClient(AsyncBaseClient):
                 self._logger.success(
                     f'successfully created a {self._kind.title()} {response_json} in workspace {workspace_id}'
                 )
-                return response_json
+                return True, response_json
             elif response.status == HTTPStatus.UNPROCESSABLE_ENTITY:
-                self._logger.error(
-                    f'validation error in the payload: {response_json["detail"][0]["msg"]}'
-                )
-                return None
+                error_msg = f'validation error in the payload: {response_json["detail"][0]["msg"]}'
+                self._logger.error(error_msg)
+                return False, error_msg
             else:
                 error_msg = error_msg_from(response_json)
                 self._logger.error(
                     f'{self._kind.title()} creation failed as: {error_msg}'
                 )
-                return error_msg
+                return False, error_msg
 
     @if_alive
     async def delete(self, id: Union[str, 'DaemonID'], **kwargs) -> bool:

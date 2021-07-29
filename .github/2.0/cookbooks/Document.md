@@ -1209,7 +1209,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `save`, `load` |❌ unnecessary |✅|
 | `sample` |✅ |✅|
 | `shuffle` |✅ |✅|
-| `match` |✅ |❌|
+| `match` |❌|✅|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 
