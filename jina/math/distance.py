@@ -92,8 +92,8 @@ def sparse_cosine(
     x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES
 ) -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
-    :param x_mat:  scipy.sparse array like with ndim=2
-    :param y_mat:  scipy.sparse array like with ndim=2
+    :param x_mat:  scipy.sparse like array with ndim=2
+    :param y_mat:  scipy.sparse like array with ndim=2
     :return: np.ndarray  with ndim=2
     """
     from scipy.sparse.linalg import norm
@@ -108,8 +108,8 @@ def sparse_sqeuclidean(
     x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES
 ) -> 'np.ndarray':
     """Cosine distance between each row in x_mat and each row in y_mat.
-    :param x_mat:  scipy.sparse array like with ndim=2
-    :param y_mat:  scipy.sparse array like with ndim=2
+    :param x_mat:  scipy.sparse like array with ndim=2
+    :param y_mat:  scipy.sparse like array with ndim=2
     :return: np.ndarray  with ndim=2
     """
     # we need the np.asarray otherwise we get a np.matrix object that iterates differently
