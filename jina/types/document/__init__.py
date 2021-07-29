@@ -448,7 +448,7 @@ class Document(ProtoTypeMixin):
         FieldMask(paths=fields_to_hash).MergeMessage(self._pb_body, masked_d)
 
         self._pb_body.content_hash = blake2b(
-            masked_d.SerializeToString(), digest_size=DIGEST_SIZE
+            masked_d.SerializePartialToString(), digest_size=DIGEST_SIZE
         ).hexdigest()
 
     @property

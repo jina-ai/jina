@@ -1092,9 +1092,3 @@ def test_tags_update_nested_lists():
     assert d.tags['hey']['list'][1] is True
     assert d.tags['hey']['list'][2]['inlist'] == 'not here'
     assert d.tags['hoy'][0] == 1
-
-
-def test_update_content_hash():
-    docs = random_docs(10000)
-    for doc in docs:
-        doc.update_content_hash()
