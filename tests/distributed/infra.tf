@@ -1,3 +1,9 @@
+terraform {
+  backend "s3" {
+    encrypt = true
+  }
+}
+
 module "jinad" {
   source            = "github.com/jina-ai/terraform-jina-jinad-aws"
   debug             = "true"

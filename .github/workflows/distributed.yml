@@ -1,12 +1,13 @@
-name: Distributed Tests
+name: DT
 
-on: pull_request
+on:
+  pull_request:
 
 env:
   INSTANCES: 2
 
 jobs:
-  distributed-tests:
+  create-distributed-resources:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -27,9 +28,12 @@ jobs:
           aws-region: us-east-1
       - uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 0.14.7
           terraform_wrapper: false
-      - run: terraform init
+      - run: >
+         terraform init -force-copy
+         -backend-config='bucket=ci-distributed-tests'
+         -backend-config='region=us-east-1'
+         -backend-config='key=${{ github.head_ref }}-${{ github.sha }}'
         working-directory: ./tests/distributed
       - run: >
           terraform plan
@@ -46,8 +50,8 @@ jobs:
           -var='branch=${{ github.head_ref }}'
           -var='commit=${{ github.sha }}'
         working-directory: ./tests/distributed
-      - name: Validate Setup
-        id: validate
+      - id: validate-setup
+        name: Validate Setup
         run: |
           sudo apt-get -qq update && sudo apt-get install -qq -y jq curl
           COUNT=0
@@ -58,16 +62,50 @@ jobs:
             if [[ $STATUS -eq 200 ]]; then
               echo "Successfully connected to ${HOST}"
               COUNT=$((COUNT+1))
-              echo "${HOST}:8000" >> $GITHUB_ENV
             fi
           done
           if [[ $COUNT -eq ${{ env.INSTANCES }} ]]; then
             echo "${{ env.INSTANCES }} instances successfully setup"
+            echo ::set-output name=CLOUDHOSTS::"$HOSTS"
           else
             echo "Issue in remote setup. Tried setting up ${{ env.INSTANCES }} instances, ${COUNT} succeeded"
             exit 1
           fi
         working-directory: ./tests/distributed
+    outputs:
+      cloudhosts: ${{ steps.validate-setup.outputs.CLOUDHOSTS }}
+
+  prep-distributed-testbed:
+    runs-on: ubuntu-latest
+    needs: create-distributed-resources
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: |
+          sudo apt-get install jq
+          echo "::set-output name=matrix::$(bash scripts/get-all-test-paths.sh distributed)"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  distributed-tests:
+    needs: [prep-distributed-testbed, create-distributed-resources]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.7]
+        test-path: ${{fromJson(needs.prep-distributed-testbed.outputs.matrix)}}
+    steps:
+      - name: Set CLOUDHOST environment variables
+        run: |
+          set -e
+          HOSTS=$(echo ${{ needs.create-distributed-resources.outputs.cloudhosts }})
+          echo $HOSTS
+          for i in $HOSTS; do
+            IFS=':'; read -r name value <<< "$i"; unset IFS
+            echo "${name}=${value}:8000" >> $GITHUB_ENV
+          done
+      - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -83,13 +121,55 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Tests
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          # docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           # still needed for 2 docker-compose tests
-          docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
-          pytest --suppress-no-test-exit-code  --force-flaky --max-runs 1 --cov=jina --cov-report=xml --timeout=360 -v -s tests/distributed
+          # docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
+          pytest --suppress-no-test-exit-code  --force-flaky --max-runs 1 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
         timeout-minutes: 30
-      - if: always()
-        name: Destroy remote instances
+
+  success-distributed-tests:
+    needs: distributed-tests
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v2
+      - name: Check Failure
+        if: env.WORKFLOW_CONCLUSION == 'failure'
+        run: exit 1
+      - name: Success
+        if: ${{ success() }}
+        run: echo "All Done"
+
+  destroy-distributed-resources:
+    needs: success-distributed-tests
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "SCRIPTPATH=${PWD}/scripts/setup-jinad.sh" >> $GITHUB_ENV
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
+      - run: >
+         terraform init -force-copy
+         -backend-config='bucket=ci-distributed-tests'
+         -backend-config='region=us-east-1'
+         -backend-config='key=${{ github.head_ref }}-${{ github.sha }}'
+        working-directory: ./tests/distributed
+      - run: >
+          terraform plan
+          -var='instances=${{ env.INSTANCES }}'
+          -var='scriptpath=${{ env.SCRIPTPATH }}'
+          -var='branch=${{ github.head_ref }}'
+          -var='commit=${{ github.sha }}'
+        working-directory: ./tests/distributed
+      - name: Destroy remote instances
         run: >
           terraform destroy -auto-approve
           -var='instances=${{ env.INSTANCES }}'

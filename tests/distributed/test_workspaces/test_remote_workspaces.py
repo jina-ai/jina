@@ -5,7 +5,7 @@ import asyncio
 import numpy as np
 import pytest
 
-from jina import Flow, Client, Document, __default_host__
+from jina import Flow, Client, Document
 from daemon.models.id import DaemonID
 from daemon.clients import JinaDClient, AsyncJinaDClient
 from ..helpers import assert_request, get_cloudhost
@@ -21,7 +21,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-HOST, PORT_EXPOSE = get_cloudhost(1)
+HOST, PORT_EXPOSE = get_cloudhost(2)
 NUM_DOCS = 100
 
 
@@ -119,7 +119,9 @@ def test_upload_multiple_workspaces(parallels, mocker):
 
 
 def test_remote_flow():
-    client = JinaDClient(host=__default_host__, port=8000)
+    client = JinaDClient(host=HOST, port=PORT_EXPOSE)
+    assert client.alive
+
     workspace_id = client.workspaces.create(
         paths=[os.path.join(cur_dir, 'empty_flow.yml')]
     )
@@ -136,9 +138,9 @@ def test_remote_flow():
 @pytest.mark.asyncio
 async def test_custom_project():
 
-    HOST = __default_host__
+    client = AsyncJinaDClient(host=HOST, port=PORT_EXPOSE)
+    assert await client.alive
 
-    client = AsyncJinaDClient(host=HOST, port=8000)
     workspace_id = await client.workspaces.create(
         paths=[os.path.join(cur_dir, 'flow_app_ws')]
     )
@@ -189,6 +191,7 @@ def docker_compose(request):
     os.system(f'docker network prune -f ')
 
 
+@pytest.mark.skip('take out docker compose from distributed tests')
 @pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
 def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
     response_mock = mocker.Mock()

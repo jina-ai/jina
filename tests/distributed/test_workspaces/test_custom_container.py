@@ -1,9 +1,6 @@
 import os
 
-import docker
-
 from ..helpers import get_cloudhost
-from jina import __default_host__
 from daemon.clients import JinaDClient
 from daemon.models.workspaces import WorkspaceItem
 
@@ -21,18 +18,15 @@ HOST, PORT_EXPOSE = get_cloudhost(2)
 
 
 def test_create_custom_container():
-    client = JinaDClient(host=__default_host__, port=8000)
+    client = JinaDClient(host=HOST, port=PORT_EXPOSE)
+    assert client.alive
+
     workspace_id = client.workspaces.create(
         paths=[os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad')]
     )
     workspace_details = client.workspaces.get(id=workspace_id)
     workspace_details = WorkspaceItem(**workspace_details)
     assert workspace_details.metadata.container_id
-
-    container = docker.from_env().containers.get(
-        workspace_details.metadata.container_id
-    )
-    assert container.name == workspace_id
 
     workspace_id = client.workspaces.create(
         paths=[os.path.join(cur_dir, 'custom_workspace_no_run')]
@@ -43,7 +37,9 @@ def test_create_custom_container():
 
 
 def test_update_custom_container():
-    client = JinaDClient(host=__default_host__, port=8000)
+    client = JinaDClient(host=HOST, port=PORT_EXPOSE)
+    assert client.alive
+
     workspace_id = client.workspaces.create(
         paths=[
             os.path.join(cur_dir, '../../daemon/unit/models/good_ws/.jinad'),
@@ -76,7 +72,9 @@ def test_update_custom_container():
 
 
 def test_delete_custom_container():
-    client = JinaDClient(host=__default_host__, port=8000)
+    client = JinaDClient(host=HOST, port=PORT_EXPOSE)
+    assert client.alive
+
     workspace_id = client.workspaces.create(
         paths=[
             os.path.join(cur_dir, 'custom_workspace_blocking'),

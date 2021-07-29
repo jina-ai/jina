@@ -3,7 +3,6 @@ import pytest
 import asyncio
 
 from ..helpers import get_cloudhost
-from jina import __default_host__
 from daemon.clients import AsyncJinaDClient
 
 
@@ -13,7 +12,8 @@ HOST, PORT_EXPOSE = get_cloudhost(2)
 success = 0
 failure = 0
 
-client = AsyncJinaDClient(host=__default_host__, port=8000)
+client = AsyncJinaDClient(host=HOST, port=PORT_EXPOSE)
+assert client.alive
 
 
 async def get_alive():
@@ -46,5 +46,5 @@ async def test_nonblocking_server():
 
     await client.flows.delete(flow_id)
     await client.workspaces.delete(workspace_id)
-    assert success > 0, f'#success is {success} (expected >0)'
-    assert failure == 0, f'#failure is {failure} (expected =0)'
+    assert success > 0, f'#success is {success} (expected > 0)'
+    assert failure == 0, f'#failure is {failure} (expected == 0)'

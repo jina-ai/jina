@@ -1,15 +1,16 @@
 import os
 
-import pytest
-
 from daemon.clients import JinaDClient
-from jina import __default_host__
+from ..helpers import get_cloudhost
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+HOST, PORT_EXPOSE = get_cloudhost(2)
 
 
 def test_flow_error_in_partial_daemon():
-    client = JinaDClient(host=__default_host__, port=8000)
+    client = JinaDClient(host=HOST, port=PORT_EXPOSE)
+    assert client.alive
+
     workspace_id = client.workspaces.create(
         paths=[os.path.join(cur_dir, 'wrong_flow.yml')]
     )
@@ -23,7 +24,9 @@ def test_flow_error_in_partial_daemon():
 
 
 def test_pea_error_in_partial_daemon():
-    client = JinaDClient(host=__default_host__, port=8000)
+    client = JinaDClient(host=HOST, port=PORT_EXPOSE)
+    assert client.alive
+
     workspace_id = client.workspaces.create()
     status, error_msg = client.peas.create(
         workspace_id=workspace_id,
