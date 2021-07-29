@@ -256,3 +256,28 @@ def test_2arity_function(docarrays_for_embedding_distance_computation):
     for d in D1:
         for m in d.matches:
             assert 'dotp' in m.scores
+
+
+def test_match_inclusive():
+    """Call match function, while the other :class:`DocumentArray` is itself
+    or have same :class:`Document`.
+    """
+    # The document array da1 match with itself.
+    da1 = DocumentArray(
+        [
+            Document(embedding=np.array([1, 2, 3])),
+            Document(embedding=np.array([1, 0, 1])),
+            Document(embedding=np.array([1, 1, 2])),
+        ]
+    )
+
+    da1.match(da1)
+    assert len(da1) == 3
+    traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(traversed) == 9
+    # The document array da2 shares same documents with da1
+    da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), da1[0], da1[1]])
+    da1.match(da2)
+    assert len(da2) == 3
+    traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(traversed) == 9

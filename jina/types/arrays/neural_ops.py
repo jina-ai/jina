@@ -75,10 +75,15 @@ class DocumentArrayNeuralOpsMixin:
             if isinstance(normalization, (tuple, list)):
                 dist = minmax_normalize(dist, normalization)
 
+        source_docarray_ids = [d.id for d in self]
         m_name = metric_name or (metric.__name__ if callable(metric) else metric)
         for _q, _ids, _dists in zip(self, idx, dist):
             _q.matches.clear()
             for _id, _dist in zip(_ids, _dists):
                 d = Document(darray[int(_id)], copy=True)
+                # Note, when match self with other, and both of them have the same Document
+                # we might bring incosistency matches
+                if d.id in source_docarray_ids:
+                    d.matches.clear()
                 d.scores[m_name] = _dist
                 _q.matches.append(d)
