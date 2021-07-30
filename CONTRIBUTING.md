@@ -6,7 +6,7 @@ I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new con
 
 # Join Us on Slack!
 
-The best way to know more about contributing and how to get started is to **[join us on Slack](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w)** and ask questions in our public channels.
+The best way to know more about contributing and how to get started is to **[join us on Slack](https://slack.jina.ai)** and ask questions in our public channels.
 
 In this guide, we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
 
@@ -26,7 +26,7 @@ In this guide, we're going to go through the steps for each kind of contribution
 <a name="-before-you-start"></a>
 ## 🏁 Before you Start
 
-Make sure you've read through our [README](https://github.com/jina-ai/jina), [Jina 101](https://101.jina.ai), and [example tutorials](https://learn.jina.ai) so you have a good understanding of what Jina is and how it works.
+Make sure you've read through our [README](https://github.com/jina-ai/jina) and [tutorials](https://github.com/jina-ai/jina#read-tutorials) so you have a good understanding of what Jina is and how it works.
 
 ### Not a coder but still want to contribute?
 
@@ -225,6 +225,7 @@ echo "<commit message>" | commitlint
 We don't enforce naming of PRs and branches, but we recommend you follow the same style. It can simply be one of your commit messages, just copy/paste it, e.g. `fix(readme): improve the readability and move sections`.
 
 <a name="-testing-jina-locally-and-on-ci"></a>
+
 ## 💥 Testing Jina Locally and on CI
 
 You need to build a local docker image tagged 'jinaai/jina:test-pip' for all the tests to run as in the CI, via:
@@ -266,9 +267,7 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 
 #### General Documentation
 
-This covers files like [Jina 101](https://101.jina.ai), [Input and Output Functions](https://docs.jina.ai/chapters/io/index.html), etc.
-
-These are typically written in Markdown, though some may be in RestructuredText.
+Our docs are typically written in Markdown, though some may be in RestructuredText.
 
 If you're just correcting a typo, feel free to make a pull request. For bigger ones, check out our [getting support section](#-getting-support) to get in touch and discuss more.
 
