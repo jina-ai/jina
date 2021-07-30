@@ -88,3 +88,27 @@ The polling strategy of the Pod (when `parallel>1`)
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--no-dynamic-routing',
+        action='store_false',
+        dest='dynamic_routing',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.',
+    )
+
+    parser.add_argument(
+        '--connect-to-predecessor',
+        action='store_true',
+        default=False,
+        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
+    )
