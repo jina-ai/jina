@@ -129,6 +129,7 @@ class DocumentArrayNeuralOpsMixin:
         plt.title(f'{len(x_mat)} documents with PCA')
 
         if colors is not None:
+            # make one plot per color with the correct tag
             for tag in tag_to_num:
                 num = tag_to_num[tag]
                 x_mat_subset = x_mat_2d[colors == num]
