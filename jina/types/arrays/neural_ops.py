@@ -53,7 +53,7 @@ class DocumentArrayNeuralOpsMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param use_scipy: use Scipy as the computation backend
-        :param is_sparse: boolean stating if inpyt is a scipy.sparse object
+        :param is_sparse: boolean stating if input is a scipy.sparse object
         :param metric_name: if provided, then match result will be marked with this string.
         """
         if is_sparse is False:
