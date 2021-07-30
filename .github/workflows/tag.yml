@@ -83,7 +83,7 @@ jobs:
           inputs: '{ "TFID": "cloud.jina.ai", "instances": "{ \"cloud.jina.ai\": { \"type\": \"t2.micro\", \"disk\" = { \"type\" = \"gp2\", \"size\" = 20 }, \"pip\": [], \"command\": \"sudo echo Hello from cloud.jina.ai\"} }", "region": "us-east-1", "cloudflare_record_name": "cloud" }'
 
   update-doc:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:

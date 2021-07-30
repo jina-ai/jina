@@ -147,7 +147,7 @@ class BaseStore(MutableMapping):
         return wrapper
 
     @classmethod
-    def load(cls) -> Union[Dict, 'BaseStore']:
+    def load(cls) -> 'BaseStore':
         """Load store from a pickle in local workspace
 
         :return: Store from local or empty store

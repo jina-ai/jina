@@ -12,7 +12,7 @@ from jina import __docker_host__
 from jina.helper import colored, random_port
 from .base import BaseStore
 from ..dockerize import Dockerizer
-from ..excepts import Runtime400Exception
+from ..excepts import PartialDaemon400Exception, Runtime400Exception
 from ..helper import id_cleaner
 from ..models import DaemonID
 from ..models.enums import UpdateOperation
@@ -164,7 +164,16 @@ class ContainerStore(BaseStore):
                 )
             object = await self._add(uri=uri, params=params, **kwargs)
         except Exception as e:
-            self._logger.error(f'Error while creating the {self._kind.title()}: \n{e}')
+            self._logger.error(f'{self._kind} creation failed as {e}')
+            container_logs = Dockerizer.logs(container.id)
+            if container_logs and isinstance(e, PartialDaemon400Exception):
+                self._logger.debug(
+                    f'error logs frm partial daemon: \n {container_logs}'
+                )
+                if e.message and isinstance(e.message, list):
+                    e.message += container_logs.split('\n')
+                elif e.message and isinstance(e.message, str):
+                    e.message += container_logs
             if id in Dockerizer.containers:
                 self._logger.info(f'removing container {id_cleaner(container.id)}')
                 Dockerizer.rm_container(container.id)
@@ -188,7 +197,6 @@ class ContainerStore(BaseStore):
             self._logger.success(
                 f'{colored(id, "green")} is added to workspace {colored(workspace_id, "green")}'
             )
-
             workspace_store[workspace_id].metadata.managed_objects.add(id)
             return id
 
@@ -246,14 +254,19 @@ class ContainerStore(BaseStore):
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
         uri = self[id].metadata.uri
-        await self._delete(uri=uri)
-        workspace_id = self[id].workspace_id
-        del self[id]
-        from . import workspace_store
+        try:
+            await self._delete(uri=uri)
+        except Exception as e:
+            self._logger.error(f'Error while updating the {self._kind.title()}: \n{e}')
+            raise
+        else:
+            workspace_id = self[id].workspace_id
+            del self[id]
+            from . import workspace_store
 
-        Dockerizer.rm_container(id)
-        workspace_store[workspace_id].metadata.managed_objects.remove(id)
-        self._logger.success(f'{colored(id, "green")} is released from the store.')
+            Dockerizer.rm_container(id)
+            workspace_store[workspace_id].metadata.managed_objects.remove(id)
+            self._logger.success(f'{colored(id, "green")} is released from the store.')
 
     async def clear(self, **kwargs) -> None:
         """Delete all the objects in the store

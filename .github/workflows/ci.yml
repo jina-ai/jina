@@ -64,9 +64,9 @@ jobs:
         run: |
           pip install flake8
           # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/resources/
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/hub/
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude .git,__pycache__,docs/source/conf.py,old,build,dist,tests/,jina/resources/
 
   check-docstring:
     runs-on: ubuntu-latest
@@ -107,7 +107,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.JINA_DEV_BOT }}
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
@@ -149,10 +148,10 @@ jobs:
       matrix:
         test-arch: ["linux/amd64", "linux/arm64"]
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
+#        with:
+#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
         id: buildx
@@ -184,10 +183,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
+#        with:
+#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
@@ -202,7 +201,7 @@ jobs:
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
 
   prep-testbed:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]
     steps:
       - uses: actions/checkout@v2
@@ -215,7 +214,7 @@ jobs:
 
   core-test:
     needs: prep-testbed
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       JINA_DAEMON_BUILD: DEVEL
     strategy:
@@ -224,10 +223,10 @@ jobs:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
+#        with:
+#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
 #        with:
 #          submodules: true
@@ -295,7 +294,7 @@ jobs:
   success-all-test:
     needs: [core-test, hub-test, docker-image-test, check-docstring, check-black, code-injection]
     if: always()
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: technote-space/workflow-conclusion-action@v2
       - name: Check Failure

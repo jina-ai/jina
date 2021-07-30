@@ -31,6 +31,8 @@ logger = JinaLogger('test-dump')
 SHARDS = 3
 EMB_SIZE = 10
 
+# TODO: Move to JinaDClient
+
 
 def _path_size_remote(this_dump_path, container_id):
     os.system(

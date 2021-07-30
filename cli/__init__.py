@@ -5,7 +5,7 @@ import sys
 def _get_run_args(print_args: bool = True):
     from jina.parsers import get_main_parser
 
-    silent_print = {'help'}
+    silent_print = {'help', 'hub'}
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
