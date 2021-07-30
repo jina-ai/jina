@@ -57,7 +57,7 @@ jobs:
           path: scripts/latency-tracking/output
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: output/
+        working-directory: scripts/latency-tracking/output
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
