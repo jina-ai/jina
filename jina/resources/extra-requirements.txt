@@ -34,7 +34,7 @@ torch>=1.1.0:               framework, cicd, chatbot, multimodal
 transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
 tensorflow>=2.0:            framework, cicd
 torchvision>=0.3.0:         framework, cv, multimodal, cicd
-Pillow:                     cv, cicd, multimodal
+Pillow:                     cv, cicd, multimodal, fashion
 lz4<3.1.2:                  devel, cicd, network, standard, perf, daemon
 uvloop:                     devel, cicd, standard, perf, daemon
 numpy:                      core
