@@ -15,6 +15,7 @@ import numpy as np
 
 from .buffer import BufferPoolManager
 from .document import DocumentArrayGetAttrMixin
+from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
@@ -24,7 +25,11 @@ PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 
 class DocumentArrayMemmap(
-    TraversableSequence, DocumentArrayGetAttrMixin, DocumentArraySearchOpsMixin, Itr
+    TraversableSequence,
+    DocumentArrayGetAttrMixin,
+    DocumentArrayNeuralOpsMixin,
+    DocumentArraySearchOpsMixin,
+    Itr,
 ):
     """
     Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.

@@ -49,9 +49,8 @@ class BufferPoolManager:
             # the least recently used item is the first item in doc_map
             dam_idx, (buffer_idx, content_hash) = self.doc_map.popitem(last=False)
 
-            # if document is dirty, persist to disk
-            if self.buffer[buffer_idx].content_hash != content_hash:
-                self.dam.append(self.buffer[buffer_idx])
+            # persist to disk
+            self.dam.append(self.buffer[buffer_idx])
             self.doc_map[idx] = (buffer_idx, doc.content_hash)
             self.doc_map.move_to_end(idx)
             self.buffer[buffer_idx] = doc
