@@ -26,7 +26,8 @@ jobs:
           sudo rm -f .dockerignore
           sudo mkdir -p /var/output
           sudo apt-get install jq
-          bash scripts/latency-tracking/track.sh ${{ matrix.last_nth_release }}
+          cd scripts/latency-tracking
+          bash track.sh ${{ matrix.last_nth_release }}
       - name: Upload output
         uses: actions/upload-artifact@v2
         with:
@@ -39,7 +40,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: mkdir -p output
+      - run: |
+          cd scripts/latency-tracking
+          mkdir -p output
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
@@ -62,8 +65,8 @@ jobs:
       - name: prepare comment
         run: |
           pip install packaging==21.0 prettytable==2.1.0
-          python scripts/latency-tracking/merge_outputs.py output stats.json
-          python scripts/latency-tracking/ppstat.py output/stats.json > comment.txt
+          python merge_outputs.py output stats.json
+          python ppstat.py output/stats.json > comment.txt
       - id: get-comment-body
         run: |
           body=$(cat comment.txt)
