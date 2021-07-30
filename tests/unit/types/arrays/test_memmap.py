@@ -117,7 +117,7 @@ def test_persist(tmpdir):
     assert dam == dam2
 
     for d1, d2 in zip(dam, dam2):
-        assert d1.content_hash == d2.content_hash
+        assert d1.proto == d2.proto
 
     assert '1' in dam
 
@@ -311,7 +311,7 @@ def test_memmap_update_document(tmpdir):
 
 
 def test_memmap_update_in_memory(tmpdir):
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=100)
     candidates = list(random_docs(100))
     dam.extend(candidates)
     for idx, candidate in enumerate(candidates):
@@ -323,7 +323,7 @@ def test_memmap_update_in_memory(tmpdir):
 
 def test_memmap_save_reload(tmpdir):
     docs = list(random_docs(100))
-    dam = DocumentArrayMemmap(tmpdir)
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=100)
     dam.extend(docs)
 
     dam1 = DocumentArrayMemmap(tmpdir)

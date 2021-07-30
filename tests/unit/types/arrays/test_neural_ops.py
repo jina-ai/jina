@@ -11,7 +11,7 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
 @pytest.fixture
-def docarrays_for_embedding_distance_computation():
+def doc_lists_for_embedding_distance_computation():
     d1 = Document(embedding=np.array([0, 0, 0]))
     d2 = Document(embedding=np.array([3, 0, 0]))
     d3 = Document(embedding=np.array([1, 0, 0]))
@@ -23,9 +23,77 @@ def docarrays_for_embedding_distance_computation():
     d4_m = Document(embedding=np.array([0, 0, 2]))
     d5_m = Document(embedding=np.array([0, 0, 3]))
 
-    D1 = DocumentArray([d1, d2, d3, d4])
-    D2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
-    return D1, D2
+    return [d1, d2, d3, d4], [d1_m, d2_m, d3_m, d4_m, d5_m]
+
+
+@pytest.fixture
+def dam_da_for_embedding_distance_computation(
+    tmpdir, doc_lists_for_embedding_distance_computation
+):
+    D1, D2 = doc_lists_for_embedding_distance_computation
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(D1)
+    da = DocumentArray(D2)
+    return dam, da
+
+
+@pytest.fixture
+def da_da_for_embedding_distance_computation(
+    tmpdir, doc_lists_for_embedding_distance_computation
+):
+    D1, D2 = doc_lists_for_embedding_distance_computation
+    da1 = DocumentArray(D1)
+    da2 = DocumentArray(D2)
+    return da1, da2
+
+
+@pytest.fixture
+def da_dam_for_embedding_distance_computation(
+    tmpdir, doc_lists_for_embedding_distance_computation
+):
+    D1, D2 = doc_lists_for_embedding_distance_computation
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(D2)
+    da = DocumentArray(D1)
+    return da, dam
+
+
+@pytest.fixture
+def dam_dam_for_embedding_distance_computation(
+    tmpdir, doc_lists_for_embedding_distance_computation
+):
+    dir1 = tmpdir / 'dir1'
+    dir1.mkdir()
+    dir2 = tmpdir / 'dir2'
+    dir2.mkdir()
+    D1, D2 = doc_lists_for_embedding_distance_computation
+    dam1 = DocumentArrayMemmap(dir1)
+    dam1.extend(D2)
+    dam2 = DocumentArrayMemmap(dir2)
+    dam2.extend(D2)
+    return dam1, dam2
+
+
+@pytest.fixture
+def docarray_combinations(
+    dam_da_for_embedding_distance_computation,
+    da_da_for_embedding_distance_computation,
+    da_dam_for_embedding_distance_computation,
+    dam_dam_for_embedding_distance_computation,
+):
+    return [
+        dam_da_for_embedding_distance_computation,
+        da_da_for_embedding_distance_computation,
+        da_dam_for_embedding_distance_computation,
+        dam_dam_for_embedding_distance_computation,
+    ]
+
+
+@pytest.fixture
+def docarrays_for_embedding_distance_computation(
+    da_da_for_embedding_distance_computation,
+):
+    return da_da_for_embedding_distance_computation
 
 
 @pytest.fixture
@@ -117,13 +185,11 @@ def test_new_distances_equal_scipy_cdist():
 
 
 @pytest.mark.parametrize('limit', [1, 2])
-def test_matching_retrieves_correct_number(
-    docarrays_for_embedding_distance_computation, limit
-):
-    D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric='sqeuclidean', limit=limit)
-    for m in D1.get_attributes('matches'):
-        assert len(m) == limit
+def test_matching_retrieves_correct_number(docarray_combinations, limit):
+    for D1, D2 in docarray_combinations:
+        D1.match(D2, metric='sqeuclidean', limit=limit)
+        for m in D1.get_attributes('matches'):
+            assert len(m) == limit
 
 
 @pytest.mark.parametrize(
@@ -139,23 +205,23 @@ def test_matching_retrieves_correct_number(
 )
 @pytest.mark.parametrize('use_scipy', [True, False])
 def test_matching_retrieves_closest_matches(
-    docarrays_for_embedding_distance_computation, normalization, metric, use_scipy
+    docarray_combinations, normalization, metric, use_scipy
 ):
     """
     Tests if match.values are returned 'low to high' if normalization is True or 'high to low' otherwise
     """
-    D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(
-        D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
-    )
-    expected_sorted_values = [
-        D1[0].matches[i].scores['sqeuclidean'].value for i in range(3)
-    ]
-    if normalization:
-        assert min(expected_sorted_values) >= 0
-        assert max(expected_sorted_values) <= 1
-    else:
-        assert expected_sorted_values == sorted(expected_sorted_values)
+    for D1, D2 in docarray_combinations:
+        D1.match(
+            D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
+        )
+        expected_sorted_values = [
+            D1[0].matches[i].scores['sqeuclidean'].value for i in range(3)
+        ]
+        if normalization:
+            assert min(expected_sorted_values) >= 0
+            assert max(expected_sorted_values) <= 1
+        else:
+            assert expected_sorted_values == sorted(expected_sorted_values)
 
 
 def test_euclidean_distance_squared(embeddings, embedding_query):
@@ -246,16 +312,16 @@ def test_scipy_dist(
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
 
 
-def test_2arity_function(docarrays_for_embedding_distance_computation):
+def test_2arity_function(docarray_combinations):
     def dotp(x, y):
         return np.dot(x, np.transpose(y))
 
-    D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric=dotp, use_scipy=True)
+    for D1, D2 in docarray_combinations:
+        D1.match(D2, metric=dotp, use_scipy=True)
 
-    for d in D1:
-        for m in d.matches:
-            assert 'dotp' in m.scores
+        for d in D1:
+            for m in d.matches:
+                assert 'dotp' in m.scores
 
 
 def test_match_inclusive():
@@ -281,3 +347,29 @@ def test_match_inclusive():
     assert len(da2) == 3
     traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(traversed) == 9
+
+
+def test_match_inclusive_dam(tmpdir):
+    """Call match function, while the other :class:`DocumentArray` is itself
+    or have same :class:`Document`.
+    """
+    # The document array da1 match with itself.
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(
+        [
+            Document(embedding=np.array([1, 2, 3])),
+            Document(embedding=np.array([1, 0, 1])),
+            Document(embedding=np.array([1, 1, 2])),
+        ]
+    )
+
+    dam.match(dam)
+    assert len(dam) == 3
+    traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(list(traversed)) == 9
+    # The document array da2 shares same documents with da1
+    da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), dam[0], dam[1]])
+    dam.match(da2)
+    assert len(da2) == 3
+    traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(list(traversed)) == 9
