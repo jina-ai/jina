@@ -59,13 +59,13 @@ class DocumentArrayMemmap(
         dam2.extend(da)
     """
 
-    def __init__(self, path: str, key_length: int = 36):
+    def __init__(self, path: str, key_length: int = 36, buffer_pool_size: int = 1000):
         Path(path).mkdir(parents=True, exist_ok=True)
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
         self._load_header_body()
-        self.buffer_pool = BufferPoolManager(self)
+        self.buffer_pool = BufferPoolManager(self, pool_size=buffer_pool_size)
 
     def reload(self):
         """Reload header of this object from the disk.

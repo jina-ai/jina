@@ -22,14 +22,6 @@ class BufferPoolManager:
         self.buffer = []
         self._empty = []
 
-    def _reverse_idx(self, idx):
-        _idx = None
-        for k, v in self.doc_map.items():
-            if v[0] == idx:
-                _idx = k
-                break
-        return idx
-
     def add_or_update(self, idx: str, doc: Document):
         """
         Adds a document to the buffer pool or updates it if it already exists
@@ -52,8 +44,9 @@ class BufferPoolManager:
             self.doc_map[idx] = (empty_idx, doc.content_hash)
             self.buffer[empty_idx] = doc
             self.doc_map.move_to_end(idx)
-        # else, choose a spot to free and use it
+        # else, choose a spot to free and use it with LRU strategy
         else:
+            # the least recently used item is the first item in doc_map
             dam_idx, (buffer_idx, content_hash) = self.doc_map.popitem(last=False)
 
             # if document is dirty, persist to disk
