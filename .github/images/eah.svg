@@ -1,6 +1,6 @@
 <svg fill="none" viewBox="0 0 1000 100"  xmlns="http://www.w3.org/2000/svg">
     <foreignObject width="100%" height="100%">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="background-color: #fff3cd; width: 100%; padding: 0.5rem; text-align:center; margin-left: auto; margin-right: auto">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="background-color: #fffbdd; text-align:center; margin-left: auto; margin-right: auto; border-radius: 6px; border-style: solid; border-width: 1px; border-color: #b0880033; color: #24292e;">
             <style>
             p {
                 font-family: sans-serif;
@@ -20,8 +20,8 @@
             }
             </style>
             <p>
-                <a href="https://www.meetup.com/jina-community-meetup/events/279298872/">
-                    📢 13 July 2021: Join us online for our monthly Engineering All Hands 🛠️
+                <a href="https://www.meetup.com/jina-community-meetup/events/279731453/">
+                    📢 10 August 2021: Join us online for our monthly Engineering All Hands 🛠️
                 </a>
             </p>
         </div>
