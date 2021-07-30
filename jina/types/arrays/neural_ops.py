@@ -1,5 +1,6 @@
 from math import inf
 from typing import Optional, Union, Callable, Tuple
+from itertools import cycle
 
 import numpy as np
 
@@ -86,27 +87,56 @@ class DocumentArrayNeuralOpsMixin:
 
     def visualize(
         self,
-        tag: Union[str, None] = None,
-        colors: Union[None, np.ndarray] = None,
+        tag_name: Union[str, None] = None,
         file_path: Union[None, str] = None,
+        alpha: float = 0.2,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm.
 
-        If colors is
-        :param tag: Optional str that specifies the key used to generate colors from doc.tags
-        :param colors: Optional np.ndarray of lengh equal to len(self) containing integers for colors.
-        :param file_path: Optional path to store the visualization.
+        If `tag_name` is provided the plot uses a distinct color for each unique tag value in the
+        documents of the DocumentArray.
 
+        :param tag_name: Optional str that specifies tag used to color the plot
+        :param file_path: Optional path to store the visualization.
+        :param alpha: Float in [0,1] defining transparency of the dots in the plot.
+                      Value 0 is invisible, value 1 is opaque.
         """
 
         import matplotlib.pyplot as plt
 
+        color_space = cycle('vbgrcmk')
+
         pca = PCA(n_components=2)
         x_mat = np.stack(self.get_attributes('embedding'))
-        x_mat_2d = pca.fit_transform(x_mat)
+        assert isinstance(
+            x_mat, np.ndarray
+        ), f'Type {type(x_mat)} not currently supported, use np.ndarray embeddings'
 
-        plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1], c=colors)
-        plt.title('PCA projection')
+        if tag_name:
+            tags = [x[tag_name] for x in self.get_attributes('tags')]
+            tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
+            colors = np.array([tag_to_num[ni] for ni in tags])
+        else:
+            colors = None
+
+        x_mat_2d = pca.fit_transform(x_mat)
+        plt.figure(figsize=(8, 8))
+        plt.title(f'{len(x_mat)} documents with PCA')
+
+        if colors is not None:
+            for tag in tag_to_num:
+                num = tag_to_num[tag]
+                x_mat_subset = x_mat_2d[colors == num]
+                plt.scatter(
+                    x_mat_subset[:, 0],
+                    x_mat_subset[:, 1],
+                    alpha=alpha,
+                    label=f'{tag_name}={tag}',
+                )
+        else:
+            plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1], alpha=alpha)
+
+        plt.legend()
 
         if file_path:
             plt.savefig(file_path)
