@@ -428,25 +428,27 @@ class Document(ProtoTypeMixin):
 
     def update_content_hash(
         self,
-        exclude_fields: Tuple[str] = (
-            'id',
-            'chunks',
-            'matches',
-            'content_hash',
-            'parent_id',
-            'evaluations',
-            'scores',
+        fields: Tuple[str] = (
+            'text',
+            'blob',
+            'buffer',
+            'embedding',
+            'uri',
+            'tags',
+            'mime_type',
+            'granularity',
+            'adjacency',
         ),
     ) -> None:
         """Update the document hash according to its content.
 
-        :param exclude_fields: a tuple of field names that excluded when computing content hash.
+        :param fields: a tuple of field names that inclusive when computing content hash.
         """
         masked_d = jina_pb2.DocumentProto()
         present_fields = {
             field_descriptor.name for field_descriptor, _ in self._pb_body.ListFields()
         }
-        fields_to_hash = present_fields.difference(exclude_fields)
+        fields_to_hash = present_fields.intersection(fields)
         FieldMask(paths=fields_to_hash).MergeMessage(self._pb_body, masked_d)
         self._pb_body.content_hash = blake2b(
             masked_d.SerializePartialToString(), digest_size=DIGEST_SIZE
