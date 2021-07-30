@@ -110,7 +110,7 @@ class DocumentArrayNeuralOpsMixin:
                                 all values will be rescaled into range `[a, b]`.
         :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
-        :return : DocumentArray with matches
+        :return: DocumentArray with matches
         """
 
         from .document import DocumentArray
