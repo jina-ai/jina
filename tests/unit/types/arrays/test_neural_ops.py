@@ -279,6 +279,7 @@ def test_pca_plot_generated(embeddings, tmpdir):
     doc_array.visualize(file_path=file_path)
     assert os.path.exists(file_path)
 
+
 def test_match_inclusive():
     """Call match function, while the other :class:`DocumentArray` is itself
     or have same :class:`Document`.
