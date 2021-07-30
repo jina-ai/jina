@@ -98,7 +98,7 @@ class DocumentArrayNeuralOpsMixin:
         normalization: Optional[Tuple[int, int]] = None,
         use_scipy: bool = False,
         metric_name: Optional[str] = None,
-    ) -> Union[DocumentArray, DocumentArrayMemmap]:
+    ) -> Union['DocumentArray', 'DocumentArrayMemmap']:
         """
         Alternative match that returns does not append matches
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
