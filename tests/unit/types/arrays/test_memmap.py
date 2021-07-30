@@ -351,3 +351,15 @@ def test_memmap_save_reload(tmpdir):
     # dam1 up-to-date
     for doc in dam1:
         assert doc.content == 'new'
+
+
+def test_memmap_buffer_synched(tmpdir):
+    docs = list(random_docs(100))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(docs[:50])
+
+    for i, doc in enumerate(docs[50:]):
+        dam[i] = doc
+        assert dam.buffer_pool[i].id == dam[i].id
+        doc.content = 'new'
+        assert dam[i].content == 'new'

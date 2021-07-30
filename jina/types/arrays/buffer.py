@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from typing import Union
 
 from ... import Document
 
@@ -85,10 +86,16 @@ class BufferPoolManager:
         self.doc_map.clear()
         self.buffer = []
 
-    def __getitem__(self, key):
-        doc = self.buffer[self.doc_map[key][0]]
-        self.doc_map.move_to_end(key)
-        return doc
+    def __getitem__(self, key: Union[str, int]):
+        if isinstance(key, int):
+            key = self.dam._int2str_id(key)
+            return self[key]
+        elif isinstance(key, str):
+            doc = self.buffer[self.doc_map[key][0]]
+            self.doc_map.move_to_end(key)
+            return doc
+        else:
+            raise IndexError(f'`key`={key} is out of range')
 
     def __delitem__(self, key):
         buffer_idx = self.doc_map.pop(key)[0]
