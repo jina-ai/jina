@@ -3,7 +3,6 @@ import sys
 
 from prettytable import MARKDOWN, PrettyTable
 
-
 try:
     stats_file = sys.argv[1]
 except IndexError:

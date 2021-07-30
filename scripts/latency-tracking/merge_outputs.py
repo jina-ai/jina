@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
+import json
 import os
 import sys
-import json
+
 from packaging import version
 
 
