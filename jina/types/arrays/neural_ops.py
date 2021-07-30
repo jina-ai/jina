@@ -85,12 +85,18 @@ class DocumentArrayNeuralOpsMixin:
                 _q.matches.append(d)
 
     def visualize(
-        self, colors: Union[None, np.ndarray] = None, file_path: Union[None, str] = None
+        self,
+        tag: Union[str, None] = None,
+        colors: Union[None, np.ndarray] = None,
+        file_path: Union[None, str] = None,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm.
 
+        If colors is
+        :param tag: Optional str that specifies the key used to generate colors from doc.tags
         :param colors: Optional np.ndarray of lengh equal to len(self) containing integers for colors.
         :param file_path: Optional path to store the visualization.
+
         """
 
         import matplotlib.pyplot as plt
@@ -101,8 +107,6 @@ class DocumentArrayNeuralOpsMixin:
 
         plt.scatter(x_mat_2d[:, 0], x_mat_2d[:, 1], c=colors)
         plt.title('PCA projection')
-        plt.xlabel('PCA component 0')
-        plt.ylabel('PCA component 1')
 
         if file_path:
             plt.savefig(file_path)
