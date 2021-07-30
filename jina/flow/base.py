@@ -1660,7 +1660,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 },
             )
 
-# self.logger.info(f'🌐\tCreate "Ingress resource"')
+            # self.logger.info(f'🌐\tCreate "Ingress resource"')
             # kubernetes_tools.create_gateway_ingress(namespace)
         else:
             raise Exception(f'deployment type "{deployment_type}" is not supported')
