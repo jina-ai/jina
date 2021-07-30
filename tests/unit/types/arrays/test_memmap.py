@@ -319,3 +319,35 @@ def test_memmap_update_in_memory(tmpdir):
 
     for idx, doc in enumerate(dam):
         assert doc.content == f'new content {idx}'
+
+
+def test_memmap_save_reload(tmpdir):
+    docs = list(random_docs(100))
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(docs)
+
+    dam1 = DocumentArrayMemmap(tmpdir)
+
+    for doc in docs:
+        doc.content = 'new'
+
+    for doc in dam:
+        # from memory
+        assert doc.content == 'new'
+        # from disk
+        assert dam.get_doc_by_key(doc.id).content == 'hello world'
+
+    # dam1 from disk (empty memory buffer + dam not persisted)
+    for doc in dam1:
+        assert doc.content == 'hello world'
+
+    dam.save()
+    dam1.reload()
+
+    # dam from disk
+    for doc in dam:
+        assert dam.get_doc_by_key(doc.id).content == 'new'
+
+    # dam1 up-to-date
+    for doc in dam1:
+        assert doc.content == 'new'

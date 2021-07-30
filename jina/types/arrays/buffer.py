@@ -71,6 +71,20 @@ class BufferPoolManager:
         if key in self:
             del self[key]
 
+    def flush(self):
+        """
+        Persists the updated documents in disk
+        """
+        for _, (buffer_idx, _) in self.doc_map.items():
+            self.dam.append(self.buffer[buffer_idx], update_buffer=False)
+
+    def clear(self):
+        """
+        Clears the memory buffer
+        """
+        self.doc_map.clear()
+        self.buffer = []
+
     def __getitem__(self, key):
         doc = self.buffer[self.doc_map[key][0]]
         self.doc_map.move_to_end(key)

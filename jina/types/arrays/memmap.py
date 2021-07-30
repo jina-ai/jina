@@ -76,6 +76,7 @@ class DocumentArrayMemmap(
         This function only reloads the header, not the body.
         """
         self._load_header_body()
+        self.buffer_pool.clear()
 
     def _load_header_body(self, mode: str = 'a'):
         if hasattr(self, '_header'):
@@ -204,7 +205,7 @@ class DocumentArrayMemmap(
 
     def get_doc_by_key(self, key: str):
         """
-        returns a document by key (ID)
+        returns a document by key (ID) from disk
 
         :param key: id of the document
         :return: returns a document
@@ -321,6 +322,10 @@ class DocumentArrayMemmap(
 
     def __contains__(self, item: str):
         return item in self._header_map
+
+    def save(self) -> None:
+        """Persists memory loaded documents to disk"""
+        self.buffer_pool.flush()
 
     def prune(self) -> None:
         """Prune deleted Documents from this object, this yields a smaller on-disk storage. """
