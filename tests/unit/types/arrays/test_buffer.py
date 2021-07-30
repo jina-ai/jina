@@ -17,6 +17,9 @@ def test_buffer_getitem(tmpdir):
         assert dam.buffer_pool[i].content_hash == doc.content_hash
         assert dam.buffer_pool[i].id == doc.id
 
+    with pytest.raises(TypeError):
+        dam.buffer_pool[1:5]
+
 
 def test_buffer_delete(tmpdir):
     dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=5)

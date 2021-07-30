@@ -87,7 +87,7 @@ class BufferPoolManager:
             self.doc_map.move_to_end(key)
             return doc
         else:
-            raise IndexError(f'`key`={key} is out of range')
+            raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 
     def __delitem__(self, key):
         buffer_idx = self.doc_map.pop(key)[0]
