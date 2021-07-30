@@ -148,10 +148,10 @@ jobs:
       matrix:
         test-arch: ["linux/amd64", "linux/arm64"]
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ github.token }}
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
+#        with:
+#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Set up Docker Buildx
         id: buildx
@@ -183,10 +183,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [commit-lint, lint-flake-8, code-injection]
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ github.token }}
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
+#        with:
+#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Set up Python 3.7
         uses: actions/setup-python@v2
@@ -223,10 +223,10 @@ jobs:
         python-version: [3.7]
         test-path: ${{fromJson(needs.prep-testbed.outputs.matrix)}}
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ github.token }}
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
+#        with:
+#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
 #        with:
 #          submodules: true

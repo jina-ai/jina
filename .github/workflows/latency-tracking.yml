@@ -10,10 +10,10 @@ jobs:
       matrix:
         last_nth_release: [master, 1, 2]
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ github.token }}
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.0
+#        with:
+#          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Test docker install
         run: |
