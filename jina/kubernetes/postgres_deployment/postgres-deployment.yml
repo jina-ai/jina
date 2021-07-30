@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: postgres
   creationTimestamp: null
   labels:
     app: postgres
