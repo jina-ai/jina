@@ -667,15 +667,6 @@
             <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">],</span>
-            <span class="n">List</span><span class="p">[</span>
-                <span class="n">Tuple</span><span class="p">[</span>
-                    <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">,</span>
-                    <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">],</span>
-            <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
-            <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
-            <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
         <span class="p">]</span>
     <span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
@@ -710,7 +701,7 @@
     <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="o">...</span><span class="p">,</span>
         <span class="n">example</span><span class="o">=</span><span class="s1">'b5110ed9-1954-4a3d-9180-0795a1e0d7d8'</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">'The id given by Jina service'</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'The ID given by Jina service'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataRequestModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">'Returned Documents'</span><span class="p">)</span>
 
@@ -742,7 +733,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 29, 2021.
+            Last updated on Jul 30, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
