@@ -87,3 +87,63 @@ class DocumentArrayNeuralOpsMixin:
                     d.pop('matches')
                 d.scores[m_name] = _dist
                 _q.matches.append(d)
+
+    def match_fast(
+        self,
+        darray: Union['DocumentArray', 'DocumentArrayMemmap'],
+        metric: Union[
+            str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
+        ] = 'cosine',
+        limit: Optional[int] = inf,
+        normalization: Optional[Tuple[int, int]] = None,
+        use_scipy: bool = False,
+        metric_name: Optional[str] = None,
+    ) -> Union[DocumentArray, DocumentArrayMemmap]:
+        """
+        Alternative match that returns does not append matches
+        :param darray: the other DocumentArray or DocumentArrayMemmap to match against
+        :param metric: the distance metric
+        :param limit: the maximum number of matches, when not given
+                      all Documents in `another` are considered as matches
+        :param normalization: a tuple [a, b] to be used with min-max normalization,
+                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
+                                all values will be rescaled into range `[a, b]`.
+        :param use_scipy: use Scipy as the computation backend
+        :param metric_name: if provided, then match result will be marked with this string.
+        :return : DocumentArray with matches
+        """
+
+        from .document import DocumentArray
+
+        X = np.stack(self.get_attributes('embedding'))
+        Y = np.stack(darray.get_attributes('embedding'))
+        limit = min(limit, len(darray))
+
+        if isinstance(metric, str):
+            if use_scipy:
+                from scipy.spatial.distance import cdist
+            else:
+                from ...math.distance import cdist
+            dists = cdist(X, Y, metric)
+        elif callable(metric):
+            dists = metric(X, Y)
+        else:
+            raise TypeError(
+                f'metric must be either string or a 2-arity function, received: {metric!r}'
+            )
+
+        dist, idx = top_k(dists, limit, descending=False)
+        if normalization is not None:
+            if isinstance(normalization, (tuple, list)):
+                dist = minmax_normalize(dist, normalization)
+
+        m_name = metric_name or (metric.__name__ if callable(metric) else metric)
+
+        docarray = DocumentArray()
+        for ids, dist_vec in zip(idx, dist):
+            for i, distance in zip(ids, dist_vec):
+                d = self[int(i)]
+                d.scores[m_name] = distance
+                docarray.append(d)
+
+        return docarray
