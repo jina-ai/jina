@@ -75,7 +75,7 @@ def test_all_fields_in_document_proto():
     document_proto_properties_alias = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['DocumentProto']['properties']
-    for i in ['contentHash', 'parentId', 'mimeType']:
+    for i in ['parentId', 'mimeType']:
         assert i in document_proto_properties_alias
 
 
