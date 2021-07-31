@@ -26,12 +26,9 @@ class MatchArray(DocumentArray):
         :return: the newly added sub-document in :class:`Document` view
         :rtype: :class:`Document` view
         """
-        if copy:
-            from ..document import Document
+        from ..document import Document
 
-            match = Document(document, copy=True)
-        else:
-            match = document
+        match = Document(document, copy=copy)
 
         match.set_attributes(
             granularity=self.granularity, adjacency=self.adjacency, **kwargs
