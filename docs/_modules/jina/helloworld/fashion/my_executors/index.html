@@ -450,9 +450,10 @@
         <span class="c1"># content.shape=(request_size, 28, 28, 3)</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">784</span><span class="p">)</span>
         <span class="c1"># content.shape=(request_size, 784)</span>
-        <span class="n">embeds</span> <span class="o">=</span> <span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">784</span><span class="p">])</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">oth_mat</span>
-        <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">embed</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeds</span><span class="p">):</span>
+        <span class="n">embeds</span> <span class="o">=</span> <span class="p">(</span><span class="n">content</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">oth_mat</span>
+        <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">embed</span><span class="p">,</span> <span class="n">cont</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">embeds</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">embed</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">cont</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">convert_image_blob_to_uri</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'blob'</span><span class="p">)</span></div></div>
 
@@ -547,7 +548,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 30, 2021.
+            Last updated on Jul 31, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

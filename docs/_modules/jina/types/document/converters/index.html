@@ -392,7 +392,6 @@
 
 <span class="k">def</span> <span class="nf">_png_to_buffer_1d</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="n">pixels</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">arr</span> <span class="o">=</span> <span class="mi">255</span> <span class="o">-</span> <span class="n">arr</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
         <span class="n">pixels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>
     <span class="n">buf</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">pixels</span><span class="p">)</span>
@@ -527,7 +526,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 30, 2021.
+            Last updated on Jul 31, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
