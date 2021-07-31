@@ -35,6 +35,7 @@ from ...helper import (
     random_identity,
     download_mermaid_url,
     dunder_get,
+    cached_property,
 )
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
@@ -84,7 +85,7 @@ DocumentSourceType = TypeVar(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
-_all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
+_all_doc_content_keys = {'content', 'uri', 'blob', 'text', 'buffer'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
@@ -290,7 +291,6 @@ class Document(ProtoTypeMixin):
                 f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
             )
         self.set_attributes(**kwargs)
-        self._mermaid_id = random_identity()  #: for mermaid visualize id
         if hash_content and not copy:
             self.update_content_hash()
 
@@ -1334,6 +1334,14 @@ class Document(ProtoTypeMixin):
         else:
             value = dunder_get(self._pb_body, item)
         return value
+
+    @cached_property
+    def _mermaid_id(self) -> str:
+        """A unique ID for mermaid visualize id
+
+        :return: unique ID
+        """
+        return random_identity()
 
 
 def _is_uri(value: str) -> bool:
