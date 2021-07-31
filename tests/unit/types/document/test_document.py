@@ -328,54 +328,6 @@ def test_content_hash_not_dependent_on_chunks_or_matches():
     assert doc1.content_hash == doc4.content_hash
 
 
-def test_include_scalar():
-    d1 = Document()
-    d1.text = 'hello'
-    dd1 = Document()
-    d1.chunks.append(dd1)
-    d1.update_content_hash(include_fields=('text',), exclude_fields=None)
-
-    d2 = Document()
-    d2.text = 'hello'
-    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
-
-    assert d1.content_hash == d2.content_hash
-
-    # change text should result in diff hash
-    d2.text = 'world'
-    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
-    assert d1.content_hash != d2.content_hash
-
-
-def test_include_repeated_fields():
-    def build_document(chunk=None):
-        d = Document()
-        d.chunks.append(chunk)
-        d.chunks[0].update_content_hash(
-            exclude_fields=('parent_id', 'id', 'content_hash')
-        )
-        d.chunks[0].parent_id = 0
-        d.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-        return d
-
-    c = Document()
-    d1 = build_document(chunk=c)
-    d2 = build_document(chunk=c)
-
-    assert d1.chunks[0].content_hash == d2.chunks[0].content_hash
-    assert d1.content_hash == d2.content_hash
-
-    # change text should result in same hash
-    d2.text = 'world'
-    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-    assert d1.content_hash == d2.content_hash
-
-    # change chunks should result in diff hash
-    d2.chunks.clear()
-    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-    assert d1.content_hash != d2.content_hash
-
-
 @pytest.mark.parametrize('from_str', [True, False])
 @pytest.mark.parametrize(
     'd_src',
@@ -1087,6 +1039,33 @@ def test_content_hash():
 
     d7 = Document(d2)
     assert d6.content_hash == d2.content_hash == d7.content_hash
+
+    # test hash image
+    d8 = Document(blob=np.array([1, 3, 5]))
+    d9 = Document(blob=np.array([2, 4, 6]))
+    d10 = Document(blob=np.array([1, 3, 5]))
+    assert d8.content_hash != d9.content_hash
+    assert d8.content_hash == d10.content_hash
+
+    # test hash buffer
+    d11 = Document(content=b'buffer1')
+    d12 = Document(content=b'buffer2')
+    d13 = Document(content=b'buffer1')
+    assert d11.content_hash != d12.content_hash
+    assert d11.content_hash == d13.content_hash
+
+    # document with more fields
+    d14 = Document(
+        uri='http://test1.com', tags={'key1': 'value1'}, granularity=2, adjacency=2
+    )
+    d15 = Document(
+        uri='http://test2.com', tags={'key1': 'value2'}, granularity=3, adjacency=2
+    )
+    d16 = Document(
+        uri='http://test2.com', tags={'key1': 'value2'}, granularity=3, adjacency=2
+    )
+    assert d14.content_hash != d15.content_hash
+    assert d15.content_hash == d16.content_hash
 
     nr = 10
     with TimeContext(f'creating {nr} docs without hashing content at init'):
