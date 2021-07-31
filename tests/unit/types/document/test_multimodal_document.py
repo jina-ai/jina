@@ -79,17 +79,13 @@ def modality_content_mapping():
 
 @pytest.fixture(scope='function')
 def multimodal_document(chunk_1, chunk_2):
-    with MultimodalDocument() as md:
-        md.tags['id'] = 1
-        md.text = b'hello world'
-        md.embedding = np.random.random([10 + np.random.randint(0, 1)])
-        md.chunks.append(
-            chunk_1
-        )  # attach a document with embedding and without content
-        md.chunks.append(
-            chunk_2
-        )  # attach a document with content and without embedding
-        yield md
+    md = MultimodalDocument()
+    md.tags['id'] = 1
+    md.text = b'hello world'
+    md.embedding = np.random.random([10 + np.random.randint(0, 1)])
+    md.chunks.append(chunk_1)  # attach a document with embedding and without content
+    md.chunks.append(chunk_2)  # attach a document with content and without embedding
+    yield md
 
 
 def test_modalities_property(multimodal_document):

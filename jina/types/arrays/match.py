@@ -31,13 +31,12 @@ class MatchArray(DocumentArray):
 
             match = Document(document, copy=True)
         else:
+            # note: this is faster than Document(document, copy=False)
             match = document
 
         match.set_attributes(
             granularity=self.granularity, adjacency=self.adjacency, **kwargs
         )
-        for score in match.scores.values():
-            score.ref_id = self._ref_doc.id
 
         super().append(match)
         return match
