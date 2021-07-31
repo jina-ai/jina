@@ -210,7 +210,7 @@ class DocumentArray(
         from ..document import Document
 
         if isinstance(item, int):
-            return Document(self._pb_body[item])
+            return Document(self._pb_body[item], hash_content=False)
         elif isinstance(item, str):
             return self[self._id_to_index[item]]
         elif isinstance(item, slice):
