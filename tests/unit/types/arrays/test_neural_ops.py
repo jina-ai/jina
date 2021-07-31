@@ -1,4 +1,5 @@
 import copy
+import os
 
 import numpy as np
 import pytest
@@ -8,6 +9,7 @@ from jina import Document, DocumentArray
 from jina.math.distance import sqeuclidean, cosine
 from jina.math.helper import minmax_normalize
 from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina.math.dimensionality_reduction import PCA
 
 
 @pytest.fixture
@@ -256,6 +258,26 @@ def test_2arity_function(docarrays_for_embedding_distance_computation):
     for d in D1:
         for m in d.matches:
             assert 'dotp' in m.scores
+
+
+@pytest.mark.parametrize('whiten', [True, False])
+def test_pca_projection(embeddings, whiten):
+    n_components = 2
+    n_features = embeddings.shape[1]
+    pca = PCA(n_components=n_components, whiten=whiten)
+    assert pca.e_values is None
+    assert pca.w is None
+    embeddings_transformed = pca.fit_transform(embeddings)
+    assert len(pca.e_values) == n_features
+    assert pca.w.shape[0] == n_features
+    assert embeddings_transformed.shape[1] == n_components
+
+
+def test_pca_plot_generated(embeddings, tmpdir):
+    doc_array = DocumentArray([Document(embedding=x) for x in embeddings])
+    file_path = os.path.join(tmpdir, 'pca_plot.png')
+    doc_array.visualize(file_path=file_path)
+    assert os.path.exists(file_path)
 
 
 def test_match_inclusive():
