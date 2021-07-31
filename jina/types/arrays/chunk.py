@@ -49,7 +49,6 @@ class ChunkArray(DocumentArray):
 
         if not chunk.mime_type:
             chunk.mime_type = self._ref_doc.mime_type
-        chunk.update_content_hash()
         super().append(chunk)
         return chunk
 

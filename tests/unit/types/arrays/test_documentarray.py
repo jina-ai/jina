@@ -181,8 +181,7 @@ def test_docarray_reverse(docs, docarray):
 
 
 def test_match_chunk_array():
-    with Document() as d:
-        d.content = 'hello world'
+    d = Document(content='hello world')
 
     m = Document()
     d.matches.append(m)
@@ -200,19 +199,19 @@ def test_match_chunk_array():
 
 
 def add_chunk(doc):
-    with Document() as chunk:
-        chunk.granularity = doc.granularity + 1
-        chunk.adjacency = doc.adjacency
-        doc.chunks.append(chunk)
-        return chunk
+    chunk = Document()
+    chunk.granularity = doc.granularity + 1
+    chunk.adjacency = doc.adjacency
+    doc.chunks.append(chunk)
+    return chunk
 
 
 def add_match(doc):
-    with Document() as match:
-        match.granularity = doc.granularity
-        match.adjacency = doc.adjacency + 1
-        doc.matches.append(match)
-        return match
+    match = Document()
+    match.granularity = doc.granularity
+    match.adjacency = doc.adjacency + 1
+    doc.matches.append(match)
+    return match
 
 
 def test_doc_array_from_generator():

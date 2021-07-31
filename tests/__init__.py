@@ -38,7 +38,6 @@ def random_docs(
                 d.embedding = np.random.random(
                     [embed_dim + np.random.randint(0, jitter)]
                 )
-        d.update_content_hash()
 
         for _ in range(chunks_per_doc):
             chunk_doc_id = next_chunk_doc_id
@@ -51,7 +50,6 @@ def random_docs(
                 )
             c.tags['parent_id'] = doc_id
             c.tags['id'] = chunk_doc_id
-            c.update_content_hash()
             d.chunks.append(c)
             next_chunk_doc_id += 1
 

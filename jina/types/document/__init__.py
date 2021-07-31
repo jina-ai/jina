@@ -157,7 +157,6 @@ class Document(ProtoTypeMixin):
         document: Optional[DocumentSourceType] = None,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
-        hash_content: bool = True,
         **kwargs,
     ):
         """
@@ -173,7 +172,6 @@ class Document(ProtoTypeMixin):
                 names defined in Protobuf. This is only used when the given ``document`` is
                 a JSON string or a Python dict.
         :param kwargs: other parameters to be set _after_ the document is constructed
-        :param hash_content: whether to hash the content of the Document
 
         .. note::
 
@@ -291,8 +289,6 @@ class Document(ProtoTypeMixin):
                 f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
             )
         self.set_attributes(**kwargs)
-        if hash_content and not copy:
-            self.update_content_hash()
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
@@ -335,14 +331,6 @@ class Document(ProtoTypeMixin):
         :param value: The modality of the document
         """
         self._pb_body.modality = value
-
-    @property
-    def content_hash(self):
-        """Get the content hash of the document.
-
-        :return: the content_hash from the proto
-        """
-        return self._pb_body.content_hash
 
     @property
     def tags(self) -> StructView:
@@ -401,7 +389,7 @@ class Document(ProtoTypeMixin):
                 destination._pb_body.ClearField(field)
                 try:
                     setattr(destination, field, getattr(source, field))
-                except AttributeError:  # some fields such as `content_hash` do not have a setter method.
+                except AttributeError:
                     setattr(destination._pb_body, field, getattr(source, field))
 
     def update(
@@ -426,9 +414,14 @@ class Document(ProtoTypeMixin):
             fields=fields,
         )
 
-    def update_content_hash(
-        self,
-        fields: Tuple[str] = (
+    @property
+    def content_hash(self) -> str:
+        """Get the document hash according to its content.
+
+        :return: the unique hash code to represent this Document
+        """
+        # a tuple of field names that inclusive when computing content hash.
+        fields = (
             'text',
             'blob',
             'buffer',
@@ -438,19 +431,14 @@ class Document(ProtoTypeMixin):
             'mime_type',
             'granularity',
             'adjacency',
-        ),
-    ) -> None:
-        """Update the document hash according to its content.
-
-        :param fields: a tuple of field names that inclusive when computing content hash.
-        """
+        )
         masked_d = jina_pb2.DocumentProto()
         present_fields = {
             field_descriptor.name for field_descriptor, _ in self._pb_body.ListFields()
         }
         fields_to_hash = present_fields.intersection(fields)
         FieldMask(paths=fields_to_hash).MergeMessage(self._pb_body, masked_d)
-        self._pb_body.content_hash = blake2b(
+        return blake2b(
             masked_d.SerializePartialToString(), digest_size=DIGEST_SIZE
         ).hexdigest()
 
@@ -854,14 +842,8 @@ class Document(ProtoTypeMixin):
             else:
                 self._pb_body.mime_type = value
 
-    def __enter__(self):
-        return self
-
     def __eq__(self, other):
         return self.proto == other.proto
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.update_content_hash()
 
     @property
     def content_type(self) -> str:
