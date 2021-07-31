@@ -1305,6 +1305,8 @@ class Document(ProtoTypeMixin):
             value = getattr(self._pb_body, item)
         elif '__' in item:
             value = dunder_get(self._pb_body, item)
+        else:
+            raise AttributeError
         return value
 
     @cached_property

@@ -674,7 +674,6 @@ def test_doc_match_score_assign():
     d1 = Document(d, copy=True, scores={'score': 123})
     d.matches = [d1]
     assert d.matches[0].scores['score'].value == 123
-    assert d.matches[0].scores['score'].ref_id == d.id
 
 
 def test_doc_update_given_empty_fields_and_attributes_identical(test_docs):
