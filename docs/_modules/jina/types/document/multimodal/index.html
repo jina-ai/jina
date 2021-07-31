@@ -200,6 +200,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.math.distance/">jina.math.distance module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.math.helper/">jina.math.helper module</a></li>
 </ul>
@@ -527,16 +528,26 @@
 
 <div class="viewcode-block" id="MultimodalDocument.update_content_hash"><a class="viewcode-back" href="../../../../../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.update_content_hash">[docs]</a>    <span class="k">def</span> <span class="nf">update_content_hash</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">exclude_fields</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'id'</span><span class="p">,</span> <span class="s1">'matches'</span><span class="p">,</span> <span class="s1">'content_hash'</span><span class="p">),</span>
-        <span class="n">include_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fields</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s1">'text'</span><span class="p">,</span>
+            <span class="s1">'blob'</span><span class="p">,</span>
+            <span class="s1">'buffer'</span><span class="p">,</span>
+            <span class="s1">'embedding'</span><span class="p">,</span>
+            <span class="s1">'uri'</span><span class="p">,</span>
+            <span class="s1">'tags'</span><span class="p">,</span>
+            <span class="s1">'mime_type'</span><span class="p">,</span>
+            <span class="s1">'granularity'</span><span class="p">,</span>
+            <span class="s1">'adjacency'</span><span class="p">,</span>
+            <span class="s1">'parent_id'</span><span class="p">,</span>
+            <span class="s1">'chunks'</span><span class="p">,</span>
+        <span class="p">),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Update content hash of the document by including ``chunks`` when computing the hash</span>
 
-<span class="sd">         :param exclude_fields: a tuple of field names that excluded when computing content hash</span>
-<span class="sd">        :param include_fields: a tuple of field names that included when computing content hash</span>
+<span class="sd">        :param fields: a tuple of field names that included when computing content hash</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">(</span><span class="n">exclude_fields</span><span class="p">,</span> <span class="n">include_fields</span><span class="p">)</span></div></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

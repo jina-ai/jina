@@ -200,6 +200,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../api/jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.math.distance/">jina.math.distance module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../api/jina.math.helper/">jina.math.helper module</a></li>
 </ul>
@@ -386,11 +387,13 @@
         <h1>Source code for jina.types.arrays.neural_ops</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">inf</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">...math.helper</span> <span class="kn">import</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">minmax_normalize</span>
+<span class="kn">from</span> <span class="nn">...math.dimensionality_reduction</span> <span class="kn">import</span> <span class="n">PCA</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">.document</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -472,7 +475,64 @@
                 <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'matches'</span><span class="p">)</span>
                 <span class="n">d</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">m_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_dist</span>
-                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div></div>
+                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DocumentArrayNeuralOpsMixin.visualize"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tag_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">file_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Visualize embeddings in a 2D projection with the PCA algorithm.</span>
+
+<span class="sd">        If `tag_name` is provided the plot uses a distinct color for each unique tag value in the</span>
+<span class="sd">        documents of the DocumentArray.</span>
+
+<span class="sd">        :param tag_name: Optional str that specifies tag used to color the plot</span>
+<span class="sd">        :param file_path: Optional path to store the visualization.</span>
+<span class="sd">        :param alpha: Float in [0,1] defining transparency of the dots in the plot.</span>
+<span class="sd">                      Value 0 is invisible, value 1 is opaque.</span>
+<span class="sd">        """</span>
+
+        <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+        <span class="n">color_space</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="s1">'vbgrcmk'</span><span class="p">)</span>
+
+        <span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">x_mat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s1">'Type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span><span class="si">}</span><span class="s1"> not currently supported, use np.ndarray embeddings'</span>
+
+        <span class="k">if</span> <span class="n">tag_name</span><span class="p">:</span>
+            <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="n">tag_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">)]</span>
+            <span class="n">tag_to_num</span> <span class="o">=</span> <span class="p">{</span><span class="n">tag</span><span class="p">:</span> <span class="n">num</span> <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">tags</span><span class="p">))}</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">tag_to_num</span><span class="p">[</span><span class="n">ni</span><span class="p">]</span> <span class="k">for</span> <span class="n">ni</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">colors</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">x_mat_2d</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span><span class="si">}</span><span class="s1"> documents with PCA'</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">colors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># make one plot per color with the correct tag</span>
+            <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tag_to_num</span><span class="p">:</span>
+                <span class="n">num</span> <span class="o">=</span> <span class="n">tag_to_num</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span>
+                <span class="n">x_mat_subset</span> <span class="o">=</span> <span class="n">x_mat_2d</span><span class="p">[</span><span class="n">colors</span> <span class="o">==</span> <span class="n">num</span><span class="p">]</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                    <span class="n">x_mat_subset</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
+                    <span class="n">x_mat_subset</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">tag_name</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_mat_2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">x_mat_2d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">file_path</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   jina.math.dimensionality_reduction
    jina.math.distance
    jina.math.helper
 

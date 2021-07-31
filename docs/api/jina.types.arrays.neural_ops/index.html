@@ -222,6 +222,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.math.distance/">jina.math.distance module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.math.helper/">jina.math.helper module</a></li>
 </ul>
@@ -450,6 +451,23 @@ all values will be rescaled into range <cite>[a, b]</cite>.</p></li>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">
+<code class="sig-name descname"><span class="pre">visualize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOpsMixin.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize embeddings in a 2D projection with the PCA algorithm.</p>
+<p>If <cite>tag_name</cite> is provided the plot uses a distinct color for each unique tag value in the
+documents of the DocumentArray.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional str that specifies tag used to color the plot</p></li>
+<li><p><strong>file_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional path to store the visualization.</p></li>
+<li><p><strong>alpha</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Float in [0,1] defining transparency of the dots in the plot.
+Value 0 is invisible, value 1 is opaque.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

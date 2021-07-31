@@ -199,6 +199,7 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina.math/">jina.math package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label for="toctree-checkbox-18"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.math.dimensionality_reduction/">jina.math.dimensionality_reduction module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.math.distance/">jina.math.distance module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.math.helper/">jina.math.helper module</a></li>
 </ul>
@@ -1693,6 +1694,10 @@
 </li>
         <li><a href="../api/jina.peapods.pods/#jina.peapods.pods.Pod.first_pea_args">first_pea_args() (jina.peapods.pods.Pod property)</a>
 </li>
+        <li><a href="../api/jina.math.dimensionality_reduction/#jina.math.dimensionality_reduction.PCA.fit">fit() (jina.math.dimensionality_reduction.PCA method)</a>
+</li>
+        <li><a href="../api/jina.math.dimensionality_reduction/#jina.math.dimensionality_reduction.PCA.fit_transform">fit_transform() (jina.math.dimensionality_reduction.PCA method)</a>
+</li>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.flatten_to_dict">flatten_to_dict() (jina.helper.ArgNamespace static method)</a>
 </li>
         <li><a href="../api/jina/#jina.Flow">Flow (class in jina)</a>
@@ -1721,10 +1726,10 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingPodError">FlowMissingPodError</a>
 </li>
-        <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.optimizers/#jina.optimizers.FlowOptimizer">FlowOptimizer (class in jina.optimizers)</a>
+</li>
         <li><a href="../api/jina.optimizers.flow_runner/#jina.optimizers.flow_runner.FlowRunner">FlowRunner (class in jina.optimizers.flow_runner)</a>
 </li>
         <li><a href="../api/daemon.models/#daemon.models.DaemonStatus.flows">flows (daemon.models.DaemonStatus attribute)</a>
@@ -2592,6 +2597,13 @@
 </li>
         </ul></li>
         <li>
+    jina.math.dimensionality_reduction
+
+        <ul>
+          <li><a href="../api/jina.math.dimensionality_reduction/#module-jina.math.dimensionality_reduction">module</a>
+</li>
+        </ul></li>
+        <li>
     jina.math.distance
 
         <ul>
@@ -2794,6 +2806,8 @@
           <li><a href="../api/jina.peapods/#module-jina.peapods">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.networking
 
@@ -2801,8 +2815,6 @@
           <li><a href="../api/jina.peapods.networking/#module-jina.peapods.networking">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.peapods.peas
 
@@ -3814,6 +3826,8 @@
 </li>
           <li><a href="../api/jina.math/#module-jina.math">jina.math</a>
 </li>
+          <li><a href="../api/jina.math.dimensionality_reduction/#module-jina.math.dimensionality_reduction">jina.math.dimensionality_reduction</a>
+</li>
           <li><a href="../api/jina.math.distance/#module-jina.math.distance">jina.math.distance</a>
 </li>
           <li><a href="../api/jina.math.helper/#module-jina.math.helper">jina.math.helper</a>
@@ -4247,6 +4261,8 @@
           <li><a href="../api/jina.peapods.zmq/#jina.peapods.zmq.ZmqStreamlet.pause_pollin">(jina.peapods.zmq.ZmqStreamlet method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.math.dimensionality_reduction/#jina.math.dimensionality_reduction.PCA">PCA (class in jina.math.dimensionality_reduction)</a>
+</li>
         <li><a href="../api/jina.math.distance/#jina.math.distance.pdist">pdist() (in module jina.math.distance)</a>
 </li>
         <li><a href="../api/daemon.models.enums/#daemon.models.enums.PartialDaemonModes.PEA">PEA (daemon.models.enums.PartialDaemonModes attribute)</a>
@@ -4303,10 +4319,10 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BuildTestLevel.POD_NONDOCKER">POD_NONDOCKER (jina.enums.BuildTestLevel attribute)</a>
 </li>
-        <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.PodClient">PodClient (class in daemon.clients.pods)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/daemon.clients.pods/#daemon.clients.pods.PodClient">PodClient (class in daemon.clients.pods)</a>
+</li>
         <li><a href="../api/daemon.api.dependencies/#daemon.api.dependencies.PodDepends">PodDepends (class in daemon.api.dependencies)</a>
 </li>
         <li><a href="../api/jina.peapods.pods.factory/#jina.peapods.pods.factory.PodFactory">PodFactory (class in jina.peapods.pods.factory)</a>
@@ -4971,10 +4987,10 @@
           <li><a href="../api/jina.types.document/#jina.types.document.Document.text">(jina.types.document.Document property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.TF">TF (jina.enums.EmbeddingClsType attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.RuntimeBackendType.THREAD">THREAD (jina.enums.RuntimeBackendType attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.OnErrorStrategy.THROW_EARLY">THROW_EARLY (jina.enums.OnErrorStrategy attribute)</a>
@@ -5002,6 +5018,8 @@
         <li><a href="../api/jina.math.helper/#jina.math.helper.top_k">top_k() (in module jina.math.helper)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.EmbeddingClsType.TORCH">TORCH (jina.enums.EmbeddingClsType attribute)</a>
+</li>
+        <li><a href="../api/jina.math.dimensionality_reduction/#jina.math.dimensionality_reduction.PCA.transform">transform() (jina.math.dimensionality_reduction.PCA method)</a>
 </li>
         <li><a href="../api/jina.types.arrays.traversable/#jina.types.arrays.traversable.TraversableSequence">TraversableSequence (class in jina.types.arrays.traversable)</a>
 </li>
@@ -5178,6 +5196,8 @@
         <li><a href="../api/jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser">VersionedYAMLParser (class in jina.jaml.parsers.base)</a>
 </li>
         <li><a href="../api/jina.hubble/#jina.hubble.HubExecutor.visibility">visibility (jina.hubble.HubExecutor attribute)</a>
+</li>
+        <li><a href="../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">visualize() (jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin method)</a>
 </li>
         <li><a href="../api/daemon.dockerize/#daemon.dockerize.Dockerizer.volume">volume() (daemon.dockerize.Dockerizer class method)</a>
 </li>
