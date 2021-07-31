@@ -17,10 +17,7 @@ DOCUMENTS_PER_LEVEL = 1
 def document_factory():
     class DocumentFactory(object):
         def create(self, idx, text):
-            with Document(id=idx) as d:
-                d.tags['id'] = idx
-                d.text = text
-            return d
+            return Document(id=idx, tags={'id': idx}, text=text)
 
     return DocumentFactory()
 
