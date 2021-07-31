@@ -87,7 +87,7 @@ class DocumentArrayNeuralOpsMixin:
                 d = darray[int(_id)]
                 if d.id in self:
                     d.pop('matches')
-                _q.matches.append(d, scores={m_name: _dist})
+                _q.matches.append(d, scores={m_name: _dist}, copy=False)
 
     def visualize(
         self,

@@ -17,18 +17,21 @@ class MatchArray(DocumentArray):
         self._ref_doc = reference_doc
         super().__init__(doc_views)
 
-    def append(self, document: 'Document', **kwargs) -> 'Document':
+    def append(self, document: 'Document', copy: bool = True, **kwargs) -> 'Document':
         """Add a matched document to the current Document.
 
         :param document: Sub-document to be added
-        :type document: :class: `Document
+        :param copy: If set, then copy the original Document. Otherwise the original Document may get modified
         :param kwargs: Extra key value arguments
         :return: the newly added sub-document in :class:`Document` view
         :rtype: :class:`Document` view
         """
-        from ..document import Document
+        if copy:
+            from ..document import Document
 
-        match = Document(document, copy=True)
+            match = Document(document, copy=True)
+        else:
+            match = document
 
         match.set_attributes(
             granularity=self.granularity, adjacency=self.adjacency, **kwargs
