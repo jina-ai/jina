@@ -86,6 +86,7 @@ class DocumentArrayNeuralOpsMixin:
                 # checkout https://github.com/jina-ai/jina/issues/3034
                 d = darray[int(_id)]
                 if d.id in self:
+                    d = Document(d, copy=True)
                     d.pop('matches')
                 _q.matches.append(d, scores={m_name: _dist}, copy=False)
 
