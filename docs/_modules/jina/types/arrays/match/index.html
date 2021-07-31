@@ -418,13 +418,12 @@
 
             <span class="n">match</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># note: this is faster than Document(document, copy=False)</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">document</span>
 
         <span class="n">match</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span>
             <span class="n">granularity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">granularity</span><span class="p">,</span> <span class="n">adjacency</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">adjacency</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
-        <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">match</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">score</span><span class="o">.</span><span class="n">ref_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span><span class="o">.</span><span class="n">id</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">match</span></div>

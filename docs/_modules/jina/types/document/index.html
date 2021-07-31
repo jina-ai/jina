@@ -496,16 +496,6 @@
 <span class="sd">    Jina requires each Document to have a string id. You can set a custom one,</span>
 <span class="sd">    or if non has been set a random one will be assigned.</span>
 
-<span class="sd">    Or you can use :class:`Document` as a context manager:</span>
-
-<span class="sd">        .. highlight:: python</span>
-<span class="sd">        .. code-block:: python</span>
-
-<span class="sd">            with Document() as d:</span>
-<span class="sd">                d.text = 'hello'</span>
-
-<span class="sd">            assert d.id  # now `id` has value</span>
-
 <span class="sd">    To access and modify the content of the document, you can use :attr:`text`, :attr:`blob`, and :attr:`buffer`.</span>
 <span class="sd">    Each property is implemented with proper setter, to improve the integrity and user experience. For example,</span>
 <span class="sd">    assigning ``doc.blob`` or ``doc.embedding`` can be simply done via:</span>
@@ -544,7 +534,6 @@
         <span class="n">document</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DocumentSourceType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">field_resolver</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">hash_content</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""</span>
@@ -560,7 +549,6 @@
 <span class="sd">                names defined in Protobuf. This is only used when the given ``document`` is</span>
 <span class="sd">                a JSON string or a Python dict.</span>
 <span class="sd">        :param kwargs: other parameters to be set _after_ the document is constructed</span>
-<span class="sd">        :param hash_content: whether to hash the content of the Document</span>
 
 <span class="sd">        .. note::</span>
 
@@ -678,8 +666,6 @@
                 <span class="sa">f</span><span class="s1">'Document content fields are mutually exclusive, please provide only one of </span><span class="si">{</span><span class="n">_all_doc_content_keys</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">hash_content</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">copy</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Document.pop"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Remove the values from the given fields of this Document.</span>
@@ -722,14 +708,6 @@
 <span class="sd">        :param value: The modality of the document</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">modality</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">content_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Get the content hash of the document.</span>
-
-<span class="sd">        :return: the content_hash from the proto</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">content_hash</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StructView</span><span class="p">:</span>
@@ -788,7 +766,7 @@
                 <span class="n">destination</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">field</span><span class="p">))</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># some fields such as `content_hash` do not have a setter method.</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="n">destination</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">field</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Document.update"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
@@ -813,9 +791,14 @@
             <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Document.update_content_hash"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.update_content_hash">[docs]</a>    <span class="k">def</span> <span class="nf">update_content_hash</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">fields</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">content_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Get the document hash according to its content.</span>
+
+<span class="sd">        :return: the unique hash code to represent this Document</span>
+<span class="sd">        """</span>
+        <span class="c1"># a tuple of field names that inclusive when computing content hash.</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s1">'text'</span><span class="p">,</span>
             <span class="s1">'blob'</span><span class="p">,</span>
             <span class="s1">'buffer'</span><span class="p">,</span>
@@ -825,21 +808,16 @@
             <span class="s1">'mime_type'</span><span class="p">,</span>
             <span class="s1">'granularity'</span><span class="p">,</span>
             <span class="s1">'adjacency'</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Update the document hash according to its content.</span>
-
-<span class="sd">        :param fields: a tuple of field names that inclusive when computing content hash.</span>
-<span class="sd">        """</span>
+        <span class="p">)</span>
         <span class="n">masked_d</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DocumentProto</span><span class="p">()</span>
         <span class="n">present_fields</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">field_descriptor</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field_descriptor</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ListFields</span><span class="p">()</span>
         <span class="p">}</span>
         <span class="n">fields_to_hash</span> <span class="o">=</span> <span class="n">present_fields</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
         <span class="n">FieldMask</span><span class="p">(</span><span class="n">paths</span><span class="o">=</span><span class="n">fields_to_hash</span><span class="p">)</span><span class="o">.</span><span class="n">MergeMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">masked_d</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">content_hash</span> <span class="o">=</span> <span class="n">blake2b</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">blake2b</span><span class="p">(</span>
             <span class="n">masked_d</span><span class="o">.</span><span class="n">SerializePartialToString</span><span class="p">(),</span> <span class="n">digest_size</span><span class="o">=</span><span class="n">DIGEST_SIZE</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+        <span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1081,7 +1059,7 @@
         <span class="sd">"""Bulk update Document fields with key-value specified in kwargs</span>
 
 <span class="sd">        .. seealso::</span>
-<span class="sd">            :meth:`get_attrs` for bulk get attributes</span>
+<span class="sd">            :meth:`get_attributes` for bulk get attributes</span>
 
 <span class="sd">        :param kwargs: the keyword arguments to set the values, where the keys are the fields to set</span>
 <span class="sd">        """</span>
@@ -1241,14 +1219,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span>
-
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">proto</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">proto</span>
-
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">content_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1718,8 +1690,10 @@
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s1">'__'</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">dunder_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span>
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="nd">@cached_property</span>

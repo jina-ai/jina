@@ -425,7 +425,7 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.types.document" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="jina.types.document.Document">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.document.</span></code><code class="sig-name descname"><span class="pre">Document</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hash_content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.types.document.</span></code><code class="sig-name descname"><span class="pre">Document</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_resolver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin" title="jina.types.mixin.ProtoTypeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.mixin.ProtoTypeMixin</span></code></a></p>
 <p><a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> is one of the <strong>primitive data type</strong> in Jina.</p>
 <p>It offers a Pythonic interface to allow users access and manipulate
@@ -440,15 +440,6 @@
 </div></blockquote>
 <p>Jina requires each Document to have a string id. You can set a custom one,
 or if non has been set a random one will be assigned.</p>
-<p>Or you can use <a class="reference internal" href="#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> as a context manager:</p>
-<blockquote>
-<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Document</span><span class="p">()</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
-    <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">'hello'</span>
-
-<span class="k">assert</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span>  <span class="c1"># now `id` has value</span>
-</pre></div>
-</div>
-</div></blockquote>
 <p>To access and modify the content of the document, you can use <a class="reference internal" href="#jina.types.document.Document.text" title="jina.types.document.Document.text"><code class="xref py py-attr docutils literal notranslate"><span class="pre">text</span></code></a>, <a class="reference internal" href="#jina.types.document.Document.blob" title="jina.types.document.Document.blob"><code class="xref py py-attr docutils literal notranslate"><span class="pre">blob</span></code></a>, and <a class="reference internal" href="#jina.types.document.Document.buffer" title="jina.types.document.Document.buffer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">buffer</span></code></a>.
 Each property is implemented with proper setter, to improve the integrity and user experience. For example,
 assigning <code class="docutils literal notranslate"><span class="pre">doc.blob</span></code> or <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code> can be simply done via:</p>
@@ -491,7 +482,6 @@ view (i.e. weak reference) from it or a deep copy from it.</p></li>
 names defined in Protobuf. This is only used when the given <code class="docutils literal notranslate"><span class="pre">document</span></code> is
 a JSON string or a Python dict.</p></li>
 <li><p><strong>kwargs</strong> – other parameters to be set _after_ the document is constructed</p></li>
-<li><p><strong>hash_content</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to hash the content of the Document</p></li>
 </ul>
 </dd>
 </dl>
@@ -555,16 +545,6 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.types.document.Document.content_hash">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">content_hash</span></code><a class="headerlink" href="#jina.types.document.Document.content_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the content hash of the document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the content_hash from the proto</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
 <dt id="jina.types.document.Document.tags">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">tags</span></code><a class="headerlink" href="#jina.types.document.Document.tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the <cite>tags</cite> field of this Document as a Python dict</p>
@@ -601,15 +581,15 @@ if not specified, merge all fields.</p></li>
 </dl>
 </dd></dl>
 <dl class="py method">
-<dt id="jina.types.document.Document.update_content_hash">
-<code class="sig-name descname"><span class="pre">update_content_hash</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('text',</span> <span class="pre">'blob',</span> <span class="pre">'buffer',</span> <span class="pre">'embedding',</span> <span class="pre">'uri',</span> <span class="pre">'tags',</span> <span class="pre">'mime_type',</span> <span class="pre">'granularity',</span> <span class="pre">'adjacency')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/#Document.update_content_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.Document.update_content_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the document hash according to its content.</p>
+<dt id="jina.types.document.Document.content_hash">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">content_hash</span></code><a class="headerlink" href="#jina.types.document.Document.content_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the document hash according to its content.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a tuple of field names that inclusive when computing content hash.</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the unique hash code to represent this Document</p>
 </dd>
 </dl>
 </dd></dl>
@@ -756,7 +736,7 @@ If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`g
 <dd><p>Bulk update Document fields with key-value specified in kwargs</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_attrs()</span></code> for bulk get attributes</p>
+<p><a class="reference internal" href="#jina.types.document.Document.get_attributes" title="jina.types.document.Document.get_attributes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_attributes()</span></code></a> for bulk get attributes</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

@@ -92,7 +92,6 @@ Represents a Document
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [string](#string) |  | A hexdigest that represents a unique document ID |
-| content_hash | [string](#string) |  | A hexdigest that represents the hash of the content of the document |
 | granularity | [uint32](#uint32) |  | the depth of the recursive chunk structure |
 | adjacency | [uint32](#uint32) |  | the width of the recursive match structure |
 | parent_id | [string](#string) |  | the parent id from the previous granularity |

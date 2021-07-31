@@ -442,7 +442,7 @@
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">_send_requests</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">):</span>
                     <span class="n">next_request</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="k">for</span> <span class="n">next_request</span> <span class="ow">in</span> <span class="n">request_iterator</span><span class="p">:</span>
-                        <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">next_request</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">())</span>
+                        <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">next_request</span><span class="o">.</span><span class="n">SerializePartialToString</span><span class="p">())</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">num_requests</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="c1"># Check if there was any request generated</span>
                     <span class="k">if</span> <span class="n">next_request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

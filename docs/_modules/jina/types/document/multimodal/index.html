@@ -502,10 +502,7 @@
 <span class="sd">        :param value: map from modality to content</span>
 <span class="sd">        """</span>
         <span class="k">for</span> <span class="n">modality</span><span class="p">,</span> <span class="n">content</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">with</span> <span class="n">Document</span><span class="p">()</span> <span class="k">as</span> <span class="n">chunk</span><span class="p">:</span>
-                <span class="n">chunk</span><span class="o">.</span><span class="n">modality</span> <span class="o">=</span> <span class="n">modality</span>
-                <span class="n">chunk</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modality</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentContentType</span><span class="p">:</span>
         <span class="sd">"""Extract content by the name of the modality.</span>
@@ -524,30 +521,7 @@
 
 <span class="sd">        :return: List of modalities extracted from chunks of the document.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modality_content_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-<div class="viewcode-block" id="MultimodalDocument.update_content_hash"><a class="viewcode-back" href="../../../../../api/jina.types.document.multimodal/#jina.types.document.multimodal.MultimodalDocument.update_content_hash">[docs]</a>    <span class="k">def</span> <span class="nf">update_content_hash</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">fields</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s1">'text'</span><span class="p">,</span>
-            <span class="s1">'blob'</span><span class="p">,</span>
-            <span class="s1">'buffer'</span><span class="p">,</span>
-            <span class="s1">'embedding'</span><span class="p">,</span>
-            <span class="s1">'uri'</span><span class="p">,</span>
-            <span class="s1">'tags'</span><span class="p">,</span>
-            <span class="s1">'mime_type'</span><span class="p">,</span>
-            <span class="s1">'granularity'</span><span class="p">,</span>
-            <span class="s1">'adjacency'</span><span class="p">,</span>
-            <span class="s1">'parent_id'</span><span class="p">,</span>
-            <span class="s1">'chunks'</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Update content hash of the document by including ``chunks`` when computing the hash</span>
-
-<span class="sd">        :param fields: a tuple of field names that included when computing content hash</span>
-<span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modality_content_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 </pre></div>
       </article>
       <footer>

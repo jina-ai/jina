@@ -412,11 +412,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span> <span class="o">=</span> <span class="n">reference_doc</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">doc_views</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ChunkArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
+<div class="viewcode-block" id="ChunkArray.append"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.chunk/#jina.types.arrays.chunk.ChunkArray.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Document'</span><span class="p">:</span>
         <span class="sd">"""Add a sub-document (i.e chunk) to the current Document.</span>
 
 <span class="sd">        :param document: Sub-document to be appended</span>
-<span class="sd">        :type document: :class:`Document`</span>
+<span class="sd">        :param copy: If set, then copy the original Document. Otherwise the original Document may get modified</span>
 <span class="sd">        :param kwargs: additional keyword arguments</span>
 <span class="sd">        :return: the newly added sub-document in :class:`Document` view</span>
 <span class="sd">        :rtype: :class:`Document`</span>
@@ -426,9 +426,13 @@
 <span class="sd">            make sure the added chunk is legit.</span>
 <span class="sd">        """</span>
 
-        <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">..document</span> <span class="kn">import</span> <span class="n">Document</span>
 
-        <span class="n">chunk</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">document</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># note: this is faster than Document(document, copy=False)</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">document</span>
 
         <span class="n">chunk</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span>
             <span class="n">parent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">granularity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">granularity</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -436,7 +440,6 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="o">.</span><span class="n">mime_type</span><span class="p">:</span>
             <span class="n">chunk</span><span class="o">.</span><span class="n">mime_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref_doc</span><span class="o">.</span><span class="n">mime_type</span>
-        <span class="n">chunk</span><span class="o">.</span><span class="n">update_content_hash</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">chunk</span></div>
 

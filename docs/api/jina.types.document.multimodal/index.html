@@ -449,7 +449,6 @@ view (i.e. weak reference) from it or a deep copy from it.</p></li>
 names defined in Protobuf. This is only used when the given <code class="docutils literal notranslate"><span class="pre">document</span></code> is
 a JSON string or a Python dict.</p></li>
 <li><p><strong>kwargs</strong> – other parameters to be set _after_ the document is constructed</p></li>
-<li><p><strong>hash_content</strong> – whether to hash the content of the Document</p></li>
 </ul>
 </dd>
 <dt class="field-even">Param</dt>
@@ -510,19 +509,6 @@ are the modalities of the chunks, the values are the corresponded content of the
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>List of modalities extracted from chunks of the document.</p>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt id="jina.types.document.multimodal.MultimodalDocument.update_content_hash">
-<code class="sig-name descname"><span class="pre">update_content_hash</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('text',</span> <span class="pre">'blob',</span> <span class="pre">'buffer',</span> <span class="pre">'embedding',</span> <span class="pre">'uri',</span> <span class="pre">'tags',</span> <span class="pre">'mime_type',</span> <span class="pre">'granularity',</span> <span class="pre">'adjacency',</span> <span class="pre">'parent_id',</span> <span class="pre">'chunks')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/document/multimodal/#MultimodalDocument.update_content_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.document.multimodal.MultimodalDocument.update_content_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update content hash of the document by including <code class="docutils literal notranslate"><span class="pre">chunks</span></code> when computing the hash</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fields</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – a tuple of field names that included when computing content hash</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>

@@ -433,12 +433,13 @@ It’s a subset of Documents.</p>
 </dl>
 <dl class="py method">
 <dt id="jina.types.arrays.chunk.ChunkArray.append">
-<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/chunk/#ChunkArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.append" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">document</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/chunk/#ChunkArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.chunk.ChunkArray.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a sub-document (i.e chunk) to the current Document.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>document</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code>) – Sub-document to be appended</p></li>
+<li><p><strong>document</strong> (<a class="reference internal" href="../jina/#jina.Document" title="jina.Document"><em>Document</em></a>) – Sub-document to be appended</p></li>
+<li><p><strong>copy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, then copy the original Document. Otherwise the original Document may get modified</p></li>
 <li><p><strong>kwargs</strong> – additional keyword arguments</p></li>
 </ul>
 </dd>
