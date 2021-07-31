@@ -141,13 +141,23 @@ class MultimodalDocument(Document):
 
     def update_content_hash(
         self,
-        exclude_fields: Tuple[str] = ('id', 'matches', 'content_hash'),
-        include_fields: Optional[Tuple[str]] = None,
+        fields: Tuple[str] = (
+            'text',
+            'blob',
+            'buffer',
+            'embedding',
+            'uri',
+            'tags',
+            'mime_type',
+            'granularity',
+            'adjacency',
+            'parent_id',
+            'chunks',
+        ),
     ) -> None:
         """
         Update content hash of the document by including ``chunks`` when computing the hash
 
-         :param exclude_fields: a tuple of field names that excluded when computing content hash
-        :param include_fields: a tuple of field names that included when computing content hash
+        :param fields: a tuple of field names that included when computing content hash
         """
-        super().update_content_hash(exclude_fields, include_fields)
+        super().update_content_hash(fields)
