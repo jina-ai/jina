@@ -115,10 +115,7 @@ class MultimodalDocument(Document):
         :param value: map from modality to content
         """
         for modality, content in value.items():
-            with Document() as chunk:
-                chunk.modality = modality
-                chunk.content = content
-                self.chunks.append(chunk)
+            self.chunks.append(Document(modality=modality, content=content))
 
     def __getitem__(self, modality: str) -> DocumentContentType:
         """Extract content by the name of the modality.
@@ -138,26 +135,3 @@ class MultimodalDocument(Document):
         :return: List of modalities extracted from chunks of the document.
         """
         return list(self.modality_content_map.keys())
-
-    def update_content_hash(
-        self,
-        fields: Tuple[str] = (
-            'text',
-            'blob',
-            'buffer',
-            'embedding',
-            'uri',
-            'tags',
-            'mime_type',
-            'granularity',
-            'adjacency',
-            'parent_id',
-            'chunks',
-        ),
-    ) -> None:
-        """
-        Update content hash of the document by including ``chunks`` when computing the hash
-
-        :param fields: a tuple of field names that included when computing content hash
-        """
-        super().update_content_hash(fields)

@@ -15,7 +15,7 @@ class RequestProto:
         # noqa: DAR102
         # noqa: DAR201
         """
-        return x.proto.SerializeToString()
+        return x.proto.SerializePartialToString()
 
     @staticmethod
     def FromString(x: bytes):

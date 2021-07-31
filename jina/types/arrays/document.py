@@ -201,7 +201,7 @@ class DocumentArray(
         from ..document import Document
 
         for d in self._pb_body:
-            yield Document(d, hash_content=False)
+            yield Document(d)
 
     def __contains__(self, item: str):
         return item in self._id_to_index
@@ -210,7 +210,7 @@ class DocumentArray(
         from ..document import Document
 
         if isinstance(item, int):
-            return Document(self._pb_body[item], hash_content=False)
+            return Document(self._pb_body[item])
         elif isinstance(item, str):
             return self[self._id_to_index[item]]
         elif isinstance(item, slice):
@@ -386,7 +386,7 @@ class DocumentArray(
             dap = jina_pb2.DocumentArrayProto()
             if self._pb_body:
                 dap.docs.extend(self._pb_body)
-            fp.write(dap.SerializeToString())
+            fp.write(dap.SerializePartialToString())
 
     def save_json(self, file: Union[str, TextIO]) -> None:
         """Save array elements into a JSON file.
