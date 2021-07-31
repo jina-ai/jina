@@ -235,11 +235,11 @@ class Message:
 
         :return: array, containing encoded receiver id, serialized envelope and the compressed serialized envelope
         """
-        r2 = self.request.SerializeToString()
+        r2 = self.request.SerializePartialToString()
         r2 = self._compress(r2)
 
         r0 = self.envelope.receiver_id.encode()
-        r1 = self.envelope.SerializeToString()
+        r1 = self.envelope.SerializePartialToString()
         m = [r0, r1, r2]
         self._size = sum(sys.getsizeof(r) for r in m)
         return m

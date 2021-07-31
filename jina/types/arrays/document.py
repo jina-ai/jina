@@ -386,7 +386,7 @@ class DocumentArray(
             dap = jina_pb2.DocumentArrayProto()
             if self._pb_body:
                 dap.docs.extend(self._pb_body)
-            fp.write(dap.SerializeToString())
+            fp.write(dap.SerializePartialToString())
 
     def save_json(self, file: Union[str, TextIO]) -> None:
         """Save array elements into a JSON file.
