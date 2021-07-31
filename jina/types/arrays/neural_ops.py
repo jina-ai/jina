@@ -81,14 +81,13 @@ class DocumentArrayNeuralOpsMixin:
         for _q, _ids, _dists in zip(self, idx, dist):
             _q.matches.clear()
             for _id, _dist in zip(_ids, _dists):
-                d = Document(darray[int(_id)], copy=True)
                 # Note, when match self with other, or both of them share the same Document
                 # we might have recursive matches .
                 # checkout https://github.com/jina-ai/jina/issues/3034
+                d = darray[int(_id)]
                 if d.id in self:
                     d.pop('matches')
-                d.scores[m_name] = _dist
-                _q.matches.append(d)
+                _q.matches.append(d, scores={m_name: _dist})
 
     def visualize(
         self,
