@@ -672,7 +672,7 @@ class Document(ProtoTypeMixin):
         """Bulk update Document fields with key-value specified in kwargs
 
         .. seealso::
-            :meth:`get_attrs` for bulk get attributes
+            :meth:`get_attributes` for bulk get attributes
 
         :param kwargs: the keyword arguments to set the values, where the keys are the fields to set
         """
@@ -1303,7 +1303,7 @@ class Document(ProtoTypeMixin):
     def __getattr__(self, item):
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
-        else:
+        elif '__' in item:
             value = dunder_get(self._pb_body, item)
         return value
 

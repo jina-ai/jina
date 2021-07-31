@@ -39,9 +39,13 @@ class ChunkArray(DocumentArray):
             make sure the added chunk is legit.
         """
 
-        from ..document import Document
+        if copy:
+            from ..document import Document
 
-        chunk = Document(document, copy=copy)
+            chunk = Document(document, copy=True)
+        else:
+            # note: this is faster than Document(document, copy=False)
+            chunk = document
 
         chunk.set_attributes(
             parent_id=self._ref_doc.id, granularity=self.granularity, **kwargs
