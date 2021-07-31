@@ -163,8 +163,8 @@ def test_bad_good_doc_id():
 
 
 def test_id_context():
-    with Document() as d:
-        d.buffer = b'123'
+    d = Document()
+    d.buffer = b'123'
     assert d.id
 
 
@@ -257,18 +257,18 @@ def test_request_docs_chunks_mutable_iterator():
 def test_doc_setattr():
     from jina import Document
 
-    with Document() as root:
-        root.text = 'abc'
+    root = Document()
+    root.text = 'abc'
 
     assert root.adjacency == 0
 
-    with Document() as match:
-        match.text = 'def'
-        m = root.matches.append(match)
+    match = Document()
+    match.text = 'def'
+    m = root.matches.append(match)
 
-    with Document() as chunk:
-        chunk.text = 'def'
-        c = root.chunks.append(chunk)
+    chunk = Document()
+    chunk.text = 'def'
+    c = root.chunks.append(chunk)
 
     assert len(root.matches) == 1
     assert root.matches[0].granularity == 0
@@ -288,8 +288,8 @@ def test_doc_setattr():
 def test_doc_score():
     from jina.types.score import NamedScore
 
-    with Document() as doc:
-        doc.text = 'text'
+    doc = Document()
+    doc.text = 'text'
 
     score = NamedScore(op_name='operation', value=10.0, ref_id=doc.id)
     doc.score = score
@@ -312,8 +312,8 @@ def test_content_hash_not_dependent_on_chunks_or_matches():
     doc3 = Document()
     doc3.content = 'one'
     for _ in range(3):
-        with Document() as m:
-            m.content = 'some chunk'
+        m = Document()
+        m.content = 'some chunk'
         doc3.chunks.append(m)
     doc3.update_content_hash()
     assert doc1.content_hash == doc3.content_hash
@@ -321,8 +321,8 @@ def test_content_hash_not_dependent_on_chunks_or_matches():
     doc4 = Document()
     doc4.content = 'one'
     for _ in range(3):
-        with Document() as m:
-            m.content = 'some match'
+        m = Document()
+        m.content = 'some match'
         doc4.matches.append(m)
     doc4.update_content_hash()
     assert doc1.content_hash == doc4.content_hash

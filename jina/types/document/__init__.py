@@ -109,16 +109,6 @@ class Document(ProtoTypeMixin):
     Jina requires each Document to have a string id. You can set a custom one,
     or if non has been set a random one will be assigned.
 
-    Or you can use :class:`Document` as a context manager:
-
-        .. highlight:: python
-        .. code-block:: python
-
-            with Document() as d:
-                d.text = 'hello'
-
-            assert d.id  # now `id` has value
-
     To access and modify the content of the document, you can use :attr:`text`, :attr:`blob`, and :attr:`buffer`.
     Each property is implemented with proper setter, to improve the integrity and user experience. For example,
     assigning ``doc.blob`` or ``doc.embedding`` can be simply done via:
@@ -854,14 +844,8 @@ class Document(ProtoTypeMixin):
             else:
                 self._pb_body.mime_type = value
 
-    def __enter__(self):
-        return self
-
     def __eq__(self, other):
         return self.proto == other.proto
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.update_content_hash()
 
     @property
     def content_type(self) -> str:

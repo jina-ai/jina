@@ -21,14 +21,14 @@ def validate(req):
 
 def documents(start_index, end_index):
     for i in range(start_index, end_index):
-        with Document() as doc:
-            doc.text = 'this is text'
-            doc.tags['id'] = 'id in tags'
-            doc.tags['inner_dict'] = {'id': 'id in inner_dict'}
-            with Document() as chunk:
-                chunk.text = 'text in chunk'
-                chunk.tags['id'] = 'id in chunk tags'
-            doc.chunks.append(chunk)
+        doc = Document()
+        doc.text = 'this is text'
+        doc.tags['id'] = 'id in tags'
+        doc.tags['inner_dict'] = {'id': 'id in inner_dict'}
+        chunk = Document()
+        chunk.text = 'text in chunk'
+        chunk.tags['id'] = 'id in chunk tags'
+        doc.chunks.append(chunk)
         yield doc
 
 

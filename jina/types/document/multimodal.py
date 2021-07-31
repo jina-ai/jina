@@ -115,10 +115,10 @@ class MultimodalDocument(Document):
         :param value: map from modality to content
         """
         for modality, content in value.items():
-            with Document() as chunk:
-                chunk.modality = modality
-                chunk.content = content
-                self.chunks.append(chunk)
+            chunk = Document()
+            chunk.modality = modality
+            chunk.content = content
+            self.chunks.append(chunk)
 
     def __getitem__(self, modality: str) -> DocumentContentType:
         """Extract content by the name of the modality.

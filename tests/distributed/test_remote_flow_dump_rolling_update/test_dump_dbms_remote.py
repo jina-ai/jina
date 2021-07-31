@@ -159,11 +159,11 @@ def _send_rest_request(
 
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
-        with Document() as d:
-            d.id = i
-            d.text = f'hello world {i}'
-            d.embedding = np.random.random(emb_size)
-            d.tags['tag_field'] = f'tag data {i}'
+        d = Document()
+        d.id = i
+        d.text = f'hello world {i}'
+        d.embedding = np.random.random(emb_size)
+        d.tags['tag_field'] = f'tag data {i}'
         yield d
 
 
