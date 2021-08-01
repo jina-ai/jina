@@ -389,8 +389,8 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
 
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">...math.dimensionality_reduction</span> <span class="kn">import</span> <span class="n">PCA</span>
 <span class="kn">from</span> <span class="nn">...math.helper</span> <span class="kn">import</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">minmax_normalize</span>
@@ -444,7 +444,6 @@
 
         <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
         <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-        <span class="n">limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">use_scipy</span><span class="p">:</span>
@@ -459,7 +458,7 @@
                 <span class="sa">f</span><span class="s1">'metric must be either string or a 2-arity function, received: </span><span class="si">{</span><span class="n">metric</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="p">)</span>
 
-        <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="p">)),</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
                 <span class="n">dist</span> <span class="o">=</span> <span class="n">minmax_normalize</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
