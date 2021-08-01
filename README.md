@@ -49,12 +49,17 @@ fragmented, multi-vendor, generic legacy tools.
 
 <details>
 <summary>More installation options</summary>
+<sub>
 
-| x86/64, arm64, v6, v7 | Linux/macOS & Python 3.7/3.8/3.9 | Docker Users|
+| On x86/64, arm64/v6/v7 | Linux/macOS with Python 3.7/3.8/3.9 | Docker Users |
 | --- | --- | --- |
-| Minimum <br><sub>(no HTTP, WebSocket, Docker support)</sub> | `pip install jina` | `docker run jinaai/jina:latest` |
-| <sub><a href="https://api.jina.ai/daemon/">Daemon</a></sub> | <sub>`pip install "jina[daemon]"`</sub> | <sub>`docker run --network=host jinaai/jina:latest-daemon`</sub> |
-| <sub>With Extras</sub> | <sub>`pip install "jina[devel]"`</sub> | <sub>`docker run jinaai/jina:latest-devel`</sub> |
+| Minimum <br>(no HTTP, WebSocket, Docker support) | `pip install jina` | `docker run jinaai/jina:latest` |
+| Minimum but more performant <br>(use `uvloop` & `lz4`) | `pip install jina[perf]` | `docker run jinaai/jina:latest-perf` |
+| With <a href="https://api.jina.ai/daemon/">Daemon</a> | `pip install "jina[daemon]"` | `docker run --network=host jinaai/jina:latest-daemon` |
+| Full development dependencies | `pip install "jina[devel]"` | `docker run jinaai/jina:latest-devel` |
+| Pre-release<br>(all tags above can be added)| <sub>`pip install --pre jina` | `docker run jinaai/jina:master` |
+
+</sub>
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
