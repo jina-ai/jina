@@ -1,8 +1,7 @@
 import re
 import random
 import operator
-from typing import Dict, Optional, Union
-
+from typing import Dict, Optional, Union, Tuple
 
 if False:
     from .document import DocumentArray
@@ -23,7 +22,7 @@ class DocumentArraySearchOpsMixin:
     def find(
         self,
         regexes: Dict[str, Union[str, re.Pattern]],
-        traversal_paths: list = ['r'],
+        traversal_paths: Tuple[str] = ('r',),
         operator: str = '>=',
         threshold: Optional[int] = None,
     ) -> 'DocumentArray':
@@ -75,7 +74,7 @@ class DocumentArraySearchOpsMixin:
 
         return filtered
 
-    def sample(self, k: int, seed: int = None) -> 'DocumentArray':
+    def sample(self, k: int, seed: Optional[int] = None) -> 'DocumentArray':
         """random sample k elements from :class:`DocumentArray` without replacement.
 
         :param k: Number of elements to sample from the document array.
@@ -95,10 +94,10 @@ class DocumentArraySearchOpsMixin:
         # without getting indices and itemgetter etc.
         # however it's only work on DocumentArray, not DocumentArrayMemmap.
         indices = random.sample(range(len(self)), k)
-        sampled = list(operator.itemgetter(*indices)(self))
+        sampled = operator.itemgetter(*indices)(self)
         return DocumentArray(sampled)
 
-    def shuffle(self, seed: int = None) -> 'DocumentArray':
+    def shuffle(self, seed: Optional[int] = None) -> 'DocumentArray':
         """Randomly shuffle documents within the :class:`DocumentArray`.
 
         :param seed: initialize the random number generator, by default is None. If set will
