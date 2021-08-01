@@ -49,7 +49,6 @@ fragmented, multi-vendor, generic legacy tools.
 
 <details>
 <summary>More installation options</summary>
-<sub>
 
 | On x86/64, arm64/v6/v7 | Linux/macOS with Python 3.7/3.8/3.9 | Docker Users |
 | --- | --- | --- |
@@ -59,7 +58,6 @@ fragmented, multi-vendor, generic legacy tools.
 | Full development dependencies | `pip install "jina[devel]"` | `docker run jinaai/jina:latest-devel` |
 | Pre-release<br>(all tags above can be added)| <sub>`pip install --pre jina` | `docker run jinaai/jina:master` |
 
-</sub>
 
 Version identifiers [are explained here](https://github.com/jina-ai/jina/blob/master/RELEASE.md). Jina can run
 on [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). We welcome the community
