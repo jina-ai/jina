@@ -1,12 +1,10 @@
+> The best way to know more about contributing and how to get started is to **[join us on Slack](https://slack.jina.ai)** and ask questions in our public channels.
+
 # Contributing to Jina
 
 Thanks for your interest in contributing to Jina. We're grateful for your initiative! ❤️
 
 I'm Alex C-G, Open Source Evangelist for Jina. I'm all about getting our new contributors up-to-speed, and that's what we'll do below.
-
-# Join Us on Slack!
-
-The best way to know more about contributing and how to get started is to **[join us on Slack](https://join.slack.com/t/jina-ai/shared_invite/zt-dkl7x8p0-rVCv~3Fdc3~Dpwx7T7XG8w)** and ask questions in our public channels.
 
 In this guide, we're going to go through the steps for each kind of contribution, and good and bad examples of what to do. We look forward to your contributions!
 
@@ -33,7 +31,8 @@ Make sure you've read through our [README](https://github.com/jina-ai/jina), [Ji
 We're happy for any contributions, code or not. If you'd like to write a blog post, record a podcast, organize a meetup, or anything else to contribute to Jina, we'd love to hear from you!
 
 * [Contribute docs](#-contributing-documentation)
-* For other contributions, please [get in touch](#-getting-support) to discuss on Slack
+* For other contributions, please [get in touch](#-getting-support) to discuss on 
+
 
 <a name="-bugs-and-issues"></a>
 ## 🐞 Bugs and Issues
