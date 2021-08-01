@@ -296,7 +296,11 @@ def test_da_reverse():
     )
     assert len(da) == 10
     assert da[0].embedding.shape == (10,)
+    da0_id = da[0].id
     da.reverse()
+    assert da[0].id != da0_id
+    assert da[da0_id].id == da0_id
+    assert da[-1].id == da0_id
     assert da[0].embedding.shape == (1,)
 
 
