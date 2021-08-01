@@ -419,7 +419,7 @@
 <dd></dd></dl>
 <dl class="py method">
 <dt id="jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find">
-<code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regexes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['r']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&gt;='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/search_ops/#DocumentArraySearchOpsMixin.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">find</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">regexes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traversal_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('r')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'&gt;='</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/search_ops/#DocumentArraySearchOpsMixin.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.search_ops.DocumentArraySearchOpsMixin.find" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find Documents whose tag match the regular expressions in <cite>regexes</cite>.
 If <cite>regexes</cite> contain several regular expressions an <cite>operator</cite> can be used to
 specify a decision depending on the of regular expression matches specified by <cite>value</cite>.</p>
@@ -434,7 +434,7 @@ specify a decision depending on the of regular expression matches specified by <
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>regexes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Pattern</span></code>]]) – Dictionary of the form {tag: Optional[str, regex]}</p></li>
-<li><p><strong>traversal_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – List specifying traversal paths</p></li>
+<li><p><strong>traversal_paths</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List specifying traversal paths</p></li>
 <li><p><strong>operator</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Operator used to accept/reject a document</p></li>
 <li><p><strong>threshold</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Number of regex that should match the operator to accept a Document.
 If no value is provided <cite>threshold=len(regexes)</cite>.</p></li>
@@ -456,7 +456,7 @@ If no value is provided <cite>threshold=len(regexes)</cite>.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of elements to sample from the document array.</p></li>
-<li><p><strong>seed</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – initialize the random number generator, by default is None. If set will
+<li><p><strong>seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – initialize the random number generator, by default is None. If set will
 save the state of the random function to produce certain outputs.</p></li>
 </ul>
 </dd>
@@ -474,7 +474,7 @@ save the state of the random function to produce certain outputs.</p></li>
 <dd><p>Randomly shuffle documents within the <code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>seed</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – initialize the random number generator, by default is None. If set will
+<dd class="field-odd"><p><strong>seed</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – initialize the random number generator, by default is None. If set will
 save the state of the random function to produce certain outputs.</p>
 </dd>
 <dt class="field-even">Return type</dt>
