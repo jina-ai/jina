@@ -175,7 +175,6 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#extend-http-interface)
 - 📓 [Developer Reference](https://docs.jina.ai)
 - 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
-- 😎 [3 Reasons to Use Jina 2.0](.github/2.0/1vs2.md)
 
 ## Support
 
@@ -198,12 +197,11 @@ solution engineers to build the next neural search ecosystem in open source.
 We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to
 your active involvement.
 
+- [Release cycles and development stages](RELEASE.md)
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md)
   community
-- [Good first issues](https://github.com/jina-ai/jina/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
-- [Release cycles and development stages](RELEASE.md)
-- [Are You a Contributor Get Your Self Some Swags ](https://jina.ai/2021/07/12/swag.html)
+- [Get yourself some swags](https://jina.ai/2021/07/12/swag.html)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-166-orange.svg?style=flat-square)](#contributors-)
