@@ -260,6 +260,7 @@ ac_table = {
             '--runs-in-docker',
             '--routing-table',
         ],
+        'hub new': ['--help'],
         'hub push': [
             '--help',
             '--no-usage',
@@ -269,7 +270,7 @@ ac_table = {
             '--private',
         ],
         'hub pull': ['--help', '--no-usage', '--install-requirements'],
-        'hub': ['--help', 'push', 'pull'],
+        'hub': ['--help', 'new', 'push', 'pull'],
         'help': ['--help'],
         'pea': [
             '--help',

@@ -216,7 +216,7 @@ class Request(ProtoTypeMixin, DocsPropertyMixin, GroundtruthPropertyMixin):
         :return: serialized request
         """
         if self.is_decompressed:
-            return self.proto.SerializeToString()
+            return self.proto.SerializePartialToString()
         else:
             # no touch, skip serialization, return original
             return self._buffer

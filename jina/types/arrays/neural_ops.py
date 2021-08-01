@@ -1,9 +1,12 @@
 from math import inf
-from typing import Optional, Tuple, Union
+from typing import Optional, Union, Callable, Tuple
 
 import numpy as np
 
-from jina import Document
+from ... import Document
+from ...importer import ImportExtensions
+from ...math.dimensionality_reduction import PCA
+from ...math.helper import top_k, minmax_normalize
 
 if False:
     from .document import DocumentArray
@@ -16,122 +19,131 @@ class DocumentArrayNeuralOpsMixin:
     def match(
         self,
         darray: Union['DocumentArray', 'DocumentArrayMemmap'],
-        metric: str = 'cosine',
+        metric: Union[
+            str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
+        ] = 'cosine',
         limit: Optional[int] = inf,
-        is_distance: bool = False,
+        normalization: Optional[Tuple[int, int]] = None,
+        use_scipy: bool = False,
+        metric_name: Optional[str] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
 
-        Note:
-            - If metric is 'cosine' it uses the cosine **distance**.
-            - If metric is 'euclidean' it uses the euclidean **distance**.
-            - If metric is 'euclidean_squared' it uses the euclidean **distance** squared.
+        .. note::
+            'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.
+
+            You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,
+            ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,
+            ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
+            ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.
+
+            To use scipy metric, please set ``use_scipy=True``.
+
+        - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``
+        - To invert the distance as score and make all values in range [0, 1],
+            use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.
 
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param metric: the distance metric
         :param limit: the maximum number of matches, when not given
                       all Documents in `another` are considered as matches
-        :param is_distance: Boolean flag informing if `metric` values want to be considered as distances or scores.
+        :param normalization: a tuple [a, b] to be used with min-max normalization,
+                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
+                                all values will be rescaled into range `[a, b]`.
+        :param use_scipy: use Scipy as the computation backend
+        :param metric_name: if provided, then match result will be marked with this string.
         """
-
-        def invert_if_score(
-            x: 'np.ndarray',
-        ) -> 'np.ndarray':
-            """Invert values to scores if `is_distance=False` according to the metric that is passed.
-
-            :param x: input np.ndarray
-            :return: A np.ndarray with distances if `is_distance=True`, scores if distance=False`.
-            """
-            if metric == 'cosine':
-                if is_distance:
-                    x = x
-                else:
-                    x = 1 - x
-            elif metric == 'euclidean_squared' or metric == 'euclidean':
-                if is_distance:
-                    x = x
-                else:
-                    x = 1 / (x + 1)
-            return x
 
         X = np.stack(self.get_attributes('embedding'))
         Y = np.stack(darray.get_attributes('embedding'))
-        limit = min(limit, len(darray))
 
-        dists = _compute_distances(X, Y, metric)
-        idx, dist = self._get_sorted_smallest_k(dists, limit)
-        dist = invert_if_score(dist)
-
-        for _q, _ids, _dists in zip(self, idx, dist):
-            for _id, _dist in zip(_ids, _dists):
-                d = Document(darray[int(_id)], copy=True)
-                d.scores[metric] = _dist
-                _q.matches.append(d)
-
-    @staticmethod
-    def _get_sorted_smallest_k(
-        dists: 'np.ndarray', top_k: int
-    ) -> Tuple['np.ndarray', 'np.ndarray']:
-        """Finds the smallest `top_k` values (and its indices) from `dists`. Returns both indices and values.
-
-        :param dists: np.ndarray of distances
-        :param top_k: number of values to retrieve
-        :return: Lowest values in dists and the indices of those values
-        """
-        if top_k >= dists.shape[1]:
-            indices = dists.argsort(axis=1)[:, :top_k]
-            dists = np.take_along_axis(dists, indices, axis=1)
+        if isinstance(metric, str):
+            if use_scipy:
+                from scipy.spatial.distance import cdist
+            else:
+                from ...math.distance import cdist
+            dists = cdist(X, Y, metric)
+        elif callable(metric):
+            dists = metric(X, Y)
         else:
-            indices_ps = dists.argpartition(kth=top_k, axis=1)[:, :top_k]
-            dists = np.take_along_axis(dists, indices_ps, axis=1)
-            indices_fs = dists.argsort(axis=1)
-            indices = np.take_along_axis(indices_ps, indices_fs, axis=1)
-            dists = np.take_along_axis(dists, indices_fs, axis=1)
+            raise TypeError(
+                f'metric must be either string or a 2-arity function, received: {metric!r}'
+            )
 
-        return indices, dists
+        dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
+        if normalization is not None:
+            if isinstance(normalization, (tuple, list)):
+                dist = minmax_normalize(dist, normalization)
 
+        m_name = metric_name or (metric.__name__ if callable(metric) else metric)
+        for _q, _ids, _dists in zip(self, idx, dist):
+            _q.matches.clear()
+            for _id, _dist in zip(_ids, _dists):
+                # Note, when match self with other, or both of them share the same Document
+                # we might have recursive matches .
+                # checkout https://github.com/jina-ai/jina/issues/3034
+                d = darray[int(_id)]
+                if d.id in self:
+                    d = Document(d, copy=True)
+                    d.pop('matches')
+                _q.matches.append(d, scores={m_name: _dist}, copy=False)
 
-def _compute_distances(x: 'np.ndarray', y: 'np.ndarray', metric: str) -> 'np.ndarray':
-    """Computes the distance between each row of X and each row on Y according to `metric`.
-    - Let `n_X = X.shape[0]`
-    - Let `n_Y = Y.shape[0]`
-    - Returns a matrix `dist` of shape `(n_X, n_Y)` with `dist[i,j] = metric(X[i], X[j])`.
-    :param x: np.ndarray of ndim 2
-    :param y:  np.ndarray of ndim 2
-    :param metric: string describing the metric type
-    :return: np.ndarray of ndim 2
-    """
-    if metric == 'cosine':
-        dists = _cosine_distance(x, y)
-    elif metric == 'euclidean_squared':
-        dists = _euclidean_distance_squared(x, y)
-    elif metric == 'euclidean':
-        dists = np.sqrt(_euclidean_distance_squared(x, y))
-    else:
-        raise ValueError(f'Input metric={metric} not valid')
-    return dists
+    def visualize(
+        self,
+        colored_tag: Optional[str] = None,
+        output: Optional[str] = None,
+        title: Optional[str] = None,
+        colormap: str = 'rainbow',
+        show_axis: bool = False,
+    ):
+        """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
 
+        If `tag_name` is provided the plot uses a distinct color for each unique tag value in the
+        documents of the DocumentArray.
 
-def _cosine_distance(x: 'np.ndarray', y: 'np.ndarray') -> 'np.ndarray':
-    """Cosine distance between each row in X and each row in Y.
-    :param x: np.ndarray with ndim=2
-    :param y: np.ndarray with ndim=2
-    :return: np.ndarray  with ndim=2
-    """
-    return 1 - np.dot(x, y.T) / np.outer(
-        np.linalg.norm(x, axis=1), np.linalg.norm(y, axis=1)
-    )
+        :param colored_tag: Optional str that specifies tag used to color the plot
+        :param output: Optional path to store the visualization. If not given, show in UI
+        :param title: Optional title of the plot. When not given, the default title is used.
+        :param colormap: the colormap string supported by matplotlib.
+        :param show_axis: If set, axis and bounding box of the plot will be printed.
 
+        """
 
-def _euclidean_distance_squared(x: 'np.ndarray', y: 'np.ndarray') -> 'np.ndarray':
-    """Euclidean (squared) distance between each row in X and each row in Y.
-    :param x: np.ndarray with ndim=2
-    :param y: np.ndarray with ndim=2
-    :return: np.ndarray with ndim=2
-    """
-    return (
-        np.sum(y ** 2, axis=1)
-        + np.sum(x ** 2, axis=1)[:, np.newaxis]
-        - 2 * np.dot(x, y.T)
-    )
+        x_mat = np.stack(self.get_attributes('embedding'))
+        assert isinstance(
+            x_mat, np.ndarray
+        ), f'Type {type(x_mat)} not currently supported, use np.ndarray embeddings'
+
+        x_mat_2d = PCA(n_components=2).fit_transform(x_mat)
+
+        plt_kwargs = {
+            'x': x_mat_2d[:, 0],
+            'y': x_mat_2d[:, 1],
+            'alpha': 0.2,
+            'marker': '.',
+        }
+
+        with ImportExtensions(required=True):
+            import matplotlib.pyplot as plt
+
+        plt.figure(figsize=(8, 8))
+        plt.title(title or f'{len(x_mat)} Documents with PCA')
+
+        if colored_tag:
+            tags = [x[colored_tag] for x in self.get_attributes('tags')]
+            tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
+            plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
+            plt_kwargs['cmap'] = plt.get_cmap(colormap)
+
+        plt.scatter(**plt_kwargs)
+
+        if not show_axis:
+            plt.gca().set_axis_off()
+            plt.gca().xaxis.set_major_locator(plt.NullLocator())
+            plt.gca().yaxis.set_major_locator(plt.NullLocator())
+
+        if output:
+            plt.savefig(output, bbox_inches='tight', pad_inches=0.1)
+        else:
+            plt.show()

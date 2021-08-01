@@ -1,8 +1,7 @@
-from typing import Tuple, Dict
+from typing import Dict
 
 import numpy as np
-
-from jina import Executor, DocumentArray, requests, Document
+from jina import Executor, DocumentArray, requests
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
 
@@ -35,7 +34,7 @@ class MyIndexer(Executor):
         docs.match(
             self._docs,
             metric='cosine',
-            is_distance=False,
+            normalization=(1, 0),
             limit=int(parameters['top_k']),
         )
 
@@ -65,9 +64,10 @@ class MyEncoder(Executor):
         # content.shape=(request_size, 28, 28, 3)
         content = content[:, :, :, 0].reshape(-1, 784)
         # content.shape=(request_size, 784)
-        embeds = (content.reshape([-1, 784]) / 255) @ self.oth_mat
-        for doc, embed in zip(docs, embeds):
+        embeds = (content / 255) @ self.oth_mat
+        for doc, embed, cont in zip(docs, embeds, content):
             doc.embedding = embed
+            doc.content = cont
             doc.convert_image_blob_to_uri(width=28, height=28)
             doc.pop('blob')
 

@@ -69,12 +69,12 @@ def get_client(port):
 
 def get_documents(count=10, emb_size=7):
     for i in range(count):
-        with Document() as d:
-            d.id = i
-            d.text = f'hello world {i}'
-            d.embedding = np.random.random(emb_size)
-            d.tags['tag_field'] = f'tag data {i}'
-        yield d
+        yield Document(
+            id=i,
+            text=f'hello world {i}',
+            embedding=np.random.random(emb_size),
+            tags={'tag_field': f'tag data {i}'},
+        )
 
 
 def path_size(dump_path):

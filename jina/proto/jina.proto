@@ -84,9 +84,6 @@ message DocumentProto {
     // A hexdigest that represents a unique document ID
     string id = 1;
 
-    // A hexdigest that represents the hash of the content of the document
-    string content_hash = 24;
-
     // the depth of the recursive chunk structure
     uint32 granularity = 14;
 

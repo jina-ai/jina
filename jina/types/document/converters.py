@@ -6,7 +6,6 @@ import numpy as np
 
 def _png_to_buffer_1d(arr: 'np.ndarray', width: int, height: int) -> bytes:
     pixels = []
-    arr = 255 - arr
     for p in arr[::-1]:
         pixels.extend([p, p, p, 255])
     buf = bytearray(pixels)

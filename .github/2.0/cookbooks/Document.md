@@ -52,6 +52,9 @@ Table of Contents
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
   - [Access nested attributes from tags](#access-nested-attributes-from-tags)
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
+  - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
+  - [Random sample a subset of Documents from a `DocumentArray` using `sample`](#random-sample-a-subset-of-documents-from-a-documentarray-using-sample)
+  - [Shuffle the `DocumentArray` using `shuffle`](#shuffle-the-documentarray-using-shuffle)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
   - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
@@ -959,10 +962,10 @@ The following image shows how `DocumentArrayA` finds `limit=5` matches from the 
 
 ![match_illustration_5](https://github.com/jina-ai/jina/blob/master/.github/images/match_illustration_5.svg)
 
-More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, is_distance=True, limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
+More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
 
-- `metric` can be `'cosine'`, `'euclidean'`,  `'euclidean_squared'` 
--  `is_distance=True` interprets the input metric as a distance (lower metric values imply closer elements), otherwise it is considered a similairty  (higher metric values imply closer elements).
+- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` 
+- `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
 
 The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from the elements in `da_2`.
 
@@ -984,14 +987,14 @@ d5_m = Document(embedding=np.array([4,5.2,2,1,0]))
 da_1  = DocumentArray([d1, d2, d3, d4])
 da_2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
 
-da_1.match(da_2, metric='euclidean', is_distance=True, limit=3)
+da_1.match(da_2, metric='euclidean', limit=3)
 query = da_1[2]
 print(f'query emb = {query.embedding}')
 for m in query.matches:
-    print('match emb ='m.embedding, 'score =', m.scores['euclidean'].value)
+    print('match emb =', m.embedding, 'score =', m.scores['euclidean'].value)
 ```
 
-```python
+```text
 executed in 12ms, finished 11:28:38 2021-07-22
 query emb = [1 1 1 1 0]
 match emb = [1.  1.2 1.  1.  0. ] score = 0.20000000298023224
@@ -999,6 +1002,92 @@ match emb = [1.  2.2 2.  1.  0. ] score = 1.5620499849319458
 match emb = [1.  0.1 0.  0.  0. ] score = 1.6763054132461548
 ```
 
+
+
+### Selecting a subset of Documents from a `DocumentArray` using `.find`
+
+`DocumentArray` provides function `.find` that finds the documents in the `DocumentArray`  whose tag values match a dictionary of user provided regular expressions. Since a `Document` can have many tags, the function expects one regular expression for each tag that a user wants to consider.
+
+The simplest way to use this function is to provide only  the `regexes` dict. In this case, documents will be selected if all regular expressions passed are matched. Sometimes, a user might want to be less restrictive and might want to select documents only if a subset of the regular expressions is verified. In this case, `threshold` can be used to set the number of regular expressions that need to be matched in order to select a document.
+
+Let us consider the following example, where we want to select documents form a `DocumentArray` if the `city` tag contains a city that starts with `'B'`.
+
+```python
+d1 = Document(tags={'city': 'Barcelona', 'phone':'None'})
+d2 = Document(tags={'city': 'Berlin','phone':'648907348'})
+d3 = Document(tags={'city': 'Paris', 'phone': 'None'})
+d4 = Document(tags={'city': 'Brussels', 'phone': 'None'})
+
+docarray = DocumentArray([d1, d2, d3, d4])
+
+regexes = {'city':r'B.*'}
+docarray_filtered = docarray.find(regexes=regexes)
+print(f'len(docarray_filtered)={len(docarray_filtered)}')
+for d in docarray_filtered:
+    print(f'dict(d.tags)={dict(d.tags)}')
+```
+
+Will print
+
+```python
+len(docarray_filtered)=3
+dict(d.tags)={'phone': 'None', 'city': 'Barcelona'}
+dict(d.tags)={'phone': '648907348', 'city': 'Berlin'}
+dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
+```
+
+We can consider more conditions, for example a subset of the previous documents that have `None` in the `'phone'` tag. We could do this as follows:
+
+```python
+regexes = {'city':r'B.*', 'phone':'None' }
+docarray_filtered = docarray.find(regexes=regexes)
+print(f'len(docarray_filtered)={len(docarray_filtered)}')
+for d in docarray_filtered:
+    print(f'dict(d.tags)={dict(d.tags)}')
+```
+
+Will print
+
+```
+len(docarray_filtered)=2
+dict(d.tags)={'city': 'Barcelona', 'phone': 'None'}
+dict(d.tags)={'phone': 'None', 'city': 'Brussels'}
+```
+
+### Random sample a subset of Documents from a `DocumentArray` using `sample`
+
+`DocumentArray` provides function `.sample` that sample `k` elements without replacement.
+It accepts 2 parameters, `k` and `seed`. `k` is used to define the number of elements to sample, and `seed`
+helps you generate pseudo random results. It should be noted that `k` should always less or equal than the length of the document array.
+
+To make use of the function:
+
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random document array
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 documents into `da`
+sampled_da = da.sample(k=10)  # sample 10 documents
+sampled_da_with_seed = da.sample(k=10, seed=1)  # sample 10 documents with seed.
+```
+
+### Shuffle the `DocumentArray` using `shuffle`
+
+`DocumentArray` provides function `.shuffle` that shuffle the entire `DocumentArray`.
+It accepts the parameter `seed`.  `seed` helps you generate pseudo random results. By default, `seed` is None.
+
+To make use of the function:
+
+```python
+from jina import Document, DocumentArray
+
+da = DocumentArray()  # initialize a random document array
+for idx in range(100):
+    da.append(Document(id=idx))  # append 100 documents into `da`
+shuffled_da = da.shuffle()  # shuffle the DocumentArray
+shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
+```
 
 
 ## `DocumentArrayMemmap` API
@@ -1118,6 +1207,9 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `__bool__` |✅|✅|
 | `__eq__` |✅|✅|
 | `save`, `load` |❌ unnecessary |✅|
+| `sample` |✅ |✅|
+| `shuffle` |✅ |✅|
+| `match` |❌|✅|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 
