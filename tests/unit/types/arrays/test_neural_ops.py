@@ -276,7 +276,7 @@ def test_pca_projection(embeddings, whiten):
 def test_pca_plot_generated(embeddings, tmpdir):
     doc_array = DocumentArray([Document(embedding=x) for x in embeddings])
     file_path = os.path.join(tmpdir, 'pca_plot.png')
-    doc_array.visualize(file_path=file_path)
+    doc_array.visualize(output=file_path)
     assert os.path.exists(file_path)
 
 
