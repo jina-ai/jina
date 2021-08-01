@@ -397,6 +397,8 @@ def test_cache_invalidation_sort_reverse(docarray_for_cache):
 
 def test_sample():
     da = DocumentArray(random_docs(100))
+    sampled = da.sample(1)
+    assert len(sampled) == 1
     sampled = da.sample(5)
     assert len(sampled) == 5
     assert isinstance(sampled, DocumentArray)

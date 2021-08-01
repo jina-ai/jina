@@ -15,6 +15,7 @@ from typing import (
     BinaryIO,
     TypeVar,
     Dict,
+    Sequence,
 )
 
 from .neural_ops import DocumentArrayNeuralOpsMixin
@@ -40,8 +41,9 @@ __all__ = ['DocumentArray', 'DocumentArrayGetAttrMixin']
 DocumentArraySourceType = TypeVar(
     'DocumentArraySourceType',
     jina_pb2.DocumentArrayProto,
-    List[Document],
-    List[jina_pb2.DocumentProto],
+    Sequence[Document],
+    Sequence[jina_pb2.DocumentProto],
+    Document,
 )
 
 
@@ -133,9 +135,13 @@ class DocumentArray(
                 # This would happen in the client
                 self._pb_body = docs._pb_body
             else:
+                if isinstance(docs, Document):
+                    # single Document
+                    docs = [docs]
+
                 from .memmap import DocumentArrayMemmap
 
-                if isinstance(docs, (list, Generator, DocumentArrayMemmap)):
+                if isinstance(docs, (list, tuple, Generator, DocumentArrayMemmap)):
                     # This would happen in the client
                     for doc in docs:
                         if isinstance(doc, Document):
@@ -173,6 +179,7 @@ class DocumentArray(
     def __setitem__(self, key, value: 'Document'):
         if isinstance(key, int):
             self[key].CopyFrom(value)
+            self._id_to_index[value.id] = key
         elif isinstance(key, str):
             self[self._id_to_index[key]].CopyFrom(value)
         else:
@@ -236,8 +243,8 @@ class DocumentArray(
 
         :param doc: The doc needs to be appended.
         """
-        self._pb_body.append(doc.proto)
         self._id_to_index[doc.id] = len(self._pb_body)
+        self._pb_body.append(doc.proto)
 
     def extend(self, iterable: Iterable['Document']) -> None:
         """
