@@ -456,17 +456,18 @@ all values will be rescaled into range <cite>[a, b]</cite>.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">
-<code class="sig-name descname"><span class="pre">visualize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOpsMixin.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Visualize embeddings in a 2D projection with the PCA algorithm.</p>
+<code class="sig-name descname"><span class="pre">visualize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colored_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rainbow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOpsMixin.visualize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize embeddings in a 2D projection with the PCA algorithm. This function requires <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> installed.</p>
 <p>If <cite>tag_name</cite> is provided the plot uses a distinct color for each unique tag value in the
 documents of the DocumentArray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tag_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional str that specifies tag used to color the plot</p></li>
-<li><p><strong>file_path</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional path to store the visualization.</p></li>
-<li><p><strong>alpha</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Float in [0,1] defining transparency of the dots in the plot.
-Value 0 is invisible, value 1 is opaque.</p></li>
+<li><p><strong>colored_tag</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional str that specifies tag used to color the plot</p></li>
+<li><p><strong>output</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional path to store the visualization. If not given, show in UI</p></li>
+<li><p><strong>title</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional title of the plot. When not given, the default title is used.</p></li>
+<li><p><strong>colormap</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the colormap string supported by matplotlib.</p></li>
+<li><p><strong>show_axis</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If set, axis and bounding box of the plot will be printed.</p></li>
 </ul>
 </dd>
 </dl>
@@ -503,7 +504,7 @@ Value 0 is invisible, value 1 is opaque.</p></li>
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Jul 31, 2021.
+            Last updated on Aug 01, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
