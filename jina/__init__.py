@@ -9,7 +9,6 @@ sub-modules, as described below.
 
 import datetime as _datetime
 import os as _os
-import platform as _platform
 import signal as _signal
 import sys as _sys
 import types as _types
@@ -18,12 +17,12 @@ if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
 # DO SOME OS-WISE PATCHES
-if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
-    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
-    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+_start_method = _os.environ.get('JINA_MP_START_METHOD', None)
+
+if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
     from multiprocessing import set_start_method as _set_start_method
 
-    _set_start_method('fork')
+    _set_start_method(_start_method.lower())
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
@@ -63,6 +62,7 @@ __jina_env__ = (
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
+    'JINA_MP_START_METHOD',
 )
 
 __default_host__ = _os.environ.get('JINA_DEFAULT_HOST', '0.0.0.0')
@@ -77,7 +77,6 @@ __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
 )
-
 
 _names_with_underscore = [
     '__version__',
@@ -94,14 +93,12 @@ _names_with_underscore = [
     '__unset_msg__',
 ]
 
-
 # ADD GLOBAL NAMESPACE VARIABLES
 JINA_GLOBAL = _types.SimpleNamespace()
 JINA_GLOBAL.scipy_installed = None
 JINA_GLOBAL.tensorflow_installed = None
 JINA_GLOBAL.torch_installed = None
 JINA_GLOBAL.dgl_installed = None
-
 
 _signal.signal(_signal.SIGINT, _signal.default_int_handler)
 

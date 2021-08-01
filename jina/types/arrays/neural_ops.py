@@ -2,8 +2,8 @@ from math import inf
 from typing import Optional, Union, Callable, Tuple
 
 import numpy as np
-from jina import Document
 
+from ... import Document
 from ...importer import ImportExtensions
 from ...math.dimensionality_reduction import PCA
 from ...math.helper import top_k, minmax_normalize
@@ -57,7 +57,6 @@ class DocumentArrayNeuralOpsMixin:
 
         X = np.stack(self.get_attributes('embedding'))
         Y = np.stack(darray.get_attributes('embedding'))
-        limit = min(limit, len(darray))
 
         if isinstance(metric, str):
             if use_scipy:
@@ -72,7 +71,7 @@ class DocumentArrayNeuralOpsMixin:
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
             )
 
-        dist, idx = top_k(dists, limit, descending=False)
+        dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if normalization is not None:
             if isinstance(normalization, (tuple, list)):
                 dist = minmax_normalize(dist, normalization)
