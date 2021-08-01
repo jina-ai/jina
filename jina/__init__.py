@@ -12,17 +12,31 @@ import os as _os
 import signal as _signal
 import sys as _sys
 import types as _types
+import warnings as _warnings
+
+
+def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
+    return '\033[1;33m%s: %s\033[0m \033[1;30m(raised from %s:%s)\033[0m\n' % (
+        category.__name__,
+        message,
+        filename,
+        lineno,
+    )
+
+
+_warnings.formatwarning = _warning_on_one_line
 
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
-# DO SOME OS-WISE PATCHES
 _start_method = _os.environ.get('JINA_MP_START_METHOD', None)
 
 if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
     from multiprocessing import set_start_method as _set_start_method
 
     _set_start_method(_start_method.lower())
+    _warnings.warn(f'multiprocessing start method is set to `{_start_method.lower()}`')
+    _os.unsetenv('JINA_MP_START_METHOD')
 
 # fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
 _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
