@@ -15,6 +15,7 @@ In this guide, we're going to go through the steps for each kind of contribution
 - [🥇 Making Your First Submission](#-making-your-first-submission)
 - [☑️ Naming Conventions](#-naming-conventions)
 - [💥 Testing Jina Locally and on CI](#-testing-jina-locally-and-on-ci)
+- [📖 Contributing Documentation](#-contributing-documentation)
 - [🙏 Thank You](#-thank-you)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
