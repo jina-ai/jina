@@ -40,6 +40,17 @@ def test_all_cli(cli):
     subprocess.check_call(['jina', cli, '--help'])
 
 
+@pytest.mark.parametrize('smethod', ['fork', 'spawn'])
+def test_all_start_method(smethod):
+    s = subprocess.check_output(
+        ['jina', '-v'],
+        env=dict(os.environ, JINA_MP_START_METHOD=smethod),
+        stderr=subprocess.STDOUT,
+    )
+    assert 'UserWarning' in s.decode()
+    assert smethod in s.decode()
+
+
 def test_parse_env_map():
     a = set_pod_parser().parse_args(['--env', 'key1=value1', '--env', 'key2=value2'])
     assert a.env == {'key1': 'value1', 'key2': 'value2'}
