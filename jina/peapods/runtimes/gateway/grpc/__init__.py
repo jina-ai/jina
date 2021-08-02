@@ -42,7 +42,7 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         self.zmqlet = AsyncZmqlet(self.args, logger=self.logger)
         self._prefetcher = GRPCPrefetchCall(self.args, self.zmqlet)
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self._prefetcher, self.server)
-        bind_addr = f'{self.args.host}:{self.args.port_expose}'
+        bind_addr = f'0.0.0.0:{self.args.port_expose}'
         self.server.add_insecure_port(bind_addr)
         await self.server.start()
 

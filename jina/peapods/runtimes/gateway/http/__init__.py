@@ -50,7 +50,7 @@ class HTTPRuntime(AsyncNewLoopRuntime):
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
-                host=self.args.host,
+                host='0.0.0.0',
                 port=self.args.port_expose,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
             )
