@@ -61,10 +61,7 @@ class DocumentArrayGetAttrMixin:
         :return: Returns a list of the values for these fields.
             When `fields` has multiple values, then it returns a list of list.
         """
-        contents = []
-
-        for doc in self:
-            contents.append(doc.get_attributes(*fields))
+        contents = [doc.get_attributes(*fields) for doc in self]
 
         if len(fields) > 1:
             contents = list(map(list, zip(*contents)))
