@@ -10,7 +10,7 @@ from scipy.spatial.distance import cdist
 
 
 @pytest.mark.parametrize(
-    'func,data_type',
+    "func,data_type",
     [
         (cosine, np.array),
         (sparse_sqeuclidean, sp.csr_matrix),
@@ -32,7 +32,7 @@ def test_euclidean_distance_squared(func, data_type, embeddings, embedding_query
 
 
 @pytest.mark.parametrize(
-    'func,data_type',
+    "func,data_type",
     [
         (cosine, np.array),
         (sparse_cosine, sp.csr_matrix),
@@ -53,20 +53,20 @@ def test_cosine_distance_squared(func, data_type, embeddings, embedding_query):
 
 
 @pytest.mark.parametrize(
-    'metric, sparse_type',
+    "metric, sparse_type",
     [
-        ('cosine', sp.csr_matrix),
-        ('cosine', sp.csc_matrix),
-        ('cosine', sp.coo_matrix),
-        ('cosine', sp.csr_matrix),
-        ('sqeuclidean', sp.csr_matrix),
-        ('sqeuclidean', sp.csc_matrix),
-        ('sqeuclidean', sp.coo_matrix),
-        ('sqeuclidean', sp.csr_matrix),
-        ('euclidean', sp.csr_matrix),
-        ('euclidean', sp.csc_matrix),
-        ('euclidean', sp.coo_matrix),
-        ('euclidean', sp.csr_matrix),
+        ("cosine", sp.csr_matrix),
+        ("cosine", sp.csc_matrix),
+        ("cosine", sp.coo_matrix),
+        ("cosine", sp.csr_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("sqeuclidean", sp.csc_matrix),
+        ("sqeuclidean", sp.coo_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("euclidean", sp.csr_matrix),
+        ("euclidean", sp.csc_matrix),
+        ("euclidean", sp.coo_matrix),
+        ("euclidean", sp.csr_matrix),
     ],
 )
 def test_cdist(metric, sparse_type, embeddings, other_embeddings):
@@ -143,11 +143,11 @@ def test_new_distances_equal_scipy_cdist():
     X = np.array([[1, 1, 1], [4, 5, 6], [0, 1, 2]])
     Y = np.array([[1, 1, 2], [2, 3, 4]])
 
-    XY_cdist = cdist(X, Y, metric='euclidean')
+    XY_cdist = cdist(X, Y, metric="euclidean")
     XY_new = np.sqrt(sqeuclidean(X, Y))
     np.testing.assert_almost_equal(XY_cdist, XY_new)
 
-    XY_cdist = cdist(X, Y, metric='cosine')
+    XY_cdist = cdist(X, Y, metric="cosine")
     XY_new = cosine(X, Y)
     np.testing.assert_almost_equal(XY_cdist, XY_new)
 
@@ -164,4 +164,3 @@ def test_minmax_normalization_2d():
     np.testing.assert_almost_equal(
         minmax_normalize(a, (1, 0)), [[1, 0.5, 0], [0, 0.5, 1]]
     )
-
