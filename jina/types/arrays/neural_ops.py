@@ -7,6 +7,8 @@ from ... import Document
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize
 
+from jina.logging.predefined import default_logger
+
 if False:
     from .document import DocumentArray
     from .memmap import DocumentArrayMemmap
@@ -53,16 +55,35 @@ class DocumentArrayNeuralOpsMixin:
         :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
         """
+        is_sparse = False
+        if isinstance(self.get_attributes('embedding')[0], np.ndarray):
+            X = np.stack(self.get_attributes('embedding'))
+            Y = np.stack(darray.get_attributes('embedding'))
+        else:
+            import scipy.sparse as sp
 
-        X = np.stack(self.get_attributes('embedding'))
-        Y = np.stack(darray.get_attributes('embedding'))
+            if sp.issparse(self.get_attributes('embedding')[0]):
+                X = sp.vstack(self.get_attributes('embedding'))
+                Y = sp.vstack(darray.get_attributes('embedding'))
+                is_sparse = True
 
+        limit = min(limit, len(darray))
         if isinstance(metric, str):
-            if use_scipy:
+
+            if use_scipy and is_sparse is False:
+                # cdist from scipy does not support sparse arrays
                 from scipy.spatial.distance import cdist
+
+                dists = cdist(X, Y, metric)
             else:
+                if use_scipy:
+                    default_logger.info(
+                        f'Scipy cdist does not support sparse arrays, using Jina.math.distances sparse cdist'
+                    )
                 from ...math.distance import cdist
-            dists = cdist(X, Y, metric)
+
+                dists = cdist(X, Y, metric, is_sparse=is_sparse)
+
         elif callable(metric):
             dists = metric(X, Y)
         else:
@@ -71,6 +92,7 @@ class DocumentArrayNeuralOpsMixin:
             )
 
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
+
         if normalization is not None:
             if isinstance(normalization, (tuple, list)):
                 dist = minmax_normalize(dist, normalization)
