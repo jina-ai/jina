@@ -5,7 +5,6 @@ import numpy as np
 
 from ... import Document
 from ...importer import ImportExtensions
-from ...math.dimensionality_reduction import PCA
 from ...math.helper import top_k, minmax_normalize
 
 if False:
@@ -91,10 +90,11 @@ class DocumentArrayNeuralOpsMixin:
 
     def visualize(
         self,
-        colored_tag: Optional[str] = None,
         output: Optional[str] = None,
         title: Optional[str] = None,
+        colored_tag: Optional[str] = None,
         colormap: str = 'rainbow',
+        method: str = 'pca',
         show_axis: bool = False,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
@@ -102,10 +102,11 @@ class DocumentArrayNeuralOpsMixin:
         If `tag_name` is provided the plot uses a distinct color for each unique tag value in the
         documents of the DocumentArray.
 
-        :param colored_tag: Optional str that specifies tag used to color the plot
         :param output: Optional path to store the visualization. If not given, show in UI
         :param title: Optional title of the plot. When not given, the default title is used.
+        :param colored_tag: Optional str that specifies tag used to color the plot
         :param colormap: the colormap string supported by matplotlib.
+        :param method: the visualization method, available `pca`, `tsne`. `tsne` requires scikit-learn to be installed
         :param show_axis: If set, axis and bounding box of the plot will be printed.
 
         """
@@ -115,7 +116,14 @@ class DocumentArrayNeuralOpsMixin:
             x_mat, np.ndarray
         ), f'Type {type(x_mat)} not currently supported, use np.ndarray embeddings'
 
-        x_mat_2d = PCA(n_components=2).fit_transform(x_mat)
+        if method == 'tsne':
+            from sklearn.manifold import TSNE
+
+            x_mat_2d = TSNE(n_components=2).fit_transform(x_mat)
+        else:
+            from ...math.dimensionality_reduction import PCA
+
+            x_mat_2d = PCA(n_components=2).fit_transform(x_mat)
 
         plt_kwargs = {
             'x': x_mat_2d[:, 0],
