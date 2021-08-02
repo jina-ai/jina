@@ -1094,3 +1094,11 @@ def test_tags_update_nested_lists():
     assert d.tags['hey']['list'][1] is True
     assert d.tags['hey']['list'][2]['inlist'] == 'not here'
     assert d.tags['hoy'][0] == 1
+
+
+def test_empty_sparse_array():
+    matrix = csr_matrix([[0, 0, 0, 0, 0]])
+    doc = Document()
+    doc.embedding = matrix
+    assert isinstance(doc.embedding, coo_matrix)
+    assert (doc.embedding != matrix).nnz == 0
