@@ -56,13 +56,13 @@ class DocumentArrayNeuralOpsMixin:
         :param metric_name: if provided, then match result will be marked with this string.
         """
         is_sparse = False
-        if isinstance(sel.get_attributes('embedding')[0], np.ndarray):
+        if isinstance(self.get_attributes('embedding')[0], np.ndarray):
             X = np.stack(self.get_attributes('embedding'))
             Y = np.stack(darray.get_attributes('embedding'))
         else:
             import scipy.sparse as sp
 
-            if scipy.sparse.issparse(sel.get_attributes('embedding')[0]):
+            if scipy.sparse.issparse(self.get_attributes('embedding')[0]):
                 X = sp.vstack(self.get_attributes('embedding'))
                 Y = sp.vstack(darray.get_attributes('embedding'))
                 is_sparse = True
