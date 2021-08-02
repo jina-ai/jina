@@ -26,7 +26,6 @@ class DocumentArrayNeuralOpsMixin:
         limit: Optional[int] = inf,
         normalization: Optional[Tuple[int, int]] = None,
         use_scipy: bool = False,
-        is_sparse: bool = False,
         metric_name: Optional[str] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
@@ -54,16 +53,19 @@ class DocumentArrayNeuralOpsMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param use_scipy: use Scipy as the computation backend
-        :param is_sparse: boolean stating if input is a scipy.sparse object.
         :param metric_name: if provided, then match result will be marked with this string.
         """
-        if is_sparse is False:
+        is_sparse = False
+        if isinstance(sel.get_attributes('embedding')[0], np.ndarray):
             X = np.stack(self.get_attributes('embedding'))
             Y = np.stack(darray.get_attributes('embedding'))
         else:
             import scipy.sparse as sp
-            X = sp.vstack(self.get_attributes('embedding'))
-            Y = sp.vstack(darray.get_attributes('embedding'))
+
+            if scipy.sparse.issparse(sel.get_attributes('embedding')[0]):
+                X = sp.vstack(self.get_attributes('embedding'))
+                Y = sp.vstack(darray.get_attributes('embedding'))
+                is_sparse = True
 
         limit = min(limit, len(darray))
         if isinstance(metric, str):
