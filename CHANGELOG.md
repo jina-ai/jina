@@ -79,6 +79,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9885,4 +9886,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b0b50bef```](https://github.com/jina-ai/jina/commit/b0b50bef25ef06026bc056c3536f0d40437e7f60)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```e7e08852```](https://github.com/jina-ai/jina/commit/e7e08852cf4ece53d645c8e510ac909d2609fa3a)] __-__ update cookbook (*Han Xiao*)
  - [[```76cfb37b```](https://github.com/jina-ai/jina/commit/76cfb37b4d26d0d7ec6f2e48c90ada7efdfe7fde)] __-__ __version__: the next version will be 2.0.14 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-15></a>
+## Release Note (`2.0.15`)
+
+> Release time: 2021-08-02 02:30:24
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```868d87b6```](https://github.com/jina-ai/jina/commit/868d87b6664022ae8b82dca5df1f42d41f7c0f6f)] __-__ __types__: add tsne algorithm to visualization (#3063) (*Han Xiao*)
+ - [[```999b4fa9```](https://github.com/jina-ai/jina/commit/999b4fa9f54cb9ee56fa09d74ebe2269044fad0d)] __-__ add env JINA_MP_START_METHOD for changing mp start_method (#3062) (*Han Xiao*)
+ - [[```dfc474e6```](https://github.com/jina-ai/jina/commit/dfc474e69197eff9d10aaee40324bf8165378f0f)] __-__ __types__: improve usability of visualize function (#3059) (*Han Xiao*)
+
+### ⚡ Performance Improvements
+
+ - [[```4543fcaf```](https://github.com/jina-ai/jina/commit/4543fcaf8fbceb077262d6c828738eab7f32e113)] __-__ __types__: remove cache_invalidator in DA for better performance (#3060) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```3d33a39f```](https://github.com/jina-ai/jina/commit/3d33a39f7ba3eed233b0746468dd1fee2a9b430c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```001f4c61```](https://github.com/jina-ai/jina/commit/001f4c61fec88e90d41d8987a2dcf25cbd8cca4b)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```f59930d5```](https://github.com/jina-ai/jina/commit/f59930d584e66a0b86936879910b72b7780915bd)] __-__ update readme and contributing guide (*Han Xiao*)
+ - [[```f9255586```](https://github.com/jina-ai/jina/commit/f9255586a7b196da122d1e37f8633c08085c5ddd)] __-__ remove google colab button (*Han Xiao*)
+ - [[```e420e22b```](https://github.com/jina-ai/jina/commit/e420e22b6159ca878049e55b0b9ffc48f9cb7ad7)] __-__ __version__: the next version will be 2.0.15 (*Jina Dev Bot*)
 
