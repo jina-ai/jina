@@ -393,6 +393,8 @@
 <div class="viewcode-block" id="minmax_normalize"><a class="viewcode-back" href="../../../../api/jina.math.helper/#jina.math.helper.minmax_normalize">[docs]</a><span class="k">def</span> <span class="nf">minmax_normalize</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="n">t_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
     <span class="sd">"""Normalize values in `x` into `t_range`.</span>
 
+<span class="sd">    `x` can be a 1D array or a 2D array. When `x` is a 2D array, then normalization is row-based.</span>
+
 <span class="sd">    .. note::</span>
 <span class="sd">        - with `t_range=(0, 1)` will normalize the min-value of the data to 0, max to 1;</span>
 <span class="sd">        - with `t_range=(1, 0)` will normalize the min-value of the data to 1, max value of the data to 0.</span>
@@ -401,8 +403,8 @@
 <span class="sd">    :param t_range: a tuple represents the target range.</span>
 <span class="sd">    :return: normalized data in `t_range`</span>
 <span class="sd">    """</span>
-    <span class="n">min_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">max_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">min_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">max_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">t_range</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">max_d</span> <span class="o">-</span> <span class="n">min_d</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span></div>
 
