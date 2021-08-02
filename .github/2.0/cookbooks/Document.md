@@ -85,7 +85,7 @@ A `Document` object has the following attributes, which can be put into the foll
 | | |
 |---|---|
 | Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
-| Meta attributes | `.id`, `.weight`, `.mime_type`, `.location`, `.tags`, `.offset`, `.modality`, `siblings` |
+| Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.tags`, `.modality` |
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
@@ -151,7 +151,7 @@ d4 = Document(content='https://static.jina.ai/logo/core/notext/light/logo.png')
 
 ```text
 <jina.types.document.Document id=2ca74b98-aed9-11eb-b791-1e008a366d48 mimeType=text/plain text=hello at 6247702096>
-<jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= mimeType=text/plain at 6247702160>
+<jina.types.document.Document id=2ca74f1c-aed9-11eb-b791-1e008a366d48 buffer=DDE= at 6247702160>
 <jina.types.document.Document id=2caab594-aed9-11eb-b791-1e008a366d48 blob={'dense': {'buffer': 'AQAAAAAAAAACAAAAAAAAAAMAAAAAAAAA', 'shape': [3], 'dtype': '<i8'}} at 6247702416>
 <jina.types.document.Document id=4c008c40-af9f-11eb-bb84-1e008a366d49 uri=https://static.jina.ai/logo/core/notext/light/logo.png mimeType=image/png at 6252395600>
 ```
@@ -196,6 +196,7 @@ doc.convert_buffer_to_uri()
 doc.convert_text_to_uri()
 doc.convert_uri_to_text()
 ```
+You can use `convert_content_to_uri` to convert the content to URI. This will determine the used `content_type` and use the appropriate conversion method.
 
 You can convert a URI to a data URI (a data in-line URI scheme) using `doc.convert_uri_to_datauri()`. This will fetch the
 resource and make it inline.
@@ -263,10 +264,10 @@ d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 | --- | --- |
 | `doc.tags` | A structured data value, consisting of fields which map to dynamically typed values |
 | `doc.id` | A hexdigest that represents a unique Document ID |
+| `doc.parent_id` | A hexdigest that ehe document's parent id |
 | `doc.weight` | The weight of the Document |
 | `doc.mime_type` | The mime type of the Document |
-| `doc.location` | The position of the Document. This could be start and end index of a string; x,y (top, left) coordinates of an image crop; timestamp of an audio clip, etc |
-| `doc.offset` | The offset of the Document in the previous granularity Document|
+| `doc.content_type` | The content type of the Document |
 | `doc.modality` | An identifier of the modality the Document belongs to|
 
 You can assign multiple attributes in the constructor via:
@@ -384,6 +385,7 @@ format:
 | `from_csv()` | Yield `Document` from a CSV file. Each line is a `Document` object |
 | `from_files()` | Yield `Document` from a glob files. Each file is a `Document` object |
 | `from_ndarray()` | Yield `Document` from a `ndarray`. Each row (depending on `axis`) is a `Document` object |
+| `from_lines()` | Yield `Document` from lines, json and csv |
 
 Using a generator is sometimes less memory-demanding, as it does not load/build all Document objects in one shot.
 
@@ -468,7 +470,7 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
   d.matches.append(Document())
   ```
 
-Note that both `doc.chunks` and `doc.matches` return `DocumentArray`, which we will introduce later.
+Note that both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes of `DocumentArray`. We will introduce `DocumentArray later.
 
 ### Represent `Document` as Dictionary or JSON
 
@@ -596,7 +598,7 @@ d
 ```
 
 ```text
-<jina.types.document.Document id=6c4db2c8-cdf1-11eb-be5d-e86a64801cb1 scores={'values': {'cosine similarity': {'value': 0.96, 'op_name': 'cosine()', 'description': 'cosine similarity'}}} evaluations={'values': {'recall': {'value': 0.56, 'op_name': 'recall()', 'description': 'recall at 10'}}} at 140003211429776>```
+<jina.types.document.Document id=6c4db2c8-cdf1-11eb-be5d-e86a64801cb1 scores={'values': {'cosine similarity': {'value': 0.96, 'op_name': 'cosine()', 'description': 'cosine similarity'}}} evaluations={'recall': {'value': 0.56, 'op_name': 'recall()', 'description': 'recall at 10'}} at 140003211429776>```
 ```
 
 Score information is often used jointly with `matches`. For example, you often see the indexer adding `matches` as
@@ -614,7 +616,7 @@ q.matches.append(m)
 ```
 
 ```text
-<jina.types.document.Document id=1aaba345-cdf1-11eb-be5d-e86a64801cb1 adjacency=1 scores={'values': {'metric': {'value': 0.96, 'ref_id': '1aaba344-cdf1-11eb-be5d-e86a64801cb1'}}} at 140001502011856>
+<jina.types.document.Document id=1aaba345-cdf1-11eb-be5d-e86a64801cb1 adjacency=1 scores={'values': {'metric': {'value': 0.96}}} at 140001502011856>
 ```
 
 These attributes (`scores` and `evaluations`) provide a dict-like interface that lets access all its elements:
@@ -646,8 +648,9 @@ Methods supported by `DocumentArray`:
 
 | | |
 |--- |--- |
-| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort` |
+| Python `list`-like interface | `__getitem__`, `__setitem__`, `__delitem__`, `__len__`, `insert`, `append`, `reverse`, `extend`, `__iadd__`, `__add__`, `__iter__`, `clear`, `sort`, `shuffle`, `sample` |
 | Persistence | `save`, `load` |
+| Neural Search Operations | `match`, `visualize` |
 | Advanced getters | `get_attributes`, `get_attributes_with_docs`, `traverse_flat`, `traverse` |
 
 ### Construct `DocumentArray`
@@ -965,7 +968,7 @@ The following image shows how `DocumentArrayA` finds `limit=5` matches from the 
 
 More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
 
-- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` 
+- `metric` can be `'cosine'`, `'euclidean'`,  `'sqeuclidean'` or a callable that takes 2 `ndarray` parameters and returns an `ndarray`
 - `normalization` is a tuple [a, b] to be used with min-max normalization. The min distance will be rescaled to `a`, the max distance will be rescaled to `b`; all other values will be rescaled into range `[a, b]`.
 
 The following example find the 3 closest documents, according to the euclidean distance, for each element in `da_1` from the elements in `da_2`.
