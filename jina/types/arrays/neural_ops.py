@@ -106,7 +106,9 @@ class DocumentArrayNeuralOpsMixin:
         :param title: Optional title of the plot. When not given, the default title is used.
         :param colored_tag: Optional str that specifies tag used to color the plot
         :param colormap: the colormap string supported by matplotlib.
-        :param method: the visualization method, available `pca`, `tsne`. `tsne` requires scikit-learn to be installed
+        :param method: the visualization method, available `pca`, `tsne`. `pca` is fast but may not well represent
+                nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is
+                much slower.
         :param show_axis: If set, axis and bounding box of the plot will be printed.
 
         """
