@@ -6,6 +6,8 @@ import numpy as np
 def minmax_normalize(x: 'np.ndarray', t_range: Tuple = (0, 1)):
     """Normalize values in `x` into `t_range`.
 
+    `x` can be a 1D array or a 2D array. When `x` is a 2D array, then normalization is row-based.
+
     .. note::
         - with `t_range=(0, 1)` will normalize the min-value of the data to 0, max to 1;
         - with `t_range=(1, 0)` will normalize the min-value of the data to 1, max value of the data to 0.
@@ -14,8 +16,8 @@ def minmax_normalize(x: 'np.ndarray', t_range: Tuple = (0, 1)):
     :param t_range: a tuple represents the target range.
     :return: normalized data in `t_range`
     """
-    min_d = np.min(x)
-    max_d = np.max(x)
+    min_d = np.min(x, axis=-1, keepdims=True)
+    max_d = np.max(x, axis=-1, keepdims=True)
     a, b = t_range
     return (b - a) * (x - min_d) / (max_d - min_d) + a
 
