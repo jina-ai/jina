@@ -392,7 +392,6 @@
 
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">...math.dimensionality_reduction</span> <span class="kn">import</span> <span class="n">PCA</span>
 <span class="kn">from</span> <span class="nn">...math.helper</span> <span class="kn">import</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">minmax_normalize</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
@@ -478,10 +477,11 @@
 
 <div class="viewcode-block" id="DocumentArrayNeuralOpsMixin.visualize"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">colored_tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colored_tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'rainbow'</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'pca'</span><span class="p">,</span>
         <span class="n">show_axis</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">"""Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.</span>
@@ -489,10 +489,13 @@
 <span class="sd">        If `tag_name` is provided the plot uses a distinct color for each unique tag value in the</span>
 <span class="sd">        documents of the DocumentArray.</span>
 
-<span class="sd">        :param colored_tag: Optional str that specifies tag used to color the plot</span>
 <span class="sd">        :param output: Optional path to store the visualization. If not given, show in UI</span>
 <span class="sd">        :param title: Optional title of the plot. When not given, the default title is used.</span>
+<span class="sd">        :param colored_tag: Optional str that specifies tag used to color the plot</span>
 <span class="sd">        :param colormap: the colormap string supported by matplotlib.</span>
+<span class="sd">        :param method: the visualization method, available `pca`, `tsne`. `pca` is fast but may not well represent</span>
+<span class="sd">                nonlinear relationship of high-dimensional data. `tsne` requires scikit-learn to be installed and is</span>
+<span class="sd">                much slower.</span>
 <span class="sd">        :param show_axis: If set, axis and bounding box of the plot will be printed.</span>
 
 <span class="sd">        """</span>
@@ -502,7 +505,14 @@
             <span class="n">x_mat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
         <span class="p">),</span> <span class="sa">f</span><span class="s1">'Type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span><span class="si">}</span><span class="s1"> not currently supported, use np.ndarray embeddings'</span>
 
-        <span class="n">x_mat_2d</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">'tsne'</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">sklearn.manifold</span> <span class="kn">import</span> <span class="n">TSNE</span>
+
+            <span class="n">x_mat_2d</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">...math.dimensionality_reduction</span> <span class="kn">import</span> <span class="n">PCA</span>
+
+            <span class="n">x_mat_2d</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_mat</span><span class="p">)</span>
 
         <span class="n">plt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">'x'</span><span class="p">:</span> <span class="n">x_mat_2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>
@@ -546,7 +556,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 01, 2021.
+            Last updated on Aug 02, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
