@@ -101,6 +101,8 @@ def create(template, params):
                 print('exists already')
             else:
                 raise e
+        except Exception as e2:
+            raise e2
     finally:
         os.remove(path)
 
@@ -119,6 +121,11 @@ def get_service_cluster_ip(service_name, namespace):
 
 
 def log_in_thread(pod_name, namespace, container):
+    pod = v1.read_namespaced_pod(pod_name, namespace)
+    print("pod.containers is not tested") #TODO
+    containers = pod.containers
+    if container not in containers:
+        return
     w = Watch()
     for e in w.stream(
         v1.read_namespaced_pod_log,
@@ -133,7 +140,11 @@ def get_pod_logs(namespace):
     pods = v1.list_namespaced_pod(namespace)
     pod_names = [item.metadata.name for item in pods.items]
     for pod_name in pod_names:
+<<<<<<< HEAD
         for container in ['executor']: #, 'linkerd-proxy']:
+=======
+        for container in ['executor', 'istio-proxy', 'dumper-init']: #, 'linkerd-proxy']:
+>>>>>>> 9a681532a3347b29feb92bb740a8698ef3fb239a
             x = threading.Thread(
                 target=log_in_thread, args=(pod_name, namespace, container)
             )
