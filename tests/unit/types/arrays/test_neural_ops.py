@@ -46,11 +46,11 @@ def test_minmax_normalization_1d():
     np.testing.assert_almost_equal(minmax_normalize(a, (1, 0)), [1, 0.5, 0])
 
 
-def test_minmax_normalization_2d():
-    a = np.array([[1, 2, 3], [3, 2, 1]])
-    np.testing.assert_almost_equal(minmax_normalize(a), [[0, 0.5, 1], [1, 0.5, 0]])
+def test_minmax_normalization_2d_row_normalize():
+    a = np.array([[1, 2, 3], [6, 3, 2]])
+    np.testing.assert_almost_equal(minmax_normalize(a), [[0, 0.5, 1], [1, 0.25, 0]])
     np.testing.assert_almost_equal(
-        minmax_normalize(a, (1, 0)), [[1, 0.5, 0], [0, 0.5, 1]]
+        minmax_normalize(a, (1, 0)), [[1, 0.5, 0], [0, 0.75, 1]]
     )
 
 
