@@ -3,6 +3,8 @@ import numpy as np
 from typing import Union
 
 if False:
+    import scipy
+
     _SPARSE_SCIPY_TYPES = Union[
         'scipy.sparse.csr_matrix',
         'scipy.sparse.csc_matrix',
