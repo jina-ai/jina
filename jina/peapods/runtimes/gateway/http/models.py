@@ -281,15 +281,6 @@ class JinaRequestModel(BaseModel):
             List[Dict[str, Any]],
             List[str],
             List[bytes],
-            List[
-                Tuple[
-                    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
-                    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
-                ]
-            ],
-            List[Tuple[Dict[str, Any], Dict[str, Any]]],
-            List[Tuple[str, str]],
-            List[Tuple[bytes, bytes]],
         ]
     ] = Field(
         None,
@@ -324,7 +315,7 @@ class JinaResponseModel(BaseModel):
     request_id: str = Field(
         ...,
         example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
-        description='The id given by Jina service',
+        description='The ID given by Jina service',
     )
     data: Optional[DataRequestModel] = Field(None, description='Returned Documents')
 

@@ -163,9 +163,7 @@ def test_bad_good_doc_id():
 
 
 def test_id_context():
-    with Document() as d:
-        d.buffer = b'123'
-    assert d.id
+    assert Document(buffer=b'123').id
 
 
 def test_doc_content():
@@ -257,18 +255,15 @@ def test_request_docs_chunks_mutable_iterator():
 def test_doc_setattr():
     from jina import Document
 
-    with Document() as root:
-        root.text = 'abc'
+    root = Document(text='abc')
 
     assert root.adjacency == 0
 
-    with Document() as match:
-        match.text = 'def'
-        m = root.matches.append(match)
+    match = Document(text='def')
+    m = root.matches.append(match)
 
-    with Document() as chunk:
-        chunk.text = 'def'
-        c = root.chunks.append(chunk)
+    chunk = Document(text='def')
+    c = root.chunks.append(chunk)
 
     assert len(root.matches) == 1
     assert root.matches[0].granularity == 0
@@ -288,8 +283,7 @@ def test_doc_setattr():
 def test_doc_score():
     from jina.types.score import NamedScore
 
-    with Document() as doc:
-        doc.text = 'text'
+    doc = Document(text='text')
 
     score = NamedScore(op_name='operation', value=10.0, ref_id=doc.id)
     doc.score = score
@@ -302,78 +296,26 @@ def test_doc_score():
 def test_content_hash_not_dependent_on_chunks_or_matches():
     doc1 = Document()
     doc1.content = 'one'
-    doc1.update_content_hash()
 
     doc2 = Document()
     doc2.content = 'one'
-    doc2.update_content_hash()
     assert doc1.content_hash == doc2.content_hash
 
     doc3 = Document()
     doc3.content = 'one'
     for _ in range(3):
-        with Document() as m:
-            m.content = 'some chunk'
+        m = Document()
+        m.content = 'some chunk'
         doc3.chunks.append(m)
-    doc3.update_content_hash()
     assert doc1.content_hash == doc3.content_hash
 
     doc4 = Document()
     doc4.content = 'one'
     for _ in range(3):
-        with Document() as m:
-            m.content = 'some match'
+        m = Document()
+        m.content = 'some match'
         doc4.matches.append(m)
-    doc4.update_content_hash()
     assert doc1.content_hash == doc4.content_hash
-
-
-def test_include_scalar():
-    d1 = Document()
-    d1.text = 'hello'
-    dd1 = Document()
-    d1.chunks.append(dd1)
-    d1.update_content_hash(include_fields=('text',), exclude_fields=None)
-
-    d2 = Document()
-    d2.text = 'hello'
-    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
-
-    assert d1.content_hash == d2.content_hash
-
-    # change text should result in diff hash
-    d2.text = 'world'
-    d2.update_content_hash(include_fields=('text',), exclude_fields=None)
-    assert d1.content_hash != d2.content_hash
-
-
-def test_include_repeated_fields():
-    def build_document(chunk=None):
-        d = Document()
-        d.chunks.append(chunk)
-        d.chunks[0].update_content_hash(
-            exclude_fields=('parent_id', 'id', 'content_hash')
-        )
-        d.chunks[0].parent_id = 0
-        d.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-        return d
-
-    c = Document()
-    d1 = build_document(chunk=c)
-    d2 = build_document(chunk=c)
-
-    assert d1.chunks[0].content_hash == d2.chunks[0].content_hash
-    assert d1.content_hash == d2.content_hash
-
-    # change text should result in same hash
-    d2.text = 'world'
-    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-    assert d1.content_hash == d2.content_hash
-
-    # change chunks should result in diff hash
-    d2.chunks.clear()
-    d2.update_content_hash(include_fields=('chunks',), exclude_fields=None)
-    assert d1.content_hash != d2.content_hash
 
 
 @pytest.mark.parametrize('from_str', [True, False])
@@ -514,29 +456,28 @@ def test_document_to_json(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = json.loads(doc.json())
     present_keys = sorted(doc_dict.keys())
-    assert present_keys == ['content_hash', 'id']
+    assert present_keys == ['id']
 
 
 def test_document_to_dict(expected_doc_fields, ignored_doc_fields):
     doc = Document()
     doc_dict = doc.dict()
     present_keys = sorted(doc_dict.keys())
-    assert present_keys == ['content_hash', 'id']
+    assert present_keys == ['id']
 
 
 def test_non_empty_fields():
     d_score = Document(scores={'score': NamedScore(value=42)})
     assert d_score.non_empty_fields == (
         'id',
-        'content_hash',
         'scores',
     )
 
     d = Document()
-    assert d.non_empty_fields == ('id', 'content_hash')
+    assert d.non_empty_fields == ('id',)
 
     d = Document(id='')
-    assert d.non_empty_fields == ('content_hash',)
+    assert not d.non_empty_fields
 
 
 def test_get_attr_values():
@@ -733,7 +674,6 @@ def test_doc_match_score_assign():
     d1 = Document(d, copy=True, scores={'score': 123})
     d.matches = [d1]
     assert d.matches[0].scores['score'].value == 123
-    assert d.matches[0].scores['score'].ref_id == d.id
 
 
 def test_doc_update_given_empty_fields_and_attributes_identical(test_docs):
@@ -839,13 +779,6 @@ def test_doc_update_given_fields_and_source_has_more_attributes(test_docs):
     assert doc1.tags == {'a': 'b'}
     assert (doc1.embedding != doc2.embedding).all()
     assert doc1.chunks != doc2.chunks
-
-
-def test_doc_update_given_content_hash_updated(test_docs):
-    doc1, doc2 = test_docs
-    doc1.update_content_hash()
-    doc2.update(doc1)
-    assert doc1.content_hash == doc2.content_hash
 
 
 def test_document_pretty_dict():
@@ -1055,9 +988,8 @@ def test_tag_compare_dict():
 
 
 def test_content_hash():
-    d0 = Document(content='a', hash_content=False)
+    d0 = Document(content='a')
     assert d0.content
-    assert not d0.content_hash
 
     empty_doc = Document()
     assert not empty_doc.content
@@ -1069,7 +1001,6 @@ def test_content_hash():
     d1 = Document(content='text')
     init_content_hash = d1.content_hash
     assert init_content_hash
-    d1.update_content_hash()
     assert init_content_hash == d1.content_hash
 
     d2 = Document(content='text')
@@ -1088,16 +1019,39 @@ def test_content_hash():
     d7 = Document(d2)
     assert d6.content_hash == d2.content_hash == d7.content_hash
 
+    # test hash image
+    d8 = Document(blob=np.array([1, 3, 5]))
+    d9 = Document(blob=np.array([2, 4, 6]))
+    d10 = Document(blob=np.array([1, 3, 5]))
+    assert d8.content_hash != d9.content_hash
+    assert d8.content_hash == d10.content_hash
+
+    # test hash buffer
+    d11 = Document(content=b'buffer1')
+    d12 = Document(content=b'buffer2')
+    d13 = Document(content=b'buffer1')
+    assert d11.content_hash != d12.content_hash
+    assert d11.content_hash == d13.content_hash
+
+    # document with more fields
+    d14 = Document(
+        uri='http://test1.com', tags={'key1': 'value1'}, granularity=2, adjacency=2
+    )
+    d15 = Document(
+        uri='http://test2.com', tags={'key1': 'value2'}, granularity=3, adjacency=2
+    )
+    d16 = Document(
+        uri='http://test2.com', tags={'key1': 'value2'}, granularity=3, adjacency=2
+    )
+    assert d14.content_hash != d15.content_hash
+    assert d15.content_hash == d16.content_hash
+
     nr = 10
     with TimeContext(f'creating {nr} docs without hashing content at init'):
         da = DocumentArray()
         for _ in range(nr):
-            d = Document(content='text' * 2, hash_content=False)
+            d = Document(content='text' * 2)
             da.append(d)
-
-        with TimeContext(f'iterating through docs without content hash'):
-            for d in da:
-                assert not d.content_hash
 
     with TimeContext(f'creating {nr} docs with hashing content at init'):
         da = DocumentArray()

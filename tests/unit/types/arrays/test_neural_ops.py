@@ -1,10 +1,12 @@
 import copy
+import os
 
 import numpy as np
 import pytest
 
 from jina import Document, DocumentArray
 from jina.types.arrays.memmap import DocumentArrayMemmap
+from jina.math.dimensionality_reduction import PCA
 
 
 @pytest.fixture
@@ -142,3 +144,48 @@ def test_2arity_function(docarrays_for_embedding_distance_computation):
     for d in D1:
         for m in d.matches:
             assert 'dotp' in m.scores
+
+
+@pytest.mark.parametrize('whiten', [True, False])
+def test_pca_projection(embeddings, whiten):
+    n_components = 2
+    n_features = embeddings.shape[1]
+    pca = PCA(n_components=n_components, whiten=whiten)
+    assert pca.e_values is None
+    assert pca.w is None
+    embeddings_transformed = pca.fit_transform(embeddings)
+    assert len(pca.e_values) == n_features
+    assert pca.w.shape[0] == n_features
+    assert embeddings_transformed.shape[1] == n_components
+
+
+def test_pca_plot_generated(embeddings, tmpdir):
+    doc_array = DocumentArray([Document(embedding=x) for x in embeddings])
+    file_path = os.path.join(tmpdir, 'pca_plot.png')
+    doc_array.visualize(output=file_path)
+    assert os.path.exists(file_path)
+
+
+def test_match_inclusive():
+    """Call match function, while the other :class:`DocumentArray` is itself
+    or have same :class:`Document`.
+    """
+    # The document array da1 match with itself.
+    da1 = DocumentArray(
+        [
+            Document(embedding=np.array([1, 2, 3])),
+            Document(embedding=np.array([1, 0, 1])),
+            Document(embedding=np.array([1, 1, 2])),
+        ]
+    )
+
+    da1.match(da1)
+    assert len(da1) == 3
+    traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(traversed) == 9
+    # The document array da2 shares same documents with da1
+    da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), da1[0], da1[1]])
+    da1.match(da2)
+    assert len(da2) == 3
+    traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(traversed) == 9

@@ -31,8 +31,7 @@ def test_flow(docker_compose, mocker, encoder_needs, indexer_needs):
     os.environ['JINA_ENCODER_NEEDS'] = encoder_needs
     os.environ['JINA_INDEXER_NEEDS'] = indexer_needs
 
-    with Document() as doc:
-        doc.content = text
+    doc = Document(content=text)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_yml) as f:

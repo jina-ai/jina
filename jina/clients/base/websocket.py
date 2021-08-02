@@ -55,7 +55,7 @@ class WebSocketBaseClient(BaseClient):
                 async def _send_requests(request_iterator):
                     next_request = None
                     for next_request in request_iterator:
-                        await websocket.send(next_request.SerializeToString())
+                        await websocket.send(next_request.SerializePartialToString())
                         self.num_requests += 1
                     # Check if there was any request generated
                     if next_request is not None:

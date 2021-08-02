@@ -258,3 +258,11 @@ class DocumentArrayMemmap(
         shutil.copy(os.path.join(tdir, 'header.bin'), self._header_path)
         shutil.copy(os.path.join(tdir, 'body.bin'), self._body_path)
         self.reload()
+
+    @property
+    def physical_size(self) -> int:
+        """Return the on-disk physical size of this DocumentArrayMemmap, in bytes
+
+        :return: the number of bytes
+        """
+        return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size

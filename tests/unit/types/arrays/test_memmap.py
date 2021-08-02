@@ -239,3 +239,10 @@ def test_shuffle_with_seed(tmpdir):
     assert len(shuffled_1) == len(shuffled_2) == len(shuffled_3) == len(da)
     assert shuffled_1 == shuffled_2
     assert shuffled_1 != shuffled_3
+
+
+def test_memmap_physical_size(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    assert da.physical_size == 0
+    da.append(Document())
+    assert da.physical_size > 0

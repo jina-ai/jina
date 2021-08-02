@@ -3,6 +3,10 @@
     show: true,
     list: []
 }, {
+    name: 'perf',
+    show: true,
+    list: []
+}, {
     name: 'fix',
     show: true,
     list: []
@@ -47,6 +51,13 @@ commits.forEach(function (commit) {
 
         if(type == 'fix' || type == 'fixed'){
             groupCommits.find(item => item.name === 'fix').list.push({
+                type: type,
+                scope: scope,
+                title: title,
+                commit: commit
+            })
+        } else if(type == 'perf' || type == 'performance'){
+            groupCommits.find(item => item.name === 'perf').list.push({
                 type: type,
                 scope: scope,
                 title: title,
@@ -128,8 +139,11 @@ if (i.name === 'fix' && i.show) { %>
 <%	} else if( i.name === 'feat' && i.show) { %>
 ### 🆕 New Features
 
+<%	} else if(i.name === 'perf' && i.show) { %>
+### ⚡ Performance Improvements
+
 <%	} else if(i.name === 'refactor' && i.show) { %>
-### 🚧 Code Refactoring
+### 🧼 Code Refactoring
 
 <%	} else if(i.name === 'docs' && i.show) { %>
 ### 📗 Documentation
