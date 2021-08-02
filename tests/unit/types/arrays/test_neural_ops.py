@@ -3,11 +3,8 @@ import os
 
 import numpy as np
 import pytest
-from scipy.spatial.distance import cdist
 
 from jina import Document, DocumentArray
-from jina.math.distance import sqeuclidean, cosine
-from jina.math.helper import minmax_normalize
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
 
@@ -28,94 +25,6 @@ def docarrays_for_embedding_distance_computation():
     D1 = DocumentArray([d1, d2, d3, d4])
     D2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
     return D1, D2
-
-
-@pytest.fixture
-def embeddings():
-    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
-
-
-@pytest.fixture
-def embedding_query():
-    return np.array([[1, 0, 0]])
-
-
-def test_minmax_normalization_1d():
-    a = np.array([1, 2, 3])
-    np.testing.assert_almost_equal(minmax_normalize(a), [0, 0.5, 1])
-    np.testing.assert_almost_equal(minmax_normalize(a, (1, 0)), [1, 0.5, 0])
-
-
-def test_minmax_normalization_2d_row_normalize():
-    a = np.array([[1, 2, 3], [6, 3, 2]])
-    np.testing.assert_almost_equal(minmax_normalize(a), [[0, 0.5, 1], [1, 0.25, 0]])
-    np.testing.assert_almost_equal(
-        minmax_normalize(a, (1, 0)), [[1, 0.5, 0], [0, 0.75, 1]]
-    )
-
-
-def test_new_distances_equal_previous_distances():
-    def _get_ones(x, y):
-        return np.ones((x, y))
-
-    def _ext_A(A):
-        nA, dim = A.shape
-        A_ext = _get_ones(nA, dim * 3)
-        A_ext[:, dim : 2 * dim] = A
-        A_ext[:, 2 * dim :] = A ** 2
-        return A_ext
-
-    def _ext_B(B):
-        nB, dim = B.shape
-        B_ext = _get_ones(dim * 3, nB)
-        B_ext[:dim] = (B ** 2).T
-        B_ext[dim : 2 * dim] = -2.0 * B.T
-        del B
-        return B_ext
-
-    def _euclidean(A_ext, B_ext):
-        sqdist = A_ext.dot(B_ext).clip(min=0)
-        return np.sqrt(sqdist)
-
-    def _norm(A):
-        return A / np.linalg.norm(A, ord=2, axis=1, keepdims=True)
-
-    def _cosine(A_norm_ext, B_norm_ext):
-        return A_norm_ext.dot(B_norm_ext).clip(min=0) / 2
-
-    np.random.seed(1234)
-    X = np.random.random((10, 10))
-    Y = np.random.random((10, 10))
-
-    ### test euclidean distance
-    X_ext = _ext_A(X)
-    Y_ext = _ext_B(Y)
-    dists_previous_euclidean = _euclidean(X_ext, Y_ext)
-    dists_new_euclidean = np.sqrt(sqeuclidean(X, Y))
-    np.testing.assert_almost_equal(dists_previous_euclidean, dists_new_euclidean)
-
-    ### test cosine distance
-    X_ext = _ext_A(_norm(X))
-    Y_ext = _ext_B(_norm(Y))
-    dists_previous_cosine = _cosine(X_ext, Y_ext)
-    dists_new_cosine = cosine(X, Y)
-    np.testing.assert_almost_equal(dists_previous_cosine, dists_new_cosine)
-
-
-def test_new_distances_equal_scipy_cdist():
-    """
-    Tests if current distance implementations match scipy.spatial.distance.cdist
-    """
-    X = np.array([[1, 1, 1], [4, 5, 6], [0, 1, 2]])
-    Y = np.array([[1, 1, 2], [2, 3, 4]])
-
-    XY_cdist = cdist(X, Y, metric='euclidean')
-    XY_new = np.sqrt(sqeuclidean(X, Y))
-    np.testing.assert_almost_equal(XY_cdist, XY_new)
-
-    XY_cdist = cdist(X, Y, metric='cosine')
-    XY_new = cosine(X, Y)
-    np.testing.assert_almost_equal(XY_cdist, XY_new)
 
 
 @pytest.mark.parametrize('limit', [1, 2])
@@ -158,29 +67,6 @@ def test_matching_retrieves_closest_matches(
         assert max(expected_sorted_values) <= 1
     else:
         assert expected_sorted_values == sorted(expected_sorted_values)
-
-
-def test_euclidean_distance_squared(embeddings, embedding_query):
-    """
-    embeddings = [[1,0,0],[2,0,0],[3,0,0]]
-    embedding_query = [[1,0,0]]
-    Should expect as output [[0,1,4]].T  because (1-1)**2 = 0, (2-1)**2 = 1, (3-1)**2 = 2**2 = 4
-    """
-    np.testing.assert_almost_equal(
-        sqeuclidean(embedding_query, embeddings),
-        np.array([[0, 1, 4]]),
-    )
-
-
-def test_cosine_distance_squared(embeddings, embedding_query):
-    """
-    embeddings = [[1,0,0],[2,0,0],[3,0,0]]
-    embedding_query = [[1,0,0]]
-    Should expect as output [[0,0,0]].T because query has same direction as every other element
-    """
-    np.testing.assert_almost_equal(
-        cosine(embedding_query, embeddings), np.array([[0, 0, 0]])
-    )
 
 
 @pytest.mark.parametrize(
