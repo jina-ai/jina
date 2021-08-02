@@ -1572,8 +1572,8 @@
             <span class="n">mermaid_str</span> <span class="o">=</span> <span class="n">mermaid_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'graph LR'</span><span class="p">,</span> <span class="s1">'graph TD'</span><span class="p">)</span>
 
         <span class="n">image_type</span> <span class="o">=</span> <span class="s1">'svg'</span>
-        <span class="k">if</span> <span class="n">output</span> <span class="ow">and</span> <span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'jpg'</span><span class="p">):</span>
-            <span class="n">image_type</span> <span class="o">=</span> <span class="s1">'jpg'</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">output</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'svg'</span><span class="p">):</span>
+            <span class="n">image_type</span> <span class="o">=</span> <span class="s1">'img'</span>
 
         <span class="n">url</span> <span class="o">=</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_mermaid_to_url</span><span class="p">(</span><span class="n">mermaid_str</span><span class="p">,</span> <span class="n">image_type</span><span class="p">)</span>
         <span class="n">showed</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1608,9 +1608,6 @@
 <span class="sd">        :param img_type: image type (svg/jpg)</span>
 <span class="sd">        :return: the url points to a SVG</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">img_type</span> <span class="o">==</span> <span class="s1">'jpg'</span><span class="p">:</span>
-            <span class="n">img_type</span> <span class="o">=</span> <span class="s1">'img'</span>
-
         <span class="n">encoded_str</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">mermaid_str</span><span class="p">,</span> <span class="s1">'utf-8'</span><span class="p">))</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'https://mermaid.ink/</span><span class="si">{</span><span class="n">img_type</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">encoded_str</span><span class="si">}</span><span class="s1">'</span>
