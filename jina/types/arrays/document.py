@@ -61,7 +61,15 @@ class DocumentArrayGetAttrMixin:
         :return: Returns a list of the values for these fields.
             When `fields` has multiple values, then it returns a list of list.
         """
-        return self.get_attributes_with_docs(*fields)[0]
+        contents = []
+
+        for doc in self:
+            contents.append(doc.get_attributes(*fields))
+
+        if len(fields) > 1:
+            contents = list(map(list, zip(*contents)))
+
+        return contents
 
     def get_attributes_with_docs(
         self,
@@ -76,27 +84,13 @@ class DocumentArrayGetAttrMixin:
 
         contents = []
         docs_pts = []
-        bad_docs = []
 
         for doc in self:
-            r = doc.get_attributes(*fields)
-            if r is None:
-                bad_docs.append(doc)
-                continue
-            contents.append(r)
+            contents.append(doc.get_attributes(*fields))
             docs_pts.append(doc)
 
         if len(fields) > 1:
             contents = list(map(list, zip(*contents)))
-
-        if bad_docs:
-            warnings.warn(
-                f'found {len(bad_docs)} docs at granularity {bad_docs[0].granularity} are missing one of the '
-                f'following fields: {fields} '
-            )
-
-        if not docs_pts:
-            warnings.warn('no documents are extracted')
 
         return contents, DocumentArray(docs_pts)
 
