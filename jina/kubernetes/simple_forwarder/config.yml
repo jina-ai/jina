@@ -1,0 +1,4 @@
+jtype: SimpleForwarder
+metas:
+  py_modules:
+    - forward.py

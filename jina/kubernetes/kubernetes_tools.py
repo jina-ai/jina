@@ -133,7 +133,7 @@ def get_pod_logs(namespace):
     pods = v1.list_namespaced_pod(namespace)
     pod_names = [item.metadata.name for item in pods.items]
     for pod_name in pod_names:
-        for container in ['executor', 'istio-proxy']: #, 'linkerd-proxy']:
+        for container in ['executor']: #, 'linkerd-proxy']:
             x = threading.Thread(
                 target=log_in_thread, args=(pod_name, namespace, container)
             )

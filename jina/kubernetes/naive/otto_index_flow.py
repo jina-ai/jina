@@ -68,9 +68,13 @@ class JinaPodAsMicroService:
 
     def deploy_as_micro_service(self):
         pod_to_args = {}
-        scheme, name, tag, secret = parse_hub_uri(self._pod.args.uses)
-        meta_data = HubIO.fetch_meta(name)
-        image_name = meta_data.image_name
+        if 'storage' in self._pod.name:
+            image_name = 'gcr.io/mystical-sweep-320315/postgres-storage:debug'
+            name = 'postgresqlstorage'
+        else:
+            scheme, name, tag, secret = parse_hub_uri(self._pod.args.uses)
+            meta_data = HubIO.fetch_meta(name)
+            image_name = meta_data.image_name
         replicas = self._pod.args.replicas
         override_with = self._pod.args.override_with
 
@@ -127,17 +131,17 @@ class K8sOttoIndexFlow:
 
     GENERIC_GATEWAY_CONTAINER_NAME = 'gcr.io/mystical-sweep-320315/generic-gateway'
 
-    def __init__(self, k8s_client, postgres_config: Optional[PostgresConfig] = None):
+    def __init__(self, k8s_client, postgres_config: Optional[PostgresConfig] = None, k8s_namespace: str = 'otto'):
         self._postgres_config = postgres_config
         self._k8s = k8s_client
         self._logger = JinaLogger(self.__class__.__name__)
-        self._namespace = 'otto'
+        self._namespace = k8s_namespace
 
     @property
     def flow_object(self) -> Flow:
         return (Flow()
                 .add(name='cliptext', uses='jinahub+docker://CLIPTextEncoder')
-                .add(name='storage', uses='jinahub+docker://PostgreSQLStorage',
+                .add(name='storage', uses='gcr.io/mystical-sweep-320315/postgres-storage',
                      override_with=self._postgres_config.__dict__))
 
     def deploy(self):
@@ -166,7 +170,7 @@ class K8sOttoIndexFlow:
         _create_gateway_service(self._namespace, 'gateway-in', 8081)
 
         gateway_yaml = self._create_gateway_yaml(
-            pod_to_args, 'gateway-in.f1.svc.cluster.local'
+            pod_to_args, f'gateway-in.{self._namespace}.svc.cluster.local'
         )
         kubernetes_tools.create(
             'deployment',

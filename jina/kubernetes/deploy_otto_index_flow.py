@@ -5,6 +5,8 @@ from kubernetes import client, config
 config.load_kube_config()
 k8s_client = client.ApiClient()
 
+NAMESPACE = 'otto4'
+
 postgres_config = PostgresConfig(
     hostname='postgres.postgres.svc.cluster.local',
     username='postgresadmin',
@@ -12,4 +14,4 @@ postgres_config = PostgresConfig(
     password='1235813'
 )
 
-K8sOttoIndexFlow(k8s_client, postgres_config).deploy()
+K8sOttoIndexFlow(k8s_client, postgres_config, NAMESPACE).deploy()
