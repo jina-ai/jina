@@ -127,7 +127,7 @@ class JinaPodAsMicroService:
         )
 
 
-class K8sOttoIndexFlow:
+class K8sEAPIndexFlow:
 
     GENERIC_GATEWAY_CONTAINER_NAME = 'gcr.io/mystical-sweep-320315/generic-gateway'
 

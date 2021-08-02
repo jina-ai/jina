@@ -1,11 +1,11 @@
-from jina.kubernetes.naive.otto_index_flow import K8sOttoIndexFlow, PostgresConfig
+from jina.kubernetes.naive.eap_index_flow import K8sEAPIndexFlow, PostgresConfig
 from kubernetes import client, config
 
 
 config.load_kube_config()
 k8s_client = client.ApiClient()
 
-NAMESPACE = 'otto4'
+NAMESPACE = 'flow4'
 
 postgres_config = PostgresConfig(
     hostname='postgres.postgres.svc.cluster.local',
@@ -14,4 +14,4 @@ postgres_config = PostgresConfig(
     password='1235813'
 )
 
-K8sOttoIndexFlow(k8s_client, postgres_config, NAMESPACE).deploy()
+K8sEAPIndexFlow(k8s_client, postgres_config, NAMESPACE).deploy()
