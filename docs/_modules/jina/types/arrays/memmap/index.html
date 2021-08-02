@@ -644,7 +644,15 @@
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tdir</span><span class="p">,</span> <span class="s1">'header.bin'</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tdir</span><span class="p">,</span> <span class="s1">'body.bin'</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">physical_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">"""Return the on-disk physical size of this DocumentArrayMemmap, in bytes</span>
+
+<span class="sd">        :return: the number of bytes</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_header_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_body_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span></div>
 </pre></div>
       </article>
       <footer>

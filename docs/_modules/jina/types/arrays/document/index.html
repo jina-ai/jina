@@ -386,7 +386,6 @@
         </label>
         <h1>Source code for jina.types.arrays.document</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableSequence</span><span class="p">,</span> <span class="n">Iterable</span> <span class="k">as</span> <span class="n">Itr</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
@@ -448,7 +447,12 @@
 <span class="sd">        :return: Returns a list of the values for these fields.</span>
 <span class="sd">            When `fields` has multiple values, then it returns a list of list.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attributes_with_docs</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="n">contents</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">contents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">contents</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">contents</span></div>
 
 <div class="viewcode-block" id="DocumentArrayGetAttrMixin.get_attributes_with_docs"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.document/#jina.DocumentArrayGetAttrMixin.get_attributes_with_docs">[docs]</a>    <span class="k">def</span> <span class="nf">get_attributes_with_docs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -463,27 +467,13 @@
 
         <span class="n">contents</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">docs_pts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">bad_docs</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">bad_docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="n">contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="o">*</span><span class="n">fields</span><span class="p">))</span>
             <span class="n">docs_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">contents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">contents</span><span class="p">)))</span>
-
-        <span class="k">if</span> <span class="n">bad_docs</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">bad_docs</span><span class="p">)</span><span class="si">}</span><span class="s1"> docs at granularity </span><span class="si">{</span><span class="n">bad_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">granularity</span><span class="si">}</span><span class="s1"> are missing one of the '</span>
-                <span class="sa">f</span><span class="s1">'following fields: </span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s1"> '</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">docs_pts</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">'no documents are extracted'</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">contents</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">docs_pts</span><span class="p">)</span></div></div>
 
