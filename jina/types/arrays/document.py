@@ -1,5 +1,4 @@
 import json
-import warnings
 from abc import abstractmethod
 from collections.abc import MutableSequence, Iterable as Itr
 from contextlib import nullcontext
