@@ -2,12 +2,13 @@ import numpy as np
 
 from typing import Union
 
-_SPARSE_SCIPY_TYPES = Union[
-    'scipy.sparse.csr_matrix',
-    'scipy.sparse.csc_matrix',
-    'scipy.sparse.bsr_matrix',
-    'scipy.sparse.coo_matrix',
-]
+if False:
+    _SPARSE_SCIPY_TYPES = Union[
+        'scipy.sparse.csr_matrix',
+        'scipy.sparse.csc_matrix',
+        'scipy.sparse.bsr_matrix',
+        'scipy.sparse.coo_matrix',
+    ]
 
 
 def pdist(
