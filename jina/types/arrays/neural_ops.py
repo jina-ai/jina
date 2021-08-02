@@ -62,7 +62,7 @@ class DocumentArrayNeuralOpsMixin:
         else:
             import scipy.sparse as sp
 
-            if scipy.sparse.issparse(self.get_attributes('embedding')[0]):
+            if sp.issparse(self.get_attributes('embedding')[0]):
                 X = sp.vstack(self.get_attributes('embedding'))
                 Y = sp.vstack(darray.get_attributes('embedding'))
                 is_sparse = True
