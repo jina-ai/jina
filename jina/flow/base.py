@@ -809,7 +809,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                 start_pod = graph._get_target_pod(start)
 
-                if pod.args.connect_to_predecessor or is_remote_local_connection(
+                if pod.connect_to_predecessor or is_remote_local_connection(
                     start_pod.host, pod.head_host
                 ):
                     pod.head_args.hosts_in_connect.append(
