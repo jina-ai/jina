@@ -1,8 +1,10 @@
 import os
 
-from .app import get_fastapi_app
-from ...zmq.asyncio import AsyncNewLoopRuntime
+from jina import __default_host__
+
 from .....importer import ImportExtensions
+from ...zmq.asyncio import AsyncNewLoopRuntime
+from .app import get_fastapi_app
 
 __all__ = ['HTTPRuntime']
 
@@ -50,7 +52,7 @@ class HTTPRuntime(AsyncNewLoopRuntime):
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(get_fastapi_app(self.args, self.logger)),
-                host='0.0.0.0',
+                host=__default_host__,
                 port=self.args.port_expose,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
             )
