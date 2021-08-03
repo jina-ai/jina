@@ -80,6 +80,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -9916,4 +9917,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f59930d5```](https://github.com/jina-ai/jina/commit/f59930d584e66a0b86936879910b72b7780915bd)] __-__ update readme and contributing guide (*Han Xiao*)
  - [[```f9255586```](https://github.com/jina-ai/jina/commit/f9255586a7b196da122d1e37f8633c08085c5ddd)] __-__ remove google colab button (*Han Xiao*)
  - [[```e420e22b```](https://github.com/jina-ai/jina/commit/e420e22b6159ca878049e55b0b9ffc48f9cb7ad7)] __-__ __version__: the next version will be 2.0.15 (*Jina Dev Bot*)
+
+<a name=release-note-2-0-16></a>
+## Release Note (`2.0.16`)
+
+> Release time: 2021-08-03 09:18:53
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Joan Fontanals,  🙇
+
+
+### ⚡ Performance Improvements
+
+ - [[```bac641d9```](https://github.com/jina-ai/jina/commit/bac641d94f06e1e797930ea7481ff3fc974e0cb4)] __-__ __types__: remove unnecessary DA building in get_attributes (#3064) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```183b76f5```](https://github.com/jina-ai/jina/commit/183b76f5882087b06a8879df7822c76255c6a91e)] __-__ __init__: bring back default fork mp start method on macos (#3084) (*Han Xiao*)
+ - [[```4951b3d4```](https://github.com/jina-ai/jina/commit/4951b3d4f2ef485dff78effdb9d0bd5ffa2f7158)] __-__ __setup__: fix missing wheel dependencies in setup.py (#3078) (*Han Xiao*)
+ - [[```50373245```](https://github.com/jina-ai/jina/commit/50373245599d8752dd0b58338691838b918c2daa)] __-__ fix plot (#3074) (*Joan Fontanals*)
+ - [[```671a310b```](https://github.com/jina-ai/jina/commit/671a310b1cb34e99faad63584f20aa4e72a1ed5b)] __-__ fix 0 sparse array (#3073) (*Joan Fontanals*)
+ - [[```27d93c25```](https://github.com/jina-ai/jina/commit/27d93c25dd957ba7b1e106ca56337bf15551c26e)] __-__ __math__: fix minmax normalize to row-wise normalization (#3065) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```046356fd```](https://github.com/jina-ai/jina/commit/046356fd12c5439d2921bce518c1f6849c912099)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```11c78e0f```](https://github.com/jina-ai/jina/commit/11c78e0f771594e1fa50a13a2bfb81a26d739a73)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```a71ee9a7```](https://github.com/jina-ai/jina/commit/a71ee9a75efe93618fd1fb1ce9ae1792c6ea78ee)] __-__ __version__: the next version will be 2.0.16 (*Jina Dev Bot*)
 
