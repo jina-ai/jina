@@ -50,7 +50,11 @@ class BufferPoolManager:
             dam_idx, (buffer_idx, content_hash) = self.doc_map.popitem(last=False)
 
             # persist to disk
-            self.dam.append(self.buffer[buffer_idx], update_buffer=False)
+            self.dam.update(
+                self.buffer[buffer_idx],
+                self.dam._str2int_id(dam_idx),
+                update_buffer=False,
+            )
             self.doc_map[idx] = (buffer_idx, doc.content_hash)
             self.doc_map.move_to_end(idx)
             self.buffer[buffer_idx] = doc

@@ -3,12 +3,14 @@ import mmap
 import os
 import shutil
 import tempfile
+from collections import OrderedDict
 from collections.abc import Iterable as Itr
 from pathlib import Path
 from typing import (
     Union,
     Iterable,
     Iterator,
+    Optional,
 )
 
 import numpy as np
@@ -106,11 +108,11 @@ class DocumentArrayMemmap(
         )
         self._header_entry_size = 24 + 4 * self._key_length
 
-        self._header_map = {
-            r[0]: (idx, r[1], r[2], r[3])
-            for idx, r in enumerate(tmp)
-            if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY)
-        }
+        self._header_map = OrderedDict()
+        for idx, r in enumerate(tmp):
+            if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY):
+                self._header_map[r[0]] = (idx, r[1], r[2], r[3])
+
         self._body_fileno = self._body.fileno()
         self._start = 0
         if self._header_map:
@@ -135,22 +137,22 @@ class DocumentArrayMemmap(
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
 
-    def append(
-        self, doc: 'Document', flush: bool = True, update_buffer: bool = True
+    def _update_or_append(
+        self,
+        doc: 'Document',
+        idx: Optional[int] = None,
+        flush: bool = True,
+        update_buffer: bool = True,
     ) -> None:
-        """
-        Append :param:`doc` in :class:`DocumentArrayMemmap`.
-
-        :param doc: The doc needs to be appended.
-        :param update_buffer: If set, update the buffer.
-        :param flush: If set, then flush to disk on done.
-        """
         value = doc.binary_str()
         l = len(value)  #: the length
         p = int(self._start / PAGE_SIZE) * PAGE_SIZE  #: offset of the page
         r = (
             self._start % PAGE_SIZE
         )  #: the remainder, i.e. the start position given the offset
+
+        if idx:
+            self._header.seek(idx * self._header_entry_size, 0)
         self._header.write(
             np.array(
                 (doc.id, p, r, r + l),
@@ -162,7 +164,18 @@ class DocumentArrayMemmap(
                 ],
             ).tobytes()
         )
-        self._header_map[doc.id] = (len(self._header_map), p, r, r + l)
+        if not idx:
+            # the idx of the appended document is the idx of the last doc + 1
+            idx = (
+                next(reversed(self._header_map.items()))[1][0] + 1
+                if len(self._header_map)
+                else 0
+            )
+            self._header_map[doc.id] = (idx, p, r, r + l)
+            self._header_map.move_to_end(doc.id)
+        else:
+            self._header_map.update({doc.id: (idx, p, r, r + l)})
+            self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)
         if flush:
@@ -170,6 +183,31 @@ class DocumentArrayMemmap(
             self._body.flush()
         if update_buffer:
             self.buffer_pool.add_or_update(doc.id, doc)
+
+    def append(
+        self, doc: 'Document', flush: bool = True, update_buffer: bool = True
+    ) -> None:
+        """
+        Append :param:`doc` in :class:`DocumentArrayMemmap`.
+
+        :param doc: The doc needs to be appended.
+        :param update_buffer: If set, update the buffer.
+        :param flush: If set, then flush to disk on done.
+        """
+        self._update_or_append(doc, flush=flush, update_buffer=update_buffer)
+
+    def update(
+        self, doc: 'Document', idx: int, flush: bool = True, update_buffer: bool = True
+    ) -> None:
+        """
+        Update :param:`doc` in :class:`DocumentArrayMemmap`.
+
+        :param doc: The doc needed to be updated.
+        :param idx: The position of the document.
+        :param update_buffer: If set, update the buffer.
+        :param flush: If set, then flush to disk on done.
+        """
+        self._update_or_append(doc, idx=idx, flush=flush, update_buffer=update_buffer)
 
     def _iteridx_by_slice(self, s: slice):
         start, stop, step = (
@@ -290,12 +328,17 @@ class DocumentArrayMemmap(
             if 0 <= key < len(self):
                 str_key = self._int2str_id(key)
                 # override an existing entry
-                self.append(value)
-                self._header_map[str_key] = self._header_map[value.id]
+                self.update(value, key)
                 self.buffer_pool.add_or_update(str_key, value)
 
                 # allows overwriting an existing document
                 if str_key != value.id:
+                    self._header_map = OrderedDict(
+                        [
+                            (str_key, v) if k == value.id else (k, v)
+                            for k, v in self._header_map.items()
+                        ]
+                    )
                     del self[value.id]
                     self.buffer_pool.delete_if_exists(value.id)
             else:
