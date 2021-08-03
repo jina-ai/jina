@@ -73,7 +73,7 @@ async def _create(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
 )
 async def _update(workspace: WorkspaceDepends = Depends(WorkspaceDepends)):
     try:
-        return workspace.j
+        return workspace.item
     except Exception as ex:
         raise Runtime400Exception from ex
 
@@ -87,4 +87,6 @@ async def _list(id: DaemonID):
     try:
         return store[id]
     except KeyError:
-        raise HTTPException(status_code=404, detail=f'{id} not found in store')
+        raise HTTPException(
+            status_code=404, detail=f'{id} not found in workspace store'
+        )

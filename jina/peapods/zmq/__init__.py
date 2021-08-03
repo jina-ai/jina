@@ -216,7 +216,6 @@ class Zmqlet:
                 for address in self.args.hosts_in_connect:
                     if in_connect is None:
                         host, port = address.split(':')
-
                         in_connect, _ = _init_socket(
                             ctx,
                             host,
@@ -286,6 +285,7 @@ class Zmqlet:
         )
 
     def _init_dynamic_out_socket(self, host_out, port_out):
+
         out_sock, _ = _init_socket(
             self.ctx,
             host_out,
@@ -452,7 +452,9 @@ class AsyncZmqlet(Zmqlet):
         :return: Received protobuf message. Or None in case of any error.
         """
         try:
-            msg = await recv_message_async(self.in_sock, **self.send_recv_kwargs)
+            msg = await recv_message_async(
+                self.in_connect_sock or self.in_sock, **self.send_recv_kwargs
+            )
             self.msg_recv += 1
             if msg is not None:
                 self.bytes_recv += msg.size
@@ -538,7 +540,8 @@ class ZmqStreamlet(Zmqlet):
             time.sleep(0.01)
             if flush:
                 for s in self.opened_socks:
-                    s.flush()
+                    events = s.flush()
+                    self.logger.debug(f'Handled #{events} during flush of socket')
             super().close()
             if hasattr(self, 'io_loop'):
                 try:
@@ -621,7 +624,7 @@ def send_ctrl_message(
     with zmq.Context() as ctx:
         ctx.setsockopt(zmq.LINGER, 0)
         sock, _ = _init_socket(ctx, address, None, SocketType.PAIR_CONNECT)
-        send_message(sock, msg, timeout)
+        send_message(sock, msg, raise_exception=raise_exception, timeout=timeout)
         r = None
         try:
             r = recv_message(sock, timeout)
@@ -706,8 +709,8 @@ async def send_message_async(
         return msg.size
     except zmq.error.Again:
         raise TimeoutError(
-            f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? '
+            f'cannot send message to sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
+            'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except zmq.error.ZMQError as ex:
         default_logger.critical(ex)
@@ -740,8 +743,8 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
 
     except zmq.error.Again:
         raise TimeoutError(
-            f'no response from sock {sock} after timeout={timeout}ms, please check the following:'
-            'is the server still online? is the network broken? are "port" correct? '
+            f'no response from sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
+            f'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except Exception as ex:
         raise ex

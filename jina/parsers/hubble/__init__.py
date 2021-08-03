@@ -60,11 +60,18 @@ def set_hub_parser(parser=None):
         required=True,
     )
 
+    spp.add_parser(
+        'new',
+        help='create a new executor using the template',
+        description='Create a new executor using the template',
+        formatter_class=_chf,
+    )
+
     set_hub_push_parser(
         spp.add_parser(
             'push',
-            help='push an executor package to the Jina hub',
-            description='Push an executor package to the Jina hub',
+            help='push an executor package to Jina hub',
+            description='Push an executor package to Jina hub',
             formatter_class=_chf,
         )
     )
@@ -72,8 +79,8 @@ def set_hub_parser(parser=None):
     set_hub_pull_parser(
         spp.add_parser(
             'pull',
-            help='download an executor package/image from the Jina hub',
-            description='Download an executor package/image from the Jina hub',
+            help='download an executor image/package from Jina hub',
+            description='Download an executor image/package from Jina hub',
             formatter_class=_chf,
         )
     )

@@ -74,6 +74,38 @@ class ContainerRuntime(ZMQRuntime):
                 )
         client.close()
 
+    @staticmethod
+    def _get_gpu_device_requests(gpu_args):
+        import docker
+
+        _gpus = {
+            'count': 0,
+            'capabilities': ['gpu'],
+            'device': [],
+            'driver': '',
+        }
+        for gpu_arg in gpu_args.split(','):
+            if gpu_arg == 'all':
+                _gpus['count'] = -1
+            if gpu_arg.isdigit():
+                _gpus['count'] = int(gpu_arg)
+            if '=' in gpu_arg:
+                gpu_arg_key, gpu_arg_value = gpu_arg.split('=')
+                if gpu_arg_key in _gpus.keys():
+                    if isinstance(_gpus[gpu_arg_key], list):
+                        _gpus[gpu_arg_key].append(gpu_arg_value)
+                    else:
+                        _gpus[gpu_arg_key] = gpu_arg_value
+        device_requests = [
+            docker.types.DeviceRequest(
+                count=_gpus['count'],
+                driver=_gpus['driver'],
+                device_ids=_gpus['device'],
+                capabilities=[_gpus['capabilities']],
+            )
+        ]
+        return device_requests
+
     def _docker_run(self, replay: bool = False):
         # important to notice, that client is not assigned as instance member to avoid potential
         # heavy copy into new process memory space
@@ -119,6 +151,7 @@ class ContainerRuntime(ZMQRuntime):
                 'pull_latest',
                 'runtime_cls',
                 'docker_kwargs',
+                'gpus',
             },
         )
 
@@ -163,6 +196,11 @@ class ContainerRuntime(ZMQRuntime):
                     'mode': 'rw',
                 }
 
+        device_requests = []
+        if self.args.gpus:
+            device_requests = self._get_gpu_device_requests(self.args.gpus)
+            del self.args.gpus
+
         _expose_port = [self.args.port_ctrl]
         if self.args.socket_in.is_bind:
             _expose_port.append(self.args.port_in)
@@ -184,6 +222,7 @@ class ContainerRuntime(ZMQRuntime):
             network_mode=self._net_mode,
             entrypoint=self.args.entrypoint,
             extra_hosts={__docker_host__: 'host-gateway'},
+            device_requests=device_requests,
             **docker_kwargs,
         )
 

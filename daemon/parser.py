@@ -81,7 +81,8 @@ def _get_run_args(print_args: bool = True):
     from argparse import _StoreAction, _StoreTrueAction
 
     args, argv = parser.parse_known_args()
-    if print_args:
+    # avoid printing for partial daemon (args.mode is set)
+    if print_args and args.mode is None:
 
         default_args = {
             a.dest: a.default

@@ -1,0 +1,3 @@
+jtype: DelayedExecutor
+metas:
+  py_modules: delayed_executor.py

@@ -1,10 +1,13 @@
 import os
 import json
+import urllib
+
 import pytest
 
 import tempfile
 from pathlib import Path
 from jina.hubble import helper
+from jina.hubble.helper import disk_cache_offline
 
 
 @pytest.fixture
@@ -41,3 +44,27 @@ def test_archive_package(tmpdir):
 
 def test_unpack_package(tmpdir, dummy_zip_file):
     helper.unpack_package(dummy_zip_file, tmpdir / 'dummp_executor')
+
+
+def test_disk_cache(tmpfile):
+    raise_exception = True
+
+    @disk_cache_offline(cache_file=str(tmpfile))
+    def _myfunc() -> bool:
+        if raise_exception:
+            raise urllib.error.URLError('Failing')
+        else:
+            return True
+
+    # test fails
+    with pytest.raises(urllib.error.URLError) as info:
+        _myfunc()
+    assert 'Failing' in str(info.value)
+
+    raise_exception = False
+    # saves result in cache
+    assert _myfunc()
+
+    raise_exception = True
+    # defaults to cache
+    assert _myfunc()

@@ -10,7 +10,6 @@ from ..helpers import (
     create_flow,
     create_workspace,
     wait_for_workspace,
-    container_ip,
     delete_workspace,
 )
 
@@ -31,6 +30,9 @@ logger = JinaLogger('test-dump')
 
 SHARDS = 3
 EMB_SIZE = 10
+
+
+# TODO: Move to JinaDClient
 
 
 def _path_size_remote(this_dump_path, container_id):
@@ -66,7 +68,7 @@ def test_dump_dbms_remote(docker_compose):
     nr_docs = 100
     nr_search = 1
     docs = list(_get_documents(nr=nr_docs, index_start=0, emb_size=EMB_SIZE))
-    jinad_ip = container_ip('test_remote_flow_dump_reload')
+    jinad_ip = 'localhost'
 
     dbms_flow_id, query_flow_id, workspace_id = _create_flows(jinad_ip)
 
@@ -158,12 +160,12 @@ def _send_rest_request(
 
 def _get_documents(nr=10, index_start=0, emb_size=7):
     for i in range(index_start, nr + index_start):
-        with Document() as d:
-            d.id = i
-            d.text = f'hello world {i}'
-            d.embedding = np.random.random(emb_size)
-            d.tags['tag_field'] = f'tag data {i}'
-        yield d
+        yield Document(
+            id=i,
+            text=f'hello world {i}',
+            embedding=np.random.random(emb_size),
+            tags={'tag_field': f'tag data {i}'},
+        )
 
 
 def _jinad_dump(pod_name, dump_path, shards, url):

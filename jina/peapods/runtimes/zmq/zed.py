@@ -86,8 +86,8 @@ class ZEDRuntime(ZMQRuntime):
         try:
             self._executor = BaseExecutor.load_config(
                 self.args.uses,
-                override_with=self.args.override_with,
-                override_metas=self.args.override_metas,
+                override_with=self.args.uses_with,
+                override_metas=self.args.uses_metas,
                 runtime_args=vars(self.args),
             )
         except BadConfigSource as ex:
@@ -204,14 +204,13 @@ class ZEDRuntime(ZMQRuntime):
             Handle does not handle explicitly message because it may wait for different messages when different parts are expected
         :return: ZEDRuntime procedure.
         """
-
-        if (
-            not re.match(self.envelope.header.target_peapod, self.name)
-            or self.request_type != 'DataRequest'
-        ):
+        # skip executor for non-DataRequest
+        if self.request_type != 'DataRequest':
+            self.logger.debug(f'skip executor: not data request')
             return self
 
         # migrated from the previously RouteDriver logic
+        # set dealer id
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
             self.envelope.receiver_id = dealer_id
@@ -219,11 +218,25 @@ class ZEDRuntime(ZMQRuntime):
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
                 self._zmqstreamlet.pause_pollin()
+            self.logger.debug(
+                f'using route, set receiver_id: {self.envelope.receiver_id}'
+            )
 
+        # skip executor if target_peapod mismatch
+        if not re.match(self.envelope.header.target_peapod, self.name):
+            self.logger.debug(
+                f'skip executor: mismatch target, target: {self.envelope.header.target_peapod}, name: {self.name}'
+            )
+            return self
+
+        # skip executor if endpoints mismatch
         if (
             self.envelope.header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
+            self.logger.debug(
+                f'skip executor: mismatch request, exec_endpoint: {self.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
+            )
             return self
 
         params = self._parse_params(self.request.parameters, self._executor.metas.name)
@@ -297,7 +310,10 @@ class ZEDRuntime(ZMQRuntime):
         try:
             # notice how executor related exceptions are handled here
             # generally unless executor throws an OSError, the exception are caught and solved inplace
-            self._zmqstreamlet.send_message(self._callback(msg))
+            processed_msg = self._callback(msg)
+            # dont sent responses for CANCEL and IDLE control requests
+            if msg.is_data_request or msg.request.command not in ['CANCEL', 'IDLE']:
+                self._zmqstreamlet.send_message(processed_msg)
         except RuntimeTerminated:
             # this is the proper way to end when a terminate signal is sent
             self._zmqstreamlet.send_message(msg)

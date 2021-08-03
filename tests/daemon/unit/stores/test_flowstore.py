@@ -27,13 +27,14 @@ def pod_list_multiple():
     return [{'name': 'pod1'}, {'name': 'pod2'}]
 
 
-def test_flow_store(workspace):
+@pytest.mark.asyncio
+async def test_flow_store(workspace):
     store = FlowStore()
     flow_id = DaemonID('jflow')
     flow_model = FlowModel()
     flow_model.uses = f'flow.yml'
 
-    store.add(
+    await store.add(
         id=flow_id,
         workspace_id=workspace,
         params=flow_model,
@@ -42,6 +43,6 @@ def test_flow_store(workspace):
     )
     assert len(store) == 1
     assert flow_id in store
-    store.delete(flow_id)
+    await store.delete(flow_id)
     assert flow_id not in store
     assert not store

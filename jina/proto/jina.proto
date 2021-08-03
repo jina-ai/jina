@@ -84,9 +84,6 @@ message DocumentProto {
     // A hexdigest that represents a unique document ID
     string id = 1;
 
-    // A hexdigest that represents the hash of the content of the document
-    string content_hash = 24;
-
     // the depth of the recursive chunk structure
     uint32 granularity = 14;
 
@@ -161,6 +158,7 @@ message RouteProto {
 message TargetPodProto{
     string host = 1; // the host HeadPea of the BasePod
     uint32 port = 2; // the port HeadPea of the BasePod
+    uint32 port_out = 6; // the port TailPea of the BasePod
     uint32 expected_parts = 3; // the number of parts the pod should expect
     repeated RoutingEdgeProto out_edges = 4; // pod_name of Pods, the TailPea should send traffic to
     string target_identity = 5;

@@ -1,11 +1,10 @@
-import os
-import signal
 from argparse import Namespace
 
-from jina import Flow, __docker_host__
 from jina.helper import colored
-from jina.logging.logger import JinaLogger
 from jina.peapods import Pea, Pod
+from jina import Flow, __docker_host__
+from jina.logging.logger import JinaLogger
+
 from .. import jinad_args
 from ..models.enums import UpdateOperation
 from ..models.partial import PartialFlowItem, PartialStoreItem
@@ -42,8 +41,6 @@ class PartialStore:
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise
-        finally:
-            os.kill(os.getpid(), signal.SIGINT)
 
 
 class PartialPeaStore(PartialStore):
@@ -66,7 +63,8 @@ class PartialPeaStore(PartialStore):
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
             self.object = self.peapod_cls(args).__enter__()
         except Exception as e:
-            self.object.__exit__(type(e), e, e.__traceback__)
+            if hasattr(self, 'object'):
+                self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
             raise
         else:
@@ -104,7 +102,8 @@ class PartialFlowStore(PartialStore):
             self.object = flow
             self.object = self.object.__enter__()
         except Exception as e:
-            self.object.__exit__(type(e), e, e.__traceback__)
+            if hasattr(self, 'object'):
+                self.object.__exit__(type(e), e, e.__traceback__)
             self._logger.error(f'{e!r}')
             raise
         else:

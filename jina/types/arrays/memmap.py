@@ -14,6 +14,7 @@ from typing import (
 import numpy as np
 
 from .document import DocumentArrayGetAttrMixin
+from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
 
@@ -21,7 +22,9 @@ HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 
-class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
+class DocumentArrayMemmap(
+    TraversableSequence, DocumentArrayGetAttrMixin, DocumentArraySearchOpsMixin, Itr
+):
     """
     Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.
 
@@ -104,6 +107,7 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         self._start = 0
         if self._header_map:
             self._start = tmp[-1][1] + tmp[-1][3]
+            self._body.seek(self._start)
 
     def __len__(self):
         return len(self._header_map)
@@ -254,3 +258,11 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArrayGetAttrMixin, Itr):
         shutil.copy(os.path.join(tdir, 'header.bin'), self._header_path)
         shutil.copy(os.path.join(tdir, 'body.bin'), self._body_path)
         self.reload()
+
+    @property
+    def physical_size(self) -> int:
+        """Return the on-disk physical size of this DocumentArrayMemmap, in bytes
+
+        :return: the number of bytes
+        """
+        return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
