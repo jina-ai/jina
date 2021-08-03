@@ -45,7 +45,7 @@ def test_memmap_delete_clear(tmpdir, mocker, idx1, idx99):
     mock.assert_not_called()
 
 
-@pytest.mark.parametrize('idx1, idx99', [(1, 99), ('id_1', 'id_99')])
+@pytest.mark.parametrize('idx1, idx99', [(1, 99)])
 def test_get_set_item(tmpdir, idx1, idx99):
     dam = DocumentArrayMemmap(tmpdir)
     candidates = list(random_docs(100))
@@ -65,8 +65,8 @@ def test_get_set_item(tmpdir, idx1, idx99):
             assert d.text == 'hello'
         if idx == 99:
             assert d.text == 'world'
-    dam['unknown_new'] = Document()
-    assert len(dam) == 101
+    with pytest.raises(ValueError):
+        dam['unknown_new'] = Document()
 
 
 def test_traverse(tmpdir, mocker):

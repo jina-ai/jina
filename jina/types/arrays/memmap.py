@@ -15,7 +15,7 @@ from typing import (
 
 import numpy as np
 
-from .buffer import BufferPoolManager
+from .bpm import BufferPoolManager
 from .document import DocumentArrayGetAttrMixin
 from .neural_ops import DocumentArrayNeuralOpsMixin
 from .search_ops import DocumentArraySearchOpsMixin
@@ -129,7 +129,6 @@ class DocumentArrayMemmap(
         """
         for d in values:
             self.append(d, flush=False)
-            self.buffer_pool.add_or_update(d.id, d)
         self._header.flush()
         self._body.flush()
 
@@ -151,7 +150,7 @@ class DocumentArrayMemmap(
             self._start % PAGE_SIZE
         )  #: the remainder, i.e. the start position given the offset
 
-        if idx:
+        if idx is not None:
             self._header.seek(idx * self._header_entry_size, 0)
         self._header.write(
             np.array(
@@ -164,7 +163,7 @@ class DocumentArrayMemmap(
                 ],
             ).tobytes()
         )
-        if not idx:
+        if idx is None:
             # the idx of the appended document is the idx of the last doc + 1
             idx = (
                 next(reversed(self._header_map.items()))[1][0] + 1
@@ -329,24 +328,23 @@ class DocumentArrayMemmap(
                 str_key = self._int2str_id(key)
                 # override an existing entry
                 self.update(value, key)
-                self.buffer_pool.add_or_update(str_key, value)
 
                 # allows overwriting an existing document
                 if str_key != value.id:
+                    entry = self._header_map.pop(value.id)
                     self._header_map = OrderedDict(
                         [
-                            (str_key, v) if k == value.id else (k, v)
+                            (value.id, entry) if k == str_key else (k, v)
                             for k, v in self._header_map.items()
                         ]
                     )
-                    del self[value.id]
-                    self.buffer_pool.delete_if_exists(value.id)
+                    self.buffer_pool.doc_map.pop(str_key)
             else:
                 raise IndexError(f'`key`={key} is out of range')
         elif isinstance(key, str):
-            value.id = key
-            self.append(value)
-            self.buffer_pool.add_or_update(key, value)
+            if key != value.id:
+                raise ValueError('key must be equal to document id')
+            self.update(value, key)
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 
