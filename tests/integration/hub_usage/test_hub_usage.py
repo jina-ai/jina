@@ -84,7 +84,7 @@ def test_use_from_local_hub_pod_level(
             archive_url=None,
         )
 
-    monkeypatch.setattr(HubIO, '_fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
     a = set_pod_parser().parse_args(['--uses', 'jinahub://hello'])
     with Pod(a):
         pass
@@ -109,7 +109,7 @@ def test_use_from_local_hub_flow_level(
             archive_url=None,
         )
 
-    monkeypatch.setattr(HubIO, '_fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
     with Flow().add(uses='jinahub://hello'):
         pass

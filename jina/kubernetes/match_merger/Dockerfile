@@ -1,4 +1,4 @@
-FROM jinaai/jina:2.0.0rc8
+FROM jinaai/jina
 RUN apt-get -y update && apt-get install -y git
 RUN pip install uvicorn
 RUN pip install fastapi

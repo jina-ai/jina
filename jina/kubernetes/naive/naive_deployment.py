@@ -41,7 +41,7 @@ def deploy_service(
         },
     )
 
-    cluster_ip = kubernetes_tools.get_service_cluster_ip(name, namespace)
+    # cluster_ip = kubernetes_tools.get_service_cluster_ip(name, namespace)
 
     replicas = 1
     logger.info(
@@ -74,7 +74,7 @@ def deploy_service(
                 'port': 8081,
             },
         )
-    return cluster_ip
+    return f'{name}.{namespace}.svc.cluster.local'
 
 
 def deploy_glue_executor(glue_executor, namespace, logger):
@@ -252,7 +252,7 @@ def deploy(flow, deployment_type='k8s'):
         # )
 
         gateway_yaml = create_gateway_yaml(
-            pod_to_pea_and_args, 'gateway-in.f1.svc.cluster.local'
+            pod_to_pea_and_args, f'gateway-in.{flow.args.name}.svc.cluster.local'
         )
 
         kubernetes_tools.create(

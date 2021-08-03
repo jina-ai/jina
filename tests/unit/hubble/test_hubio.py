@@ -237,9 +237,9 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
         '_load_docker_client',
         _gen_load_docker_client(fail_pull=True, fail_get=True),
     )
-    monkeypatch.setattr(HubIO, '_fetch_meta', _mock_fetch)
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
 
-    # Expect failure due to _fetch_meta
+    # Expect failure due to fetch_meta
     with pytest.raises(urllib.error.URLError):
         HubIO(args).pull()
 
@@ -256,7 +256,7 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     )
     assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder'
 
-    # expect successful pull using cached _fetch_meta response and saved image
+    # expect successful pull using cached fetch_meta response and saved image
     fail_meta_fetch = True
     monkeypatch.setattr(
         HubIO,
