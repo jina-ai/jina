@@ -261,7 +261,9 @@ class DocumentArrayMemmap(
         if isinstance(key, str):
             if key in self.buffer_pool:
                 return self.buffer_pool[key]
-            return self.get_doc_by_key(key)
+            doc = self.get_doc_by_key(key)
+            self.buffer_pool.add_or_update(key, doc)
+            return doc
 
         elif isinstance(key, int):
             return self[self._int2str_id(key)]
@@ -338,7 +340,8 @@ class DocumentArrayMemmap(
                             for k, v in self._header_map.items()
                         ]
                     )
-                    self.buffer_pool.doc_map.pop(str_key)
+                    if str_key in self.buffer_pool.doc_map:
+                        self.buffer_pool.doc_map.pop(str_key)
             else:
                 raise IndexError(f'`key`={key} is out of range')
         elif isinstance(key, str):
