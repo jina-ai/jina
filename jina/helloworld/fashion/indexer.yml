@@ -1,0 +1,7 @@
+jtype: SimpleIndexer
+with:
+  index_file_name: index
+requests:
+  /index: index
+  /eval: search
+  /search: search

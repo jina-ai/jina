@@ -4,6 +4,10 @@ from pathlib import Path
 from jina import Flow
 from jina.parsers.helloworld import set_hw_parser
 
+# you need `pip install git+https://github.com/jina-ai/executors/`
+from jinahub.indexers.SimpleIndexer import SimpleIndexer
+from jinahub.encoders.image.ImageTorchEncoder.torch_encoder import ImageTorchEncoder
+
 if __name__ == '__main__':
     from helper import (
         print_result,
@@ -73,8 +77,9 @@ def hello_world(args):
     # load index flow from a YAML file
     f = (
         Flow()
-        .add(uses=MyEncoder, parallel=2)
-        .add(uses=MyIndexer, workspace=args.workdir)
+        .add(uses=ImageTorchEncoder, parallel=2)
+        .add(uses=MyConverter)
+        .add(uses='indexer.yml')
         .add(uses=MyEvaluator)
     )
 
