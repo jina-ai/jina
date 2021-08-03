@@ -1185,8 +1185,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             mermaid_str = mermaid_str.replace('graph LR', 'graph TD')
 
         image_type = 'svg'
-        if output and output.endswith('jpg'):
-            image_type = 'jpg'
+        if output and not output.endswith('svg'):
+            image_type = 'img'
 
         url = op_flow._mermaid_to_url(mermaid_str, image_type)
         showed = False
@@ -1221,9 +1221,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param img_type: image type (svg/jpg)
         :return: the url points to a SVG
         """
-        if img_type == 'jpg':
-            img_type = 'img'
-
         encoded_str = base64.b64encode(bytes(mermaid_str, 'utf-8')).decode('utf-8')
 
         return f'https://mermaid.ink/{img_type}/{encoded_str}'
