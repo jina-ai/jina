@@ -59,6 +59,17 @@ def da_dam_for_embedding_distance_computation(
 
 
 @pytest.fixture
+def da_small_dam_for_embedding_distance_computation(
+    tmpdir, doc_lists_for_embedding_distance_computation
+):
+    D1, D2 = doc_lists_for_embedding_distance_computation
+    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=3)
+    dam.extend(D2)
+    da = DocumentArray(D1)
+    return da, dam
+
+
+@pytest.fixture
 def dam_dam_for_embedding_distance_computation(
     tmpdir, doc_lists_for_embedding_distance_computation
 ):
@@ -80,12 +91,14 @@ def docarray_combinations(
     da_da_for_embedding_distance_computation,
     da_dam_for_embedding_distance_computation,
     dam_dam_for_embedding_distance_computation,
+    da_small_dam_for_embedding_distance_computation,
 ):
     return [
         dam_da_for_embedding_distance_computation,
         da_da_for_embedding_distance_computation,
         da_dam_for_embedding_distance_computation,
         dam_dam_for_embedding_distance_computation,
+        da_small_dam_for_embedding_distance_computation,
     ]
 
 
