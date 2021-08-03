@@ -1,5 +1,5 @@
-import os
 import asyncio
+import os
 import pathlib
 import random
 import shutil
@@ -9,10 +9,6 @@ import time
 
 import pytest
 from fastapi.testclient import TestClient
-
-from jina.enums import RemoteWorkspaceState
-from jina.excepts import NoAvailablePortError
-from jina.executors.metas import get_default_metas
 
 
 @pytest.fixture(scope='function')
@@ -24,6 +20,8 @@ def random_workspace_name():
 
 @pytest.fixture(scope='function')
 def test_metas(tmpdir, random_workspace_name):
+    from jina.executors.metas import get_default_metas
+
     os.environ[random_workspace_name] = str(tmpdir)
     metas = get_default_metas()
     metas['workspace'] = os.environ[random_workspace_name]
@@ -95,6 +93,7 @@ def docker_compose(request):
 def patched_random_port(mocker):
     used_ports = set()
     from jina.helper import random_port
+    from jina.excepts import NoAvailablePortError
 
     def _random_port():
 
@@ -150,6 +149,7 @@ def _create_workspace_directly(cur_dir):
         workspace_id=workspace_id, daemon_file=daemon_file, logger=daemon_logger
     )
     network_id = Dockerizer.network(workspace_id=workspace_id)
+    from jina.enums import RemoteWorkspaceState
 
     workspace_store[workspace_id] = WorkspaceItem(
         state=RemoteWorkspaceState.ACTIVE,

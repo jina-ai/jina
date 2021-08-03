@@ -107,7 +107,6 @@ def test_persist(tmpdir):
     for doc in docs:
         doc.scores['score'] = 50
         doc.evaluations['eval'] = 100
-        doc.update_content_hash()
 
     dam.extend(docs)
 
@@ -363,3 +362,10 @@ def test_memmap_buffer_synched(tmpdir):
         assert dam.buffer_pool[i].id == dam[i].id
         doc.content = 'new'
         assert dam[i].content == 'new'
+
+
+def test_memmap_physical_size(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    assert da.physical_size == 0
+    da.append(Document())
+    assert da.physical_size > 0

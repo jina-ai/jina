@@ -17,10 +17,7 @@ DOCUMENTS_PER_LEVEL = 1
 def document_factory():
     class DocumentFactory(object):
         def create(self, idx, text):
-            with Document(id=idx) as d:
-                d.tags['id'] = idx
-                d.text = text
-            return d
+            return Document(id=idx, tags={'id': idx}, text=text)
 
     return DocumentFactory()
 
@@ -181,8 +178,7 @@ def test_docarray_reverse(docs, docarray):
 
 
 def test_match_chunk_array():
-    with Document() as d:
-        d.content = 'hello world'
+    d = Document(content='hello world')
 
     m = Document()
     d.matches.append(m)
@@ -200,19 +196,19 @@ def test_match_chunk_array():
 
 
 def add_chunk(doc):
-    with Document() as chunk:
-        chunk.granularity = doc.granularity + 1
-        chunk.adjacency = doc.adjacency
-        doc.chunks.append(chunk)
-        return chunk
+    chunk = Document()
+    chunk.granularity = doc.granularity + 1
+    chunk.adjacency = doc.adjacency
+    doc.chunks.append(chunk)
+    return chunk
 
 
 def add_match(doc):
-    with Document() as match:
-        match.granularity = doc.granularity
-        match.adjacency = doc.adjacency + 1
-        doc.matches.append(match)
-        return match
+    match = Document()
+    match.granularity = doc.granularity
+    match.adjacency = doc.adjacency + 1
+    doc.matches.append(match)
+    return match
 
 
 def test_doc_array_from_generator():
@@ -300,7 +296,11 @@ def test_da_reverse():
     )
     assert len(da) == 10
     assert da[0].embedding.shape == (10,)
+    da0_id = da[0].id
     da.reverse()
+    assert da[0].id != da0_id
+    assert da[da0_id].id == da0_id
+    assert da[-1].id == da0_id
     assert da[0].embedding.shape == (1,)
 
 
@@ -401,6 +401,8 @@ def test_cache_invalidation_sort_reverse(docarray_for_cache):
 
 def test_sample():
     da = DocumentArray(random_docs(100))
+    sampled = da.sample(1)
+    assert len(sampled) == 1
     sampled = da.sample(5)
     assert len(sampled) == 5
     assert isinstance(sampled, DocumentArray)
