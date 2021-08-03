@@ -147,6 +147,13 @@ class BasePod:
         return self.args.name
 
     @property
+    def connect_to_predecessor(self) -> str:
+        """True, if the Pod should open a connect socket in the HeadPea to the predecessor Pod.
+        .. # noqa: DAR201
+        """
+        return self.args.connect_to_predecessor
+
+    @property
     def head_host(self) -> str:
         """Get the host of the HeadPea of this pod
         .. # noqa: DAR201
