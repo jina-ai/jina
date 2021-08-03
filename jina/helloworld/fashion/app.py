@@ -77,7 +77,7 @@ def hello_world(args):
     # load index flow from a YAML file
     f = (
         Flow()
-        .add(uses=ImageTorchEncoder, parallel=2)
+        .add(uses='jinahub://ImageTorchEncoder', parallel=2)
         .add(uses=MyConverter)
         .add(uses='indexer.yml')
         .add(uses=MyEvaluator)
@@ -93,9 +93,7 @@ def hello_world(args):
 
         f.post(
             '/eval',
-            query_generator(
-                num_docs=args.num_query, target=targets, with_groundtruth=True
-            ),
+            query_generator(num_docs=10, target=targets, with_groundtruth=True),
             shuffle=True,
             on_done=print_result,
             request_size=args.request_size,
