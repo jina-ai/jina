@@ -6,6 +6,12 @@ from jina.hubble.hubio import HubIO
 from jina.kubernetes import kubernetes_tools
 from jina.peapods import BasePod, Pod
 
+IS_LOCAL = False
+
+if IS_LOCAL:
+    gateway_image = 'generic-gateway'
+else:
+    gateway_image = 'gcr.io/jina-showcase/generic-gateway'
 
 def to_dns_name(name):
     return name.replace('/', '-')
@@ -118,7 +124,7 @@ def deploy(flow, deployment_type='k8s'):
                     pod_to_pea_and_args[pod_name].append(
                         [
                             pod.peas_args[name].name,
-                            {'host_in': cluster_ip, 'parallel': pod.args.parallel},
+                            {'host_in': cluster_ip, 'parallel': pod.args.parallel, 'needs': pod.needs},
                         ]
                     )
 
@@ -135,27 +141,32 @@ def deploy(flow, deployment_type='k8s'):
                     init_image_name = get_image_name('jinahub+docker://PostgreSQLStorage')
                     postgres_cluster_ip = "10.3.255.243"
 
-
-                    init_container = {
-                        'init-name': 'dumper-init',
-                        'init-image': init_image_name,
-                        'init-command': '["python", "-c", "'
-                                    'from workspace.PostgreSQLStorage import PostgreSQLStorage; '
+                    python_script = (
+                                    'import os; '
+                                    'os.chdir(\'/\'); '
+                                    'from workspace import PostgreSQLStorage; '
                                     'storage = PostgreSQLStorage('
-                                        f'hostname = "{postgres_cluster_ip}",' 
-                                        'port = 5432,'
-                                        'username = "postgresadmin",'
-                                        'password = "1235813",'
-                                        'database = "postgresdb",'
-                                        f'table = {pod_name},'
+                                        f'hostname="{postgres_cluster_ip}",' 
+                                        'port=5432,'
+                                        'username="postgresadmin",'
+                                        'password="1235813",'
+                                        'database="postgresdb",'
+                                        f'table="{pod_name}",'
                                     '); '
                                     'storage.dump(parameters={'
                                         '"dump_path": "/shared", '
                                         f'"shards": {shards}'
-                                   '});'
-                                    '"]'
-                    }
+                                   '});').replace("\"", "\\\"")
 
+
+                    init_container = {
+                        'init-name': 'dumper-init',
+                        'init-image': init_image_name,
+                        'init-command': '["python", "-c", "' + python_script + '"]'
+
+
+                    }
+                    print('init-container')
                     # initContainers:
                     # - name: init - myservice
                     # image: busybox:1.28
@@ -165,6 +176,8 @@ def deploy(flow, deployment_type='k8s'):
                     init_container = None
 
                 double_quote = '"'
+                override_with = pea_arg.override_with.__str__().replace("'", "\\\"") if pea_arg.override_with else None
+                override_metas = {'pea_id': pea_arg.pea_id}.__str__().replace("'", "\\\"")
                 cluster_ip = deploy_service(
                     pea_dns_name,
                     namespace,
@@ -172,7 +185,9 @@ def deploy(flow, deployment_type='k8s'):
                     container_cmd='["jina"]',
                     container_args=f'["executor", '
                                    f'"--uses", "config.yml", '
-                                   f'{f"{double_quote}--override-with{double_quote}, {double_quote}{pea_arg.override_with}{double_quote}, " if pea_arg.override_with else ""} '
+                                   f'"--pea-id", "{pea_arg.pea_id}", '
+                                   f'"--override-metas", "{override_metas}", '
+                                   f'{f"{double_quote}--override-with{double_quote}, {double_quote}{override_with}{double_quote}, " if pea_arg.override_with else ""} '
                                    f'"--port-in", "8081", '
                                    f'"--dynamic-routing-in", "--dynamic-routing-out", '
                                    f'"--socket-in", "ROUTER_BIND", "--socket-out", "ROUTER_BIND"]',
@@ -181,7 +196,7 @@ def deploy(flow, deployment_type='k8s'):
                 )
 
                 pod_to_pea_and_args[pod_name].append(
-                    [pea_name, {'host_in': cluster_ip, 'parallel': pod.args.parallel}]
+                    [pea_name, {'host_in': cluster_ip, 'parallel': pod.args.parallel, 'needs': pod.needs}]
                 )
 
         flow.logger.info(f'🔒\tCreate "gateway service"')
@@ -214,6 +229,7 @@ def deploy(flow, deployment_type='k8s'):
         gateway_yaml = create_gateway_yaml(
             pod_to_pea_and_args, 'gateway-in.f1.svc.cluster.local'
         )
+
         kubernetes_tools.create(
             'deployment',
             {
@@ -222,7 +238,7 @@ def deploy(flow, deployment_type='k8s'):
                 'port': 8080,
                 'command': "[\"python\"]",
                 'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
-                'image': 'gcr.io/jina-showcase/generic-gateway',
+                'image': gateway_image,
                 'namespace': namespace,
             },
         )
@@ -255,6 +271,11 @@ def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in):
             peas-hosts: ["{'", "'.join(peas_hosts)}"]
             external: True
             """
+        needs = pea_to_args[0][1]['needs']
+        if needs:
+            yaml += (f"""
+            needs: [{', '.join(needs)}]
+            """)
 
     # return yaml
     base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')

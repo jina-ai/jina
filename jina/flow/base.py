@@ -1683,6 +1683,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             host: {args['host_in']}
             external: True
             """
+            if args.needs:
+                yaml += (f"""
+            needs: [{', '.join(args.needs)}]
+                """)
 
         # return yaml
         base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')

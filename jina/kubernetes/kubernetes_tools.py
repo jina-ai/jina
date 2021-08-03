@@ -122,8 +122,7 @@ def get_service_cluster_ip(service_name, namespace):
 
 def log_in_thread(pod_name, namespace, container):
     pod = v1.read_namespaced_pod(pod_name, namespace)
-    print("pod.containers is not tested") #TODO
-    containers = pod.containers
+    containers = [container.name for container in pod.spec.containers]
     if container not in containers:
         return
     w = Watch()

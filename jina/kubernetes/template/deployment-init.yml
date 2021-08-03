@@ -8,15 +8,23 @@ spec:
   selector:
     matchLabels:
       app: {name}
+
+
   template:
     metadata:
       labels:
         app: {name}
     spec:
+      volumes:
+        - name: shared
+          emptyDir: {}
       initContainers:
       - name: {init-name}
         image: {init-image}
         command: {init-command}
+        volumeMounts:
+          - name: shared
+            mountPath: /shared
       containers:
       - name: executor
         image: {image}
@@ -31,4 +39,7 @@ spec:
           value: "1"
         - name: WORKER_CLASS
           value: "uvicorn.workers.UvicornH11Worker"
+        volumeMounts:
+          - name: shared
+            mountPath: /shared
 
