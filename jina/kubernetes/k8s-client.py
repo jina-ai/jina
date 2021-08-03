@@ -19,7 +19,7 @@ host = f'http://{ip}'
 data = [{'text': 'hello jina'} for _ in range(1)]
 def make_request(current):
     resp = requests.post(f'{host}/search', json={'data': data})
-    print('resp', resp.status_code, resp.json)
+    print('resp', resp.status_code, resp.json())
 
 # with Pool(10) as p:
 #     p.map(make_request, range(10))
