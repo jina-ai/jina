@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import scipy.sparse as sp
+from scipy.spatial.distance import cdist as scipy_cdist
 import pytest
 
 from jina import Document, DocumentArray
@@ -61,8 +62,8 @@ def test_matching_retrieves_correct_number(
         assert len(m) == limit
 
 
-@pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
-def test_matching_same_results(
+@pytest.mark.parametrize("metric", ["sqeuclidean", "cosine"])
+def test_matching_same_results_with_sparse(
     docarrays_for_embedding_distance_computation,
     docarrays_for_embedding_distance_computation_sparse,
     metric,
@@ -86,6 +87,34 @@ def test_matching_same_results(
             distances_sparse.extend([d.scores[metric].value])
 
     np.testing.assert_equal(distances, distances_sparse)
+
+
+@pytest.mark.parametrize("metric", ["euclidean", "cosine"])
+def test_matching_scipy_cdist(
+    docarrays_for_embedding_distance_computation,
+    metric,
+):
+    def scipy_cdist_metric(X, Y):
+        return scipy_cdist(X, Y, metric=metric)
+
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1_scipy = copy.deepcopy(D1)
+
+    # match with our custom metric
+    D1.match(D2, metric=metric)
+    distances = []
+    for m in D1.get_attributes("matches"):
+        for d in m:
+            distances.extend([d.scores[metric].value])
+
+    # match with callable cdist function from scipy
+    D1_scipy.match(D2, metric=scipy_cdist_metric)
+    distances_scipy = []
+    for m in D1.get_attributes("matches"):
+        for d in m:
+            distances_scipy.extend([d.scores[metric].value])
+
+    np.testing.assert_equal(distances, distances_scipy)
 
 
 @pytest.mark.parametrize(
