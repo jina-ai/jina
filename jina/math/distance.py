@@ -2,10 +2,10 @@ import numpy as np
 
 from typing import Union
 
-if False:
+if TYPE_CHECKING:
     import scipy
 
-    _SPARSE_SCIPY_TYPES = Union[
+_SPARSE_SCIPY_TYPES = Union[
         'scipy.sparse.csr_matrix',
         'scipy.sparse.csc_matrix',
         'scipy.sparse.bsr_matrix',
