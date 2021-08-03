@@ -13,11 +13,20 @@ if IS_LOCAL:
 else:
     gateway_image = 'gcr.io/jina-showcase/generic-gateway'
 
+
 def to_dns_name(name):
     return name.replace('/', '-')
 
 
-def deploy_service(name, namespace, image_name, container_cmd, container_args, logger, init_container=None):
+def deploy_service(
+    name,
+    namespace,
+    image_name,
+    container_cmd,
+    container_args,
+    logger,
+    init_container=None,
+):
     logger.info(
         f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}"'
     )
@@ -35,7 +44,9 @@ def deploy_service(name, namespace, image_name, container_cmd, container_args, l
     cluster_ip = kubernetes_tools.get_service_cluster_ip(name, namespace)
 
     replicas = 1
-    logger.info(f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas} and init_container {init_container is not None}')
+    logger.info(
+        f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas} and init_container {init_container is not None}'
+    )
     if init_container:
         kubernetes_tools.create(
             'deployment-init',
@@ -47,7 +58,7 @@ def deploy_service(name, namespace, image_name, container_cmd, container_args, l
                 'command': container_cmd,
                 'args': container_args,
                 'port': 8081,
-                **init_container
+                **init_container,
             },
         )
     else:
@@ -124,10 +135,13 @@ def deploy(flow, deployment_type='k8s'):
                     pod_to_pea_and_args[pod_name].append(
                         [
                             pod.peas_args[name].name,
-                            {'host_in': cluster_ip, 'parallel': pod.args.parallel, 'needs': pod.needs},
+                            {
+                                'host_in': cluster_ip,
+                                'parallel': pod.args.parallel,
+                                'needs': pod.needs,
+                            },
                         ]
                     )
-
 
             image_name = get_image_name(pod.args.uses)
 
@@ -138,33 +152,33 @@ def deploy(flow, deployment_type='k8s'):
 
                 if pod.args.uses == 'jinahub+docker://AnnoySearcher':
                     shards = len(pod.peas_args['peas'])
-                    init_image_name = get_image_name('jinahub+docker://PostgreSQLStorage')
+                    init_image_name = get_image_name(
+                        'jinahub+docker://PostgreSQLStorage'
+                    )
                     postgres_cluster_ip = "10.3.255.243"
 
                     python_script = (
-                                    'import os; '
-                                    'os.chdir(\'/\'); '
-                                    'from workspace import PostgreSQLStorage; '
-                                    'storage = PostgreSQLStorage('
-                                        f'hostname="{postgres_cluster_ip}",' 
-                                        'port=5432,'
-                                        'username="postgresadmin",'
-                                        'password="1235813",'
-                                        'database="postgresdb",'
-                                        f'table="{pod_name}",'
-                                    '); '
-                                    'storage.dump(parameters={'
-                                        '"dump_path": "/shared", '
-                                        f'"shards": {shards}'
-                                   '});').replace("\"", "\\\"")
-
+                        'import os; '
+                        'os.chdir(\'/\'); '
+                        'from workspace import PostgreSQLStorage; '
+                        'storage = PostgreSQLStorage('
+                        f'hostname="{postgres_cluster_ip}",'
+                        'port=5432,'
+                        'username="postgresadmin",'
+                        'password="1235813",'
+                        'database="postgresdb",'
+                        f'table="{pod_name}",'
+                        '); '
+                        'storage.dump(parameters={'
+                        '"dump_path": "/shared", '
+                        f'"shards": {shards}'
+                        '});'
+                    ).replace("\"", "\\\"")
 
                     init_container = {
                         'init-name': 'dumper-init',
                         'init-image': init_image_name,
-                        'init-command': '["python", "-c", "' + python_script + '"]'
-
-
+                        'init-command': '["python", "-c", "' + python_script + '"]',
                     }
                     print('init-container')
                     # initContainers:
@@ -176,7 +190,11 @@ def deploy(flow, deployment_type='k8s'):
                     init_container = None
 
                 double_quote = '"'
-                uses_with = pea_arg.uses_with.__str__().replace("'", "\\\"") if pea_arg.uses_with else None
+                uses_with = (
+                    pea_arg.uses_with.__str__().replace("'", "\\\"")
+                    if pea_arg.uses_with
+                    else None
+                )
                 uses_metas = {'pea_id': pea_arg.pea_id}.__str__().replace("'", "\\\"")
                 cluster_ip = deploy_service(
                     pea_dns_name,
@@ -184,19 +202,26 @@ def deploy(flow, deployment_type='k8s'):
                     image_name,
                     container_cmd='["jina"]',
                     container_args=f'["executor", '
-                                   f'"--uses", "config.yml", '
-                                   f'"--pea-id", "{pea_arg.pea_id}", '
-                                   f'"--override-metas", "{uses_metas}", '
-                                   f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
-                                   f'"--port-in", "8081", '
-                                   f'"--dynamic-routing-in", "--dynamic-routing-out", '
-                                   f'"--socket-in", "ROUTER_BIND", "--socket-out", "ROUTER_BIND"]',
+                    f'"--uses", "config.yml", '
+                    f'"--pea-id", "{pea_arg.pea_id}", '
+                    f'"--override-metas", "{uses_metas}", '
+                    f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
+                    f'"--port-in", "8081", '
+                    f'"--dynamic-routing-in", "--dynamic-routing-out", '
+                    f'"--socket-in", "ROUTER_BIND", "--socket-out", "ROUTER_BIND"]',
                     logger=flow.logger,
-                    init_container=init_container
+                    init_container=init_container,
                 )
 
                 pod_to_pea_and_args[pod_name].append(
-                    [pea_name, {'host_in': cluster_ip, 'parallel': pod.args.parallel, 'needs': pod.needs}]
+                    [
+                        pea_name,
+                        {
+                            'host_in': cluster_ip,
+                            'parallel': pod.args.parallel,
+                            'needs': pod.needs,
+                        },
+                    ]
                 )
 
         flow.logger.info(f'🔒\tCreate "gateway service"')
@@ -273,9 +298,9 @@ def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in):
             """
         needs = pea_to_args[0][1]['needs']
         if needs:
-            yaml += (f"""
+            yaml += f"""
             needs: [{', '.join(needs)}]
-            """)
+            """
 
     # return yaml
     base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')

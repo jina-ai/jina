@@ -25,14 +25,18 @@ class PostgresConfig:
 class PostgresDefaultDeployment:
 
     RESOURCES = {
-      'config': 'postgres-configmap.yml',
-      'deployment': 'postgres-deployment.yml',
-      'pv': 'postgres-pv.yml',
-      'pvc': 'postgres-pvc.yml',
-      'service': 'postgres-service.yml'
+        'config': 'postgres-configmap.yml',
+        'deployment': 'postgres-deployment.yml',
+        'pv': 'postgres-pv.yml',
+        'pvc': 'postgres-pvc.yml',
+        'service': 'postgres-service.yml',
     }
 
-    def __init__(self, k8s_client, path_to_config_folder: Optional[str] = 'jina/kubernetes/postgres_deployment'):
+    def __init__(
+        self,
+        k8s_client,
+        path_to_config_folder: Optional[str] = 'jina/kubernetes/postgres_deployment',
+    ):
         self._k8s_client = k8s_client
         self._path_to_config_folder = path_to_config_folder
         self._logger = JinaLogger(self.__class__.__name__)
@@ -54,12 +58,13 @@ class PostgresDefaultDeployment:
             hostname=service_dns,
             username='postgresadmin',
             database='postgresdb',
-            password='1235813'
+            password='1235813',
         )
 
 
 class JinaPodAsMicroService:
     """ Deploys a single executor as a micro-service-styled deployment + service in kubernetes. """
+
     def __init__(self, jina_pod: Pod, namespace: str, service_port: int = 8081):
         self._pod = jina_pod
         self._logger = JinaLogger(self.__class__.__name__)
@@ -78,7 +83,9 @@ class JinaPodAsMicroService:
             f'🔋\tCreate Service for "{self._pod.name}" with image "{name}" pulling from "{image_name}"'
         )
         self._create_service(name)
-        pod_to_args[self._pod.name] = {'host_in': f'{name.lower()}.{self._namespace}.svc.cluster.local'}
+        pod_to_args[self._pod.name] = {
+            'host_in': f'{name.lower()}.{self._namespace}.svc.cluster.local'
+        }
 
         self._logger.info(
             f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas}'
@@ -87,15 +94,19 @@ class JinaPodAsMicroService:
         return pod_to_args
 
     def _create_deployment(self, image_name, name, replicas, override_with):
-        container_args = "[\"--uses\", \"config.yml\", " \
-                        "\"--port-in\", \"8081\"," \
-                        " \"--dynamic-routing-in\"," \
-                        " \"--dynamic-routing-out\"," \
-                        " \"--socket-in\", \"ROUTER_BIND\"," \
-                        " \"--socket-out\", \"ROUTER_BIND\"]"
+        container_args = (
+            "[\"--uses\", \"config.yml\", "
+            "\"--port-in\", \"8081\","
+            " \"--dynamic-routing-in\","
+            " \"--dynamic-routing-out\","
+            " \"--socket-in\", \"ROUTER_BIND\","
+            " \"--socket-out\", \"ROUTER_BIND\"]"
+        )
         if override_with is not None:
             override_with = override_with.__str__().replace("'", "\"")
-            container_args = f"[\"--override-with\", \'{override_with}\', " + container_args[1:]
+            container_args = (
+                f"[\"--override-with\", \'{override_with}\', " + container_args[1:]
+            )
 
         kubernetes_tools.create(
             'deployment',
@@ -135,10 +146,15 @@ class K8sOttoIndexFlow:
 
     @property
     def flow_object(self) -> Flow:
-        return (Flow()
-                .add(name='cliptext', uses='jinahub+docker://CLIPTextEncoder')
-                .add(name='storage', uses='jinahub+docker://PostgreSQLStorage',
-                     override_with=self._postgres_config.__dict__))
+        return (
+            Flow()
+            .add(name='cliptext', uses='jinahub+docker://CLIPTextEncoder')
+            .add(
+                name='storage',
+                uses='jinahub+docker://PostgreSQLStorage',
+                override_with=self._postgres_config.__dict__,
+            )
+        )
 
     def deploy(self):
         kubernetes_tools.create('namespace', {'name': self._namespace})
@@ -162,6 +178,7 @@ class K8sOttoIndexFlow:
                     'type': 'ClusterIP',
                 },
             )
+
         _create_gateway_service(self._namespace, 'gateway-exposed', 8080)
         _create_gateway_service(self._namespace, 'gateway-in', 8081)
 
@@ -178,7 +195,7 @@ class K8sOttoIndexFlow:
                 'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
                 'image': self.GENERIC_GATEWAY_CONTAINER_NAME,
                 'namespace': self._namespace,
-            }
+            },
         )
 
     def _deploy_pods(self) -> Dict:
@@ -186,7 +203,9 @@ class K8sOttoIndexFlow:
         for pod_name, pod in self.flow_object._pod_nodes.items():
             if pod_name == 'gateway':
                 continue
-            pod_to_args = JinaPodAsMicroService(pod, self._namespace).deploy_as_micro_service()
+            pod_to_args = JinaPodAsMicroService(
+                pod, self._namespace
+            ).deploy_as_micro_service()
             pods_to_args.update(pod_to_args)
         return pods_to_args
 
