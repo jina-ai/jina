@@ -89,6 +89,30 @@ _all_doc_content_keys = {'content', 'uri', 'blob', 'text', 'buffer'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
+_meth_profiler = {}
+
+
+def benchmark(function):
+    from jina.logging.profile import TimeContext
+
+    def wrapper(*args, **kwargs):
+        with TimeContext(f'Running {function.__name__}') as timer:
+            func = function(*args, **kwargs)
+
+        if function.__name__ not in _meth_profiler.keys():
+            _meth_profiler[function.__name__] = {'time': timer.duration, 'calls': 1}
+        else:
+            _meth_profiler[function.__name__]['time'] += timer.duration
+            _meth_profiler[function.__name__]['calls'] += 1
+
+        print(f' {function.__name__} duration {timer.duration}')
+        return func
+
+    if os.environ.get('JINA_BENCHMARK', False):
+        return wrapper
+    else:
+        return function
+
 
 class Document(ProtoTypeMixin):
     """
@@ -142,6 +166,7 @@ class Document(ProtoTypeMixin):
 
     """
 
+    @benchmark
     def __init__(
         self,
         document: Optional[DocumentSourceType] = None,
@@ -382,6 +407,7 @@ class Document(ProtoTypeMixin):
                 except AttributeError:
                     setattr(destination._pb_body, field, getattr(source, field))
 
+    @benchmark
     def update(
         self,
         source: 'Document',
@@ -508,6 +534,7 @@ class Document(ProtoTypeMixin):
         self._update_ndarray('blob', value)
 
     @property
+    @benchmark
     def embedding(self) -> 'SparseArrayType':
         """Return ``embedding`` of the content of a Document.
 
