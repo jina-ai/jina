@@ -147,15 +147,6 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         else argparse.SUPPRESS,
     )
 
-    parser.add_argument(
-        '--dynamic-routing',
-        action='store_true',
-        default=True,
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
     gp.add_argument(
         '--dynamic-routing-out',
         action='store_true',
