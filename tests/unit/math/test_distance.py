@@ -11,7 +11,7 @@ from scipy.spatial.distance import cdist, pdist
 
 
 @pytest.mark.parametrize(
-    "func,data_type",
+    'func,data_type',
     [
         (cosine, np.array),
         (sparse_sqeuclidean, sp.csr_matrix),
@@ -33,7 +33,7 @@ def test_euclidean_distance_squared(func, data_type, embeddings, embedding_query
 
 
 @pytest.mark.parametrize(
-    "func,data_type",
+    'func,data_type',
     [
         (cosine, np.array),
         (sparse_cosine, sp.csr_matrix),
@@ -54,20 +54,20 @@ def test_cosine_distance_squared(func, data_type, embeddings, embedding_query):
 
 
 @pytest.mark.parametrize(
-    "metric, sparse_type",
+    'metric, sparse_type',
     [
-        ("cosine", sp.csr_matrix),
-        ("cosine", sp.csc_matrix),
-        ("cosine", sp.coo_matrix),
-        ("cosine", sp.csr_matrix),
-        ("sqeuclidean", sp.csr_matrix),
-        ("sqeuclidean", sp.csc_matrix),
-        ("sqeuclidean", sp.coo_matrix),
-        ("sqeuclidean", sp.csr_matrix),
-        ("euclidean", sp.csr_matrix),
-        ("euclidean", sp.csc_matrix),
-        ("euclidean", sp.coo_matrix),
-        ("euclidean", sp.csr_matrix),
+        ('cosine', sp.csr_matrix),
+        ('cosine', sp.csc_matrix),
+        ('cosine', sp.coo_matrix),
+        ('cosine', sp.csr_matrix),
+        ('sqeuclidean', sp.csr_matrix),
+        ('sqeuclidean', sp.csc_matrix),
+        ('sqeuclidean', sp.coo_matrix),
+        ('sqeuclidean', sp.csr_matrix),
+        ('euclidean', sp.csr_matrix),
+        ('euclidean', sp.csc_matrix),
+        ('euclidean', sp.coo_matrix),
+        ('euclidean', sp.csr_matrix),
     ],
 )
 def test_cdist(metric, sparse_type, embeddings, other_embeddings):
@@ -95,20 +95,20 @@ def test_cdist_unkown_metric(embeddings):
 
 
 @pytest.mark.parametrize(
-    "metric, sparse_type",
+    'metric, sparse_type',
     [
-        ("cosine", sp.csr_matrix),
-        ("cosine", sp.csc_matrix),
-        ("cosine", sp.coo_matrix),
-        ("cosine", sp.csr_matrix),
-        ("sqeuclidean", sp.csr_matrix),
-        ("sqeuclidean", sp.csc_matrix),
-        ("sqeuclidean", sp.coo_matrix),
-        ("sqeuclidean", sp.csr_matrix),
-        ("euclidean", sp.csr_matrix),
-        ("euclidean", sp.csc_matrix),
-        ("euclidean", sp.coo_matrix),
-        ("euclidean", sp.csr_matrix),
+        ('cosine', sp.csr_matrix),
+        ('cosine', sp.csc_matrix),
+        ('cosine', sp.coo_matrix),
+        ('cosine', sp.csr_matrix),
+        ('sqeuclidean', sp.csr_matrix),
+        ('sqeuclidean', sp.csc_matrix),
+        ('sqeuclidean', sp.coo_matrix),
+        ('sqeuclidean', sp.csr_matrix),
+        ('euclidean', sp.csr_matrix),
+        ('euclidean', sp.csc_matrix),
+        ('euclidean', sp.coo_matrix),
+        ('euclidean', sp.csr_matrix),
     ],
 )
 def test_pdist(metric, sparse_type, embeddings, other_embeddings):
