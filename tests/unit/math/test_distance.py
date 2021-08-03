@@ -3,10 +3,11 @@ import pytest
 
 from jina.math.distance import sqeuclidean, cosine, sparse_cosine, sparse_sqeuclidean
 from jina.math.distance import cdist as jina_cdist
+from jina.math.distance import pdist as jina_pdist
 from jina.math.helper import minmax_normalize
 
 import scipy.sparse as sp
-from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist, pdist
 
 
 @pytest.mark.parametrize(
@@ -86,6 +87,42 @@ def test_cdist(metric, sparse_type, embeddings, other_embeddings):
     np.testing.assert_almost_equal(result_sparse, result_dense)
     np.testing.assert_almost_equal(result_dense, result_scipy)
     np.testing.assert_almost_equal(result_sparse, result_scipy)
+
+
+def test_cdist_unkown_metric(embeddings):
+    with pytest.raises(ValueError):
+        jina_cdist(embeddings, embeddings, metric='Cosinatrus')
+
+
+@pytest.mark.parametrize(
+    "metric, sparse_type",
+    [
+        ("cosine", sp.csr_matrix),
+        ("cosine", sp.csc_matrix),
+        ("cosine", sp.coo_matrix),
+        ("cosine", sp.csr_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("sqeuclidean", sp.csc_matrix),
+        ("sqeuclidean", sp.coo_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("euclidean", sp.csr_matrix),
+        ("euclidean", sp.csc_matrix),
+        ("euclidean", sp.coo_matrix),
+        ("euclidean", sp.csr_matrix),
+    ],
+)
+def test_pdist(metric, sparse_type, embeddings, other_embeddings):
+    """
+    Tests behaviour `jina.math.distance.pdist`  provides same results with sparse and dense versions.
+    """
+    result_dense = jina_pdist(embeddings, metric=metric)
+    result_sparse = jina_pdist(
+        sparse_type(embeddings),
+        metric=metric,
+        is_sparse=True,
+    )
+
+    np.testing.assert_almost_equal(result_sparse, result_dense)
 
 
 def test_new_distances_equal_previous_distances():
