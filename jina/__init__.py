@@ -9,6 +9,7 @@ sub-modules, as described below.
 
 import datetime as _datetime
 import os as _os
+import platform as _platform
 import signal as _signal
 import sys as _sys
 import types as _types
@@ -29,6 +30,15 @@ _warnings.formatwarning = _warning_on_one_line
 if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
     raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
+# DO SOME OS-WISE PATCHES
+if _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
+    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
+    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+    from multiprocessing import set_start_method as _set_start_method
+
+    _set_start_method('fork')
+
+# JINA_MP_START_METHOD has higher priority than os-patch
 _start_method = _os.environ.get('JINA_MP_START_METHOD', None)
 
 if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
