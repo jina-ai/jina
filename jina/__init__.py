@@ -16,6 +16,10 @@ import types as _types
 import warnings as _warnings
 
 
+if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
+    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
+
+
 def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
     return '\033[1;33m%s: %s\033[0m \033[1;30m(raised from %s:%s)\033[0m\n' % (
         category.__name__,
@@ -27,9 +31,8 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
 
 _warnings.formatwarning = _warning_on_one_line
 
-if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
-    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
-
+# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
+_os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 # JINA_MP_START_METHOD has higher priority than os-patch
 _start_method = _os.environ.get('JINA_MP_START_METHOD', None)
@@ -48,9 +51,6 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     from multiprocessing import set_start_method as _set_start_method
 
     _set_start_method('fork')
-
-# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
-_os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
