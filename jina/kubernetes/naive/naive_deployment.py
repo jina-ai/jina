@@ -176,8 +176,8 @@ def deploy(flow, deployment_type='k8s'):
                     init_container = None
 
                 double_quote = '"'
-                override_with = pea_arg.override_with.__str__().replace("'", "\\\"") if pea_arg.override_with else None
-                override_metas = {'pea_id': pea_arg.pea_id}.__str__().replace("'", "\\\"")
+                uses_with = pea_arg.uses_with.__str__().replace("'", "\\\"") if pea_arg.uses_with else None
+                uses_metas = {'pea_id': pea_arg.pea_id}.__str__().replace("'", "\\\"")
                 cluster_ip = deploy_service(
                     pea_dns_name,
                     namespace,
@@ -186,8 +186,8 @@ def deploy(flow, deployment_type='k8s'):
                     container_args=f'["executor", '
                                    f'"--uses", "config.yml", '
                                    f'"--pea-id", "{pea_arg.pea_id}", '
-                                   f'"--override-metas", "{override_metas}", '
-                                   f'{f"{double_quote}--override-with{double_quote}, {double_quote}{override_with}{double_quote}, " if pea_arg.override_with else ""} '
+                                   f'"--override-metas", "{uses_metas}", '
+                                   f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
                                    f'"--port-in", "8081", '
                                    f'"--dynamic-routing-in", "--dynamic-routing-out", '
                                    f'"--socket-in", "ROUTER_BIND", "--socket-out", "ROUTER_BIND"]',
