@@ -2,6 +2,7 @@ import copy
 import os
 
 import numpy as np
+import scipy.sparse as sp
 import pytest
 
 from jina import Document, DocumentArray
@@ -32,6 +33,24 @@ def docarrays_for_embedding_distance_computation():
     return D1, D2
 
 
+@pytest.fixture
+def docarrays_for_embedding_distance_computation_sparse():
+    d1 = Document(embedding=sp.csr_matrix([0, 0, 0]))
+    d2 = Document(embedding=sp.csr_matrix([3, 0, 0]))
+    d3 = Document(embedding=sp.csr_matrix([1, 0, 0]))
+    d4 = Document(embedding=sp.csr_matrix([2, 0, 0]))
+
+    d1_m = Document(embedding=sp.csr_matrix([1, 0, 0]))
+    d2_m = Document(embedding=sp.csr_matrix([2, 0, 0]))
+    d3_m = Document(embedding=sp.csr_matrix([0, 0, 1]))
+    d4_m = Document(embedding=sp.csr_matrix([0, 0, 2]))
+    d5_m = Document(embedding=sp.csr_matrix([0, 0, 3]))
+
+    D1 = DocumentArray([d1, d2, d3, d4])
+    D2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
+    return D1, D2
+
+
 @pytest.mark.parametrize("limit", [1, 2])
 def test_matching_retrieves_correct_number(
     docarrays_for_embedding_distance_computation, limit
@@ -40,6 +59,33 @@ def test_matching_retrieves_correct_number(
     D1.match(D2, metric="sqeuclidean", limit=limit)
     for m in D1.get_attributes("matches"):
         assert len(m) == limit
+
+
+@pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
+def test_matching_same_results(
+    docarrays_for_embedding_distance_computation,
+    docarrays_for_embedding_distance_computation_sparse,
+    metric,
+):
+
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1_sp, D2_sp = docarrays_for_embedding_distance_computation_sparse
+
+    # use match with numpy arrays
+    D1.match(D2, metric=metric)
+    distances = []
+    for m in D1.get_attributes("matches"):
+        for d in m:
+            distances.extend([d.scores[metric].value])
+
+    # use match with sparse arrays
+    D1_sp.match(D2_sp, metric=metric)
+    distances_sparse = []
+    for m in D1.get_attributes("matches"):
+        for d in m:
+            distances_sparse.extend([d.scores[metric].value])
+
+    np.testing.assert_equal(distances, distances_sparse)
 
 
 @pytest.mark.parametrize(
