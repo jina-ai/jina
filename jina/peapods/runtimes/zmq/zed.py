@@ -88,6 +88,7 @@ class ZEDRuntime(ZMQRuntime):
                 self.args.uses,
                 override_with=self.args.uses_with,
                 override_metas=self.args.uses_metas,
+                override_requests=self.args.uses_requests,
                 runtime_args=vars(self.args),
             )
         except BadConfigSource as ex:
