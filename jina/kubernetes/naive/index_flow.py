@@ -134,7 +134,7 @@ class JinaPodAsMicroService:
         )
 
 
-class K8sOttoIndexFlow:
+class K8sIndexFlow:
 
     GENERIC_GATEWAY_CONTAINER_NAME = 'gcr.io/mystical-sweep-320315/generic-gateway'
 
@@ -142,7 +142,7 @@ class K8sOttoIndexFlow:
         self._postgres_config = postgres_config
         self._k8s = k8s_client
         self._logger = JinaLogger(self.__class__.__name__)
-        self._namespace = 'otto'
+        self._namespace = 'f1'
 
     @property
     def flow_object(self) -> Flow:
