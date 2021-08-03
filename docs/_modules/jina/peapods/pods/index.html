@@ -534,6 +534,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connect_to_predecessor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""True, if the Pod should open a connect socket in the HeadPea to the predecessor Pod.</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">connect_to_predecessor</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Get the host of the HeadPea of this pod</span>
 <span class="sd">        .. # noqa: DAR201</span>
