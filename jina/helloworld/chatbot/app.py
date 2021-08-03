@@ -20,8 +20,12 @@ def _get_flow(args):
     """Ensure the same flow is used in hello world example and system test."""
     return (
         Flow(cors=True)
-        .add(uses=MyTransformer, parallel=args.parallel)
-        .add(uses=MyIndexer, workspace=args.workdir)
+        .add(uses='jinahub+docker://TransformerSentenceEncoder', parallel=args.parallel)
+        .add(
+            uses='jinahub+docker://SimpleIndexer',
+            workspace=args.workdir,
+            uses_with={'index_file_name': 'index'},
+        )
     )
 
 
@@ -59,7 +63,10 @@ def hello_world(args):
 
     # index it!
     with f, open(targets['covid-csv']['filename']) as fp:
-        f.index(from_csv(fp, field_resolver={'question': 'text'}), show_progress=True)
+        f.index(
+            from_csv(fp, field_resolver={'question': 'text'}, size=30),
+            show_progress=True,
+        )
 
         # switch to REST gateway at runtime
         f.protocol = 'http'
