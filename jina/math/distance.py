@@ -1,7 +1,9 @@
+from typing import Union
+
 import numpy as np
 
 
-def pdist(x_mat: 'np.ndarray', metric: str) -> 'np.ndarray':
+def pdist(x_mat: Union['np.ndarray', 'scipy.sparse.csr_matrix'], metric: str) -> 'np.ndarray':
     """Computes Pairwise distances between observations in n-dimensional space.
 
     :param x_mat: np.ndarray of ndim 2
