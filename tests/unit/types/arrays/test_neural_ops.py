@@ -10,6 +10,11 @@ from jina.math.dimensionality_reduction import PCA
 
 
 @pytest.fixture
+def embeddings():
+    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
+
+
+@pytest.fixture
 def docarrays_for_embedding_distance_computation():
     d1 = Document(embedding=np.array([0, 0, 0]))
     d2 = Document(embedding=np.array([3, 0, 0]))
@@ -27,28 +32,28 @@ def docarrays_for_embedding_distance_computation():
     return D1, D2
 
 
-@pytest.mark.parametrize('limit', [1, 2])
+@pytest.mark.parametrize("limit", [1, 2])
 def test_matching_retrieves_correct_number(
     docarrays_for_embedding_distance_computation, limit
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric='sqeuclidean', limit=limit)
-    for m in D1.get_attributes('matches'):
+    D1.match(D2, metric="sqeuclidean", limit=limit)
+    for m in D1.get_attributes("matches"):
         assert len(m) == limit
 
 
 @pytest.mark.parametrize(
-    'normalization, metric',
+    "normalization, metric",
     [
-        (None, 'sqeuclidean'),
-        ((0, 1), 'sqeuclidean'),
-        (None, 'euclidean'),
-        ((0, 1), 'euclidean'),
-        (None, 'cosine'),
-        ((0, 1), 'cosine'),
+        (None, "sqeuclidean"),
+        ((0, 1), "sqeuclidean"),
+        (None, "euclidean"),
+        ((0, 1), "euclidean"),
+        (None, "cosine"),
+        ((0, 1), "cosine"),
     ],
 )
-@pytest.mark.parametrize('use_scipy', [True, False])
+@pytest.mark.parametrize("use_scipy", [True, False])
 def test_matching_retrieves_closest_matches(
     docarrays_for_embedding_distance_computation, normalization, metric, use_scipy
 ):
@@ -60,7 +65,7 @@ def test_matching_retrieves_closest_matches(
         D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
     )
     expected_sorted_values = [
-        D1[0].matches[i].scores['sqeuclidean'].value for i in range(3)
+        D1[0].matches[i].scores["sqeuclidean"].value for i in range(3)
     ]
     if normalization:
         assert min(expected_sorted_values) >= 0
@@ -70,17 +75,17 @@ def test_matching_retrieves_closest_matches(
 
 
 @pytest.mark.parametrize(
-    'normalization, metric',
+    "normalization, metric",
     [
-        (None, 'sqeuclidean'),
-        ((0, 1), 'sqeuclidean'),
-        (None, 'euclidean'),
-        ((0, 1), 'euclidean'),
-        (None, 'cosine'),
-        ((0, 1), 'cosine'),
+        (None, "sqeuclidean"),
+        ((0, 1), "sqeuclidean"),
+        (None, "euclidean"),
+        ((0, 1), "euclidean"),
+        (None, "cosine"),
+        ((0, 1), "cosine"),
     ],
 )
-@pytest.mark.parametrize('use_scipy', [True, False])
+@pytest.mark.parametrize("use_scipy", [True, False])
 def test_docarray_match_docarraymemmap(
     docarrays_for_embedding_distance_computation,
     normalization,
@@ -105,14 +110,14 @@ def test_docarray_match_docarraymemmap(
 
 
 @pytest.mark.parametrize(
-    'normalization, metric',
+    "normalization, metric",
     [
-        (None, 'hamming'),
-        ((0, 1), 'hamming'),
-        (None, 'minkowski'),
-        ((0, 1), 'minkowski'),
-        (None, 'jaccard'),
-        ((0, 1), 'jaccard'),
+        (None, "hamming"),
+        ((0, 1), "hamming"),
+        (None, "minkowski"),
+        ((0, 1), "minkowski"),
+        (None, "jaccard"),
+        ((0, 1), "jaccard"),
     ],
 )
 def test_scipy_dist(
@@ -143,10 +148,10 @@ def test_2arity_function(docarrays_for_embedding_distance_computation):
 
     for d in D1:
         for m in d.matches:
-            assert 'dotp' in m.scores
+            assert "dotp" in m.scores
 
 
-@pytest.mark.parametrize('whiten', [True, False])
+@pytest.mark.parametrize("whiten", [True, False])
 def test_pca_projection(embeddings, whiten):
     n_components = 2
     n_features = embeddings.shape[1]
@@ -161,7 +166,7 @@ def test_pca_projection(embeddings, whiten):
 
 def test_pca_plot_generated(embeddings, tmpdir):
     doc_array = DocumentArray([Document(embedding=x) for x in embeddings])
-    file_path = os.path.join(tmpdir, 'pca_plot.png')
+    file_path = os.path.join(tmpdir, "pca_plot.png")
     doc_array.visualize(output=file_path)
     assert os.path.exists(file_path)
 
@@ -181,11 +186,11 @@ def test_match_inclusive():
 
     da1.match(da1)
     assert len(da1) == 3
-    traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    traversed = da1.traverse_flat(traversal_paths=["m", "mm", "mmm"])
     assert len(traversed) == 9
     # The document array da2 shares same documents with da1
     da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), da1[0], da1[1]])
     da1.match(da2)
     assert len(da2) == 3
-    traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    traversed = da1.traverse_flat(traversal_paths=["m", "mm", "mmm"])
     assert len(traversed) == 9
