@@ -73,6 +73,7 @@ def test_flow_with_external_pod(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
+        del external_args['dynamic_routing']
         flow = Flow().add(
             **external_args,
             name='external_fake',
@@ -132,6 +133,7 @@ def test_two_flow_with_shared_external_pod(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
+        del external_args['dynamic_routing']
         flow1 = Flow().add(
             **external_args,
             name='external_fake',
@@ -253,10 +255,11 @@ def test_flow_with_external_pod_parallel(
         del external_args_1['name']
         del external_args_1['external']
         del external_args_1['pod_role']
+        del external_args_1['dynamic_routing']
         del external_args_2['name']
         del external_args_2['external']
         del external_args_2['pod_role']
-
+        del external_args_2['dynamic_routing']
         flow = (
             Flow()
             .add(name='pod1')
@@ -318,6 +321,7 @@ def test_flow_with_external_pod_pre_parallel(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
+        del external_args['dynamic_routing']
         flow = (
             Flow()
             .add(
@@ -380,6 +384,7 @@ def test_flow_with_external_pod_join(
         del external_args['name']
         del external_args['external']
         del external_args['pod_role']
+        del external_args['dynamic_routing']
         flow = (
             Flow()
             .add(

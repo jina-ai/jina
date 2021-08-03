@@ -90,6 +90,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
+        connect_to_predecessor: Optional[bool] = False,
         cors: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = True,
         daemon: Optional[bool] = False,
@@ -144,6 +145,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
+        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
@@ -431,6 +433,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def add(
         self,
+        connect_to_predecessor: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = False,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
@@ -484,6 +487,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -804,7 +808,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     start = f'start-{GATEWAY_NAME}'
 
                 start_pod = graph._get_target_pod(start)
-                if is_remote_local_connection(start_pod.host, pod.head_host):
+
+                if pod.connect_to_predecessor or is_remote_local_connection(
+                    start_pod.host, pod.head_host
+                ):
                     pod.head_args.hosts_in_connect.append(
                         graph._get_target_pod(start).full_out_address
                     )
