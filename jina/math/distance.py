@@ -1,23 +1,23 @@
 import numpy as np
 
-from typing import Union
+from typing import Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     import scipy
 
 _SPARSE_SCIPY_TYPES = Union[
-        'scipy.sparse.csr_matrix',
-        'scipy.sparse.csc_matrix',
-        'scipy.sparse.bsr_matrix',
-        'scipy.sparse.coo_matrix',
-    ]
+    "scipy.sparse.csr_matrix",
+    "scipy.sparse.csc_matrix",
+    "scipy.sparse.bsr_matrix",
+    "scipy.sparse.coo_matrix",
+]
 
 
 def pdist(
-    x_mat: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
+    x_mat: Union["np.ndarray", _SPARSE_SCIPY_TYPES],
     metric: str,
     is_sparse: bool = False,
-) -> 'np.ndarray':
+) -> "np.ndarray":
     """Computes Pairwise distances between observations in n-dimensional space.
 
     :param x_mat: Union['np.ndarray','scipy.sparse.csr_matrix', 'scipy.sparse.coo_matrix'] of ndim 2
@@ -29,11 +29,11 @@ def pdist(
 
 
 def cdist(
-    x_mat: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
-    y_mat: Union['np.ndarray', _SPARSE_SCIPY_TYPES],
+    x_mat: Union["np.ndarray", _SPARSE_SCIPY_TYPES],
+    y_mat: Union["np.ndarray", _SPARSE_SCIPY_TYPES],
     metric: str,
     is_sparse: bool = False,
-) -> 'np.ndarray':
+) -> "np.ndarray":
 
     """Computes the pairwise distance between each row of X and each row on Y according to `metric`.
     - Let `n_x = x_mat.shape[0]`
@@ -45,29 +45,29 @@ def cdist(
     :param is_sparse: boolean describing if data type is sparse
     :return: np.ndarray of ndim 2
     """
-    if metric == 'cosine':
+    if metric == "cosine":
         if is_sparse:
             dists = sparse_cosine(x_mat, y_mat)
         else:
             dists = cosine(x_mat, y_mat)
 
-    elif metric == 'sqeuclidean':
+    elif metric == "sqeuclidean":
         if is_sparse:
             dists = sparse_sqeuclidean(x_mat, y_mat)
         else:
             dists = sqeuclidean(x_mat, y_mat)
 
-    elif metric == 'euclidean':
+    elif metric == "euclidean":
         if is_sparse:
             dists = np.sqrt(sparse_sqeuclidean(x_mat, y_mat))
         else:
             dists = np.sqrt(sqeuclidean(x_mat, y_mat))
     else:
-        raise ValueError(f'Input metric={metric} not valid')
+        raise ValueError(f"Input metric={metric} not valid")
     return dists
 
 
-def cosine(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
+def cosine(x_mat: "np.ndarray", y_mat: "np.ndarray") -> "np.ndarray":
     """Cosine distance between each row in x_mat and each row in y_mat.
     :param x_mat: np.ndarray with ndim=2
     :param y_mat: np.ndarray with ndim=2
@@ -78,7 +78,7 @@ def cosine(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
     )
 
 
-def sqeuclidean(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
+def sqeuclidean(x_mat: "np.ndarray", y_mat: "np.ndarray") -> "np.ndarray":
     """squared Euclidean distance between each row in x_mat and each row in y_mat.
     :param x_mat: np.ndarray with ndim=2
     :param y_mat: np.ndarray with ndim=2
@@ -93,7 +93,7 @@ def sqeuclidean(x_mat: 'np.ndarray', y_mat: 'np.ndarray') -> 'np.ndarray':
 
 def sparse_cosine(
     x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES
-) -> 'np.ndarray':
+) -> "np.ndarray":
     """Cosine distance between each row in x_mat and each row in y_mat.
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2
@@ -109,7 +109,7 @@ def sparse_cosine(
 
 def sparse_sqeuclidean(
     x_mat: _SPARSE_SCIPY_TYPES, y_mat: _SPARSE_SCIPY_TYPES
-) -> 'np.ndarray':
+) -> "np.ndarray":
     """Cosine distance between each row in x_mat and each row in y_mat.
     :param x_mat:  scipy.sparse like array with ndim=2
     :param y_mat:  scipy.sparse like array with ndim=2
