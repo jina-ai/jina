@@ -17,7 +17,7 @@ class BufferPoolManager:
 
     def __init__(self, dam: 'DocumentArrayMemmap', pool_size: int = 1000):
         self.pool_size = pool_size
-        self.doc_map = OrderedDict()  # dam_idx: (buffer_idx, content_hash)
+        self.doc_map = OrderedDict()  # dam_idx: (buffer_idx, version)
         self.dam = dam
         self.buffer = []
         self._empty = []
@@ -35,27 +35,27 @@ class BufferPoolManager:
             self.doc_map.move_to_end(idx)
         # else, if len is less than the size, append to buffer
         elif len(self.buffer) < self.pool_size:
-            self.doc_map[idx] = (len(self.buffer), hash(doc.SerializeToString()))
+            self.doc_map[idx] = (len(self.buffer), doc.version)
             self.doc_map.move_to_end(idx)
             self.buffer.append(doc)
         # else, if buffer has empty spots, allocate them
         elif self._empty:
             empty_idx = self._empty.pop()
-            self.doc_map[idx] = (empty_idx, hash(doc.SerializeToString()))
+            self.doc_map[idx] = (empty_idx, doc.version)
             self.buffer[empty_idx] = doc
             self.doc_map.move_to_end(idx)
         # else, choose a spot to free and use it with LRU strategy
         else:
             # the least recently used item is the first item in doc_map
-            dam_idx, (buffer_idx, content_hash) = self.doc_map.popitem(last=False)
-            if content_hash != hash(self.buffer[buffer_idx].SerializeToString()):
+            dam_idx, (buffer_idx, version) = self.doc_map.popitem(last=False)
+            if version != self.buffer[buffer_idx].version:
                 # persist to disk
                 self.dam.update(
                     self.buffer[buffer_idx],
                     self.dam._str2int_id(dam_idx),
                     update_buffer=False,
                 )
-            self.doc_map[idx] = (buffer_idx, hash(doc.SerializeToString()))
+            self.doc_map[idx] = (buffer_idx, doc.version)
             self.doc_map.move_to_end(idx)
             self.buffer[buffer_idx] = doc
 

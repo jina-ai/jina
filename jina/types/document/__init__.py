@@ -24,6 +24,7 @@ from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
 from .converters import png_to_buffer, to_datauri, to_image_blob
+from .helper import versioned, VersionedMixin
 from ..mixin import ProtoTypeMixin
 from ..ndarray.generic import NdArray, BaseSparseNdArray
 from ..score import NamedScore
@@ -90,7 +91,7 @@ _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
 
-class Document(ProtoTypeMixin):
+class Document(ProtoTypeMixin, VersionedMixin):
     """
     :class:`Document` is one of the **primitive data type** in Jina.
 
@@ -141,6 +142,8 @@ class Document(ProtoTypeMixin):
     You can leverage the :meth:`convert_a_to_b` interface to convert between content forms.
 
     """
+
+    ON_GETATTR = ['matches']
 
     def __init__(
         self,
@@ -629,6 +632,7 @@ class Document(ProtoTypeMixin):
                 raise TypeError(f'{k} is in unsupported type {typename(v)}')
 
     @property
+    @versioned
     def matches(self) -> 'MatchArray':
         """Get all matches of the current document.
 
@@ -649,6 +653,7 @@ class Document(ProtoTypeMixin):
         self.matches.extend(value)
 
     @property
+    @versioned
     def chunks(self) -> 'ChunkArray':
         """Get all chunks of the current document.
 
@@ -1301,6 +1306,8 @@ class Document(ProtoTypeMixin):
         return list(set(support_keys))
 
     def __getattr__(self, item):
+        if item in self.ON_GETATTR:
+            self._increaseVersion()
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
         elif '__' in item:
