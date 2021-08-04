@@ -421,7 +421,6 @@
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--uses-with'</span><span class="p">,</span>
-        <span class="s1">'--override-with'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
@@ -431,13 +430,21 @@
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--uses-metas'</span><span class="p">,</span>
-        <span class="s1">'--override-metas'</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
         <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
         <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
 <span class="s1">    Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
 <span class="s1">    '''</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'--uses-requests'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+<span class="s1">        Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
+<span class="s1">        '''</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--py-modules'</span><span class="p">,</span>
@@ -563,7 +570,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 03, 2021.
+            Last updated on Aug 04, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
