@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 from jina import Flow
@@ -12,7 +13,7 @@ if __name__ == '__main__':
         index_generator,
         query_generator,
     )
-    from my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter
+    from my_executors import MyEncoder, MyIndexer, MyEvaluator, MyConverter, MatchMerger
 else:
     from .helper import (
         print_result,
@@ -71,23 +72,51 @@ def hello_world(args):
     os.environ['JINA_ARRAY_QUANT'] = 'fp16'
     # now comes the real work
     # load index flow from a YAML file
-    f = (
+    storage_flow = (
         Flow()
         .add(uses=MyEncoder, parallel=2)
-        .add(uses=MyIndexer, workspace=args.workdir)
-        .add(uses=MyEvaluator)
+        # requires PSQL running. do `docker run -e POSTGRES_PASSWORD=123456  -p 127.0.0.1:5432:5432/tcp postgres:13.2`
+        .add(uses='jinahub://PostgreSQLStorage', name='psql')
     )
 
-    # run it!
-    with f:
-        f.index(
+    # store the data
+    with storage_flow:
+        storage_flow.index(
             index_generator(num_docs=targets['index']['data'].shape[0], target=targets),
             request_size=args.request_size,
             show_progress=True,
         )
+        dump_path = os.path.join(os.path.curdir, 'dump')
+        # if exists from previous run
+        shutil.rmtree(dump_path, ignore_errors=True)
+        # dump to intermediary location
+        storage_flow.post(
+            target_peapod='psql', # optional. just to avoid errors in the Encoder
+            on='/dump',
+            parameters={'dump_path': dump_path, 'shards': 1}
+        )
 
-        f.post(
-            '/eval',
+    # define query flow
+    query_flow = (
+        Flow()
+        .add(uses=MyEncoder, parallel=2)
+        # to perform vector similarity
+        # replicas >= 2 required for rolling update
+        .add(uses='jinahub://AnnoySearcher', name='searcher', replicas=2)
+        # to retrieve full Document metadata
+        .add(uses='jinahub://PostgreSQLStorage', override_with={'default_traversal_paths': ['m']})
+        .add(uses=MyEvaluator)
+    )
+
+    # start query flow
+    with query_flow:
+        # perform rolling update
+        query_flow.rolling_update(pod_name='searcher', dump_path=dump_path)
+
+        # do a search
+        query_flow.post(
+            # can be `/eval`, but requires re-mapping requests. this is an MVP
+            '/search',
             query_generator(
                 num_docs=args.num_query, target=targets, with_groundtruth=True
             ),

@@ -1,6 +1,7 @@
-from typing import Dict
+from typing import Dict, OrderedDict
 
 import numpy as np
+
 from jina import Executor, DocumentArray, requests
 from jina.types.arrays.memmap import DocumentArrayMemmap
 
@@ -132,7 +133,7 @@ class MyEvaluator(Executor):
         ret = len(set(actual_at_k).intersection(set(desired)))
         return ret / len(desired)
 
-    @requests(on='/eval')
+    @requests(on='/search')
     def evaluate(self, docs: 'DocumentArray', groundtruths: 'DocumentArray', **kwargs):
         """Evaluate documents using the class values from ground truths
 
@@ -150,3 +151,35 @@ class MyEvaluator(Executor):
             doc.evaluations['Precision'].op_name = 'Precision'
             doc.evaluations['Recall'] = self.avg_recall
             doc.evaluations['Recall'].op_name = 'Recall'
+
+
+class MatchMerger(Executor):
+
+    @requests(on='/search')
+    def merge(self, docs_matrix, parameters: Dict, **kwargs):
+        if docs_matrix:
+            # noinspection PyTypeHints
+            results = OrderedDict()
+            for docs in docs_matrix:
+                for doc in docs:
+                    if doc.id in results:
+                        results[doc.id].matches.extend(doc.matches)
+                    else:
+                        results[doc.id] = doc
+
+            top_k = parameters.get('top_k')
+            if top_k:
+                top_k = int(top_k)
+
+            for doc in results.values():
+                try:
+                    doc.matches = sorted(
+                        doc.matches,
+                        key=lambda m: m.scores['cosine'].value,
+                        reverse=True,
+                    )[:top_k]
+                except TypeError as e:
+                    print(f'##### {e}')
+
+            docs = DocumentArray(list(results.values()))
+            return docs

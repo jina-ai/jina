@@ -102,7 +102,7 @@ def print_result(resp):
         for kk in d.matches:
             kmi = kk.uri
             result_html.append(
-                f'<img src="{kmi}" style="opacity:{kk.scores["cosine"].value}"/>'
+                f'<img src="{kmi}" style="opacity:{kk.scores["euclidean"].value}"/>'
             )
         result_html.append('</td></tr>\n')
 
