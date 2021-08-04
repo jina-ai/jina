@@ -1,0 +1,17 @@
+
+!Flow
+version: '1'
+with:
+  port_expose: 8080
+  host: gateway-in.search-flow.svc.cluster.local
+  port_in: 8081
+  protocol: http
+pods:
+  - name: cliptext
+    port_in: 8081
+    parallel: 2
+#    host: cliptext.search-flow.svc.cluster.local
+    peas_hosts: ["a", "b", "c", "d"]
+    external: True
+
+    needs: [gateway]
