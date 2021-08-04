@@ -59,7 +59,6 @@ class PrefetchCaller:
             self._message_buffer.clear()
 
     async def _process_message(self, message):
-        self.logger.debug(f'process message {type(message)}')
         if isinstance(message, Message):
             message = message.request
         if message.request_id in self._message_buffer:

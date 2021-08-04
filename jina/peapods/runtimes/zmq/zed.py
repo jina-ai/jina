@@ -210,7 +210,6 @@ class ZEDRuntime(ZMQRuntime):
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
         parsed_params = parameters
-        print(f'params {type(parameters)}')
         specific_parameters = parameters.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
@@ -260,7 +259,6 @@ class ZEDRuntime(ZMQRuntime):
             )
             return self
 
-        print(f'req {type(self.request)}')
         params = self._parse_params(self.request.parameters, self._executor.metas.name)
 
         # executor logic
@@ -317,11 +315,9 @@ class ZEDRuntime(ZMQRuntime):
             )
 
     def _callback(self, msg: 'Message'):
-        self.logger.debug('zed runtime callback')
         self.is_post_hook_done = False  #: if the post_hook is called
         self._pre_hook(msg)._handle()._post_hook(msg)
         self.is_post_hook_done = True
-        self.logger.debug('done')
         return msg
 
     def _msg_callback(self, msg: 'Message') -> None:

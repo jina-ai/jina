@@ -63,7 +63,6 @@ class Message:
             # otherwise delay it to after request is built
             self.envelope = None
 
-        print(f'req is type {type(request)} ')
         self.request = request
         if envelope is None:
             self.envelope = self._add_envelope(*args, **kwargs)
@@ -109,7 +108,6 @@ class Message:
         :param val: serialized Request
         """
         if isinstance(val, bytes):
-            print('deserialize byrs')
             self._request = Request(
                 val,
                 CompressAlgo.from_string(self.envelope.compression.algorithm)

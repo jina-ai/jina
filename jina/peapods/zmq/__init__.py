@@ -332,7 +332,6 @@ class Zmqlet:
         return out_sock
 
     def _get_dynamic_next_routes(self, message):
-        print(f'got this routing table {message.envelope.routing_table}')
         routing_table = RoutingTable(message.envelope.routing_table)
         next_targets = routing_table.get_next_targets()
         next_routes = []
@@ -346,7 +345,6 @@ class Zmqlet:
                 if out_socket is None:
                     out_socket = self._get_dynamic_out_socket(target.active_target_pod)
 
-            self.logger.debug(f'gonna send msg from {self.name} to {target.active_pod}')
             next_routes.append((target, out_socket))
         return next_routes
 
@@ -462,7 +460,6 @@ class AsyncZmqlet(Zmqlet):
             new_envelope.CopyFrom(msg.envelope)
             new_envelope.routing_table.CopyFrom(routing_table.proto)
             new_message = Message(request=msg.request, envelope=new_envelope)
-            self.logger.debug(f'send the following routing table {routing_table}')
             asyncio.create_task(self._send_message_via(out_sock, new_message))
 
     async def _send_message_via(self, socket, msg):
