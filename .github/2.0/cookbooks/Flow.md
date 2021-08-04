@@ -233,7 +233,7 @@ from jina import Executor
 
 class MyExecutor(Executor):
 
-    def __init__(self, bar):
+    def __init__(self, bar, *args, **kwargs):
         super().__init__()
         self.bar = bar
 
@@ -540,7 +540,7 @@ with f:
 def post(
         self,
         on: str,
-        inputs: InputType,
+        inputs: Optional[InputType] = None,
         on_done: CallbackFnType = None,
         on_error: CallbackFnType = None,
         on_always: CallbackFnType = None,
@@ -570,14 +570,7 @@ def post(
     """
 ```
 
-Compared to 1.x Client/Flow API, the three new arguments are:
-
-- `on`: the endpoint used for identifying the user-defined `request_type`, labeled by `@requests(on='/foo')` in
-  the `Executor` class;
-- `parameters`: the kwargs that will be sent to the `Executor`;
-- `target_peapod`: a regex string represent the certain peas/pods request targeted.
-
-Note, all 1.x CRUD methods (`index`, `search`, `update`, `delete`) are just sugary syntax of `post` with `on='/index'`
+Note, you can also use CRUD methods (`index`, `search`, `update`, `delete`) which are just sugary syntax of `post` with `on='/index'`
 , `on='/search'`, etc. Precisely, they are defined as:
 
 ```python
@@ -717,22 +710,13 @@ with f:
 ```
 
 ```console
-        gateway@8869[I]:input tcp://0.0.0.0:53021 (ROUTER_BIND) output None (DEALER_CONNECT) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmpdryull18 (PAIR_BIND)
-        gateway@8869[S]:GRPCRuntime is listening at: 0.0.0.0:53023
-        gateway@8865[S]:ready and listening
-           Flow@8865[I]:1 Pods (i.e. 1 Peas) are running in this Flow
-           Flow@8865[S]:🎉 Flow is ready to use!
-           Flow@8865[I]:
+        gateway@137489[L]:ready and listening
+           Flow@137489[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:53023
-	🔒 Private network:	192.168.31.159:53023
-     GRPCClient@8865[S]:connected to the gateway at 0.0.0.0:53023!
+	🏠 Local access:	0.0.0.0:44249
+	🔒 Private network:	192.168.1.100:44249
+	🌐 Public address:	197.28.126.36:44249
 
-        ...
-        
-        gateway@8869[I]:#sent: 10 #recv: 10 sent_size: 10.3 KB recv_size: 9.7 KB
-        gateway@8865[S]:terminated
-           Flow@8865[S]:flow is closed and all resources are released, current build level is 0
 ```
 
 To see that more clearly, you can turn on the progress-bar by `show_progress`.
@@ -743,15 +727,13 @@ with f:
 ```
 
 ```console
-     GRPCClient@8903[S]:connected to the gateway at 0.0.0.0:53061!
-  |█                   | ⏳      0 ⏱️ 0.0s 🐎   0 QPS ...	        gateway@8907[I]:prefetching 50 requests...
-        gateway@8907[W]:if this takes too long, you may want to take smaller "--prefetch" or ask client to reduce `request_size`
-        gateway@8907[I]:prefetching 50 requests takes 0 seconds (0.01s)
-  |██████████          | ⏳     10 ⏱️ 0.0s 🐎 769 QPS takes 0 seconds (0.01s)
-	✅ done in ⏱ 0 seconds 🐎 757 QPS
-        gateway@8907[I]:#sent: 10 #recv: 10 sent_size: 10.3 KB recv_size: 9.7 KB
-        gateway@8903[S]:terminated
-           Flow@8903[S]:flow is closed and all resources are released, current build level is 0
+        gateway@137489[L]:ready and listening
+           Flow@137489[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:59109
+	🔒 Private network:	192.168.1.100:59109
+	🌐 Public address:	197.28.126.36:59109
+⏳   |██████████          | ⏱️ 0.0s 🐎 429.0 RPS✅ 10 requests done in ⏱ 0 seconds 🐎 425.1 RPS
 
 ```
 
@@ -770,19 +752,12 @@ with f:
 ```
 
 ```console
-        gateway@9003[I]:input tcp://0.0.0.0:53174 (ROUTER_BIND) output None (DEALER_CONNECT) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmpgu5yqxyw (PAIR_BIND)
-        gateway@9003[S]:GRPCRuntime is listening at: 0.0.0.0:53176
-        gateway@9000[S]:ready and listening
-           Flow@9000[I]:1 Pods (i.e. 1 Peas) are running in this Flow
-           Flow@9000[S]:🎉 Flow is ready to use!
-           Flow@9000[I]:
+        gateway@137489[L]:ready and listening
+           Flow@137489[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:53176
-	🔒 Private network:	192.168.31.159:53176
-     GRPCClient@9000[S]:connected to the gateway at 0.0.0.0:53176!
-        gateway@9003[I]:prefetching 50 requests...
-        gateway@9003[W]:if this takes too long, you may want to take smaller "--prefetch" or ask client to reduce `request_size`
-        gateway@9003[I]:prefetching 50 requests takes 0 seconds (0.01s)
+	🏠 Local access:	0.0.0.0:59275
+	🔒 Private network:	192.168.1.100:59275
+	🌐 Public address:	197.28.126.36:59275
 [<jina.types.request.Response request_id=116880a6-acd7-474a-8ec6-71bab47041cd data={'docs': [{'id': 'e42c22dc-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c2552-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c26e2-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c2836-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c298a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c2ad4-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c2c1e-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c2d5e-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c2ea8-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c2ff2-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}]} header={'exec_endpoint': '/'} routes=[{'pod': 'gateway', 'pod_id': 'c5a1293e-80b3-4b40-84d1-b9742611b92e', 'start_time': '2021-06-23T06:04:37.896226Z', 'end_time': '2021-06-23T06:04:37.897433Z'}, {'pod': 'gateway', 'pod_id': '6e3b1625-531d-4ec2-a8eb-43f2fb0fe7ee', 'start_time': '2021-06-23T06:04:37.897424Z'}] status={} at 5673238672>,
  <jina.types.request.Response request_id=37040d37-6835-443e-8741-b2f762ae95cc data={'docs': [{'id': 'e42c806a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c8a10-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c8e70-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c9276-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c9668-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42ca748-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42ca996-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42caaf4-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cb40e-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cb594-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}]} header={'exec_endpoint': '/'} routes=[{'pod': 'gateway', 'pod_id': 'c5a1293e-80b3-4b40-84d1-b9742611b92e', 'start_time': '2021-06-23T06:04:37.898454Z', 'end_time': '2021-06-23T06:04:37.899392Z'}, {'pod': 'gateway', 'pod_id': '6e3b1625-531d-4ec2-a8eb-43f2fb0fe7ee', 'start_time': '2021-06-23T06:04:37.899384Z'}] status={} at 5678885008>,
  <jina.types.request.Response request_id=54eddb8b-8691-446f-98bc-1d492f5bedb0 data={'docs': [{'id': 'e42cfc16-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cfdb0-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cff04-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d0044-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d017a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d02ba-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d03fa-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d053a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d067a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d07b0-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}]} header={'exec_endpoint': '/'} routes=[{'pod': 'gateway', 'pod_id': 'c5a1293e-80b3-4b40-84d1-b9742611b92e', 'start_time': '2021-06-23T06:04:37.900145Z', 'end_time': '2021-06-23T06:04:37.901004Z'}, {'pod': 'gateway', 'pod_id': '6e3b1625-531d-4ec2-a8eb-43f2fb0fe7ee', 'start_time': '2021-06-23T06:04:37.900997Z'}] status={} at 5721399952>,
@@ -793,9 +768,6 @@ with f:
  <jina.types.request.Response request_id=4771806e-6c33-4a75-a519-85916a949ea2 data={'docs': [{'id': 'e42c3a06-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c3bf0-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c3d6c-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c3ede-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c4050-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c41ae-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c430c-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c446a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c45c8-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42c473a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}]} header={'exec_endpoint': '/'} routes=[{'pod': 'gateway', 'pod_id': 'c5a1293e-80b3-4b40-84d1-b9742611b92e', 'start_time': '2021-06-23T06:04:37.897122Z', 'end_time': '2021-06-23T06:04:37.898220Z'}, {'pod': 'gateway', 'pod_id': '6e3b1625-531d-4ec2-a8eb-43f2fb0fe7ee', 'start_time': '2021-06-23T06:04:37.898208Z'}] status={} at 5724837648>,
  <jina.types.request.Response request_id=76d92a47-7ce5-4a86-aab2-c3ced227d8e4 data={'docs': [{'id': 'e42cce62-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd074-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd1c8-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd312-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd452-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd592-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd6d2-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd81c-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cd95c-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42cda9c-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}]} header={'exec_endpoint': '/'} routes=[{'pod': 'gateway', 'pod_id': 'c5a1293e-80b3-4b40-84d1-b9742611b92e', 'start_time': '2021-06-23T06:04:37.899022Z', 'end_time': '2021-06-23T06:04:37.899859Z'}, {'pod': 'gateway', 'pod_id': '6e3b1625-531d-4ec2-a8eb-43f2fb0fe7ee', 'start_time': '2021-06-23T06:04:37.899852Z'}] status={} at 5724837264>,
  <jina.types.request.Response request_id=c741e3dd-c57e-4deb-b074-99cd65037e05 data={'docs': [{'id': 'e42d123c-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d143a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d15ac-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d1700-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d184a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d198a-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d1ad4-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d1c14-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d1d54-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}, {'id': 'e42d1e9e-d3e8-11eb-aecd-1e008a366d48', 'content_hash': 'e4a6a0577479b2b4'}]} header={'exec_endpoint': '/'} routes=[{'pod': 'gateway', 'pod_id': 'c5a1293e-80b3-4b40-84d1-b9742611b92e', 'start_time': '2021-06-23T06:04:37.900727Z', 'end_time': '2021-06-23T06:04:37.902004Z'}, {'pod': 'gateway', 'pod_id': '6e3b1625-531d-4ec2-a8eb-43f2fb0fe7ee', 'start_time': '2021-06-23T06:04:37.901984Z'}] status={} at 5724837200>]
-        gateway@9003[I]:#sent: 10 #recv: 10 sent_size: 10.3 KB recv_size: 9.7 KB
-        gateway@9000[S]:terminated
-           Flow@9000[S]:flow is closed and all resources are released, current build level is 0
 
 ```
 
@@ -936,7 +908,7 @@ with f:
            on_done=print)
 ```
 
-You can also modify the Documents while merging, which was not feasible to do in 1.x:
+You can also modify the Documents while merging:
 
 ```python
 class C(Executor):
