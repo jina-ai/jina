@@ -1,9 +1,21 @@
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 
+if TYPE_CHECKING:
+    import scipy
 
-def minmax_normalize(x: "np.ndarray", t_range: Tuple = (0, 1)):
+_SPARSE_SCIPY_TYPES = Union[
+    'scipy.sparse.csr_matrix',
+    'scipy.sparse.csc_matrix',
+    'scipy.sparse.bsr_matrix',
+    'scipy.sparse.coo_matrix',
+]
+
+
+def minmax_normalize(
+    x: Union['np.ndarray', _SPARSE_SCIPY_TYPES], t_range: Tuple = (0, 1)
+):
     """Normalize values in `x` into `t_range`.
 
     `x` can be a 1D array or a 2D array. When `x` is a 2D array, then normalization is row-based.
@@ -29,8 +41,8 @@ def minmax_normalize(x: "np.ndarray", t_range: Tuple = (0, 1)):
 
 
 def top_k(
-    values: "np.ndarray", k: int, descending: bool = False
-) -> Tuple["np.ndarray", "np.ndarray"]:
+    values: 'np.ndarray', k: int, descending: bool = False
+) -> Tuple['np.ndarray', 'np.ndarray']:
     """Finds values and indices of the k largest entries for the last dimension.
 
     :param values: array of distances
