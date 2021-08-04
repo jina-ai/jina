@@ -541,6 +541,8 @@
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        :raises KeyError: if id doesn't exist in the store</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">files</span> <span class="ow">and</span> <span class="n">network</span> <span class="ow">and</span> <span class="n">container</span><span class="p">:</span>
+            <span class="n">everything</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">everything</span><span class="p">:</span>
             <span class="n">container</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">network</span> <span class="o">=</span> <span class="kc">True</span>
