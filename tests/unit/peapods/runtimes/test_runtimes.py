@@ -82,10 +82,13 @@ def test_container_runtime_good_entrypoint(runtime):
 
 @pytest.mark.parametrize('runtime', ['thread', 'process'])
 def test_address_in_use(runtime):
-    p = ['--port-ctrl', '55555', '--runtime-backend', runtime]
+    # test does not work with same control port, because right now the `READYNESS` signal is done by sending to that port
+    p = ['--port-in', '55555', '--runtime-backend', runtime]
     args1 = set_pea_parser().parse_args(p)
     args2 = set_pea_parser().parse_args(p)
     with pytest.raises(RuntimeFailToStart):
+        args1.name = 'Pea-1'
+        args2.name = 'Pea-2'
         with Pea(args1), Pea(args2):
             pass
 
