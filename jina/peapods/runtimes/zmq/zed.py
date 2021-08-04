@@ -2,7 +2,7 @@ import argparse
 import re
 import time
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Optional, Union
 
 import zmq
 
@@ -28,20 +28,25 @@ from ....types.message import Message
 from ....types.request import Request
 from ....types.routing.table import RoutingTable
 
+if False:
+    import multiprocessing
+    import threading
+    from ....logging.logger import JinaLogger
+
 
 class ZEDRuntime(ZMQRuntime):
     """Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""
 
-    def __init__(self, args: 'argparse.Namespace', ctrl_addr: str, **kwargs):
+    def __init__(self, args: 'argparse.Namespace', **kwargs):
         """Initialize private parameters and execute private loading functions.
 
         :param args: args from CLI
-        :param ctrl_addr: control port address
         :param kwargs: extra keyword arguments
         """
-        super().__init__(args, ctrl_addr, **kwargs)
+        super().__init__(args, **kwargs)
         self._id = random_identity()
         self._last_active_time = time.perf_counter()
+        self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
 
         self._request = None
         self._message = None
@@ -54,9 +59,9 @@ class ZEDRuntime(ZMQRuntime):
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
 
-        self._load_zmqstreamlet()
         self._load_plugins()
         self._load_executor()
+        self._load_zmqstreamlet()
 
     def run_forever(self):
         """Start the `ZmqStreamlet`."""
@@ -78,7 +83,6 @@ class ZEDRuntime(ZMQRuntime):
             args=self.args,
             logger=self.logger,
             ctrl_addr=self.ctrl_addr,
-            ready_event=self.is_ready_event,
         )
 
     def _load_executor(self):
@@ -88,6 +92,7 @@ class ZEDRuntime(ZMQRuntime):
                 self.args.uses,
                 override_with=self.args.uses_with,
                 override_metas=self.args.uses_metas,
+                override_requests=self.args.uses_requests,
                 runtime_args=vars(self.args),
             )
         except BadConfigSource as ex:
@@ -498,3 +503,170 @@ class ZEDRuntime(ZMQRuntime):
         .. # noqa: DAR201
         """
         return self._message.envelope
+
+    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+
+    @staticmethod
+    def status(ctrl_address: str, timeout_ctrl: int):
+        """
+        Send get status control message.
+
+        :param ctrl_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+
+        :return: control message.
+        """
+        from ...zmq import send_ctrl_message
+
+        return send_ctrl_message(
+            ctrl_address, 'STATUS', timeout=timeout_ctrl, raise_exception=False
+        )
+
+    @staticmethod
+    def is_ready(ctrl_address: str, timeout_ctrl: int) -> bool:
+        """
+        Check if status is ready.
+
+        :param ctrl_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+
+        :return: True if status is ready else False.
+        """
+        status = ZEDRuntime.status(ctrl_address, timeout_ctrl)
+        return status and status.is_ready
+
+    @staticmethod
+    def wait_for_ready_or_shutdown(
+        timeout: Optional[float],
+        ctrl_address: str,
+        timeout_ctrl: int,
+        shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ctrl_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param shutdown_event: the multiprocessing event to detect if the process failed
+        :param kwargs: extra keyword arguments
+        :return: True if is ready or it needs to be shutdown
+        """
+        timeout_ns = 1000000000 * timeout if timeout else None
+        now = time.time_ns()
+        while timeout_ns is None or time.time_ns() - now < timeout_ns:
+            if shutdown_event.is_set() or ZEDRuntime.is_ready(
+                ctrl_address, timeout_ctrl
+            ):
+                return True
+
+        return False
+
+    @staticmethod
+    def _retry_control_message(
+        ctrl_address: str,
+        timeout_ctrl: int,
+        command: str,
+        num_retry: int,
+        logger: 'JinaLogger',
+    ):
+        """Retry sending a control message with a given command for several trials
+        :param ctrl_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param command: the command to send in the control message
+        :param num_retry: the number of retries to successfully send the message
+        :param logger: the JinaLogger to log messages
+        """
+        from ...zmq import send_ctrl_message
+
+        for retry in range(1, num_retry + 1):
+            logger.debug(f'Sending {command} command for the {retry}th time')
+            try:
+                send_ctrl_message(
+                    ctrl_address,
+                    command,
+                    timeout=timeout_ctrl,
+                    raise_exception=True,
+                )
+                break
+            except Exception as ex:
+                logger.warning(f'{ex!r}')
+                if retry == num_retry:
+                    raise ex
+
+    @staticmethod
+    def cancel(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        skip_deactivate: bool,
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param skip_deactivate: flag to tell if deactivate signal may be missed.
+            This is important when you want to independently kill a Runtime
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        if not skip_deactivate and socket_in_type == SocketType.DEALER_CONNECT:
+            ZEDRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='DEACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+        ZEDRuntime._retry_control_message(
+            ctrl_address=control_address,
+            timeout_ctrl=timeout_ctrl,
+            command='TERMINATE',
+            num_retry=3,
+            logger=logger,
+        )
+
+    @staticmethod
+    def activate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            ZEDRuntime._retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='ACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+
+    @staticmethod
+    def get_control_address(host: str, port: str, **kwargs):
+        """
+        Get the control address for a runtime with a given host and port
+
+        :param host: the host where the runtime works
+        :param port: the control port where the runtime listens
+        :param kwargs: extra keyword arguments
+        :return: The corresponding control address
+        """
+        from ...zmq import Zmqlet
+
+        return Zmqlet.get_ctrl_address(host, port, False)[0]
