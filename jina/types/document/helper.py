@@ -48,7 +48,7 @@ class DocGroundtruthPair:
             yield DocGroundtruthPair(doc, groundtruth)
 
 
-class VersionedMixin(object):
+class VersionedMixin:
     """
     Helper class to add versioning to an object. The version number is incremented each time an attribute is set.
     """
@@ -57,10 +57,10 @@ class VersionedMixin(object):
     ON_GETATTR: List = []
 
     def _increase_version(self):
-        super(VersionedMixin, self).__setattr__('version', self.version + 1)
+        super().__setattr__('version', self.version + 1)
 
     def __setattr__(self, attr, value):
-        super(VersionedMixin, self).__setattr__(attr, value)
+        super().__setattr__(attr, value)
         self._increase_version()
 
     def __delattr__(self, attr):
