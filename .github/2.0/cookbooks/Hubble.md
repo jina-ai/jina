@@ -25,25 +25,20 @@ Table of Contents
 
 ## 1. Create Executor
 
-The resulted file structure should look like the following:
-
+To create a new executor, use `jina hub new` and follow the steps in order to customize the new executor.
+This will generate an Executor project with the name and the configuration that you have provided.
+After running the command, a project with the following structure will be generated:
 ```text
 MyExecutor/
 ├── Dockerfile	        # Optional
-├── manifest.yml	    # Optional 
-├── config.yml	        # Optional
-├── README.md	        # Optional
-├── requirements.txt	# Optional
-├── __init__.py
-├── setup.py	        # Optional
-└── tests/	            # Optional
-    ├── test_MyAwesomeExecutor.py
-    └── __init__.py
+├── manifest.yml
+├── config.yml
+├── README.md
+├── requirements.txt
+└── executor.py
 
 ```
 
-Link to the _**detailed guidelines**_ for creating an executor
-is [here](https://github.com/jina-ai/executor-template/blob/main/.github/GUIDELINES.md).
 
 ## 2. Push and Pull CLI
 
@@ -65,7 +60,7 @@ is [here](https://github.com/jina-ai/executor-template/blob/main/.github/GUIDELI
     $ jina hub push [--public/--private] --force <UUID8/Alias> --secret <SECRET> <your_folder>
     ```
    _**Note**_:
-    - Without any visibility option, it will only update the content of exexited executor.
+    - Without any visibility option, it will only update the content of executor.
     - With `--public` option, the resulted executor will be **visible to public**.
     - With `--private` options, the resulted executor will be **invisible to public**.
 
@@ -75,7 +70,7 @@ is [here](https://github.com/jina-ai/executor-template/blob/main/.github/GUIDELI
     ```bash
     $ jina hub pull jinahub+docker://<UUID8/Alias>[:<SECRET>]
     ```
-- Pull the executor's **source-code package** into `~/.jina/hub-executors` defaultly
+- Pull the executor's **source-code package** into `~/.jina/hub-packages` defaultly
     ```bash
     $ jina hub pull jinahub://<UUID8/Alias>[:<SECRET>]
     ```
