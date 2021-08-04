@@ -135,10 +135,10 @@ class DocumentArrayNeuralOpsMixin:
 
         """
 
-        x_mat = np.stack(self.get_attributes("embedding"))
+        x_mat = np.stack(self.get_attributes('embedding'))
         assert isinstance(
             x_mat, np.ndarray
-        ), f"Type {type(x_mat)} not currently supported, use np.ndarray embeddings"
+        ), f'Type {type(x_mat)} not currently supported, use np.ndarray embeddings'
 
         if method == 'tsne':
             from sklearn.manifold import TSNE
