@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import Tuple, Union, TYPE_CHECKING
 
 import numpy as np
 
