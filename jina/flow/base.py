@@ -31,7 +31,7 @@ from ..helper import (
 from ..hubble.helper import get_hubble_url, parse_hub_uri
 from ..hubble.hubio import HubIO
 from ..jaml import JAMLCompatible
-from ..kubernetes import kubernetes_tools
+
 from ..kubernetes.naive import naive_deployment
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
@@ -1580,6 +1580,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
 
         if deployment_type == 'k8s':
+            from ..kubernetes import kubernetes_tools
             # self.logger.info(f'✨ Deploy Flow on Kubernetes...')
             namespace = self.args.name
             self.logger.info(f'📦\tCreate Namespace {namespace}')
