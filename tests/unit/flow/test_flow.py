@@ -817,3 +817,13 @@ def test_flow_routes_list(monkeypatch):
             )
 
         parallel_flow.index(inputs=Document(), on_done=validate_routes)
+
+
+def test_connect_to_predecessor():
+    f = Flow().add(name='pod1').add(name='pod2', connect_to_predecessor=True)
+
+    f.build()
+
+    assert len(f._pod_nodes['gateway'].head_args.hosts_in_connect) == 0
+    assert len(f._pod_nodes['pod1'].head_args.hosts_in_connect) == 0
+    assert len(f._pod_nodes['pod2'].head_args.hosts_in_connect) == 1

@@ -90,6 +90,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         compress: Optional[str] = 'NONE',
         compress_min_bytes: Optional[int] = 1024,
         compress_min_ratio: Optional[float] = 1.1,
+        connect_to_predecessor: Optional[bool] = False,
         cors: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = True,
         daemon: Optional[bool] = False,
@@ -131,6 +132,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
@@ -144,6 +146,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               it depends on the settings of `--compress-min-bytes` and `compress-min-ratio`
         :param compress_min_bytes: The original message size must be larger than this number to trigger the compress algorithm, -1 means disable compression.
         :param compress_min_ratio: The compression ratio (uncompressed_size/compressed_size) must be higher than this number to trigger the compress algorithm.
+        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
@@ -216,6 +219,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
@@ -431,6 +435,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     @overload
     def add(
         self,
+        connect_to_predecessor: Optional[bool] = False,
         ctrl_with_ipc: Optional[bool] = False,
         daemon: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
@@ -476,6 +481,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
@@ -484,6 +490,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
+        :param connect_to_predecessor: The head Pea of this Pod will connect to the TailPea of the predecessor Pod.
         :param ctrl_with_ipc: If set, use ipc protocol for control socket
         :param daemon: The Pea attempts to terminate all of its Runtime child processes/threads on existing. setting it to true basically tell the Pea do not wait on the Runtime when closing
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
@@ -580,6 +587,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param volumes: The path on the host to be mounted inside the container.
 
@@ -804,7 +812,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     start = f'start-{GATEWAY_NAME}'
 
                 start_pod = graph._get_target_pod(start)
-                if is_remote_local_connection(start_pod.host, pod.head_host):
+
+                if pod.connect_to_predecessor or is_remote_local_connection(
+                    start_pod.host, pod.head_host
+                ):
                     pod.head_args.hosts_in_connect.append(
                         graph._get_target_pod(start).full_out_address
                     )
