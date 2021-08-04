@@ -6,7 +6,7 @@ import signal
 from jina.parsers import set_gateway_parser, set_pea_parser
 from jina import Executor
 
-from cli.api import gateway, zed_runtime, pea
+from cli.api import gateway, zed_runtime
 
 
 class DummyExecutor(Executor):

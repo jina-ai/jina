@@ -536,7 +536,7 @@ class ZEDRuntime(ZMQRuntime):
         return status and status.is_ready
 
     @staticmethod
-    def wait_ready_or_shutdown(
+    def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ctrl_address: str,
         timeout_ctrl: int,

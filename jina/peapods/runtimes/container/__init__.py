@@ -283,7 +283,7 @@ class ContainerRuntime(ZMQRuntime):
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
     @staticmethod
-    def wait_ready_or_shutdown(
+    def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
         **kwargs,

@@ -222,8 +222,7 @@ class BasePea:
         """
         Send terminate control message.
 
-        :param skip_deactivate: flag to tell if deactivate signal may be missed.
-            This is important when you want to independently kill a Runtime
+        :param skip_deactivate: Mark that the DEACTIVATE signal may be missed if set to True
         """
         self.runtime_cls.cancel(
             cancel_event=self.cancel_event,
@@ -241,7 +240,7 @@ class BasePea:
         :param timeout: The time to wait before readiness or failure is determined
             .. # noqa: DAR201
         """
-        return self.runtime_cls.wait_ready_or_shutdown(
+        return self.runtime_cls.wait_for_ready_or_shutdown(
             timeout=timeout,
             ready_or_shutdown_event=self.ready_or_shutdown.event,
             ctrl_address=self._zed_runtime_ctrl_address,

@@ -64,7 +64,7 @@ class GRPCRuntime(AsyncNewLoopRuntime):
         self.zmqlet.close()
 
     @staticmethod
-    def wait_ready_or_shutdown(
+    def wait_for_ready_or_shutdown(
         timeout: Optional[float],
         ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
         **kwargs,
