@@ -32,7 +32,6 @@ from ..hubble.helper import get_hubble_url, parse_hub_uri
 from ..hubble.hubio import HubIO
 from ..jaml import JAMLCompatible
 
-from ..kubernetes.naive import naive_deployment
 from ..logging.logger import JinaLogger
 from ..parsers import set_gateway_parser, set_pod_parser, set_client_cli_parser
 from ..peapods import CompoundPod, Pod
@@ -1702,4 +1701,5 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
 
     def deploy_naive(self, deployment_type='k8s'):
+        from ..kubernetes.naive import naive_deployment
         naive_deployment.deploy(self, deployment_type)
