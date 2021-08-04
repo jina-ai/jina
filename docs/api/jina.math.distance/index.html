@@ -410,17 +410,18 @@
 <span id="jina-math-distance-module"></span><h1>jina.math.distance module<a class="headerlink" href="#module-jina.math.distance" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="jina.math.distance.pdist">
-<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">pdist</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#pdist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.pdist" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">pdist</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#pdist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.pdist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes Pairwise distances between observations in n-dimensional space.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_mat</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – np.ndarray of ndim 2</p></li>
+<li><p><strong>x_mat</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – Union[‘np.ndarray’,’scipy.sparse.csr_matrix’, ‘scipy.sparse.coo_matrix’] of ndim 2</p></li>
 <li><p><strong>metric</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – string describing the metric type</p></li>
+<li><p><strong>is_sparse</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – boolean stating if computation must be done with sparse data</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+<dd class="field-even"><p>np.ndarray</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>np.ndarray of ndim 2</p>
@@ -429,18 +430,20 @@
 </dd></dl>
 <dl class="py function">
 <dt id="jina.math.distance.cdist">
-<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">cdist</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#cdist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.cdist" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">cdist</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#cdist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.cdist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the pairwise distance between each row of X and each row on Y according to <cite>metric</cite>.
 - Let <cite>n_x = x_mat.shape[0]</cite>
 - Let <cite>n_y = y_mat.shape[0]</cite>
 - Returns a matrix <cite>dist</cite> of shape <cite>(n_x, n_y)</cite> with <cite>dist[i,j] = metric(x_mat[i], y_mat[j])</cite>.
-:type x_mat: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param x_mat: np.ndarray of ndim 2
-:type y_mat: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
-:param y_mat:  np.ndarray of ndim 2
+:type x_mat: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param x_mat: numpy or scipy array of ndim 2
+:type y_mat: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param y_mat: numpy or scipy array of ndim 2
 :type metric: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param metric: string describing the metric type
-:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
+:type is_sparse: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:param is_sparse: boolean describing if data type is sparse
+:rtype: np.ndarray
 :return: np.ndarray of ndim 2</p>
 </dd></dl>
 <dl class="py function">
@@ -464,6 +467,28 @@
 :param y_mat: np.ndarray with ndim=2
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>
 :return: np.ndarray with ndim=2</p>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.math.distance.sparse_cosine">
+<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">sparse_cosine</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#sparse_cosine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.sparse_cosine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cosine distance between each row in x_mat and each row in y_mat.
+:type x_mat: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param x_mat:  scipy.sparse like array with ndim=2
+:type y_mat: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param y_mat:  scipy.sparse like array with ndim=2
+:rtype: np.ndarray
+:return: np.ndarray  with ndim=2</p>
+</dd></dl>
+<dl class="py function">
+<dt id="jina.math.distance.sparse_sqeuclidean">
+<code class="sig-prename descclassname"><span class="pre">jina.math.distance.</span></code><code class="sig-name descname"><span class="pre">sparse_sqeuclidean</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_mat</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/distance/#sparse_sqeuclidean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.distance.sparse_sqeuclidean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cosine distance between each row in x_mat and each row in y_mat.
+:type x_mat: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param x_mat:  scipy.sparse like array with ndim=2
+:type y_mat: <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]
+:param y_mat:  scipy.sparse like array with ndim=2
+:rtype: np.ndarray
+:return: np.ndarray  with ndim=2</p>
 </dd></dl>
 </div>
 
