@@ -41,7 +41,7 @@ def zed_runtime(args: 'Namespace'):
     from jina.peapods.runtimes.zmq.zed import ZEDRuntime
 
     with ZEDRuntime(args) as runtime:
-        runtime.logger.success(f' Executor {runtime._executor.metas.name} started')
+        runtime.logger.success(f' Executor {runtime._data_request_handler._executor.metas.name} started')
         runtime.run_forever()
 
 

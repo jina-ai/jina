@@ -1,5 +1,4 @@
 import argparse
-import re
 import time
 from collections import defaultdict
 from typing import Dict, List, Optional, Union
@@ -7,20 +6,17 @@ from typing import Dict, List, Optional, Union
 import zmq
 
 from .base import ZMQRuntime
+from ..request_handlers.data_request_handler import DataRequestHandler
 from ...zmq import ZmqStreamlet
-from .... import __default_endpoint__
 from ....enums import OnErrorStrategy, SocketType
 from ....excepts import (
     NoExplicitMessage,
-    ExecutorFailToLoad,
     MemoryOverHighWatermark,
     ChainedPodException,
-    BadConfigSource,
     RuntimeTerminated,
     UnknownControlCommand,
 )
-from ....executors import BaseExecutor
-from ....helper import random_identity, typename
+from ....helper import random_identity
 from ....logging.profile import used_memory
 from ....proto import jina_pb2
 from ....types.arrays.document import DocumentArray
@@ -59,8 +55,7 @@ class ZEDRuntime(ZMQRuntime):
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
 
-        self._load_plugins()
-        self._load_executor()
+        self._data_request_handler = DataRequestHandler(self.args, self.logger)
         self._load_zmqstreamlet()
 
     def run_forever(self):
@@ -70,7 +65,7 @@ class ZEDRuntime(ZMQRuntime):
     def teardown(self):
         """Close the `ZmqStreamlet` and `Executor`."""
         self._zmqstreamlet.close()
-        self._executor.close()
+        self._data_request_handler.close()
         super().teardown()
 
     #: Private methods required by :meth:`setup`
@@ -84,36 +79,6 @@ class ZEDRuntime(ZMQRuntime):
             logger=self.logger,
             ctrl_addr=self.ctrl_addr,
         )
-
-    def _load_executor(self):
-        """Load the executor to this runtime, specified by ``uses`` CLI argument."""
-        try:
-            self._executor = BaseExecutor.load_config(
-                self.args.uses,
-                override_with=self.args.uses_with,
-                override_metas=self.args.uses_metas,
-                override_requests=self.args.uses_requests,
-                runtime_args=vars(self.args),
-            )
-        except BadConfigSource as ex:
-            self.logger.error(
-                f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
-                f'please use "docker://YOUR_IMAGE_NAME"'
-            )
-            raise ExecutorFailToLoad from ex
-        except FileNotFoundError as ex:
-            self.logger.error(f'fail to load file dependency')
-            raise ExecutorFailToLoad from ex
-        except Exception as ex:
-            self.logger.critical(f'can not load the executor from {self.args.uses}')
-            raise ExecutorFailToLoad from ex
-
-    def _load_plugins(self):
-        """Load the plugins if needed necessary to load executors."""
-        if self.args.py_modules:
-            from ....importer import PathImporter
-
-            PathImporter.add_modules(*self.args.py_modules)
 
     #: Private methods required by :meth:`teardown`
     def _check_memory_watermark(self):
@@ -227,49 +192,15 @@ class ZEDRuntime(ZMQRuntime):
                 f'using route, set receiver_id: {self.envelope.receiver_id}'
             )
 
-        # skip executor if target_peapod mismatch
-        if not re.match(self.envelope.header.target_peapod, self.name):
-            self.logger.debug(
-                f'skip executor: mismatch target, target: {self.envelope.header.target_peapod}, name: {self.name}'
-            )
-            return self
-
-        # skip executor if endpoints mismatch
-        if (
-            self.envelope.header.exec_endpoint not in self._executor.requests
-            and __default_endpoint__ not in self._executor.requests
-        ):
-            self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {self.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
-            )
-            return self
-
-        params = self._parse_params(self.request.parameters, self._executor.metas.name)
-
-        # executor logic
-        r_docs = self._executor(
-            req_endpoint=self.envelope.header.exec_endpoint,
+        self._data_request_handler.handle(
+            request=self.request,
             docs=self.docs,
-            parameters=params,
             docs_matrix=self.docs_matrix,
             groundtruths=self.groundtruths,
             groundtruths_matrix=self.groundtruths_matrix,
+            envelope=self.envelope,
+            peapod_name=self.name,
         )
-
-        # assigning result back to request
-        # 1. Return none: do nothing
-        # 2. Return nonempty and non-DocumentArray: raise error
-        # 3. Return DocArray, but the memory pointer says it is the same as self.docs: do nothing
-        # 4. Return DocArray and its not a shallow copy of self.docs: assign self.request.docs
-        if r_docs is not None:
-            if not isinstance(r_docs, DocumentArray):
-                raise TypeError(
-                    f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
-                )
-            elif r_docs != self.request.docs:
-                # this means the returned DocArray is a completely new one
-                self.request.docs.clear()
-                self.request.docs.extend(r_docs)
 
         return self
 
@@ -355,7 +286,7 @@ class ZEDRuntime(ZMQRuntime):
                 # please do NOT add logger.error here!
                 msg.add_exception()
             else:
-                msg.add_exception(ex, executor=getattr(self, '_executor'))
+                msg.add_exception(ex, executor=self._data_request_handler._executor)
                 self.logger.error(
                     f'{ex!r}'
                     + f'\n add "--quiet-error" to suppress the exception details'
