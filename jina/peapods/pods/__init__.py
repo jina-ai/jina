@@ -552,7 +552,7 @@ class Pod(BasePod, ExitFIFO):
             ]
         )
 
-        for idx, pea_host in zip(range(args.parallel), cycle(_host_list)):
+        for idx, pea_host in zip(range(args.parallel), _host_list[2:]):
             _args = copy.deepcopy(args)
             _args.pea_id = idx
 
@@ -618,7 +618,11 @@ class Pod(BasePod, ExitFIFO):
             self.is_head_router = True
             self.is_tail_router = True
             parsed_args['head'] = BasePod._copy_to_head_args(args, args.polling)
+            if parsed_args['head'].peas_hosts:
+                parsed_args['head'].host = parsed_args['head'].peas_hosts[0]
             parsed_args['tail'] = BasePod._copy_to_tail_args(args, args.polling)
+            if parsed_args['tail'].peas_hosts:
+                parsed_args['tail'].host = parsed_args['tail'].peas_hosts[1]
             parsed_args['peas'] = self._set_peas_args(
                 args,
                 head_args=parsed_args['head'],
