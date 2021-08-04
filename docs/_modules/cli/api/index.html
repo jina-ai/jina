@@ -419,8 +419,21 @@
         <span class="k">pass</span></div>
 
 
+<div class="viewcode-block" id="zed_runtime"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.zed_runtime">[docs]</a><span class="k">def</span> <span class="nf">zed_runtime</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Start a ZEDRuntime</span>
+
+<span class="sd">    :param args: arguments coming from the CLI.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span> <span class="nn">jina.peapods.runtimes.zmq.zed</span> <span class="kn">import</span> <span class="n">ZEDRuntime</span>
+
+    <span class="k">with</span> <span class="n">ZEDRuntime</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Executor </span><span class="si">{</span><span class="n">runtime</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started'</span><span class="p">)</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
+
+
 <span class="c1"># alias</span>
-<span class="n">executor</span> <span class="o">=</span> <span class="n">pea</span>
+<span class="n">executor</span> <span class="o">=</span> <span class="n">zed_runtime</span>
 
 
 <div class="viewcode-block" id="gateway"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.gateway">[docs]</a><span class="k">def</span> <span class="nf">gateway</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>
@@ -429,7 +442,21 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="n">pod</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
+    <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
+    <span class="kn">from</span> <span class="nn">jina.peapods.runtimes</span> <span class="kn">import</span> <span class="n">get_runtime</span>
+
+    <span class="n">gateway_runtime_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">:</span> <span class="s1">'GRPCRuntime'</span><span class="p">,</span>
+        <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">:</span> <span class="s1">'WebSocketRuntime'</span><span class="p">,</span>
+        <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span> <span class="s1">'HTTPRuntime'</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">get_runtime</span><span class="p">(</span><span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">])</span>
+
+    <span class="k">with</span> <span class="n">runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">' Gateway with protocol </span><span class="si">{</span><span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span><span class="si">}</span><span class="s1"> started'</span>
+        <span class="p">)</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ping"><a class="viewcode-back" href="../../../api/cli.api/#cli.api.ping">[docs]</a><span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">'Namespace'</span><span class="p">):</span>

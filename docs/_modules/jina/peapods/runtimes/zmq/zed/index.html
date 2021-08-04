@@ -389,7 +389,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">zmq</span>
 
@@ -415,20 +415,25 @@
 <span class="kn">from</span> <span class="nn">....types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">....types.routing.table</span> <span class="kn">import</span> <span class="n">RoutingTable</span>
 
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">multiprocessing</span>
+    <span class="kn">import</span> <span class="nn">threading</span>
+    <span class="kn">from</span> <span class="nn">....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+
 
 <div class="viewcode-block" id="ZEDRuntime"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime">[docs]</a><span class="k">class</span> <span class="nc">ZEDRuntime</span><span class="p">(</span><span class="n">ZMQRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure leveraging :class:`ZmqStreamlet` for Executor."""</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Initialize private parameters and execute private loading functions.</span>
 
 <span class="sd">        :param args: args from CLI</span>
-<span class="sd">        :param ctrl_addr: control port address</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">random_identity</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_active_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_control_address</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="kc">None</span>
@@ -441,9 +446,9 @@
         <span class="c1"># idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_zmqstreamlet</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_plugins</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_executor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_zmqstreamlet</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ZEDRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Start the `ZmqStreamlet`."""</span>
@@ -465,7 +470,6 @@
             <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="n">ctrl_addr</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span>
-            <span class="n">ready_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_load_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -885,7 +889,174 @@
 
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">envelope</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">envelope</span>
+
+    <span class="c1"># Static methods used by the Pea to communicate with the `Runtime` in the separate process</span>
+
+<div class="viewcode-block" id="ZEDRuntime.status"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.status">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Send get status control message.</span>
+
+<span class="sd">        :param ctrl_address: the address where the control message needs to be sent</span>
+<span class="sd">        :param timeout_ctrl: the timeout to wait for control messages to be processed</span>
+
+<span class="sd">        :return: control message.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
+
+        <span class="k">return</span> <span class="n">send_ctrl_message</span><span class="p">(</span>
+            <span class="n">ctrl_address</span><span class="p">,</span> <span class="s1">'STATUS'</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ZEDRuntime.is_ready"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Check if status is ready.</span>
+
+<span class="sd">        :param ctrl_address: the address where the control message needs to be sent</span>
+<span class="sd">        :param timeout_ctrl: the timeout to wait for control messages to be processed</span>
+
+<span class="sd">        :return: True if status is ready else False.</span>
+<span class="sd">        """</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">ZEDRuntime</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout_ctrl</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">status</span> <span class="ow">and</span> <span class="n">status</span><span class="o">.</span><span class="n">is_ready</span></div>
+
+<div class="viewcode-block" id="ZEDRuntime.wait_for_ready_or_shutdown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.wait_for_ready_or_shutdown">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">wait_for_ready_or_shutdown</span><span class="p">(</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">shutdown_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Check if the runtime has successfully started</span>
+
+<span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
+<span class="sd">        :param ctrl_address: the address where the control message needs to be sent</span>
+<span class="sd">        :param timeout_ctrl: the timeout to wait for control messages to be processed</span>
+<span class="sd">        :param shutdown_event: the multiprocessing event to detect if the process failed</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        :return: True if is ready or it needs to be shutdown</span>
+<span class="sd">        """</span>
+        <span class="n">timeout_ns</span> <span class="o">=</span> <span class="mi">1000000000</span> <span class="o">*</span> <span class="n">timeout</span> <span class="k">if</span> <span class="n">timeout</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">timeout_ns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="n">timeout_ns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">shutdown_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">or</span> <span class="n">ZEDRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span>
+                <span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout_ctrl</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_retry_control_message</span><span class="p">(</span>
+        <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">num_retry</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""Retry sending a control message with a given command for several trials</span>
+<span class="sd">        :param ctrl_address: the address where the control message needs to be sent</span>
+<span class="sd">        :param timeout_ctrl: the timeout to wait for control messages to be processed</span>
+<span class="sd">        :param command: the command to send in the control message</span>
+<span class="sd">        :param num_retry: the number of retries to successfully send the message</span>
+<span class="sd">        :param logger: the JinaLogger to log messages</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
+
+        <span class="k">for</span> <span class="n">retry</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_retry</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sending </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> command for the </span><span class="si">{</span><span class="n">retry</span><span class="si">}</span><span class="s1">th time'</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">send_ctrl_message</span><span class="p">(</span>
+                    <span class="n">ctrl_address</span><span class="p">,</span>
+                    <span class="n">command</span><span class="p">,</span>
+                    <span class="n">timeout</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span>
+                    <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="n">num_retry</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ex</span>
+
+<div class="viewcode-block" id="ZEDRuntime.cancel"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.cancel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span>
+        <span class="n">control_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">socket_in_type</span><span class="p">:</span> <span class="s1">'SocketType'</span><span class="p">,</span>
+        <span class="n">skip_deactivate</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Check if the runtime has successfully started</span>
+
+<span class="sd">        :param control_address: the address where the control message needs to be sent</span>
+<span class="sd">        :param timeout_ctrl: the timeout to wait for control messages to be processed</span>
+<span class="sd">        :param socket_in_type: the type of input socket, needed to know if is a dealer</span>
+<span class="sd">        :param skip_deactivate: flag to tell if deactivate signal may be missed.</span>
+<span class="sd">            This is important when you want to independently kill a Runtime</span>
+<span class="sd">        :param logger: the JinaLogger to log messages</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_deactivate</span> <span class="ow">and</span> <span class="n">socket_in_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span>
+            <span class="n">ZEDRuntime</span><span class="o">.</span><span class="n">_retry_control_message</span><span class="p">(</span>
+                <span class="n">ctrl_address</span><span class="o">=</span><span class="n">control_address</span><span class="p">,</span>
+                <span class="n">timeout_ctrl</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span>
+                <span class="n">command</span><span class="o">=</span><span class="s1">'DEACTIVATE'</span><span class="p">,</span>
+                <span class="n">num_retry</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">ZEDRuntime</span><span class="o">.</span><span class="n">_retry_control_message</span><span class="p">(</span>
+            <span class="n">ctrl_address</span><span class="o">=</span><span class="n">control_address</span><span class="p">,</span>
+            <span class="n">timeout_ctrl</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span>
+            <span class="n">command</span><span class="o">=</span><span class="s1">'TERMINATE'</span><span class="p">,</span>
+            <span class="n">num_retry</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ZEDRuntime.activate"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.activate">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span>
+        <span class="n">control_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">socket_in_type</span><span class="p">:</span> <span class="s1">'SocketType'</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Check if the runtime has successfully started</span>
+
+<span class="sd">        :param control_address: the address where the control message needs to be sent</span>
+<span class="sd">        :param timeout_ctrl: the timeout to wait for control messages to be processed</span>
+<span class="sd">        :param socket_in_type: the type of input socket, needed to know if is a dealer</span>
+<span class="sd">        :param logger: the JinaLogger to log messages</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">socket_in_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span>
+            <span class="n">ZEDRuntime</span><span class="o">.</span><span class="n">_retry_control_message</span><span class="p">(</span>
+                <span class="n">ctrl_address</span><span class="o">=</span><span class="n">control_address</span><span class="p">,</span>
+                <span class="n">timeout_ctrl</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span>
+                <span class="n">command</span><span class="o">=</span><span class="s1">'ACTIVATE'</span><span class="p">,</span>
+                <span class="n">num_retry</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="ZEDRuntime.get_control_address"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.zed/#jina.peapods.runtimes.zmq.zed.ZEDRuntime.get_control_address">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_control_address</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Get the control address for a runtime with a given host and port</span>
+
+<span class="sd">        :param host: the host where the runtime works</span>
+<span class="sd">        :param port: the control port where the runtime listens</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        :return: The corresponding control address</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
+
+        <span class="k">return</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div></div>
 </pre></div>
       </article>
       <footer>

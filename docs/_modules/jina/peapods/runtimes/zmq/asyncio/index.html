@@ -388,11 +388,11 @@
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">import</span> <span class="nn">signal</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">..zmq.base</span> <span class="kn">import</span> <span class="n">ZMQRuntime</span>
-
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
@@ -409,12 +409,13 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
-        <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s1">'asyncio.Event'</span><span class="p">,</span> <span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span> <span class="o">=</span> <span class="n">cancel_event</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span> <span class="o">=</span> <span class="n">cancel_event</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AsyncZMQRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncZMQRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Running method to block the main thread."""</span>
@@ -430,6 +431,7 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Do NOT override this method when inheriting from :class:`GatewayPea`"""</span>
+        <span class="c1"># handle terminate signals</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
@@ -454,6 +456,19 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
         <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">signame</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'SIGINT'</span><span class="p">,</span> <span class="s1">'SIGTERM'</span><span class="p">}:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">add_signal_handler</span><span class="p">(</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">signame</span><span class="p">),</span>
+                    <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">(),</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">' The runtime </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. '</span>
+                <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.run_forever"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -472,7 +487,63 @@
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_setup"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""The async method to setup."""</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">pass</span></div>
+
+    <span class="c1"># Static methods used by the Pea to communicate with the `Runtime` in the separate process</span>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.cancel"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.cancel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span>
+        <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Signal the runtime to terminate</span>
+
+<span class="sd">        :param cancel_event: the cancel event to set</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        """</span>
+        <span class="n">cancel_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.activate"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.activate">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Activate the runtime, does not apply to these runtimes</span>
+
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        """</span>
+        <span class="c1"># does not apply to this types of runtimes</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.get_control_address"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.get_control_address">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_control_address</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Get the control address for a runtime with a given host and port</span>
+
+<span class="sd">        :param host: the host where the runtime works</span>
+<span class="sd">        :param port: the control port where the runtime listens</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        :return: The corresponding control address</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
+
+        <span class="c1"># TODO: I think the control address with ipc from Gateway is not used anymore</span>
+        <span class="k">return</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="AsyncNewLoopRuntime.wait_for_ready_or_shutdown"><a class="viewcode-back" href="../../../../../../api/jina.peapods.runtimes.zmq.asyncio/#jina.peapods.runtimes.zmq.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">wait_for_ready_or_shutdown</span><span class="p">(</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">ready_or_shutdown_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Check if the runtime has successfully started</span>
+
+<span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
+<span class="sd">        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+
+<span class="sd">        :return: True if is ready or it needs to be shutdown</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">ready_or_shutdown_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div></div>
 </pre></div>
       </article>
       <footer>

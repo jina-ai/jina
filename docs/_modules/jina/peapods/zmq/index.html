@@ -869,12 +869,10 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">ready_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span> <span class="o">=</span> <span class="n">ready_event</span>
 
     <span class="k">def</span> <span class="nf">_register_pollin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""</span>
@@ -883,7 +881,6 @@
 
             <span class="n">get_or_reuse_loop</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span><span class="o">.</span><span class="n">set</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span> <span class="o">=</span> <span class="n">ZMQStream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">io_loop</span><span class="p">)</span>

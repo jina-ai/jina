@@ -389,6 +389,9 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">....enums</span> <span class="kn">import</span> <span class="n">SocketType</span>
 
 <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
 <span class="kn">from</span> <span class="nn">....jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
@@ -401,17 +404,27 @@
     <span class="n">DaemonWorkspaceCreationFailed</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">multiprocessing</span>
+    <span class="kn">import</span> <span class="nn">threading</span>
+    <span class="kn">from</span> <span class="nn">....logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+
 
 <div class="viewcode-block" id="JinadRuntime"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime">[docs]</a><span class="k">class</span> <span class="nc">JinadRuntime</span><span class="p">(</span><span class="n">AsyncNewLoopRuntime</span><span class="p">):</span>
     <span class="sd">"""Runtime procedure for JinaD."""</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ctrl_addr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="c1"># Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`</span>
         <span class="c1"># process.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span> <span class="o">=</span> <span class="n">timeout_ctrl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_control_address</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">port_ctrl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_expose</span>
 
 <div class="viewcode-block" id="JinadRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Create Workspace, Pea on remote JinaD server"""</span>
@@ -420,7 +433,6 @@
             <span class="kn">import</span> <span class="nn">rich</span>
             <span class="kn">import</span> <span class="nn">aiohttp</span>
             <span class="kn">from</span> <span class="nn">daemon.clients</span> <span class="kn">import</span> <span class="n">AsyncJinaDClient</span>
-            <span class="kn">from</span> <span class="nn">daemon.models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
 
             <span class="k">assert</span> <span class="n">rich</span>
             <span class="k">assert</span> <span class="n">aiohttp</span>
@@ -453,18 +465,16 @@
             <span class="k">raise</span> <span class="n">DaemonPeaCreationFailed</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Do NOT override this method when inheriting from :class:`GatewayPea`"""</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
-                <span class="n">send_ctrl_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span>
-                <span class="k">return</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
+        <span class="n">send_ctrl_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctrl_addr</span><span class="p">,</span> <span class="s1">'TERMINATE'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span>
 
 <div class="viewcode-block" id="JinadRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Streams log messages using websocket from remote server"""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_ready_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="sd">"""</span>
+<span class="sd">        Streams log messages using websocket from remote server</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logstream</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_forever</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_remote_logs</span>
@@ -529,7 +539,86 @@
             <span class="p">]</span> <span class="o">+</span> <span class="n">changes</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">changes</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">_args</span></div>
+        <span class="k">return</span> <span class="n">_args</span>
+
+    <span class="c1"># Static methods used by the Pea to communicate with the `Runtime` in the separate process</span>
+
+<div class="viewcode-block" id="JinadRuntime.cancel"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.cancel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span>
+        <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Signal the runtime to terminate</span>
+
+<span class="sd">        :param cancel_event: the cancel event to set</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        """</span>
+        <span class="n">cancel_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="JinadRuntime.activate"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.activate">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span>
+        <span class="n">control_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">socket_in_type</span><span class="p">:</span> <span class="s1">'SocketType'</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Check if the runtime has successfully started</span>
+
+<span class="sd">        :param control_address: the address where the control message needs to be sent</span>
+<span class="sd">        :param timeout_ctrl: the timeout to wait for control messages to be processed</span>
+<span class="sd">        :param socket_in_type: the type of input socket, needed to know if is a dealer</span>
+<span class="sd">        :param logger: the JinaLogger to log messages</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        """</span>
+
+        <span class="k">def</span> <span class="nf">_retry_control_message</span><span class="p">(</span>
+            <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">num_retry</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">send_ctrl_message</span>
+
+            <span class="k">for</span> <span class="n">retry</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_retry</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sending </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> command for the </span><span class="si">{</span><span class="n">retry</span><span class="si">}</span><span class="s1">th time'</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">send_ctrl_message</span><span class="p">(</span>
+                        <span class="n">ctrl_address</span><span class="p">,</span>
+                        <span class="n">command</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span>
+                        <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="n">num_retry</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">ex</span>
+
+        <span class="k">if</span> <span class="n">socket_in_type</span> <span class="o">==</span> <span class="n">SocketType</span><span class="o">.</span><span class="n">DEALER_CONNECT</span><span class="p">:</span>
+            <span class="n">_retry_control_message</span><span class="p">(</span>
+                <span class="n">ctrl_address</span><span class="o">=</span><span class="n">control_address</span><span class="p">,</span>
+                <span class="n">timeout_ctrl</span><span class="o">=</span><span class="n">timeout_ctrl</span><span class="p">,</span>
+                <span class="n">command</span><span class="o">=</span><span class="s1">'ACTIVATE'</span><span class="p">,</span>
+                <span class="n">num_retry</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="JinadRuntime.get_control_address"><a class="viewcode-back" href="../../../../../api/jina.peapods.runtimes.jinad/#jina.peapods.runtimes.jinad.JinadRuntime.get_control_address">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_control_address</span><span class="p">(</span><span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Get the control address for a runtime with a given host and port</span>
+
+<span class="sd">        :param host: the host where the runtime works</span>
+<span class="sd">        :param port: the control port where the runtime listens</span>
+<span class="sd">        :param kwargs: extra keyword arguments</span>
+<span class="sd">        :return: The corresponding control address</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">...zmq</span> <span class="kn">import</span> <span class="n">Zmqlet</span>
+
+        <span class="k">return</span> <span class="n">Zmqlet</span><span class="o">.</span><span class="n">get_ctrl_address</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div></div>
 </pre></div>
       </article>
       <footer>

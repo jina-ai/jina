@@ -410,7 +410,7 @@
 <span id="jina-peapods-runtimes-zmq-zed-module"></span><h1>jina.peapods.runtimes.zmq.zed module<a class="headerlink" href="#module-jina.peapods.runtimes.zmq.zed" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="jina.peapods.runtimes.zmq.zed.ZEDRuntime">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.zmq.zed.</span></code><code class="sig-name descname"><span class="pre">ZEDRuntime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_addr</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">jina.peapods.runtimes.zmq.zed.</span></code><code class="sig-name descname"><span class="pre">ZEDRuntime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.peapods.runtimes.zmq.base/#jina.peapods.runtimes.zmq.base.ZMQRuntime" title="jina.peapods.runtimes.zmq.base.ZMQRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.peapods.runtimes.zmq.base.ZMQRuntime</span></code></a></p>
 <p>Runtime procedure leveraging <code class="xref py py-class docutils literal notranslate"><span class="pre">ZmqStreamlet</span></code> for Executor.</p>
 <p>Initialize private parameters and execute private loading functions.</p>
@@ -418,7 +418,6 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – args from CLI</p></li>
-<li><p><strong>ctrl_addr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – control port address</p></li>
 <li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
 </ul>
 </dd>
@@ -565,6 +564,111 @@
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EnvelopeProto</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.zmq.zed.ZEDRuntime.status">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">status</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ctrl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime.status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send get status control message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
+<li><p><strong>timeout_ctrl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the timeout to wait for control messages to be processed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>control message.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_ready">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_ready</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ctrl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime.is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime.is_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if status is ready.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
+<li><p><strong>timeout_ctrl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the timeout to wait for control messages to be processed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if status is ready else False.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.zmq.zed.ZEDRuntime.wait_for_ready_or_shutdown">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ctrl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shutdown_event</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime.wait_for_ready_or_shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime.wait_for_ready_or_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the runtime has successfully started</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The time to wait before readiness or failure is determined</p></li>
+<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
+<li><p><strong>timeout_ctrl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the timeout to wait for control messages to be processed</p></li>
+<li><p><strong>shutdown_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – the multiprocessing event to detect if the process failed</p></li>
+<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if is ready or it needs to be shutdown</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.zmq.zed.ZEDRuntime.cancel">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">cancel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">control_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ctrl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socket_in_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_deactivate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime.cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the runtime has successfully started</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>control_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
+<li><p><strong>timeout_ctrl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the timeout to wait for control messages to be processed</p></li>
+<li><p><strong>socket_in_type</strong> (<a class="reference internal" href="../jina.enums/#jina.enums.SocketType" title="jina.enums.SocketType"><em>SocketType</em></a>) – the type of input socket, needed to know if is a dealer</p></li>
+<li><p><strong>skip_deactivate</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – flag to tell if deactivate signal may be missed.
+This is important when you want to independently kill a Runtime</p></li>
+<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – the JinaLogger to log messages</p></li>
+<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.zmq.zed.ZEDRuntime.activate">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">activate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">control_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_ctrl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">socket_in_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime.activate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime.activate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the runtime has successfully started</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>control_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
+<li><p><strong>timeout_ctrl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – the timeout to wait for control messages to be processed</p></li>
+<li><p><strong>socket_in_type</strong> (<a class="reference internal" href="../jina.enums/#jina.enums.SocketType" title="jina.enums.SocketType"><em>SocketType</em></a>) – the type of input socket, needed to know if is a dealer</p></li>
+<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – the JinaLogger to log messages</p></li>
+<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt id="jina.peapods.runtimes.zmq.zed.ZEDRuntime.get_control_address">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_control_address</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/peapods/runtimes/zmq/zed/#ZEDRuntime.get_control_address"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.peapods.runtimes.zmq.zed.ZEDRuntime.get_control_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the control address for a runtime with a given host and port</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>host</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the host where the runtime works</p></li>
+<li><p><strong>port</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the control port where the runtime listens</p></li>
+<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding control address</p>
 </dd>
 </dl>
 </dd></dl>
