@@ -41,8 +41,6 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
                     f'Grpclet can not send as bind to target {pod_address}'
                 )
 
-            self.logger.debug(f'gonna send msg from {self.name} to {target.active_pod}')
-
             next_routes.append(target)
         return next_routes
 
@@ -114,6 +112,7 @@ class Grpclet(jina_pb2_grpc.JinaDataRequestRPCServicer):
     async def Call(self, msg, *args):
         if self._callback:
             if inspect.iscoroutinefunction(self._callback):
+
                 await self._callback(msg)
             else:
                 self._callback(msg)
