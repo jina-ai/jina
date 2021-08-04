@@ -1580,6 +1580,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if deployment_type == 'k8s':
             from ..kubernetes import kubernetes_tools
+
             # self.logger.info(f'✨ Deploy Flow on Kubernetes...')
             namespace = self.args.name
             self.logger.info(f'📦\tCreate Namespace {namespace}')
@@ -1609,7 +1610,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 # cluster_ip = kubernetes_tools.get_service_cluster_ip(
                 #     name.lower(), namespace
                 # )
-                pod_to_args[pod_name] = {'host_in': f'{name.lower()}.{namespace}.svc.cluster.local'}
+                pod_to_args[pod_name] = {
+                    'host_in': f'{name.lower()}.{namespace}.svc.cluster.local'
+                }
 
                 self.logger.info(
                     f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas}'
@@ -1653,7 +1656,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             #     'gateway-in', namespace
             # )
 
-            gateway_yaml = self.create_gateway_yaml(pod_to_args, 'gateway-in.f1.svc.cluster.local')
+            gateway_yaml = self.create_gateway_yaml(
+                pod_to_args, 'gateway-in.f1.svc.cluster.local'
+            )
             kubernetes_tools.create(
                 'deployment',
                 {
@@ -1691,15 +1696,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             external: True
             """
             if args.needs:
-                yaml += (f"""
+                yaml += f"""
             needs: [{', '.join(args.needs)}]
-                """)
+                """
 
         # return yaml
         base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
         return base_64_yaml
 
-
     def deploy_naive(self, deployment_type='k8s'):
         from ..kubernetes.naive import naive_deployment
+
         naive_deployment.deploy(self, deployment_type)
