@@ -1,7 +1,5 @@
 import threading
-import time
 
-import bcolors
 from bcolors import UNDERLINE, ENDC, BOLD, PASS
 
 

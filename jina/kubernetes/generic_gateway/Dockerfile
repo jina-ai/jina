@@ -2,7 +2,10 @@ FROM jinaai/jina
 RUN apt-get -y update && apt-get install -y git
 RUN pip install uvicorn
 RUN pip install fastapi
-RUN pip install git+https://github.com/jina-ai/jina.git@feat-custom-host-in
+RUN pip install bcolors
+RUN pip install kubernetes==18.20.0b1
+
+RUN pip install git+https://github.com/jina-ai/jina.git@feat-kubernetes-mvp
 
 # setup the workspace
 COPY . /workspace

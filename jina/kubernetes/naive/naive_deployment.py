@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
-from jina.kubernetes import kubernetes_tools
+
 from jina.peapods import BasePod, Pod
 
 IS_LOCAL = False
@@ -11,7 +11,7 @@ IS_LOCAL = False
 if IS_LOCAL:
     gateway_image = 'generic-gateway'
 else:
-    gateway_image = 'gcr.io/jina-showcase/generic-gateway'
+    gateway_image = 'gcr.io/jina-showcase/generic-gateway:latest'
 
 
 def to_dns_name(name):
@@ -27,6 +27,8 @@ def deploy_service(
     logger,
     init_container=None,
 ):
+    from jina.kubernetes import kubernetes_tools
+
     logger.info(
         f'🔋\tCreate Service for "{name}" with image "{name}" pulling from "{image_name}"'
     )
@@ -109,6 +111,7 @@ def deploy(flow, deployment_type='k8s'):
     """Deploys the Flow. Currently only Kubernetes is supported.
     Each pod is deployed in a stateful set and we use zmq level communication.
     """
+    from jina.kubernetes import kubernetes_tools
 
     if deployment_type == 'k8s':
         flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
