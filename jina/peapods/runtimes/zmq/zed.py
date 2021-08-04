@@ -29,9 +29,9 @@ from ....types.request import Request
 from ....types.routing.table import RoutingTable
 
 if False:
-    from jina.logging.logger import JinaLogger
     import multiprocessing
     import threading
+    from ....logging.logger import JinaLogger
 
 
 class ZEDRuntime(ZMQRuntime):

@@ -1,50 +1,38 @@
 import argparse
-from typing import Union
 
 from ...excepts import RuntimeTerminated
 from ...logging.logger import JinaLogger
 
-if False:
-    import multiprocessing
-    import threading
-
 
 class BaseRuntime:
     """A Jina Runtime is a procedure that blocks the main process once running (i.e. :meth:`run_forever`),
-    therefore must be put into a separated thread/process. Any program/library/package/module that blocks the main
-    process, can be formulated into a :class:`BaseRuntime` class and then be used in :class:`BasePea`.
+    therefore should be put into a separated thread/process, or inside the main process of a docker container.
+     Any program/library/package/module that blocks the main process, can be formulated into a :class:`BaseRuntime` class
+     and then be started from a :class:`BasePea`.
 
      In the sequel, we call the main process/thread as ``M``, the process/thread blocked :class:`Runtime` as ``S``.
 
      In Jina, a :class:`BasePea` object is used to manage a :class:`Runtime` object's lifecycle. A :class:`BasePea`
      acts as a :class:`multiprocessing.Process` or :class:`threading.Thread`, it starts from ``M`` and once the
-     ``S`` is spawned, it calls :class:`Runtime` methods in the following order:
+     ``S`` is spawned, it uses :class:`Runtime` as a context manager:
 
         0. :meth:`__init__`
 
-        1. :meth:`run_forever`. Note that this will block ``S``, step 3 won't be
-        reached until it is unblocked by :meth:`cancel`. This method is responsible
-        to set the `ready_event` to guarantee that the rest of the system knows when it is ready
-        to receive messages.
+        1. :meth: `__enter__`
 
-        2. :meth:`teardown` in ``S``. Note that ``S`` is blocked by
-        :meth:`run_forever`, this step won't be reached until step 2 is unblocked by :meth:`cancel`
+        2. :meth:`run_forever`. Note that this will block ``S``, step 3 won't be
+        reached until it is unblocked by :meth:`cancel`.
+
+        3. When an error occurs during `run_forever` or `cancel` signal is reached by the `runtime`. The `run_forever` method is cancelled and
+        the managed context is closed. The `__exit__` of `Runtime` guarantees that the `Runtime` is properly shut by calling `teardown`.
 
      The :meth:`__init__` and :meth:`teardown` pair together, which defines instructions that will be executed before
      and after. In subclasses, `teardown` is optional.
 
-     The :meth:`run_forever` and :meth:`cancel` pair together, which introduces blocking to ``S`` and then
-     unblocking from it. They are mandatory for all subclasses.
-
-     Note that, there is no "exclusive" relation between :meth:`run_forever` and :meth:`teardown`, :meth:`teardown`
-     is not about "cancelling", it is about "cleaning".
-
-     Unlike other three methods that get invoked inside ``S``, the :meth:`cancel` is invoked in ``M`` to unblock ``S``.
-     Therefore, :meth:`cancel` usually requires some special communication between ``M`` and ``S``, e.g.
+     In order to cancel the `run_forever` method of a `Runtime`, you can use their `static` `cancel` method that will make sure that the runtime is properly cancelled.
 
         - Use :class:`threading.Event` or `multiprocessing.Event`, while :meth:`run_forever` polls for this event
-        - Use ZMQ to send a message, while :meth:`run_forever` polls for this message
-        - Use HTTP/REST to send a request, while :meth:`run_forever` listens to this request
+        - Use ZMQ to send a TERMINATE message, while :meth:`run_forever` polls for this message
 
      Note, another way to jump out from :meth:`run_forever` is raise exceptions from it. This will immediately move to
      :meth:`teardown`.
