@@ -1,4 +1,5 @@
 import os
+import asyncio
 
 from jina import __default_host__
 
@@ -61,8 +62,15 @@ class HTTPRuntime(AsyncNewLoopRuntime):
 
     async def async_run_forever(self):
         """Running method of ther server."""
-        self.is_ready_event.set()
         await self._server.serve()
+
+    async def _wait_for_cancel(self):
+        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
+        # handle terminate signals
+        while not self.is_cancel.is_set() and not self._server.should_exit:
+            await asyncio.sleep(0.1)
+
+        await self.async_cancel()
 
     async def async_cancel(self):
         """Stop the server."""
