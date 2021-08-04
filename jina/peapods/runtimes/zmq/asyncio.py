@@ -140,3 +140,20 @@ class AsyncNewLoopRuntime(AsyncZMQRuntime, ABC):
 
         # TODO: I think the control address with ipc from Gateway is not used anymore
         return Zmqlet.get_ctrl_address(host, port, True)[0]
+
+    @staticmethod
+    def wait_for_ready_or_shutdown(
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded
+        :param kwargs: extra keyword arguments
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        return ready_or_shutdown_event.wait(timeout)

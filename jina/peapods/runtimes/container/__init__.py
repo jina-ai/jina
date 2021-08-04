@@ -18,7 +18,7 @@ from ....enums import SocketType
 if False:
     import multiprocessing
     import threading
-    from jina.logging.logger import JinaLogger
+    from ....logging.logger import JinaLogger
 
 
 class ContainerRuntime(ZMQRuntime):

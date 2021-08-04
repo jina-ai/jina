@@ -1,5 +1,4 @@
 import os
-from typing import Optional, Union
 import asyncio
 
 from jina import __default_host__
@@ -7,10 +6,6 @@ from jina import __default_host__
 from .....importer import ImportExtensions
 from ...zmq.asyncio import AsyncNewLoopRuntime
 from .app import get_fastapi_app
-
-if False:
-    import multiprocessing
-    import threading
 
 __all__ = ['WebSocketRuntime']
 
@@ -82,20 +77,3 @@ class WebSocketRuntime(AsyncNewLoopRuntime):
         """Stop the server."""
         self._server.should_exit = True
         await self._server.shutdown()
-
-    @staticmethod
-    def wait_for_ready_or_shutdown(
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        **kwargs
-    ):
-        """
-        Check if the runtime has successfully started
-
-        :param timeout: The time to wait before readiness or failure is determined
-        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded
-        :param kwargs: extra keyword arguments
-
-        :return: True if is ready or it needs to be shutdown
-        """
-        return ready_or_shutdown_event.wait(timeout)

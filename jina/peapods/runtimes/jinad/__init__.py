@@ -2,7 +2,7 @@ import os
 import copy
 import asyncio
 import argparse
-from typing import Optional, Union
+from typing import Union
 
 from ....enums import SocketType
 
@@ -20,7 +20,7 @@ from ....excepts import (
 if False:
     import multiprocessing
     import threading
-    from jina.logging.logger import JinaLogger
+    from ....logging.logger import JinaLogger
 
 
 class JinadRuntime(AsyncNewLoopRuntime):
@@ -155,23 +155,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
         return _args
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
-
-    @staticmethod
-    def wait_for_ready_or_shutdown(
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        **kwargs,
-    ):
-        """
-        Check if the runtime has successfully started
-
-        :param timeout: The time to wait before readiness or failure is determined
-        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or succeeded
-        :param kwargs: extra keyword arguments
-
-        :return: True if is ready or it needs to be shutdown
-        """
-        return ready_or_shutdown_event.wait(timeout)
 
     @staticmethod
     def cancel(
