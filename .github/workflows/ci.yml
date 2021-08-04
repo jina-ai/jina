@@ -239,7 +239,7 @@ jobs:
           docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
-          pip install ".[cicd,test,daemon]" --no-cache-dir
+          pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
         env:

@@ -9,10 +9,15 @@ sub-modules, as described below.
 
 import datetime as _datetime
 import os as _os
+import platform as _platform
 import signal as _signal
 import sys as _sys
 import types as _types
 import warnings as _warnings
+
+
+if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
+    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
 
 
 def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
@@ -26,9 +31,10 @@ def _warning_on_one_line(message, category, filename, lineno, *args, **kwargs):
 
 _warnings.formatwarning = _warning_on_one_line
 
-if _sys.version_info < (3, 7, 0) or _sys.version_info >= (3, 10, 0):
-    raise OSError(f'Jina requires Python 3.7/3.8/3.9, but yours is {_sys.version_info}')
+# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
+_os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
+# JINA_MP_START_METHOD has higher priority than os-patch
 _start_method = _os.environ.get('JINA_MP_START_METHOD', None)
 
 if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
@@ -37,15 +43,20 @@ if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
     _set_start_method(_start_method.lower())
     _warnings.warn(f'multiprocessing start method is set to `{_start_method.lower()}`')
     _os.unsetenv('JINA_MP_START_METHOD')
+elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
+    # DO SOME OS-WISE PATCHES
 
-# fix fork error on MacOS but seems no effect? must do EXPORT manually before jina start
-_os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
+    # temporary fix for python 3.8 on macos where the default start is set to "spawn"
+    # https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods
+    from multiprocessing import set_start_method as _set_start_method
+
+    _set_start_method('fork')
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '2.0.15'
+__version__ = '2.0.17'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution

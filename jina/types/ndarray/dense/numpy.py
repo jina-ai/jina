@@ -60,6 +60,8 @@ class DenseNdArray(BaseDenseNdArray):
                 x = x.astype(blob.original_dtype) * blob.scale + blob.min_val
 
             return x.reshape(blob.shape)
+        elif len(blob.shape) > 0:
+            return np.zeros(blob.shape)
 
     @value.setter
     def value(self, value: 'np.ndarray'):

@@ -103,6 +103,22 @@ def set_gateway_parser(parser=None):
         help='Routing graph for the gateway' if _SHOW_ALL_ARGS else argparse.SUPPRESS,
     )
 
+    parser.add_argument(
+        '--dynamic-routing',
+        action='store_true',
+        default=True,
+        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
+        if _SHOW_ALL_ARGS
+        else argparse.SUPPRESS,
+    )
+
+    parser.add_argument(
+        '--connect-to-predecessor',
+        action='store_true',
+        default=False,
+        help='The head Pea of this Pod will connect to the TailPea of the predecessor Pod.',
+    )
+
     return parser
 
 
