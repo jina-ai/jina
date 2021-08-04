@@ -4,14 +4,28 @@ import pytest
 from jina.math.distance import sqeuclidean, cosine, sparse_cosine, sparse_sqeuclidean
 from jina.math.distance import cdist as jina_cdist
 from jina.math.distance import pdist as jina_pdist
-from jina.math.helper import minmax_normalize
 
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist, pdist
 
 
+@pytest.fixture
+def embeddings():
+    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
+
+
+@pytest.fixture
+def embedding_query():
+    return np.array([[1, 0, 0]])
+
+
+@pytest.fixture
+def other_embeddings():
+    return np.array([[2, 0, 0], [3, 0, 0]])
+
+
 @pytest.mark.parametrize(
-    'func,data_type',
+    "func,data_type",
     [
         (cosine, np.array),
         (sparse_sqeuclidean, sp.csr_matrix),
@@ -33,7 +47,7 @@ def test_euclidean_distance_squared(func, data_type, embeddings, embedding_query
 
 
 @pytest.mark.parametrize(
-    'func,data_type',
+    "func,data_type",
     [
         (cosine, np.array),
         (sparse_cosine, sp.csr_matrix),
@@ -54,20 +68,20 @@ def test_cosine_distance_squared(func, data_type, embeddings, embedding_query):
 
 
 @pytest.mark.parametrize(
-    'metric, sparse_type',
+    "metric, sparse_type",
     [
-        ('cosine', sp.csr_matrix),
-        ('cosine', sp.csc_matrix),
-        ('cosine', sp.coo_matrix),
-        ('cosine', sp.csr_matrix),
-        ('sqeuclidean', sp.csr_matrix),
-        ('sqeuclidean', sp.csc_matrix),
-        ('sqeuclidean', sp.coo_matrix),
-        ('sqeuclidean', sp.csr_matrix),
-        ('euclidean', sp.csr_matrix),
-        ('euclidean', sp.csc_matrix),
-        ('euclidean', sp.coo_matrix),
-        ('euclidean', sp.csr_matrix),
+        ("cosine", sp.csr_matrix),
+        ("cosine", sp.csc_matrix),
+        ("cosine", sp.coo_matrix),
+        ("cosine", sp.csr_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("sqeuclidean", sp.csc_matrix),
+        ("sqeuclidean", sp.coo_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("euclidean", sp.csr_matrix),
+        ("euclidean", sp.csc_matrix),
+        ("euclidean", sp.coo_matrix),
+        ("euclidean", sp.csr_matrix),
     ],
 )
 def test_cdist(metric, sparse_type, embeddings, other_embeddings):
@@ -91,24 +105,24 @@ def test_cdist(metric, sparse_type, embeddings, other_embeddings):
 
 def test_cdist_unkown_metric(embeddings):
     with pytest.raises(ValueError):
-        jina_cdist(embeddings, embeddings, metric='Cosinatrus')
+        jina_cdist(embeddings, embeddings, metric="Cosinatrus")
 
 
 @pytest.mark.parametrize(
-    'metric, sparse_type',
+    "metric, sparse_type",
     [
-        ('cosine', sp.csr_matrix),
-        ('cosine', sp.csc_matrix),
-        ('cosine', sp.coo_matrix),
-        ('cosine', sp.csr_matrix),
-        ('sqeuclidean', sp.csr_matrix),
-        ('sqeuclidean', sp.csc_matrix),
-        ('sqeuclidean', sp.coo_matrix),
-        ('sqeuclidean', sp.csr_matrix),
-        ('euclidean', sp.csr_matrix),
-        ('euclidean', sp.csc_matrix),
-        ('euclidean', sp.coo_matrix),
-        ('euclidean', sp.csr_matrix),
+        ("cosine", sp.csr_matrix),
+        ("cosine", sp.csc_matrix),
+        ("cosine", sp.coo_matrix),
+        ("cosine", sp.csr_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("sqeuclidean", sp.csc_matrix),
+        ("sqeuclidean", sp.coo_matrix),
+        ("sqeuclidean", sp.csr_matrix),
+        ("euclidean", sp.csr_matrix),
+        ("euclidean", sp.csc_matrix),
+        ("euclidean", sp.coo_matrix),
+        ("euclidean", sp.csr_matrix),
     ],
 )
 def test_pdist(metric, sparse_type, embeddings, other_embeddings):
@@ -187,17 +201,3 @@ def test_new_distances_equal_scipy_cdist():
     XY_cdist = cdist(X, Y, metric="cosine")
     XY_new = cosine(X, Y)
     np.testing.assert_almost_equal(XY_cdist, XY_new)
-
-
-def test_minmax_normalization_1d():
-    a = np.array([1, 2, 3])
-    np.testing.assert_almost_equal(minmax_normalize(a), [0, 0.5, 1])
-    np.testing.assert_almost_equal(minmax_normalize(a, (1, 0)), [1, 0.5, 0])
-
-
-def test_minmax_normalization_2d():
-    a = np.array([[1, 2, 3], [3, 2, 1]])
-    np.testing.assert_almost_equal(minmax_normalize(a), [[0, 0.5, 1], [1, 0.5, 0]])
-    np.testing.assert_almost_equal(
-        minmax_normalize(a, (1, 0)), [[1, 0.5, 0], [0, 0.5, 1]]
-    )
