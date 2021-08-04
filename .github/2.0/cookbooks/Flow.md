@@ -440,7 +440,7 @@ f = (Flow()
 | `port_in` | randomly initialized | Port for incoming traffic for the Executor. |
 | `port_out` | randomly initialized | Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below. |
 | `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
-| `use_external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
+| `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
 | `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Pod does not run natively, but is spawned inside a container. |
 
 #### Commonly used patterns for `.add`
@@ -480,13 +480,13 @@ The external Executor in the following two use-cases could have been spawned
 - or by the `jina executor` CLI command
 
 ```python
-f.add(host='localhost', port_in=12345, use_external=True)
-f.add(host='123.45.67.89', port_in=12345, use_external=True)
+f.add(host='localhost', port_in=12345, external=True)
+f.add(host='123.45.67.89', port_in=12345, external=True)
 ```
 
 ##### Remote Executor
 
-In any of the following remote patterns without `use_external`, JinaD must be running on the remote machine.
+In any of the following remote patterns without `external`, JinaD must be running on the remote machine.
 Furthermore, JinaD must be setup to listen on `port_expose`.
 
 ```python
