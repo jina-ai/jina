@@ -34,7 +34,6 @@ def mixin_zed_runtime_parser(parser):
     )
     gp.add_argument(
         '--uses-with',
-        '--override-with',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
@@ -44,13 +43,21 @@ def mixin_zed_runtime_parser(parser):
     )
     gp.add_argument(
         '--uses-metas',
-        '--override-metas',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
         help='''
     Dictionary of keyword arguments that will override the `metas` configuration in `uses`
     ''',
+    )
+    gp.add_argument(
+        '--uses-requests',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+        Dictionary of keyword arguments that will override the `requests` configuration in `uses`
+        ''',
     )
     gp.add_argument(
         '--py-modules',
