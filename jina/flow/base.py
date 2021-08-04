@@ -132,6 +132,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
         workspace: Optional[str] = None,
         zmq_identity: Optional[str] = None,
@@ -218,6 +219,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param zmq_identity: The identity of a ZMQRuntime. It is used for unique socket identification towards other ZMQRuntimes.
@@ -479,6 +481,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_before: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_metas: Optional[dict] = None,
+        uses_requests: Optional[dict] = None,
         uses_with: Optional[dict] = None,
         volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
@@ -584,6 +587,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param uses_after: The executor attached after the Peas described by --uses, typically used for receiving from all parallels, accepted type follows `--uses`
         :param uses_before: The executor attached after the Peas described by --uses, typically before sending to all parallels, accepted type follows `--uses`
         :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param volumes: The path on the host to be mounted inside the container.
 
