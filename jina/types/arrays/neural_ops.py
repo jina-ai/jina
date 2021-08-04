@@ -21,7 +21,7 @@ class DocumentArrayNeuralOpsMixin:
         darray: Union['DocumentArray', 'DocumentArrayMemmap'],
         metric: Union[
             str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
-        ] = "cosine",
+        ] = 'cosine',
         limit: Optional[int] = inf,
         normalization: Optional[Tuple[int, int]] = None,
         use_scipy: bool = False,
