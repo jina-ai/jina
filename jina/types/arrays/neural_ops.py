@@ -18,9 +18,9 @@ class DocumentArrayNeuralOpsMixin:
 
     def match(
         self,
-        darray: Union["DocumentArray", "DocumentArrayMemmap"],
+        darray: Union['DocumentArray', 'DocumentArrayMemmap'],
         metric: Union[
-            str, Callable[["np.ndarray", "np.ndarray"], "np.ndarray"]
+            str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
         ] = "cosine",
         limit: Optional[int] = inf,
         normalization: Optional[Tuple[int, int]] = None,
@@ -57,14 +57,14 @@ class DocumentArrayNeuralOpsMixin:
         is_sparse = False
 
         if isinstance(darray[0].embedding, np.ndarray):
-            X = np.stack(self.get_attributes("embedding"))
-            Y = np.stack(darray.get_attributes("embedding"))
+            X = np.stack(self.get_attributes('embedding'))
+            Y = np.stack(darray.get_attributes('embedding'))
         else:
             import scipy.sparse as sp
 
             if sp.issparse(darray[0].embedding):
-                X = sp.vstack(self.get_attributes("embedding"))
-                Y = sp.vstack(darray.get_attributes("embedding"))
+                X = sp.vstack(self.get_attributes('embedding'))
+                Y = sp.vstack(darray.get_attributes('embedding'))
                 is_sparse = True
 
         limit = min(limit, len(darray))
@@ -78,7 +78,7 @@ class DocumentArrayNeuralOpsMixin:
             else:
                 if use_scipy:
                     default_logger.info(
-                        f"Scipy cdist does not support sparse arrays, using Jina.math.distances sparse cdist"
+                        f'Scipy cdist does not support sparse arrays, using Jina.math.distances sparse cdist'
                     )
                 from ...math.distance import cdist
 
@@ -88,7 +88,7 @@ class DocumentArrayNeuralOpsMixin:
             dists = metric(X, Y)
         else:
             raise TypeError(
-                f"metric must be either string or a 2-arity function, received: {metric!r}"
+                f'metric must be either string or a 2-arity function, received: {metric!r}'
             )
 
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
@@ -107,7 +107,7 @@ class DocumentArrayNeuralOpsMixin:
                 d = darray[int(_id)]
                 if d.id in self:
                     d = Document(d, copy=True)
-                    d.pop("matches")
+                    d.pop('matches')
                 _q.matches.append(d, scores={m_name: _dist}, copy=False)
 
     def visualize(
@@ -115,8 +115,8 @@ class DocumentArrayNeuralOpsMixin:
         output: Optional[str] = None,
         title: Optional[str] = None,
         colored_tag: Optional[str] = None,
-        colormap: str = "rainbow",
-        method: str = "pca",
+        colormap: str = 'rainbow',
+        method: str = 'pca',
         show_axis: bool = False,
     ):
         """Visualize embeddings in a 2D projection with the PCA algorithm. This function requires ``matplotlib`` installed.
@@ -140,7 +140,7 @@ class DocumentArrayNeuralOpsMixin:
             x_mat, np.ndarray
         ), f"Type {type(x_mat)} not currently supported, use np.ndarray embeddings"
 
-        if method == "tsne":
+        if method == 'tsne':
             from sklearn.manifold import TSNE
 
             x_mat_2d = TSNE(n_components=2).fit_transform(x_mat)
@@ -150,23 +150,23 @@ class DocumentArrayNeuralOpsMixin:
             x_mat_2d = PCA(n_components=2).fit_transform(x_mat)
 
         plt_kwargs = {
-            "x": x_mat_2d[:, 0],
-            "y": x_mat_2d[:, 1],
-            "alpha": 0.2,
-            "marker": ".",
+            'x': x_mat_2d[:, 0],
+            'y': x_mat_2d[:, 1],
+            'alpha': 0.2,
+            'marker': '.',
         }
 
         with ImportExtensions(required=True):
             import matplotlib.pyplot as plt
 
         plt.figure(figsize=(8, 8))
-        plt.title(title or f"{len(x_mat)} Documents with PCA")
+        plt.title(title or f'{len(x_mat)} Documents with PCA')
 
         if colored_tag:
-            tags = [x[colored_tag] for x in self.get_attributes("tags")]
+            tags = [x[colored_tag] for x in self.get_attributes('tags')]
             tag_to_num = {tag: num for num, tag in enumerate(set(tags))}
-            plt_kwargs["c"] = np.array([tag_to_num[ni] for ni in tags])
-            plt_kwargs["cmap"] = plt.get_cmap(colormap)
+            plt_kwargs['c'] = np.array([tag_to_num[ni] for ni in tags])
+            plt_kwargs['cmap'] = plt.get_cmap(colormap)
 
         plt.scatter(**plt_kwargs)
 
@@ -176,6 +176,6 @@ class DocumentArrayNeuralOpsMixin:
             plt.gca().yaxis.set_major_locator(plt.NullLocator())
 
         if output:
-            plt.savefig(output, bbox_inches="tight", pad_inches=0.1)
+            plt.savefig(output, bbox_inches='tight', pad_inches=0.1)
         else:
             plt.show()
