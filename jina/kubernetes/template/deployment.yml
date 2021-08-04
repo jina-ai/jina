@@ -16,6 +16,7 @@ spec:
       containers:
       - name: executor
         image: {image}
+        imagePullPolicy: Always
         command: {command}
         args: {args}
         ports:

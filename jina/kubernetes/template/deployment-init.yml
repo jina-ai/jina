@@ -21,6 +21,7 @@ spec:
       initContainers:
       - name: {init-name}
         image: {init-image}
+        imagePullPolicy: Always
         command: {init-command}
         volumeMounts:
           - name: shared
