@@ -209,30 +209,29 @@ class DocumentArrayMemmap(
         self._update_or_append(doc, idx=idx, flush=flush, update_buffer=update_buffer)
 
     def _iteridx_by_slice(self, s: slice):
+        length = self.__len__()
         start, stop, step = (
             s.start or 0,
-            s.stop if s.stop is not None else self.__len__(),
+            s.stop if s.stop is not None else length,
             s.step or 1,
         )
-        if 0 > stop >= -self.__len__():
-            stop = stop + self.__len__()
+        if 0 > stop >= -length:
+            stop = stop + length
 
-        if 0 > start >= -self.__len__():
-            start = start + self.__len__()
+        if 0 > start >= -length:
+            start = start + length
 
         # if start and stop are in order, put them inside bounds
         # otherwise, range will return an empty iterator
         if start <= stop:
-            if (start < 0 and stop < 0) or (
-                start > self.__len__() and stop > self.__len__()
-            ):
+            if (start < 0 and stop < 0) or (start > length and stop > length):
                 start, stop = 0, 0
-            elif start < 0 and stop > self.__len__():
-                start, stop = 0, self.__len__()
+            elif start < 0 and stop > length:
+                start, stop = 0, length
             elif start < 0:
                 start = 0
-            elif stop > self.__len__():
-                stop = self.__len__()
+            elif stop > length:
+                stop = length
 
         return range(start, stop, step)
 
