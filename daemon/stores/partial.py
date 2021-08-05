@@ -1,4 +1,5 @@
 from argparse import Namespace
+from typing import Union
 
 from jina.helper import colored
 from jina.peapods import Pea, Pod
@@ -61,7 +62,7 @@ class PartialPeaStore(PartialStore):
             # and on linux machines, we can access dockerhost inside containers
             if args.runtime_cls == 'ContainerRuntime':
                 args.docker_kwargs = {'extra_hosts': {__docker_host__: 'host-gateway'}}
-            self.object = self.peapod_cls(args).__enter__()
+            self.object: Union['Pea', 'Pod'] = self.peapod_cls(args).__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
                 self.object.__exit__(type(e), e, e.__traceback__)
@@ -99,7 +100,7 @@ class PartialFlowStore(PartialStore):
             flow = Flow.load_config(y_spec)
             flow.workspace_id = jinad_args.workspace_id
             flow.port_expose = port_expose
-            self.object = flow
+            self.object: Flow = flow
             self.object = self.object.__enter__()
         except Exception as e:
             if hasattr(self, 'object'):
@@ -136,6 +137,9 @@ class PartialFlowStore(PartialStore):
         try:
             if kind == UpdateOperation.ROLLING_UPDATE:
                 self.object.rolling_update(pod_name=pod_name, dump_path=dump_path)
+            else:
+                self._logger.error(f'unsupoorted kind: {kind}, no changes done')
+                return self.item
         except Exception as e:
             self._logger.error(f'{e!r}')
             raise

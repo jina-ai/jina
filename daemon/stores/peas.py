@@ -32,10 +32,6 @@ class PeaStore(ContainerStore):
                 raise PartialDaemon400Exception(error_msg_from(response_json))
             return response_json
 
-    async def _update(self, uri, **kwargs):
-        # TODO
-        pass
-
     @if_alive
     async def _delete(self, uri, **kwargs) -> Dict:
         """Sends a `DELETE` request to `mini-jinad` to terminate a Pea/Pod
