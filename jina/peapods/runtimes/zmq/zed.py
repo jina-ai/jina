@@ -193,8 +193,8 @@ class ZEDRuntime(ZMQRuntime):
             )
 
         self._data_request_handler.handle(
-            parameters=self.request.parameters,
             docs=self.docs,
+            parameters=self.request.parameters,
             docs_matrix=self.docs_matrix,
             groundtruths=self.groundtruths,
             groundtruths_matrix=self.groundtruths_matrix,

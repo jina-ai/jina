@@ -71,8 +71,8 @@ class DataRequestHandler:
 
     def handle(
         self,
-        parameters: Dict,
         docs: Optional['DocumentArray'],
+        parameters: Dict,
         docs_matrix: Optional[List['DocumentArray']],
         groundtruths: Optional['DocumentArray'],
         groundtruths_matrix: Optional[List['DocumentArray']],
@@ -82,8 +82,8 @@ class DataRequestHandler:
     ):
         """Initialize private parameters and execute private loading functions.
 
-        :param parameters: The parameters to be passed to the executor
         :param docs: The documents extracted from the request
+        :param parameters: The parameters to be passed to the executor
         :param docs_matrix: The list of documentarrays for different parts, used when merging messages from different parts
         :param groundtruths: The groundtruth documents extracted from the request
         :param groundtruths_matrix: The list of groundtruth documentarrays for different parts, used when merging messages from different parts
