@@ -523,8 +523,6 @@ class ZmqStreamlet(Zmqlet):
 
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
-        self.io_loop.add_callback(callback=lambda: self.is_ready_event.set())
-
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
         if self.in_sock is not None:
             self.in_sock = ZMQStream(self.in_sock, self.io_loop)

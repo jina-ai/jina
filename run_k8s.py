@@ -29,7 +29,7 @@ def run_remote(grpc_data_requests, requests):
 
 def run_normal(grpc_data_requests, requests):
     # grpc_data_requests=True
-    with Flow(port_expose=12345,grpc_data_requests=grpc_data_requests)\
+    with Flow(port_expose=12345, grpc_data_requests=grpc_data_requests)\
             .add(name='myexec1', parallel=1, uses='dummy_exec.yml' )\
             .add(parallel=1, uses='dummy_exec.yml') \
             .add(parallel=1, uses='dummy_exec.yml') \
@@ -75,8 +75,8 @@ def runq_k8s():
         result = f.search(DocumentArray([Document(content='1')]), on_done=print)
 
 requests = 10
-grpc = run_remote(grpc_data_requests=True, requests=requests)
-zmq = run_remote(grpc_data_requests=False, requests=requests)
+grpc = run_normal(grpc_data_requests=True, requests=requests)
+zmq = run_normal(grpc_data_requests=False, requests=requests)
 
 print(f'for {requests} it took:')
 print(f'grpc: {grpc} s, avg {(grpc/requests) * 1000} ms')
