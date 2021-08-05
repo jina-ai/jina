@@ -52,6 +52,7 @@ Table of Contents
   - [Get Attributes in Bulk](#get-attributes-in-bulk)
   - [Access nested attributes from tags](#access-nested-attributes-from-tags)
   - [Finding closest documents between `DocumentArray` objects](#finding-closest-documents-between-documentarray-objects)
+    - [Using Sparse arrays as embeddings](#using-sparse-arrays-as-embeddings)
   - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
   - [Random sample a subset of Documents from a `DocumentArray` using `sample`](#random-sample-a-subset-of-documents-from-a-documentarray-using-sample)
   - [Shuffle the `DocumentArray` using `shuffle`](#shuffle-the-documentarray-using-shuffle)
