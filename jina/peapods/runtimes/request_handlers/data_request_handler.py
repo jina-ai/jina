@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List
+from typing import Dict, Optional, List
 
 from .... import __default_endpoint__
 from ....excepts import (
@@ -10,9 +10,23 @@ from ....executors import BaseExecutor
 from ....helper import typename
 from ....types.arrays.document import DocumentArray
 
+if False:
+    import argparse
+    from ....logging.logger import JinaLogger
+    from ....types.request import Request
+    from ....proto import jina_pb2
+
 
 class DataRequestHandler:
-    def __init__(self, args, logger, **kwargs):
+    """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
+
+    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger', **kwargs):
+        """Initialize private parameters and execute private loading functions.
+
+        :param args: args from CLI
+        :param logger: the logger provided by the user
+        :param kwargs: extra keyword arguments
+        """
         super().__init__()
         self.args = args
         self.logger = logger
@@ -59,14 +73,24 @@ class DataRequestHandler:
 
     def handle(
         self,
-        request,
-        docs,
-        docs_matrix,
-        groundtruths,
-        groundtruths_matrix,
-        envelope,
-        peapod_name,
+        request: 'Request',
+        docs: Optional['DocumentArray'],
+        docs_matrix: Optional[List['DocumentArray']],
+        groundtruths: Optional['DocumentArray'],
+        groundtruths_matrix: Optional[List['DocumentArray']],
+        envelope: 'jina_pb2.EnvelopeProto',
+        peapod_name: str,
     ):
+        """Initialize private parameters and execute private loading functions.
+
+        :param request: The request that is being processed
+        :param docs: The documents extracted from the request
+        :param docs_matrix: The list of documentarrays for different parts, used when merging messages from different parts
+        :param groundtruths: The groundtruth documents extracted from the request
+        :param groundtruths_matrix: The list of groundtruth documentarrays for different parts, used when merging messages from different parts
+        :param envelope: the envelope of the message being processed
+        :param peapod_name: the name of the peapod owning this handler
+        """
         # skip executor if target_peapod mismatch
         if not re.match(envelope.header.target_peapod, peapod_name):
             self.logger.debug(
@@ -112,4 +136,5 @@ class DataRequestHandler:
                 request.docs.extend(r_docs)
 
     def close(self):
+        """ Close the data request handler, by closing the executor """
         self._executor.close()
