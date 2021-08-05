@@ -87,7 +87,7 @@ class BufferPoolManager:
         self.doc_map.clear()
         self.buffer = []
 
-    def __getitem__(self, key: Union[str, int]):
+    def __getitem__(self, key: str):
         if isinstance(key, str):
             doc = self.buffer[self.doc_map[key][0]]
             self.doc_map.move_to_end(key)
@@ -96,7 +96,7 @@ class BufferPoolManager:
             raise TypeError(f'`key` must be str, but receiving {key!r}')
 
     def __delitem__(self, key):
-        buffer_idx = self.doc_map.pop(key)[0]
+        buffer_idx, _ = self.doc_map.pop(key)
         self._empty.append(buffer_idx)
 
     def __contains__(self, key):

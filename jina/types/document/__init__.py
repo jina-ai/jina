@@ -143,7 +143,7 @@ class Document(ProtoTypeMixin, VersionedMixin):
 
     """
 
-    ON_GETATTR = ['matches']
+    ON_GETATTR = ['matches', 'chunks']
 
     def __init__(
         self,
