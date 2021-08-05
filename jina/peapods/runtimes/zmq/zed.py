@@ -193,12 +193,13 @@ class ZEDRuntime(ZMQRuntime):
             )
 
         self._data_request_handler.handle(
-            request=self.request,
+            parameters=self.request.parameters,
             docs=self.docs,
             docs_matrix=self.docs_matrix,
             groundtruths=self.groundtruths,
             groundtruths_matrix=self.groundtruths_matrix,
-            envelope=self.envelope,
+            exec_endpoint=self.envelope.header.exec_endpoint,
+            target_peapod=self.envelope.header.target_peapod,
             peapod_name=self.name,
         )
 

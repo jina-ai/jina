@@ -13,8 +13,6 @@ from ....types.arrays.document import DocumentArray
 if False:
     import argparse
     from ....logging.logger import JinaLogger
-    from ....types.request import Request
-    from ....proto import jina_pb2
 
 
 class DataRequestHandler:
@@ -73,46 +71,48 @@ class DataRequestHandler:
 
     def handle(
         self,
-        request: 'Request',
+        parameters: Dict,
         docs: Optional['DocumentArray'],
         docs_matrix: Optional[List['DocumentArray']],
         groundtruths: Optional['DocumentArray'],
         groundtruths_matrix: Optional[List['DocumentArray']],
-        envelope: 'jina_pb2.EnvelopeProto',
+        exec_endpoint: str,
+        target_peapod: str,
         peapod_name: str,
     ):
         """Initialize private parameters and execute private loading functions.
 
-        :param request: The request that is being processed
+        :param parameters: The parameters to be passed to the executor
         :param docs: The documents extracted from the request
         :param docs_matrix: The list of documentarrays for different parts, used when merging messages from different parts
         :param groundtruths: The groundtruth documents extracted from the request
         :param groundtruths_matrix: The list of groundtruth documentarrays for different parts, used when merging messages from different parts
-        :param envelope: the envelope of the message being processed
+        :param exec_endpoint: the executor endpoint to be called
+        :param target_peapod: the executor endpoint to be called
         :param peapod_name: the name of the peapod owning this handler
         """
         # skip executor if target_peapod mismatch
-        if not re.match(envelope.header.target_peapod, peapod_name):
+        if not re.match(target_peapod, peapod_name):
             self.logger.debug(
-                f'skip executor: mismatch target, target: {envelope.header.target_peapod}, name: {peapod_name}'
+                f'skip executor: mismatch target, target: {target_peapod}, name: {peapod_name}'
             )
             return
 
         # skip executor if endpoints mismatch
         if (
-            envelope.header.exec_endpoint not in self._executor.requests
+            exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {envelope.header.exec_endpoint}, requests: {self._executor.requests}'
+                f'skip executor: mismatch request, exec_endpoint: {exec_endpoint}, requests: {self._executor.requests}'
             )
             return
 
-        params = self._parse_params(request.parameters, self._executor.metas.name)
+        params = self._parse_params(parameters, self._executor.metas.name)
 
         # executor logic
         r_docs = self._executor(
-            req_endpoint=envelope.header.exec_endpoint,
+            req_endpoint=exec_endpoint,
             docs=docs,
             parameters=params,
             docs_matrix=docs_matrix,
@@ -130,10 +130,10 @@ class DataRequestHandler:
                 raise TypeError(
                     f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                 )
-            elif r_docs != request.docs:
+            elif r_docs != docs:
                 # this means the returned DocArray is a completely new one
-                request.docs.clear()
-                request.docs.extend(r_docs)
+                docs.clear()
+                docs.extend(r_docs)
 
     def close(self):
         """ Close the data request handler, by closing the executor """
