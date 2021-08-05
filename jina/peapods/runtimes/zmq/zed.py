@@ -93,20 +93,21 @@ class ZEDRuntime(ZMQRuntime):
 
         expected_parts = self._expect_parts(msg)
 
+        req_id = msg.envelope.request_id
         if expected_parts > 1:
-            req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
-            self._partial_requests = [v.request for v in self._pending_msgs[req_id]]
+
+        num_partial_requests = len(self._pending_msgs[req_id])
 
         if self.logger.debug_enabled:
             self._log_info_msg(
                 msg,
-                f'({len(self._partial_requests)}/{expected_parts} parts)'
+                f'({num_partial_requests}/{expected_parts} parts)'
                 if expected_parts > 1
                 else '',
             )
 
-        if expected_parts > 1 and expected_parts > len(self._partial_requests):
+        if expected_parts > 1 and expected_parts > num_partial_requests:
             # NOTE: reduce priority is higher than chain exception
             # otherwise a reducer will lose its function when earlier pods raise exception
             raise NoExplicitMessage
@@ -191,10 +192,13 @@ class ZEDRuntime(ZMQRuntime):
                 f'using route, set receiver_id: {msg.envelope.receiver_id}'
             )
 
+        req_id = msg.envelope.request_id
+        num_expected_parts = self._expect_parts(msg)
         self._data_request_handler.handle(
             msg=msg,
-            expected_parts=self._expect_parts(msg),
-            partial_requests=self._partial_requests,
+            partial_requests=[m.request for m in self._pending_msgs[req_id]]
+            if num_expected_parts > 1
+            else None,
             peapod_name=self.name,
         )
 

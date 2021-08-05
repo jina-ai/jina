@@ -18,11 +18,10 @@ if False:
 
 def _get_docs_matrix_from_message(
     msg: 'Message',
-    expected_parts: int,
     partial_request: Optional[List[Request]],
     field: str,
 ) -> List['DocumentArray']:
-    if expected_parts > 1:
+    if partial_request is not None:
         result = [getattr(r, field) for r in reversed(partial_request)]
     else:
         result = [getattr(msg.request, field)]
@@ -36,11 +35,10 @@ def _get_docs_matrix_from_message(
 
 def _get_docs_from_msg(
     msg: 'Message',
-    expected_parts: int,
     partial_request: Optional[List[Request]],
     field: str,
 ) -> 'DocumentArray':
-    if expected_parts > 1:
+    if partial_request is not None:
         result = DocumentArray(
             [d for r in reversed(partial_request) for d in getattr(r, field)]
         )
@@ -110,14 +108,12 @@ class DataRequestHandler:
     def handle(
         self,
         msg: 'Message',
-        expected_parts: int,
         partial_requests: Optional[List[Request]],
         peapod_name: str,
     ):
         """Initialize private parameters and execute private loading functions.
 
         :param msg: The message to handle containing a DataRequest
-        :param expected_parts: The number of expected parts of this message
         :param partial_requests: All the partial requests, to be considered when more than one expected part
         :param peapod_name: the name of the peapod owning this handler
         """
@@ -145,26 +141,22 @@ class DataRequestHandler:
             req_endpoint=msg.envelope.header.exec_endpoint,
             docs=_get_docs_from_msg(
                 msg,
-                expected_parts=expected_parts,
                 partial_request=partial_requests,
                 field='docs',
             ),
             parameters=params,
             docs_matrix=_get_docs_matrix_from_message(
                 msg,
-                expected_parts=expected_parts,
                 partial_request=partial_requests,
                 field='docs',
             ),
             groundtruths=_get_docs_from_msg(
                 msg,
-                expected_parts=expected_parts,
                 partial_request=partial_requests,
                 field='groundtruths',
             ),
             groundtruths_matrix=_get_docs_matrix_from_message(
                 msg,
-                expected_parts=expected_parts,
                 partial_request=partial_requests,
                 field='groundtruths',
             ),
