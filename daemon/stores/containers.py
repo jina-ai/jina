@@ -13,9 +13,9 @@ from jina.helper import colored, random_port
 from .base import BaseStore
 from ..dockerize import Dockerizer
 from ..excepts import PartialDaemon400Exception, Runtime400Exception
-from ..helper import id_cleaner
+from ..helper import if_alive, id_cleaner, error_msg_from
 from ..models import DaemonID
-from ..models.enums import UpdateOperation
+from ..models.enums import UpdateOperation, IDLiterals
 from ..models.containers import (
     ContainerArguments,
     ContainerItem,
@@ -39,11 +39,25 @@ class ContainerStore(BaseStore):
         .. #noqa: DAR101"""
         raise NotImplementedError
 
-    async def _update(self, uri, *args, **kwargs):
-        """Implements jina object update in `mini-jinad`
+    @if_alive
+    async def _update(self, uri: str, params: Dict, **kwargs) -> Dict:
+        """Sends `PUT` request to `mini-jinad` to execute a command on a Flow.
 
-        .. #noqa: DAR101"""
-        raise NotImplementedError
+        :param uri: uri of mini-jinad
+        :param params: json payload to be sent
+        :param kwargs: keyword args
+        :raises PartialDaemon400Exception: if update fails
+        :return: response from mini-jinad
+        """
+
+        self._logger.debug(f'sending PUT request to mini-jinad on {uri}/{self._kind}')
+        async with aiohttp.request(
+            method='PUT', url=f'{uri}/{self._kind}', params=params
+        ) as response:
+            response_json = await response.json()
+            if response.status != HTTPStatus.OK:
+                raise PartialDaemon400Exception(error_msg_from(response_json))
+            return response_json
 
     async def _delete(self, uri, *args, **kwargs):
         """Implements jina object termination in `mini-jinad`
@@ -224,12 +238,18 @@ class ContainerStore(BaseStore):
         if id not in self:
             raise KeyError(f'{colored(id, "red")} not found in store.')
 
-        params = {
-            'kind': kind.value,
-            'dump_path': dump_path,
-            'pod_name': pod_name,
-        }
-        params.update({'shards': shards} if shards else {})
+        if id.jtype == IDLiterals.JFLOW:
+            params = {
+                'kind': kind.value,
+                'dump_path': dump_path,
+                'pod_name': pod_name,
+            }
+            params.update({'shards': shards} if shards else {})
+        elif id.jtype == IDLiterals.JPOD:
+            params = {'kind': kind.value, 'dump_path': dump_path}
+        else:
+            self._logger.error(f'update not supported for {id.type} {id}')
+            return id
 
         uri = self[id].metadata.uri
         try:
