@@ -569,7 +569,7 @@ class ZmqStreamlet(Zmqlet):
             self.in_sock.on_recv(self._in_sock_callback)
             self.is_polling_paused = False
 
-    def start(self, callback: Callable[['Message'], 'Message']):
+    def start(self, callback: Callable[['Message'], None]):
         """
         Open all sockets and start the ZMQ context associated to this `Zmqlet`.
 
@@ -581,10 +581,7 @@ class ZmqStreamlet(Zmqlet):
             self.bytes_recv += msg.size
             self.msg_recv += 1
 
-            msg = callback(msg)
-
-            if msg:
-                self.send_message(msg)
+            callback(msg)
 
         self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
         self.in_sock.on_recv(self._in_sock_callback)
