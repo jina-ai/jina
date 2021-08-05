@@ -31,7 +31,6 @@ def validate(req):
     assert len(chunk_ids) == 80
 
 
-# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.skip(
     'this should fail as explained in https://github.com/jina-ai/jina/pull/730'
 )
@@ -56,7 +55,6 @@ def test_this_will_fail(mocker, protocol):
     validate_callback(response_mock, validate)
 
 
-# TODO(Deepankar): Gets stuck when `restful: True` - issues with `needs='gateway'`
 @pytest.mark.timeout(180)
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_this_should_work(mocker, protocol):
