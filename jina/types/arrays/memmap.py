@@ -171,9 +171,8 @@ class DocumentArrayMemmap(
                 else 0
             )
             self._header_map[doc.id] = (idx, p, r, r + l)
-            self._header_map.move_to_end(doc.id)
         else:
-            self._header_map.update({doc.id: (idx, p, r, r + l)})
+            self._header_map[doc.id] = (idx, p, r, r + l)
             self._header.seek(0, 2)
         self._start = p + r + l
         self._body.write(value)
