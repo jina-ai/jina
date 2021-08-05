@@ -37,7 +37,7 @@ class AsyncPodClient(AsyncPeaClient):
             },
         ) as response:
             response_json = await response.json()
-            if response.status != HTTPStatus.CREATED:
+            if response.status != HTTPStatus.OK:
                 error_msg = error_msg_from(response_json)
                 self._logger.error(
                     f'{self._kind.title()} update failed as: {error_msg}'
