@@ -485,7 +485,6 @@
 <span class="sd">    :param response: dict response</span>
 <span class="sd">    :return: prettified response string</span>
 <span class="sd">    """</span>
-    <span class="c1"># TODO</span>
     <span class="k">assert</span> <span class="s1">'detail'</span> <span class="ow">in</span> <span class="n">response</span><span class="p">,</span> <span class="s1">'</span><span class="se">\'</span><span class="s1">detail</span><span class="se">\'</span><span class="s1"> not found in response'</span>
     <span class="k">assert</span> <span class="s1">'body'</span> <span class="ow">in</span> <span class="n">response</span><span class="p">,</span> <span class="s1">'</span><span class="se">\'</span><span class="s1">body</span><span class="se">\'</span><span class="s1"> not found in response'</span>
     <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s1">'detail'</span><span class="p">]</span> <span class="o">==</span> <span class="n">PartialDaemon400Exception</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>

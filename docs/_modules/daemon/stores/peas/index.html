@@ -419,10 +419,6 @@
                 <span class="k">raise</span> <span class="n">PartialDaemon400Exception</span><span class="p">(</span><span class="n">error_msg_from</span><span class="p">(</span><span class="n">response_json</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">response_json</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># TODO</span>
-        <span class="k">pass</span>
-
     <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""Sends a `DELETE` request to `mini-jinad` to terminate a Pea/Pod</span>

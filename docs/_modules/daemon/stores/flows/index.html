@@ -424,26 +424,6 @@
             <span class="k">return</span> <span class="n">response_json</span>
 
     <span class="nd">@if_alive</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="sd">"""Sends `PUT` request to `mini-jinad` to execute a command on a Flow.</span>
-
-<span class="sd">        :param uri: uri of mini-jinad</span>
-<span class="sd">        :param params: json payload to be sent</span>
-<span class="sd">        :param kwargs: keyword args</span>
-<span class="sd">        :raises PartialDaemon400Exception: if update fails</span>
-<span class="sd">        :return: response from mini-jinad</span>
-<span class="sd">        """</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'sending PUT request to mini-jinad on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
-            <span class="n">method</span><span class="o">=</span><span class="s1">'PUT'</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
-        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
-            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">PartialDaemon400Exception</span><span class="p">(</span><span class="n">error_msg_from</span><span class="p">(</span><span class="n">response_json</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">response_json</span>
-
-    <span class="nd">@if_alive</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">"""Sends a `DELETE` request to terminate the Flow &amp; remove the container</span>
 

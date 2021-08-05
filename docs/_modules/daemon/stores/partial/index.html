@@ -386,6 +386,7 @@
         </label>
         <h1>Source code for daemon.stores.partial</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">colored</span>
 <span class="kn">from</span> <span class="nn">jina.peapods</span> <span class="kn">import</span> <span class="n">Pea</span><span class="p">,</span> <span class="n">Pod</span>
@@ -448,7 +449,7 @@
             <span class="c1"># and on linux machines, we can access dockerhost inside containers</span>
             <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">==</span> <span class="s1">'ContainerRuntime'</span><span class="p">:</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'extra_hosts'</span><span class="p">:</span> <span class="p">{</span><span class="n">__docker_host__</span><span class="p">:</span> <span class="s1">'host-gateway'</span><span class="p">}}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peapod_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Pea'</span><span class="p">,</span> <span class="s1">'Pod'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">peapod_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'object'</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
@@ -486,7 +487,7 @@
             <span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">y_spec</span><span class="p">)</span>
             <span class="n">flow</span><span class="o">.</span><span class="n">workspace_id</span> <span class="o">=</span> <span class="n">jinad_args</span><span class="o">.</span><span class="n">workspace_id</span>
             <span class="n">flow</span><span class="o">.</span><span class="n">port_expose</span> <span class="o">=</span> <span class="n">port_expose</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="n">flow</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="p">:</span> <span class="n">Flow</span> <span class="o">=</span> <span class="n">flow</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'object'</span><span class="p">):</span>
@@ -523,6 +524,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">UpdateOperation</span><span class="o">.</span><span class="n">ROLLING_UPDATE</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span><span class="n">pod_name</span><span class="o">=</span><span class="n">pod_name</span><span class="p">,</span> <span class="n">dump_path</span><span class="o">=</span><span class="n">dump_path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'unsupoorted kind: </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">, no changes done'</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">item</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">raise</span>

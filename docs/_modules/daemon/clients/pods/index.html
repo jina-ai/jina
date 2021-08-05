@@ -385,15 +385,52 @@
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
         <h1>Source code for daemon.clients.pods</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.peas</span> <span class="kn">import</span> <span class="n">AsyncPeaClient</span>
+<span></span><span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">aiohttp</span>
+
+<span class="kn">from</span> <span class="nn">.peas</span> <span class="kn">import</span> <span class="n">AsyncPeaClient</span>
 <span class="kn">from</span> <span class="nn">.mixin</span> <span class="kn">import</span> <span class="n">AsyncToSyncMixin</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">if_alive</span><span class="p">,</span> <span class="n">error_msg_from</span>
+<span class="kn">from</span> <span class="nn">..models.id</span> <span class="kn">import</span> <span class="n">DaemonID</span><span class="p">,</span> <span class="n">daemonize</span>
+<span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span>
 
 
 <div class="viewcode-block" id="AsyncPodClient"><a class="viewcode-back" href="../../../../api/daemon.clients.pods/#daemon.clients.pods.AsyncPodClient">[docs]</a><span class="k">class</span> <span class="nc">AsyncPodClient</span><span class="p">(</span><span class="n">AsyncPeaClient</span><span class="p">):</span>
     <span class="sd">"""Async Client to create/update/delete Peods on remote JinaD"""</span>
 
     <span class="n">_kind</span> <span class="o">=</span> <span class="s1">'pod'</span>
-    <span class="n">_endpoint</span> <span class="o">=</span> <span class="s1">'/pods'</span></div>
+    <span class="n">_endpoint</span> <span class="o">=</span> <span class="s1">'/pods'</span>
+
+    <span class="nd">@if_alive</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">'DaemonID'</span><span class="p">],</span> <span class="n">dump_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Update a Flow on remote JinaD (only rolling_update supported)</span>
+
+<span class="sd">        :param id: flow id</span>
+<span class="sd">        :param dump_path: path of dump from other flow</span>
+<span class="sd">        :param args: positional args</span>
+<span class="sd">        :param kwargs: keyword args</span>
+<span class="sd">        :return: flow id</span>
+<span class="sd">        """</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">'PUT'</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">store_api</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">daemonize</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">'kind'</span><span class="p">:</span> <span class="n">UpdateOperation</span><span class="o">.</span><span class="n">ROLLING_UPDATE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+                <span class="n">error_msg</span> <span class="o">=</span> <span class="n">error_msg_from</span><span class="p">(</span><span class="n">response_json</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> update failed as: </span><span class="si">{</span><span class="n">error_msg</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">error_msg</span>
+            <span class="k">return</span> <span class="n">response_json</span></div>
 
 
 <div class="viewcode-block" id="PodClient"><a class="viewcode-back" href="../../../../api/daemon.clients.pods/#daemon.clients.pods.PodClient">[docs]</a><span class="k">class</span> <span class="nc">PodClient</span><span class="p">(</span><span class="n">AsyncToSyncMixin</span><span class="p">,</span> <span class="n">AsyncPodClient</span><span class="p">):</span>

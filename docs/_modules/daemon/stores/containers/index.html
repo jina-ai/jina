@@ -400,9 +400,9 @@
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">BaseStore</span>
 <span class="kn">from</span> <span class="nn">..dockerize</span> <span class="kn">import</span> <span class="n">Dockerizer</span>
 <span class="kn">from</span> <span class="nn">..excepts</span> <span class="kn">import</span> <span class="n">PartialDaemon400Exception</span><span class="p">,</span> <span class="n">Runtime400Exception</span>
-<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">id_cleaner</span>
+<span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">if_alive</span><span class="p">,</span> <span class="n">id_cleaner</span><span class="p">,</span> <span class="n">error_msg_from</span>
 <span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">DaemonID</span>
-<span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span>
+<span class="kn">from</span> <span class="nn">..models.enums</span> <span class="kn">import</span> <span class="n">UpdateOperation</span><span class="p">,</span> <span class="n">IDLiterals</span>
 <span class="kn">from</span> <span class="nn">..models.containers</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ContainerArguments</span><span class="p">,</span>
     <span class="n">ContainerItem</span><span class="p">,</span>
@@ -426,11 +426,25 @@
 <span class="sd">        .. #noqa: DAR101"""</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Implements jina object update in `mini-jinad`</span>
+    <span class="nd">@if_alive</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">"""Sends `PUT` request to `mini-jinad` to execute a command on a Flow.</span>
 
-<span class="sd">        .. #noqa: DAR101"""</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+<span class="sd">        :param uri: uri of mini-jinad</span>
+<span class="sd">        :param params: json payload to be sent</span>
+<span class="sd">        :param kwargs: keyword args</span>
+<span class="sd">        :raises PartialDaemon400Exception: if update fails</span>
+<span class="sd">        :return: response from mini-jinad</span>
+<span class="sd">        """</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'sending PUT request to mini-jinad on </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">'PUT'</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_kind</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">response_json</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">PartialDaemon400Exception</span><span class="p">(</span><span class="n">error_msg_from</span><span class="p">(</span><span class="n">response_json</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">response_json</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Implements jina object termination in `mini-jinad`</span>
@@ -611,12 +625,18 @@
         <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">colored</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span><span class="si">}</span><span class="s1"> not found in store.'</span><span class="p">)</span>
 
-        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">'kind'</span><span class="p">:</span> <span class="n">kind</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">,</span>
-            <span class="s1">'pod_name'</span><span class="p">:</span> <span class="n">pod_name</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'shards'</span><span class="p">:</span> <span class="n">shards</span><span class="p">}</span> <span class="k">if</span> <span class="n">shards</span> <span class="k">else</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="nb">id</span><span class="o">.</span><span class="n">jtype</span> <span class="o">==</span> <span class="n">IDLiterals</span><span class="o">.</span><span class="n">JFLOW</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">'kind'</span><span class="p">:</span> <span class="n">kind</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">,</span>
+                <span class="s1">'pod_name'</span><span class="p">:</span> <span class="n">pod_name</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">'shards'</span><span class="p">:</span> <span class="n">shards</span><span class="p">}</span> <span class="k">if</span> <span class="n">shards</span> <span class="k">else</span> <span class="p">{})</span>
+        <span class="k">elif</span> <span class="nb">id</span><span class="o">.</span><span class="n">jtype</span> <span class="o">==</span> <span class="n">IDLiterals</span><span class="o">.</span><span class="n">JPOD</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'kind'</span><span class="p">:</span> <span class="n">kind</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="s1">'dump_path'</span><span class="p">:</span> <span class="n">dump_path</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'update not supported for </span><span class="si">{</span><span class="nb">id</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">id</span>
 
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">uri</span>
         <span class="k">try</span><span class="p">:</span>
