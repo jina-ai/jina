@@ -124,8 +124,6 @@ with f:
 
 Every new executor should be inherited directly from `jina.Executor`.
 
-The 1.x inheritance tree is removed. `Executor` no longer has polymorphism.
-
 You can name your executor class freely.
 
 ### `__init__` Constructor
@@ -369,7 +367,7 @@ requests:
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
 - `with` is a map. Defines kwargs of the class `__init__` method
-- `metas` is a map. Defines the meta information of that class. Compared to `1.x` it is reduced to the following fields:
+- `metas` is a map. Defines the meta information of that class. It contains the following fields:
     - `name` is a string. Defines the name of the executor;
     - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
     - `workspace` is a string. Defines the workspace of the executor;
@@ -505,7 +503,7 @@ different purposes.
 
 In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 
-|||
+| Attribute | Fields |
 | --- | --- |
 | `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace` |
 | `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts` |
