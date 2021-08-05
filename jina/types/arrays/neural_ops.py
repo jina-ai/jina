@@ -5,7 +5,7 @@ import numpy as np
 
 from ... import Document
 from ...importer import ImportExtensions
-from ...math.helper import top_k, minmax_normalize
+from ...math.helper import top_k, minmax_normalize, top_k_from_pair
 
 if False:
     from .document import DocumentArray
@@ -25,6 +25,7 @@ class DocumentArrayNeuralOpsMixin:
         normalization: Optional[Tuple[int, int]] = None,
         use_scipy: bool = False,
         metric_name: Optional[str] = None,
+        batch_size: Union[None, int] = None,
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
@@ -52,28 +53,110 @@ class DocumentArrayNeuralOpsMixin:
                                 all values will be rescaled into range `[a, b]`.
         :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
+        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option
+                           will be slower but more memory efficient. Specialy indicated if `darray` is a big
+                           DocumentArrayMemmap.
         """
 
-        X = np.stack(self.get_attributes('embedding'))
-        Y = np.stack(darray.get_attributes('embedding'))
-
-        if isinstance(metric, str):
+        if callable(metric):
+            cdist = metric
+        elif isinstance(metric, str):
             if use_scipy:
-                from scipy.spatial.distance import cdist
+                from scipy.spatial.distance import cdist as cdist
             else:
-                from ...math.distance import cdist
-            dists = cdist(X, Y, metric)
-        elif callable(metric):
-            dists = metric(X, Y)
+                from ...math.distance import cdist as cdist
         else:
             raise TypeError(
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
             )
+        # brekpoint()
+        metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
 
+        if batch_size:
+            self._match_online(darray, cdist, limit, use_scipy, metric_name, batch_size)
+        else:
+            self._match(darray, cdist, limit, normalization, use_scipy, metric_name)
+
+    def _match(self, darray, cdist, limit, normalization, use_scipy, metric_name):
+        """
+        Computes the matches between self and `darray` loading `darray` into main memory.
+
+        :param darray: the other DocumentArray or DocumentArrayMemmap to match against
+        :param cdist: the distance metric
+        :param limit: the maximum number of matches, when not given
+                      all Documents in `another` are considered as matches
+        :param normalization: a tuple [a, b] to be used with min-max normalization,
+                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
+                                all values will be rescaled into range `[a, b]`.
+        :param use_scipy: use Scipy as the computation backend
+        :param metric_name: if provided, then match result will be marked with this string.
+        """
+
+        x_mat = np.stack(self.get_attributes('embedding'))
+        y_mat = np.stack(darray.get_attributes('embedding'))
+
+        dists = cdist(x_mat, y_mat, metric_name)
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if normalization is not None:
             if isinstance(normalization, (tuple, list)):
                 dist = minmax_normalize(dist, normalization)
+
+        for _q, _ids, _dists in zip(self, idx, dist):
+            _q.matches.clear()
+            for _id, _dist in zip(_ids, _dists):
+                # Note, when match self with other, or both of them share the same Document
+                # we might have recursive matches .
+                # checkout https://github.com/jina-ai/jina/issues/3034
+                d = darray[int(_id)]
+                if d.id in self:
+                    d = Document(d, copy=True)
+                    d.pop('matches')
+                _q.matches.append(d, scores={metric_name: _dist}, copy=False)
+
+    def _match_online(
+        self, darray, cdist, limit, normalization, use_scipy, metric_name, batch_size
+    ):
+        """
+        Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
+
+        :param darray: the other DocumentArray or DocumentArrayMemmap to match against
+        :param cdist: the distance metric
+        :param limit: the maximum number of matches, when not given
+                      all Documents in `another` are considered as matches
+        :param normalization: a tuple [a, b] to be used with min-max normalization,
+                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
+                                all values will be rescaled into range `[a, b]`.
+        :param use_scipy: use Scipy as the computation backend
+        :param metric_name: if provided, then match result will be marked with this string.
+        :param batch_size: length of the chunks loaded into memory from darray.
+        """
+
+        x_mat = np.stack(self.get_attributes('embedding'))
+        n_x = x_mat.shape[0]
+
+        def batch_generator(y_darray, n_batch):
+            for i in range(0, len(y_darray), n_batch):
+                y_mat = np.vstack(
+                    [y_darray[j].embedding for j in range(i, i + n_batch)]
+                )
+                yield y_mat, i
+
+        y_batch_generator = batch_generator(darray, batch_size)
+        top_dists = np.inf * np.ones((n_x, top_k_value))
+        top_inds = np.zeros((n_x, limit), dtype=int)
+
+        for ybatch, ybatch_start_pos in y_batch_generator:
+            distances = cdist(x_mat, ybatch)
+            dists, inds = top_k(distances, limit, descending=False)
+            inds = ybatch_start_pos + inds
+            top_dists, top_inds = top_k_from_pair(
+                dists, inds, top_dists, top_inds, limit
+            )
+
+        # sort final the final `top_dists` and `top_inds` per row
+        permutation = np.argsort(top_dists, axis=1)
+        dist = np.take_along_axis(top_dists, permutation, axis=1)
+        idx = np.take_along_axis(top_inds, permutation, axis=1)
 
         m_name = metric_name or (metric.__name__ if callable(metric) else metric)
         for _q, _ids, _dists in zip(self, idx, dist):
