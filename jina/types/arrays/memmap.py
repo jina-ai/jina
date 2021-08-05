@@ -72,7 +72,7 @@ class DocumentArrayMemmap(
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
         self._load_header_body()
-        self.buffer_pool = BufferPoolManager(self, pool_size=buffer_pool_size)
+        self.buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -107,6 +107,7 @@ class DocumentArrayMemmap(
             ],
         )
         self._header_entry_size = 24 + 4 * self._key_length
+        self.last_header_entry = len(tmp)
 
         self._header_map = OrderedDict()
         for idx, r in enumerate(tmp):
@@ -164,13 +165,8 @@ class DocumentArrayMemmap(
             ).tobytes()
         )
         if idx is None:
-            # the idx of the appended document is the idx of the last doc + 1
-            idx = (
-                next(reversed(self._header_map.items()))[1][0] + 1
-                if len(self._header_map)
-                else 0
-            )
-            self._header_map[doc.id] = (idx, p, r, r + l)
+            self._header_map[doc.id] = (self.last_header_entry, p, r, r + l)
+            self.last_header_entry = self.last_header_entry + 1
         else:
             self._header_map[doc.id] = (idx, p, r, r + l)
             self._header.seek(0, 2)
@@ -180,7 +176,10 @@ class DocumentArrayMemmap(
             self._header.flush()
             self._body.flush()
         if update_buffer:
-            self.buffer_pool.add_or_update(doc.id, doc)
+            excluded = self.buffer_pool.add_or_update(doc.id, doc)
+            if excluded:
+                key, doc = excluded
+                self.update(doc, self._str2int_id(key), update_buffer=False)
 
     def append(
         self, doc: 'Document', flush: bool = True, update_buffer: bool = True
@@ -260,7 +259,10 @@ class DocumentArrayMemmap(
             if key in self.buffer_pool:
                 return self.buffer_pool[key]
             doc = self.get_doc_by_key(key)
-            self.buffer_pool.add_or_update(key, doc)
+            excluded = self.buffer_pool.add_or_update(key, doc)
+            if excluded:
+                key, doc = excluded
+                self.update(doc, self._str2int_id(key), update_buffer=False)
             return doc
 
         elif isinstance(key, int):
@@ -372,7 +374,11 @@ class DocumentArrayMemmap(
 
     def save(self) -> None:
         """Persists memory loaded documents to disk"""
-        self.buffer_pool.flush()
+        docs_to_flush = self.buffer_pool.docs_to_flush()
+        for key, doc in docs_to_flush:
+            self.update(doc, self._str2int_id(key), flush=False)
+        self._header.flush()
+        self._body.flush()
 
     def prune(self) -> None:
         """Prune deleted Documents from this object, this yields a smaller on-disk storage. """

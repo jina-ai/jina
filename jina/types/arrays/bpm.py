@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Union
+from typing import Union, Tuple, Optional, List
 
 from ... import Document
 
@@ -15,20 +15,22 @@ class BufferPoolManager:
     The memory buffer has a fixed size and uses an LRU strategy to empty spots when full.
     """
 
-    def __init__(self, dam: 'DocumentArrayMemmap', pool_size: int = 1000):
+    def __init__(self, pool_size: int = 1000):
         self.pool_size = pool_size
         self.doc_map = OrderedDict()  # dam_idx: (buffer_idx, version)
-        self.dam = dam
         self.buffer = []
         self._empty = []
 
-    def add_or_update(self, idx: str, doc: Document):
+    def add_or_update(self, idx: str, doc: Document) -> Optional[Tuple[str, Document]]:
         """
         Adds a document to the buffer pool or updates it if it already exists
 
         :param idx: index
         :param doc: document
+
+        :return: returns a couple of ID and :class:`Document` if there's a document to persist
         """
+        result = None
         # if document is already in buffer, update it
         if idx in self.doc_map:
             self.buffer[self.doc_map[idx][0]] = doc
@@ -49,15 +51,12 @@ class BufferPoolManager:
             # the least recently used item is the first item in doc_map
             dam_idx, (buffer_idx, version) = self.doc_map.popitem(last=False)
             if version != self.buffer[buffer_idx].version:
-                # persist to disk
-                self.dam.update(
-                    self.buffer[buffer_idx],
-                    self.dam._str2int_id(dam_idx),
-                    update_buffer=False,
-                )
+                result = dam_idx, self.buffer[buffer_idx]
             self.doc_map[idx] = (buffer_idx, doc.version)
             self.doc_map.move_to_end(idx)
             self.buffer[buffer_idx] = doc
+
+        return result
 
     def delete_if_exists(self, key):
         """
@@ -68,12 +67,18 @@ class BufferPoolManager:
         if key in self:
             del self[key]
 
-    def flush(self):
+    def docs_to_flush(self) -> List[Tuple[str, Document]]:
         """
         Persists the updated documents in disk
+
+        :return: returns a list of documents to be flushed
         """
-        for _, (buffer_idx, _) in self.doc_map.items():
-            self.dam.append(self.buffer[buffer_idx], update_buffer=False)
+        result = []
+        for dam_idx, (buffer_idx, version) in self.doc_map.items():
+            doc = self.buffer[buffer_idx]
+            if version != doc.version:
+                result.append((dam_idx, self.buffer[buffer_idx]))
+        return result
 
     def clear(self):
         """
