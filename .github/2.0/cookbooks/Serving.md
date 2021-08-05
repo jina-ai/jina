@@ -106,25 +106,22 @@ with Flow(port_expose=12345) as f:
 ```
 
 ```console
-        gateway@14736[I]:input tcp://0.0.0.0:56392 (PULL_CONNECT) output tcp://0.0.0.0:56392 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp5pe2snw1 (PAIR_BIND)
-        gateway@14736[S]:GRPCRuntime is listening at: 0.0.0.0:12345
-        gateway@14733[S]:ready and listening
-           Flow@14733[I]:1 Pods (i.e. 1 Peas) are running in this Flow
-           Flow@14733[S]:🎉 Flow is ready to use!
-           Flow@14733[I]:
+        gateway@153127[L]:ready and listening
+           Flow@153127[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:12345
-	🔒 Private network:	192.168.31.159:12345
+	🔒 Private network:	192.168.1.15:12345
+	🌐 Public address:	197.26.36.43:12345
 ```
 
-Note that the host address is `192.168.31.159` and `port_expose` is `12345`.
+Note that the host address is `192.168.1.15` and `port_expose` is `12345`.
 
 While keep this server open, let's create a client on a different machine:
 
 ```python
 from jina import Client
 
-c = Client(host='192.168.31.159', port_expose=12345)
+c = Client(host='192.168.1.15', port_expose=12345)
 
 c.post('/')
 ```
@@ -146,15 +143,12 @@ with f:
 ```
 
 ```console
-        gateway@14550[I]:input tcp://0.0.0.0:56192 (PULL_CONNECT) output tcp://0.0.0.0:56192 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmpwn67zk99 (PAIR_BIND)
-        gateway@14550[S]:WebSocketRuntime is listening at: 0.0.0.0:12345
-        gateway@14547[S]:ready and listening
-           Flow@14547[I]:1 Pods (i.e. 1 Peas) are running in this Flow
-           Flow@14547[S]:🎉 Flow is ready to use!
-           Flow@14547[I]:
+        gateway@153127[L]:ready and listening
+           Flow@153127[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		WEBSOCKET
 	🏠 Local access:	0.0.0.0:12345
-	🔒 Private network:	192.168.31.159:12345
+	🔒 Private network:	192.168.1.15:12345
+	🌐 Public address:	197.26.36.43:12345
 ```
 
 This will serve the Flow with WebSocket, so any Client connects to it should follow the WebSocket protocol as well.
@@ -162,7 +156,7 @@ This will serve the Flow with WebSocket, so any Client connects to it should fol
 ```python
 from jina import Client
 
-c = Client(protocol='websocket', host='192.168.31.159', port_expose=12345)
+c = Client(protocol='websocket', host='192.168.1.15', port_expose=12345)
 c.post('/')
 ```
 
@@ -184,17 +178,14 @@ with f:
 ```
 
 ```console
-        gateway@14786[I]:input tcp://0.0.0.0:56454 (PULL_CONNECT) output tcp://0.0.0.0:56454 (PUSH_BIND) control over ipc:///var/folders/89/wxpq1yjn44g26_kcbylqkcb40000gn/T/tmp_uqd9ifv (PAIR_BIND)
-        gateway@14786[S]:HTTPRuntime is listening at: 0.0.0.0:12345
-        gateway@14783[S]:ready and listening
-           Flow@14783[I]:1 Pods (i.e. 1 Peas) are running in this Flow
-           Flow@14783[S]:🎉 Flow is ready to use!
-           Flow@14783[I]:
+        gateway@153127[L]:ready and listening
+           Flow@153127[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		HTTP
 	🏠 Local access:	0.0.0.0:12345
-	🔒 Private network:	192.168.31.159:12345
+	🔒 Private network:	192.168.1.15:12345
+	🌐 Public address:	197.26.36.43:12345
 	💬 Swagger UI:		http://localhost:12345/docs
-	📚 Redoc:		    http://localhost:12345/redoc
+	📚 Redoc:		http://localhost:12345/redoc
 ```
 
 #### Use Swagger UI to Send HTTP Request
@@ -208,53 +199,55 @@ You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 Now you can send data request via `curl`/Postman:
 
 ```console
-$ curl --request POST -d '{"exec_entrypoint":"index", "data": [{"text": "hello world"}]}' -H 'Content-Type: application/json' http://localhost:12345/post/
+$ curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'
 
 {
-  "request_id": "1f52dae0-93a5-47b5-9fa0-522a75301d99",
+  "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
   "data": {
     "docs": [
       {
-        "id": "28287a66-b86a-11eb-99c2-1e008a366d49",
-        "tags": {},
-        "text": "hello world",
-        "content_hash": "",
+        "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
         "granularity": 0,
         "adjacency": 0,
-        "parent_id": "",
+        "parentId": "",
+        "text": "hello world",
         "chunks": [],
         "weight": 0.0,
-        "siblings": 0,
         "matches": [],
-        "mime_type": "",
+        "mimeType": "",
+        "tags": {
+          "mimeType": "",
+          "parentId": ""
+        },
         "location": [],
         "offset": 0,
+        "embedding": null,
+        "scores": {},
         "modality": "",
+        "evaluations": {}
       }
     ],
     "groundtruths": []
   },
   "header": {
-    "exec_endpoint": "index",
-    "target_peapod": "",
-    "no_propagate": false
+    "execEndpoint": "/index",
+    "targetPeapod": "",
+    "noPropagate": false
   },
+  "parameters": {},
   "routes": [
     {
       "pod": "gateway",
-      "pod_id": "5e4211d0-3916-4f33-8b9e-eec54be8ed9a",
-      "start_time": "2021-05-19T06:19:24.472050Z",
-      "end_time": "2021-05-19T06:19:24.473895Z"
-    },
-    {
-      "pod": "gateway",
-      "pod_id": "83a7ad34-1042-4b5d-b065-3692e2fc691b",
-      "start_time": "2021-05-19T06:19:24.473831Z"
+      "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
+      "startTime": "2021-08-05T07:26:58.636258+00:00",
+      "endTime": "2021-08-05T07:26:58.636910+00:00",
+      "status": null
     }
   ],
   "status": {
-    "code": "SUCCESS",
-    "description": ""
+    "code": 0,
+    "description": "",
+    "exception": null
   }
 }
 ```
