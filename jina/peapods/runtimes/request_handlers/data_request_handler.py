@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Optional, List
+from typing import Dict, List, Optional
 
 from .... import __default_endpoint__
 from ....excepts import (
@@ -9,10 +9,53 @@ from ....excepts import (
 from ....executors import BaseExecutor
 from ....helper import typename
 from ....types.arrays.document import DocumentArray
+from ....types.message import Message, Request
 
 if False:
     import argparse
     from ....logging.logger import JinaLogger
+
+
+def _get_docs_matrix_from_message(
+    msg: 'Message',
+    expected_parts: int,
+    partial_request: Optional[List[Request]],
+    field: str,
+) -> List['DocumentArray']:
+    """DocumentArray from (multiple) requests
+
+    :param field: either `docs` or `groundtruths`
+
+    .. # noqa: DAR201"""
+    if expected_parts > 1:
+        result = [getattr(r, field) for r in reversed(partial_request)]
+    else:
+        result = [getattr(msg.request, field)]
+
+    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+    # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
+    len_r = sum(len(r) for r in result)
+    if len_r:
+        return result
+
+
+def _get_docs_from_msg(
+    msg: 'Message',
+    expected_parts: int,
+    partial_request: Optional[List[Request]],
+    field: str,
+) -> 'DocumentArray':
+    if expected_parts > 1:
+        result = DocumentArray(
+            [d for r in reversed(partial_request) for d in getattr(r, field)]
+        )
+    else:
+        result = getattr(msg.request, field)
+
+    # to unify all length=0 DocumentArray (or any other results) will simply considered as None
+    # otherwise the executor has to handle DocArray(0)
+    if len(result):
+        return result
 
 
 class DataRequestHandler:
@@ -71,53 +114,65 @@ class DataRequestHandler:
 
     def handle(
         self,
-        docs: Optional['DocumentArray'],
-        parameters: Dict,
-        docs_matrix: Optional[List['DocumentArray']],
-        groundtruths: Optional['DocumentArray'],
-        groundtruths_matrix: Optional[List['DocumentArray']],
-        exec_endpoint: str,
-        target_peapod: str,
+        msg: 'Message',
+        expected_parts: int,
+        partial_requests: Optional[List[Request]],
         peapod_name: str,
     ):
         """Initialize private parameters and execute private loading functions.
 
-        :param docs: The documents extracted from the request
-        :param parameters: The parameters to be passed to the executor
-        :param docs_matrix: The list of documentarrays for different parts, used when merging messages from different parts
-        :param groundtruths: The groundtruth documents extracted from the request
-        :param groundtruths_matrix: The list of groundtruth documentarrays for different parts, used when merging messages from different parts
-        :param exec_endpoint: the executor endpoint to be called
-        :param target_peapod: the executor endpoint to be called
+        :param msg: The message to handle containing a DataRequest
+        :param expected_parts: The number of expected parts of this message
+        :param partial_requests: All the partial requests, to be considered when more than one expected part
         :param peapod_name: the name of the peapod owning this handler
         """
         # skip executor if target_peapod mismatch
-        if not re.match(target_peapod, peapod_name):
+        if not re.match(msg.envelope.header.target_peapod, peapod_name):
             self.logger.debug(
-                f'skip executor: mismatch target, target: {target_peapod}, name: {peapod_name}'
+                f'skip executor: mismatch target, target: {msg.envelope.header.target_peapod}, name: {peapod_name}'
             )
             return
 
         # skip executor if endpoints mismatch
         if (
-            exec_endpoint not in self._executor.requests
+            msg.envelope.header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
         ):
             self.logger.debug(
-                f'skip executor: mismatch request, exec_endpoint: {exec_endpoint}, requests: {self._executor.requests}'
+                f'skip executor: mismatch request, exec_endpoint: {msg.envelope.header.exec_endpoint}, requests: {self._executor.requests}'
             )
             return
 
-        params = self._parse_params(parameters, self._executor.metas.name)
+        params = self._parse_params(msg.request.parameters, self._executor.metas.name)
 
         # executor logic
         r_docs = self._executor(
-            req_endpoint=exec_endpoint,
-            docs=docs,
+            req_endpoint=msg.envelope.header.exec_endpoint,
+            docs=_get_docs_from_msg(
+                msg,
+                expected_parts=expected_parts,
+                partial_request=partial_requests,
+                field='docs',
+            ),
             parameters=params,
-            docs_matrix=docs_matrix,
-            groundtruths=groundtruths,
-            groundtruths_matrix=groundtruths_matrix,
+            docs_matrix=_get_docs_matrix_from_message(
+                msg,
+                expected_parts=expected_parts,
+                partial_request=partial_requests,
+                field='docs',
+            ),
+            groundtruths=_get_docs_from_msg(
+                msg,
+                expected_parts=expected_parts,
+                partial_request=partial_requests,
+                field='groundtruths',
+            ),
+            groundtruths_matrix=_get_docs_matrix_from_message(
+                msg,
+                expected_parts=expected_parts,
+                partial_request=partial_requests,
+                field='groundtruths',
+            ),
         )
 
         # assigning result back to request
@@ -130,10 +185,10 @@ class DataRequestHandler:
                 raise TypeError(
                     f'return type must be {DocumentArray!r} or None, but getting {typename(r_docs)}'
                 )
-            elif r_docs != docs:
+            elif r_docs != msg.request.docs:
                 # this means the returned DocArray is a completely new one
-                docs.clear()
-                docs.extend(r_docs)
+                msg.request.docs.clear()
+                msg.request.docs.extend(r_docs)
 
     def close(self):
         """ Close the data request handler, by closing the executor """

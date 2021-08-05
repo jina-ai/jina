@@ -19,9 +19,7 @@ from ....excepts import (
 from ....helper import random_identity
 from ....logging.profile import used_memory
 from ....proto import jina_pb2
-from ....types.arrays.document import DocumentArray
 from ....types.message import Message
-from ....types.request import Request
 from ....types.routing.table import RoutingTable
 
 if False:
@@ -44,13 +42,9 @@ class ZEDRuntime(ZMQRuntime):
         self._last_active_time = time.perf_counter()
         self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
 
-        self._request = None
-        self._message = None
-
         # all pending messages collected so far, key is the request id
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List['Message']]
         self._partial_requests = None
-        self._partial_messages = None
 
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
@@ -87,7 +81,7 @@ class ZEDRuntime(ZMQRuntime):
             raise MemoryOverHighWatermark
 
     #: Private methods required by run_forever
-    def _pre_hook(self, msg: 'Message') -> 'ZEDRuntime':
+    def _pre_hook(self, msg: 'Message') -> 'Message':
         """
         Pre-hook function, what to do after first receiving the message.
 
@@ -95,30 +89,29 @@ class ZEDRuntime(ZMQRuntime):
         :return: `ZEDRuntime`
         """
         msg.add_route(self.name, self._id)
-        self._request = msg.request
-        self._message = msg
 
-        if self.expect_parts > 1:
+        expected_parts = self._expect_parts(msg)
+
+        if expected_parts > 1:
             req_id = msg.envelope.request_id
             self._pending_msgs[req_id].append(msg)
-            self._partial_messages = self._pending_msgs[req_id]
-            self._partial_requests = [v.request for v in self._partial_messages]
+            self._partial_requests = [v.request for v in self._pending_msgs[req_id]]
 
         if self.logger.debug_enabled:
             self._log_info_msg(
                 msg,
-                f'({len(self.partial_requests)}/{self.expect_parts} parts)'
-                if self.expect_parts > 1
+                f'({len(self._partial_requests)}/{expected_parts} parts)'
+                if expected_parts > 1
                 else '',
             )
 
-        if self.expect_parts > 1 and self.expect_parts > len(self.partial_requests):
+        if expected_parts > 1 and expected_parts > len(self._partial_requests):
             # NOTE: reduce priority is higher than chain exception
             # otherwise a reducer will lose its function when earlier pods raise exception
             raise NoExplicitMessage
 
-        if self.request_type == 'ControlRequest':
-            self._handle_control_req()
+        if msg.envelope.request_type == 'ControlRequest':
+            self._handle_control_req(msg)
 
         if (
             msg.envelope.status.code == jina_pb2.StatusProto.ERROR
@@ -126,18 +119,21 @@ class ZEDRuntime(ZMQRuntime):
         ):
             raise ChainedPodException
 
-        return self
+        return msg
 
     def _log_info_msg(self, msg, part_str):
         info_msg = f'recv {msg.envelope.request_type} '
-        if self.request_type == 'DataRequest':
-            info_msg += f'({self.envelope.header.exec_endpoint}) - ({self.envelope.request_id}) '
-        elif self.request_type == 'ControlRequest':
-            info_msg += f'({self.request.command}) '
+        req_type = msg.envelope.request_type
+        if req_type == 'DataRequest':
+            info_msg += (
+                f'({msg.envelope.header.exec_endpoint}) - ({msg.envelope.request_id}) '
+            )
+        elif req_type == 'ControlRequest':
+            info_msg += f'({msg.request.command}) '
         info_msg += f'{part_str} from {msg.colored_route}'
         self.logger.debug(info_msg)
 
-    def _post_hook(self, msg: 'Message') -> 'ZEDRuntime':
+    def _post_hook(self, msg: 'Message') -> 'Message':
         """
         Post-hook function, what to do before handing out the message.
 
@@ -150,12 +146,12 @@ class ZEDRuntime(ZMQRuntime):
         self._last_active_time = time.perf_counter()
         self._check_memory_watermark()
 
-        if self.expect_parts > 1:
+        if self._expect_parts(msg) > 1:
             msgs = self._pending_msgs.pop(msg.envelope.request_id)
             msg.merge_envelope_from(msgs)
 
         msg.update_timestamp()
-        return self
+        return msg
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
@@ -165,7 +161,7 @@ class ZEDRuntime(ZMQRuntime):
             parsed_params.update(**specific_parameters)
         return parsed_params
 
-    def _handle(self) -> 'ZEDRuntime':
+    def _handle(self, msg: 'Message') -> 'Message':
         """Register the current message to this pea, so that all message-related properties are up-to-date, including
         :attr:`request`, :attr:`prev_requests`, :attr:`message`, :attr:`prev_messages`. And then call the executor to handle
         this message if its envelope's  status is not ERROR, else skip handling of message.
@@ -175,65 +171,61 @@ class ZEDRuntime(ZMQRuntime):
         :return: ZEDRuntime procedure.
         """
         # skip executor for non-DataRequest
-        if self.request_type != 'DataRequest':
+        if msg.envelope.request_type != 'DataRequest':
             self.logger.debug(f'skip executor: not data request')
-            return self
+            return msg
 
         # migrated from the previously RouteDriver logic
         # set dealer id
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
-            self.envelope.receiver_id = dealer_id
+            msg.envelope.receiver_id = dealer_id
 
             # when no available dealer, pause the pollin from upstream
             if not self._idle_dealer_ids:
                 self._zmqstreamlet.pause_pollin()
             self.logger.debug(
-                f'using route, set receiver_id: {self.envelope.receiver_id}'
+                f'using route, set receiver_id: {msg.envelope.receiver_id}'
             )
 
         self._data_request_handler.handle(
-            docs=self.docs,
-            parameters=self.request.parameters,
-            docs_matrix=self.docs_matrix,
-            groundtruths=self.groundtruths,
-            groundtruths_matrix=self.groundtruths_matrix,
-            exec_endpoint=self.envelope.header.exec_endpoint,
-            target_peapod=self.envelope.header.target_peapod,
+            msg=msg,
+            expected_parts=self._expect_parts(msg),
+            partial_requests=self._partial_requests,
             peapod_name=self.name,
         )
 
-        return self
+        return msg
 
-    def _handle_control_req(self):
+    def _handle_control_req(self, msg: 'Message'):
         # migrated from previous ControlDriver logic
-        if self.request.command == 'TERMINATE':
-            self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
+        if msg.request.command == 'TERMINATE':
+            msg.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated
-        elif self.request.command == 'STATUS':
-            self.envelope.status.code = jina_pb2.StatusProto.READY
-            self.request.parameters = vars(self.args)
-        elif self.request.command == 'IDLE':
-            self._idle_dealer_ids.add(self.envelope.receiver_id)
+        elif msg.request.command == 'STATUS':
+            msg.envelope.status.code = jina_pb2.StatusProto.READY
+            msg.request.parameters = vars(self.args)
+        elif msg.request.command == 'IDLE':
+            self._idle_dealer_ids.add(msg.envelope.receiver_id)
             self._zmqstreamlet.resume_pollin()
             self.logger.debug(
-                f'{self.envelope.receiver_id} is idle, now I know these idle peas {self._idle_dealer_ids}'
+                f'{msg.envelope.receiver_id} is idle, now I know these idle peas {self._idle_dealer_ids}'
             )
-        elif self.request.command == 'CANCEL':
-            if self.envelope.receiver_id in self._idle_dealer_ids:
-                self._idle_dealer_ids.remove(self.envelope.receiver_id)
-        elif self.request.command == 'ACTIVATE':
+        elif msg.request.command == 'CANCEL':
+            if msg.envelope.receiver_id in self._idle_dealer_ids:
+                self._idle_dealer_ids.remove(msg.envelope.receiver_id)
+        elif msg.request.command == 'ACTIVATE':
             self._zmqstreamlet._send_idle_to_router()
-        elif self.request.command == 'DEACTIVATE':
+        elif msg.request.command == 'DEACTIVATE':
             self._zmqstreamlet._send_cancel_to_router()
         else:
             raise UnknownControlCommand(
-                f'don\'t know how to handle {self.request.command}'
+                f'don\'t know how to handle {msg.request.command}'
             )
 
     def _callback(self, msg: 'Message'):
         self.is_post_hook_done = False  #: if the post_hook is called
-        self._pre_hook(msg)._handle()._post_hook(msg)
+        msg = self._post_hook(self._handle(self._pre_hook(msg)))
         self.is_post_hook_done = True
         return msg
 
@@ -309,132 +301,20 @@ class ZEDRuntime(ZMQRuntime):
         """
         return (time.perf_counter() - self._last_active_time) > self.args.max_idle_time
 
-    @property
-    def request(self) -> 'Request':
-        """
-        Get the current request body inside the protobuf message
-
-        :return: :class:`ZEDRuntime` request
-        """
-        return self._request
-
-    @property
-    def message(self) -> 'Message':
-        """
-        Get the current protobuf message to be processed
-
-        :return: :class:`ZEDRuntime` message
-        """
-        return self._message
-
-    @property
-    def request_type(self) -> str:
-        """
-        Get the type of message being processed
-
-        :return: request type
-        """
-        return self._message.envelope.request_type
-
-    @property
-    def expect_parts(self) -> int:
+    def _expect_parts(self, msg: 'Message') -> int:
         """
         The expected number of partial messages before trigger :meth:`handle`
 
         :return: expected number of partial messages
         """
-        if self.message.is_data_request:
+        if msg.is_data_request:
             if self.args.socket_in == SocketType.ROUTER_BIND:
-                graph = RoutingTable(self._message.envelope.routing_table)
+                graph = RoutingTable(msg.envelope.routing_table)
                 return graph.active_target_pod.expected_parts
             else:
                 return self.args.num_part
         else:
             return 1
-
-    @property
-    def partial_requests(self) -> List['Request']:
-        """
-        The collected partial requests under the current ``request_id``
-
-        :return: collected partial requests
-        """
-        return self._partial_requests
-
-    @property
-    def partial_messages(self) -> List['Message']:
-        """
-        The collected partial messages under the current ``request_id`` "
-        :return: collected partial messages
-
-        """
-        return self._partial_messages
-
-    def _get_docs(self, field: str) -> 'DocumentArray':
-        if self.expect_parts > 1:
-            result = DocumentArray(
-                [d for r in reversed(self.partial_requests) for d in getattr(r, field)]
-            )
-        else:
-            result = getattr(self.request, field)
-
-        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-        # otherwise the executor has to handle DocArray(0)
-        if len(result):
-            return result
-
-    def _get_docs_matrix(self, field) -> List['DocumentArray']:
-        """DocumentArray from (multiple) requests
-
-        :param field: either `docs` or `groundtruths`
-
-        .. # noqa: DAR201"""
-        if self.expect_parts > 1:
-            result = [getattr(r, field) for r in reversed(self.partial_requests)]
-        else:
-            result = [getattr(self.request, field)]
-
-        # to unify all length=0 DocumentArray (or any other results) will simply considered as None
-        # otherwise, the executor has to handle [None, None, None] or [DocArray(0), DocArray(0), DocArray(0)]
-        len_r = sum(len(r) for r in result)
-        if len_r:
-            return result
-
-    @property
-    def docs(self) -> 'DocumentArray':
-        """Return a DocumentArray by concatenate (multiple) ``requests.docs``
-
-        .. # noqa: DAR201"""
-        return self._get_docs('docs')
-
-    @property
-    def groundtruths(self) -> 'DocumentArray':
-        """Return a DocumentArray by concatenate (multiple) ``requests.groundtruths``
-
-        .. # noqa: DAR201"""
-        return self._get_docs('groundtruths')
-
-    @property
-    def docs_matrix(self) -> List['DocumentArray']:
-        """Return a list of DocumentArray from multiple requests
-
-        .. # noqa: DAR201"""
-        return self._get_docs_matrix('docs')
-
-    @property
-    def groundtruths_matrix(self) -> List['DocumentArray']:
-        """A flattened DocumentArray from (multiple) requests
-
-        .. # noqa: DAR201"""
-        return self._get_docs_matrix('groundtruths')
-
-    @property
-    def envelope(self) -> 'jina_pb2.EnvelopeProto':
-        """Get the current message envelope
-
-        .. # noqa: DAR201
-        """
-        return self._message.envelope
 
     # Static methods used by the Pea to communicate with the `Runtime` in the separate process
 
