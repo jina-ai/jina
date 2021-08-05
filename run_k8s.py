@@ -1,34 +1,44 @@
 import time
 
-from jina import Flow, Executor, requests, DocumentArray, Document
+
+from jina import Flow, DocumentArray, Document
 
 # TODO just used for some benchmarking, remove this file before merging
 
-class MyDummyExecutor(Executor):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._docs = DocumentArray()
 
-    @requests(on='/index')
-    def index(self, docs, **kwargs):
-        self._docs.extend(docs)
+#18.196.68.230
+#18.195.213.135
+def run_remote(grpc_data_requests, requests):
+    # grpc_data_requests=True
+    with Flow(port_expose=8000) \
+            .add(name='myexec1', parallel=1, uses='dummy_exec.yml', host='18.196.68.230') \
+       as f:
 
-    @requests(on='/search')
-    def search(self, docs, **kwargs):
-        return self._docs
+        #print(f._get_routing_table().json())
+        print('index')
+
+        for i in range(10):
+            result = f.index(DocumentArray([Document(content='1'), Document(content='2')]))
+        print(f'indexed {result}')
+        print('search')
+        da = DocumentArray([Document(content='1')])
+        start = time.time()
+        for i in range(requests):
+            result = f.search(da)
+        return time.time()-start
 
 def run_normal(grpc_data_requests, requests):
     # grpc_data_requests=True
     with Flow(port_expose=12345,grpc_data_requests=grpc_data_requests)\
-            .add(name='myexec1', parallel=1, uses=MyDummyExecutor)\
-            .add(parallel=1, uses=MyDummyExecutor) \
-            .add(parallel=1, uses=MyDummyExecutor) \
-            .add(parallel=1, uses=MyDummyExecutor) \
-            .add(parallel=1, uses=MyDummyExecutor) \
-            .add(parallel=1, uses=MyDummyExecutor) \
-            .add(parallel=1, uses=MyDummyExecutor) \
-            .add(parallel=1, uses=MyDummyExecutor)\
-            .add(parallel=1, uses=MyDummyExecutor) as f:
+            .add(name='myexec1', parallel=1, uses='dummy_exec.yml' )\
+            .add(parallel=1, uses='dummy_exec.yml') \
+            .add(parallel=1, uses='dummy_exec.yml') \
+            .add(parallel=1, uses='dummy_exec.yml') \
+            .add(parallel=1, uses='dummy_exec.yml') \
+            .add(parallel=1, uses='dummy_exec.yml') \
+            .add(parallel=1, uses='dummy_exec.yml') \
+            .add(parallel=1, uses='dummy_exec.yml') \
+            .add(parallel=1, uses='dummy_exec.yml') as f:
 
         #print(f._get_routing_table().json())
         print('index')
@@ -64,9 +74,9 @@ def runq_k8s():
         print('search')
         result = f.search(DocumentArray([Document(content='1')]), on_done=print)
 
-requests = 1000
-grpc = run_normal(grpc_data_requests=True, requests=requests)
-zmq = run_normal(grpc_data_requests=False, requests=requests)
+requests = 10
+grpc = run_remote(grpc_data_requests=True, requests=requests)
+zmq = run_remote(grpc_data_requests=False, requests=requests)
 
 print(f'for {requests} it took:')
 print(f'grpc: {grpc} s, avg {(grpc/requests) * 1000} ms')
