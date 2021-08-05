@@ -352,7 +352,7 @@ class Document(ProtoTypeMixin):
     ) -> None:
         """Updates fields specified in ``fields`` from the source to current Document.
 
-        :param source: The :class:`Document` we want to update fromm as source. The current
+        :param source: The :class:`Document` we want to update from as source. The current
             :class:`Document` is referred as destination.
         :param fields: a list of field names that we want to update, if not specified,
             use all present fields in source.
