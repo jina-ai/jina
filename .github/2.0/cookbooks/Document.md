@@ -82,7 +82,7 @@ d = Document()
 
 A `Document` object has the following attributes, which can be put into the following categories:
 
-| | |
+| Category | Attributes |
 |---|---|
 | Content attributes | `.buffer`, `.blob`, `.text`, `.uri`, `.content`, `.embedding` |
 | Meta attributes | `.id`, `.parent_id`, `.weight`, `.mime_type`, `.content_type`, `.tags`, `.modality` |
@@ -128,7 +128,7 @@ d.pop('text', 'id', 'mime_type')
 
 ##### Content Attributes
 
-|     |     |
+| Attribute | Description |
 | --- | --- |
 | `doc.buffer` | The raw binary content of this Document |
 | `doc.blob` | The `ndarray` of the image/audio/video Document |
