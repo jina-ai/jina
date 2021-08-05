@@ -345,7 +345,7 @@ class DocumentArrayMemmap(
         elif isinstance(key, str):
             if key != value.id:
                 raise ValueError('key must be equal to document id')
-            self.update(value, key)
+            self.update(value, self._str2int_id(key))
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 

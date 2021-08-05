@@ -45,21 +45,23 @@ def test_memmap_delete_clear(tmpdir, mocker, idx1, idx99):
     mock.assert_not_called()
 
 
-@pytest.mark.parametrize('idx1, idx99', [(1, 99)])
+@pytest.mark.parametrize('idx1, idx99', [(1, 99), ('id_1', 'id_99')])
 def test_get_set_item(tmpdir, idx1, idx99):
     dam = DocumentArrayMemmap(tmpdir)
     candidates = list(random_docs(100))
     for d in candidates:
         d.id = f'id_{d.id}'
     dam.extend(candidates)
-    dam[idx1] = Document(text='hello')
+    dam[idx1] = Document(id='id_1', text='hello')
     assert len(dam) == 100
     with pytest.raises(IndexError):
         dam[100] = Document(text='world')
-    dam[idx99] = Document(text='world')
+    dam[idx99] = Document(id='id_99', text='world')
     assert len(dam) == 100
     assert dam[1].text == 'hello'
     assert dam[99].text == 'world'
+    assert dam['id_1'].text == 'hello'
+    assert dam['id_99'].text == 'world'
     for idx, d in enumerate(dam):
         if idx == 1:
             assert d.text == 'hello'
