@@ -83,15 +83,12 @@ class BufferPoolManager:
         self.buffer = []
 
     def __getitem__(self, key: Union[str, int]):
-        if isinstance(key, int):
-            key = self.dam._int2str_id(key)
-            return self[key]
-        elif isinstance(key, str):
+        if isinstance(key, str):
             doc = self.buffer[self.doc_map[key][0]]
             self.doc_map.move_to_end(key)
             return doc
         else:
-            raise TypeError(f'`key` must be int or str, but receiving {key!r}')
+            raise TypeError(f'`key` must be str, but receiving {key!r}')
 
     def __delitem__(self, key):
         buffer_idx = self.doc_map.pop(key)[0]

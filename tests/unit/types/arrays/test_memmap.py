@@ -359,9 +359,9 @@ def test_memmap_buffer_synched(tmpdir):
 
     for i, doc in enumerate(docs[50:]):
         dam[i] = doc
-        assert dam.buffer_pool[i].id == dam[i].id
+        assert dam.buffer_pool[doc.id].id == dam[i].id
         doc.content = 'new'
-        assert dam[i].content == 'new'
+        assert dam[doc.id].content == 'new'
 
 
 def test_memmap_physical_size(tmpdir):

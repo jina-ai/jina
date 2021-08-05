@@ -13,12 +13,11 @@ def test_buffer_getitem(tmpdir):
         assert dam.buffer_pool[doc.id].content_hash == doc.content_hash
         assert dam.buffer_pool[doc.id].id == doc.id
 
-        # assert same doc when getting by index
-        assert dam.buffer_pool[i].content_hash == doc.content_hash
-        assert dam.buffer_pool[i].id == doc.id
-
     with pytest.raises(TypeError):
         dam.buffer_pool[1:5]
+
+    with pytest.raises(TypeError):
+        dam.buffer_pool[0]
 
 
 def test_buffer_delete(tmpdir):
