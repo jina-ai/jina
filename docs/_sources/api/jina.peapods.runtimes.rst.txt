@@ -10,6 +10,7 @@ Subpackages
    jina.peapods.runtimes.container
    jina.peapods.runtimes.gateway
    jina.peapods.runtimes.jinad
+   jina.peapods.runtimes.request_handlers
    jina.peapods.runtimes.zmq
 
 Submodules
