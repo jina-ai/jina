@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Union
 
 import zmq
 
+
 from .base import ZMQRuntime
 from ..request_handlers.data_request_handler import DataRequestHandler
 from ...zmq import ZmqStreamlet
@@ -137,7 +138,7 @@ class ZEDRuntime(ZMQRuntime):
         """
         Post-hook function, what to do before handing out the message.
 
-        :param msg: received message
+        :param msg: the transformed message
         :return: `ZEDRuntime`
         """
         # do NOT access `msg.request.*` in the _pre_hook, as it will trigger the deserialization
@@ -168,7 +169,9 @@ class ZEDRuntime(ZMQRuntime):
 
         .. note::
             Handle does not handle explicitly message because it may wait for different messages when different parts are expected
-        :return: ZEDRuntime procedure.
+
+        :param msg: received message
+        :return: the transformed message.
         """
         # skip executor for non-DataRequest
         if msg.envelope.request_type != 'DataRequest':
@@ -305,6 +308,7 @@ class ZEDRuntime(ZMQRuntime):
         """
         The expected number of partial messages before trigger :meth:`handle`
 
+        :param msg: The message from which to compute the expected parts
         :return: expected number of partial messages
         """
         if msg.is_data_request:

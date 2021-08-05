@@ -22,11 +22,6 @@ def _get_docs_matrix_from_message(
     partial_request: Optional[List[Request]],
     field: str,
 ) -> List['DocumentArray']:
-    """DocumentArray from (multiple) requests
-
-    :param field: either `docs` or `groundtruths`
-
-    .. # noqa: DAR201"""
     if expected_parts > 1:
         result = [getattr(r, field) for r in reversed(partial_request)]
     else:
