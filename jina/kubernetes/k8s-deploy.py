@@ -30,13 +30,19 @@ dump_path = '/shared'
 # )
 
 search_flow = (
-    Flow(name='search-flow')
+    Flow(name='search-flow', host='gateway.search-flow.svc.cluster.local')
     .add(
         name='cliptext',
         uses='jinahub+docker://CLIPTextEncoder',
-        shards=1,
-        polling='any',
-    )
+        shards=2,
+        peas_hosts=[
+            f'{"cliptext-head"}.{"search-flow"}.svc.cluster.local',
+            f'{"cliptext-tail"}.{"search-flow"}.svc.cluster.local',
+            f'{"cliptext-pea-0"}.{"search-flow"}.svc.cluster.local',
+            f'{"cliptext-pea-1"}.{"search-flow"}.svc.cluster.local',
+        ],
+        polling='all',
+    ).build(copy_flow=True)
     # .add(
     #     name='cliptext2',
     #     uses='jinahub+docker://CLIPTextEncoder',
@@ -75,6 +81,6 @@ search_flow = (
 # index_flow.deploy_naive('k8s')
 
 print('deploy search flow')
-search_flow.plot('jina/kubernetes/search_flow.jpg')
+# search_flow.plot('jina/kubernetes/search_flow.jpg')
 search_flow.deploy_naive('k8s')
 print('done')

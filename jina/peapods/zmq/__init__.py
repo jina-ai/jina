@@ -906,4 +906,5 @@ def _connect_socket(
     if ssh_server is not None:
         tunnel_connection(sock, address, ssh_server, ssh_keyfile, ssh_password)
     else:
+        print('connect to', address)
         sock.connect(address)

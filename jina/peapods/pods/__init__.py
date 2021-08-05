@@ -549,10 +549,10 @@ class Pod(BasePod, ExitFIFO):
             if args.peas_hosts
             else [
                 args.host,
-            ]
+            ] * (args.parallel + 2)
         )
 
-        for idx, pea_host in zip(range(args.parallel), _host_list[2:]):
+        for idx, pea_host in zip(range(args.parallel), _host_list[2:]): # first two are taken by head and tail TODO refactor this hack
             _args = copy.deepcopy(args)
             _args.pea_id = idx
 

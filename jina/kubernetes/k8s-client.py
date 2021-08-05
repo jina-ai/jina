@@ -29,4 +29,4 @@ while True:
         print('request num', i)
         make_request(i)
 
-    time.sleep(5000)
+    time.sleep(2000)

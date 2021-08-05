@@ -7,11 +7,12 @@ with:
   port_in: 8081
   protocol: http
 pods:
+
   - name: cliptext
     port_in: 8081
     parallel: 2
-#    host: cliptext.search-flow.svc.cluster.local
-    peas_hosts: ["a", "b", "c", "d"]
+    peas_hosts: ['a', 'b', 'c', 'd']
     external: True
 
     needs: [gateway]
+            
