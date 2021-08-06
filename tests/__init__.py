@@ -4,7 +4,8 @@ from typing import Iterator
 
 import numpy as np
 
-from jina import Document
+if False:
+    from jina import Document
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(os.path.dirname(file_dir))
@@ -20,6 +21,8 @@ def random_docs(
     sparse_embedding=False,
     text='hello world',
 ) -> Iterator['Document']:
+    from jina import Document
+
     next_chunk_doc_id = start_id + num_docs
     for j in range(num_docs):
         doc_id = start_id + j
@@ -38,7 +41,6 @@ def random_docs(
                 d.embedding = np.random.random(
                     [embed_dim + np.random.randint(0, jitter)]
                 )
-        d.update_content_hash()
 
         for _ in range(chunks_per_doc):
             chunk_doc_id = next_chunk_doc_id
@@ -51,7 +53,6 @@ def random_docs(
                 )
             c.tags['parent_id'] = doc_id
             c.tags['id'] = chunk_doc_id
-            c.update_content_hash()
             d.chunks.append(c)
             next_chunk_doc_id += 1
 

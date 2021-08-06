@@ -4,6 +4,7 @@ from typing import Union, TYPE_CHECKING, Dict, Optional
 import aiohttp
 
 from ..models.id import daemonize
+from ..models.enums import UpdateOperation
 from ..helper import if_alive, error_msg_from
 from .base import AsyncBaseClient
 from .mixin import AsyncToSyncMixin
@@ -52,6 +53,37 @@ class AsyncFlowClient(AsyncBaseClient):
                 error_msg = error_msg_from(response_json)
                 self._logger.error(
                     f'{self._kind.title()} creation failed as: {error_msg}'
+                )
+                return error_msg
+            return response_json
+
+    @if_alive
+    async def update(
+        self, id: Union[str, 'DaemonID'], pod_name: str, dump_path: str, *args, **kwargs
+    ) -> str:
+        """Update a Flow on remote JinaD (only rolling_update supported)
+
+        :param id: flow id
+        :param pod_name: pod name for rolling update
+        :param dump_path: path of dump from other flow
+        :param args: positional args
+        :param kwargs: keyword args
+        :return: flow id
+        """
+        async with aiohttp.request(
+            method='PUT',
+            url=f'{self.store_api}/{daemonize(id, self._kind)}',
+            params={
+                'kind': UpdateOperation.ROLLING_UPDATE.value,
+                'pod_name': pod_name,
+                'dump_path': dump_path,
+            },
+        ) as response:
+            response_json = await response.json()
+            if response.status != HTTPStatus.OK:
+                error_msg = error_msg_from(response_json)
+                self._logger.error(
+                    f'{self._kind.title()} update failed as: {error_msg}'
                 )
                 return error_msg
             return response_json

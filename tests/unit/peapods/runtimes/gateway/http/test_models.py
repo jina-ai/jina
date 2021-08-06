@@ -54,7 +54,6 @@ def test_all_fields_in_document_proto():
     )['definitions']['DocumentProto']['properties']
     for i in [
         'id',
-        'content_hash',
         'granularity',
         'adjacency',
         'parent_id',
@@ -76,7 +75,7 @@ def test_all_fields_in_document_proto():
     document_proto_properties_alias = PROTO_TO_PYDANTIC_MODELS.DocumentProto().schema()[
         'definitions'
     ]['DocumentProto']['properties']
-    for i in ['contentHash', 'parentId', 'mimeType']:
+    for i in ['parentId', 'mimeType']:
         assert i in document_proto_properties_alias
 
 
@@ -220,7 +219,6 @@ def test_jina_document_to_pydantic_document():
 
         assert jina_doc['text'] == pydantic_doc.text
         assert jina_doc['mime_type'] == pydantic_doc.mime_type
-        assert jina_doc['content_hash'] == pydantic_doc.content_hash
         assert (
             jina_doc['embedding']['dense']['shape']
             == pydantic_doc.embedding.dense.shape
@@ -239,7 +237,6 @@ def test_jina_document_to_pydantic_document():
             assert jina_doc_chunk['mime_type'] == pydantic_doc_chunk.mime_type
             assert jina_doc_chunk['parent_id'] == pydantic_doc_chunk.parent_id
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
-            assert jina_doc_chunk['content_hash'] == pydantic_doc_chunk.content_hash
 
 
 def test_jina_document_to_pydantic_document_sparse():
@@ -251,7 +248,6 @@ def test_jina_document_to_pydantic_document_sparse():
 
         assert jina_doc['text'] == pydantic_doc.text
         assert jina_doc['mime_type'] == pydantic_doc.mime_type
-        assert jina_doc['content_hash'] == pydantic_doc.content_hash
         assert (
             jina_doc['embedding']['sparse']['indices']['buffer']
             == pydantic_doc.embedding.sparse.indices.buffer.decode()
@@ -286,7 +282,6 @@ def test_jina_document_to_pydantic_document_sparse():
             assert jina_doc_chunk['mime_type'] == pydantic_doc_chunk.mime_type
             assert jina_doc_chunk['parent_id'] == pydantic_doc_chunk.parent_id
             assert jina_doc_chunk['granularity'] == pydantic_doc_chunk.granularity
-            assert jina_doc_chunk['content_hash'] == pydantic_doc_chunk.content_hash
 
 
 def test_pydatic_document_to_jina_document():

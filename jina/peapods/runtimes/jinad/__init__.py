@@ -2,6 +2,9 @@ import os
 import copy
 import asyncio
 import argparse
+from typing import Union
+
+from ....enums import SocketType
 
 from ...zmq import send_ctrl_message
 from ....jaml.helper import complete_path
@@ -14,17 +17,27 @@ from ....excepts import (
     DaemonWorkspaceCreationFailed,
 )
 
+if False:
+    import multiprocessing
+    import threading
+    from ....logging.logger import JinaLogger
+
 
 class JinadRuntime(AsyncNewLoopRuntime):
     """Runtime procedure for JinaD."""
 
     def __init__(
-        self, args: 'argparse.Namespace', ctrl_addr: str, timeout_ctrl: int, **kwargs
+        self,
+        args: 'argparse.Namespace',
+        **kwargs,
     ):
-        super().__init__(args, ctrl_addr, **kwargs)
+        super().__init__(args, **kwargs)
         # Need the `proper` control address to send `activate` and `deactivate` signals, from the pea in the `main`
         # process.
-        self.timeout_ctrl = timeout_ctrl
+        self.ctrl_addr = self.get_control_address(args.host, args.port_ctrl)
+        self.timeout_ctrl = args.timeout_ctrl
+        self.host = args.host
+        self.port_expose = args.port_expose
 
     async def async_setup(self):
         """Create Workspace, Pea on remote JinaD server"""
@@ -33,7 +46,6 @@ class JinadRuntime(AsyncNewLoopRuntime):
             import rich
             import aiohttp
             from daemon.clients import AsyncJinaDClient
-            from daemon.models import DaemonID
 
             assert rich
             assert aiohttp
@@ -66,18 +78,16 @@ class JinadRuntime(AsyncNewLoopRuntime):
             raise DaemonPeaCreationFailed
 
     async def _wait_for_cancel(self):
-        """Do NOT override this method when inheriting from :class:`GatewayPea`"""
-        while True:
-            if self.is_cancel.is_set():
-                await self.async_cancel()
-                send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
-                return
-            else:
-                await asyncio.sleep(0.1)
+        while not self.is_cancel.is_set():
+            await asyncio.sleep(0.1)
+
+        await self.async_cancel()
+        send_ctrl_message(self.ctrl_addr, 'TERMINATE', self.timeout_ctrl)
 
     async def async_run_forever(self):
-        """Streams log messages using websocket from remote server"""
-        self.is_ready_event.set()
+        """
+        Streams log messages using websocket from remote server
+        """
         self.logstream = asyncio.create_task(
             self._sleep_forever()
             if self.args.quiet_remote_logs
@@ -143,3 +153,82 @@ class JinadRuntime(AsyncNewLoopRuntime):
             self.logger.debug('\n'.join(changes))
 
         return _args
+
+    # Static methods used by the Pea to communicate with the `Runtime` in the separate process
+
+    @staticmethod
+    def cancel(
+        cancel_event: Union['multiprocessing.Event', 'threading.Event'], **kwargs
+    ):
+        """
+        Signal the runtime to terminate
+
+        :param cancel_event: the cancel event to set
+        :param kwargs: extra keyword arguments
+        """
+        cancel_event.set()
+
+    @staticmethod
+    def activate(
+        control_address: str,
+        timeout_ctrl: int,
+        socket_in_type: 'SocketType',
+        logger: 'JinaLogger',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param control_address: the address where the control message needs to be sent
+        :param timeout_ctrl: the timeout to wait for control messages to be processed
+        :param socket_in_type: the type of input socket, needed to know if is a dealer
+        :param logger: the JinaLogger to log messages
+        :param kwargs: extra keyword arguments
+        """
+
+        def _retry_control_message(
+            ctrl_address: str,
+            timeout_ctrl: int,
+            command: str,
+            num_retry: int,
+            logger: 'JinaLogger',
+        ):
+            from ...zmq import send_ctrl_message
+
+            for retry in range(1, num_retry + 1):
+                logger.debug(f'Sending {command} command for the {retry}th time')
+                try:
+                    send_ctrl_message(
+                        ctrl_address,
+                        command,
+                        timeout=timeout_ctrl,
+                        raise_exception=True,
+                    )
+                    break
+                except Exception as ex:
+                    logger.warning(f'{ex!r}')
+                    if retry == num_retry:
+                        raise ex
+
+        if socket_in_type == SocketType.DEALER_CONNECT:
+            _retry_control_message(
+                ctrl_address=control_address,
+                timeout_ctrl=timeout_ctrl,
+                command='ACTIVATE',
+                num_retry=3,
+                logger=logger,
+            )
+
+    @staticmethod
+    def get_control_address(host: str, port: str, **kwargs):
+        """
+        Get the control address for a runtime with a given host and port
+
+        :param host: the host where the runtime works
+        :param port: the control port where the runtime listens
+        :param kwargs: extra keyword arguments
+        :return: The corresponding control address
+        """
+        from ...zmq import Zmqlet
+
+        return Zmqlet.get_ctrl_address(host, port, False)[0]

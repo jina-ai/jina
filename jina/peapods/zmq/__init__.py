@@ -482,12 +482,10 @@ class ZmqStreamlet(Zmqlet):
 
     def __init__(
         self,
-        ready_event: Union['multiprocessing.Event', 'threading.Event'],
         *args,
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.is_ready_event = ready_event
 
     def _register_pollin(self):
         """Register :attr:`in_sock`, :attr:`ctrl_sock` and :attr:`out_sock` in poller."""
@@ -496,7 +494,6 @@ class ZmqStreamlet(Zmqlet):
 
             get_or_reuse_loop()
             self.io_loop = tornado.ioloop.IOLoop.current()
-        self.io_loop.add_callback(callback=lambda: self.is_ready_event.set())
         self.in_sock = ZMQStream(self.in_sock, self.io_loop)
         self.out_sock = ZMQStream(self.out_sock, self.io_loop)
         self.ctrl_sock = ZMQStream(self.ctrl_sock, self.io_loop)
@@ -572,7 +569,7 @@ class ZmqStreamlet(Zmqlet):
             self.in_sock.on_recv(self._in_sock_callback)
             self.is_polling_paused = False
 
-    def start(self, callback: Callable[['Message'], 'Message']):
+    def start(self, callback: Callable[['Message'], None]):
         """
         Open all sockets and start the ZMQ context associated to this `Zmqlet`.
 
@@ -584,10 +581,7 @@ class ZmqStreamlet(Zmqlet):
             self.bytes_recv += msg.size
             self.msg_recv += 1
 
-            msg = callback(msg)
-
-            if msg:
-                self.send_message(msg)
+            callback(msg)
 
         self._in_sock_callback = lambda x: _callback(x, self.in_sock_type)
         self.in_sock.on_recv(self._in_sock_callback)

@@ -5,8 +5,10 @@ import asyncio
 import numpy as np
 import pytest
 
-from jina import Flow, Client, Document
+from jina import Flow, Client, Document, __default_host__
+from jina.enums import RemoteWorkspaceState
 from daemon.models.id import DaemonID
+from daemon.models.workspaces import WorkspaceItem
 from daemon.clients import JinaDClient, AsyncJinaDClient
 from ..helpers import assert_request, get_cloudhost
 
@@ -133,6 +135,21 @@ def test_remote_flow():
     assert_request('get', url=f'http://localhost:23456/status/', expect_rcode=200)
     assert client.flows.delete(flow_id)
     assert client.workspaces.delete(workspace_id)
+
+
+def test_workspace_delete():
+    client = JinaDClient(host=__default_host__, port=8000)
+    for _ in range(2):
+        workspace_id = client.workspaces.create(
+            paths=[os.path.join(cur_dir, 'empty_flow.yml')]
+        )
+        assert DaemonID(workspace_id).type == 'workspace'
+        assert (
+            WorkspaceItem(**client.workspaces.get(id=workspace_id)).state
+            == RemoteWorkspaceState.ACTIVE
+        )
+        assert workspace_id in client.workspaces.list()
+        assert client.workspaces.delete(workspace_id)
 
 
 @pytest.mark.asyncio
