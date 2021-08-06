@@ -59,8 +59,8 @@ def top_k_from_pair(
     k: int,
 ) -> Tuple['np.ndarray', 'np.ndarray']:
     """
-    Finds values and indices of the k largest entries found in (x_mat union y_mat)
-    and the indices from (x_inds union y_inds)
+    Finds values and indices of the k largest entries found in `x_ma` union `y_mat`
+    and the indices from `x_inds` union `y_inds`
 
     :param x_mat: numpy array of the first matrix
     :param x_inds: numpy array of the indices of the first matrix
