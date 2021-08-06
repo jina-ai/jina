@@ -73,11 +73,13 @@ class DocumentArrayNeuralOpsMixin:
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
 
         if batch_size:
-            self._match_online(darray, cdist, limit, use_scipy, metric_name, batch_size)
+            self._match_online(
+                darray, cdist, limit, normalization, metric_name, batch_size
+            )
         else:
-            self._match(darray, cdist, limit, normalization, use_scipy, metric_name)
+            self._match(darray, cdist, limit, normalization, metric_name)
 
-    def _match(self, darray, cdist, limit, normalization, use_scipy, metric_name):
+    def _match(self, darray, cdist, limit, normalization, metric_name):
         """
         Computes the matches between self and `darray` loading `darray` into main memory.
 
@@ -88,7 +90,6 @@ class DocumentArrayNeuralOpsMixin:
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
-        :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
         """
 
@@ -114,7 +115,7 @@ class DocumentArrayNeuralOpsMixin:
                 _q.matches.append(d, scores={metric_name: _dist}, copy=False)
 
     def _match_online(
-        self, darray, cdist, limit, normalization, use_scipy, metric_name, batch_size
+        self, darray, cdist, limit, normalization, metric_name, batch_size
     ):
         """
         Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
@@ -126,7 +127,6 @@ class DocumentArrayNeuralOpsMixin:
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
-        :param use_scipy: use Scipy as the computation backend
         :param metric_name: if provided, then match result will be marked with this string.
         :param batch_size: length of the chunks loaded into memory from darray.
         """
@@ -134,20 +134,26 @@ class DocumentArrayNeuralOpsMixin:
         x_mat = np.stack(self.get_attributes('embedding'))
         n_x = x_mat.shape[0]
 
-        def batch_generator(y_darray, n_batch):
+        def batch_generator(y_darray: 'DocumentArrayMemmap', n_batch: int):
             for i in range(0, len(y_darray), n_batch):
                 y_mat = np.vstack(
                     [y_darray[j].embedding for j in range(i, i + n_batch)]
                 )
+
                 yield y_mat, i
 
         y_batch_generator = batch_generator(darray, batch_size)
-        top_dists = np.inf * np.ones((n_x, top_k_value))
+        top_dists = np.inf * np.ones((n_x, limit))
         top_inds = np.zeros((n_x, limit), dtype=int)
 
         for ybatch, ybatch_start_pos in y_batch_generator:
-            distances = cdist(x_mat, ybatch)
+            distances = cdist(x_mat, ybatch, metric_name)
             dists, inds = top_k(distances, limit, descending=False)
+
+            if normalization is not None:
+                if isinstance(normalization, (tuple, list)):
+                    dist = minmax_normalize(dist, normalization)
+
             inds = ybatch_start_pos + inds
             top_dists, top_inds = top_k_from_pair(
                 dists, inds, top_dists, top_inds, limit
