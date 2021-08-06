@@ -328,12 +328,13 @@ py_modules:
         from rich.console import Console
 
         console = Console()
-        with console.status(f'Pushing `{self.args.path}`...') as st:
+        work_path = Path(self.args.path)
+        with console.status(f'Pushing `{work_path}`...') as st:
             req_header = self._get_request_header()
             try:
-                st.update(f'Packaging {self.args.path}...')
+                st.update(f'Packaging {work_path}...')
                 md5_hash = hashlib.md5()
-                bytesio = archive_package(Path(self.args.path))
+                bytesio = archive_package(work_path)
                 content = bytesio.getvalue()
                 md5_hash.update(content)
                 md5_digest = md5_hash.hexdigest()
@@ -346,7 +347,26 @@ py_modules:
                     else 'False',
                     'md5sum': md5_digest,
                 }
-                uuid8, secret = load_secret(Path(self.args.path))
+
+                if self.args.tag:
+                    exec_tags = ','.join(self.args.tag)
+                    form_data['tags'] = exec_tags
+
+                if self.args.docker_file:
+                    dockerfile = Path(self.args.docker_file)
+                    if not dockerfile.exists():
+                        raise Exception(
+                            f'The given Dockerfile `{dockerfile}` does not exist!'
+                        )
+                    if dockerfile.parent != work_path:
+                        raise Exception(
+                            f'The Dockerfile must be placed at the given folder `{work_path}`'
+                        )
+
+                    dockerfile = dockerfile.relative_to(work_path)
+                    form_data['dockerfile'] = str(dockerfile)
+
+                uuid8, secret = load_secret(work_path)
                 if self.args.force or uuid8:
                     form_data['force'] = self.args.force or uuid8
                 if self.args.secret or secret:
@@ -385,7 +405,7 @@ py_modules:
                 elif 200 <= result['statusCode'] < 300:
                     new_uuid8, new_secret = self._prettyprint_result(console, result)
                     if new_uuid8 != uuid8 or new_secret != secret:
-                        dump_secret(Path(self.args.path), new_uuid8, new_secret)
+                        dump_secret(work_path, new_uuid8, new_secret)
                 elif result['message']:
                     raise Exception(result['message'])
                 elif resp.text:
