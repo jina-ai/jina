@@ -9,7 +9,7 @@ postgres_config = PostgresConfig(
     hostname='postgres.postgres.svc.cluster.local',
     username='postgresadmin',
     database='postgresdb',
-    password='1235813'
+    password='1235813',
 )
 
 K8sOttoIndexFlow(k8s_client, postgres_config).deploy()

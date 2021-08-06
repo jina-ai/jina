@@ -19,14 +19,14 @@ def to_dns_name(name):
 
 
 def deploy_service(
-        name,
-        namespace,
-        port,
-        image_name,
-        container_cmd,
-        container_args,
-        logger,
-        init_container=None,
+    name,
+    namespace,
+    port,
+    image_name,
+    container_cmd,
+    container_args,
+    logger,
+    init_container=None,
 ):
     from jina.kubernetes import kubernetes_tools
 
@@ -104,20 +104,21 @@ def deploy_glue_executor(glue_executor, namespace, logger):
 
 
 def get_cli_params(arguments):
-    cli_args = ['"--' + name + '", "' + str(getattr(arguments, name.replace('-', '_'))) + '"'
-                for name in [
-                    'port-in',
-                    'port-out',
-                    'host-in',
-                    'host-out',
-                    'socket-in',
-                    'socket-out',
-                    'pea-id',
-                    'polling',
-                    'dynamic-routing_in',
-                    'dynamic-routing_out'
-                ]
-                ]
+    cli_args = [
+        '"--' + name + '", "' + str(getattr(arguments, name.replace('-', '_'))) + '"'
+        for name in [
+            'port-in',
+            'port-out',
+            'host-in',
+            'host-out',
+            'socket-in',
+            'socket-out',
+            'pea-id',
+            'polling',
+            'dynamic-routing_in',
+            'dynamic-routing_out',
+        ]
+    ]
     cli_string = ', '.join(cli_args)
     return cli_string
 
@@ -224,7 +225,11 @@ def deploy(flow, deployment_type='k8s'):
                 uses_metas = {'pea_id': pea_arg.pea_id}.__str__().replace("'", "\\\"")
 
                 dynamic_routing = len(pod.peas_args['peas']) == 1
-                routing_info = f'"--dynamic-routing-in", "--dynamic-routing-out", ' if dynamic_routing else f'"--host-in", "{pea_arg.host_in}", "--host-out", "{pea_arg.host_out}", '
+                routing_info = (
+                    f'"--dynamic-routing-in", "--dynamic-routing-out", '
+                    if dynamic_routing
+                    else f'"--host-in", "{pea_arg.host_in}", "--host-out", "{pea_arg.host_out}", '
+                )
                 cluster_ip = deploy_service(
                     pea_dns_name,
                     namespace,
@@ -232,11 +237,11 @@ def deploy(flow, deployment_type='k8s'):
                     image_name,
                     container_cmd='["jina"]',
                     container_args=f'["executor", '
-                                   f'"--uses", "config.yml", '
-                                   f'"--override-metas", "{uses_metas}", '
-                                   f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
-                                   + routing_info +
-                                   f'{get_cli_params(pea_arg)}]',
+                    f'"--uses", "config.yml", '
+                    f'"--override-metas", "{uses_metas}", '
+                    f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
+                    + routing_info
+                    + f'{get_cli_params(pea_arg)}]',
                     logger=flow.logger,
                     init_container=init_container,
                 )
@@ -283,7 +288,7 @@ def deploy(flow, deployment_type='k8s'):
         gateway_yaml = create_gateway_yaml(
             pod_to_pea_and_args,
             f'gateway-in.{flow.args.name}.svc.cluster.local',
-            flow._pod_nodes['gateway'].args.port_in
+            flow._pod_nodes['gateway'].args.port_in,
         )
 
         kubernetes_tools.create(

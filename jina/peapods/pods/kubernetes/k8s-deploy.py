@@ -42,7 +42,8 @@ search_flow = (
             f'{"cliptext-pea-1"}.{"search-flow"}.svc.cluster.local',
         ],
         polling='all',
-    ).build(copy_flow=True)
+    )
+    .build(copy_flow=True)
     # .add(
     #     name='cliptext2',
     #     uses='jinahub+docker://CLIPTextEncoder',
