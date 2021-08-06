@@ -8,9 +8,13 @@ metadata:
 spec:
   type: {type}
   ports:
-    - port: {port}
-      targetPort: {port}
-      name: grpc
+    - port: {port_in}
+      targetPort: {port_in}
+      name: port-in
+      protocol: TCP
+    - port: {port_out}
+      targetPort: {port_out}
+      name: port-out
       protocol: TCP
   selector:
     app: {target}

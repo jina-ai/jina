@@ -21,7 +21,8 @@ def to_dns_name(name):
 def deploy_service(
         name,
         namespace,
-        port,
+        port_in,
+        port_out,
         image_name,
         container_cmd,
         container_args,
@@ -39,7 +40,8 @@ def deploy_service(
             'name': name,
             'target': name,
             'namespace': namespace,
-            'port': port,
+            'port_in': port_in,
+            'port_out': port_out,
             'type': 'ClusterIP',
         },
     )
@@ -60,7 +62,8 @@ def deploy_service(
                 'replicas': replicas,
                 'command': container_cmd,
                 'args': container_args,
-                'port': port,
+                'port_in': port_in,
+                'port_out': port_out,
                 **init_container,
             },
         )
@@ -74,7 +77,8 @@ def deploy_service(
                 'replicas': replicas,
                 'command': container_cmd,
                 'args': container_args,
-                'port': port,
+                'port_in': port_in,
+                'port_out': port_out,
             },
         )
     return f'{name}.{namespace}.svc.cluster.local'
@@ -86,6 +90,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             to_dns_name(glue_executor.name),
             namespace,
             glue_executor.port_in,
+            glue_executor.port_out,
             glue_executor.uses,
             '["jina"]',
             f'["executor", "--uses", "config.yml", {get_cli_params(glue_executor)}]',
@@ -96,6 +101,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             to_dns_name(glue_executor.name),
             namespace,
             glue_executor.port_in,
+            glue_executor.port_out,
             'jinaai/jina',
             '["jina"]',
             f'["executor", "--uses", "{glue_executor.uses}", {get_cli_params(glue_executor)}]',
@@ -104,7 +110,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
 
 
 def get_cli_params(arguments):
-    cli_args = ['"--' + name + '", "' + str(getattr(arguments, name.replace('-', '_'))) + '"'
+    cli_args = [f'"--{name}", "' + str(getattr(arguments, name.replace('-', '_'))) + '"'
                 for name in [
                     'port-in',
                     'port-out',
@@ -114,10 +120,11 @@ def get_cli_params(arguments):
                     'socket-out',
                     'pea-id',
                     'polling',
-                    'dynamic-routing_in',
-                    'dynamic-routing_out'
                 ]
                 ]
+    for name in ['dynamic-routing-in', 'dynamic-routing-out']:
+        if getattr(arguments, name.replace('-', '_')):
+            cli_args.append(f'"--{name}"')
     cli_string = ', '.join(cli_args)
     return cli_string
 
@@ -223,19 +230,17 @@ def deploy(flow, deployment_type='k8s'):
                 )
                 uses_metas = {'pea_id': pea_arg.pea_id}.__str__().replace("'", "\\\"")
 
-                dynamic_routing = len(pod.peas_args['peas']) == 1
-                routing_info = f'"--dynamic-routing-in", "--dynamic-routing-out", ' if dynamic_routing else f'"--host-in", "{pea_arg.host_in}", "--host-out", "{pea_arg.host_out}", '
                 cluster_ip = deploy_service(
                     pea_dns_name,
                     namespace,
                     pea_arg.port_in,
+                    pea_arg.port_out,
                     image_name,
                     container_cmd='["jina"]',
                     container_args=f'["executor", '
                                    f'"--uses", "config.yml", '
                                    f'"--override-metas", "{uses_metas}", '
                                    f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
-                                   + routing_info +
                                    f'{get_cli_params(pea_arg)}]',
                     logger=flow.logger,
                     init_container=init_container,
@@ -261,7 +266,8 @@ def deploy(flow, deployment_type='k8s'):
                 'name': external_gateway_service,
                 'target': 'gateway',
                 'namespace': namespace,
-                'port': 8080,
+                'port_in': 8080,
+                'port_out': 8888,
                 'type': 'ClusterIP',
             },
         )
@@ -271,7 +277,8 @@ def deploy(flow, deployment_type='k8s'):
                 'name': 'gateway-in',
                 'target': 'gateway',
                 'namespace': namespace,
-                'port': flow._pod_nodes['gateway'].args.port_in,
+                'port_in': flow._pod_nodes['gateway'].args.port_in,
+                'port_out': flow._pod_nodes['gateway'].args.port_out,
                 'type': 'ClusterIP',
             },
         )
@@ -291,7 +298,8 @@ def deploy(flow, deployment_type='k8s'):
             {
                 'name': 'gateway',
                 'replicas': 1,
-                'port': 8080,
+                'port_in': 8080,
+                'port_out': 8888,
                 'command': "[\"python\"]",
                 'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
                 'image': gateway_image,
@@ -320,7 +328,7 @@ def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in, gateway_port_in):
         yaml += f"""
           - name: {pod_name}
             port_in: {pea_to_args[0][1]}
-            host: {pea_to_args[0][0]}
+            host: {pea_to_args[0][2]['host_in']}
             external: True
             """
         needs = pea_to_args[0][2]['needs']

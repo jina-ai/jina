@@ -20,7 +20,8 @@ spec:
         command: {command}
         args: {args}
         ports:
-          - containerPort: {port}
+          - containerPort: {port_in}
+          - containerPort: {port_out}
         env:
         - name: JINA_LOG_LEVEL
           value: debug

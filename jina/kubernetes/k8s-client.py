@@ -28,5 +28,5 @@ while True:
     for i in range(1):
         print('request num', i)
         make_request(i)
-
+        time.sleep(1)
     time.sleep(2000)
