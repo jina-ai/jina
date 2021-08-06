@@ -125,7 +125,7 @@ That means, **we want to find lines from the above code snippet that are most si
 <img src="https://github.com/jina-ai/jina/blob/master/.github/swagger-ui-prettyprint1.gif?raw=true" alt="Jina Swagger UI extension on visualizing neural search results" width="85%">
 </p>
 
-3️⃣ Not a GUI guy? Let's do it in Python then! Keep the above server running and start a simple client:
+3️⃣ Not a GUI person? Let's do it in Python then! Keep the above server running and start a simple client:
 
 
 <!-- README-CLIENT-START -->
