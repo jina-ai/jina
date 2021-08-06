@@ -176,10 +176,10 @@ class DocumentArrayMemmap(
             self._header.flush()
             self._body.flush()
         if update_buffer:
-            excluded = self.buffer_pool.add_or_update(doc.id, doc)
-            if excluded:
-                key, doc = excluded
-                self.update(doc, self._str2int_id(key), update_buffer=False)
+            result = self.buffer_pool.add_or_update(doc.id, doc)
+            if result:
+                _key, _doc = result
+                self.update(_doc, self._str2int_id(_key), update_buffer=False)
 
     def append(
         self, doc: 'Document', flush: bool = True, update_buffer: bool = True
@@ -259,10 +259,10 @@ class DocumentArrayMemmap(
             if key in self.buffer_pool:
                 return self.buffer_pool[key]
             doc = self.get_doc_by_key(key)
-            excluded = self.buffer_pool.add_or_update(key, doc)
-            if excluded:
-                key, doc = excluded
-                self.update(doc, self._str2int_id(key), update_buffer=False)
+            result = self.buffer_pool.add_or_update(key, doc)
+            if result:
+                _key, _doc = result
+                self.update(_doc, self._str2int_id(_key), update_buffer=False)
             return doc
 
         elif isinstance(key, int):
