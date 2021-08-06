@@ -35,14 +35,8 @@ search_flow = (
         name='cliptext',
         uses='jinahub+docker://CLIPTextEncoder',
         shards=2,
-        peas_hosts=[
-            f'{"cliptext-head"}.{"search-flow"}.svc.cluster.local',
-            f'{"cliptext-tail"}.{"search-flow"}.svc.cluster.local',
-            f'{"cliptext-pea-0"}.{"search-flow"}.svc.cluster.local',
-            f'{"cliptext-pea-1"}.{"search-flow"}.svc.cluster.local',
-        ],
         polling='all',
-    ).build(copy_flow=True)
+    )
     # .add(
     #     name='cliptext2',
     #     uses='jinahub+docker://CLIPTextEncoder',

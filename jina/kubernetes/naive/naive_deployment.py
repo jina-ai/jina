@@ -136,11 +136,30 @@ def get_image_name(uses):
     return image_name
 
 
+def prepare_flow(flow):
+    namespace = flow.args.name
+    for pod_name, pod in flow._pod_nodes.items():
+        if pod.args.parallel > 1:
+            service_name = to_dns_name(pod.args.name)
+            pod.args.peas_hosts = [
+                             f'{service_name}-head.{namespace}.svc.cluster.local',
+                             f'{service_name}-tail.{namespace}.svc.cluster.local'] + [
+                             f'{service_name}-pea-{i}.{namespace}.svc.cluster.local' for i in range(pod.args.parallel)
+                         ]
+            for pea_arg in pod.peas_args['peas']:
+                pea_arg.host_in = pod.args.peas_hosts[0]
+                pea_arg.host_out = pod.args.peas_hosts[1]
+
+    return flow.build(copy_flow=True)
+
+
 def deploy(flow, deployment_type='k8s'):
     """Deploys the Flow. Currently only Kubernetes is supported.
     Each pod is deployed in a stateful set and we use zmq level communication.
     """
     from jina.kubernetes import kubernetes_tools
+
+    flow = prepare_flow(flow)
 
     if deployment_type == 'k8s':
         flow.logger.info(f'✨ Deploy Flow on Kubernetes...')
