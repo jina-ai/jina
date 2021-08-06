@@ -436,7 +436,6 @@
 
         <span class="c1"># all pending messages collected so far, key is the request id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_msgs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># type: Dict[str, List['Message']]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_partial_requests</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_idle_dealer_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
