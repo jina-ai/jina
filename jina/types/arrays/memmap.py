@@ -68,7 +68,7 @@ class DocumentArrayMemmap(
 
     @cached_property
     def _mmap(self):
-        return mmap.mmap(self._body_fileno, length=0)
+        return mmap.mmap(self._body_fileno, length=0, prot=mmap.PROT_READ)
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -167,7 +167,7 @@ class DocumentArrayMemmap(
         if isinstance(key, str):
             pos_info = self._header_map[key]
             _, p, r, r_plus_l = pos_info
-            return Document(self._mmap[(p + r) : (p + r_plus_l)])
+            return Document(self._mmap[p + r : p + r_plus_l])
         elif isinstance(key, int):
             return self[self._int2str_id(key)]
         else:
