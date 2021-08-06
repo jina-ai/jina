@@ -66,7 +66,6 @@ class HubIO:
             import docker
             from docker import APIClient
 
-            # self._client: DockerClient = docker.from_env()
             # low-level client
             self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
 
@@ -605,7 +604,6 @@ with f:
 
             if scheme == 'jinahub+docker':
                 self._load_docker_client()
-                # st.update(f'Pulling {executor.image_name}...')
 
                 with Progress(
                     "[progress.description]{task.description}",
@@ -627,27 +625,24 @@ with f:
                             status_id = log.get('id', None)
                             pg_detail = log.get('progressDetail', None)
 
-                            if pg_detail is None:
+                            if (pg_detail is None) or (status_id is None):
                                 console.print(status)
                                 continue
 
-                            if status_id not in tasks:
-                                task = progress.add_task(status, total=0)
-                                tasks[status_id] = task
+                            task = tasks.get(
+                                status_id, progress.add_task(status, total=0)
+                            )
+                            current = pg_detail['current']
+                            total = pg_detail['total']
+                            progress.update(
+                                task,
+                                completed=current,
+                                total=total,
+                                description=status,
+                            )
 
-                            if pg_detail:
-                                task = tasks[status_id]
-                                current = pg_detail['current']
-                                total = pg_detail['total']
-                                progress.update(
-                                    task,
-                                    completed=current,
-                                    total=total,
-                                    description=status,
-                                )
-
-                                if total and current == total:
-                                    progress.stop_task(task)
+                            if total and current == total:
+                                progress.stop_task(task)
 
                     except Exception as ex:
                         raise ex
@@ -661,8 +656,8 @@ with f:
                         pkg_path, pkg_dist_path = resolve_local(executor)
                         # check serial number to upgrade
                         sn_file_path = pkg_dist_path / f'PKG-SN-{executor.sn or 0}'
-                        if not sn_file_path.exists() and any(
-                            True for _ in pkg_dist_path.glob('PKG-SN-*')
+                        if (not sn_file_path.exists()) and any(
+                            pkg_dist_path.glob('PKG-SN-*')
                         ):
                             raise FileNotFoundError(f'{pkg_path} need to be upgraded')
                         if self.args.install_requirements:
