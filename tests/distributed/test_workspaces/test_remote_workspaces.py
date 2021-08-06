@@ -1,5 +1,4 @@
 import os
-import time
 import asyncio
 
 import numpy as np
@@ -23,7 +22,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-HOST, PORT_EXPOSE = get_cloudhost(2)
+HOST, PORT_EXPOSE = get_cloudhost(3)
 NUM_DOCS = 100
 
 
@@ -138,7 +137,7 @@ def test_remote_flow():
 
 
 def test_workspace_delete():
-    client = JinaDClient(host=__default_host__, port=8000)
+    client = JinaDClient(host=HOST, port=PORT_EXPOSE)
     for _ in range(2):
         workspace_id = client.workspaces.create(
             paths=[os.path.join(cur_dir, 'empty_flow.yml')]
@@ -192,39 +191,3 @@ async def test_custom_project():
         assert fields['second'].string_value == 't'
     print(f'Deleting workspace {workspace_id}')
     assert await client.workspaces.delete(workspace_id)
-
-
-@pytest.fixture()
-def docker_compose(request):
-    os.system(f'docker network prune -f ')
-    os.system(
-        f'docker-compose -f {request.param} --project-directory . up  --build -d --remove-orphans'
-    )
-    time.sleep(5)
-    yield
-    os.system(
-        f'docker-compose -f {request.param} --project-directory . down --remove-orphans'
-    )
-    os.system(f'docker network prune -f ')
-
-
-@pytest.mark.skip('take out docker compose from distributed tests')
-@pytest.mark.parametrize('docker_compose', [compose_yml], indirect=['docker_compose'])
-def test_upload_simple_non_standard_rootworkspace(docker_compose, mocker):
-    response_mock = mocker.Mock()
-    f = (
-        Flow()
-        .add()
-        .add(
-            uses='mwu_encoder.yml',
-            host='localhost:9090',
-            upload_files=['mwu_encoder.py'],
-        )
-        .add()
-    )
-    with f:
-        f.index(
-            inputs=(Document(blob=np.random.random([1, 100])) for _ in range(NUM_DOCS)),
-            on_done=response_mock,
-        )
-    response_mock.assert_called()

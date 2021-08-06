@@ -14,7 +14,7 @@ docker run --add-host host.docker.internal:host-gateway \
     -p 8000:8000 -d jinaai/jina:test-daemon
 """
 
-HOST, PORT_EXPOSE = get_cloudhost(2)
+HOST, PORT_EXPOSE = get_cloudhost(3)
 
 
 def test_create_custom_container():

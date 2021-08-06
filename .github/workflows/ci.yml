@@ -247,11 +247,10 @@ jobs:
       - name: Test
         id: test
         run: |
-          if [[ "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
+          if [[ "${{ matrix.test-path }}" =~ ^tests/compose/* || "${{ matrix.test-path }}" =~ ^tests/daemon/* ]]; then
             # Build daemon for all daemon unittests
             docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
             pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
-            docker rm -f jinad || true
           else
             SUB='daemon'
             if [[ "${{ matrix.test-path }}" == *"$SUB"* ]]; then

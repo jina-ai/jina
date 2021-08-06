@@ -4,7 +4,7 @@ from daemon.clients import JinaDClient
 from ..helpers import get_cloudhost
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-HOST, PORT_EXPOSE = get_cloudhost(2)
+HOST, PORT_EXPOSE = get_cloudhost(3)
 
 
 def test_flow_error_in_partial_daemon():

@@ -8,7 +8,7 @@ from daemon.clients import AsyncJinaDClient
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
-HOST, PORT_EXPOSE = get_cloudhost(2)
+HOST, PORT_EXPOSE = get_cloudhost(3)
 success = 0
 failure = 0
 

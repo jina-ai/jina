@@ -7,7 +7,6 @@ set -e
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        --action) action=true ;;
         --dir) dir="$2"; shift ;;
         --instances) instances="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;

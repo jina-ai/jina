@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-  INSTANCES: 2
+  INSTANCES: 3
 
 jobs:
   create-distributed-resources:
@@ -14,10 +14,6 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-        with:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v2
       - run: echo "SCRIPTPATH=${PWD}/scripts/setup-jinad.sh" >> $GITHUB_ENV
       - name: Configure AWS Credentials
@@ -121,9 +117,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Tests
         run: |
-          # docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
-          # still needed for 2 docker-compose tests
-          # docker build -f Dockerfiles/debianx.Dockerfile --build-arg PIP_TAG=daemon -t jinaai/jina:test-daemon .
           pytest --suppress-no-test-exit-code  --force-flaky --max-runs 1 --cov=jina --cov-report=xml --timeout=360 -v -s ${{ matrix.test-path }}
         timeout-minutes: 30
 

@@ -13,16 +13,14 @@ During CICD, we run distributed tests with JinaD on AWS ec2 instances. To run th
 1. Initalize terraform module
 
     ```bash
-    terraform -chdir="tests/distributed" init
+    terraform -chdir="tests/distributed" init -force-copy -backend-config="bucket=ci-distributed-tests" -backend-config="region=us-east-1" -backend-config="key=<a-unique-id>"
     ```
 
-1. Create remote instances
+1. Create remote instances. File `${PWD}/scripts/setup-jinad.sh` lists all the commands to be executed on remote. **Please change that if you need to customize your code.**
 
     ```bash
-    terraform -chdir="tests/distributed" apply -var="scriptpath=${PWD}/scripts/setup-jinad.sh" -var="branch=<your-branch-name>"
+    terraform -chdir="tests/distributed" apply -var="instances=3" -var="scriptpath=${PWD}/scripts/setup-jinad.sh" -var="branch=<your-branch-name>"
     ```
-
-    File `${PWD}/scripts/setup-jinad.sh` lists all the commands to be executed on remote. Please change that if you need to customize that.
 
 1. Get JinaD IPs (Following command will set the required environment variables in your current shell)
 
