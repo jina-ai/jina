@@ -895,15 +895,19 @@ from known fields defined in Protobuf, all unknown fields are mapped to <code cl
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>source</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – source <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> object.</p></li>
-<li><p><strong>fields</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – a list of field names that included from the current document,
-if not specified, merge all fields.</p></li>
+<li><p><strong>source</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> we want to update from as source. The current
+<a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> is referred as destination.</p></li>
+<li><p><strong>fields</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – a list of field names that we want to update, if not specified,
+use all present fields in source.</p></li>
 </ul>
 </dd>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a href="#id1"><span class="problematic" id="id2">*</span></a>. <code class="docutils literal notranslate"><span class="pre">destination</span></code> will be modified in place, <code class="docutils literal notranslate"><span class="pre">source</span></code> will be unchanged</p>
+<p><a href="#id1"><span class="problematic" id="id2">*</span></a>. if <code class="docutils literal notranslate"><span class="pre">fields</span></code> are empty, then all present fields in source will be merged into current document.
+* <cite>tags</cite> will be updated like a python <a class="reference internal" href="#jina.Document.dict" title="jina.Document.dict"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dict</span></code></a>.
+<a href="#id3"><span class="problematic" id="id4">*</span></a>. the current <a class="reference internal" href="#jina.Document" title="jina.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> will be modified in place, <code class="docutils literal notranslate"><span class="pre">source</span></code> will be unchanged.
+<a href="#id5"><span class="problematic" id="id6">*</span></a>. if current document has more fields than <code class="xref py py-attr docutils literal notranslate"><span class="pre">source</span></code>, these extra fields wll be preserved.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -1090,7 +1094,7 @@ If any other type of <cite>sparse</cite> type is desired, use the <cite>:meth:`g
 assert d.tags[‘hello’] == ‘world’ # true
 assert d.tags[‘good’] == ‘bye’ # true
 assert d.tags[‘id’] == ‘external_id’ # true</p>
-<p>res = d.get_attrs_values(<a href="#id3"><span class="problematic" id="id4">*</span></a>[‘id’, ‘tags__hello’, ‘tags__good’, ‘tags__id’])</p>
+<p>res = d.get_attrs_values(<a href="#id7"><span class="problematic" id="id8">*</span></a>[‘id’, ‘tags__hello’, ‘tags__good’, ‘tags__id’])</p>
 <p>assert res == [‘123’, ‘world’, ‘bye’, ‘external_id’]</p>
 </div></blockquote>
 </div>
@@ -1486,7 +1490,7 @@ it builds a view or a copy from it. It also can accept a List</p>
 <dl class="py method">
 <dt id="jina.DocumentArray.insert">
 <code class="sig-name descname"><span class="pre">insert</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.insert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Insert <a href="#id5"><span class="problematic" id="id6">:param:`doc.proto`</span></a> at <a href="#id7"><span class="problematic" id="id8">:param:`index`</span></a> into the list of <cite>:class:`DocumentArray</cite> .</p>
+<dd><p>Insert <a href="#id9"><span class="problematic" id="id10">:param:`doc.proto`</span></a> at <a href="#id11"><span class="problematic" id="id12">:param:`index`</span></a> into the list of <cite>:class:`DocumentArray</cite> .</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1502,7 +1506,7 @@ it builds a view or a copy from it. It also can accept a List</p>
 <dl class="py method">
 <dt id="jina.DocumentArray.append">
 <code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/document/#DocumentArray.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.DocumentArray.append" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append <a href="#id9"><span class="problematic" id="id10">:param:`doc`</span></a> in <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p>
+<dd><p>Append <a href="#id13"><span class="problematic" id="id14">:param:`doc`</span></a> in <a class="reference internal" href="#jina.DocumentArray" title="jina.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>doc</strong> (<a class="reference internal" href="../jina.types.document/#jina.types.document.Document" title="jina.types.document.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>) – The doc needs to be appended.</p>

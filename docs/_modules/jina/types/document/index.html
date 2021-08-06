@@ -736,43 +736,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s1"> is not supported.'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">source</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span>
-        <span class="n">destination</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span>
-        <span class="n">fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Merge fields specified in ``fields`` from source to destination.</span>
-
-<span class="sd">        :param source: source :class:`Document` object.</span>
-<span class="sd">        :param destination: the destination :class:`Document` object to be merged into.</span>
-<span class="sd">        :param fields: a list of field names that included from destination document</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            *. if ``fields`` is empty, then destination is overridden by the source completely.</span>
-<span class="sd">            *. ``destination`` will be modified in place, ``source`` will be unchanged.</span>
-<span class="sd">            *. the ``fields`` has value in destination while not in source will be preserved.</span>
-<span class="sd">        """</span>
-        <span class="c1"># We do a safe update: only update existent (value being set) fields from source.</span>
-        <span class="n">fields_can_be_updated</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># ListFields returns a list of (FieldDescriptor, value) tuples for present fields.</span>
-        <span class="n">present_fields</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ListFields</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">field_descriptor</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">present_fields</span><span class="p">:</span>
-            <span class="n">fields_can_be_updated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field_descriptor</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span><span class="p">:</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="n">fields_can_be_updated</span>  <span class="c1"># if `fields` empty, update all fields.</span>
-        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">field</span> <span class="o">==</span> <span class="s1">'tags'</span>
-            <span class="p">):</span>  <span class="c1"># For the tags, stay consistent with the python update method.</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">destination</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">field</span><span class="p">))</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">destination</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">field</span><span class="p">))</span>
-
 <div class="viewcode-block" id="Document.update"><a class="viewcode-back" href="../../../../api/jina.types.document/#jina.Document.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source</span><span class="p">:</span> <span class="s1">'Document'</span><span class="p">,</span>
@@ -780,20 +743,35 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Updates fields specified in ``fields`` from the source to current Document.</span>
 
-<span class="sd">        :param source: source :class:`Document` object.</span>
-<span class="sd">        :param fields: a list of field names that included from the current document,</span>
-<span class="sd">                if not specified, merge all fields.</span>
+<span class="sd">        :param source: The :class:`Document` we want to update from as source. The current</span>
+<span class="sd">            :class:`Document` is referred as destination.</span>
+<span class="sd">        :param fields: a list of field names that we want to update, if not specified,</span>
+<span class="sd">            use all present fields in source.</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            *. ``destination`` will be modified in place, ``source`` will be unchanged</span>
+<span class="sd">            *. if ``fields`` are empty, then all present fields in source will be merged into current document.</span>
+<span class="sd">            * `tags` will be updated like a python :attr:`dict`.</span>
+<span class="sd">            *. the current :class:`Document` will be modified in place, ``source`` will be unchanged.</span>
+<span class="sd">            *. if current document has more fields than :attr:`source`, these extra fields wll be preserved.</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="n">fields</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'Parameter `fields` must be list of str'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span>
-            <span class="n">source</span><span class="p">,</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="c1"># We do a safe update: only update existent (value being set) fields from source.</span>
+        <span class="n">present_fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">field_descriptor</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">for</span> <span class="n">field_descriptor</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ListFields</span><span class="p">()</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="n">present_fields</span>  <span class="c1"># if `fields` empty, update all present fields.</span>
+        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">field</span> <span class="o">==</span> <span class="s1">'tags'</span>
+            <span class="p">):</span>  <span class="c1"># For the tags, stay consistent with the python update method.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="o">.</span><span class="n">ClearField</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">field</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pb_body</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">field</span><span class="p">))</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">content_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
