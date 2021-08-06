@@ -9,6 +9,7 @@ from typing import (
     Union,
     Iterable,
     Iterator,
+    List,
 )
 
 import numpy as np
@@ -64,6 +65,7 @@ class DocumentArrayMemmap(
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
         self._load_header_body()
+        self._buffer_cache = {}
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -161,8 +163,13 @@ class DocumentArrayMemmap(
         if isinstance(key, str):
             pos_info = self._header_map[key]
             _, p, r, l = pos_info
-            with mmap.mmap(self._body_fileno, offset=p, length=l) as m:
-                return Document(m[r:])
+            if key in self.buffer_cache:
+                return Document(self.buffer_cache[key])
+            else:
+                with mmap.mmap(self._body_fileno, offset=p, length=l) as m:
+                    buffer = m[r:]
+                    self.buffer_cache[key] = m[r:]
+                    return Document(buffer)
         elif isinstance(key, int):
             return self[self._int2str_id(key)]
         else:
@@ -266,3 +273,7 @@ class DocumentArrayMemmap(
         :return: the number of bytes
         """
         return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
+
+    @property
+    def buffer_cache(self):
+        return self._buffer_cache
