@@ -94,7 +94,7 @@ def test_matching_scipy_cdist(
     docarrays_for_embedding_distance_computation,
     metric,
 ):
-    def scipy_cdist_metric(X, Y):
+    def scipy_cdist_metric(X, Y, *args):
         return scipy_cdist(X, Y, metric=metric)
 
     D1, D2 = docarrays_for_embedding_distance_computation

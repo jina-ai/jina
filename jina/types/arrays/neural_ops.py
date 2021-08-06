@@ -100,11 +100,24 @@ class DocumentArrayNeuralOpsMixin:
         :param metric_name: if provided, then match result will be marked with this string.
         :return: distances and indices
         """
+        is_sparse = False
 
-        x_mat = np.stack(self.get_attributes('embedding'))
-        y_mat = np.stack(darray.get_attributes('embedding'))
+        if isinstance(darray[0].embedding, np.ndarray):
+            x_mat = np.stack(self.get_attributes('embedding'))
+            y_mat = np.stack(darray.get_attributes('embedding'))
+        else:
+            import scipy.sparse as sp
 
-        dists = cdist(x_mat, y_mat, metric_name)
+            if sp.issparse(darray[0].embedding):
+                x_mat = sp.vstack(self.get_attributes('embedding'))
+                y_mat = sp.vstack(darray.get_attributes('embedding'))
+                is_sparse = True
+
+        if is_sparse:
+            dists = cdist(x_mat, y_mat, metric_name, is_sparse=is_sparse)
+        else:
+            dists = cdist(x_mat, y_mat, metric_name)
+
         dist, idx = top_k(dists, min(limit, len(darray)), descending=False)
         if isinstance(normalization, (tuple, list)) and normalization is not None:
             dist = minmax_normalize(dist, normalization)
@@ -116,6 +129,7 @@ class DocumentArrayNeuralOpsMixin:
     ):
         """
         Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
+
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param cdist: the distance metric
         :param limit: the maximum number of matches, when not given
