@@ -437,9 +437,39 @@ DocumentArray has 1 items:
 
 This is useful in debugging an Executor.
 
+### Close Executor
+
+You might need to execute some logic when your executor's destructor is called.
+For example, let's suppose you want to persist data to the disk (e.g in-memory indexed data, fine-tuned model,...).
+To do so, you can overwrite the method `close` and add your logic.
+
+```python
+from jina import Executor, requests, Document, DocumentArray
+
+class MyExec(Executor):
+
+    @requests
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+          print(doc.text)
+    
+    def close(self):
+      print("closing...")
+    
+with MyExec() as executor:
+    executor.foo(DocumentArray([Document(text='hello world')]))
+```
+
+```text
+hello world
+closing...
+```
+
 ## Executor Built-in Features
 
-In Jina 2.0 the Executor class has fewer built-in features compared to 1.x. The design principles are (`user` here
+In Jina 2.0 the Executor class is generic to all categories of executors (`encoders`, `indexers`, `segmenters`,...) to keep development simple.
+We do not provide subclasses of `Executor` that are specific to each category.
+The design principles are (`user` here
 means "Executor developer"):
 
 - **Do not surprise the user**: keep `Executor` class as Pythonic as possible. It should be as light and unintrusive as
@@ -451,32 +481,10 @@ means "Executor developer"):
   interface while delivering just loosely-implemented features is bad for scaling the core framework. For
   example, `save`, `load`, `on_gpu`, etc.
 
-We want to give programming freedom back to the user. If a user is a good Python programmer, they should pick
-up `Executor` in no time - not spend extra time learning the implicit boilerplate as in 1.x. Plus,
-subclassing `Executor` should be easy.
+We want to give our users the freedom to customize their executors easily. If a user is a good Python programmer, they should pick
+up `Executor` in no time.
+It is as simple as subclassing `Executor` and adding an endpoint.
 
-### 1.x vs 2.0
-
-- ❌: Completely removed. Users have to implement it on their own.
-- ✅: Preserved.
-
-| 1.x | 2.0 |
-| --- | --- |
-| `.save_config()` | ✅ |
-| `.load_config()` | ✅ |
-| `.close()` |  ✅ |
-| `workspace` interface |  ✅ [Refactored](#workspace). |
-| `metas` config | Moved to `self.metas.xxx`. [Number of fields greatly reduced](#yaml-interface). |
-| `._drivers` | Refactored and moved to `self.requests.xxx`. |
-| `.save()` | ❌ |
-| `.load()` | ❌ |
-| `.logger`  | ❌ |
-| Pickle interface | ❌ |
-| init boilerplates (`pre_init`, `post_init`) | ❌ |
-| Context manager interface |  ❌ |
-| Inline `import` coding style |  ❌ |
-
-![](1.xvs2.0%20BaseExecutor.svg)
 
 ### Workspace
 
@@ -506,7 +514,7 @@ In 2.0rc1, the following fields are valid for `metas` and `runtime_args`:
 | Attribute | Fields |
 | --- | --- |
 | `.metas` (static values from hard-coded values, YAML config) | `name`, `description`, `py_modules`, `workspace` |
-| `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts` |
+| `.runtime_args` (runtime values from its containers, e.g. `Runtime`, `Pea`, `Pod`) | `name`, `description`, `workspace`, `log_config`, `quiet`, `quiet_error`, `identity`, `port_ctrl`, `ctrl_with_ipc`, `timeout_ctrl`, `ssh_server`, `ssh_keyfile`, `ssh_password`, `uses`, `py_modules`, `port_in`, `port_out`, `host_in`, `host_out`, `socket_in`, `socket_out`, `memory_hwm`, `on_error_strategy`, `num_part`, `entrypoint`, `docker_kwargs`, `pull_latest`, `volumes`, `host`, `port_expose`, `quiet_remote_logs`, `upload_files`, `workspace_id`, `daemon`, `runtime_backend`, `runtime_cls`, `timeout_ready`, `env`, `expose_public`, `pea_id`, `pea_role`, `noblock_on_start`, `uses_before`, `uses_after`, `parallel`, `replicas`, `polling`, `scheduling`, `pod_role`, `peas_hosts`, `proxy`, `uses_metas`, `external`, `gpus`, `zmq_identity`, `hosts_in_connect`, `uses_with` |
 
 **Notes** 
 
@@ -571,7 +579,7 @@ with Flow().\
 
 ---
 
-## Migration in Practice
+## Migrating from 1.x to 2.0 in Practice
 
 ### Encoder in `jina hello fashion`
 
