@@ -110,9 +110,9 @@ def _get_tags_updater() -> Callable:
         extra_fields = {k: values[k] for k in set(values).difference(cls.__fields__)}
         if extra_fields:
             if 'tags' not in values:
-                values['tags'] = cls.__fields__['tags'].default
+                values['tags'] = {}
             if isinstance(values['tags'], Dict):
-                values['tags'].update({i: j for i, j in extra_fields.items()})
+                values['tags'].update(extra_fields)
         return values
 
     return root_validator(pre=True, allow_reuse=True)(tags_updater)
@@ -152,6 +152,7 @@ def protobuf_to_pydantic_model(
 
         field_type = PROTOBUF_TO_PYTHON_TYPE[f.type]
         default_value = f.default_value
+        default_factory = None
 
         if f.containing_oneof:
             # Proto Field type: oneof
@@ -169,11 +170,11 @@ def protobuf_to_pydantic_model(
             if f.message_type.name == 'Struct':
                 # Proto Field Type: google.protobuf.Struct
                 field_type = Dict
-                default_value = {}
+                default_factory = dict
             elif f.message_type.name == 'Timestamp':
                 # Proto Field Type: google.protobuf.Timestamp
                 field_type = datetime
-                default_value = datetime.now()
+                default_factory = datetime.now
             else:
                 # Proto field type: Proto message defined in jina.proto
                 if f.message_type.name == model_name:
@@ -187,7 +188,12 @@ def protobuf_to_pydantic_model(
         if f.label == FieldDescriptor.LABEL_REPEATED:
             field_type = List[field_type]
 
-        all_fields[field_name] = (field_type, Field(default=default_value))
+        all_fields[field_name] = (
+            field_type,
+            Field(default_factory=default_factory)
+            if default_factory
+            else Field(default=default_value),
+        )
 
         # some fixes on Doc.scores and Doc.evaluations
         if field_name in ('scores', 'evaluations'):

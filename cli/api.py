@@ -32,8 +32,23 @@ def pea(args: 'Namespace'):
         pass
 
 
+def zed_runtime(args: 'Namespace'):
+    """
+    Starts a ZEDRuntime
+
+    :param args: arguments coming from the CLI.
+    """
+    from jina.peapods.runtimes.zmq.zed import ZEDRuntime
+
+    with ZEDRuntime(args) as runtime:
+        runtime.logger.success(
+            f' Executor {runtime._data_request_handler._executor.metas.name} started'
+        )
+        runtime.run_forever()
+
+
 # alias
-executor = pea
+executor = zed_runtime
 
 
 def gateway(args: 'Namespace'):
@@ -42,7 +57,21 @@ def gateway(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    pod(args)
+    from jina.enums import GatewayProtocolType
+    from jina.peapods.runtimes import get_runtime
+
+    gateway_runtime_dict = {
+        GatewayProtocolType.GRPC: 'GRPCRuntime',
+        GatewayProtocolType.WEBSOCKET: 'WebSocketRuntime',
+        GatewayProtocolType.HTTP: 'HTTPRuntime',
+    }
+    runtime_cls = get_runtime(gateway_runtime_dict[args.protocol])
+
+    with runtime_cls(args) as runtime:
+        runtime.logger.success(
+            f' Gateway with protocol {gateway_runtime_dict[args.protocol]} started'
+        )
+        runtime.run_forever()
 
 
 def ping(args: 'Namespace'):

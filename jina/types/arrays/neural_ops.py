@@ -6,6 +6,7 @@ import numpy as np
 from ... import Document
 from ...importer import ImportExtensions
 from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
+from ...logging.predefined import default_logger
 
 if False:
     from .document import DocumentArray
@@ -29,21 +30,16 @@ class DocumentArrayNeuralOpsMixin:
     ) -> None:
         """Compute embedding based nearest neighbour in `another` for each Document in `self`,
         and store results in `matches`.
-
         .. note::
             'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.
-
             You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,
             ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,
             ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
             ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.
-
             To use scipy metric, please set ``use_scipy=True``.
-
         - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``
         - To invert the distance as score and make all values in range [0, 1],
             use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.
-
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param metric: the distance metric
         :param limit: the maximum number of matches, when not given
@@ -94,7 +90,6 @@ class DocumentArrayNeuralOpsMixin:
     def _match(self, darray, cdist, limit, normalization, metric_name):
         """
         Computes the matches between self and `darray` loading `darray` into main memory.
-
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param cdist: the distance metric
         :param limit: the maximum number of matches, when not given
@@ -121,7 +116,6 @@ class DocumentArrayNeuralOpsMixin:
     ):
         """
         Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
-
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param cdist: the distance metric
         :param limit: the maximum number of matches, when not given

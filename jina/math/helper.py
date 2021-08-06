@@ -1,9 +1,21 @@
-from typing import Tuple
+from typing import Tuple, Union, TYPE_CHECKING
 
 import numpy as np
 
+if TYPE_CHECKING:
+    import scipy
 
-def minmax_normalize(x: 'np.ndarray', t_range: Tuple = (0, 1)):
+_SPARSE_SCIPY_TYPES = Union[
+    'scipy.sparse.csr_matrix',
+    'scipy.sparse.csc_matrix',
+    'scipy.sparse.bsr_matrix',
+    'scipy.sparse.coo_matrix',
+]
+
+
+def minmax_normalize(
+    x: Union['np.ndarray', _SPARSE_SCIPY_TYPES], t_range: Tuple = (0, 1)
+):
     """Normalize values in `x` into `t_range`.
 
     `x` can be a 1D array or a 2D array. When `x` is a 2D array, then normalization is row-based.
@@ -16,10 +28,16 @@ def minmax_normalize(x: 'np.ndarray', t_range: Tuple = (0, 1)):
     :param t_range: a tuple represents the target range.
     :return: normalized data in `t_range`
     """
-    min_d = np.min(x, axis=-1, keepdims=True)
-    max_d = np.max(x, axis=-1, keepdims=True)
     a, b = t_range
-    return (b - a) * (x - min_d) / (max_d - min_d) + a
+
+    if isinstance(x, np.ndarray):
+        min_d = np.min(x, axis=-1, keepdims=True)
+        max_d = np.max(x, axis=-1, keepdims=True)
+        return (b - a) * (x - min_d) / (max_d - min_d) + a
+    else:
+        min_d = x.min(axis=-1).toarray()
+        max_d = x.max(axis=-1).toarray()
+        return (b - a) * (x - min_d) / (max_d - min_d) + a
 
 
 def top_k(
