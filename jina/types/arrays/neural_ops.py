@@ -141,6 +141,9 @@ class DocumentArrayNeuralOpsMixin:
         :param metric_name: if provided, then match result will be marked with this string.
         :return: distances and indices
         """
+        assert isinstance(
+            darray[0].embedding, np.ndarray
+        ), f'expected embedding of type np.ndarray but received {type(darray[0].embedding)}'
 
         x_mat = np.stack(self.get_attributes('embedding'))
         n_x = x_mat.shape[0]
