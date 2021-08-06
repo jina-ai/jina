@@ -27,11 +27,15 @@ Table of Contents
   - [`Document` Attributes](#document-attributes)
     - [Set & Unset Attributes](#set--unset-attributes)
   - [Construct `Document`](#construct-document)
+      - [Content Attributes](#content-attributes)
     - [Exclusivity of `doc.content`](#exclusivity-of-doccontent)
     - [Conversion between `doc.content`](#conversion-between-doccontent)
+      - [Set Embedding](#set-embedding)
     - [Support for Sparse arrays](#support-for-sparse-arrays)
     - [Construct with Multiple Attributes](#construct-with-multiple-attributes)
+      - [Meta Attributes](#meta-attributes)
     - [Construct from Dict or JSON String](#construct-from-dict-or-json-string)
+      - [Parsing Unrecognized Fields](#parsing-unrecognized-fields)
     - [Construct from Another `Document`](#construct-from-another-document)
     - [Construct from JSON, CSV, `ndarray` and Files](#construct-from-json-csv-ndarray-and-files)
   - [Serialize `Document`](#serialize-document)
@@ -41,6 +45,10 @@ Table of Contents
   - [Visualize `Document`](#visualize-document)
   - [Add Relevancy to `Document`s](#add-relevancy-to-documents)
     - [Relevance Attributes](#relevance-attributes)
+  - [`GraphDocument`](#graphdocument)
+    - [`GraphDocument` Constructor](#graphdocument-constructor)
+    - [`GraphDocument` Additional Attributes](#graphdocument-additional-attributes)
+    - [`GraphDocument` methods](#graphdocument-methods)
 - [`DocumentArray` API](#documentarray-api)
   - [Construct `DocumentArray`](#construct-documentarray)
   - [Persistence via `save()`/`load()`](#persistence-via-saveload)
@@ -56,6 +64,7 @@ Table of Contents
   - [Selecting a subset of Documents from a `DocumentArray` using `.find`](#selecting-a-subset-of-documents-from-a-documentarray-using-find)
   - [Random sample a subset of Documents from a `DocumentArray` using `sample`](#random-sample-a-subset-of-documents-from-a-documentarray-using-sample)
   - [Shuffle the `DocumentArray` using `shuffle`](#shuffle-the-documentarray-using-shuffle)
+  - [Visualize Embeddings](#visualize-embeddings)
 - [`DocumentArrayMemmap` API](#documentarraymemmap-api)
   - [Create `DocumentArrayMemmap` object](#create-documentarraymemmap-object)
   - [Add Documents to `DocumentArrayMemmap` object](#add-documents-to-documentarraymemmap-object)
@@ -260,7 +269,7 @@ d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 
 ##### Meta Attributes
 
-|     |     |
+| Attribute | Description |
 | --- | --- |
 | `doc.tags` | A structured data value, consisting of fields which map to dynamically typed values |
 | `doc.id` | A hexdigest that represents a unique Document ID |
@@ -643,6 +652,10 @@ for evaluation_key, evaluation_score in d.evaluations.items():
 `GraphDocument` is a subclass of `Document`. It's a special type of `Document` that adds functionality to let you work with a `Document` as a `directed graph`.
 Chunks of the document represent the nodes of the graph. `GraphDocument` adds graph-specific attributes (`nodes`, `adjacency` list, `edge_features`,...) and operations (`add_node`, `remove_node`, `add_edge`, `remove_edge`,...)
 
+
+#### `GraphDocument` Constructor
+`GraphDocument`'s constructor supports the same parameters as `Document`.
+It mainly adds one parameter `force_undirected`. It's a boolean flag that, when set to `True`, forces the graph document to be undirected.
 
 #### `GraphDocument` Additional Attributes
 
