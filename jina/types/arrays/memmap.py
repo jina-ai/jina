@@ -17,6 +17,7 @@ from .document import DocumentArrayGetAttrMixin
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
+from ...helper import cached_property
 
 HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
@@ -65,6 +66,10 @@ class DocumentArrayMemmap(
         self._key_length = key_length
         self._load_header_body()
 
+    @cached_property
+    def _mmap(self):
+        return mmap.mmap(self._body_fileno, length=0)
+
     def reload(self):
         """Reload header of this object from the disk.
 
@@ -104,6 +109,7 @@ class DocumentArrayMemmap(
             if not np.array_equal((r[1], r[2], r[3]), HEADER_NONE_ENTRY)
         }
         self._body_fileno = self._body.fileno()
+
         self._start = 0
         if self._header_map:
             self._start = tmp[-1][1] + tmp[-1][3]
@@ -160,9 +166,8 @@ class DocumentArrayMemmap(
     def __getitem__(self, key: Union[int, str]) -> 'Document':
         if isinstance(key, str):
             pos_info = self._header_map[key]
-            _, p, r, l = pos_info
-            with mmap.mmap(self._body_fileno, offset=p, length=l) as m:
-                return Document(m[r:])
+            _, p, r, r_plus_l = pos_info
+            return Document(self._mmap[(p + r) : (p + r_plus_l)])
         elif isinstance(key, int):
             return self[self._int2str_id(key)]
         else:
