@@ -37,9 +37,8 @@ The content source to be shipped into a Jina Hub executor. It can one of the fol
     gp.add_argument(
         '-t',
         '--tag',
-        nargs='*',
-        type=str,
-        help='Name and optionally a list of tags (separated by space)',
+        action='append',
+        help='Name and optionally a list of tags',
     )
 
     gp.add_argument(
