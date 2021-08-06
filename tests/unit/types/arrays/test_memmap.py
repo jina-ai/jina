@@ -371,3 +371,18 @@ def test_memmap_physical_size(tmpdir):
     assert da.physical_size == 0
     da.append(Document())
     assert da.physical_size > 0
+
+
+def test_memmap_persisted(tmpdir):
+    def _local_context():
+        dam = DocumentArrayMemmap(tmpdir)
+        docs = list(random_docs(10))
+        dam.extend(docs)
+        for doc in docs:
+            doc.content = 'new'
+
+    _local_context()
+    dam = DocumentArrayMemmap(tmpdir)
+    for i, doc in enumerate(dam):
+        assert doc.content == 'new'
+        assert doc.id == str(i)

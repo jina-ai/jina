@@ -380,6 +380,9 @@ class DocumentArrayMemmap(
         self._header.flush()
         self._body.flush()
 
+    def __del__(self):
+        self.save()
+
     def prune(self) -> None:
         """Prune deleted Documents from this object, this yields a smaller on-disk storage. """
         tdir = tempfile.mkdtemp()
