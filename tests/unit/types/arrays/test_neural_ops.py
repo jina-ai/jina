@@ -249,7 +249,7 @@ def test_scipy_dist(
 
 
 def test_2arity_function(docarrays_for_embedding_distance_computation):
-    def dotp(x, y):
+    def dotp(x, y, *args):
         return np.dot(x, np.transpose(y))
 
     D1, D2 = docarrays_for_embedding_distance_computation
