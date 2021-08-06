@@ -89,6 +89,34 @@ def test_matching_same_results_with_sparse(
     np.testing.assert_equal(distances, distances_sparse)
 
 
+@pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
+def test_matching_same_results_with_batch(
+    docarrays_for_embedding_distance_computation,
+    metric,
+):
+
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1_batch = copy.deepcopy(D1)
+    D2_batch = copy.deepcopy(D2)
+
+    # use match without batches
+    D1.match(D2, metric=metric)
+    distances = []
+    for m in D1.get_attributes('matches'):
+        for d in m:
+            distances.extend([d.scores[metric].value])
+
+    # use match with batches
+    D1_batch.match(D2_batch, metric=metric, batch_size=10)
+
+    distances_batch = []
+    for m in D1.get_attributes('matches'):
+        for d in m:
+            distances_batch.extend([d.scores[metric].value])
+
+    np.testing.assert_equal(distances, distances_batch)
+
+
 @pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
 def test_matching_scipy_cdist(
     docarrays_for_embedding_distance_computation,

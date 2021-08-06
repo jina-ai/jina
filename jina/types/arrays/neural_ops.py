@@ -22,7 +22,7 @@ class DocumentArrayNeuralOpsMixin:
         metric: Union[
             str, Callable[['np.ndarray', 'np.ndarray'], 'np.ndarray']
         ] = 'cosine',
-        limit: Optional[int] = inf,
+        limit: Optional[int] = 20,
         normalization: Optional[Tuple[int, int]] = None,
         use_scipy: bool = False,
         metric_name: Optional[str] = None,
@@ -42,8 +42,7 @@ class DocumentArrayNeuralOpsMixin:
             use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param metric: the distance metric
-        :param limit: the maximum number of matches, when not given
-                      all Documents in `another` are considered as matches
+        :param limit: the maximum number of matches, when not given defaults to 20
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
@@ -149,9 +148,10 @@ class DocumentArrayNeuralOpsMixin:
         n_x = x_mat.shape[0]
 
         def batch_generator(y_darray: 'DocumentArrayMemmap', n_batch: int):
+            n_max = len(y_darray)
             for i in range(0, len(y_darray), n_batch):
                 y_mat = np.vstack(
-                    [y_darray[j].embedding for j in range(i, i + n_batch)]
+                    [y_darray[j].embedding for j in range(i, min(i + n_batch, n_max))]
                 )
                 yield y_mat, i
 
