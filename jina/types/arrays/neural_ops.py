@@ -5,7 +5,7 @@ import numpy as np
 
 from ... import Document
 from ...importer import ImportExtensions
-from ...math.helper import top_k, minmax_normalize, top_k_from_pair
+from ...math.helper import top_k, minmax_normalize, update_rows_x_mat_best
 
 if False:
     from .document import DocumentArray
@@ -70,14 +70,14 @@ class DocumentArrayNeuralOpsMixin:
                 f'metric must be either string or a 2-arity function, received: {metric!r}'
             )
 
+        metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
+
         if batch_size:
             dist, idx = self._match_online(
-                darray, cdist, limit, normalization, batch_size
+                darray, cdist, limit, normalization, metric_name, batch_size
             )
         else:
-            dist, idx = self._match(darray, cdist, limit, normalization)
-
-        metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
+            dist, idx = self._match(darray, cdist, limit, normalization, metric_name)
 
         for _q, _ids, _dists in zip(self, idx, dist):
             _q.matches.clear()
@@ -91,8 +91,7 @@ class DocumentArrayNeuralOpsMixin:
                     d.pop('matches')
                 _q.matches.append(d, scores={metric_name: _dist}, copy=False)
 
-    @profile
-    def _match(self, darray, cdist, limit, normalization):
+    def _match(self, darray, cdist, limit, normalization, metric_name):
         """
         Computes the matches between self and `darray` loading `darray` into main memory.
 
@@ -103,6 +102,7 @@ class DocumentArrayNeuralOpsMixin:
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
+        :param metric_name: if provided, then match result will be marked with this string.
         :return: distances and indices
         """
 
@@ -116,8 +116,9 @@ class DocumentArrayNeuralOpsMixin:
 
         return dist, idx
 
-    @profile
-    def _match_online(self, darray, cdist, limit, normalization, batch_size):
+    def _match_online(
+        self, darray, cdist, limit, normalization, metric_name, batch_size
+    ):
         """
         Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.
 
@@ -129,6 +130,7 @@ class DocumentArrayNeuralOpsMixin:
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
         :param batch_size: length of the chunks loaded into memory from darray.
+        :param metric_name: if provided, then match result will be marked with this string.
         :return: distances and indices
         """
 
@@ -140,7 +142,6 @@ class DocumentArrayNeuralOpsMixin:
                 y_mat = np.vstack(
                     [y_darray[j].embedding for j in range(i, i + n_batch)]
                 )
-
                 yield y_mat, i
 
         y_batch_generator = batch_generator(darray, batch_size)
@@ -155,8 +156,8 @@ class DocumentArrayNeuralOpsMixin:
                 dists = minmax_normalize(dists, normalization)
 
             inds = y_batch_start_pos + inds
-            top_dists, top_inds = top_k_from_pair(
-                dists, inds, top_dists, top_inds, limit
+            top_dists, top_inds = update_rows_x_mat_best(
+                top_dists, top_inds, dists, inds, limit
             )
 
         # sort final the final `top_dists` and `top_inds` per row

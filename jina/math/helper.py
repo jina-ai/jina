@@ -51,30 +51,26 @@ def top_k(
     return values, idx
 
 
-def top_k_from_pair(
-    x_mat: 'np.ndarray',
-    x_inds: 'np.ndarray',
+def update_rows_x_mat_best(
     x_mat_best: 'np.ndarray',
     x_inds_best: 'np.ndarray',
+    x_mat: 'np.ndarray',
+    x_inds: 'np.ndarray',
     k: int,
-) -> Tuple['np.ndarray', 'np.ndarray']:
+):
     """
-    Finds values and indices of the k largest entries found in `x_ma` union `x_mat_best`
-    and the indices from `x_inds` union `x_inds_best`.
-
-    This method can be practical to update `x_mat_best` from successive incoming `x_mat`
-    arrays.
+    Updates `x_mat_best` and `x_inds_best` rows with the k best values and indices (per row)  from `x_mat` union `x_mat_best`.
 
     :param x_mat: numpy array of the first matrix
     :param x_inds: numpy array of the indices of the first matrix
     :param x_mat_best: numpy array of the second matrix
     :param x_inds_best: numpy array of the indices of the second matrix
     :param k: number of values to retrieve
-    :return: indices and distances of the best items in the pair
+    :return: indices and distances
     """
     all_dists = np.hstack((x_mat, x_mat_best))
     all_inds = np.hstack((x_inds, x_inds_best))
     best_inds = np.argpartition(all_dists, kth=k, axis=1)
-    d_mat = np.take_along_axis(all_dists, best_inds, axis=1)
-    i_mat = np.take_along_axis(all_inds, best_inds, axis=1)
-    return d_mat[:, :k], i_mat[:, :k]
+    x_mat_best = np.take_along_axis(all_dists, best_inds, axis=1)[:, :k]
+    x_inds_best = np.take_along_axis(all_inds, best_inds, axis=1)[:, :k]
+    return x_mat_best, x_inds_best
