@@ -327,8 +327,25 @@ py_modules:
 
         from rich.console import Console
 
-        console = Console()
         work_path = Path(self.args.path)
+
+        exec_tags = None
+        if self.args.tag:
+            exec_tags = ','.join(self.args.tag)
+
+        dockerfile = None
+        if self.args.docker_file:
+            dockerfile = Path(self.args.docker_file)
+            if not dockerfile.exists():
+                raise Exception(f'The given Dockerfile `{dockerfile}` does not exist!')
+            if dockerfile.parent != work_path:
+                raise Exception(
+                    f'The Dockerfile must be placed at the given folder `{work_path}`'
+                )
+
+            dockerfile = dockerfile.relative_to(work_path)
+
+        console = Console()
         with console.status(f'Pushing `{work_path}`...') as st:
             req_header = self._get_request_header()
             try:
@@ -348,22 +365,10 @@ py_modules:
                     'md5sum': md5_digest,
                 }
 
-                if self.args.tag:
-                    exec_tags = ','.join(self.args.tag)
+                if exec_tags:
                     form_data['tags'] = exec_tags
 
-                if self.args.docker_file:
-                    dockerfile = Path(self.args.docker_file)
-                    if not dockerfile.exists():
-                        raise Exception(
-                            f'The given Dockerfile `{dockerfile}` does not exist!'
-                        )
-                    if dockerfile.parent != work_path:
-                        raise Exception(
-                            f'The Dockerfile must be placed at the given folder `{work_path}`'
-                        )
-
-                    dockerfile = dockerfile.relative_to(work_path)
+                if dockerfile:
                     form_data['dockerfile'] = str(dockerfile)
 
                 uuid8, secret = load_secret(work_path)
@@ -376,8 +381,8 @@ py_modules:
 
                 st.update(f'Connecting Hubble...')
                 hubble_url = get_hubble_url()
-                # upload the archived executor to Jina Hub
 
+                # upload the archived executor to Jina Hub
                 st.update(f'Uploading...')
                 resp = upload_file(
                     hubble_url,
