@@ -18,10 +18,10 @@ def test_push_parser():
     assert not hasattr(args, 'public')
     assert not hasattr(args, 'private')
 
-    args = parser.parse_args(['/tmp', '-t', 'v1', 'v2'])
+    args = parser.parse_args(['/tmp', '-t', 'v1', '-t', 'v2'])
     assert args.tag == ['v1', 'v2']
 
-    args = parser.parse_args(['/tmp', '--tag', 'v1', 'v2'])
+    args = parser.parse_args(['/tmp', '--tag', 'v1', '--tag', 'v2'])
     assert args.tag == ['v1', 'v2']
 
     args = parser.parse_args(['/tmp', '-f', 'Dockerfile'])
