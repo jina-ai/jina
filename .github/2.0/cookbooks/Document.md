@@ -640,11 +640,11 @@ for evaluation_key, evaluation_score in d.evaluations.items():
 ```
 
 ### `GraphDocument`
-`GraphDocument` is a subclass of `Document`. It's a special type of `Document` that adds functionality to lets you work with a `Document` as a `directed graph`
+`GraphDocument` is a subclass of `Document`. It's a special type of `Document` that adds functionality to let you work with a `Document` as a `directed graph`.
 Chunks of the document represent the nodes of the graph. `GraphDocument` adds graph-specific attributes (`nodes`, `adjacency` list, `edge_features`,...) and operations (`add_node`, `remove_node`, `add_edge`, `remove_edge`,...)
 
 
-### `GraphDocument` Additional Attributes
+#### `GraphDocument` Additional Attributes
 
 `GraphDocument` adds the following attributes to `Document`:
 
@@ -657,7 +657,7 @@ Chunks of the document represent the nodes of the graph. `GraphDocument` adds gr
 | `num_edges` | Number of edges in the graph |
 | `nodes` | The list of nodes. Equivalent to `chunks` |
 
-### `GraphDocument` methods
+#### `GraphDocument` methods
 
 `GraphDocument` adds the following methods to `Document`:
 
@@ -1227,6 +1227,29 @@ shuffled_da = da.shuffle()  # shuffle the DocumentArray
 shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
 ```
 
+### Visualize Embeddings
+
+`DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods to project in 2D space: `pca` and `tsne`.
+
+In the following example, we add 3 different distributions of embeddings and see 3 kinds of point clouds in the graph.
+```python
+import numpy as np
+from jina import Document, DocumentArray
+
+da = DocumentArray(
+    [
+        Document(embedding = np.random.normal(0, 1, 50)) for _ in range(500)
+    ] + [
+        Document(embedding = np.random.normal(5, 2, 50)) for _ in range(500)
+    ] + [
+        Document(embedding = np.random.normal(2, 5, 50)) for _ in range(500)
+    ]
+)
+da.visualize()
+
+```
+
+![](../document-array-visualize.png?raw=true)
 
 ## `DocumentArrayMemmap` API
 
