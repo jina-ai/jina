@@ -166,7 +166,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
 
 
 def get_cli_params(arguments):
-    skip_attributes = ['workspace', 'log_config', 'uses']
+    skip_attributes = ['workspace', 'log_config', 'uses', 'dynamic_routing']
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
         for attribute, value in arguments.__dict__.items()

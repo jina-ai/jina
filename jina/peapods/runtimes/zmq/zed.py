@@ -174,7 +174,7 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: the transformed message.
         """
-        print(f'handle {self.request_type}')
+        print(f'handle {msg.envelope.request_type}')
         # skip executor for non-DataRequest
         if msg.envelope.request_type != 'DataRequest':
             self.logger.debug(f'skip executor: not data request')
