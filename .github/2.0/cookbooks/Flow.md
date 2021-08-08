@@ -25,15 +25,30 @@ Table of Contents
   - [Add `Executor` to a Flow](#add-executor-to-a-flow)
     - [Chain `.add()`](#chain-add)
     - [Define What Executor to Use via `uses`](#define-what-executor-to-use-via-uses)
+      - [Add Executor via its Class Name](#add-executor-via-its-class-name)
+      - [Add Executor via YAML file](#add-executor-via-yaml-file)
+      - [Add Executor via `Dict`](#add-executor-via-dict)
+      - [Add Executor via Docker Image](#add-executor-via-docker-image)
     - [Intra Parallelism via `needs`](#intra-parallelism-via-needs)
     - [Inter Parallelism via `parallel`](#inter-parallelism-via-parallel)
     - [Add a Remote `Executor` via `host`](#add-a-remote-executor-via-host)
-  - [Send Data Request via `post`](#send-data-request-via-post)
+    - [Commonly used arguments for deployment in `.add`](#commonly-used-arguments-for-deployment-in-add)
+    - [Commonly used patterns for `.add`](#commonly-used-patterns-for-add)
+      - [Local native Executor via `.py` file:](#local-native-executor-via-py-file)
+      - [Local native Executor via `.yml` file:](#local-native-executor-via-yml-file)
+      - [Local Docker Executor:](#local-docker-executor)
+      - [Local Docker Executor from Jina Hub:](#local-docker-executor-from-jina-hub)
+      - [Using an already spawned Executor:](#using-an-already-spawned-executor)
+      - [Remote Executor](#remote-executor)
+      - [Setting the Gateway data port and host](#setting-the-gateway-data-port-and-host)
+      - [Forcing an Executor in the remote-local configuration](#forcing-an-executor-in-the-remote-local-configuration)
+  - [Send data request via `post`](#send-data-request-via-post)
     - [Function Signature](#function-signature)
     - [Define Data via `inputs`](#define-data-via-inputs)
     - [Callback Functions](#callback-functions)
     - [Send Parameters](#send-parameters)
     - [Fine-grained Control on Request](#fine-grained-control-on-request)
+      - [Size of the Request](#size-of-the-request)
     - [Get All Responses](#get-all-responses)
   - [Asynchronous Flow](#asynchronous-flow)
 - [Remarks](#remarks)
@@ -396,7 +411,7 @@ dependencies that need to be uploaded are specified via the `upload_files` keywo
 
 <table>
     <tr>
-    <td>123.456.78.9</td>
+    <td>123.45.67.89</td>
     <td>
 
 ```bash
@@ -421,7 +436,7 @@ f = (Flow()
      .add()
      .add(name='gpu_exec',
           uses='mwu_encoder.yml',
-          host='123.456.78.9:8000',
+          host='123.45.67.89:8000',
           parallel=2,
           upload_files=['mwu_encoder.py'])
      .add())
@@ -431,7 +446,93 @@ f = (Flow()
 
 </table>
 
-### Send Data Request via `post`
+#### Commonly used arguments for deployment in `.add`
+
+| Name | default | Description |
+| --- | --- | --- |
+| `host` | `0.0.0.0` | The host of the machine. Can be an ip address or DNS name (e.g. `0.0.0.0`, `my_encoder.jina.ai`) |
+| `port_expose` | randomly initialized | Port of JinaD on the remote machine. |
+| `port_in` | randomly initialized | Port for incoming traffic for the Executor. |
+| `port_out` | randomly initialized | Port for outgoing traffic for the Executor. This is only used in the remote-local use-case described below. |
+| `connect_to_predecessor` | `False` | Forces a Head to connect to the previous Tail. This is only used in the remote-local use-case described below. |
+| `external` | `False` | Stops `Flow` from context managing an Executor. This allows spawning of an external Executor and reusing across multiple Flows. |
+| `uses`, `uses_before` and `uses_after` prefix | No prefix | When prefixing one of the `uses` arguments with `docker` or `jinahub+docker`, the Executor does not run natively, but is spawned inside a container. |
+
+#### Commonly used patterns for `.add`
+
+##### Local native Executor via `.py` file:
+
+```python
+class MyExecutor():...
+
+f.add(uses=MyExecutor)   # passing the Executor class
+f.add(uses='MyExecutor') # passing the name of the Executor class
+```
+
+##### Local native Executor via `.yml` file:
+
+```python
+f.add(uses='mwu_encoder.yml')
+```
+
+##### Local Docker Executor:
+
+```python
+f.add(uses='docker://MyExecutor')
+```
+
+##### Local Docker Executor from Jina Hub:
+
+```python
+f.add(uses='jinahub+docker://MyExecutor')
+```
+
+##### Using an already spawned Executor:
+
+The external Executor in the following two use-cases could have been spawned
+
+- either by another Flow
+- or by the `jina executor` CLI command
+
+```python
+f.add(host='localhost', port_in=12345, external=True)
+f.add(host='123.45.67.89', port_in=12345, external=True)
+```
+
+##### Remote Executor
+
+In any of the following remote patterns without `external`, JinaD must be running on the remote machine.
+Furthermore, JinaD must be setup to listen on `port_expose`.
+
+```python
+f.add(uses='mwu_encoder.yml', host='123.45.67.89', port_in=12345, port_expose=8080)
+```
+
+`uses` can take any argument that would be used in the local case (e.g. `jinahub+docker://...`).
+
+##### Setting the Gateway data port and host
+
+If you need to change the networking of the Gateway, the respective arguments go directly into the Flow initialization.
+
+```python
+Flow(host='123.45.67.89', port_in=12345)
+```
+
+##### Forcing an Executor in the remote-local configuration
+
+Sometimes you want to use a remote Executor in your local Flow (e.g. using an expensive encoder on a remote GPU).
+Then the remote cannot talk back to the next local Executor directly.
+This is similar to a server that cannot talk to a client before the client has opened a connection.
+The Flow inside Jina has an auto-detection mechanism for such cases.
+Anyhow, in some networking setups this mechanism fails.
+Then you can force this by hand by setting the `connect_to_predecessor` argument and `port_out` to the Executor in front.
+
+```python
+Flow().add(name='remote', host='123.45.67.89', port_out=23456).add(name='local', connect_to_predecessor=True)
+```
+
+
+### Send data request via `post`
 
 `.post()` is the core method for sending data to a `Flow` object.
 
