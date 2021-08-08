@@ -656,7 +656,7 @@ def send_message(
     """
     num_bytes = 0
     try:
-        print('try send_message', msg)
+        print('try send_message, is data request', msg.is_data_request, 'size: ', msg.size, 'envelope', msg.envelope)
         _prep_send_socket(sock, timeout)
         sock.send_multipart(msg.dump())
         num_bytes = msg.size

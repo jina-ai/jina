@@ -124,6 +124,7 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: `ZEDRuntime`
         """
+        print('pre hook')
         msg.add_route(self.name, self._id)
         self._request = msg.request
         self._message = msg
@@ -204,6 +205,7 @@ class ZEDRuntime(ZMQRuntime):
             Handle does not handle explicitly message because it may wait for different messages when different parts are expected
         :return: ZEDRuntime procedure.
         """
+        print(f'handle {self.request_type}')
         # skip executor for non-DataRequest
         if self.request_type != 'DataRequest':
             self.logger.debug(f'skip executor: not data request')
@@ -211,8 +213,10 @@ class ZEDRuntime(ZMQRuntime):
 
         # migrated from the previously RouteDriver logic
         # set dealer id
+        print(f'are there idle dealers for data request? {self._idle_dealer_ids}')
         if self._idle_dealer_ids:
             dealer_id = self._idle_dealer_ids.pop()
+            print(f'handle idle dealer {dealer_id}')
             self.envelope.receiver_id = dealer_id
 
             # when no available dealer, pause the pollin from upstream
@@ -270,6 +274,7 @@ class ZEDRuntime(ZMQRuntime):
 
     def _handle_control_req(self):
         # migrated from previous ControlDriver logic
+        print('handle control request', self.request.command)
         if self.request.command == 'TERMINATE':
             self.envelope.status.code = jina_pb2.StatusProto.SUCCESS
             raise RuntimeTerminated
@@ -277,6 +282,7 @@ class ZEDRuntime(ZMQRuntime):
             self.envelope.status.code = jina_pb2.StatusProto.READY
             self.request.parameters = vars(self.args)
         elif self.request.command == 'IDLE':
+            print(f'dealer added {self.envelope.receiver_id}')
             self._idle_dealer_ids.add(self.envelope.receiver_id)
             self._zmqstreamlet.resume_pollin()
             self.logger.debug(
