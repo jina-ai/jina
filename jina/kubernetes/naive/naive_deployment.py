@@ -19,17 +19,17 @@ def to_dns_name(name):
 
 
 def deploy_service(
-        name,
-        namespace,
-        port_in,
-        port_out,
-        port_ctrl,
-        port_expose,
-        image_name,
-        container_cmd,
-        container_args,
-        logger,
-        init_container=None,
+    name,
+    namespace,
+    port_in,
+    port_out,
+    port_ctrl,
+    port_expose,
+    image_name,
+    container_cmd,
+    container_args,
+    logger,
+    init_container=None,
 ):
     from jina.kubernetes import kubernetes_tools
 
@@ -163,13 +163,13 @@ def deploy_glue_executor(glue_executor, namespace, logger):
 #     cli_string = ', '.join(cli_args)
 #     return cli_string
 
+
 def get_cli_params(arguments):
-    skip_attributes = [
-        'workspace',
-        'log_config',
-        'uses'
+    skip_attributes = ['workspace', 'log_config', 'uses']
+    arg_list = [
+        [attribute, attribute.replace('_', '-'), value]
+        for attribute, value in arguments.__dict__.items()
     ]
-    arg_list = [[attribute, attribute.replace('_', '-'), value] for attribute, value in arguments.__dict__.items()]
     cli_args = []
     for attribute, cli_attribute, value in arg_list:
         if attribute in skip_attributes:
@@ -205,21 +205,21 @@ def prepare_flow(flow):
         if pod.args.parallel > 1:
 
             pod.args.peas_hosts = [
-                                      f'{service_name}-head.{namespace}.svc.cluster.local',
-                                      f'{service_name}-tail.{namespace}.svc.cluster.local'] + [
-                                      f'{service_name}-pea-{i}.{namespace}.svc.cluster.local' for i in
-                                      range(pod.args.parallel)
-                                  ]
+                f'{service_name}-head.{namespace}.svc.cluster.local',
+                f'{service_name}-tail.{namespace}.svc.cluster.local',
+            ] + [
+                f'{service_name}-pea-{i}.{namespace}.svc.cluster.local'
+                for i in range(pod.args.parallel)
+            ]
             for pea_arg in pod.peas_args['peas']:
                 pea_arg.host_in = pod.args.peas_hosts[0]
                 pea_arg.host_out = pod.args.peas_hosts[1]
 
-
             # pod.host = f'{service_name}-head.{namespace}.svc.cluster.local'
             # pod.head_host = f'{service_name}-head.{namespace}.svc.cluster.local'
         # else:
-            # pod.host = f'{service_name}.{namespace}.svc.cluster.local'
-            # pod.head_host = f'{service_name}.{namespace}.svc.cluster.local'
+        # pod.host = f'{service_name}.{namespace}.svc.cluster.local'
+        # pod.head_host = f'{service_name}.{namespace}.svc.cluster.local'
 
     return flow.build(copy_flow=True)
 
@@ -330,10 +330,10 @@ def deploy(flow, deployment_type='k8s'):
                     image_name,
                     container_cmd='["jina"]',
                     container_args=f'["executor", '
-                                   f'"--uses", "config.yml", '
-                                   f'"--override-metas", "{uses_metas}", '
-                                   f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
-                                   f'{get_cli_params(pea_arg)}]',
+                    f'"--uses", "config.yml", '
+                    f'"--override-metas", "{uses_metas}", '
+                    f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
+                    f'{get_cli_params(pea_arg)}]',
                     logger=flow.logger,
                     init_container=init_container,
                 )
@@ -388,8 +388,7 @@ def deploy(flow, deployment_type='k8s'):
             gateway_args.port_expose,
             'gcr.io/jina-showcase/generic-gateway',
             container_cmd='["jina"]',
-            container_args=f'["gateway", '
-                           f'{get_cli_params(gateway_args)}]',
+            container_args=f'["gateway", ' f'{get_cli_params(gateway_args)}]',
             logger=flow.logger,
             init_container=None,
         )
@@ -423,6 +422,7 @@ def deploy(flow, deployment_type='k8s'):
         # kubernetes_tools.create_gateway_ingress(namespace)
     else:
         raise Exception(f'deployment type "{deployment_type}" is not supported')
+
 
 # def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in, gateway_port_in):
 #     yaml = f"""

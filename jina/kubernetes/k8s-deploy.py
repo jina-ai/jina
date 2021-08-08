@@ -2,18 +2,19 @@ from jina import Flow
 
 dump_path = '/shared'
 
-service_name ='cliptext7'
+service_name = 'cliptext7'
 namespace = 'search-flow'
 search_flow = (
-    Flow(name='search-flow', protocol='http', port_expose=8080,
-         # host='gateway.search-flow.svc.cluster.local'
-         )
-    .add(
+    Flow(
+        name='search-flow',
+        protocol='http',
+        port_expose=8080,
+        # host='gateway.search-flow.svc.cluster.local'
+    ).add(
         name='cliptext7',
         uses='jinahub+docker://CLIPTextEncoder',
         # uses='jinahub+docker://Sentencizer',
         # uses='docker://jinaai/jina',
-
         # peas_hosts=  [ # don't - it overwrites host and tries to use JinaD
         #     f'{service_name}-head.{namespace}.svc.cluster.local',
         #     f'{service_name}-tail.{namespace}.svc.cluster.local',
