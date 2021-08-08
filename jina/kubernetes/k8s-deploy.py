@@ -2,38 +2,24 @@ from jina import Flow
 
 dump_path = '/shared'
 
-# index_flow = (
-#     Flow(name='index-flow')
-#     .add(
-#         name='cliptext',
-#         uses='jinahub+docker://CLIPTextEncoder',
-#         shards=1,
-#         polling='any',
-#     )
-#     .add(
-#         name='cliptext2',
-#         uses='jinahub+docker://CLIPTextEncoder',
-#         needs='gateway',
-#         shards=1,
-#         polling='any',
-#     )
-#     .add(
-#         name='textindexer',
-#         uses='jinahub+docker://PostgreSQLStorage',
-#         needs=['cliptext'],
-#     )
-#     .add(
-#         name='textindexer2',
-#         uses='jinahub+docker://PostgreSQLStorage',
-#         needs=['cliptext2'],
-#     )
-# )
-
+service_name ='cliptext7'
+namespace = 'search-flow'
 search_flow = (
-    Flow(name='search-flow', host='gateway.search-flow.svc.cluster.local')
+    Flow(name='search-flow', protocol='http', port_expose=8080,
+         # host='gateway.search-flow.svc.cluster.local'
+         )
     .add(
-        name='cliptext',
+        name='cliptext7',
         uses='jinahub+docker://CLIPTextEncoder',
+        # uses='jinahub+docker://Sentencizer',
+        # uses='docker://jinaai/jina',
+
+        # peas_hosts=  [ # don't - it overwrites host and tries to use JinaD
+        #     f'{service_name}-head.{namespace}.svc.cluster.local',
+        #     f'{service_name}-tail.{namespace}.svc.cluster.local',
+        #     f'{service_name}-pea-{0}.{namespace}.svc.cluster.local',
+        #     f'{service_name}-pea-{1}.{namespace}.svc.cluster.local',
+        # ],
         shards=2,
         polling='all',
     )
@@ -73,6 +59,11 @@ search_flow = (
 # print('deploy index flow')
 # index_flow.plot('jina/kubernetes/index_flow.jpg')
 # index_flow.deploy_naive('k8s')
+
+
+# with search_flow:
+#     search_flow.block()
+
 
 print('deploy search flow')
 # search_flow.plot('jina/kubernetes/search_flow.jpg')

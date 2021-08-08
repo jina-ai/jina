@@ -656,23 +656,28 @@ def send_message(
     """
     num_bytes = 0
     try:
+        print('try send_message', msg)
         _prep_send_socket(sock, timeout)
         sock.send_multipart(msg.dump())
         num_bytes = msg.size
     except zmq.error.Again:
+        print('zmq.error.Again')
         raise TimeoutError(
             f'cannot send message to sock {sock} after timeout={timeout}ms, please check the following:'
             'is the server still online? is the network broken? are "port" correct?'
         )
     except zmq.error.ZMQError as ex:
+        print('zmq.error.ZMQError')
         if raise_exception:
             raise ex
         else:
             default_logger.critical(ex)
     finally:
         try:
+            print('try sock.setsockopt(zmq.SNDTIMEO, -1)')
             sock.setsockopt(zmq.SNDTIMEO, -1)
         except zmq.error.ZMQError:
+            print('zmq.error.ZMQError sock.setsockopt(zmq.SNDTIMEO, -1)')
             pass
 
     return num_bytes
@@ -704,22 +709,28 @@ async def send_message_async(
     :return: the size (in bytes) of the sent message
     """
     try:
+        print('send async...')
         _prep_send_socket(sock, timeout)
         await sock.send_multipart(msg.dump())
         return msg.size
     except zmq.error.Again:
+        print('send async... zmq.error.Again')
         raise TimeoutError(
             f'cannot send message to sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
             'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except zmq.error.ZMQError as ex:
+        print('send async... zmq.error.ZMQError')
         default_logger.critical(ex)
     except asyncio.CancelledError:
+        print('send async... asyncio.CancelledError')
         default_logger.debug('all gateway tasks are cancelled')
     except Exception as ex:
+        print('send async... Exception')
         raise ex
     finally:
         try:
+            print('send async... finally sock.setsockopt(zmq.SNDTIMEO, -1)')
             sock.setsockopt(zmq.SNDTIMEO, -1)
         except zmq.error.ZMQError:
             pass
@@ -737,16 +748,21 @@ def recv_message(sock: 'zmq.Socket', timeout: int = -1, **kwargs) -> 'Message':
             - the size of the message in bytes
     """
     try:
+        print('try recv_message')
         _prep_recv_socket(sock, timeout)
         msg_data = sock.recv_multipart()
-        return _parse_from_frames(sock.type, msg_data)
+        msg = _parse_from_frames(sock.type, msg_data)
+        print('massage received', msg)
+        return msg
 
     except zmq.error.Again:
+        print('timeout')
         raise TimeoutError(
             f'no response from sock {sock.getsockopt_string(zmq.LAST_ENDPOINT)} after timeout={timeout}ms, '
             f'please check the following: is the server still online? is the network broken? are "port" correct? '
         )
     except Exception as ex:
+        print('another exception')
         raise ex
     finally:
         sock.setsockopt(zmq.RCVTIMEO, -1)

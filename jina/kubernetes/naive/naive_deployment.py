@@ -23,6 +23,8 @@ def deploy_service(
         namespace,
         port_in,
         port_out,
+        port_ctrl,
+        port_expose,
         image_name,
         container_cmd,
         container_args,
@@ -42,6 +44,8 @@ def deploy_service(
             'namespace': namespace,
             'port_in': port_in,
             'port_out': port_out,
+            'port_ctrl': port_ctrl,
+            'port_expose': port_expose,
             'type': 'ClusterIP',
         },
     )
@@ -64,6 +68,8 @@ def deploy_service(
                 'args': container_args,
                 'port_in': port_in,
                 'port_out': port_out,
+                'port_ctrl': port_ctrl,
+                'port_expose': port_expose,
                 **init_container,
             },
         )
@@ -79,6 +85,8 @@ def deploy_service(
                 'args': container_args,
                 'port_in': port_in,
                 'port_out': port_out,
+                'port_ctrl': port_ctrl,
+                'port_expose': port_expose,
             },
         )
     return f'{name}.{namespace}.svc.cluster.local'
@@ -91,6 +99,8 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             namespace,
             glue_executor.port_in,
             glue_executor.port_out,
+            glue_executor.port_ctrl,
+            glue_executor.port_expose,
             glue_executor.uses,
             '["jina"]',
             f'["executor", "--uses", "config.yml", {get_cli_params(glue_executor)}]',
@@ -102,6 +112,8 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             namespace,
             glue_executor.port_in,
             glue_executor.port_out,
+            glue_executor.port_ctrl,
+            glue_executor.port_expose,
             'jinaai/jina',
             '["jina"]',
             f'["executor", "--uses", "{glue_executor.uses}", {get_cli_params(glue_executor)}]',
@@ -109,46 +121,105 @@ def deploy_glue_executor(glue_executor, namespace, logger):
         )
 
 
+# def get_cli_params(arguments):
+#     cli_args = [f'"--{name}", "' + repr(
+#         str(getattr(arguments, name.replace('-', '_')))
+#     ).replace('\'', '').replace('"', '\\"') + '"'
+#                 for name in [
+#                     'port-in',
+#                     'port-out',
+#                     'port-ctrl',
+#                     'port-expose',
+#                     'host-in',
+#                     'host-out',
+#                     'socket-in',
+#                     'socket-out',
+#                     'pea-id',
+#                     'polling',
+#                     'scheduling',
+#                     'pea-role',
+#                     'pod-role',
+#                     # 'zmq-identity',
+#                     'workspace-id',
+#                     'name',
+#                     'identity',
+#                     # 'hosts-in-connect',
+#                     # 'upload-files',
+#                     'num-part',
+#                     'parallel',
+#                     'protocol',
+#                     'routing-table',
+#                     'runtime-cls',
+#                     'runtime-backend',
+#                     'prefetch-on-recv',
+#                     'prefetch',
+#                     'ctrl-with-ipc'
+#                 ]
+#                 if hasattr(arguments, name.replace('-', '_'))]
+#
+#     for name in ['dynamic-routing-in', 'dynamic-routing-out']:
+#         if getattr(arguments, name.replace('-', '_')):
+#             cli_args.append(f'"--{name}"')
+#     cli_string = ', '.join(cli_args)
+#     return cli_string
+
 def get_cli_params(arguments):
-    cli_args = [f'"--{name}", "' + str(getattr(arguments, name.replace('-', '_'))) + '"'
-                for name in [
-                    'port-in',
-                    'port-out',
-                    'host-in',
-                    'host-out',
-                    'socket-in',
-                    'socket-out',
-                    'pea-id',
-                    'polling',
-                ]
-                ]
-    for name in ['dynamic-routing-in', 'dynamic-routing-out']:
-        if getattr(arguments, name.replace('-', '_')):
-            cli_args.append(f'"--{name}"')
+    skip_attributes = [
+        'workspace',
+        'log_config',
+        'uses'
+    ]
+    arg_list = [[attribute, attribute.replace('_', '-'), value] for attribute, value in arguments.__dict__.items()]
+    cli_args = []
+    for attribute, cli_attribute, value in arg_list:
+        if attribute in skip_attributes:
+            continue
+        if type(value) == bool and value:
+            cli_args.append(f'"--{cli_attribute}"')
+        else:
+            if value:
+                value = str(value)
+                value = value.replace('\'', '').replace('"', '\\"')
+                cli_args.append(f'"--{cli_attribute}", "{value}"')
     cli_string = ', '.join(cli_args)
     return cli_string
 
 
 def get_image_name(uses):
-    scheme, name, tag, secret = parse_hub_uri(uses)
-    meta_data = HubIO.fetch_meta(name)
-    image_name = meta_data.image_name
-    return image_name
+    try:
+        scheme, name, tag, secret = parse_hub_uri(uses)
+        meta_data = HubIO.fetch_meta(name)
+        image_name = meta_data.image_name
+        return image_name
+    except Exception:
+        return uses.replace('docker://', '')
 
 
 def prepare_flow(flow):
     namespace = flow.args.name
+    flow.args.host = f'gateway.{namespace}.svc.cluster.local'
+    flow.host = f'gateway.{namespace}.svc.cluster.local'
+
     for pod_name, pod in flow._pod_nodes.items():
+        service_name = to_dns_name(pod.args.name)
         if pod.args.parallel > 1:
-            service_name = to_dns_name(pod.args.name)
+
             pod.args.peas_hosts = [
-                             f'{service_name}-head.{namespace}.svc.cluster.local',
-                             f'{service_name}-tail.{namespace}.svc.cluster.local'] + [
-                             f'{service_name}-pea-{i}.{namespace}.svc.cluster.local' for i in range(pod.args.parallel)
-                         ]
+                                      f'{service_name}-head.{namespace}.svc.cluster.local',
+                                      f'{service_name}-tail.{namespace}.svc.cluster.local'] + [
+                                      f'{service_name}-pea-{i}.{namespace}.svc.cluster.local' for i in
+                                      range(pod.args.parallel)
+                                  ]
             for pea_arg in pod.peas_args['peas']:
                 pea_arg.host_in = pod.args.peas_hosts[0]
                 pea_arg.host_out = pod.args.peas_hosts[1]
+
+
+            # pod.host = f'{service_name}-head.{namespace}.svc.cluster.local'
+            # pod.head_host = f'{service_name}-head.{namespace}.svc.cluster.local'
+        # else:
+            # pod.host = f'{service_name}.{namespace}.svc.cluster.local'
+            # pod.head_host = f'{service_name}.{namespace}.svc.cluster.local'
 
     return flow.build(copy_flow=True)
 
@@ -167,7 +238,7 @@ def deploy(flow, deployment_type='k8s'):
         flow.logger.info(f'📦\tCreate Namespace {namespace}')
         kubernetes_tools.create('namespace', {'name': namespace})
 
-        pod_to_pea_and_args = defaultdict(list)
+        # pod_to_pea_and_args = defaultdict(list)
         for pod_name, pod in flow._pod_nodes.items():
             if pod_name == 'gateway':
                 continue
@@ -183,17 +254,17 @@ def deploy(flow, deployment_type='k8s'):
                         namespace,
                         flow.logger,
                     )
-                    pod_to_pea_and_args[pod_name].append(
-                        [
-                            pod.peas_args[name].name,
-                            pod.head_port_in,
-                            {
-                                'host_in': cluster_ip,
-                                'parallel': pod.args.parallel,
-                                'needs': pod.needs,
-                            },
-                        ]
-                    )
+                    # pod_to_pea_and_args[pod_name].append(
+                    #     [
+                    #         pod.peas_args[name].name,
+                    #         pod.head_port_in,
+                    #         {
+                    #             'host_in': cluster_ip,
+                    #             'parallel': pod.args.parallel,
+                    #             'needs': pod.needs,
+                    #         },
+                    #     ]
+                    # )
 
             image_name = get_image_name(pod.args.uses)
 
@@ -254,6 +325,8 @@ def deploy(flow, deployment_type='k8s'):
                     namespace,
                     pea_arg.port_in,
                     pea_arg.port_out,
+                    pea_arg.port_ctrl,
+                    pea_arg.port_expose,
                     image_name,
                     container_cmd='["jina"]',
                     container_args=f'["executor", '
@@ -265,97 +338,116 @@ def deploy(flow, deployment_type='k8s'):
                     init_container=init_container,
                 )
 
-                pod_to_pea_and_args[pod_name].append(
-                    [
-                        pea_name,
-                        pod.head_port_in,
-                        {
-                            'host_in': cluster_ip,
-                            'parallel': pod.args.parallel,
-                            'needs': pod.needs,
-                        },
-                    ]
-                )
+                # pod_to_pea_and_args[pod_name].append(
+                #     [
+                #         pea_name,
+                #         pod.head_port_in,
+                #         {
+                #             'host_in': cluster_ip,
+                #             'parallel': pod.args.parallel,
+                #             'needs': pod.needs,
+                #         },
+                #     ]
+                # )
 
-        flow.logger.info(f'🔒\tCreate "gateway service"')
-        external_gateway_service = 'gateway-exposed'
-        kubernetes_tools.create(
-            'service',
-            {
-                'name': external_gateway_service,
-                'target': 'gateway',
-                'namespace': namespace,
-                'port_in': 8080,
-                'port_out': 8888,
-                'type': 'ClusterIP',
-            },
-        )
-        kubernetes_tools.create(
-            'service',
-            {
-                'name': 'gateway-in',
-                'target': 'gateway',
-                'namespace': namespace,
-                'port_in': flow._pod_nodes['gateway'].args.port_in,
-                'port_out': flow._pod_nodes['gateway'].args.port_out,
-                'type': 'ClusterIP',
-            },
+        # flow.logger.info(f'🔒\tCreate "gateway service"')
+        # external_gateway_service = 'gateway-exposed'
+        # kubernetes_tools.create(
+        #     'service',
+        #     {
+        #         'name': external_gateway_service,
+        #         'target': 'gateway',
+        #         'namespace': namespace,
+        #         'port_in': 8080,
+        #         'port_out': 8888,
+        #         'port_ctrl': 9999,
+        #         'type': 'ClusterIP',
+        #     },
+        # )
+
+        # kubernetes_tools.create(
+        #     'service',
+        #     {
+        #         'name': 'gateway-in',
+        #         'target': 'gateway',
+        #         'namespace': namespace,
+        #         'port_in': flow._pod_nodes['gateway'].args.port_in,
+        #         'port_out': flow._pod_nodes['gateway'].args.port_out,
+        #         'port_ctrl': flow._pod_nodes['gateway'].args.port_ctrl,
+        #         'type': 'ClusterIP',
+        #     },
+        # )
+
+        gateway_args = flow._pod_nodes['gateway'].peas_args['peas'][0]
+        deploy_service(
+            gateway_args.name,
+            namespace,
+            gateway_args.port_in,
+            gateway_args.port_out,
+            gateway_args.port_ctrl,
+            gateway_args.port_expose,
+            'gcr.io/jina-showcase/generic-gateway',
+            container_cmd='["jina"]',
+            container_args=f'["gateway", '
+                           f'{get_cli_params(gateway_args)}]',
+            logger=flow.logger,
+            init_container=None,
         )
 
         # gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip(
         #     'gateway-in', namespace
         # )
 
-        gateway_yaml = create_gateway_yaml(
-            pod_to_pea_and_args,
-            f'gateway-in.{flow.args.name}.svc.cluster.local',
-            flow._pod_nodes['gateway'].args.port_in
-        )
+        # gateway_yaml = create_gateway_yaml(
+        #     pod_to_pea_and_args,
+        #     f'gateway-in.{flow.args.name}.svc.cluster.local',
+        #     flow._pod_nodes['gateway'].args.port_in
+        # )
 
-        kubernetes_tools.create(
-            'deployment',
-            {
-                'name': 'gateway',
-                'replicas': 1,
-                'port_in': 8080,
-                'port_out': 8888,
-                'command': "[\"python\"]",
-                'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
-                'image': gateway_image,
-                'namespace': namespace,
-            },
-        )
+        # kubernetes_tools.create(
+        #     'deployment',
+        #     {
+        #         'name': 'gateway',
+        #         'replicas': 1,
+        #         'port_in': 8080,
+        #         'port_out': 8888,
+        #         'port_ctrl': 9999,
+        #         'command': "[\"python\"]",
+        #         'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
+        #         'image': gateway_image,
+        #         'namespace': namespace,
+        #     },
+        # )
 
         # flow.logger.info(f'🌐\tCreate "Ingress resource"')
         # kubernetes_tools.create_gateway_ingress(namespace)
     else:
         raise Exception(f'deployment type "{deployment_type}" is not supported')
 
-
-def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in, gateway_port_in):
-    yaml = f"""
-        !Flow
-        version: '1'
-        with:
-          port_expose: 8080
-          host: {gateway_host_in}
-          port_in: {gateway_port_in}
-          protocol: http
-        pods:
-        """
-    for pod_name, pea_to_args in pod_to_pea_and_args.items():
-        yaml += f"""
-          - name: {pod_name}
-            port_in: {pea_to_args[0][1]}
-            host: {pea_to_args[0][2]['host_in']}
-            external: True
-            """
-        needs = pea_to_args[0][2]['needs']
-        if needs:
-            yaml += f"""
-            needs: [{', '.join(needs)}]
-            """
-
-    # return yaml
-    base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
-    return base_64_yaml
+# def create_gateway_yaml(pod_to_pea_and_args, gateway_host_in, gateway_port_in):
+#     yaml = f"""
+#         !Flow
+#         version: '1'
+#         with:
+#           port_expose: 8080
+#           host: {gateway_host_in}
+#           port_in: {gateway_port_in}
+#           protocol: http
+#         pods:
+#         """
+#     for pod_name, pea_to_args in pod_to_pea_and_args.items():
+#         yaml += f"""
+#           - name: {pod_name}
+#             port_in: {pea_to_args[0][1]}
+#             host: {pea_to_args[0][2]['host_in']}
+#             external: True
+#             """
+#         needs = pea_to_args[0][2]['needs']
+#         if needs:
+#             yaml += f"""
+#             needs: [{', '.join(needs)}]
+#             """
+#
+#     # return yaml
+#     base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
+#     return base_64_yaml

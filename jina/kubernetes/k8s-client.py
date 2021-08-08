@@ -5,8 +5,6 @@ import time
 
 from jina.kubernetes import kubernetes_tools
 
-
-
 kubernetes_tools.get_pod_logs("search-flow")
 
 time.sleep(2)
@@ -17,9 +15,12 @@ ip = '127.0.0.1:8080'
 host = f'http://{ip}'
 
 data = [{'text': 'hello jina'} for _ in range(1)]
+
+
 def make_request(current):
     resp = requests.post(f'{host}/search', json={'data': data})
     print('resp', resp.status_code, resp.json())
+
 
 # with Pool(10) as p:
 #     p.map(make_request, range(10))

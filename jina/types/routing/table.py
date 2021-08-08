@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import List, Optional, Union
 
 from google.protobuf import json_format
+from jina.enums import PodRoleType
 
 from ..mixin import ProtoTypeMixin
 from ...excepts import BadRequestType
@@ -164,7 +165,13 @@ class RoutingTable(ProtoTypeMixin):
             )
         target = self.pods[pod_name]
 
-        target.host = pod.head_host
+        # target.host = pod.head_host
+        if pod_name == 'start-gateway':
+            target.host = '0.0.0.0'
+        elif pod.args.pod_role != PodRoleType.GATEWAY and pod.args.parallel > 1:
+            target.host = f'{pod.name}-head.search-flow.svc.cluster.local'
+        else:
+            target.host = f'{pod.name}.search-flow.svc.cluster.local'
         target.port = pod.head_port_in
         target.port_out = pod.tail_port_out
         target.target_identity = pod.head_zmq_identity
