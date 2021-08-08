@@ -37,26 +37,6 @@ class FlowStore(ContainerStore):
             return response_json
 
     @if_alive
-    async def _update(self, uri: str, params: Dict, **kwargs) -> Dict:
-        """Sends `PUT` request to `mini-jinad` to execute a command on a Flow.
-
-        :param uri: uri of mini-jinad
-        :param params: json payload to be sent
-        :param kwargs: keyword args
-        :raises PartialDaemon400Exception: if update fails
-        :return: response from mini-jinad
-        """
-
-        self._logger.debug(f'sending PUT request to mini-jinad on {uri}/{self._kind}')
-        async with aiohttp.request(
-            method='PUT', url=f'{uri}/{self._kind}', params=params
-        ) as response:
-            response_json = await response.json()
-            if response.status != HTTPStatus.OK:
-                raise PartialDaemon400Exception(error_msg_from(response_json))
-            return response_json
-
-    @if_alive
     async def _delete(self, uri, **kwargs) -> Dict:
         """Sends a `DELETE` request to terminate the Flow & remove the container
 

@@ -154,6 +154,8 @@ class WorkspaceStore(BaseStore):
         :param kwargs: keyword args
         :raises KeyError: if id doesn't exist in the store
         """
+        if files and network and container:
+            everything = True
         if everything:
             container = True
             network = True
