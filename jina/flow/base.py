@@ -889,7 +889,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # TODO skipped for now to have faster runtime (k8s hosts can not be resolved locally)
         # for pod in op_flow._pod_nodes.values():
         #     pass
-            # pod.args.host = self._resolve_host(pod.args.host)
+        # pod.args.host = self._resolve_host(pod.args.host)
 
         hanging_pods = _hanging_pods(op_flow)
         if hanging_pods:
