@@ -179,7 +179,7 @@ class DocumentArrayMemmap(
             result = self.buffer_pool.add_or_update(doc.id, doc)
             if result:
                 _key, _doc = result
-                self.update(_doc, self._str2int_id(_key), update_buffer=False)
+                self._update(_doc, self._str2int_id(_key), update_buffer=False)
 
     def append(
         self, doc: 'Document', flush: bool = True, update_buffer: bool = True
@@ -193,7 +193,7 @@ class DocumentArrayMemmap(
         """
         self._update_or_append(doc, flush=flush, update_buffer=update_buffer)
 
-    def update(
+    def _update(
         self, doc: 'Document', idx: int, flush: bool = True, update_buffer: bool = True
     ) -> None:
         """
@@ -262,7 +262,7 @@ class DocumentArrayMemmap(
             result = self.buffer_pool.add_or_update(key, doc)
             if result:
                 _key, _doc = result
-                self.update(_doc, self._str2int_id(_key), update_buffer=False)
+                self._update(_doc, self._str2int_id(_key), update_buffer=False)
             return doc
 
         elif isinstance(key, int):
@@ -329,7 +329,7 @@ class DocumentArrayMemmap(
             if 0 <= key < len(self):
                 str_key = self._int2str_id(key)
                 # override an existing entry
-                self.update(value, key)
+                self._update(value, key)
 
                 # allows overwriting an existing document
                 if str_key != value.id:
@@ -347,7 +347,7 @@ class DocumentArrayMemmap(
         elif isinstance(key, str):
             if key != value.id:
                 raise ValueError('key must be equal to document id')
-            self.update(value, self._str2int_id(key))
+            self._update(value, self._str2int_id(key))
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 
@@ -376,7 +376,7 @@ class DocumentArrayMemmap(
         """Persists memory loaded documents to disk"""
         docs_to_flush = self.buffer_pool.docs_to_flush()
         for key, doc in docs_to_flush:
-            self.update(doc, self._str2int_id(key), flush=False)
+            self._update(doc, self._str2int_id(key), flush=False)
         self._header.flush()
         self._body.flush()
 
