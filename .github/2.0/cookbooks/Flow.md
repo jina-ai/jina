@@ -174,7 +174,7 @@ from jina import Flow
 f = Flow().add().plot('f.svg')
 ```
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/empty-flow.svg?raw=true"/>
+<img src="../../2.0/empty-flow.svg?raw=true"/>
 
 In Jupyter Lab/Notebook, the `Flow` object is rendered automatically without needing to call `plot()`.
 
@@ -204,7 +204,7 @@ from jina import Flow
 f = Flow().add().add().add().add()
 ```
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/chain-flow.svg?raw=true"/>
+<img src="../../2.0/chain-flow.svg?raw=true"/>
 
 #### Define What Executor to Use via `uses`
 
@@ -324,7 +324,7 @@ f = (Flow()
      .needs(['p1', 'p2', 'p3'], name='r1'))
 ```
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot3.svg?raw=true"/>
+<img src="../../simple-plot3.svg?raw=true"/>
 
 `p1`, `p2`, `p3` now subscribe to `Gateway` and conduct their work in parallel. The last `.needs()` blocks all Executors
 until they finish their work.
@@ -365,7 +365,7 @@ f = (Flow()
      .add(name='p2'))
 ```
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/parallel-explain.svg?raw=true"/>
+<img src="../../2.0/parallel-explain.svg?raw=true"/>
 
 Note, by default:
 
@@ -393,7 +393,7 @@ f = (Flow()
      .needs(['p1', 'p3'], name='r1'))
 ```
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/simple-plot4.svg?raw=true"/>
+<img src="../../simple-plot4.svg?raw=true"/>
 
 #### Add a Remote `Executor` via `host`
 

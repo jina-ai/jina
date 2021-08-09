@@ -70,7 +70,7 @@ A `Flow` _is_ a service by nature. Though implicitly, you are already using it a
 When you start a `Flow` and call `.post()` inside the context, a `jina.Client` object is created and used for
 communication.
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/implict-vs-explicit-service.svg?raw=true"/>
+![](../implict-vs-explicit-service.svg?raw=true)
 
 Many times we need to use `Flow` & `Client` in a more explicit way, often due to one of the following reasons:
 
@@ -95,7 +95,7 @@ Jina supports `grpc`, `websocket`, `http` three communication protocols between 
 
 The protocol is controlled by `protocol=` argument in `Flow`/`Client`'s constructor.
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/client-server.svg?raw=true"/>
+<img src="../../2.0/client-server.svg?raw=true"/>
 
 ### via gRPC
 
@@ -195,7 +195,7 @@ with f:
 
 You can navigate to the Swagger docs UI via `http://localhost:12345/docs`:
 
-<img src="https://github.com/jina-ai/jina/blob/master/.github/2.0/swagger-ui.png?raw=true"/>
+<img src="../../2.0/swagger-ui.png?raw=true"/>
 
 #### Use `curl` to Send HTTP Request
 

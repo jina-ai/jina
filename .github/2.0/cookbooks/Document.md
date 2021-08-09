@@ -479,7 +479,7 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
   d.matches.append(Document())
   ```
 
-Note that both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes of `DocumentArray`. We will introduce `DocumentArray later.
+Note that both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes of [`DocumentArray`](#documentarray-api). We will introduce `DocumentArray later.
 
 ### Represent `Document` as dictionary or JSON
 
@@ -577,7 +577,7 @@ d0.plot()  # simply `d0` on JupyterLab
 
 </td>
 <td>
-<img src="https://github.com/jina-ai/jina/blob/master/.github/images/four-symbol-docs.svg?raw=true"/>
+<img src="../../images/four-symbol-docs.svg?raw=true"/>
 </td>
 </tr>
 </table>
@@ -1071,7 +1071,7 @@ da.get_attributes('tags__dimensions__height', 'tags__dimensions__weight')
 
 The following image shows how `DocumentArrayA` finds `limit=5` matches from the documents in `DocumentArrayB`. By default, the cosine similarity is used to evaluate the score between documents.
 
-![match_illustration_5](https://github.com/jina-ai/jina/blob/master/.github/images/match_illustration_5.svg)
+![match_illustration_5](../../images/match_illustration_5.svg)
 
 More generally, given two `DocumentArray` objects `da_1` and `da_2` the function `da_1.match(da_2, metric=some_metric, normalization=(0, 1), limit=N)` finds for each document in `da_1` then `N` documents from `da_2` with the lowest metric values according to `some_metric`. 
 
