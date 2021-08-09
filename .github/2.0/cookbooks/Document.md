@@ -1250,7 +1250,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `save`, `load` |❌ unnecessary |✅|
 | `sample` |✅ |✅|
 | `shuffle` |✅ |✅|
-| `match` |✅|✅|
+| `match` (L/Rvalue) |✅|✅|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 
