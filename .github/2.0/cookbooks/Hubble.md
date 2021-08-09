@@ -39,6 +39,9 @@ MyExecutor/
 
 ```
 
+Example usage:
+
+![Demo](../jina-hub-new.gif)
 
 ## 2. Push and Pull CLI
 
