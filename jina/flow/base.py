@@ -794,14 +794,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             },
         )
 
-    def _get_routing_table(self) -> RoutingTable:
+    def _get_routing_table(self, flow_name) -> RoutingTable:
         graph = RoutingTable()
         for pod_id, pod in self._pod_nodes.items():
             if pod_id == GATEWAY_NAME:
-                graph.add_pod(f'start-{GATEWAY_NAME}', pod)
-                graph.add_pod(f'end-{GATEWAY_NAME}', pod)
+                graph.add_pod(f'start-{GATEWAY_NAME}', flow_name, pod)
+                graph.add_pod(f'end-{GATEWAY_NAME}', flow_name, pod)
             else:
-                graph.add_pod(pod_id, pod)
+                graph.add_pod(pod_id,flow_name, pod)
 
         for end, pod in self._pod_nodes.items():
 
@@ -831,8 +831,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         graph.active_pod = f'start-{GATEWAY_NAME}'
         return graph
 
-    def _set_initial_dynamic_routing_table(self):
-        routing_table = self._get_routing_table()
+    def _set_initial_dynamic_routing_table(self, flow_name):
+        routing_table = self._get_routing_table(flow_name)
         if not routing_table.is_acyclic():
             raise RoutingTableCyclicError(
                 'The routing graph has a cycle. This would result in an infinite loop. Fix your Flow setup.'
@@ -895,7 +895,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else:
                 pod.needs = set(reverse_inspect_map.get(ep, ep) for ep in pod.needs)
 
-        op_flow._set_initial_dynamic_routing_table()
+        op_flow._set_initial_dynamic_routing_table(self.args.name)
 
         # TODO skipped for now to have faster runtime (k8s hosts can not be resolved locally)
         # for pod in op_flow._pod_nodes.values():
@@ -1581,141 +1581,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         self._common_kwargs.update(kwargs)
 
-    def deploy(self, deployment_type='k8s'):
-        """Deploys the Flow. Currently only Kubernetes is supported.
-        Moreover it comes with some limitations at the moment:
-        - only 'simple' linear Flows are supported
-        - sharding is not supported
-        - replicas are just used for redundancy - they can not be used in parallel
-        - each image can only be used once
-        - ingress is only possible on port 8080
-        """
-
-        if deployment_type == 'k8s':
-            from ..kubernetes import kubernetes_tools
-
-            # self.logger.info(f'✨ Deploy Flow on Kubernetes...')
-            namespace = self.args.name
-            self.logger.info(f'📦\tCreate Namespace {namespace}')
-            kubernetes_tools.create('namespace', {'name': namespace})
-
-            pod_to_args = {}
-            for pod_name, pod in self._pod_nodes.items():
-                if pod_name == 'gateway':
-                    continue
-                scheme, name, tag, secret = parse_hub_uri(pod.args.uses)
-                meta_data = HubIO.fetch_meta(name)
-                image_name = meta_data.image_name
-                replicas = pod.args.replicas
-                self.logger.info(
-                    f'🔋\tCreate Service for "{pod_name}" with image "{name}" pulling from "{image_name}"'
-                )
-                kubernetes_tools.create(
-                    'service',
-                    {
-                        'name': name.lower(),
-                        'target': name.lower(),
-                        'namespace': namespace,
-                        'port': 8081,
-                        'type': 'ClusterIP',
-                    },
-                )
-                # cluster_ip = kubernetes_tools.get_service_cluster_ip(
-                #     name.lower(), namespace
-                # )
-                pod_to_args[pod_name] = {
-                    'host_in': f'{name.lower()}.{namespace}.svc.cluster.local'
-                }
-
-                self.logger.info(
-                    f'🐳\tCreate Deployment for "{image_name}" with replicas {replicas}'
-                )
-                kubernetes_tools.create(
-                    'deployment',
-                    {
-                        'name': name.lower(),
-                        'namespace': namespace,
-                        'image': image_name,
-                        'replicas': replicas,
-                        'command': "[\"jina\"]",
-                        'args': "[\"executor\", \"--uses\", \"config.yml\", \"--port-in\", \"8081\", \"--dynamic-routing-in\", \"--dynamic-routing-out\", \"--socket-in\", \"ROUTER_BIND\", \"--socket-out\", \"ROUTER_BIND\"]",
-                        'port': 8081,
-                    },
-                )
-            self.logger.info(f'🔒\tCreate "gateway service"')
-            external_gateway_service = 'gateway-exposed'
-            kubernetes_tools.create(
-                'service',
-                {
-                    'name': external_gateway_service,
-                    'target': 'gateway',
-                    'namespace': namespace,
-                    'port': 8080,
-                    'type': 'ClusterIP',
-                },
-            )
-            kubernetes_tools.create(
-                'service',
-                {
-                    'name': 'gateway-in',
-                    'target': 'gateway',
-                    'namespace': namespace,
-                    'port': 8081,
-                    'type': 'ClusterIP',
-                },
-            )
-
-            # gateway_cluster_ip = kubernetes_tools.get_service_cluster_ip(
-            #     'gateway-in', namespace
-            # )
-
-            gateway_yaml = self.create_gateway_yaml(
-                pod_to_args, 'gateway-in.f1.svc.cluster.local'
-            )
-            kubernetes_tools.create(
-                'deployment',
-                {
-                    'name': 'gateway',
-                    'replicas': 1,
-                    'port': 8080,
-                    'command': "[\"python\"]",
-                    'args': f"[\"gateway.py\", \"{gateway_yaml}\"]",
-                    'image': 'gcr.io/jina-showcase/generic-gateway',
-                    'namespace': namespace,
-                },
-            )
-
-            # self.logger.info(f'🌐\tCreate "Ingress resource"')
-            # kubernetes_tools.create_gateway_ingress(namespace)
-        else:
-            raise Exception(f'deployment type "{deployment_type}" is not supported')
-
-    def create_gateway_yaml(self, pod_to_args, gateway_host_in):
-        yaml = f"""
-        !Flow
-        version: '1'
-        with:
-          port_expose: 8080
-          host_in: {gateway_host_in}
-          port_in: 8081
-          protocol: http
-        pods:
-        """
-        for pod, args in pod_to_args.items():
-            yaml += f"""
-          - name: {pod}
-            port_in: 8081
-            host: {args['host_in']}
-            external: True
-            """
-            if args.needs:
-                yaml += f"""
-            needs: [{', '.join(args.needs)}]
-                """
-
-        # return yaml
-        base_64_yaml = base64.b64encode(yaml.encode()).decode('utf8')
-        return base_64_yaml
 
     def deploy_naive(self, deployment_type='k8s'):
         from ..kubernetes.naive import naive_deployment
