@@ -280,5 +280,5 @@ class DocumentArrayMemmap(
     @embeddings_memmap.setter
     def embeddings_memmap(self, other):
         """Set the cached embedding value in case it is not cached."""
-        np.memmap('embedding.bin', mode='w+')
-        np.flush()
+        fp = np.memmap('embedding.bin', mode='w+')
+        fp.flush()
