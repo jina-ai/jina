@@ -1250,7 +1250,7 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `sample` |✅ |✅|
 | `shuffle` |✅ |✅|
 | `match` (L/Rvalue) |✅|✅|
-| `visualize` (L/Rvalue) |✅|✅|
+| `visualize` |✅|✅|
 
 ### Convert between `DocumentArray` and `DocumentArrayMemmap`
 
