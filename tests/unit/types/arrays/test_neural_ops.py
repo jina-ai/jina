@@ -1,21 +1,19 @@
 import copy
 import os
+import tempfile
+from itertools import product
 
 import numpy as np
 import scipy.sparse as sp
 from scipy.spatial.distance import cdist as scipy_cdist
 import pytest
-from scipy.spatial.distance import cdist
 
 from jina import Document, DocumentArray
-from jina.math.distance import sqeuclidean, cosine
-from jina.math.helper import minmax_normalize
 from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
 
 
-@pytest.fixture
-def doc_lists_for_embedding_distance_computation():
+def get_docs():
     d1 = Document(embedding=np.array([0, 0, 0]))
     d2 = Document(embedding=np.array([3, 0, 0]))
     d3 = Document(embedding=np.array([1, 0, 0]))
@@ -30,87 +28,42 @@ def doc_lists_for_embedding_distance_computation():
     return [d1, d2, d3, d4], [d1_m, d2_m, d3_m, d4_m, d5_m]
 
 
-@pytest.fixture
-def dam_da_for_embedding_distance_computation(
-    tmpdir, doc_lists_for_embedding_distance_computation
-):
-    D1, D2 = doc_lists_for_embedding_distance_computation
-    dam = DocumentArrayMemmap(tmpdir)
-    dam.extend(D1)
-    da = DocumentArray(D2)
-    return dam, da
+def gen_docarrays(is_dam1=False, is_dam2=False, buffer_pool_size=1000):
+    def func():
+        D1, D2 = get_docs()
+        if is_dam1:
+            da1 = DocumentArrayMemmap(
+                tempfile.mkdtemp(), buffer_pool_size=buffer_pool_size
+            )
+        else:
+            da1 = DocumentArray()
+
+        if is_dam2:
+            da2 = DocumentArrayMemmap(
+                tempfile.mkdtemp(), buffer_pool_size=buffer_pool_size
+            )
+        else:
+            da2 = DocumentArray()
+        da1.extend(D1)
+        da2.extend(D2)
+        return da1, da2
+
+    return func
+
+
+def gen_docarray_combinations():
+    return [
+        gen_docarrays(is_dam1, is_dam2)
+        for is_dam1, is_dam2 in product((True, False), (True, False))
+    ] + [gen_docarrays(False, True, buffer_pool_size=3)]
 
 
 @pytest.fixture
-def da_da_for_embedding_distance_computation(
-    tmpdir, doc_lists_for_embedding_distance_computation
-):
-    D1, D2 = doc_lists_for_embedding_distance_computation
+def docarrays_for_embedding_distance_computation():
+    D1, D2 = get_docs()
     da1 = DocumentArray(D1)
     da2 = DocumentArray(D2)
     return da1, da2
-
-
-@pytest.fixture
-def da_dam_for_embedding_distance_computation(
-    tmpdir, doc_lists_for_embedding_distance_computation
-):
-    D1, D2 = doc_lists_for_embedding_distance_computation
-    dam = DocumentArrayMemmap(tmpdir)
-    dam.extend(D2)
-    da = DocumentArray(D1)
-    return da, dam
-
-
-@pytest.fixture
-def da_small_dam_for_embedding_distance_computation(
-    tmpdir, doc_lists_for_embedding_distance_computation
-):
-    D1, D2 = doc_lists_for_embedding_distance_computation
-    dam = DocumentArrayMemmap(tmpdir, buffer_pool_size=3)
-    dam.extend(D2)
-    da = DocumentArray(D1)
-    return da, dam
-
-
-@pytest.fixture
-def dam_dam_for_embedding_distance_computation(
-    tmpdir, doc_lists_for_embedding_distance_computation
-):
-    dir1 = tmpdir / 'dir1'
-    dir1.mkdir()
-    dir2 = tmpdir / 'dir2'
-    dir2.mkdir()
-    D1, D2 = doc_lists_for_embedding_distance_computation
-    dam1 = DocumentArrayMemmap(dir1)
-    dam1.extend(D2)
-    dam2 = DocumentArrayMemmap(dir2)
-    dam2.extend(D2)
-    return dam1, dam2
-
-
-@pytest.fixture
-def docarray_combinations(
-    dam_da_for_embedding_distance_computation,
-    da_da_for_embedding_distance_computation,
-    da_dam_for_embedding_distance_computation,
-    dam_dam_for_embedding_distance_computation,
-    da_small_dam_for_embedding_distance_computation,
-):
-    return [
-        dam_da_for_embedding_distance_computation,
-        da_da_for_embedding_distance_computation,
-        da_dam_for_embedding_distance_computation,
-        dam_dam_for_embedding_distance_computation,
-        da_small_dam_for_embedding_distance_computation,
-    ]
-
-
-@pytest.fixture
-def docarrays_for_embedding_distance_computation(
-    da_da_for_embedding_distance_computation,
-):
-    return da_da_for_embedding_distance_computation
 
 
 @pytest.fixture
@@ -136,17 +89,18 @@ def embeddings():
     return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
 
 
+@pytest.mark.parametrize('gen_doc_arrays', gen_docarray_combinations())
 @pytest.mark.parametrize(
     'limit, batch_size', [(1, None), (2, None), (None, None), (1, 1), (1, 2), (2, 1)]
 )
-def test_matching_retrieves_correct_number(docarray_combinations, limit, batch_size):
-    for D1, D2 in docarray_combinations:
-        D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
-        for m in D1.get_attributes('matches'):
-            if limit is None:
-                assert len(m) == len(D2)
-            else:
-                assert len(m) == limit
+def test_matching_retrieves_correct_number(gen_doc_arrays, limit, batch_size):
+    D1, D2 = gen_doc_arrays()
+    D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
+    for m in D1.get_attributes('matches'):
+        if limit is None:
+            assert len(m) == len(D2)
+        else:
+            assert len(m) == limit
 
 
 @pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
@@ -244,24 +198,25 @@ def test_matching_scipy_cdist(
     ],
 )
 @pytest.mark.parametrize('use_scipy', [True, False])
+@pytest.mark.parametrize('gen_doc_arrays', gen_docarray_combinations())
 def test_matching_retrieves_closest_matches(
-    docarray_combinations, normalization, metric, use_scipy
+    gen_doc_arrays, normalization, metric, use_scipy
 ):
     """
     Tests if match.values are returned 'low to high' if normalization is True or 'high to low' otherwise
     """
-    for D1, D2 in docarray_combinations:
-        D1.match(
-            D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
-        )
-        expected_sorted_values = [
-            D1[0].matches[i].scores['sqeuclidean'].value for i in range(3)
-        ]
-        if normalization:
-            assert min(expected_sorted_values) >= 0
-            assert max(expected_sorted_values) <= 1
-        else:
-            assert expected_sorted_values == sorted(expected_sorted_values)
+    D1, D2 = gen_doc_arrays()
+    D1.match(
+        D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
+    )
+    expected_sorted_values = [
+        D1[0].matches[i].scores['sqeuclidean'].value for i in range(3)
+    ]
+    if normalization:
+        assert min(expected_sorted_values) >= 0
+        assert max(expected_sorted_values) <= 1
+    else:
+        assert expected_sorted_values == sorted(expected_sorted_values)
 
 
 @pytest.mark.parametrize(
@@ -329,16 +284,17 @@ def test_scipy_dist(
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
 
 
-def test_2arity_function(docarray_combinations):
+@pytest.mark.parametrize('gen_doc_arrays', gen_docarray_combinations())
+def test_2arity_function(gen_doc_arrays):
     def dotp(x, y, *args):
         return np.dot(x, np.transpose(y))
 
-    for D1, D2 in docarray_combinations:
-        D1.match(D2, metric=dotp, use_scipy=True)
+    D1, D2 = gen_doc_arrays()
+    D1.match(D2, metric=dotp, use_scipy=True)
 
-        for d in D1:
-            for m in d.matches:
-                assert 'dotp' in m.scores
+    for d in D1:
+        for m in d.matches:
+            assert 'dotp' in m.scores
 
 
 @pytest.mark.parametrize('whiten', [True, False])
