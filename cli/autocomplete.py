@@ -264,6 +264,8 @@ ac_table = {
         'hub push': [
             '--help',
             '--no-usage',
+            '--docker-file',
+            '--tag',
             '--force',
             '--secret',
             '--public',
