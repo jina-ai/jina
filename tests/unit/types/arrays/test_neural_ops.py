@@ -1,5 +1,7 @@
 import copy
 import os
+import tempfile
+from itertools import product
 
 import numpy as np
 import scipy.sparse as sp
@@ -11,13 +13,7 @@ from jina.types.arrays.memmap import DocumentArrayMemmap
 from jina.math.dimensionality_reduction import PCA
 
 
-@pytest.fixture
-def embeddings():
-    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
-
-
-@pytest.fixture
-def docarrays_for_embedding_distance_computation():
+def get_docs():
     d1 = Document(embedding=np.array([0, 0, 0]))
     d2 = Document(embedding=np.array([3, 0, 0]))
     d3 = Document(embedding=np.array([1, 0, 0]))
@@ -29,9 +25,45 @@ def docarrays_for_embedding_distance_computation():
     d4_m = Document(embedding=np.array([0, 0, 2]))
     d5_m = Document(embedding=np.array([0, 0, 3]))
 
-    D1 = DocumentArray([d1, d2, d3, d4])
-    D2 = DocumentArray([d1_m, d2_m, d3_m, d4_m, d5_m])
-    return D1, D2
+    return [d1, d2, d3, d4], [d1_m, d2_m, d3_m, d4_m, d5_m]
+
+
+def gen_docarrays(is_dam1=False, is_dam2=False, buffer_pool_size=1000):
+    def func():
+        D1, D2 = get_docs()
+        if is_dam1:
+            da1 = DocumentArrayMemmap(
+                tempfile.mkdtemp(), buffer_pool_size=buffer_pool_size
+            )
+        else:
+            da1 = DocumentArray()
+
+        if is_dam2:
+            da2 = DocumentArrayMemmap(
+                tempfile.mkdtemp(), buffer_pool_size=buffer_pool_size
+            )
+        else:
+            da2 = DocumentArray()
+        da1.extend(D1)
+        da2.extend(D2)
+        return da1, da2
+
+    return func
+
+
+def gen_docarray_combinations():
+    return [
+        gen_docarrays(is_dam1, is_dam2)
+        for is_dam1, is_dam2 in product((True, False), (True, False))
+    ] + [gen_docarrays(False, True, buffer_pool_size=3)]
+
+
+@pytest.fixture
+def docarrays_for_embedding_distance_computation():
+    D1, D2 = get_docs()
+    da1 = DocumentArray(D1)
+    da2 = DocumentArray(D2)
+    return da1, da2
 
 
 @pytest.fixture
@@ -52,13 +84,17 @@ def docarrays_for_embedding_distance_computation_sparse():
     return D1, D2
 
 
+@pytest.fixture
+def embeddings():
+    return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
+
+
+@pytest.mark.parametrize('gen_doc_arrays', gen_docarray_combinations())
 @pytest.mark.parametrize(
     'limit, batch_size', [(1, None), (2, None), (None, None), (1, 1), (1, 2), (2, 1)]
 )
-def test_matching_retrieves_correct_number(
-    docarrays_for_embedding_distance_computation, limit, batch_size
-):
-    D1, D2 = docarrays_for_embedding_distance_computation
+def test_matching_retrieves_correct_number(gen_doc_arrays, limit, batch_size):
+    D1, D2 = gen_doc_arrays()
     D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
     for m in D1.get_attributes('matches'):
         if limit is None:
@@ -162,13 +198,14 @@ def test_matching_scipy_cdist(
     ],
 )
 @pytest.mark.parametrize('use_scipy', [True, False])
+@pytest.mark.parametrize('gen_doc_arrays', gen_docarray_combinations())
 def test_matching_retrieves_closest_matches(
-    docarrays_for_embedding_distance_computation, normalization, metric, use_scipy
+    gen_doc_arrays, normalization, metric, use_scipy
 ):
     """
     Tests if match.values are returned 'low to high' if normalization is True or 'high to low' otherwise
     """
-    D1, D2 = docarrays_for_embedding_distance_computation
+    D1, D2 = gen_doc_arrays()
     D1.match(
         D2, metric=metric, limit=3, normalization=normalization, use_scipy=use_scipy
     )
@@ -247,11 +284,12 @@ def test_scipy_dist(
     np.testing.assert_equal(values_docarray, values_docarraymemmap)
 
 
-def test_2arity_function(docarrays_for_embedding_distance_computation):
+@pytest.mark.parametrize('gen_doc_arrays', gen_docarray_combinations())
+def test_2arity_function(gen_doc_arrays):
     def dotp(x, y, *args):
         return np.dot(x, np.transpose(y))
 
-    D1, D2 = docarrays_for_embedding_distance_computation
+    D1, D2 = gen_doc_arrays()
     D1.match(D2, metric=dotp, use_scipy=True)
 
     for d in D1:
@@ -302,3 +340,29 @@ def test_match_inclusive():
     assert len(da2) == 3
     traversed = da1.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
     assert len(traversed) == 9
+
+
+def test_match_inclusive_dam(tmpdir):
+    """Call match function, while the other :class:`DocumentArray` is itself
+    or have same :class:`Document`.
+    """
+    # The document array da1 match with itself.
+    dam = DocumentArrayMemmap(tmpdir)
+    dam.extend(
+        [
+            Document(embedding=np.array([1, 2, 3])),
+            Document(embedding=np.array([1, 0, 1])),
+            Document(embedding=np.array([1, 1, 2])),
+        ]
+    )
+
+    dam.match(dam)
+    assert len(dam) == 3
+    traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(list(traversed)) == 9
+    # The document array da2 shares same documents with da1
+    da2 = DocumentArray([Document(embedding=np.array([4, 1, 3])), dam[0], dam[1]])
+    dam.match(da2)
+    assert len(da2) == 3
+    traversed = dam.traverse_flat(traversal_paths=['m', 'mm', 'mmm'])
+    assert len(list(traversed)) == 9
