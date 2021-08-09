@@ -1,10 +1,8 @@
 from collections import OrderedDict
-from typing import Union, Tuple, Optional, List
-
-from ... import Document
+from typing import Tuple, Optional, List
 
 if False:
-    from .memmap import DocumentArrayMemmap
+    from ... import Document
 
 
 class BufferPoolManager:
@@ -21,7 +19,9 @@ class BufferPoolManager:
         self.buffer = []
         self._empty = []
 
-    def add_or_update(self, idx: str, doc: Document) -> Optional[Tuple[str, Document]]:
+    def add_or_update(
+        self, idx: str, doc: 'Document'
+    ) -> Optional[Tuple[str, 'Document']]:
         """
         Adds a document to the buffer pool or updates it if it already exists
 
@@ -67,7 +67,7 @@ class BufferPoolManager:
         if key in self:
             del self[key]
 
-    def docs_to_flush(self) -> List[Tuple[str, Document]]:
+    def docs_to_flush(self) -> List[Tuple[str, 'Document']]:
         """
         Persists the updated documents in disk
 
