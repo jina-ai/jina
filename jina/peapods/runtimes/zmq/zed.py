@@ -45,7 +45,6 @@ class ZEDRuntime(ZMQRuntime):
 
         # all pending messages collected so far, key is the request id
         self._pending_msgs = defaultdict(list)  # type: Dict[str, List['Message']]
-        self._partial_requests = None
 
         # idle_dealer_ids only becomes non-None when it receives IDLE ControlRequest
         self._idle_dealer_ids = set()
