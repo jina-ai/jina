@@ -64,6 +64,8 @@ class DocumentArrayMemmap(
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
         self._load_header_body()
+        self._is_updated = False
+        self._embeddings = []
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -125,6 +127,7 @@ class DocumentArrayMemmap(
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
+        self._is_updated = True
 
     def append(self, doc: 'Document', flush: bool = True) -> None:
         """
@@ -153,6 +156,7 @@ class DocumentArrayMemmap(
         self._header_map[doc.id] = (len(self._header_map), p, r, r + l)
         self._start = p + r + l
         self._body.write(value)
+        self._is_updated = True
         if flush:
             self._header.flush()
             self._body.flush()
@@ -194,6 +198,7 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._header_map.pop(str_key)
+        self._is_updated = True
 
     def _str2int_id(self, key: str) -> int:
         return self._header_map[key][0]

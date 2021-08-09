@@ -61,10 +61,10 @@ class DocumentArrayMemmapGetAttrMixin:
             When `fields` has multiple values, then it returns a list of list.
         """
         fields = list(fields)
-        if 'embedding' in fields:
-            embeddings = self.get_cached_embedding()
+        if 'embedding' in fields and not self._is_updated:
+            embeddings = self._embeddings
             index = fields.index('embedding')
-            fields = fields.remove('embedding')
+            fields.remove('embedding')
         if fields:
             contents = [doc.get_attributes(*fields) for doc in self]
             if len(fields) > 1:
