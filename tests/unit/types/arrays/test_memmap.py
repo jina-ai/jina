@@ -386,3 +386,21 @@ def test_memmap_persisted(tmpdir):
     for i, doc in enumerate(dam):
         assert doc.content == 'new'
         assert doc.id == str(i)
+
+
+def test_memmap_mutate(tmpdir):
+    da = DocumentArrayMemmap(tmpdir)
+    d0 = Document(text='hello')
+    da.append(d0)
+    assert da[0] == d0
+    d1 = Document(text='world')
+    da.append(d1)
+    assert da[1] == d1
+
+    da2 = DocumentArrayMemmap(tmpdir)
+    assert len(da2) == 2
+    assert da2[0] == d0
+    assert da2[1] == d1
+
+    da.clear()
+    assert not len(da)
