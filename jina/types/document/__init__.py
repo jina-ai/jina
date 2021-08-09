@@ -35,6 +35,7 @@ from ...helper import (
     random_identity,
     download_mermaid_url,
     dunder_get,
+    cached_property,
 )
 from ...importer import ImportExtensions
 from ...logging.predefined import default_logger
@@ -84,7 +85,7 @@ DocumentSourceType = TypeVar(
 
 _all_mime_types = set(mimetypes.types_map.values())
 
-_all_doc_content_keys = ('content', 'uri', 'blob', 'text', 'buffer')
+_all_doc_content_keys = {'content', 'uri', 'blob', 'text', 'buffer'}
 _all_doc_array_keys = ('blob', 'embedding')
 _special_mapped_keys = ('scores', 'evaluations')
 
@@ -107,16 +108,6 @@ class Document(ProtoTypeMixin):
 
     Jina requires each Document to have a string id. You can set a custom one,
     or if non has been set a random one will be assigned.
-
-    Or you can use :class:`Document` as a context manager:
-
-        .. highlight:: python
-        .. code-block:: python
-
-            with Document() as d:
-                d.text = 'hello'
-
-            assert d.id  # now `id` has value
 
     To access and modify the content of the document, you can use :attr:`text`, :attr:`blob`, and :attr:`buffer`.
     Each property is implemented with proper setter, to improve the integrity and user experience. For example,
@@ -156,7 +147,6 @@ class Document(ProtoTypeMixin):
         document: Optional[DocumentSourceType] = None,
         field_resolver: Dict[str, str] = None,
         copy: bool = False,
-        hash_content: bool = True,
         **kwargs,
     ):
         """
@@ -172,7 +162,6 @@ class Document(ProtoTypeMixin):
                 names defined in Protobuf. This is only used when the given ``document`` is
                 a JSON string or a Python dict.
         :param kwargs: other parameters to be set _after_ the document is constructed
-        :param hash_content: whether to hash the content of the Document
 
         .. note::
 
@@ -290,9 +279,6 @@ class Document(ProtoTypeMixin):
                 f'Document content fields are mutually exclusive, please provide only one of {_all_doc_content_keys}'
             )
         self.set_attributes(**kwargs)
-        self._mermaid_id = random_identity()  #: for mermaid visualize id
-        if hash_content:
-            self.update_content_hash()
 
     def pop(self, *fields) -> None:
         """Remove the values from the given fields of this Document.
@@ -337,14 +323,6 @@ class Document(ProtoTypeMixin):
         self._pb_body.modality = value
 
     @property
-    def content_hash(self):
-        """Get the content hash of the document.
-
-        :return: the content_hash from the proto
-        """
-        return self._pb_body.content_hash
-
-    @property
     def tags(self) -> StructView:
         """Return the `tags` field of this Document as a Python dict
 
@@ -367,43 +345,6 @@ class Document(ProtoTypeMixin):
         else:
             raise TypeError(f'{value!r} is not supported.')
 
-    def _update(
-        self,
-        source: 'Document',
-        destination: 'Document',
-        fields: Optional[List[str]] = None,
-    ) -> None:
-        """Merge fields specified in ``fields`` from source to destination.
-
-        :param source: source :class:`Document` object.
-        :param destination: the destination :class:`Document` object to be merged into.
-        :param fields: a list of field names that included from destination document
-
-        .. note::
-            *. if ``fields`` is empty, then destination is overridden by the source completely.
-            *. ``destination`` will be modified in place, ``source`` will be unchanged.
-            *. the ``fields`` has value in destination while not in source will be preserved.
-        """
-        # We do a safe update: only update existent (value being set) fields from source.
-        fields_can_be_updated = []
-        # ListFields returns a list of (FieldDescriptor, value) tuples for present fields.
-        present_fields = source._pb_body.ListFields()
-        for field_descriptor, _ in present_fields:
-            fields_can_be_updated.append(field_descriptor.name)
-        if not fields:
-            fields = fields_can_be_updated  # if `fields` empty, update all fields.
-        for field in fields:
-            if (
-                field == 'tags'
-            ):  # For the tags, stay consistent with the python update method.
-                destination._pb_body.tags.update(source.tags)
-            else:
-                destination._pb_body.ClearField(field)
-                try:
-                    setattr(destination, field, getattr(source, field))
-                except AttributeError:  # some fields such as `content_hash` do not have a setter method.
-                    setattr(destination._pb_body, field, getattr(source, field))
-
     def update(
         self,
         source: 'Document',
@@ -411,58 +352,62 @@ class Document(ProtoTypeMixin):
     ) -> None:
         """Updates fields specified in ``fields`` from the source to current Document.
 
-        :param source: source :class:`Document` object.
-        :param fields: a list of field names that included from the current document,
-                if not specified, merge all fields.
+        :param source: The :class:`Document` we want to update from as source. The current
+            :class:`Document` is referred as destination.
+        :param fields: a list of field names that we want to update, if not specified,
+            use all present fields in source.
 
         .. note::
-            *. ``destination`` will be modified in place, ``source`` will be unchanged
+            *. if ``fields`` are empty, then all present fields in source will be merged into current document.
+            * `tags` will be updated like a python :attr:`dict`.
+            *. the current :class:`Document` will be modified in place, ``source`` will be unchanged.
+            *. if current document has more fields than :attr:`source`, these extra fields wll be preserved.
         """
-        if fields and not isinstance(fields, list):
-            raise TypeError('Parameter `fields` must be list of str')
-        self._update(
-            source,
-            self,
-            fields=fields,
+        # We do a safe update: only update existent (value being set) fields from source.
+        present_fields = [
+            field_descriptor.name
+            for field_descriptor, _ in source._pb_body.ListFields()
+        ]
+        if not fields:
+            fields = present_fields  # if `fields` empty, update all present fields.
+        for field in fields:
+            if (
+                field == 'tags'
+            ):  # For the tags, stay consistent with the python update method.
+                self._pb_body.tags.update(source.tags)
+            else:
+                self._pb_body.ClearField(field)
+                try:
+                    setattr(self, field, getattr(source, field))
+                except AttributeError:
+                    setattr(self._pb_body, field, getattr(source, field))
+
+    @property
+    def content_hash(self) -> str:
+        """Get the document hash according to its content.
+
+        :return: the unique hash code to represent this Document
+        """
+        # a tuple of field names that inclusive when computing content hash.
+        fields = (
+            'text',
+            'blob',
+            'buffer',
+            'embedding',
+            'uri',
+            'tags',
+            'mime_type',
+            'granularity',
+            'adjacency',
         )
-
-    def update_content_hash(
-        self,
-        exclude_fields: Optional[Tuple[str]] = (
-            'id',
-            'chunks',
-            'matches',
-            'content_hash',
-            'parent_id',
-        ),
-        include_fields: Optional[Tuple[str]] = None,
-    ) -> None:
-        """Update the document hash according to its content.
-
-        :param exclude_fields: a tuple of field names that excluded when computing content hash
-        :param include_fields: a tuple of field names that included when computing content hash
-
-        .. note::
-            "exclude_fields" and "include_fields" are mutually exclusive, use one only
-        """
         masked_d = jina_pb2.DocumentProto()
-        masked_d.CopyFrom(self._pb_body)
-        empty_doc = jina_pb2.DocumentProto()
-        if include_fields and exclude_fields:
-            raise ValueError(
-                '"exclude_fields" and "exclude_fields" are mutually exclusive, use one only'
-            )
-
-        if include_fields is not None:
-            FieldMask(paths=include_fields).MergeMessage(masked_d, empty_doc)
-            masked_d = empty_doc
-        elif exclude_fields is not None:
-            FieldMask(paths=exclude_fields).MergeMessage(
-                empty_doc, masked_d, replace_repeated_field=True
-            )
-
-        self._pb_body.content_hash = blake2b(
-            masked_d.SerializeToString(), digest_size=DIGEST_SIZE
+        present_fields = {
+            field_descriptor.name for field_descriptor, _ in self._pb_body.ListFields()
+        }
+        fields_to_hash = present_fields.intersection(fields)
+        FieldMask(paths=fields_to_hash).MergeMessage(self._pb_body, masked_d)
+        return blake2b(
+            masked_d.SerializePartialToString(), digest_size=DIGEST_SIZE
         ).hexdigest()
 
     @property
@@ -705,7 +650,7 @@ class Document(ProtoTypeMixin):
         """Bulk update Document fields with key-value specified in kwargs
 
         .. seealso::
-            :meth:`get_attrs` for bulk get attributes
+            :meth:`get_attributes` for bulk get attributes
 
         :param kwargs: the keyword arguments to set the values, where the keys are the fields to set
         """
@@ -865,11 +810,8 @@ class Document(ProtoTypeMixin):
             else:
                 self._pb_body.mime_type = value
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.update_content_hash()
+    def __eq__(self, other):
+        return self.proto == other.proto
 
     @property
     def content_type(self) -> str:
@@ -1200,10 +1142,10 @@ class Document(ProtoTypeMixin):
 
         mermaid_str = (
             """
-                            %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
-                            classDiagram
-                        
-                                    """
+                                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#FFC666'}}}%%
+                                classDiagram
+
+                                        """
             + self.__mermaid_str__()
         )
 
@@ -1339,9 +1281,19 @@ class Document(ProtoTypeMixin):
     def __getattr__(self, item):
         if hasattr(self._pb_body, item):
             value = getattr(self._pb_body, item)
-        else:
+        elif '__' in item:
             value = dunder_get(self._pb_body, item)
+        else:
+            raise AttributeError
         return value
+
+    @cached_property
+    def _mermaid_id(self) -> str:
+        """A unique ID for mermaid visualize id
+
+        :return: unique ID
+        """
+        return random_identity()
 
 
 def _is_uri(value: str) -> bool:

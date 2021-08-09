@@ -34,8 +34,7 @@ def test_flow(
     os.environ['JINA_INDEXER_NEEDS'] = indexer_needs
     os.environ['JINA_INDEXER_METHOD'] = indexer_method
 
-    with Document() as doc:
-        doc.content = text
+    doc = Document(content=text)
 
     mock = mocker.Mock()
     with Flow.load_config(flow_yml) as f:

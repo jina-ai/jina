@@ -10,9 +10,7 @@ from jina.types.document.helper import DocGroundtruthPair
 def document_factory():
     class DocumentFactory(object):
         def create(self, content):
-            with Document() as d:
-                d.content = content
-            return d
+            return Document(content=content)
 
     return DocumentFactory()
 

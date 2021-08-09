@@ -44,7 +44,7 @@ class ProtoTypeMixin:
 
         :return: binary string representation of the object
         """
-        return self._pb_body.SerializeToString()
+        return self._pb_body.SerializePartialToString()
 
     @property
     def nbytes(self) -> int:

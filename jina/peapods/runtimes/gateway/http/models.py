@@ -110,9 +110,9 @@ def _get_tags_updater() -> Callable:
         extra_fields = {k: values[k] for k in set(values).difference(cls.__fields__)}
         if extra_fields:
             if 'tags' not in values:
-                values['tags'] = cls.__fields__['tags'].default
+                values['tags'] = {}
             if isinstance(values['tags'], Dict):
-                values['tags'].update({i: j for i, j in extra_fields.items()})
+                values['tags'].update(extra_fields)
         return values
 
     return root_validator(pre=True, allow_reuse=True)(tags_updater)
@@ -152,6 +152,7 @@ def protobuf_to_pydantic_model(
 
         field_type = PROTOBUF_TO_PYTHON_TYPE[f.type]
         default_value = f.default_value
+        default_factory = None
 
         if f.containing_oneof:
             # Proto Field type: oneof
@@ -169,11 +170,11 @@ def protobuf_to_pydantic_model(
             if f.message_type.name == 'Struct':
                 # Proto Field Type: google.protobuf.Struct
                 field_type = Dict
-                default_value = {}
+                default_factory = dict
             elif f.message_type.name == 'Timestamp':
                 # Proto Field Type: google.protobuf.Timestamp
                 field_type = datetime
-                default_value = datetime.now()
+                default_factory = datetime.now
             else:
                 # Proto field type: Proto message defined in jina.proto
                 if f.message_type.name == model_name:
@@ -187,7 +188,12 @@ def protobuf_to_pydantic_model(
         if f.label == FieldDescriptor.LABEL_REPEATED:
             field_type = List[field_type]
 
-        all_fields[field_name] = (field_type, Field(default=default_value))
+        all_fields[field_name] = (
+            field_type,
+            Field(default_factory=default_factory)
+            if default_factory
+            else Field(default=default_value),
+        )
 
         # some fixes on Doc.scores and Doc.evaluations
         if field_name in ('scores', 'evaluations'):
@@ -281,15 +287,6 @@ class JinaRequestModel(BaseModel):
             List[Dict[str, Any]],
             List[str],
             List[bytes],
-            List[
-                Tuple[
-                    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
-                    PROTO_TO_PYDANTIC_MODELS.DocumentProto,
-                ]
-            ],
-            List[Tuple[Dict[str, Any], Dict[str, Any]]],
-            List[Tuple[str, str]],
-            List[Tuple[bytes, bytes]],
         ]
     ] = Field(
         None,
@@ -324,7 +321,7 @@ class JinaResponseModel(BaseModel):
     request_id: str = Field(
         ...,
         example='b5110ed9-1954-4a3d-9180-0795a1e0d7d8',
-        description='The id given by Jina service',
+        description='The ID given by Jina service',
     )
     data: Optional[DataRequestModel] = Field(None, description='Returned Documents')
 

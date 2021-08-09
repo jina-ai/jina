@@ -34,7 +34,6 @@ def mixin_zed_runtime_parser(parser):
     )
     gp.add_argument(
         '--uses-with',
-        '--override-with',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
@@ -44,13 +43,21 @@ def mixin_zed_runtime_parser(parser):
     )
     gp.add_argument(
         '--uses-metas',
-        '--override-metas',
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
         help='''
     Dictionary of keyword arguments that will override the `metas` configuration in `uses`
     ''',
+    )
+    gp.add_argument(
+        '--uses-requests',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+        Dictionary of keyword arguments that will override the `requests` configuration in `uses`
+        ''',
     )
     gp.add_argument(
         '--py-modules',
@@ -143,15 +150,6 @@ is wrong in the upstream, it is hard to carry this exception and moving forward 
         type=int,
         default=0,
         help='the number of messages expected from upstream, 0 and 1 means single part'
-        if _SHOW_ALL_ARGS
-        else argparse.SUPPRESS,
-    )
-
-    parser.add_argument(
-        '--dynamic-routing',
-        action='store_true',
-        default=True,
-        help='The Pod will setup the socket types of the HeadPea and TailPea depending on this argument.'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )

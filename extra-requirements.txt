@@ -20,23 +20,28 @@
 # 3. Tag order doesn't matter; case-sensitive; duplicated tag will be ignored
 # 4. Tag `all` is reserved for representing all packages
 
-scipy>=1.6.1:               sparse, cicd, graph
-fastapi:                    devel, cicd, http, test, daemon, chatbot, multimodal, standard
-uvicorn[standard]>=0.14.0:  devel, cicd, http, test, daemon, chatbot, multimodal, standard
-fluent-logger:              logging, http, sse, dashboard, devel, cicd, daemon
-docker:                     devel, cicd, network, hub, daemon, standard
-pathspec:                   devel, cicd, hub, standard, daemon
-rich:                       devel, standard, hub, cicd, daemon
-cryptography:               devel, cicd, hub, standard, daemon
-filelock:                   devel, cicd, hub, standard, daemon
-requests:                   http, devel, cicd, daemon, standard
-torch>=1.1.0:               framework, cicd, chatbot, multimodal
-transformers>=2.6.0:        nlp, cicd, chatbot, multimodal
-tensorflow>=2.0:            framework, cicd
-torchvision>=0.3.0:         framework, cv, multimodal, cicd
-Pillow:                     cv, cicd, multimodal
-lz4<3.1.2:                  devel, cicd, network, standard, perf, daemon
-uvloop:                     devel, cicd, standard, perf, daemon
+# AVAILABLE TAGS:
+# core < perf < standard < daemon < devel: these tags correspond to Docker image tag
+# test: required for **setting up test ENVIRONMENT**
+# chatbot, multimodal: required for the hello world demos
+
+scipy>=1.6.1:               devel
+fastapi:                    standard, daemon, devel, chatbot, multimodal
+uvicorn[standard]>=0.14.0:  standard, daemon, devel, chatbot, multimodal
+fluent-logger:              daemon, devel
+docker:                     standard, daemon, devel
+pathspec:                   standard, daemon, devel
+rich:                       standard, daemon, devel
+cryptography:               standard, daemon, devel
+filelock:                   standard, daemon, devel
+requests:                   standard, daemon, devel
+torch>=1.1.0:               chatbot, multimodal
+transformers>=2.6.0:        chatbot, multimodal
+tensorflow>=2.0:            cicd
+torchvision>=0.3.0:         multimodal
+Pillow:                     multimodal
+lz4<3.1.2:                  perf, standard, daemon, devel
+uvloop:                     perf, standard, daemon, devel
 numpy:                      core
 pyzmq>=17.1.0:              core
 protobuf>=3.13.0:           core
@@ -52,16 +57,17 @@ pytest-asyncio:             test
 pytest-reraise:             test
 flaky:                      test
 mock:                       test
-prettytable:                devel, cicd
-optuna:                     cicd, optimizer
-websockets:                 http, devel, cicd, daemon, client, standard
-pydantic:                   http, devel, cicd, daemon, chatbot, multimodal, standard
-python-multipart:           http, devel, cicd, daemon, standard
-aiofiles:                   devel, cicd, http, daemon, standard
-aiohttp:                    devel, cicd, http, async, client, standard, daemon
+prettytable:                devel
+optuna:                     devel
+websockets:                 standard, daemon, devel
+pydantic:                   standard, daemon, devel, chatbot, multimodal
+python-multipart:           standard, daemon, devel
+aiofiles:                   standard, daemon, devel
+aiohttp:                    standard, daemon, devel
 pytest-custom_exit_code:    test
 bs4:                        cicd
-aiostream:                  devel, cicd, async, client, standard, daemon
+aiostream:                  standard, daemon, devel
 jsonschema:                 cicd
-dgl==0.6.1:                 cicd, graph
-black==20.8b1:              cicd
+dgl==0.6.1:                 devel
+black==20.8b1:              test
+matplotlib>=3.3.1:          devel

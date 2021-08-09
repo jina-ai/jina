@@ -93,11 +93,20 @@ class AsyncBaseClient:
         :return: json response of the remote Flow/Pea/Pod/Workspace status
         """
         async with aiohttp.request(method='GET', url=self.store_api) as response:
-            response_json = await response.json()
-            self._logger.success(
-                f'found {len(response_json.get("items", []))} {self._kind.title()}(s) in store'
-            )
-            return response_json['items'] if 'items' in response_json else response_json
+            if response.status == HTTPStatus.OK:
+                response_json = await response.json()
+                self._logger.success(
+                    f'found {len(response_json.get("items", []))} {self._kind.title()}(s) in store'
+                )
+                return (
+                    response_json['items']
+                    if 'items' in response_json
+                    else response_json
+                )
+            else:
+                self._logger.error(
+                    f'got response {response.status} while listing all {self._kind}s'
+                )
 
     async def create(self, *args, **kwargs) -> Dict:
         """Create a Workspace/Flow/Pea/Pod on remote.

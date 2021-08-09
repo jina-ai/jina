@@ -43,7 +43,7 @@ async def _create(flow: FlowDepends = Depends(FlowDepends)):
 
 @router.put(
     path='/{id}',
-    summary='Run an update operation on the Flow object',
+    summary='Trigger an update operation on the Flow object',
     description='Types supported: "rolling_update"',
 )
 async def _update(
@@ -53,7 +53,10 @@ async def _update(
     pod_name: str,
     shards: int = None,
 ):
-    return await store.update(id, kind, dump_path, pod_name, shards)
+    try:
+        return await store.update(id, kind, dump_path, pod_name, shards)
+    except Exception as ex:
+        raise Runtime400Exception from ex
 
 
 # order matters! this must be put in front of del {id}
