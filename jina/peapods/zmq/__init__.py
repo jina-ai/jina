@@ -361,7 +361,9 @@ class Zmqlet:
         self.bytes_sent += send_message(socket, msg, **self.send_recv_kwargs)
         self.msg_sent += 1
 
+        print('send idle after send message?')
         if self._active and socket == self.out_sock and self.in_sock_type == zmq.DEALER:
+            print('send idle')
             self._send_idle_to_router()
 
     def _send_control_to_router(self, command, raise_exception=False):
@@ -650,7 +652,7 @@ def send_message(
     """
     num_bytes = 0
     try:
-        print('try send_message, is data request', msg.is_data_request, 'size: ', msg.size, 'envelope', msg.envelope)
+        print('try send_message, is data request', msg.is_data_request, 'size: ', msg.size)
         _prep_send_socket(sock, timeout)
         sock.send_multipart(msg.dump())
         num_bytes = msg.size

@@ -88,7 +88,7 @@ class ZEDRuntime(ZMQRuntime):
         :param msg: received message
         :return: `ZEDRuntime`
         """
-        print('pre hook')
+        print('pre hook, request type: ', msg.envelope.request_type)
         msg.add_route(self.name, self._id)
 
         expected_parts = self._expect_parts(msg)

@@ -19,7 +19,6 @@ class PostgresConfig:
     hostname: str
     username: str
     database: str
-    password: str
 
 
 class PostgresDefaultDeployment:

@@ -143,4 +143,4 @@ def get_pod_logs(namespace):
                 target=log_in_thread, args=(pod_name, namespace, container)
             )
             x.start()
-            time.sleep(0.25) # wait to get the logs after another
+            time.sleep(0.1) # wait to get the logs after another

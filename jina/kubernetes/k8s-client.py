@@ -1,5 +1,6 @@
 from multiprocessing import Pool
 
+import numpy as np
 import requests
 import time
 
@@ -14,11 +15,14 @@ ip = '34.141.109.41'
 ip = '127.0.0.1:8080'
 host = f'http://{ip}'
 
-data = [{'text': 'hello jina'} for _ in range(1)]
+
+# search flow
+data = [{'embedding': np.ones((512, )).tolist()} for _ in range(1)]
 
 
 def make_request(current):
     resp = requests.post(f'{host}/search', json={'data': data})
+    print(f"Len response matches: {len(resp.json()['data']['docs'][0]['matches'])}")
     print('resp', resp.status_code, resp.json())
 
 

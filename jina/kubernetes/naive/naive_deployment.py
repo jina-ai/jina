@@ -103,7 +103,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             glue_executor.port_expose,
             glue_executor.uses,
             '["jina"]',
-            f'["executor", "--uses", "config.yml", {get_cli_params(glue_executor)}]',
+            f'["executor", "--uses", "config.yml", {get_cli_params(glue_executor, skip_list=["uses_with"])}]',
             logger,
         )
     else:
@@ -117,7 +117,7 @@ def deploy_glue_executor(glue_executor, namespace, logger):
             # 'jinaai/jina',
             'gcr.io/jina-showcase/generic-gateway:latest',
             '["jina"]',
-            f'["executor", "--uses", "{glue_executor.uses}", {get_cli_params(glue_executor)}]',
+            f'["executor", "--uses", "{glue_executor.uses}", {get_cli_params(glue_executor, skip_list=["uses_with"])}]',
             logger,
         )
 
@@ -165,8 +165,8 @@ def deploy_glue_executor(glue_executor, namespace, logger):
 #     return cli_string
 
 
-def get_cli_params(arguments):
-    skip_attributes = ['workspace', 'log_config', 'uses', 'dynamic_routing']
+def get_cli_params(arguments, skip_list=()):
+    skip_attributes = ['workspace', 'log_config', 'uses', 'dynamic_routing', 'hosts_in_connect', 'polling_type'] + list(skip_list)
     arg_list = [
         [attribute, attribute.replace('_', '-'), value]
         for attribute, value in arguments.__dict__.items()
@@ -225,6 +225,10 @@ def prepare_flow(flow):
     return flow.build(copy_flow=True)
 
 
+def dictionary_to_cli_param(dictionary):
+    return dictionary.__str__().replace("'", "\\\"") if dictionary else ""
+
+
 def deploy(flow, deployment_type='k8s'):
     """Deploys the Flow. Currently only Kubernetes is supported.
     Each pod is deployed in a stateful set and we use zmq level communication.
@@ -279,7 +283,7 @@ def deploy(flow, deployment_type='k8s'):
                     init_image_name = get_image_name(
                         'jinahub+docker://PostgreSQLStorage'
                     )
-                    postgres_cluster_ip = "10.3.255.243"
+                    postgres_cluster_ip = f'postgres.postgres.svc.cluster.local'
 
                     python_script = (
                         'import os; '
@@ -289,9 +293,10 @@ def deploy(flow, deployment_type='k8s'):
                         f'hostname="{postgres_cluster_ip}",'
                         'port=5432,'
                         'username="postgresadmin",'
-                        'password="1235813",'
+                        # 'password="1235813",'
                         'database="postgresdb",'
-                        f'table="{pod_name}",'
+                        # f'table="{pod_name}",'
+                        f'table="image_data",'
                         '); '
                         'storage.dump(parameters={'
                         '"dump_path": "/shared", '
@@ -319,8 +324,11 @@ def deploy(flow, deployment_type='k8s'):
                     if pea_arg.uses_with
                     else None
                 )
-                uses_metas = {'pea_id': pea_arg.pea_id}.__str__().replace("'", "\\\"")
+                uses_metas = dictionary_to_cli_param({'pea_id': pea_arg.pea_id})
+                uses_with = dictionary_to_cli_param(pea_arg.uses_with)
 
+
+                uses_with_string = f'"--uses-with", "{uses_with}", ' if uses_with else ''
                 cluster_ip = deploy_service(
                     pea_dns_name,
                     namespace,
@@ -332,8 +340,8 @@ def deploy(flow, deployment_type='k8s'):
                     container_cmd='["jina"]',
                     container_args=f'["executor", '
                     f'"--uses", "config.yml", '
-                    f'"--override-metas", "{uses_metas}", '
-                    f'{f"{double_quote}--override-with{double_quote}, {double_quote}{uses_with}{double_quote}, " if pea_arg.uses_with else ""} '
+                    f'"--uses-metas", "{uses_metas}", '
+                    + uses_with_string +
                     f'{get_cli_params(pea_arg)}]',
                     logger=flow.logger,
                     init_container=init_container,
