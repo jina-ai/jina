@@ -54,7 +54,7 @@ fragmented, multi-vendor, generic legacy tools.
 | --- | --- | --- |
 | Minimum <br>(no HTTP, WebSocket, Docker support) | `pip install jina` | `docker run jinaai/jina:latest` |
 | Minimum but more performant <br>(use `uvloop` & `lz4`) | `pip install jina[perf]` | `docker run jinaai/jina:latest-perf` |
-| With <a href="https://api.jina.ai/daemon/">Daemon</a> | `pip install "jina[daemon]"` | `docker run --network=host jinaai/jina:latest-daemon` |
+| With <a href="https://api.jina.ai/daemon/">Daemon</a> | `pip install "jina[daemon]"` | [Run JinaD](.github/2.0/cookbooks/Daemon.md#run) |
 | Full development dependencies | `pip install "jina[devel]"` | `docker run jinaai/jina:latest-devel` |
 | Pre-release<br>(all tags above can be added)| <sub>`pip install --pre jina` | `docker run jinaai/jina:master` |
 
@@ -103,9 +103,9 @@ class Indexer(Executor):
         self._docs.extend(docs)  # extend stored `docs`
 
     @requests(on='/search')
-    def bar(self, docs: DocumentArray, **kwargs):        
+    def bar(self, docs: DocumentArray, **kwargs):
          docs.match(self._docs, metric='euclidean', limit=20)
-        
+
 f = Flow(port_expose=12345, protocol='http', cors=True).add(uses=CharEmbed, parallel=2).add(uses=Indexer)  # build a Flow, with 2 parallel CharEmbed, tho unnecessary
 with f:
     f.post('/index', (Document(text=t.strip()) for t in open(__file__) if t.strip()))  # index all lines of _this_ file
@@ -145,7 +145,7 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
 
 <!-- README-CLIENT-END -->
 
-, which prints the following results:  
+, which prints the following results:
 
 ```text
          Client@1608[S]:connected to the gateway at localhost:12345!
@@ -176,6 +176,10 @@ c.post('/search', Document(text='request(on=something)'), on_done=print_matches)
     - [Minimum Working Example](.github/2.0/cookbooks/Serving.md#minimum-working-example)
     - [`Flow`-as-a-Service](.github/2.0/cookbooks/Serving.md#flow-as-a-service)
     - [Deliver OAS3.0 Friendly API](.github/2.0/cookbooks/Serving.md#extend-http-interface)
+- ☁️ `JinaD`: manage & deploy Jina on remote
+  - [Server & Client](.github/2.0/cookbooks/Daemon.md#jinad-daemon)
+  - [Remote Executors](.github/2.0/cookbooks/Daemon.md#restful-executors)
+  - [Remote Flows](.github/2.0/cookbooks/Daemon.md#restful-flows)
 - 📓 [Developer Reference](https://docs.jina.ai)
 - 🧼 [Clean & Efficient Coding in Jina](.github/2.0/cookbooks/CleanCode.md)
 
