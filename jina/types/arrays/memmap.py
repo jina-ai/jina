@@ -9,11 +9,13 @@ from typing import (
     Union,
     Iterable,
     Iterator,
+    List,
+    Tuple,
 )
 
 import numpy as np
 
-from .document import DocumentArrayGetAttrMixin
+from .document import DocumentArray
 from .search_ops import DocumentArraySearchOpsMixin
 from .traversable import TraversableSequence
 from ..document import Document
@@ -22,9 +24,7 @@ HEADER_NONE_ENTRY = (-1, -1, -1)
 PAGE_SIZE = mmap.ALLOCATIONGRANULARITY
 
 
-class DocumentArrayMemmap(
-    TraversableSequence, DocumentArrayGetAttrMixin, DocumentArraySearchOpsMixin, Itr
-):
+class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr):
     """
     Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.
 
@@ -64,7 +64,6 @@ class DocumentArrayMemmap(
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
         self._load_header_body()
-        self._is_updated = False
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -126,7 +125,6 @@ class DocumentArrayMemmap(
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
         self._load_header_body('wb')
-        self._is_updated = True
 
     def append(self, doc: 'Document', flush: bool = True) -> None:
         """
@@ -155,7 +153,6 @@ class DocumentArrayMemmap(
         self._header_map[doc.id] = (len(self._header_map), p, r, r + l)
         self._start = p + r + l
         self._body.write(value)
-        self._is_updated = True
         if flush:
             self._header.flush()
             self._body.flush()
@@ -197,7 +194,6 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._header_map.pop(str_key)
-        self._is_updated = True
 
     def _str2int_id(self, key: str) -> int:
         return self._header_map[key][0]
@@ -271,14 +267,63 @@ class DocumentArrayMemmap(
         """
         return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
 
+    def get_attributes(self, *fields: str) -> Union[List, List[List]]:
+        """Return all nonempty values of the fields from all docs this array contains
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list.
+        """
+        fields = list(fields)
+        if 'embedding' in fields and not self._embeddings_memmap:
+            embeddings = self.embeddings_memmap.tolist()
+            index = fields.index('embedding')
+            fields.remove('embedding')
+        elif 'embedding' in fields and self._embeddings_memmap:
+            embeddings = [doc.get_attributes('embedding') for doc in self]
+            self.embeddings_memmap = np.asarray(embeddings)
+            index = fields.index('embedding')
+            fields.remove('embedding')
+        if fields:
+            contents = [doc.get_attributes(*fields) for doc in self]
+            if len(fields) > 1:
+                contents = list(map(list, zip(*contents)))
+            if index:
+                contents.insert(index, embeddings)
+
+        return contents
+
+    def get_attributes_with_docs(
+        self,
+        *fields: str,
+    ) -> Tuple[Union[List, List[List]], 'DocumentArray']:
+        """Return all nonempty values of the fields together with their nonempty docs
+
+        :param fields: Variable length argument with the name of the fields to extract
+        :return: Returns a tuple. The first element is  a list of the values for these fields.
+            When `fields` has multiple values, then it returns a list of list. The second element is the non-empty docs.
+        """
+
+        contents = []
+        docs_pts = []
+
+        for doc in self:
+            contents.append(doc.get_attributes(*fields))
+            docs_pts.append(doc)
+
+        if len(fields) > 1:
+            contents = list(map(list, zip(*contents)))
+
+        return contents, DocumentArray(docs_pts)
+
     @property
-    def embeddings_memmap(self):
+    def _embeddings_memmap(self):
         """Return the cached embedding stored in memory."""
-        self._is_updated = False
         return np.memmap('embedding.bin', mode='r')
 
-    @embeddings_memmap.setter
-    def embeddings_memmap(self, other):
+    @_embeddings_memmap.setter
+    def _embeddings_memmap(self, other_embeddings):
         """Set the cached embedding value in case it is not cached."""
-        fp = np.memmap('embedding.bin', mode='w+')
+        fp = np.memmap('embedding.bin', dtype='float32', mode='w+')
+        fp[:] = other_embeddings[:]
         fp.flush()
