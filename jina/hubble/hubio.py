@@ -66,8 +66,12 @@ class HubIO:
             import docker
             from docker import APIClient
 
-            # low-level client
-            self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
+            try:
+                # low-level client
+                self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
+            except docker.errors.DockerException:
+                self.logger.critical(f'Docker daemon seems not running.')
+                exit(1)
 
     @staticmethod
     def _get_request_header() -> Dict:
