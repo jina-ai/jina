@@ -87,7 +87,7 @@ d = Document()
 
 ## `Document` API
 
-### `Document` Attributes
+### `Document` attributes
 
 A `Document` object has the following attributes, which can be put into the following categories:
 
@@ -98,7 +98,7 @@ A `Document` object has the following attributes, which can be put into the foll
 | Recursive attributes | `.chunks`, `.matches`, `.granularity`, `.adjacency` |
 | Relevance attributes | `.score`, `.evaluations` |
 
-#### Set & Unset Attributes
+#### Set & Unset attributes
 
 Set a attribute:
 
@@ -135,7 +135,7 @@ d.pop('text', 'id', 'mime_type')
 
 ### Construct `Document`
 
-##### Content Attributes
+##### Content attributes
 
 | Attribute | Description |
 | --- | --- |
@@ -219,7 +219,7 @@ doc.convert_image_uri_to_blob()
 doc.convert_image_datauri_to_blob()
 ```
 
-##### Set Embedding
+##### Set embedding
 
 An embedding is a high-dimensional representation of a `Document`. You can assign any Numpy `ndarray` as a `Document`'s embedding.
 
@@ -231,7 +231,7 @@ d1 = Document(embedding=np.array([1, 2, 3]))
 d2 = Document(embedding=np.array([[1, 2, 3], [4, 5, 6]]))
 ```
 
-#### Support for Sparse arrays
+#### Support for sparse arrays
 
  Scipy sparse array (`coo_matrix, bsr_matrix, csr_matrix, csc_matrix`)  are supported as both `embedding` or `blob` :
 
@@ -265,15 +265,15 @@ d3 = Document(blob=torch.sparse_coo_tensor(indices, values, dense_shape))
 d4 = Document(blob=tf.SparseTensor(indices, values, dense_shape))
 ```
 
-#### Construct with Multiple Attributes
+#### Construct with multiple attributes
 
-##### Meta Attributes
+##### Meta attributes
 
 | Attribute | Description |
 | --- | --- |
 | `doc.tags` | A structured data value, consisting of fields which map to dynamically typed values |
 | `doc.id` | A hexdigest that represents a unique Document ID |
-| `doc.parent_id` | A hexdigest that ehe document's parent id |
+| `doc.parent_id` | A hexdigest that represents the document's parent id |
 | `doc.weight` | The weight of the Document |
 | `doc.mime_type` | The mime type of the Document |
 | `doc.content_type` | The content type of the Document |
@@ -295,7 +295,7 @@ d = Document(uri='https://jina.ai',
 <jina.types.document.Document id=e01a53bc-aedb-11eb-88e6-1e008a366d48 uri=https://jina.ai mimeType=text/plain tags={'foo': 'bar'} granularity=1 adjacency=3 at 6317309200>
 ```
 
-#### Construct from Dict or JSON String
+#### Construct from dict or JSON string
 
 You can build a `Document` from a `dict` or JSON string:
 
@@ -310,7 +310,7 @@ d = json.dumps({'id': 'hello123', 'content': 'world'})
 d2 = Document(d)
 ```
 
-##### Parsing Unrecognized Fields
+##### Parsing unrecognized fields
 
 Unrecognized fields in a `dict`/JSON string are automatically put into the Document's `.tags` field:
 
@@ -336,7 +336,7 @@ d1 = Document({'id': 'hello123', 'foo': 'bar'}, field_resolver={'foo': 'content'
 <jina.types.document.Document id=hello123 mimeType=text/plain text=bar at 6246985488>
 ```
 
-#### Construct from Another `Document`
+#### Construct from another `Document`
 
 Assigning a `Document` object to another `Document` object will make a shallow copy:
 
@@ -382,7 +382,7 @@ d.update(s, fields=['id'])
 d.update(s)
 ```
 
-#### Construct from JSON, CSV, `ndarray` and Files
+#### Construct from JSON, CSV, `ndarray` and files
 
 The `jina.types.document.generators` module let you construct `Document` from common file types such as JSON, CSV, `ndarray` and text files. The following
 functions will give a generator of `Document`, where each `Document` object corresponds to a line/row in the original
@@ -442,9 +442,9 @@ d.binary_str()
 b'\n$6a1c7f34-aef7-11eb-b075-1e008a366d48R\ntext/plainj\x0bhello world'
 ```
 
-### Add Recursion to `Document`
+### Add recursion to `Document`
 
-#### Recursive Attributes
+#### Recursive attributes
 
 `Document` can be recursed both horizontally and vertically:
 
@@ -481,7 +481,7 @@ You can add **chunks** (sub-Document) and **matches** (neighbour-Document) to a 
 
 Note that both `doc.chunks` and `doc.matches` return `ChunkArray` and `MatchArray`, which are sub-classes of `DocumentArray`. We will introduce `DocumentArray later.
 
-### Represent `Document` as Dictionary or JSON
+### Represent `Document` as dictionary or JSON
 
 Any `Document` can be converted into a `Python dictionary` or into `Json string` by calling their `.dict()` or `.json()` methods. 
 
@@ -582,9 +582,9 @@ d0.plot()  # simply `d0` on JupyterLab
 </tr>
 </table>
 
-### Add Relevancy to `Document`s
+### Add relevancy to `Document`s
 
-#### Relevance Attributes
+#### Relevance attributes
 
 |     |     |
 | --- | --- |
@@ -653,11 +653,11 @@ for evaluation_key, evaluation_score in d.evaluations.items():
 Chunks of the document represent the nodes of the graph. `GraphDocument` adds graph-specific attributes (`nodes`, `adjacency` list, `edge_features`,...) and operations (`add_node`, `remove_node`, `add_edge`, `remove_edge`,...)
 
 
-#### `GraphDocument` Constructor
+#### `GraphDocument` constructor
 `GraphDocument`'s constructor supports the same parameters as `Document`.
 It mainly adds one parameter `force_undirected`. It's a boolean flag that, when set to `True`, forces the graph document to be undirected.
 
-#### `GraphDocument` Additional Attributes
+#### `GraphDocument` additional attributes
 
 `GraphDocument` adds the following attributes to `Document`:
 
@@ -801,7 +801,7 @@ da.save('data.bin', file_format='binary')
 da1 = DocumentArray.load('data.bin', file_format='binary')
 ```
 
-### Access Element
+### Access element
 
 You can access a `Document` in the `DocumentArray` via integer index, string `id` or `slice` indices:
 
@@ -820,7 +820,7 @@ da[1:2]
 # <jina.types.arrays.document.DocumentArray length=1 at 5705863632>
 ```
 
-### Traverse Elements
+### Traverse elements
 The following graphic illustrates the recursive `Document` structure. 
 Every `Document` can have multiple `Chunks` and `Matches`.
 `Chunks` and `Matches` are `Documents` as well.
@@ -892,7 +892,7 @@ DocumentArray([
 ```
 
 
-### Sort Elements
+### Sort elements
 
 `DocumentArray` is a subclass of `MutableSequence`, therefore you can use built-in Python `sort` to sort elements in
 a `DocumentArray` object, e.g.
@@ -922,7 +922,7 @@ To sort elements in `da` in-place, using `tags[id]` value in a descending manner
 {'id': '6a799190-b6b0-11eb-8a66-1e008a366d49', 'tags': {'id': 1.0}}
 ```
 
-### Filter Elements
+### Filter elements
 
 You can use Python's [built-in `filter()`](https://docs.python.org/3/library/functions.html#filter) to filter elements in a `DocumentArray` object:
 
@@ -985,7 +985,7 @@ for key, group in groups:
 ('1', 3)
 ```
 
-### Get Attributes in Bulk
+### Get attributes in bulk
 
 `DocumentArray` implements powerful getters that lets you fetch multiple attributes from the Documents it contains
 in one-shot:
@@ -1240,7 +1240,7 @@ shuffled_da = da.shuffle()  # shuffle the DocumentArray
 shuffled_da_with_seed = da.shuffle(seed=1)  # shuffle the DocumentArray with seed.
 ```
 
-### Visualize Embeddings
+### Visualize embeddings
 
 `DocumentArray` provides function `.visualize` to plot document embeddings in a 2D graph. `visualize` supports 2 methods to project in 2D space: `pca` and `tsne`.
 
@@ -1402,7 +1402,7 @@ da = DocumentArray(dam)
 ```
 
 
-### Maintaining Consistency via `.reload()`
+### Maintaining consistency via `.reload()`
 
 Considering two `DocumentArrayMemmap` objects that share the same on-disk storage `./memmap` but sit in different processes/threads. After some writing ops, the consistency of the lookup table may be corrupted, as each `DocumentArrayMemmap` object has its own version of lookup table in memory. `.reload()` method is for solving this issue:
 
