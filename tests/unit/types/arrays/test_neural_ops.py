@@ -52,14 +52,19 @@ def docarrays_for_embedding_distance_computation_sparse():
     return D1, D2
 
 
-@pytest.mark.parametrize('limit', [1, 2])
+@pytest.mark.parametrize(
+    'limit, batch_size', [(1, None), (2, None), (None, None), (1, 1), (1, 2), (2, 1)]
+)
 def test_matching_retrieves_correct_number(
-    docarrays_for_embedding_distance_computation, limit
+    docarrays_for_embedding_distance_computation, limit, batch_size
 ):
     D1, D2 = docarrays_for_embedding_distance_computation
-    D1.match(D2, metric='sqeuclidean', limit=limit)
+    D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
     for m in D1.get_attributes('matches'):
-        assert len(m) == limit
+        if limit is None:
+            assert len(m) == len(D2)
+        else:
+            assert len(m) == limit
 
 
 @pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])

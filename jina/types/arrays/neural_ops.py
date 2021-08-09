@@ -42,7 +42,7 @@ class DocumentArrayNeuralOpsMixin:
             use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param metric: the distance metric
-        :param limit: the maximum number of matches, when not given defaults to 20
+        :param limit: the maximum number of matches, when not given defaults to 20.
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
@@ -66,6 +66,7 @@ class DocumentArrayNeuralOpsMixin:
             )
 
         metric_name = metric_name or (metric.__name__ if callable(metric) else metric)
+        limit = len(darray) if limit is None else limit
 
         if batch_size:
             dist, idx = self._match_online(
@@ -92,7 +93,7 @@ class DocumentArrayNeuralOpsMixin:
         :param darray: the other DocumentArray or DocumentArrayMemmap to match against
         :param cdist: the distance metric
         :param limit: the maximum number of matches, when not given
-                      all Documents in `another` are considered as matches
+                      all Documents in `darray` are considered as matches
         :param normalization: a tuple [a, b] to be used with min-max normalization,
                                 the min distance will be rescaled to `a`, the max distance will be rescaled to `b`
                                 all values will be rescaled into range `[a, b]`.
