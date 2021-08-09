@@ -3,6 +3,14 @@ from abc import ABC, abstractmethod
 from math import inf
 from typing import Union, List, Tuple, Iterable, Callable, Optional, Dict, Iterator
 
+import numpy as np
+
+if False:
+    from .document import DocumentArray
+    from .memmap import DocumentArrayMemmap
+    from .traversable import TraversableSequence
+    from ..document import Document
+
 
 class AbstractDocumentArray(ABC):
     """ Abstract class that defines the public interface of DocumentArray classes """
