@@ -417,6 +417,21 @@
 <span class="s1">- a directory containing Dockerfile, manifest.yml, README.md, zero or more yaml config, zero or more Python file.</span>
 <span class="s1">'''</span><span class="p">,</span>
     <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'-f'</span><span class="p">,</span>
+        <span class="s1">'--docker-file'</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">'PATH'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Name of the Dockerfile (Default is `path/Dockerfile`)'</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">'-t'</span><span class="p">,</span>
+        <span class="s1">'--tag'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">'append'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">'Name and optionally a list of tags'</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--force'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
@@ -457,7 +472,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 08, 2021.
+            Last updated on Aug 09, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and

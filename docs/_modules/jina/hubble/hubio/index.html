@@ -718,13 +718,31 @@
 
         <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
 
+        <span class="n">work_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">exec_tags</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span>
+            <span class="n">exec_tags</span> <span class="o">=</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+
+        <span class="n">dockerfile</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_file</span><span class="p">:</span>
+            <span class="n">dockerfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dockerfile</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The given Dockerfile `</span><span class="si">{</span><span class="n">dockerfile</span><span class="si">}</span><span class="s1">` does not exist!'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dockerfile</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">work_path</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'The Dockerfile must be placed at the given folder `</span><span class="si">{</span><span class="n">work_path</span><span class="si">}</span><span class="s1">`'</span>
+                <span class="p">)</span>
+
+            <span class="n">dockerfile</span> <span class="o">=</span> <span class="n">dockerfile</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
+
         <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pushing `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">`...'</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Pushing `</span><span class="si">{</span><span class="n">work_path</span><span class="si">}</span><span class="s1">`...'</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
             <span class="n">req_header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_request_header</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Packaging </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Packaging </span><span class="si">{</span><span class="n">work_path</span><span class="si">}</span><span class="s1">...'</span><span class="p">)</span>
                 <span class="n">md5_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
-                <span class="n">bytesio</span> <span class="o">=</span> <span class="n">archive_package</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+                <span class="n">bytesio</span> <span class="o">=</span> <span class="n">archive_package</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
                 <span class="n">content</span> <span class="o">=</span> <span class="n">bytesio</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
                 <span class="n">md5_hash</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
                 <span class="n">md5_digest</span> <span class="o">=</span> <span class="n">md5_hash</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
@@ -737,7 +755,14 @@
                     <span class="k">else</span> <span class="s1">'False'</span><span class="p">,</span>
                     <span class="s1">'md5sum'</span><span class="p">:</span> <span class="n">md5_digest</span><span class="p">,</span>
                 <span class="p">}</span>
-                <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">exec_tags</span><span class="p">:</span>
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'tags'</span><span class="p">]</span> <span class="o">=</span> <span class="n">exec_tags</span>
+
+                <span class="k">if</span> <span class="n">dockerfile</span><span class="p">:</span>
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">'dockerfile'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dockerfile</span><span class="p">)</span>
+
+                <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="ow">or</span> <span class="n">uuid8</span><span class="p">:</span>
                     <span class="n">form_data</span><span class="p">[</span><span class="s1">'force'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force</span> <span class="ow">or</span> <span class="n">uuid8</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span> <span class="ow">or</span> <span class="n">secret</span><span class="p">:</span>
@@ -747,8 +772,8 @@
 
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Connecting Hubble...'</span><span class="p">)</span>
                 <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">get_hubble_url</span><span class="p">()</span>
-                <span class="c1"># upload the archived executor to Jina Hub</span>
 
+                <span class="c1"># upload the archived executor to Jina Hub</span>
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Uploading...'</span><span class="p">)</span>
                 <span class="n">resp</span> <span class="o">=</span> <span class="n">upload_file</span><span class="p">(</span>
                     <span class="n">hubble_url</span><span class="p">,</span>
@@ -776,7 +801,7 @@
                 <span class="k">elif</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">result</span><span class="p">[</span><span class="s1">'statusCode'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
                     <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span><span class="p">:</span>
-                        <span class="n">dump_secret</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">),</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span><span class="p">)</span>
+                        <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">]:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">'message'</span><span class="p">])</span>
                 <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
@@ -1049,7 +1074,7 @@
         <div class="related-information">
               Copyright &#169; Jina AI Limited. All rights reserved.
             |
-            Last updated on Aug 08, 2021.
+            Last updated on Aug 09, 2021.
             |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
