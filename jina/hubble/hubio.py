@@ -70,7 +70,9 @@ class HubIO:
                 # low-level client
                 self._raw_client = APIClient(base_url='unix://var/run/docker.sock')
             except docker.errors.DockerException:
-                self.logger.critical(f'Docker daemon seems not running.')
+                self.logger.critical(
+                    f'Docker daemon seems not running. Please run Docker daemon and try again.'
+                )
                 exit(1)
 
     @staticmethod
