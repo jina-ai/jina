@@ -321,12 +321,20 @@ class DocumentArrayMemmap(TraversableSequence, DocumentArraySearchOpsMixin, Itr)
 
     @property
     def _embeddings_memmap(self):
-        """Return the cached embedding stored in np.memmap."""
+        """Return the cached embedding stored in np.memmap.
+
+        :returns: Embeddings as np.ndarray stored in memmap.
+        """
         return np.memmap('embedding.bin', mode='r')
 
     @_embeddings_memmap.setter
     def _embeddings_memmap(self, other_embeddings):
-        """Set the cached embedding values in case it is not cached."""
-        fp = np.memmap('embedding.bin', dtype='float32', mode='w+')
+        """Set the cached embedding values in case it is not cached.
+
+        :param other_embeddings: The embedding to be stored into numpy.memmap.
+        """
+        fp = np.memmap(
+            'embedding.bin', dtype='float32', mode='w+', shape=other_embeddings.shape
+        )
         fp[:] = other_embeddings[:]
         fp.flush()
