@@ -248,7 +248,7 @@ def test_memmap_physical_size(tmpdir):
     assert da.physical_size > 0
 
 
-def test_memmap_append(tmpdir):
+def test_memmap_mutate(tmpdir):
     da = DocumentArrayMemmap(tmpdir)
     d0 = Document(text='hello')
     da.append(d0)
@@ -261,3 +261,6 @@ def test_memmap_append(tmpdir):
     assert len(da2) == 2
     assert da2[0] == d0
     assert da2[1] == d1
+
+    da.clear()
+    assert not len(da)

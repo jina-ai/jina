@@ -64,12 +64,12 @@ class DocumentArrayMemmap(
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
-        self._invalidated_mmap = False
-        self._last_mmap = None
+        self._invalidated_mmap = False  # a boolean flag to say mmap is invalidated, set on the change of mmap
+        self._last_mmap = None  # the last cached mmap object
         self._load_header_body()
 
     @property
-    def _mmap(self):
+    def _mmap(self) -> 'mmap':
         if self._invalidated_mmap or self._last_mmap is None:
             self._invalidated_mmap = False
             self._last_mmap = mmap.mmap(

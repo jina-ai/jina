@@ -3,6 +3,8 @@ import random
 import operator
 from typing import Dict, Optional, Union, Tuple
 
+from ...helper import typename
+
 if False:
     from .document import DocumentArray
 
@@ -86,7 +88,7 @@ class DocumentArraySearchOpsMixin:
 
         if k > len(self):
             raise ValueError(
-                f'Sample size {k} is greater than the length of Document {len(self)}'
+                f'Sample size can not be greater than the length of {typename(self)}, but {k} > {len(self)}'
             )
         if seed is not None:
             random.seed(seed)
