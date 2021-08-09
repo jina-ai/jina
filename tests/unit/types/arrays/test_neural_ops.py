@@ -136,12 +136,17 @@ def embeddings():
     return np.array([[1, 0, 0], [2, 0, 0], [3, 0, 0]])
 
 
-@pytest.mark.parametrize('limit', [1, 2])
-def test_matching_retrieves_correct_number(docarray_combinations, limit):
+@pytest.mark.parametrize(
+    'limit, batch_size', [(1, None), (2, None), (None, None), (1, 1), (1, 2), (2, 1)]
+)
+def test_matching_retrieves_correct_number(docarray_combinations, limit, batch_size):
     for D1, D2 in docarray_combinations:
-        D1.match(D2, metric='sqeuclidean', limit=limit)
+        D1.match(D2, metric='sqeuclidean', limit=limit, batch_size=batch_size)
         for m in D1.get_attributes('matches'):
-            assert len(m) == limit
+            if limit is None:
+                assert len(m) == len(D2)
+            else:
+                assert len(m) == limit
 
 
 @pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
@@ -171,12 +176,40 @@ def test_matching_same_results_with_sparse(
     np.testing.assert_equal(distances, distances_sparse)
 
 
+@pytest.mark.parametrize('metric', ['sqeuclidean', 'cosine'])
+def test_matching_same_results_with_batch(
+    docarrays_for_embedding_distance_computation,
+    metric,
+):
+
+    D1, D2 = docarrays_for_embedding_distance_computation
+    D1_batch = copy.deepcopy(D1)
+    D2_batch = copy.deepcopy(D2)
+
+    # use match without batches
+    D1.match(D2, metric=metric)
+    distances = []
+    for m in D1.get_attributes('matches'):
+        for d in m:
+            distances.extend([d.scores[metric].value])
+
+    # use match with batches
+    D1_batch.match(D2_batch, metric=metric, batch_size=10)
+
+    distances_batch = []
+    for m in D1.get_attributes('matches'):
+        for d in m:
+            distances_batch.extend([d.scores[metric].value])
+
+    np.testing.assert_equal(distances, distances_batch)
+
+
 @pytest.mark.parametrize('metric', ['euclidean', 'cosine'])
 def test_matching_scipy_cdist(
     docarrays_for_embedding_distance_computation,
     metric,
 ):
-    def scipy_cdist_metric(X, Y):
+    def scipy_cdist_metric(X, Y, *args):
         return scipy_cdist(X, Y, metric=metric)
 
     D1, D2 = docarrays_for_embedding_distance_computation
@@ -297,7 +330,7 @@ def test_scipy_dist(
 
 
 def test_2arity_function(docarray_combinations):
-    def dotp(x, y):
+    def dotp(x, y, *args):
         return np.dot(x, np.transpose(y))
 
     for D1, D2 in docarray_combinations:
