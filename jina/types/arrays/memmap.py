@@ -271,3 +271,13 @@ class DocumentArrayMemmap(
         :return: the number of bytes
         """
         return os.stat(self._header_path).st_size + os.stat(self._body_path).st_size
+
+    @property
+    def cached_embeddings(self):
+        """Return the cached embedding stored in memory."""
+        return self._embeddings
+
+    @cached_embeddings.setter
+    def cached_embeddings(self, other):
+        """Set the cached embedding value in case it is not cached."""
+        self._embeddings = other

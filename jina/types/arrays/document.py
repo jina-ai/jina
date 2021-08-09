@@ -62,7 +62,12 @@ class DocumentArrayMemmapGetAttrMixin:
         """
         fields = list(fields)
         if 'embedding' in fields and not self._is_updated:
-            embeddings = self._embeddings
+            embeddings = self.cached_embeddings
+            index = fields.index('embedding')
+            fields.remove('embedding')
+        elif 'embedding' in fields and self._is_updated:
+            embeddings = [doc.get_attributes('embedding') for doc in self]
+            self.cached_embeddings = embeddings
             index = fields.index('embedding')
             fields.remove('embedding')
         if fields:
