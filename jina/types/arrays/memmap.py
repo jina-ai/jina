@@ -45,12 +45,24 @@ class DocumentArrayMemmap(
         - `header.bin`: stores id, offset, length and boundary info of each Document in `body.bin`;
         - `body.bin`: stores Documents continuously
 
-    When loading :class:`DocumentArrayMemmap`, it only loads the content of `header.bin` into memory, while storing
+    When loading :class:`DocumentArrayMemmap`, it loads the content of `header.bin` into memory, while storing
     all `body.bin` data on disk. As `header.bin` is often much smaller than `body.bin`, memory is saved.
 
+    :class:`DocumentArrayMemmap` also loads a portion of the documents in a memory buffer and keeps the memory documents
+    synced with the disk. This helps ensure that modified documents are persisted to the disk.
+    The memory buffer size is configured with parameter `buffer_pool_size` which represents the number of documents
+    that the buffer can store.
+
+    .. note::
+            To make sure the documents you modify are persisted to disk, make sure that the number of referenced
+            documents does not exceed the buffer pool size. Otherwise, they won't be referenced by the buffer pool and
+            they will not be persisted.
+            The best practice is to always reference documents using DAM.
+
     This class is designed to work similarly as :class:`DocumentArray` but differs in the following aspects:
-        - one can not set the attribute of elements in a :class:`DocumentArrayMemmap`;
-        - one can not use slice to index elements in a :class:`DocumentArrayMemmap`;
+        - you can set the attribute of elements in a :class:`DocumentArrayMemmap` but you need to make sure that you
+        don't reference more documents than the buffer pool size
+        - each document
 
     To convert between a :class:`DocumentArrayMemmap` and a :class:`DocumentArray`
 
