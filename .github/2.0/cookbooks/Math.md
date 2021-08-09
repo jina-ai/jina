@@ -1,6 +1,6 @@
 # Jina Math
 
-Jina offers several Math helpers used by it's core logic and that users can use for their own purposes (for example, in their executors).
+Jina offers several Math helpers used by its core logic that users can use for their own purposes (for example, in their Executors).
 
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

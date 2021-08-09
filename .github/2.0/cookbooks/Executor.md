@@ -367,7 +367,7 @@ requests:
 
 - `jtype` is a string. Defines the class name, interchangeable with bang mark `!`;
 - `with` is a map. Defines kwargs of the class `__init__` method
-- `metas` is a map. Defines the meta information of that class. It contains the following fields:
+- `metas` is a dictionary. It defines the meta information of that class. It contains the following fields:
     - `name` is a string. Defines the name of the executor;
     - `description` is a string. Defines the description of this executor. It will be used in automatic docs UI;
     - `workspace` is a string. Defines the workspace of the executor;
