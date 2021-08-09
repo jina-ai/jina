@@ -85,6 +85,7 @@ class DocumentArrayMemmap(
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
+        self._last_mmap = None
         self._load_header_body()
         self.buffer_pool = BufferPoolManager(pool_size=buffer_pool_size)
 
@@ -133,6 +134,7 @@ class DocumentArrayMemmap(
         if self._header_map:
             self._start = tmp[-1][1] + tmp[-1][3]
             self._body.seek(self._start)
+        self._last_mmap = None
 
     def __len__(self):
         return len(self._header_map)
@@ -146,6 +148,7 @@ class DocumentArrayMemmap(
             self.append(d, flush=False)
         self._header.flush()
         self._body.flush()
+        self._last_mmap = None
 
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
@@ -189,6 +192,7 @@ class DocumentArrayMemmap(
         if flush:
             self._header.flush()
             self._body.flush()
+            self._last_mmap = None
         if update_buffer:
             result = self.buffer_pool.add_or_update(doc.id, doc)
             if result:
@@ -256,6 +260,14 @@ class DocumentArrayMemmap(
 
         return da
 
+    @property
+    def _mmap(self) -> 'mmap':
+        if self._last_mmap is None:
+            self._last_mmap = mmap.mmap(
+                self._body_fileno, length=0, prot=mmap.PROT_READ
+            )
+        return self._last_mmap
+
     def get_doc_by_key(self, key: str):
         """
         returns a document by key (ID) from disk
@@ -264,9 +276,8 @@ class DocumentArrayMemmap(
         :return: returns a document
         """
         pos_info = self._header_map[key]
-        _, p, r, l = pos_info
-        with mmap.mmap(self._body_fileno, offset=p, length=l) as m:
-            return Document(m[r:])
+        _, p, r, r_plus_l = pos_info
+        return Document(self._mmap[p + r : p + r_plus_l])
 
     def __getitem__(self, key: Union[int, str, slice]):
         if isinstance(key, str):
@@ -303,6 +314,7 @@ class DocumentArrayMemmap(
         )
         self._header.seek(0, 2)
         self._header.flush()
+        self._last_mmap = None
         self._header_map.pop(str_key)
         self.buffer_pool.delete_if_exists(str_key)
 
@@ -393,6 +405,7 @@ class DocumentArrayMemmap(
             self._update(doc, self._str2int_id(key), flush=False)
         self._header.flush()
         self._body.flush()
+        self._last_mmap = None
 
     def __del__(self):
         self.save()
