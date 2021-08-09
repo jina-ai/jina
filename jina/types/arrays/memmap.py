@@ -275,6 +275,7 @@ class DocumentArrayMemmap(
     @property
     def cached_embeddings(self):
         """Return the cached embedding stored in memory."""
+        self._is_updated = False
         return self._embeddings
 
     @cached_embeddings.setter
