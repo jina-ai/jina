@@ -64,11 +64,18 @@ class DocumentArrayMemmap(
         self._header_path = os.path.join(path, 'header.bin')
         self._body_path = os.path.join(path, 'body.bin')
         self._key_length = key_length
+        self._invalidated_mmap = False
+        self._last_mmap = None
         self._load_header_body()
 
-    @cached_property
+    @property
     def _mmap(self):
-        return mmap.mmap(self._body_fileno, length=0, prot=mmap.PROT_READ)
+        if self._invalidated_mmap or self._last_mmap is None:
+            self._invalidated_mmap = False
+            self._last_mmap = mmap.mmap(
+                self._body_fileno, length=0, prot=mmap.PROT_READ
+            )
+        return self._last_mmap
 
     def reload(self):
         """Reload header of this object from the disk.
@@ -115,6 +122,10 @@ class DocumentArrayMemmap(
             self._start = tmp[-1][1] + tmp[-1][3]
             self._body.seek(self._start)
 
+        self._invalidated_mmap = (
+            True  #: always invalid mmap after calling this function
+        )
+
     def __len__(self):
         return len(self._header_map)
 
@@ -127,6 +138,7 @@ class DocumentArrayMemmap(
             self.append(d, flush=False)
         self._header.flush()
         self._body.flush()
+        self._invalidated_mmap = True
 
     def clear(self) -> None:
         """Clear the on-disk data of :class:`DocumentArrayMemmap`"""
@@ -162,6 +174,7 @@ class DocumentArrayMemmap(
         if flush:
             self._header.flush()
             self._body.flush()
+        self._invalidated_mmap = True
 
     def __getitem__(self, key: Union[int, str]) -> 'Document':
         if isinstance(key, str):
@@ -199,6 +212,7 @@ class DocumentArrayMemmap(
         self._header.seek(0, 2)
         self._header.flush()
         self._header_map.pop(str_key)
+        self._invalidated_mmap = True
 
     def _str2int_id(self, key: str) -> int:
         return self._header_map[key][0]
@@ -223,11 +237,13 @@ class DocumentArrayMemmap(
                 self.append(value)
                 self._header_map[self._int2str_id(key)] = self._header_map[value.id]
                 del self[value.id]
+                self._invalidated_mmap = True
             else:
                 raise IndexError(f'`key`={key} is out of range')
         elif isinstance(key, str):
             value.id = key
             self.append(value)
+            self._invalidated_mmap = True
         else:
             raise TypeError(f'`key` must be int or str, but receiving {key!r}')
 
