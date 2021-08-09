@@ -15,6 +15,7 @@ from typing import (
 
 import numpy as np
 
+from .abstract import AbstractDocumentArray
 from .bpm import BufferPoolManager
 from .document import DocumentArrayGetAttrMixin
 from .neural_ops import DocumentArrayNeuralOpsMixin
@@ -32,6 +33,7 @@ class DocumentArrayMemmap(
     DocumentArrayNeuralOpsMixin,
     DocumentArraySearchOpsMixin,
     Itr,
+    AbstractDocumentArray,
 ):
     """
     Create a memory-map to an :class:`DocumentArray` stored in binary files on disk.
