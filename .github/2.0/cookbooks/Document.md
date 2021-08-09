@@ -1247,7 +1247,6 @@ This table summarizes the interfaces of `DocumentArrayMemmap` and `DocumentArray
 | `__add__`, `__iadd__` | ❌|✅|
 | `__bool__` |✅|✅|
 | `__eq__` |✅|✅|
-| saving and loading |`save()` and `reload()` | `save(filename)` and `load(filename)` |
 | `sample` |✅ |✅|
 | `shuffle` |✅ |✅|
 | `match` (L/Rvalue) |✅|✅|
