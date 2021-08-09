@@ -458,6 +458,31 @@
         <span class="n">values</span> <span class="o">=</span> <span class="o">-</span><span class="n">values</span>
 
     <span class="k">return</span> <span class="n">values</span><span class="p">,</span> <span class="n">idx</span></div>
+
+
+<div class="viewcode-block" id="update_rows_x_mat_best"><a class="viewcode-back" href="../../../../api/jina.math.helper/#jina.math.helper.update_rows_x_mat_best">[docs]</a><span class="k">def</span> <span class="nf">update_rows_x_mat_best</span><span class="p">(</span>
+    <span class="n">x_mat_best</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span>
+    <span class="n">x_inds_best</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span>
+    <span class="n">x_mat</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span>
+    <span class="n">x_inds</span><span class="p">:</span> <span class="s1">'np.ndarray'</span><span class="p">,</span>
+    <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Updates `x_mat_best` and `x_inds_best` rows with the k best values and indices (per row)  from `x_mat` union `x_mat_best`.</span>
+
+<span class="sd">    :param x_mat: numpy array of the first matrix</span>
+<span class="sd">    :param x_inds: numpy array of the indices of the first matrix</span>
+<span class="sd">    :param x_mat_best: numpy array of the second matrix</span>
+<span class="sd">    :param x_inds_best: numpy array of the indices of the second matrix</span>
+<span class="sd">    :param k: number of values to retrieve</span>
+<span class="sd">    :return: indices and distances</span>
+<span class="sd">    """</span>
+    <span class="n">all_dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">x_mat_best</span><span class="p">))</span>
+    <span class="n">all_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">x_inds</span><span class="p">,</span> <span class="n">x_inds_best</span><span class="p">))</span>
+    <span class="n">best_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="n">all_dists</span><span class="p">,</span> <span class="n">kth</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x_mat_best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">all_dists</span><span class="p">,</span> <span class="n">best_inds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">x_inds_best</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">all_inds</span><span class="p">,</span> <span class="n">best_inds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">:</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">x_mat_best</span><span class="p">,</span> <span class="n">x_inds_best</span></div>
 </pre></div>
       </article>
       <footer>

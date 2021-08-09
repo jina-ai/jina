@@ -456,6 +456,25 @@
 </dd>
 </dl>
 </dd></dl>
+<dl class="py function">
+<dt id="jina.math.helper.update_rows_x_mat_best">
+<code class="sig-prename descclassname"><span class="pre">jina.math.helper.</span></code><code class="sig-name descname"><span class="pre">update_rows_x_mat_best</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat_best</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_inds_best</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_inds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/math/helper/#update_rows_x_mat_best"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.math.helper.update_rows_x_mat_best" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates <cite>x_mat_best</cite> and <cite>x_inds_best</cite> rows with the k best values and indices (per row)  from <cite>x_mat</cite> union <cite>x_mat_best</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_mat</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – numpy array of the first matrix</p></li>
+<li><p><strong>x_inds</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – numpy array of the indices of the first matrix</p></li>
+<li><p><strong>x_mat_best</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – numpy array of the second matrix</p></li>
+<li><p><strong>x_inds_best</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – numpy array of the indices of the second matrix</p></li>
+<li><p><strong>k</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – number of values to retrieve</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>indices and distances</p>
+</dd>
+</dl>
+</dd></dl>
 </div>
 
       </article>

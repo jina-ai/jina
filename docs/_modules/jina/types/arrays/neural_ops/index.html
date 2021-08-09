@@ -396,7 +396,7 @@
 
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">...importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
-<span class="kn">from</span> <span class="nn">...math.helper</span> <span class="kn">import</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">minmax_normalize</span>
+<span class="kn">from</span> <span class="nn">...math.helper</span> <span class="kn">import</span> <span class="n">top_k</span><span class="p">,</span> <span class="n">minmax_normalize</span><span class="p">,</span> <span class="n">update_rows_x_mat_best</span>
 <span class="kn">from</span> <span class="nn">...logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
 <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
@@ -413,82 +413,59 @@
         <span class="n">metric</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
             <span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">'np.ndarray'</span><span class="p">,</span> <span class="s1">'np.ndarray'</span><span class="p">],</span> <span class="s1">'np.ndarray'</span><span class="p">]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="s1">'cosine'</span><span class="p">,</span>
-        <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">inf</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
         <span class="n">normalization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_scipy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">metric_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Compute embedding based nearest neighbour in `another` for each Document in `self`,</span>
 <span class="sd">        and store results in `matches`.</span>
-
 <span class="sd">        .. note::</span>
 <span class="sd">            'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.</span>
-
 <span class="sd">            You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,</span>
 <span class="sd">            ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,</span>
 <span class="sd">            ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,</span>
 <span class="sd">            ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.</span>
-
 <span class="sd">            To use scipy metric, please set ``use_scipy=True``.</span>
-
 <span class="sd">        - To make all matches values in [0, 1], use ``dA.match(dB, normalization=(0, 1))``</span>
 <span class="sd">        - To invert the distance as score and make all values in range [0, 1],</span>
 <span class="sd">            use ``dA.match(dB, normalization=(1, 0))``. Note, how ``normalization`` differs from the previous.</span>
-
 <span class="sd">        :param darray: the other DocumentArray or DocumentArrayMemmap to match against</span>
 <span class="sd">        :param metric: the distance metric</span>
-<span class="sd">        :param limit: the maximum number of matches, when not given</span>
-<span class="sd">                      all Documents in `another` are considered as matches</span>
+<span class="sd">        :param limit: the maximum number of matches, when not given defaults to 20.</span>
 <span class="sd">        :param normalization: a tuple [a, b] to be used with min-max normalization,</span>
 <span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
 <span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
 <span class="sd">        :param use_scipy: use Scipy as the computation backend</span>
 <span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
+<span class="sd">        :param batch_size: if provided, then `darray` is loaded in chunks of, at most, batch_size elements. This option</span>
+<span class="sd">                           will be slower but more memory efficient. Specialy indicated if `darray` is a big</span>
+<span class="sd">                           DocumentArrayMemmap.</span>
 <span class="sd">        """</span>
-        <span class="n">is_sparse</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-            <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
-
-            <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">):</span>
-                <span class="n">X</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-                <span class="n">Y</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
-                <span class="n">is_sparse</span> <span class="o">=</span> <span class="kc">True</span>
-
-        <span class="n">limit</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-
-            <span class="k">if</span> <span class="n">use_scipy</span> <span class="ow">and</span> <span class="n">is_sparse</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="c1"># cdist from scipy does not support sparse arrays</span>
-                <span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
-
-                <span class="n">dists</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">):</span>
+            <span class="n">cdist</span> <span class="o">=</span> <span class="n">metric</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">use_scipy</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cdist</span> <span class="k">as</span> <span class="n">cdist</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">use_scipy</span><span class="p">:</span>
-                    <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'Scipy cdist does not support sparse arrays, using Jina.math.distances sparse cdist'</span>
-                    <span class="p">)</span>
-                <span class="kn">from</span> <span class="nn">...math.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
-
-                <span class="n">dists</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">is_sparse</span><span class="o">=</span><span class="n">is_sparse</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">):</span>
-            <span class="n">dists</span> <span class="o">=</span> <span class="n">metric</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+                <span class="kn">from</span> <span class="nn">...math.distance</span> <span class="kn">import</span> <span class="n">cdist</span> <span class="k">as</span> <span class="n">cdist</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'metric must be either string or a 2-arity function, received: </span><span class="si">{</span><span class="n">metric</span><span class="si">!r}</span><span class="s1">'</span>
             <span class="p">)</span>
 
-        <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="p">)),</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">metric_name</span> <span class="o">=</span> <span class="n">metric_name</span> <span class="ow">or</span> <span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span> <span class="k">else</span> <span class="n">metric</span><span class="p">)</span>
+        <span class="n">limit</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="p">)</span> <span class="k">if</span> <span class="n">limit</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">limit</span>
 
-        <span class="k">if</span> <span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-                <span class="n">dist</span> <span class="o">=</span> <span class="n">minmax_normalize</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">batch_size</span><span class="p">:</span>
+            <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_online</span><span class="p">(</span>
+                <span class="n">darray</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">batch_size</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match</span><span class="p">(</span><span class="n">darray</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
 
-        <span class="n">m_name</span> <span class="o">=</span> <span class="n">metric_name</span> <span class="ow">or</span> <span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span> <span class="k">else</span> <span class="n">metric</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">_q</span><span class="p">,</span> <span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">dist</span><span class="p">):</span>
             <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">_dist</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">_ids</span><span class="p">,</span> <span class="n">_dists</span><span class="p">):</span>
@@ -499,7 +476,99 @@
                 <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
                     <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'matches'</span><span class="p">)</span>
-                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="p">{</span><span class="n">m_name</span><span class="p">:</span> <span class="n">_dist</span><span class="p">},</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+                <span class="n">_q</span><span class="o">.</span><span class="n">matches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">scores</span><span class="o">=</span><span class="p">{</span><span class="n">metric_name</span><span class="p">:</span> <span class="n">_dist</span><span class="p">},</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">darray</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Computes the matches between self and `darray` loading `darray` into main memory.</span>
+<span class="sd">        :param darray: the other DocumentArray or DocumentArrayMemmap to match against</span>
+<span class="sd">        :param cdist: the distance metric</span>
+<span class="sd">        :param limit: the maximum number of matches, when not given</span>
+<span class="sd">                      all Documents in `darray` are considered as matches</span>
+<span class="sd">        :param normalization: a tuple [a, b] to be used with min-max normalization,</span>
+<span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
+<span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
+<span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
+<span class="sd">        :return: distances and indices</span>
+<span class="sd">        """</span>
+        <span class="n">is_sparse</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">x_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+            <span class="n">y_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sp</span>
+
+            <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">issparse</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">):</span>
+                <span class="n">x_mat</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+                <span class="n">y_mat</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">darray</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+                <span class="n">is_sparse</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">is_sparse</span><span class="p">:</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">y_mat</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">is_sparse</span><span class="o">=</span><span class="n">is_sparse</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">y_mat</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
+
+        <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">limit</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">darray</span><span class="p">)),</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">minmax_normalize</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span>
+
+    <span class="k">def</span> <span class="nf">_match_online</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">darray</span><span class="p">,</span> <span class="n">cdist</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">normalization</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">batch_size</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        Computes the matches between self and `darray` loading `darray` into main memory in chunks of size `batch_size`.</span>
+
+<span class="sd">        :param darray: the other DocumentArray or DocumentArrayMemmap to match against</span>
+<span class="sd">        :param cdist: the distance metric</span>
+<span class="sd">        :param limit: the maximum number of matches, when not given</span>
+<span class="sd">                      all Documents in `another` are considered as matches</span>
+<span class="sd">        :param normalization: a tuple [a, b] to be used with min-max normalization,</span>
+<span class="sd">                                the min distance will be rescaled to `a`, the max distance will be rescaled to `b`</span>
+<span class="sd">                                all values will be rescaled into range `[a, b]`.</span>
+<span class="sd">        :param batch_size: length of the chunks loaded into memory from darray.</span>
+<span class="sd">        :param metric_name: if provided, then match result will be marked with this string.</span>
+<span class="sd">        :return: distances and indices</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s1">'expected embedding of type np.ndarray but received </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">darray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+
+        <span class="n">x_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s1">'embedding'</span><span class="p">))</span>
+        <span class="n">n_x</span> <span class="o">=</span> <span class="n">x_mat</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">batch_generator</span><span class="p">(</span><span class="n">y_darray</span><span class="p">:</span> <span class="s1">'DocumentArrayMemmap'</span><span class="p">,</span> <span class="n">n_batch</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">n_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_darray</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_darray</span><span class="p">),</span> <span class="n">n_batch</span><span class="p">):</span>
+                <span class="n">y_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">y_darray</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">embedding</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">n_batch</span><span class="p">,</span> <span class="n">n_max</span><span class="p">))]</span>
+                <span class="p">)</span>
+                <span class="k">yield</span> <span class="n">y_mat</span><span class="p">,</span> <span class="n">i</span>
+
+        <span class="n">y_batch_generator</span> <span class="o">=</span> <span class="n">batch_generator</span><span class="p">(</span><span class="n">darray</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">top_dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">n_x</span><span class="p">,</span> <span class="n">limit</span><span class="p">))</span>
+        <span class="n">top_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_x</span><span class="p">,</span> <span class="n">limit</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">y_batch</span><span class="p">,</span> <span class="n">y_batch_start_pos</span> <span class="ow">in</span> <span class="n">y_batch_generator</span><span class="p">:</span>
+            <span class="n">distances</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">x_mat</span><span class="p">,</span> <span class="n">y_batch</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">)</span>
+            <span class="n">dists</span><span class="p">,</span> <span class="n">inds</span> <span class="o">=</span> <span class="n">top_k</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalization</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="n">normalization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dists</span> <span class="o">=</span> <span class="n">minmax_normalize</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">normalization</span><span class="p">)</span>
+
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">y_batch_start_pos</span> <span class="o">+</span> <span class="n">inds</span>
+            <span class="n">top_dists</span><span class="p">,</span> <span class="n">top_inds</span> <span class="o">=</span> <span class="n">update_rows_x_mat_best</span><span class="p">(</span>
+                <span class="n">top_dists</span><span class="p">,</span> <span class="n">top_inds</span><span class="p">,</span> <span class="n">dists</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">limit</span>
+            <span class="p">)</span>
+
+        <span class="c1"># sort final the final `top_dists` and `top_inds` per row</span>
+        <span class="n">permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">top_dists</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">top_dists</span><span class="p">,</span> <span class="n">permutation</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">top_inds</span><span class="p">,</span> <span class="n">permutation</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span>
 
 <div class="viewcode-block" id="DocumentArrayNeuralOpsMixin.visualize"><a class="viewcode-back" href="../../../../../api/jina.types.arrays.neural_ops/#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.visualize">[docs]</a>    <span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

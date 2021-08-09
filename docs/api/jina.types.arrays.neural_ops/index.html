@@ -419,17 +419,17 @@
 <p>A mixin that provides match functionality to DocumentArrays</p>
 <dl class="py method">
 <dt id="jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match">
-<code class="sig-name descname"><span class="pre">match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">darray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_scipy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOpsMixin.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">match</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">darray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cosine'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_scipy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/arrays/neural_ops/#DocumentArrayNeuralOpsMixin.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.arrays.neural_ops.DocumentArrayNeuralOpsMixin.match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute embedding based nearest neighbour in <cite>another</cite> for each Document in <cite>self</cite>,
-and store results in <cite>matches</cite>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>‘cosine’, ‘euclidean’, ‘sqeuclidean’ are supported natively without extra dependency.</p>
-<p>You can use other distance metric provided by <code class="docutils literal notranslate"><span class="pre">scipy</span></code>, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,
+and store results in <cite>matches</cite>.
+.. note:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>'cosine', 'euclidean', 'sqeuclidean' are supported natively without extra dependency.
+You can use other distance metric provided by ``scipy``, such as ‘braycurtis’, ‘canberra’, ‘chebyshev’,
 ‘cityblock’, ‘correlation’, ‘cosine’, ‘dice’, ‘euclidean’, ‘hamming’, ‘jaccard’, ‘jensenshannon’,
 ‘kulsinski’, ‘mahalanobis’, ‘matching’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’,
-‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.</p>
-<p>To use scipy metric, please set <code class="docutils literal notranslate"><span class="pre">use_scipy=True</span></code>.</p>
+‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘wminkowski’, ‘yule’.
+To use scipy metric, please set ``use_scipy=True``.
+</pre></div>
 </div>
 <ul class="simple">
 <li><p>To make all matches values in [0, 1], use <code class="docutils literal notranslate"><span class="pre">dA.match(dB,</span> <span class="pre">normalization=(0,</span> <span class="pre">1))</span></code></p></li>
@@ -444,13 +444,15 @@ and store results in <cite>matches</cite>.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>darray</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – the other DocumentArray or DocumentArrayMemmap to match against</p></li>
 <li><p><strong>metric</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]]) – the distance metric</p></li>
-<li><p><strong>limit</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum number of matches, when not given
-all Documents in <cite>another</cite> are considered as matches</p></li>
+<li><p><strong>limit</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – the maximum number of matches, when not given defaults to 20.</p></li>
 <li><p><strong>normalization</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – a tuple [a, b] to be used with min-max normalization,
 the min distance will be rescaled to <cite>a</cite>, the max distance will be rescaled to <cite>b</cite>
 all values will be rescaled into range <cite>[a, b]</cite>.</p></li>
 <li><p><strong>use_scipy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – use Scipy as the computation backend</p></li>
 <li><p><strong>metric_name</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – if provided, then match result will be marked with this string.</p></li>
+<li><p><strong>batch_size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – if provided, then <cite>darray</cite> is loaded in chunks of, at most, batch_size elements. This option
+will be slower but more memory efficient. Specialy indicated if <cite>darray</cite> is a big
+DocumentArrayMemmap.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
